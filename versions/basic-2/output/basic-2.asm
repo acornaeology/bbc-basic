@@ -116,7 +116,7 @@ l002f            = &2f
 l0030            = &30
 ; &30 referenced 55 times by &9a76, &9e3f, &9ed1, &9f65, &9f7e, &9f8e, &a0f7, &a1ef, &a1f5, &a1f9, &a217, &a226, &a24e, &a252, &a2e1, &a2e8, &a301, &a311, &a32e, &a346, &a38f, &a3cd, &a3fe, &a40c, &a418, &a44c, &a486, &a49d, &a4e6, &a513, &a555, &a58e, &a614, &a61f, &a629, &a62d, &a68c, &a6a1, &a6f8, &a703, &a7c1, &a7c6, &a7e0, &a820, &a82e, &a91b, &a936, &a9d3, &a9ff, &aa94, &abce, &af76, &b36b, &b4eb, &bd5b
 l0031            = &31
-; &31 referenced 73 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a600, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &af7a, &b37f, &b4f6, &b5dd, &b612, &bd66
+; &31 referenced 72 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &af7a, &b37f, &b4f6, &b5dd, &b612, &bd66
 l0032            = &32
 ; &32 referenced 61 times by &9a82, &9f86, &a07f, &a0d9, &a11f, &a18a, &a18e, &a19d, &a1aa, &a1b3, &a1c6, &a1c8, &a1d3, &a1dc, &a20f, &a22e, &a275, &a291, &a29f, &a2b2, &a2d9, &a307, &a319, &a31f, &a340, &a3a2, &a3c3, &a3d5, &a3eb, &a42e, &a434, &a43e, &a47b, &a47d, &a4be, &a4ee, &a56c, &a572, &a581, &a59c, &a5ce, &a5d0, &a5f6, &a5fa, &a690, &a714, &a732, &a736, &a74b, &a75c, &a77a, &a77e, &a78d, &a7a0, &a9f7, &b361, &b373, &b4ff, &b5e1, &b616, &bd6f
 l0033            = &33
@@ -142,7 +142,7 @@ l003c            = &3c
 l003d            = &3d
 ; &3d referenced 65 times by &85c1, &85e7, &85f3, &87b6, &8899, &88ad, &88b9, &88bb, &88c0, &88ca, &88cc, &88fc, &8905, &8909, &8911, &8a3b, &8a49, &8a5c, &9058, &9486, &94b3, &94e6, &9972, &997a, &9982, &9984, &9986, &9992, &999b, &999d, &99e0, &9a09, &9a12, &9a2f, &9a74, &9db4, &a228, &a36a, &a459, &a4e4, &a515, &a553, &a58c, &a616, &a6fa, &a81e, &a944, &a9e6, &b154, &b466, &b5ef, &b8d9, &bae8, &bb0a, &bc32, &bc38, &bcea, &bcf6, &bcfb, &bd00, &bd0a, &be57, &be59, &be68, &bf00
 l003e            = &3e
-; &3e referenced 56 times by &85e9, &85fd, &889b, &88ab, &88b0, &88b5, &88be, &88c7, &88d0, &88f5, &890b, &905d, &9976, &998a, &99a1, &99e2, &9a0b, &9a17, &9a2c, &9a7a, &9db6, &a192, &a22c, &a242, &a26f, &a289, &a37a, &a422, &a428, &a444, &a45b, &a4e8, &a534, &a538, &a543, &a598, &a5d2, &a5fe, &a63a, &a710, &a73a, &a758, &a782, &a81b, &a946, &ac88, &b46a, &b5f3, &b8db, &baec, &bb0e, &bc3c, &bc44, &bced, &be5d, &bf04
+; &3e referenced 55 times by &85e9, &85fd, &889b, &88ab, &88b0, &88b5, &88be, &88c7, &88d0, &88f5, &890b, &905d, &9976, &998a, &99a1, &99e2, &9a0b, &9a17, &9a2c, &9a7a, &9db6, &a192, &a22c, &a242, &a26f, &a289, &a37a, &a422, &a428, &a444, &a45b, &a4e8, &a534, &a538, &a543, &a598, &a5d2, &a63a, &a710, &a73a, &a758, &a782, &a81b, &a946, &ac88, &b46a, &b5f3, &b8db, &baec, &bb0e, &bc3c, &bc44, &bced, &be5d, &bf04
 l003f            = &3f
 ; &3f referenced 55 times by &8522, &8542, &9147, &915e, &917c, &91bb, &923c, &924f, &9723, &992b, &993f, &994b, &9960, &99e4, &9a0d, &9a1c, &9a29, &9a80, &9d87, &9d9a, &9d9e, &9ea0, &9ea8, &9eb3, &9eb7, &a18c, &a230, &a244, &a273, &a28b, &a35c, &a36e, &a41e, &a424, &a446, &a45d, &a4ec, &a530, &a536, &a545, &a59e, &a5cc, &a5f8, &a63c, &a716, &a734, &a75e, &a77c, &ac8a, &b21a, &b222, &bca6, &bca8, &bcfe, &bf0d
 l0040            = &40
@@ -322,6 +322,8 @@ string_work      = &0600
 l06ff            = &06ff
 ; &06ff referenced 2 times by &8ee0, &8ef1
 line_input_buf   = &0700
+l3185            = &3185
+; &3185 referenced 1 time by &a5ff
 l6142            = &6142
 ; &6142 referenced 1 time by &bea1
 l7461            = &7461
@@ -1550,7 +1552,7 @@ l848a = sub_c847b+15
     pha                                                               ; 8859: 48          H     
     jsr eval_expr_to_integer                                          ; 885a: 20 21 88     !.   
     ldx #&29 ; ')'                                                    ; 885d: a2 29       .)    
-    jsr sub_cbe44                                                     ; 885f: 20 44 be     D.   
+    jsr iwa_store_zp                                                  ; 885f: 20 44 be     D.   
     pla                                                               ; 8862: 68          h     
     tay                                                               ; 8863: a8          .     
 ; &8864 referenced 1 time by &887a
@@ -2493,7 +2495,7 @@ l848a = sub_c847b+15
     cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,    
     bne c8d77                                                         ; 8d37: d0 3e       .>    
     jsr sub_c9b29                                                     ; 8d39: 20 29 9b     ).   
-    jsr sub_ca385                                                     ; 8d3c: 20 85 a3     ..   
+    jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..   
     pla                                                               ; 8d3f: 68          h     
     tay                                                               ; 8d40: a8          .     
     lda zp_var_type                                                   ; 8d41: a5 27       .'    
@@ -4386,7 +4388,7 @@ l848a = sub_c847b+15
     lda (zp_text_ptr),y                                               ; 98a0: b1 0b       ..    
     tay                                                               ; 98a2: a8          .     
     pla                                                               ; 98a3: 68          h     
-    jsr caeea                                                         ; 98a4: 20 ea ae     ..   
+    jsr iwa_from_ya                                                   ; 98a4: 20 ea ae     ..   
     jsr sub_c9905                                                     ; 98a7: 20 05 99     ..   
     pla                                                               ; 98aa: 68          h     
     tay                                                               ; 98ab: a8          .     
@@ -4586,7 +4588,7 @@ l848a = sub_c847b+15
     jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..   
     lda l002d                                                         ; 99c2: a5 2d       .-    
     pha                                                               ; 99c4: 48          H     
-    jsr sub_cad71                                                     ; 99c5: 20 71 ad     q.   
+    jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.   
     jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..   
     stx zp_var_type                                                   ; 99cb: 86 27       .'    
     tay                                                               ; 99cd: a8          .     
@@ -4595,7 +4597,7 @@ l848a = sub_c847b+15
     sta l0038                                                         ; 99d2: 85 38       .8    
     eor l002d                                                         ; 99d4: 45 2d       E-    
     sta zp_general                                                    ; 99d6: 85 37       .7    
-    jsr sub_cad71                                                     ; 99d8: 20 71 ad     q.   
+    jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.   
     ldx #&39 ; '9'                                                    ; 99db: a2 39       .9    
     jsr sub_cbe0d                                                     ; 99dd: 20 0d be     ..   
     sty l003d                                                         ; 99e0: 84 3d       .=    
@@ -4664,9 +4666,9 @@ l848a = sub_c847b+15
     jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..   
     jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.   
     jsr ca2be                                                         ; 9a41: 20 be a2     ..   
-    jsr sub_ca21e                                                     ; 9a44: 20 1e a2     ..   
+    jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..   
     jsr sub_cbd7e                                                     ; 9a47: 20 7e bd     ~.   
-    jsr unpack_fwa_from_ptr                                           ; 9a4a: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..   
     jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.   
 ; &9a50 referenced 1 time by &9aa0
 .loop_c9a50
@@ -4678,7 +4680,7 @@ l848a = sub_c847b+15
     jsr sub_cbd7e                                                     ; 9a5c: 20 7e bd     ~.   
 ; &9a5f referenced 1 time by &b78f
 .sub_c9a5f
-    jsr sub_ca34e                                                     ; 9a5f: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.   
 ; &9a62 referenced 1 time by &9a4d
 .c9a62
     ldx zp_var_type                                                   ; 9a62: a6 27       .'    
@@ -4730,6 +4732,11 @@ l848a = sub_c847b+15
     tay                                                               ; 9aa8: a8          .     
     beq c9a9a                                                         ; 9aa9: f0 ef       ..    
     bmi loop_c9a39                                                    ; 9aab: 30 8c       0.    
+; ***************************************************************************************
+; Compare an integer variable with the accumulator
+;
+; Compare the integer operand against IWA and set flags.
+.iwa_test_var
     lda l002d                                                         ; 9aad: a5 2d       .-    
     eor #&80                                                          ; 9aaf: 49 80       I.    
     sta l002d                                                         ; 9ab1: 85 2d       .-    
@@ -5023,6 +5030,11 @@ l848a = sub_c847b+15
     tay                                                               ; 9c56: a8          .     
     beq c9c88                                                         ; 9c57: f0 2f       ./    
     bmi c9ca7                                                         ; 9c59: 30 4c       0L    
+; ***************************************************************************************
+; Integer add
+;
+; IWA = IWA + the integer operand.
+.iwa_add
     ldy #0                                                            ; 9c5b: a0 00       ..    
     clc                                                               ; 9c5d: 18          .     
     lda (zp_stack_ptr),y                                              ; 9c5e: b1 04       ..    
@@ -5065,7 +5077,7 @@ l848a = sub_c847b+15
 ; &9c9b referenced 2 times by &9c96, &9cb2
 .c9c9b
     jsr sub_cbd7e                                                     ; 9c9b: 20 7e bd     ~.   
-    jsr ca500                                                         ; 9c9e: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; 9c9e: 20 00 a5     ..   
 ; &9ca1 referenced 2 times by &9cf7, &9d0b
 .c9ca1
     ldx zp_var_type                                                   ; 9ca1: a6 27       .'    
@@ -5087,6 +5099,11 @@ l848a = sub_c847b+15
     tay                                                               ; 9cbd: a8          .     
     beq c9c88                                                         ; 9cbe: f0 c8       ..    
     bmi c9cfa                                                         ; 9cc0: 30 38       08    
+; ***************************************************************************************
+; Reverse integer subtract
+;
+; IWA = operand - IWA.
+.iwa_rsub
     sec                                                               ; 9cc2: 38          8     
     ldy #0                                                            ; 9cc3: a0 00       ..    
     lda (zp_stack_ptr),y                                              ; 9cc5: b1 04       ..    
@@ -5116,7 +5133,7 @@ l848a = sub_c847b+15
 ; &9cf1 referenced 1 time by &9cec
 .c9cf1
     jsr sub_cbd7e                                                     ; 9cf1: 20 7e bd     ~.   
-    jsr sub_ca4fd                                                     ; 9cf4: 20 fd a4     ..   
+    jsr fwa_rsub_var                                                  ; 9cf4: 20 fd a4     ..   
     jmp c9ca1                                                         ; 9cf7: 4c a1 9c    L..   
 ; &9cfa referenced 1 time by &9cc0
 .c9cfa
@@ -5149,7 +5166,7 @@ l848a = sub_c847b+15
 ; &9d2c referenced 1 time by &9d1a
 .c9d2c
     jsr sub_cbd7e                                                     ; 9d2c: 20 7e bd     ~.   
-    jsr sub_ca656                                                     ; 9d2f: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.   
     lda #&ff                                                          ; 9d32: a9 ff       ..    
     ldx zp_var_type                                                   ; 9d34: a6 27       .'    
     jmp c9dd4                                                         ; 9d36: 4c d4 9d    L..   
@@ -5188,16 +5205,21 @@ l848a = sub_c847b+15
 .c9d69
     eor l002b                                                         ; 9d69: 45 2b       E+    
     bmi c9d0e                                                         ; 9d6b: 30 a1       0.    
+; ***************************************************************************************
+; Integer multiply
+;
+; IWA = IWA * the integer operand.
+.iwa_mul
     lda l002d                                                         ; 9d6d: a5 2d       .-    
     pha                                                               ; 9d6f: 48          H     
-    jsr sub_cad71                                                     ; 9d70: 20 71 ad     q.   
+    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.   
     ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9    
-    jsr sub_cbe44                                                     ; 9d75: 20 44 be     D.   
+    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.   
     jsr unstack_integer                                               ; 9d78: 20 ea bd     ..   
     pla                                                               ; 9d7b: 68          h     
     eor l002d                                                         ; 9d7c: 45 2d       E-    
     sta zp_general                                                    ; 9d7e: 85 37       .7    
-    jsr sub_cad71                                                     ; 9d80: 20 71 ad     q.   
+    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.   
     ldy #0                                                            ; 9d83: a0 00       ..    
     ldx #0                                                            ; 9d85: a2 00       ..    
     sty l003f                                                         ; 9d87: 84 3f       .?    
@@ -5238,10 +5260,10 @@ l848a = sub_c847b+15
     ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=    
 ; &9dbd referenced 1 time by &9e1a
 .c9dbd
-    jsr sub_caf56                                                     ; 9dbd: 20 56 af     V.   
+    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.   
     plp                                                               ; 9dc0: 28          (     
     bpl c9dc6                                                         ; 9dc1: 10 03       ..    
-    jsr cad93                                                         ; 9dc3: 20 93 ad     ..   
+    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..   
 ; &9dc6 referenced 1 time by &9dc1
 .c9dc6
     ldx zp_var_type                                                   ; 9dc6: a6 27       .'    
@@ -5262,9 +5284,9 @@ l848a = sub_c847b+15
     cpx #&2f ; '/'                                                    ; 9dd8: e0 2f       ./    
     beq c9de5                                                         ; 9dda: f0 09       ..    
     cpx #&83                                                          ; 9ddc: e0 83       ..    
-    beq c9e01                                                         ; 9dde: f0 21       .!    
+    beq iwa_mod                                                       ; 9dde: f0 21       .!    
     cpx #&81                                                          ; 9de0: e0 81       ..    
-    beq c9e0a                                                         ; 9de2: f0 26       .&    
+    beq iwa_div                                                       ; 9de2: f0 26       .&    
     rts                                                               ; 9de4: 60          `     
 ; &9de5 referenced 1 time by &9dda
 .c9de5
@@ -5276,18 +5298,26 @@ l848a = sub_c847b+15
     tay                                                               ; 9df1: a8          .     
     jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..   
     jsr sub_cbd7e                                                     ; 9df5: 20 7e bd     ~.   
-    jsr sub_ca6ad                                                     ; 9df8: 20 ad a6     ..   
+    jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..   
     ldx zp_var_type                                                   ; 9dfb: a6 27       .'    
     lda #&ff                                                          ; 9dfd: a9 ff       ..    
     bne c9dd4                                                         ; 9dff: d0 d3       ..    
+; ***************************************************************************************
+; Integer remainder
+;
+; IWA = IWA MOD the integer operand.
 ; &9e01 referenced 1 time by &9dde
-.c9e01
+.iwa_mod
     jsr sub_c99be                                                     ; 9e01: 20 be 99     ..   
     lda l0038                                                         ; 9e04: a5 38       .8    
     php                                                               ; 9e06: 08          .     
     jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..   
+; ***************************************************************************************
+; Integer divide
+;
+; IWA = IWA DIV the integer operand.
 ; &9e0a referenced 1 time by &9de2
-.c9e0a
+.iwa_div
     jsr sub_c99be                                                     ; 9e0a: 20 be 99     ..   
     rol zp_fileblk                                                    ; 9e0d: 26 39       &9    
     rol l003a                                                         ; 9e0f: 26 3a       &:    
@@ -5330,37 +5360,37 @@ l848a = sub_c847b+15
     jsr sub_ca486                                                     ; 9e45: 20 86 a4     ..   
     bne c9e59                                                         ; 9e48: d0 0f       ..    
     jsr sub_cbd7e                                                     ; 9e4a: 20 7e bd     ~.   
-    jsr unpack_fwa_from_ptr                                           ; 9e4d: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..   
     lda l004a                                                         ; 9e50: a5 4a       .J    
     jsr sub_cab12                                                     ; 9e52: 20 12 ab     ..   
     lda #&ff                                                          ; 9e55: a9 ff       ..    
     bne c9e23                                                         ; 9e57: d0 ca       ..    
 ; &9e59 referenced 1 time by &9e48
 .c9e59
-    jsr sub_ca381                                                     ; 9e59: 20 81 a3     ..   
+    jsr fwa_pack_temp3                                                ; 9e59: 20 81 a3     ..   
     lda zp_stack_ptr                                                  ; 9e5c: a5 04       ..    
     sta l004b                                                         ; 9e5e: 85 4b       .K    
     lda l0005                                                         ; 9e60: a5 05       ..    
     sta l004c                                                         ; 9e62: 85 4c       .L    
-    jsr unpack_fwa_from_ptr                                           ; 9e64: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; 9e64: 20 b5 a3     ..   
     lda l004a                                                         ; 9e67: a5 4a       .J    
     jsr sub_cab12                                                     ; 9e69: 20 12 ab     ..   
 ; &9e6c referenced 1 time by &9e8e
 .loop_c9e6c
-    jsr sub_ca37d                                                     ; 9e6c: 20 7d a3     }.   
+    jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.   
     jsr sub_cbd7e                                                     ; 9e6f: 20 7e bd     ~.   
-    jsr unpack_fwa_from_ptr                                           ; 9e72: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..   
     jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..   
     jsr caad1                                                         ; 9e78: 20 d1 aa     ..   
     jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..   
     jsr sub_ca7ed                                                     ; 9e7e: 20 ed a7     ..   
-    jsr sub_ca656                                                     ; 9e81: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; 9e81: 20 56 a6     V.   
     lda #&ff                                                          ; 9e84: a9 ff       ..    
     bne c9e23                                                         ; 9e86: d0 9b       ..    
 ; &9e88 referenced 1 time by &9e43
 .c9e88
-    jsr sub_ca381                                                     ; 9e88: 20 81 a3     ..   
-    jsr sub_ca699                                                     ; 9e8b: 20 99 a6     ..   
+    jsr fwa_pack_temp3                                                ; 9e88: 20 81 a3     ..   
+    jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..   
     bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..    
 ; &9e90 referenced 1 time by &9f07
 .loop_c9e90
@@ -5418,7 +5448,7 @@ l848a = sub_c847b+15
     lda l0030                                                         ; 9ed1: a5 30       .0    
     cmp #&81                                                          ; 9ed3: c9 81       ..    
     bcs c9f25                                                         ; 9ed5: b0 4e       .N    
-    jsr sub_ca1f4                                                     ; 9ed7: 20 f4 a1     ..   
+    jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..   
     dec l0049                                                         ; 9eda: c6 49       .I    
     jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..   
 ; &9edf referenced 2 times by &8dfb, &b0b9
@@ -5456,7 +5486,7 @@ l848a = sub_c847b+15
     jsr ca2be                                                         ; 9f0c: 20 be a2     ..   
 ; &9f0f referenced 1 time by &9f0a
 .c9f0f
-    jsr test_fwa_zero                                                 ; 9f0f: 20 da a1     ..   
+    jsr fwa_sign                                                      ; 9f0f: 20 da a1     ..   
     bne loop_c9ec8                                                    ; 9f12: d0 b4       ..    
     lda zp_general                                                    ; 9f14: a5 37       .7    
     bne c9f1d                                                         ; 9f16: d0 05       ..    
@@ -5467,7 +5497,7 @@ l848a = sub_c847b+15
     jmp c9f9c                                                         ; 9f1d: 4c 9c 9f    L..   
 ; &9f20 referenced 1 time by &9f96
 .loop_c9f20
-    jsr sub_ca699                                                     ; 9f20: 20 99 a6     ..   
+    jsr fwa_set_one                                                   ; 9f20: 20 99 a6     ..   
     bne c9f34                                                         ; 9f23: d0 0f       ..    
 ; &9f25 referenced 1 time by &9ed5
 .c9f25
@@ -5479,7 +5509,7 @@ l848a = sub_c847b+15
     bcc c9f39                                                         ; 9f2f: 90 08       ..    
 ; &9f31 referenced 1 time by &9f29
 .c9f31
-    jsr sub_ca24d                                                     ; 9f31: 20 4d a2     M.   
+    jsr fwa_div10                                                     ; 9f31: 20 4d a2     M.   
 ; &9f34 referenced 1 time by &9f23
 .c9f34
     inc l0049                                                         ; 9f34: e6 49       .I    
@@ -5488,7 +5518,7 @@ l848a = sub_c847b+15
 .c9f39
     lda l0035                                                         ; 9f39: a5 35       .5    
     sta zp_var_type                                                   ; 9f3b: 85 27       .'    
-    jsr sub_ca385                                                     ; 9f3d: 20 85 a3     ..   
+    jsr fwa_pack_temp1                                                ; 9f3d: 20 85 a3     ..   
     lda l004e                                                         ; 9f40: a5 4e       .N    
     sta l0038                                                         ; 9f42: 85 38       .8    
     ldx zp_general                                                    ; 9f44: a6 37       .7    
@@ -5505,7 +5535,7 @@ l848a = sub_c847b+15
     sta zp_general                                                    ; 9f5a: 85 37       .7    
 ; &9f5c referenced 2 times by &9f48, &9f52
 .c9f5c
-    jsr ca686                                                         ; 9f5c: 20 86 a6     ..   
+    jsr fwa_clear                                                     ; 9f5c: 20 86 a6     ..   
     lda #&a0                                                          ; 9f5f: a9 a0       ..    
     sta l0031                                                         ; 9f61: 85 31       .1    
     lda #&83                                                          ; 9f63: a9 83       ..    
@@ -5514,16 +5544,16 @@ l848a = sub_c847b+15
     beq c9f71                                                         ; 9f69: f0 06       ..    
 ; &9f6b referenced 1 time by &9f6f
 .loop_c9f6b
-    jsr sub_ca24d                                                     ; 9f6b: 20 4d a2     M.   
+    jsr fwa_div10                                                     ; 9f6b: 20 4d a2     M.   
     dex                                                               ; 9f6e: ca          .     
     bne loop_c9f6b                                                    ; 9f6f: d0 fa       ..    
 ; &9f71 referenced 1 time by &9f69
 .c9f71
     jsr sub_ca7f5                                                     ; 9f71: 20 f5 a7     ..   
-    jsr sub_ca34e                                                     ; 9f74: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; 9f74: 20 4e a3     N.   
     lda zp_var_type                                                   ; 9f77: a5 27       .'    
     sta l0042                                                         ; 9f79: 85 42       .B    
-    jsr sub_ca50b                                                     ; 9f7b: 20 0b a5     ..   
+    jsr fwa_add_fwb_raw                                               ; 9f7b: 20 0b a5     ..   
 ; &9f7e referenced 1 time by &9f90
 .loop_c9f7e
     lda l0030                                                         ; 9f7e: a5 30       .0    
@@ -5549,7 +5579,7 @@ l848a = sub_c847b+15
     beq c9fe6                                                         ; 9f9e: f0 46       .F    
 ; &9fa0 referenced 1 time by &9f4c
 .c9fa0
-    jsr ca686                                                         ; 9fa0: 20 86 a6     ..   
+    jsr fwa_clear                                                     ; 9fa0: 20 86 a6     ..   
     lda #0                                                            ; 9fa3: a9 00       ..    
     sta l0049                                                         ; 9fa5: 85 49       .I    
     lda l004e                                                         ; 9fa7: a5 4e       .N    
@@ -5701,7 +5731,7 @@ l848a = sub_c847b+15
 .ca072
     clc                                                               ; a072: 18          .     
     stx l0035                                                         ; a073: 86 35       .5    
-    jsr test_fwa_zero                                                 ; a075: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a075: 20 da a1     ..   
     lda #&ff                                                          ; a078: a9 ff       ..    
     rts                                                               ; a07a: 60          `     
 ; &a07b referenced 3 times by &ac60, &ac6b, &ae2a
@@ -5778,7 +5808,7 @@ l848a = sub_c847b+15
     lda l0049                                                         ; a0ea: a5 49       .I    
     ora l0048                                                         ; a0ec: 05 48       .H    
     beq ca11f                                                         ; a0ee: f0 2f       ./    
-    jsr test_fwa_zero                                                 ; a0f0: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a0f0: 20 da a1     ..   
     beq ca11b                                                         ; a0f3: f0 26       .&    
 ; &a0f5 referenced 1 time by &a127
 .loop_ca0f5
@@ -5787,24 +5817,24 @@ l848a = sub_c847b+15
     lda #0                                                            ; a0f9: a9 00       ..    
     sta l002f                                                         ; a0fb: 85 2f       ./    
     sta zp_fwa                                                        ; a0fd: 85 2e       ..    
-    jsr ca303                                                         ; a0ff: 20 03 a3     ..   
+    jsr fwa_normalise                                                 ; a0ff: 20 03 a3     ..   
     lda l0049                                                         ; a102: a5 49       .I    
     bmi ca111                                                         ; a104: 30 0b       0.    
     beq ca118                                                         ; a106: f0 10       ..    
 ; &a108 referenced 1 time by &a10d
 .loop_ca108
-    jsr sub_ca1f4                                                     ; a108: 20 f4 a1     ..   
+    jsr fwa_mul10                                                     ; a108: 20 f4 a1     ..   
     dec l0049                                                         ; a10b: c6 49       .I    
     bne loop_ca108                                                    ; a10d: d0 f9       ..    
     beq ca118                                                         ; a10f: f0 07       ..    
 ; &a111 referenced 2 times by &a104, &a116
 .ca111
-    jsr sub_ca24d                                                     ; a111: 20 4d a2     M.   
+    jsr fwa_div10                                                     ; a111: 20 4d a2     M.   
     inc l0049                                                         ; a114: e6 49       .I    
     bne ca111                                                         ; a116: d0 f9       ..    
 ; &a118 referenced 2 times by &a106, &a10f
 .ca118
-    jsr ca65c                                                         ; a118: 20 5c a6     \.   
+    jsr fwa_round                                                     ; a118: 20 5c a6     \.   
 ; &a11b referenced 1 time by &a0f3
 .ca11b
     sec                                                               ; a11b: 38          8     
@@ -5937,12 +5967,12 @@ l848a = sub_c847b+15
     pla                                                               ; a1d8: 68          h     
     rts                                                               ; a1d9: 60          `     
 ; ***************************************************************************************
-; Test whether the FP accumulator is zero
+; Get the sign of the FP accumulator
 ;
-; OR the mantissa bytes of the floating-point accumulator (&31-&35) together; returns
-; with Z set if the value is zero.
+; Determine the sign of the floating-point accumulator: zero, positive or negative (Z set
+; when FWA is zero). Tests the mantissa bytes (&31-&35) and the sign.
 ; &a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e
-.test_fwa_zero
+.fwa_sign
     lda l0031                                                         ; a1da: a5 31       .1    
     ora l0032                                                         ; a1dc: 05 32       .2    
     ora l0033                                                         ; a1de: 05 33       .3    
@@ -5961,8 +5991,12 @@ l848a = sub_c847b+15
 ; &a1f3 referenced 1 time by &a1e8
 .return_20
     rts                                                               ; a1f3: 60          `     
+; ***************************************************************************************
+; FWA = FWA * 10
+;
+; Multiply FWA by ten, unnormalised and unrounded.
 ; &a1f4 referenced 2 times by &9ed7, &a108
-.sub_ca1f4
+.fwa_mul10
     clc                                                               ; a1f4: 18          .     
     lda l0030                                                         ; a1f5: a5 30       .0    
     adc #3                                                            ; a1f7: 69 03       i.    
@@ -5971,7 +6005,7 @@ l848a = sub_c847b+15
     inc l002f                                                         ; a1fd: e6 2f       ./    
 ; &a1ff referenced 1 time by &a1fb
 .ca1ff
-    jsr sub_ca21e                                                     ; a1ff: 20 1e a2     ..   
+    jsr fwb_copy_from_fwa                                             ; a1ff: 20 1e a2     ..   
     jsr sub_ca242                                                     ; a202: 20 42 a2     B.   
     jsr sub_ca242                                                     ; a205: 20 42 a2     B.   
 ; &a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0
@@ -5991,8 +6025,12 @@ l848a = sub_c847b+15
 ; &a21d referenced 2 times by &a20b, &a219
 .return_21
     rts                                                               ; a21d: 60          `     
+; ***************************************************************************************
+; FWB = FWA
+;
+; Copy FWA into FWB.
 ; &a21e referenced 5 times by &9a44, &a1ff, &a23f, &a3f8, &a6b2
-.sub_ca21e
+.fwb_copy_from_fwa
     lda zp_fwa                                                        ; a21e: a5 2e       ..    
     sta zp_fwb                                                        ; a220: 85 3b       .;    
     lda l002f                                                         ; a222: a5 2f       ./    
@@ -6012,7 +6050,7 @@ l848a = sub_c847b+15
     rts                                                               ; a23e: 60          `     
 ; &a23f referenced 2 times by &a258, &a25e
 .sub_ca23f
-    jsr sub_ca21e                                                     ; a23f: 20 1e a2     ..   
+    jsr fwb_copy_from_fwa                                             ; a23f: 20 1e a2     ..   
 ; &a242 referenced 5 times by &a202, &a205, &a261, &a264, &a267
 .sub_ca242
     lsr l003e                                                         ; a242: 46 3e       F>    
@@ -6021,8 +6059,12 @@ l848a = sub_c847b+15
     ror l0041                                                         ; a248: 66 41       fA    
     ror l0042                                                         ; a24a: 66 42       fB    
     rts                                                               ; a24c: 60          `     
+; ***************************************************************************************
+; FWA = FWA / 10
+;
+; Divide FWA by ten, unnormalised and unrounded.
 ; &a24d referenced 3 times by &9f31, &9f6b, &a111
-.sub_ca24d
+.fwa_div10
     sec                                                               ; a24d: 38          8     
     lda l0030                                                         ; a24e: a5 30       .0    
     sbc #4                                                            ; a250: e9 04       ..    
@@ -6090,7 +6132,7 @@ l848a = sub_c847b+15
     stx l002f                                                         ; a2c2: 86 2f       ./    
     lda l002d                                                         ; a2c4: a5 2d       .-    
     bpl ca2cd                                                         ; a2c6: 10 05       ..    
-    jsr cad93                                                         ; a2c8: 20 93 ad     ..   
+    jsr iwa_negate                                                    ; a2c8: 20 93 ad     ..   
     ldx #&ff                                                          ; a2cb: a2 ff       ..    
 ; &a2cd referenced 1 time by &a2c6
 .ca2cd
@@ -6105,7 +6147,7 @@ l848a = sub_c847b+15
     sta l0031                                                         ; a2dd: 85 31       .1    
     lda #&a0                                                          ; a2df: a9 a0       ..    
     sta l0030                                                         ; a2e1: 85 30       .0    
-    jmp ca303                                                         ; a2e3: 4c 03 a3    L..   
+    jmp fwa_normalise                                                 ; a2e3: 4c 03 a3    L..   
 ; &a2e6 referenced 1 time by &a30f
 .loop_ca2e6
     sta zp_fwa                                                        ; a2e6: 85 2e       ..    
@@ -6117,7 +6159,7 @@ l848a = sub_c847b+15
 ; &a2ed referenced 1 time by &a852
 .sub_ca2ed
     pha                                                               ; a2ed: 48          H     
-    jsr ca686                                                         ; a2ee: 20 86 a6     ..   
+    jsr fwa_clear                                                     ; a2ee: 20 86 a6     ..   
     pla                                                               ; a2f1: 68          h     
     beq return_23                                                     ; a2f2: f0 f8       ..    
     bpl ca2fd                                                         ; a2f4: 10 07       ..    
@@ -6130,8 +6172,12 @@ l848a = sub_c847b+15
     sta l0031                                                         ; a2fd: 85 31       .1    
     lda #&88                                                          ; a2ff: a9 88       ..    
     sta l0030                                                         ; a301: 85 30       .0    
+; ***************************************************************************************
+; Normalise FWA
+;
+; Normalise the floating-point accumulator.
 ; &a303 referenced 8 times by &a0ff, &a2e3, &a4b3, &a5dc, &a602, &a659, &aa0e, &af33
-.ca303
+.fwa_normalise
     lda l0031                                                         ; a303: a5 31       .1    
     bmi return_23                                                     ; a305: 30 e5       0.    
     ora l0032                                                         ; a307: 05 32       .2    
@@ -6176,8 +6222,12 @@ l848a = sub_c847b+15
     bcs ca336                                                         ; a348: b0 ec       ..    
     dec l002f                                                         ; a34a: c6 2f       ./    
     bcc ca336                                                         ; a34c: 90 e8       ..    
+; ***************************************************************************************
+; Unpack a fp variable into FWB
+;
+; Unpack the fp variable at (&4B/&4C) into FWB.
 ; &a34e referenced 7 times by &9a5f, &9f74, &a4d6, &a500, &a60b, &a6ec, &a9df
-.sub_ca34e
+.fwb_unpack_var
     ldy #4                                                            ; a34e: a0 04       ..    
     lda (l004b),y                                                     ; a350: b1 4b       .K    
     sta l0041                                                         ; a352: 85 41       .A    
@@ -6206,24 +6256,40 @@ l848a = sub_c847b+15
 .ca37a
     sta l003e                                                         ; a37a: 85 3e       .>    
     rts                                                               ; a37c: 60          `     
+; ***************************************************************************************
+; Pack FWA into TEMP2
+;
+; Pack FWA into the floating-point temporary at &0471.
 ; &a37d referenced 2 times by &9e6c, &aa11
-.sub_ca37d
+.fwa_pack_temp2
     lda #&71 ; 'q'                                                    ; a37d: a9 71       .q    
     bne ca387                                                         ; a37f: d0 06       ..    
+; ***************************************************************************************
+; Pack FWA into TEMP3
+;
+; Pack FWA into the floating-point temporary at &0476.
 ; &a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe
-.sub_ca381
+.fwa_pack_temp3
     lda #&76 ; 'v'                                                    ; a381: a9 76       .v    
     bne ca387                                                         ; a383: d0 02       ..    
+; ***************************************************************************************
+; Pack FWA into TEMP1
+;
+; Pack FWA into the floating-point temporary at &046C.
 ; &a385 referenced 9 times by &8d3c, &9f3d, &a6a5, &a7be, &a84b, &a89b, &a9b1, &a9d9, &ab1f
-.sub_ca385
+.fwa_pack_temp1
     lda #&6c ; 'l'                                                    ; a385: a9 6c       .l    
 ; &a387 referenced 3 times by &a37f, &a383, &a835
 .ca387
     sta l004b                                                         ; a387: 85 4b       .K    
     lda #4                                                            ; a389: a9 04       ..    
     sta l004c                                                         ; a38b: 85 4c       .L    
+; ***************************************************************************************
+; Pack FWA into a fp variable
+;
+; Pack FWA into the five-byte fp variable at (&4B/&4C).
 ; &a38d referenced 7 times by &a4d9, &a6ca, &a7cf, &a9b7, &aa20, &b860, &b882
-.sub_ca38d
+.fwa_pack_var
     ldy #0                                                            ; a38d: a0 00       ..    
     lda l0030                                                         ; a38f: a5 30       .0    
     sta (l004b),y                                                     ; a391: 91 4b       .K    
@@ -6245,16 +6311,20 @@ l848a = sub_c847b+15
     iny                                                               ; a3ae: c8          .     
     sta (l004b),y                                                     ; a3af: 91 4b       .K    
     rts                                                               ; a3b1: 60          `     
+; ***************************************************************************************
+; Unpack TEMP1 into FWA
+;
+; Unpack the floating-point temporary at &046C into FWA.
 ; &a3b2 referenced 2 times by &aa35, &ba36
-.ca3b2
+.fwa_unpack_temp1
     jsr sub_ca7f5                                                     ; a3b2: 20 f5 a7     ..   
 ; ***************************************************************************************
-; Unpack a floating-point value into the accumulator
+; Unpack a floating-point variable into FWA
 ;
-; Copy the five mantissa/exponent bytes addressed by (&4B) into the floating-point
-; accumulator (&30-&34).
+; Unpack the packed five-byte floating-point value addressed by (&4B/&4C) into the
+; floating-point accumulator (FWA).
 ; &a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea
-.unpack_fwa_from_ptr
+.fwa_unpack_var
     ldy #4                                                            ; a3b5: a0 04       ..    
     lda (l004b),y                                                     ; a3b7: b1 4b       .K    
     sta l0034                                                         ; a3b9: 85 34       .4    
@@ -6299,14 +6369,14 @@ l848a = sub_c847b+15
     rts                                                               ; a3f7: 60          `     
 ; &a3f8 referenced 1 time by &a400
 .loop_ca3f8
-    jsr sub_ca21e                                                     ; a3f8: 20 1e a2     ..   
-    jmp ca686                                                         ; a3fb: 4c 86 a6    L..   
+    jsr fwb_copy_from_fwa                                             ; a3f8: 20 1e a2     ..   
+    jmp fwa_clear                                                     ; a3fb: 4c 86 a6    L..   
 ; &a3fe referenced 4 times by &a3e4, &a491, &a9ee, &ac82
 .sub_ca3fe
     lda l0030                                                         ; a3fe: a5 30       .0    
     bpl loop_ca3f8                                                    ; a400: 10 f6       ..    
-    jsr sub_ca453                                                     ; a402: 20 53 a4     S.   
-    jsr test_fwa_zero                                                 ; a405: 20 da a1     ..   
+    jsr fwb_clear                                                     ; a402: 20 53 a4     S.   
+    jsr fwa_sign                                                      ; a405: 20 da a1     ..   
     bne ca43c                                                         ; a408: d0 32       .2    
     beq ca468                                                         ; a40a: f0 5c       .\    
 ; &a40c referenced 2 times by &a43a, &a44e
@@ -6350,8 +6420,12 @@ l848a = sub_c847b+15
 ; &a450 referenced 2 times by &a466, &a4c4
 .ca450
     jmp ca66c                                                         ; a450: 4c 6c a6    Ll.   
+; ***************************************************************************************
+; FWB = 0
+;
+; Set the second floating-point accumulator to zero.
 ; &a453 referenced 3 times by &a402, &a814, &a93f
-.sub_ca453
+.fwb_clear
     lda #0                                                            ; a453: a9 00       ..    
     sta zp_fwb                                                        ; a455: 85 3b       .;    
     sta l003c                                                         ; a457: 85 3c       .<    
@@ -6393,7 +6467,7 @@ l848a = sub_c847b+15
     bmi ca491                                                         ; a488: 30 07       0.    
     lda #0                                                            ; a48a: a9 00       ..    
     sta l004a                                                         ; a48c: 85 4a       .J    
-    jmp test_fwa_zero                                                 ; a48e: 4c da a1    L..   
+    jmp fwa_sign                                                      ; a48e: 4c da a1    L..   
 ; &a491 referenced 1 time by &a488
 .ca491
     jsr sub_ca3fe                                                     ; a491: 20 fe a3     ..   
@@ -6417,7 +6491,7 @@ l848a = sub_c847b+15
     jsr ca46c                                                         ; a4b0: 20 6c a4     l.   
 ; &a4b3 referenced 1 time by &a4a1
 .ca4b3
-    jmp ca303                                                         ; a4b3: 4c 03 a3    L..   
+    jmp fwa_normalise                                                 ; a4b3: 4c 03 a3    L..   
 ; &a4b6 referenced 1 time by &a4ca
 .sub_ca4b6
     inc l0034                                                         ; a4b6: e6 34       .4    
@@ -6438,14 +6512,22 @@ l848a = sub_c847b+15
     jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.   
 ; &a4d0 referenced 2 times by &9d08, &a9bd
 .sub_ca4d0
-    jsr sub_ca4fd                                                     ; a4d0: 20 fd a4     ..   
-    jmp cad7e                                                         ; a4d3: 4c 7e ad    L~.   
+    jsr fwa_rsub_var                                                  ; a4d0: 20 fd a4     ..   
+    jmp fwa_negate                                                    ; a4d3: 4c 7e ad    L~.   
+; ***************************************************************************************
+; Swap FWA and a fp variable
+;
+; Exchange the FP accumulator with the fp variable operand.
 ; &a4d6 referenced 1 time by &a6d5
-.sub_ca4d6
-    jsr sub_ca34e                                                     ; a4d6: 20 4e a3     N.   
-    jsr sub_ca38d                                                     ; a4d9: 20 8d a3     ..   
+.fwa_swap_var
+    jsr fwb_unpack_var                                                ; a4d6: 20 4e a3     N.   
+    jsr fwa_pack_var                                                  ; a4d9: 20 8d a3     ..   
+; ***************************************************************************************
+; FWA = FWB
+;
+; Copy FWB into FWA.
 ; &a4dc referenced 2 times by &a50e, &a559
-.ca4dc
+.fwa_copy_from_fwb
     lda zp_fwb                                                        ; a4dc: a5 3b       .;    
     sta zp_fwa                                                        ; a4de: 85 2e       ..    
     lda l003c                                                         ; a4e0: a5 3c       .<    
@@ -6467,21 +6549,37 @@ l848a = sub_c847b+15
 ; &a4fc referenced 2 times by &a503, &a51d
 .return_26
     rts                                                               ; a4fc: 60          `     
+; ***************************************************************************************
+; FWA = fp var - FWA
+;
+; Reverse subtract: operand minus FWA (normalised, rounded).
 ; &a4fd referenced 2 times by &9cf4, &a4d0
-.sub_ca4fd
-    jsr cad7e                                                         ; a4fd: 20 7e ad     ~.   
+.fwa_rsub_var
+    jsr fwa_negate                                                    ; a4fd: 20 7e ad     ~.   
+; ***************************************************************************************
+; FWA = FWA + fp var
+;
+; Add the fp variable operand to FWA (normalised, rounded).
 ; &a500 referenced 10 times by &9c9e, &a7dd, &a848, &a863, &a8cc, &a92a, &a930, &aa1d, &aa32, &b774
-.ca500
-    jsr sub_ca34e                                                     ; a500: 20 4e a3     N.   
+.fwa_add_var
+    jsr fwb_unpack_var                                                ; a500: 20 4e a3     N.   
     beq return_26                                                     ; a503: f0 f7       ..    
+; ***************************************************************************************
+; FWA = FWA + FWB
+;
+; Add FWB to FWA (normalised, rounded).
 ; &a505 referenced 3 times by &a830, &a94a, &a9e8
-.sub_ca505
-    jsr sub_ca50b                                                     ; a505: 20 0b a5     ..   
-    jmp ca65c                                                         ; a508: 4c 5c a6    L\.   
+.fwa_add_fwb
+    jsr fwa_add_fwb_raw                                               ; a505: 20 0b a5     ..   
+    jmp fwa_round                                                     ; a508: 4c 5c a6    L\.   
+; ***************************************************************************************
+; FWA = FWA + FWB (unrounded)
+;
+; Add FWB to FWA, normalised but not rounded.
 ; &a50b referenced 2 times by &9f7b, &a505
-.sub_ca50b
-    jsr test_fwa_zero                                                 ; a50b: 20 da a1     ..   
-    beq ca4dc                                                         ; a50e: f0 cc       ..    
+.fwa_add_fwb_raw
+    jsr fwa_sign                                                      ; a50b: 20 da a1     ..   
+    beq fwa_copy_from_fwb                                             ; a50e: f0 cc       ..    
     ldy #0                                                            ; a510: a0 00       ..    
     sec                                                               ; a512: 38          8     
     lda l0030                                                         ; a513: a5 30       .0    
@@ -6532,7 +6630,7 @@ l848a = sub_c847b+15
     lda l003d                                                         ; a553: a5 3d       .=    
     sbc l0030                                                         ; a555: e5 30       .0    
     cmp #&25 ; '%'                                                    ; a557: c9 25       .%    
-    bcs ca4dc                                                         ; a559: b0 81       ..    
+    bcs fwa_copy_from_fwb                                             ; a559: b0 81       ..    
     pha                                                               ; a55b: 48          H     
     and #&38 ; '8'                                                    ; a55c: 29 38       )8    
     beq ca579                                                         ; a55e: f0 19       ..    
@@ -6592,7 +6690,7 @@ l848a = sub_c847b+15
     lda l0035                                                         ; a5ae: a5 35       .5    
     cmp l0042                                                         ; a5b0: c5 42       .B    
     bne ca5b7                                                         ; a5b2: d0 03       ..    
-    jmp ca686                                                         ; a5b4: 4c 86 a6    L..   
+    jmp fwa_clear                                                     ; a5b4: 4c 86 a6    L..   
 ; &a5b7 referenced 5 times by &a59a, &a5a0, &a5a6, &a5ac, &a5b2
 .ca5b7
     bcs ca5e3                                                         ; a5b7: b0 2a       .*    
@@ -6614,7 +6712,7 @@ l848a = sub_c847b+15
     sta l0031                                                         ; a5d6: 85 31       .1    
     lda zp_fwb                                                        ; a5d8: a5 3b       .;    
     sta zp_fwa                                                        ; a5da: 85 2e       ..    
-    jmp ca303                                                         ; a5dc: 4c 03 a3    L..   
+    jmp fwa_normalise                                                 ; a5dc: 4c 03 a3    L..   
 ; &a5df referenced 1 time by &a594
 .ca5df
     clc                                                               ; a5df: 18          .     
@@ -6635,19 +6733,28 @@ l848a = sub_c847b+15
     sbc l003f                                                         ; a5f8: e5 3f       .?    
     sta l0032                                                         ; a5fa: 85 32       .2    
     lda l0031                                                         ; a5fc: a5 31       .1    
-    sbc l003e                                                         ; a5fe: e5 3e       .>    
-    sta l0031                                                         ; a600: 85 31       .1    
-    jmp ca303                                                         ; a602: 4c 03 a3    L..   
+    equb &e5                                                          ; a5fe: e5          .     
+; ***************************************************************************************
+; Compare FWA with a fp variable
+;
+; Test the fp variable operand against FWA.
+.fwa_compare_var
+    rol l3185,x                                                       ; a5ff: 3e 85 31    >.1   
+    jmp fwa_normalise                                                 ; a602: 4c 03 a3    L..   
 ; &a605 referenced 1 time by &a609
 .return_27
     rts                                                               ; a605: 60          `     
+; ***************************************************************************************
+; FWA = FWA * fp var (raw)
+;
+; Multiply FWA by the operand, unnormalised and unrounded.
 ; &a606 referenced 2 times by &a656, &af30
-.sub_ca606
-    jsr test_fwa_zero                                                 ; a606: 20 da a1     ..   
+.fwa_mul_var_raw
+    jsr fwa_sign                                                      ; a606: 20 da a1     ..   
     beq return_27                                                     ; a609: f0 fa       ..    
-    jsr sub_ca34e                                                     ; a60b: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; a60b: 20 4e a3     N.   
     bne ca613                                                         ; a60e: d0 03       ..    
-    jmp ca686                                                         ; a610: 4c 86 a6    L..   
+    jmp fwa_clear                                                     ; a610: 4c 86 a6    L..   
 ; &a613 referenced 1 time by &a60e
 .ca613
     clc                                                               ; a613: 18          .     
@@ -6696,14 +6803,22 @@ l848a = sub_c847b+15
     dey                                                               ; a652: 88          .     
     bne loop_ca63a                                                    ; a653: d0 e5       ..    
     rts                                                               ; a655: 60          `     
+; ***************************************************************************************
+; FWA = FWA * fp var
+;
+; Multiply FWA by the fp variable operand (normalised, rounded).
 ; &a656 referenced 12 times by &9d2f, &9e81, &a842, &a845, &a85d, &a9b4, &a9c6, &aa17, &aa2c, &aad4, &ab2c, &abbc
-.sub_ca656
-    jsr sub_ca606                                                     ; a656: 20 06 a6     ..   
+.fwa_mul_var
+    jsr fwa_mul_var_raw                                               ; a656: 20 06 a6     ..   
 ; &a659 referenced 2 times by &a7a6, &af81
 .ca659
-    jsr ca303                                                         ; a659: 20 03 a3     ..   
+    jsr fwa_normalise                                                 ; a659: 20 03 a3     ..   
+; ***************************************************************************************
+; Round FWA
+;
+; Round the floating-point accumulator.
 ; &a65c referenced 2 times by &a118, &a508
-.ca65c
+.fwa_round
     lda l0035                                                         ; a65c: a5 35       .5    
     cmp #&80                                                          ; a65e: c9 80       ..    
     bcc ca67c                                                         ; a660: 90 1a       ..    
@@ -6729,8 +6844,12 @@ l848a = sub_c847b+15
     lda l002f                                                         ; a680: a5 2f       ./    
     beq return_28                                                     ; a682: f0 14       ..    
     bpl ca66c                                                         ; a684: 10 e6       ..    
+; ***************************************************************************************
+; FWA = 0
+;
+; Set the floating-point accumulator to zero.
 ; &a686 referenced 8 times by &9f5c, &9fa0, &a2ee, &a3fb, &a5b4, &a610, &a699, &aaa6
-.ca686
+.fwa_clear
     lda #0                                                            ; a686: a9 00       ..    
     sta zp_fwa                                                        ; a688: 85 2e       ..    
     sta l002f                                                         ; a68a: 85 2f       ./    
@@ -6743,26 +6862,38 @@ l848a = sub_c847b+15
 ; &a698 referenced 2 times by &a682, &a6ea
 .return_28
     rts                                                               ; a698: 60          `     
+; ***************************************************************************************
+; FWA = 1
+;
+; Set the floating-point accumulator to 1.
 ; &a699 referenced 6 times by &9e8b, &9f20, &a6a8, &a9ba, &ab22, &b863
-.sub_ca699
-    jsr ca686                                                         ; a699: 20 86 a6     ..   
+.fwa_set_one
+    jsr fwa_clear                                                     ; a699: 20 86 a6     ..   
     ldy #&80                                                          ; a69c: a0 80       ..    
     sty l0031                                                         ; a69e: 84 31       .1    
     iny                                                               ; a6a0: c8          .     
     sty l0030                                                         ; a6a1: 84 30       .0    
     tya                                                               ; a6a3: 98          .     
     rts                                                               ; a6a4: 60          `     
+; ***************************************************************************************
+; FWA = 1 / FWA
+;
+; Reciprocal of the FP accumulator (normalised, rounded).
 ; &a6a5 referenced 2 times by &a921, &ab1a
-.sub_ca6a5
-    jsr sub_ca385                                                     ; a6a5: 20 85 a3     ..   
-    jsr sub_ca699                                                     ; a6a8: 20 99 a6     ..   
+.fwa_reciprocal
+    jsr fwa_pack_temp1                                                ; a6a5: 20 85 a3     ..   
+    jsr fwa_set_one                                                   ; a6a8: 20 99 a6     ..   
     bne ca6e7                                                         ; a6ab: d0 3a       .:    
+; ***************************************************************************************
+; FWA = fp var / FWA
+;
+; Reverse divide: operand divided by FWA (normalised, rounded).
 ; &a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8
-.sub_ca6ad
-    jsr test_fwa_zero                                                 ; a6ad: 20 da a1     ..   
+.fwa_rdiv_var
+    jsr fwa_sign                                                      ; a6ad: 20 da a1     ..   
     beq ca6bb                                                         ; a6b0: f0 09       ..    
-    jsr sub_ca21e                                                     ; a6b2: 20 1e a2     ..   
-    jsr unpack_fwa_from_ptr                                           ; a6b5: 20 b5 a3     ..   
+    jsr fwb_copy_from_fwa                                             ; a6b2: 20 1e a2     ..   
+    jsr fwa_unpack_var                                                ; a6b5: 20 b5 a3     ..   
     bne ca6f1                                                         ; a6b8: d0 37       .7    
     rts                                                               ; a6ba: 60          `     
 ; &a6bb referenced 2 times by &a6b0, &a6ef
@@ -6774,11 +6905,11 @@ l848a = sub_c847b+15
     lda l004a                                                         ; a6c4: a5 4a       .J    
     pha                                                               ; a6c6: 48          H     
     jsr sub_ca7e9                                                     ; a6c7: 20 e9 a7     ..   
-    jsr sub_ca38d                                                     ; a6ca: 20 8d a3     ..   
+    jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..   
     inc l004a                                                         ; a6cd: e6 4a       .J    
     jsr ca99e                                                         ; a6cf: 20 9e a9     ..   
     jsr sub_ca7e9                                                     ; a6d2: 20 e9 a7     ..   
-    jsr sub_ca4d6                                                     ; a6d5: 20 d6 a4     ..   
+    jsr fwa_swap_var                                                  ; a6d5: 20 d6 a4     ..   
     pla                                                               ; a6d8: 68          h     
     sta l004a                                                         ; a6d9: 85 4a       .J    
     jsr ca99e                                                         ; a6db: 20 9e a9     ..   
@@ -6788,9 +6919,9 @@ l848a = sub_c847b+15
     rts                                                               ; a6e6: 60          `     
 ; &a6e7 referenced 3 times by &a6ab, &a6e1, &a9eb
 .ca6e7
-    jsr test_fwa_zero                                                 ; a6e7: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a6e7: 20 da a1     ..   
     beq return_28                                                     ; a6ea: f0 ac       ..    
-    jsr sub_ca34e                                                     ; a6ec: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; a6ec: 20 4e a3     N.   
     beq ca6bb                                                         ; a6ef: f0 ca       ..    
 ; &a6f1 referenced 1 time by &a6b8
 .ca6f1
@@ -6919,10 +7050,10 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..   
 ; &a7b7 referenced 1 time by &a9c0
 .ca7b7
-    jsr test_fwa_zero                                                 ; a7b7: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a7b7: 20 da a1     ..   
     beq ca7e6                                                         ; a7ba: f0 2a       .*    
     bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.    
-    jsr sub_ca385                                                     ; a7be: 20 85 a3     ..   
+    jsr fwa_pack_temp1                                                ; a7be: 20 85 a3     ..   
     lda l0030                                                         ; a7c1: a5 30       .0    
     lsr a                                                             ; a7c3: 4a          J     
     adc #&40 ; '@'                                                    ; a7c4: 69 40       i@    
@@ -6932,13 +7063,13 @@ l848a = sub_c847b+15
     jsr sub_ca7ed                                                     ; a7cc: 20 ed a7     ..   
 ; &a7cf referenced 1 time by &a7e4
 .loop_ca7cf
-    jsr sub_ca38d                                                     ; a7cf: 20 8d a3     ..   
+    jsr fwa_pack_var                                                  ; a7cf: 20 8d a3     ..   
     lda #&6c ; 'l'                                                    ; a7d2: a9 6c       .l    
     sta l004b                                                         ; a7d4: 85 4b       .K    
-    jsr sub_ca6ad                                                     ; a7d6: 20 ad a6     ..   
+    jsr fwa_rdiv_var                                                  ; a7d6: 20 ad a6     ..   
     lda #&71 ; 'q'                                                    ; a7d9: a9 71       .q    
     sta l004b                                                         ; a7db: 85 4b       .K    
-    jsr ca500                                                         ; a7dd: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; a7dd: 20 00 a5     ..   
     dec l0030                                                         ; a7e0: c6 30       .0    
     dec l004a                                                         ; a7e2: c6 4a       .J    
     bne loop_ca7cf                                                    ; a7e4: d0 e9       ..    
@@ -6972,7 +7103,7 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..   
 ; &a801 referenced 1 time by &9e75
 .sub_ca801
-    jsr test_fwa_zero                                                 ; a801: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a801: 20 da a1     ..   
     beq ca808                                                         ; a804: f0 02       ..    
     bpl ca814                                                         ; a806: 10 0c       ..    
 ; &a808 referenced 1 time by &a804
@@ -6983,7 +7114,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; a813: 00          .     
 ; &a814 referenced 1 time by &a806
 .ca814
-    jsr sub_ca453                                                     ; a814: 20 53 a4     S.   
+    jsr fwb_clear                                                     ; a814: 20 53 a4     S.   
     ldy #&80                                                          ; a817: a0 80       ..    
     sty zp_fwb                                                        ; a819: 84 3b       .;    
     sty l003e                                                         ; a81b: 84 3e       .>    
@@ -7003,17 +7134,17 @@ l848a = sub_c847b+15
     txa                                                               ; a82c: 8a          .     
     pha                                                               ; a82d: 48          H     
     sty l0030                                                         ; a82e: 84 30       .0    
-    jsr sub_ca505                                                     ; a830: 20 05 a5     ..   
+    jsr fwa_add_fwb                                                   ; a830: 20 05 a5     ..   
     lda #&7b ; '{'                                                    ; a833: a9 7b       .{    
     jsr ca387                                                         ; a835: 20 87 a3     ..   
     lda #&73 ; 's'                                                    ; a838: a9 73       .s    
     ldy #&a8                                                          ; a83a: a0 a8       ..    
     jsr sub_ca897                                                     ; a83c: 20 97 a8     ..   
     jsr sub_ca7e9                                                     ; a83f: 20 e9 a7     ..   
-    jsr sub_ca656                                                     ; a842: 20 56 a6     V.   
-    jsr sub_ca656                                                     ; a845: 20 56 a6     V.   
-    jsr ca500                                                         ; a848: 20 00 a5     ..   
-    jsr sub_ca385                                                     ; a84b: 20 85 a3     ..   
+    jsr fwa_mul_var                                                   ; a842: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; a845: 20 56 a6     V.   
+    jsr fwa_add_var                                                   ; a848: 20 00 a5     ..   
+    jsr fwa_pack_temp1                                                ; a84b: 20 85 a3     ..   
     pla                                                               ; a84e: 68          h     
     sec                                                               ; a84f: 38          8     
     sbc #&81                                                          ; a850: e9 81       ..    
@@ -7022,9 +7153,9 @@ l848a = sub_c847b+15
     sta l004b                                                         ; a857: 85 4b       .K    
     lda #&a8                                                          ; a859: a9 a8       ..    
     sta l004c                                                         ; a85b: 85 4c       .L    
-    jsr sub_ca656                                                     ; a85d: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; a85d: 20 56 a6     V.   
     jsr sub_ca7f5                                                     ; a860: 20 f5 a7     ..   
-    jsr ca500                                                         ; a863: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; a863: 20 00 a5     ..   
     lda #&ff                                                          ; a866: a9 ff       ..    
     rts                                                               ; a868: 60          `     
     equb &7f, &5e, &5b, &d8, &aa, &80, &31, &72, &17, &f8, &06, &7a   ; a869: 7f 5e 5b... .^[...
@@ -7035,7 +7166,7 @@ l848a = sub_c847b+15
 .sub_ca897
     sta l004d                                                         ; a897: 85 4d       .M    
     sty l004e                                                         ; a899: 84 4e       .N    
-    jsr sub_ca385                                                     ; a89b: 20 85 a3     ..   
+    jsr fwa_pack_temp1                                                ; a89b: 20 85 a3     ..   
     ldy #0                                                            ; a89e: a0 00       ..    
     lda (l004d),y                                                     ; a8a0: b1 4d       .M    
     sta l0048                                                         ; a8a2: 85 48       .H    
@@ -7048,11 +7179,11 @@ l848a = sub_c847b+15
     sta l004b                                                         ; a8ac: 85 4b       .K    
     lda l004e                                                         ; a8ae: a5 4e       .N    
     sta l004c                                                         ; a8b0: 85 4c       .L    
-    jsr unpack_fwa_from_ptr                                           ; a8b2: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; a8b2: 20 b5 a3     ..   
 ; &a8b5 referenced 1 time by &a8d1
 .loop_ca8b5
     jsr sub_ca7f5                                                     ; a8b5: 20 f5 a7     ..   
-    jsr sub_ca6ad                                                     ; a8b8: 20 ad a6     ..   
+    jsr fwa_rdiv_var                                                  ; a8b8: 20 ad a6     ..   
     clc                                                               ; a8bb: 18          .     
     lda l004d                                                         ; a8bc: a5 4d       .M    
     adc #5                                                            ; a8be: 69 05       i.    
@@ -7062,7 +7193,7 @@ l848a = sub_c847b+15
     adc #0                                                            ; a8c6: 69 00       i.    
     sta l004e                                                         ; a8c8: 85 4e       .N    
     sta l004c                                                         ; a8ca: 85 4c       .L    
-    jsr ca500                                                         ; a8cc: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; a8cc: 20 00 a5     ..   
     dec l0048                                                         ; a8cf: c6 48       .H    
     bne loop_ca8b5                                                    ; a8d1: d0 e2       ..    
     rts                                                               ; a8d3: 60          `     
@@ -7072,24 +7203,24 @@ l848a = sub_c847b+15
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
     jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..   
-    jsr test_fwa_zero                                                 ; a8dd: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a8dd: 20 da a1     ..   
     bpl ca8ea                                                         ; a8e0: 10 08       ..    
     lsr zp_fwa                                                        ; a8e2: 46 2e       F.    
     jsr ca8ea                                                         ; a8e4: 20 ea a8     ..   
     jmp ca916                                                         ; a8e7: 4c 16 a9    L..   
 ; &a8ea referenced 2 times by &a8e0, &a8e4
 .ca8ea
-    jsr sub_ca381                                                     ; a8ea: 20 81 a3     ..   
+    jsr fwa_pack_temp3                                                ; a8ea: 20 81 a3     ..   
     jsr sub_ca9b1                                                     ; a8ed: 20 b1 a9     ..   
-    jsr test_fwa_zero                                                 ; a8f0: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a8f0: 20 da a1     ..   
     beq ca8fe                                                         ; a8f3: f0 09       ..    
     jsr sub_ca7f1                                                     ; a8f5: 20 f1 a7     ..   
-    jsr sub_ca6ad                                                     ; a8f8: 20 ad a6     ..   
+    jsr fwa_rdiv_var                                                  ; a8f8: 20 ad a6     ..   
     jmp ca90a                                                         ; a8fb: 4c 0a a9    L..   
 ; &a8fe referenced 2 times by &a8f3, &abcb
 .ca8fe
     jsr sub_caa55                                                     ; a8fe: 20 55 aa     U.   
-    jsr unpack_fwa_from_ptr                                           ; a901: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..   
 ; &a904 referenced 2 times by &a90d, &a93a
 .ca904
     lda #&ff                                                          ; a904: a9 ff       ..    
@@ -7098,7 +7229,7 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a907: 20 fa 92     ..   
 ; &a90a referenced 1 time by &a8fb
 .ca90a
-    jsr test_fwa_zero                                                 ; a90a: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a90a: 20 da a1     ..   
     beq ca904                                                         ; a90d: f0 f5       ..    
     bpl ca91b                                                         ; a90f: 10 0a       ..    
     lsr zp_fwa                                                        ; a911: 46 2e       F.    
@@ -7113,27 +7244,27 @@ l848a = sub_c847b+15
     lda l0030                                                         ; a91b: a5 30       .0    
     cmp #&81                                                          ; a91d: c9 81       ..    
     bcc ca936                                                         ; a91f: 90 15       ..    
-    jsr sub_ca6a5                                                     ; a921: 20 a5 a6     ..   
+    jsr fwa_reciprocal                                                ; a921: 20 a5 a6     ..   
     jsr ca936                                                         ; a924: 20 36 a9     6.   
 ; &a927 referenced 1 time by &a8d7
 .ca927
     jsr sub_caa48                                                     ; a927: 20 48 aa     H.   
-    jsr ca500                                                         ; a92a: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; a92a: 20 00 a5     ..   
     jsr sub_caa4c                                                     ; a92d: 20 4c aa     L.   
-    jsr ca500                                                         ; a930: 20 00 a5     ..   
-    jmp cad7e                                                         ; a933: 4c 7e ad    L~.   
+    jsr fwa_add_var                                                   ; a930: 20 00 a5     ..   
+    jmp fwa_negate                                                    ; a933: 4c 7e ad    L~.   
 ; &a936 referenced 2 times by &a91f, &a924
 .ca936
     lda l0030                                                         ; a936: a5 30       .0    
     cmp #&73 ; 's'                                                    ; a938: c9 73       .s    
     bcc ca904                                                         ; a93a: 90 c8       ..    
-    jsr sub_ca381                                                     ; a93c: 20 81 a3     ..   
-    jsr sub_ca453                                                     ; a93f: 20 53 a4     S.   
+    jsr fwa_pack_temp3                                                ; a93c: 20 81 a3     ..   
+    jsr fwb_clear                                                     ; a93f: 20 53 a4     S.   
     lda #&80                                                          ; a942: a9 80       ..    
     sta l003d                                                         ; a944: 85 3d       .=    
     sta l003e                                                         ; a946: 85 3e       .>    
     sta zp_fwb                                                        ; a948: 85 3b       .;    
-    jsr sub_ca505                                                     ; a94a: 20 05 a5     ..   
+    jsr fwa_add_fwb                                                   ; a94a: 20 05 a5     ..   
     lda #&5a ; 'Z'                                                    ; a94d: a9 5a       .Z    
     ldy #&a9                                                          ; a94f: a0 a9       ..    
     jsr sub_ca897                                                     ; a951: 20 97 a8     ..   
@@ -7161,7 +7292,7 @@ l848a = sub_c847b+15
     and #2                                                            ; a9a0: 29 02       ).    
     beq ca9aa                                                         ; a9a2: f0 06       ..    
     jsr ca9aa                                                         ; a9a4: 20 aa a9     ..   
-    jmp cad7e                                                         ; a9a7: 4c 7e ad    L~.   
+    jmp fwa_negate                                                    ; a9a7: 4c 7e ad    L~.   
 ; &a9aa referenced 2 times by &a9a2, &a9a4
 .ca9aa
     lsr l004a                                                         ; a9aa: 46 4a       FJ    
@@ -7169,16 +7300,16 @@ l848a = sub_c847b+15
     jsr ca9c3                                                         ; a9ae: 20 c3 a9     ..   
 ; &a9b1 referenced 1 time by &a8ed
 .sub_ca9b1
-    jsr sub_ca385                                                     ; a9b1: 20 85 a3     ..   
-    jsr sub_ca656                                                     ; a9b4: 20 56 a6     V.   
-    jsr sub_ca38d                                                     ; a9b7: 20 8d a3     ..   
-    jsr sub_ca699                                                     ; a9ba: 20 99 a6     ..   
+    jsr fwa_pack_temp1                                                ; a9b1: 20 85 a3     ..   
+    jsr fwa_mul_var                                                   ; a9b4: 20 56 a6     V.   
+    jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..   
+    jsr fwa_set_one                                                   ; a9ba: 20 99 a6     ..   
     jsr sub_ca4d0                                                     ; a9bd: 20 d0 a4     ..   
     jmp ca7b7                                                         ; a9c0: 4c b7 a7    L..   
 ; &a9c3 referenced 2 times by &a9ac, &a9ae
 .ca9c3
-    jsr sub_ca381                                                     ; a9c3: 20 81 a3     ..   
-    jsr sub_ca656                                                     ; a9c6: 20 56 a6     V.   
+    jsr fwa_pack_temp3                                                ; a9c3: 20 81 a3     ..   
+    jsr fwa_mul_var                                                   ; a9c6: 20 56 a6     V.   
     lda #&72 ; 'r'                                                    ; a9c9: a9 72       .r    
     ldy #&aa                                                          ; a9cb: a0 aa       ..    
     jsr sub_ca897                                                     ; a9cd: 20 97 a8     ..   
@@ -7188,13 +7319,13 @@ l848a = sub_c847b+15
     lda l0030                                                         ; a9d3: a5 30       .0    
     cmp #&98                                                          ; a9d5: c9 98       ..    
     bcs caa38                                                         ; a9d7: b0 5f       ._    
-    jsr sub_ca385                                                     ; a9d9: 20 85 a3     ..   
+    jsr fwa_pack_temp1                                                ; a9d9: 20 85 a3     ..   
     jsr sub_caa55                                                     ; a9dc: 20 55 aa     U.   
-    jsr sub_ca34e                                                     ; a9df: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; a9df: 20 4e a3     N.   
     lda zp_fwa                                                        ; a9e2: a5 2e       ..    
     sta zp_fwb                                                        ; a9e4: 85 3b       .;    
     dec l003d                                                         ; a9e6: c6 3d       .=    
-    jsr sub_ca505                                                     ; a9e8: 20 05 a5     ..   
+    jsr fwa_add_fwb                                                   ; a9e8: 20 05 a5     ..   
     jsr ca6e7                                                         ; a9eb: 20 e7 a6     ..   
     jsr sub_ca3fe                                                     ; a9ee: 20 fe a3     ..   
     lda l0034                                                         ; a9f1: a5 34       .4    
@@ -7213,22 +7344,22 @@ l848a = sub_c847b+15
     jsr ca46c                                                         ; aa0b: 20 6c a4     l.   
 ; &aa0e referenced 1 time by &aa09
 .caa0e
-    jsr ca303                                                         ; aa0e: 20 03 a3     ..   
-    jsr sub_ca37d                                                     ; aa11: 20 7d a3     }.   
+    jsr fwa_normalise                                                 ; aa0e: 20 03 a3     ..   
+    jsr fwa_pack_temp2                                                ; aa11: 20 7d a3     }.   
     jsr sub_caa48                                                     ; aa14: 20 48 aa     H.   
-    jsr sub_ca656                                                     ; aa17: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.   
     jsr sub_ca7f5                                                     ; aa1a: 20 f5 a7     ..   
-    jsr ca500                                                         ; aa1d: 20 00 a5     ..   
-    jsr sub_ca38d                                                     ; aa20: 20 8d a3     ..   
+    jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..   
+    jsr fwa_pack_var                                                  ; aa20: 20 8d a3     ..   
     jsr sub_ca7ed                                                     ; aa23: 20 ed a7     ..   
-    jsr unpack_fwa_from_ptr                                           ; aa26: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..   
     jsr sub_caa4c                                                     ; aa29: 20 4c aa     L.   
-    jsr sub_ca656                                                     ; aa2c: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.   
     jsr sub_ca7f5                                                     ; aa2f: 20 f5 a7     ..   
-    jmp ca500                                                         ; aa32: 4c 00 a5    L..   
+    jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..   
 ; &aa35 referenced 1 time by &a9fb
 .caa35
-    jmp ca3b2                                                         ; aa35: 4c b2 a3    L..   
+    jmp fwa_unpack_temp1                                              ; aa35: 4c b2 a3    L..   
 ; &aa38 referenced 1 time by &a9d7
 .caa38
     brk                                                               ; aa38: 00          .     
@@ -7281,7 +7412,7 @@ l848a = sub_c847b+15
 .caaa2
     lda zp_fwa                                                        ; aaa2: a5 2e       ..    
     bpl caaac                                                         ; aaa4: 10 06       ..    
-    jsr ca686                                                         ; aaa6: 20 86 a6     ..   
+    jsr fwa_clear                                                     ; aaa6: 20 86 a6     ..   
     lda #&ff                                                          ; aaa9: a9 ff       ..    
     rts                                                               ; aaab: 60          `     
 ; &aaac referenced 1 time by &aaa4
@@ -7294,18 +7425,18 @@ l848a = sub_c847b+15
 .caab8
     jsr sub_ca486                                                     ; aab8: 20 86 a4     ..   
     jsr sub_caada                                                     ; aabb: 20 da aa     ..   
-    jsr sub_ca381                                                     ; aabe: 20 81 a3     ..   
+    jsr fwa_pack_temp3                                                ; aabe: 20 81 a3     ..   
     lda #&e4                                                          ; aac1: a9 e4       ..    
     sta l004b                                                         ; aac3: 85 4b       .K    
     lda #&aa                                                          ; aac5: a9 aa       ..    
     sta l004c                                                         ; aac7: 85 4c       .L    
-    jsr unpack_fwa_from_ptr                                           ; aac9: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; aac9: 20 b5 a3     ..   
     lda l004a                                                         ; aacc: a5 4a       .J    
     jsr sub_cab12                                                     ; aace: 20 12 ab     ..   
 ; &aad1 referenced 3 times by &9e78, &a954, &a9d0
 .caad1
     jsr sub_ca7f1                                                     ; aad1: 20 f1 a7     ..   
-    jsr sub_ca656                                                     ; aad4: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; aad4: 20 56 a6     V.   
     lda #&ff                                                          ; aad7: a9 ff       ..    
     rts                                                               ; aad9: 60          `     
 ; &aada referenced 1 time by &aabb
@@ -7327,13 +7458,13 @@ l848a = sub_c847b+15
     txa                                                               ; ab16: 8a          .     
     eor #&ff                                                          ; ab17: 49 ff       I.    
     pha                                                               ; ab19: 48          H     
-    jsr sub_ca6a5                                                     ; ab1a: 20 a5 a6     ..   
+    jsr fwa_reciprocal                                                ; ab1a: 20 a5 a6     ..   
     pla                                                               ; ab1d: 68          h     
 ; &ab1e referenced 1 time by &ab13
 .cab1e
     pha                                                               ; ab1e: 48          H     
-    jsr sub_ca385                                                     ; ab1f: 20 85 a3     ..   
-    jsr sub_ca699                                                     ; ab22: 20 99 a6     ..   
+    jsr fwa_pack_temp1                                                ; ab1f: 20 85 a3     ..   
+    jsr fwa_set_one                                                   ; ab22: 20 99 a6     ..   
 ; &ab25 referenced 1 time by &ab2f
 .cab25
     pla                                                               ; ab25: 68          h     
@@ -7341,7 +7472,7 @@ l848a = sub_c847b+15
     sec                                                               ; ab28: 38          8     
     sbc #1                                                            ; ab29: e9 01       ..    
     pha                                                               ; ab2b: 48          H     
-    jsr sub_ca656                                                     ; ab2c: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; ab2c: 20 56 a6     V.   
     jmp cab25                                                         ; ab2f: 4c 25 ab    L%.   
 ; &ab32 referenced 1 time by &ab26
 .return_29
@@ -7352,7 +7483,7 @@ l848a = sub_c847b+15
     lda #osbyte_read_adc_or_get_buffer_status                         ; ab38: a9 80       ..    
     jsr osbyte                                                        ; ab3a: 20 f4 ff     ..      ; Read ADC channel X or buffer status
     txa                                                               ; ab3d: 8a          .     
-    jmp caeea                                                         ; ab3e: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; ab3e: 4c ea ae    L..   
 .fn_point
     jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..   
     jsr stack_integer                                                 ; ab44: 20 94 bd     ..   
@@ -7386,7 +7517,7 @@ l848a = sub_c847b+15
     jmp caed8                                                         ; ab7c: 4c d8 ae    L..   
 ; &ab7f referenced 1 time by &ab8d
 .loop_cab7f
-    jsr test_fwa_zero                                                 ; ab7f: 20 da a1     ..   
+    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..   
     beq caba2                                                         ; ab82: f0 1e       ..    
     bpl caba0                                                         ; ab84: 10 1a       ..    
     bmi cab9d                                                         ; ab86: 30 15       0.    
@@ -7427,7 +7558,7 @@ l848a = sub_c847b+15
 .cabb8
     sty l004b                                                         ; abb8: 84 4b       .K    
     sta l004c                                                         ; abba: 85 4c       .L    
-    jsr sub_ca656                                                     ; abbc: 20 56 a6     V.   
+    jsr fwa_mul_var                                                   ; abbc: 20 56 a6     V.   
     lda #&ff                                                          ; abbf: a9 ff       ..    
     rts                                                               ; abc1: 60          `     
 .fn_deg
@@ -7578,7 +7709,7 @@ l848a = sub_c847b+15
     cpy #0                                                            ; acb0: c0 00       ..    
     bne fn_true                                                       ; acb2: d0 10       ..    
     txa                                                               ; acb4: 8a          .     
-    jmp caeea                                                         ; acb5: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; acb5: 4c ea ae    L..   
 .fn_eof
     jsr sub_cbfb5                                                     ; acb8: 20 b5 bf     ..   
     tax                                                               ; acbb: aa          .     
@@ -7701,19 +7832,27 @@ l848a = sub_c847b+15
     jsr eval_factor                                                   ; ad6a: 20 ec ad     ..   
     beq cad67                                                         ; ad6d: f0 f8       ..    
     bmi cad77                                                         ; ad6f: 30 06       0.    
+; ***************************************************************************************
+; Make the integer accumulator positive
+;
+; IWA = ABS(IWA).
 ; &ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80
-.sub_cad71
+.iwa_abs
     bit l002d                                                         ; ad71: 24 2d       $-    
-    bmi cad93                                                         ; ad73: 30 1e       0.    
+    bmi iwa_negate                                                    ; ad73: 30 1e       0.    
     bpl cadaa                                                         ; ad75: 10 33       .3    
 ; &ad77 referenced 1 time by &ad6f
 .cad77
-    jsr test_fwa_zero                                                 ; ad77: 20 da a1     ..   
+    jsr fwa_sign                                                      ; ad77: 20 da a1     ..   
     bpl cad89                                                         ; ad7a: 10 0d       ..    
     bmi cad83                                                         ; ad7c: 30 05       0.    
+; ***************************************************************************************
+; FWA = -FWA
+;
+; Negate the floating-point accumulator.
 ; &ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91
-.cad7e
-    jsr test_fwa_zero                                                 ; ad7e: 20 da a1     ..   
+.fwa_negate
+    jsr fwa_sign                                                      ; ad7e: 20 da a1     ..   
     beq cad89                                                         ; ad81: f0 06       ..    
 ; &ad83 referenced 1 time by &ad7c
 .cad83
@@ -7730,9 +7869,13 @@ l848a = sub_c847b+15
 ; &ad8f referenced 1 time by &ac70
 .sub_cad8f
     beq cad67                                                         ; ad8f: f0 d6       ..    
-    bmi cad7e                                                         ; ad91: 30 eb       0.    
+    bmi fwa_negate                                                    ; ad91: 30 eb       0.    
+; ***************************************************************************************
+; Negate the integer accumulator
+;
+; IWA = -IWA (two's-complement negate the 32-bit integer).
 ; &ad93 referenced 3 times by &9dc3, &a2c8, &ad73
-.cad93
+.iwa_negate
     sec                                                               ; ad93: 38          8     
     lda #0                                                            ; ad94: a9 00       ..    
     tay                                                               ; ad96: a8          .     
@@ -7861,7 +8004,7 @@ l848a = sub_c847b+15
 .sub_cae3a
     lda resint_p                                                      ; ae3a: ad 40 04    .@.   
     ldy l0441                                                         ; ae3d: ac 41 04    .A.   
-    jmp caeea                                                         ; ae40: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..   
 ; &ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7
 .cae43
     brk                                                               ; ae43: 00          .     
@@ -7943,7 +8086,7 @@ l848a = sub_c847b+15
 .fn_page
     lda #0                                                            ; aec0: a9 00       ..    
     ldy zp_page                                                       ; aec2: a4 18       ..    
-    jmp caeea                                                         ; aec4: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; aec4: 4c ea ae    L..   
 ; &aec7 referenced 1 time by &aee2
 .loop_caec7
     jmp cae43                                                         ; aec7: 4c 43 ae    LC.   
@@ -7960,7 +8103,7 @@ l848a = sub_c847b+15
 ; &aed8 referenced 18 times by &8f6b, &8f76, &9182, &9339, &96f8, &ab6a, &ab73, &ab7c, &aba2, &acaa, &ad4f, &aecc, &aef9, &afbc, &b5a9, &b810, &bf75, &bf93
 .caed8
     ldy #0                                                            ; aed8: a0 00       ..    
-    beq caeea                                                         ; aeda: f0 0e       ..    
+    beq iwa_from_ya                                                   ; aeda: f0 0e       ..    
 .fn_to
     ldy zp_text_ptr2_off                                              ; aedc: a4 1b       ..    
     lda (zp_text_ptr2),y                                              ; aede: b1 19       ..    
@@ -7969,8 +8112,12 @@ l848a = sub_c847b+15
     inc zp_text_ptr2_off                                              ; aee4: e6 1b       ..    
     lda zp_top                                                        ; aee6: a5 12       ..    
     ldy l0013                                                         ; aee8: a4 13       ..    
+; ***************************************************************************************
+; Set the integer accumulator to a small integer
+;
+; IWA = 256*Y + A.
 ; &aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351
-.caeea
+.iwa_from_ya
     sta zp_iwa                                                        ; aeea: 85 2a       .*    
     sty l002b                                                         ; aeec: 84 2b       .+    
     lda #0                                                            ; aeee: a9 00       ..    
@@ -7984,11 +8131,11 @@ l848a = sub_c847b+15
 .fn_lomem
     lda zp_lomem                                                      ; aefc: a5 00       ..    
     ldy l0001                                                         ; aefe: a4 01       ..    
-    jmp caeea                                                         ; af00: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; af00: 4c ea ae    L..   
 .fn_himem
     lda zp_himem                                                      ; af03: a5 06       ..    
     ldy l0007                                                         ; af05: a4 07       ..    
-    jmp caeea                                                         ; af07: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; af07: 4c ea ae    L..   
 ; &af0a referenced 1 time by &af4f
 .loop_caf0a
     inc zp_text_ptr2_off                                              ; af0a: e6 1b       ..    
@@ -8009,8 +8156,8 @@ l848a = sub_c847b+15
     jsr stack_real                                                    ; af27: 20 51 bd     Q.   
     jsr caf69                                                         ; af2a: 20 69 af     i.   
     jsr sub_cbd7e                                                     ; af2d: 20 7e bd     ~.   
-    jsr sub_ca606                                                     ; af30: 20 06 a6     ..   
-    jsr ca303                                                         ; af33: 20 03 a3     ..   
+    jsr fwa_mul_var_raw                                               ; af30: 20 06 a6     ..   
+    jsr fwa_normalise                                                 ; af33: 20 03 a3     ..   
     jsr ca3e4                                                         ; af36: 20 e4 a3     ..   
     jsr sub_c9222                                                     ; af39: 20 22 92     ".   
     lda #&40 ; '@'                                                    ; af3c: a9 40       .@    
@@ -8018,7 +8165,7 @@ l848a = sub_c847b+15
 ; &af3f referenced 1 time by &af14
 .caf3f
     ldx #&0d                                                          ; af3f: a2 0d       ..    
-    jsr sub_cbe44                                                     ; af41: 20 44 be     D.   
+    jsr iwa_store_zp                                                  ; af41: 20 44 be     D.   
     lda #&40 ; '@'                                                    ; af44: a9 40       .@    
     sta l0011                                                         ; af46: 85 11       ..    
     rts                                                               ; af48: 60          `     
@@ -8029,8 +8176,12 @@ l848a = sub_c847b+15
     beq loop_caf0a                                                    ; af4f: f0 b9       ..    
     jsr sub_caf87                                                     ; af51: 20 87 af     ..   
     ldx #&0d                                                          ; af54: a2 0d       ..    
+; ***************************************************************************************
+; Load a zero-page integer variable into the accumulator
+;
+; Copy a 4-byte integer from zero page into IWA.
 ; &af56 referenced 2 times by &9dbd, &b326
-.sub_caf56
+.iwa_load_zp
     lda zp_lomem,x                                                    ; af56: b5 00       ..    
     sta zp_iwa                                                        ; af58: 85 2a       .*    
     lda l0001,x                                                       ; af5a: b5 01       ..    
@@ -8084,11 +8235,11 @@ l848a = sub_c847b+15
 .fn_erl
     ldy l0009                                                         ; af9f: a4 09       ..    
     lda zp_erl                                                        ; afa1: a5 08       ..    
-    jmp caeea                                                         ; afa3: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; afa3: 4c ea ae    L..   
 .fn_err
     ldy #0                                                            ; afa6: a0 00       ..    
     lda (l00fd),y                                                     ; afa8: b1 fd       ..    
-    jmp caeea                                                         ; afaa: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; afaa: 4c ea ae    L..   
 ; &afad referenced 2 times by &acad, &b026
 .sub_cafad
     jsr sub_c92e3                                                     ; afad: 20 e3 92     ..   
@@ -8612,11 +8763,11 @@ l848a = sub_c847b+15
     beq cb2b5                                                         ; b2da: f0 d9       ..    
     sta zp_var_type                                                   ; b2dc: 85 27       .'    
     ldx #&37 ; '7'                                                    ; b2de: a2 37       .7    
-    jsr sub_cbe44                                                     ; b2e0: 20 44 be     D.   
+    jsr iwa_store_zp                                                  ; b2e0: 20 44 be     D.   
     lda zp_var_type                                                   ; b2e3: a5 27       .'    
     bpl cb2f0                                                         ; b2e5: 10 09       ..    
     jsr sub_cbd7e                                                     ; b2e7: 20 7e bd     ~.   
-    jsr unpack_fwa_from_ptr                                           ; b2ea: 20 b5 a3     ..   
+    jsr fwa_unpack_var                                                ; b2ea: 20 b5 a3     ..   
     jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..   
 ; &b2f0 referenced 1 time by &b2e5
 .cb2f0
@@ -8644,7 +8795,7 @@ l848a = sub_c847b+15
     cpy #4                                                            ; b30f: c0 04       ..    
     bne cb318                                                         ; b311: d0 05       ..    
     ldx #&37 ; '7'                                                    ; b313: a2 37       .7    
-    jsr sub_cbe44                                                     ; b315: 20 44 be     D.   
+    jsr iwa_store_zp                                                  ; b315: 20 44 be     D.   
 ; &b318 referenced 1 time by &b311
 .cb318
     jsr cb32c                                                         ; b318: 20 2c b3     ,.   
@@ -8654,7 +8805,7 @@ l848a = sub_c847b+15
     beq cb329                                                         ; b320: f0 07       ..    
     bmi cb329                                                         ; b322: 30 05       0.    
     ldx #&37 ; '7'                                                    ; b324: a2 37       .7    
-    jsr sub_caf56                                                     ; b326: 20 56 af     V.   
+    jsr iwa_load_zp                                                   ; b326: 20 56 af     V.   
 ; &b329 referenced 2 times by &b320, &b322
 .cb329
     jmp stack_integer                                                 ; b329: 4c 94 bd    L..   
@@ -8665,6 +8816,11 @@ l848a = sub_c847b+15
     beq cb34f                                                         ; b330: f0 1d       ..    
     cpy #5                                                            ; b332: c0 05       ..    
     beq cb354                                                         ; b334: f0 1e       ..    
+; ***************************************************************************************
+; Load an integer variable into the accumulator
+;
+; Copy a 4-byte integer variable into IWA.
+.iwa_load_var
     ldy #3                                                            ; b336: a0 03       ..    
     lda (zp_iwa),y                                                    ; b338: b1 2a       .*    
     sta l002d                                                         ; b33a: 85 2d       .-    
@@ -8683,7 +8839,7 @@ l848a = sub_c847b+15
 ; &b34f referenced 1 time by &b330
 .cb34f
     lda (zp_iwa),y                                                    ; b34f: b1 2a       .*    
-    jmp caeea                                                         ; b351: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; b351: 4c ea ae    L..   
 ; &b354 referenced 2 times by &b334, &b766
 .cb354
     dey                                                               ; b354: 88          .     
@@ -8907,10 +9063,14 @@ l848a = sub_c847b+15
     beq cb4e0                                                         ; b4bb: f0 23       .#    
     lda zp_var_type                                                   ; b4bd: a5 27       .'    
     beq cb4ae                                                         ; b4bf: f0 ed       ..    
-    bpl cb4c6                                                         ; b4c1: 10 03       ..    
+    bpl iwa_store_var                                                 ; b4c1: 10 03       ..    
     jsr ca3e4                                                         ; b4c3: 20 e4 a3     ..   
+; ***************************************************************************************
+; Store the accumulator into an integer variable
+;
+; Copy IWA into a 4-byte integer variable.
 ; &b4c6 referenced 1 time by &b4c1
-.cb4c6
+.iwa_store_var
     ldy #0                                                            ; b4c6: a0 00       ..    
     lda zp_iwa                                                        ; b4c8: a5 2a       .*    
     sta (zp_general),y                                                ; b4ca: 91 37       .7    
@@ -9338,7 +9498,7 @@ l848a = sub_c847b+15
     sta l004b                                                         ; b76e: 85 4b       .K    
     lda #5                                                            ; b770: a9 05       ..    
     sta l004c                                                         ; b772: 85 4c       .L    
-    jsr ca500                                                         ; b774: 20 00 a5     ..   
+    jsr fwa_add_var                                                   ; b774: 20 00 a5     ..   
     lda zp_iwa                                                        ; b777: a5 2a       .*    
     sta zp_general                                                    ; b779: 85 37       .7    
     lda l002b                                                         ; b77b: a5 2b       .+    
@@ -9453,8 +9613,8 @@ l848a = sub_c847b+15
     sta l004b                                                         ; b85a: 85 4b       .K    
     lda #5                                                            ; b85c: a9 05       ..    
     sta l004c                                                         ; b85e: 85 4c       .L    
-    jsr sub_ca38d                                                     ; b860: 20 8d a3     ..   
-    jsr sub_ca699                                                     ; b863: 20 99 a6     ..   
+    jsr fwa_pack_var                                                  ; b860: 20 8d a3     ..   
+    jsr fwa_set_one                                                   ; b863: 20 99 a6     ..   
     jsr skip_spaces_ptr2                                              ; b866: 20 8c 8a     ..   
     cmp #&88                                                          ; b869: c9 88       ..    
     bne cb875                                                         ; b86b: d0 08       ..    
@@ -9470,7 +9630,7 @@ l848a = sub_c847b+15
     sta l004b                                                         ; b87c: 85 4b       .K    
     lda #5                                                            ; b87e: a9 05       ..    
     sta l004c                                                         ; b880: 85 4c       .L    
-    jsr sub_ca38d                                                     ; b882: 20 8d a3     ..   
+    jsr fwa_pack_var                                                  ; b882: 20 8d a3     ..   
     jmp cb837                                                         ; b885: 4c 37 b8    L7.   
 .stmt_gosub
     jsr sub_cb99a                                                     ; b888: 20 9a b9     ..   
@@ -9732,7 +9892,7 @@ l848a = sub_c847b+15
     sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.   
     dex                                                               ; ba33: ca          .     
     bpl loop_cba2d                                                    ; ba34: 10 f7       ..    
-    jsr ca3b2                                                         ; ba36: 20 b2 a3     ..   
+    jsr fwa_unpack_temp1                                              ; ba36: 20 b2 a3     ..   
 ; &ba39 referenced 1 time by &ba29
 .cba39
     jsr sub_cb4b4                                                     ; ba39: 20 b4 b4     ..   
@@ -10423,8 +10583,12 @@ l848a = sub_c847b+15
 ; &be41 referenced 2 times by &be38, &be3e
 .cbe41
     jmp c8cb7                                                         ; be41: 4c b7 8c    L..   
+; ***************************************************************************************
+; Store the accumulator into a zero-page integer variable
+;
+; Copy IWA into a 4-byte zero-page integer variable.
 ; &be44 referenced 5 times by &885f, &9d75, &af41, &b2e0, &b315
-.sub_cbe44
+.iwa_store_zp
     lda zp_iwa                                                        ; be44: a5 2a       .*    
     sta zp_lomem,x                                                    ; be46: 95 00       ..    
     lda l002b                                                         ; be48: a5 2b       .+    
@@ -10708,7 +10872,7 @@ save pydis_start, pydis_end
 ;     zp_text_ptr2_off:           90
 ;     zp_stack_ptr:               85
 ;     zp_text_ptr:                75
-;     l0031:                      73
+;     l0031:                      72
 ;     l002c:                      70
 ;     l0038:                      66
 ;     l003d:                      65
@@ -10718,8 +10882,8 @@ save pydis_start, pydis_end
 ;     l0034:                      61
 ;     zp_fwb:                     59
 ;     l0033:                      58
-;     l003e:                      56
 ;     l0030:                      55
+;     l003e:                      55
 ;     l003f:                      55
 ;     zp_strbuf_len:              52
 ;     skip_spaces:                48
@@ -10752,8 +10916,8 @@ save pydis_start, pydis_end
 ;     l004e:                      19
 ;     c8c0e:                      18
 ;     caed8:                      18
+;     fwa_sign:                   17
 ;     l0042:                      17
-;     test_fwa_zero:              17
 ;     sub_c9b29:                  16
 ;     unstack_integer:            16
 ;     zp_page:                    16
@@ -10763,34 +10927,34 @@ save pydis_start, pydis_end
 ;     cb558:                      13
 ;     eval_factor:                13
 ;     ca2be:                      12
+;     fwa_mul_var:                12
 ;     oswrch:                     12
 ;     stack_real:                 12
-;     sub_ca656:                  12
 ;     ca066:                      11
 ;     cae56:                      11
-;     caeea:                      11
 ;     eval_expr:                  11
+;     iwa_from_ya:                11
 ;     osbyte:                     11
 ;     sub_c92fa:                  11
 ;     sub_cbd7e:                  11
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
-;     ca500:                      10
+;     fwa_add_var:                10
+;     fwa_unpack_var:             10
 ;     sub_c92e3:                  10
 ;     sub_c97df:                  10
-;     unpack_fwa_from_ptr:        10
 ;     cb565:                       9
+;     fwa_pack_temp1:              9
 ;     l0048:                       9
 ;     stack_string:                9
 ;     sub_c9582:                   9
-;     sub_ca385:                   9
 ;     zp_print_flag:               9
 ;     c870d:                       8
 ;     c9127:                       8
 ;     c986d:                       8
 ;     ca099:                       8
-;     ca303:                       8
-;     ca686:                       8
+;     fwa_clear:                   8
+;     fwa_normalise:               8
 ;     inc_ptr_general:             8
 ;     l0007:                       8
 ;     l05ff:                       8
@@ -10803,10 +10967,10 @@ save pydis_start, pydis_end
 ;     c8b96:                       7
 ;     c982a:                       7
 ;     c9bb5:                       7
+;     fwa_pack_var:                7
+;     fwb_unpack_var:              7
 ;     sub_c882c:                   7
 ;     sub_c92fd:                   7
-;     sub_ca34e:                   7
-;     sub_ca38d:                   7
 ;     zp_count:                    7
 ;     c8af3:                       6
 ;     c9bb4:                       6
@@ -10814,14 +10978,14 @@ save pydis_start, pydis_end
 ;     cae43:                       6
 ;     cb2b5:                       6
 ;     cbddc:                       6
+;     fwa_pack_temp3:              6
+;     fwa_set_one:                 6
 ;     immediate_loop:              6
 ;     l0001:                       6
 ;     l0017:                       6
 ;     osbget:                      6
 ;     osbput:                      6
 ;     sub_c92ee:                   6
-;     sub_ca381:                   6
-;     sub_ca699:                   6
 ;     sub_ca7f5:                   6
 ;     sub_cb4b4:                   6
 ;     sub_cbdcb:                   6
@@ -10839,9 +11003,11 @@ save pydis_start, pydis_end
 ;     ca3e4:                       5
 ;     ca5b7:                       5
 ;     cac9b:                       5
-;     cad7e:                       5
 ;     cb741:                       5
 ;     cb97d:                       5
+;     fwa_negate:                  5
+;     fwb_copy_from_fwa:           5
+;     iwa_store_zp:                5
 ;     l0044:                       5
 ;     osword:                      5
 ;     resint_at:                   5
@@ -10849,11 +11015,9 @@ save pydis_start, pydis_end
 ;     skip_spaces_expect_comma:    5
 ;     sub_c8926:                   5
 ;     sub_c9a9d:                   5
-;     sub_ca21e:                   5
 ;     sub_ca242:                   5
 ;     sub_cbd20:                   5
 ;     sub_cbe0d:                   5
-;     sub_cbe44:                   5
 ;     sub_cbfa9:                   5
 ;     zp_gosub_level:              5
 ;     zp_repeat_level:             5
@@ -10876,6 +11040,8 @@ save pydis_start, pydis_end
 ;     cb751:                       4
 ;     cba5a:                       4
 ;     cbc28:                       4
+;     fwa_rdiv_var:                4
+;     iwa_abs:                     4
 ;     l000f:                       4
 ;     l0011:                       4
 ;     l001d:                       4
@@ -10894,10 +11060,8 @@ save pydis_start, pydis_end
 ;     sub_c9c42:                   4
 ;     sub_c9e20:                   4
 ;     sub_ca3fe:                   4
-;     sub_ca6ad:                   4
 ;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
-;     sub_cad71:                   4
 ;     sub_cb99a:                   4
 ;     sub_cbe2e:                   4
 ;     zp_asm_opcode:               4
@@ -10936,7 +11100,6 @@ save pydis_start, pydis_end
 ;     ca7f7:                       3
 ;     ca99e:                       3
 ;     caad1:                       3
-;     cad93:                       3
 ;     caea2:                       3
 ;     cb033:                       3
 ;     cb32c:                       3
@@ -10944,6 +11107,10 @@ save pydis_start, pydis_end
 ;     cbb07:                       3
 ;     cbb7a:                       3
 ;     fn_true:                     3
+;     fwa_add_fwb:                 3
+;     fwa_div10:                   3
+;     fwb_clear:                   3
+;     iwa_negate:                  3
 ;     l0009:                       3
 ;     l000e:                       3
 ;     l00fd:                       3
@@ -10966,9 +11133,6 @@ save pydis_start, pydis_end
 ;     sub_c9970:                   3
 ;     sub_c9dd1:                   3
 ;     sub_ca07b:                   3
-;     sub_ca24d:                   3
-;     sub_ca453:                   3
-;     sub_ca505:                   3
 ;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
 ;     sub_cab12:                   3
@@ -11059,13 +11223,10 @@ save pydis_start, pydis_end
 ;     ca197:                       2
 ;     ca313:                       2
 ;     ca336:                       2
-;     ca3b2:                       2
 ;     ca40c:                       2
 ;     ca43c:                       2
 ;     ca450:                       2
-;     ca4dc:                       2
 ;     ca659:                       2
-;     ca65c:                       2
 ;     ca66c:                       2
 ;     ca67c:                       2
 ;     ca6bb:                       2
@@ -11124,6 +11285,16 @@ save pydis_start, pydis_end
 ;     cbf82:                       2
 ;     dispatch_token:              2
 ;     fp_temp1:                    2
+;     fwa_add_fwb_raw:             2
+;     fwa_copy_from_fwb:           2
+;     fwa_mul10:                   2
+;     fwa_mul_var_raw:             2
+;     fwa_pack_temp2:              2
+;     fwa_reciprocal:              2
+;     fwa_round:                   2
+;     fwa_rsub_var:                2
+;     fwa_unpack_temp1:            2
+;     iwa_load_zp:                 2
 ;     l0010:                       2
 ;     l0022:                       2
 ;     l0100:                       2
@@ -11181,21 +11352,14 @@ save pydis_start, pydis_end
 ;     sub_c9edf:                   2
 ;     sub_ca064:                   2
 ;     sub_ca178:                   2
-;     sub_ca1f4:                   2
 ;     sub_ca23f:                   2
-;     sub_ca37d:                   2
 ;     sub_ca486:                   2
 ;     sub_ca4d0:                   2
-;     sub_ca4fd:                   2
-;     sub_ca50b:                   2
-;     sub_ca606:                   2
-;     sub_ca6a5:                   2
 ;     sub_ca7f1:                   2
 ;     sub_caa48:                   2
 ;     sub_caa4c:                   2
 ;     sub_caa55:                   2
 ;     sub_cadad:                   2
-;     sub_caf56:                   2
 ;     sub_caf87:                   2
 ;     sub_cafad:                   2
 ;     sub_cb30d:                   2
@@ -11412,8 +11576,6 @@ save pydis_start, pydis_end
 ;     c9dbd:                       1
 ;     c9dc6:                       1
 ;     c9de5:                       1
-;     c9e01:                       1
-;     c9e0a:                       1
 ;     c9e35:                       1
 ;     c9e59:                       1
 ;     c9e88:                       1
@@ -11561,7 +11723,6 @@ save pydis_start, pydis_end
 ;     cb3c0:                       1
 ;     cb3f9:                       1
 ;     cb413:                       1
-;     cb4c6:                       1
 ;     cb4e0:                       1
 ;     cb536:                       1
 ;     cb542:                       1
@@ -11639,6 +11800,10 @@ save pydis_start, pydis_end
 ;     fn_asn:                      1
 ;     fn_ln:                       1
 ;     for_gosub_stack:             1
+;     fwa_swap_var:                1
+;     iwa_div:                     1
+;     iwa_mod:                     1
+;     iwa_store_var:               1
 ;     l0047:                       1
 ;     l0061:                       1
 ;     l0064:                       1
@@ -11673,6 +11838,7 @@ save pydis_start, pydis_end
 ;     l05cc:                       1
 ;     l05e5:                       1
 ;     l05e6:                       1
+;     l3185:                       1
 ;     l6142:                       1
 ;     l7461:                       1
 ;     l82df:                       1
@@ -11933,7 +12099,6 @@ save pydis_start, pydis_end
 ;     sub_ca3e7:                   1
 ;     sub_ca4b6:                   1
 ;     sub_ca4c7:                   1
-;     sub_ca4d6:                   1
 ;     sub_ca4e8:                   1
 ;     sub_ca801:                   1
 ;     sub_ca9b1:                   1
@@ -12267,8 +12432,6 @@ save pydis_start, pydis_end
 ;     c9dc6
 ;     c9dd4
 ;     c9de5
-;     c9e01
-;     c9e0a
 ;     c9e23
 ;     c9e35
 ;     c9e59
@@ -12329,13 +12492,11 @@ save pydis_start, pydis_end
 ;     ca2be
 ;     ca2cd
 ;     ca2fd
-;     ca303
 ;     ca313
 ;     ca336
 ;     ca33a
 ;     ca37a
 ;     ca387
-;     ca3b2
 ;     ca3e1
 ;     ca3e4
 ;     ca40c
@@ -12348,8 +12509,6 @@ save pydis_start, pydis_end
 ;     ca4ae
 ;     ca4b0
 ;     ca4b3
-;     ca4dc
-;     ca500
 ;     ca53d
 ;     ca552
 ;     ca579
@@ -12363,11 +12522,9 @@ save pydis_start, pydis_end
 ;     ca625
 ;     ca652
 ;     ca659
-;     ca65c
 ;     ca66c
 ;     ca676
 ;     ca67c
-;     ca686
 ;     ca6bb
 ;     ca6e7
 ;     ca6f1
@@ -12432,10 +12589,8 @@ save pydis_start, pydis_end
 ;     cad59
 ;     cad67
 ;     cad77
-;     cad7e
 ;     cad83
 ;     cad89
-;     cad93
 ;     cadaa
 ;     cadc5
 ;     cadc9
@@ -12454,7 +12609,6 @@ save pydis_start, pydis_end
 ;     caea2
 ;     caeaa
 ;     caed8
-;     caeea
 ;     caf24
 ;     caf3f
 ;     caf69
@@ -12506,7 +12660,6 @@ save pydis_start, pydis_end
 ;     cb413
 ;     cb48f
 ;     cb4ae
-;     cb4c6
 ;     cb4e0
 ;     cb4e9
 ;     cb51e
@@ -12704,6 +12857,7 @@ save pydis_start, pydis_end
 ;     l05e6
 ;     l05ff
 ;     l06ff
+;     l3185
 ;     l6142
 ;     l7461
 ;     l82df
@@ -13024,35 +13178,17 @@ save pydis_start, pydis_end
 ;     sub_ca140
 ;     sub_ca14b
 ;     sub_ca178
-;     sub_ca1f4
-;     sub_ca21e
 ;     sub_ca23f
 ;     sub_ca242
-;     sub_ca24d
 ;     sub_ca2a4
 ;     sub_ca2ed
-;     sub_ca34e
-;     sub_ca37d
-;     sub_ca381
-;     sub_ca385
-;     sub_ca38d
 ;     sub_ca3e7
 ;     sub_ca3fe
-;     sub_ca453
 ;     sub_ca486
 ;     sub_ca4b6
 ;     sub_ca4c7
 ;     sub_ca4d0
-;     sub_ca4d6
 ;     sub_ca4e8
-;     sub_ca4fd
-;     sub_ca505
-;     sub_ca50b
-;     sub_ca606
-;     sub_ca656
-;     sub_ca699
-;     sub_ca6a5
-;     sub_ca6ad
 ;     sub_ca7e9
 ;     sub_ca7ed
 ;     sub_ca7f1
@@ -13068,12 +13204,10 @@ save pydis_start, pydis_end
 ;     sub_caada
 ;     sub_cab12
 ;     sub_cac34
-;     sub_cad71
 ;     sub_cad8f
 ;     sub_cadad
 ;     sub_cae02
 ;     sub_cae3a
-;     sub_caf56
 ;     sub_caf87
 ;     sub_cafad
 ;     sub_cb197
@@ -13106,7 +13240,6 @@ save pydis_start, pydis_end
 ;     sub_cbe0b
 ;     sub_cbe0d
 ;     sub_cbe2e
-;     sub_cbe44
 ;     sub_cbe55
 ;     sub_cbe56
 ;     sub_cbe62
@@ -13124,11 +13257,11 @@ save pydis_start, pydis_end
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14425 bytes (88%)
-;     Data                     = 1959 bytes (12%)
+;     Code                     = 14424 bytes (88%)
+;     Data                     = 1960 bytes (12%)
 ;
-;     Number of instructions   = 7132
-;     Number of data bytes     = 944 bytes
+;     Number of instructions   = 7131
+;     Number of data bytes     = 945 bytes
 ;     Number of data words     = 0 bytes
 ;     Number of string bytes   = 1015 bytes
 ;     Number of strings        = 189

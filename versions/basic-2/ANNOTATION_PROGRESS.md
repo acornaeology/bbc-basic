@@ -26,6 +26,28 @@ uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
 - [ ] Remaining high-call utilities from `fantasm audit undeclared 2`
       (e.g. `&8821`, `&8C1E`, `&8821`, the `&882C`/`&882F`/`&8832` group).
 
+## Tooling
+
+- [x] `tools/correlate_jgh.py` — aligns JGH's `Basic2.src` against our
+      disassembly (label anchors + 98.6% opcode match) and harvests his
+      inline comments and routine banners keyed by our addresses. Outputs
+      gitignored; used as a research aid (we write our own annotations).
+
+## Pharo reference sweep (build foundational routine declarations)
+
+- [x] Ch. 7 memory map (zero page, RAM, tables).
+- [x] Ch. 2 integer routines (IWA): `iwa_negate/abs/add/rsub/mul/div/mod/
+      test_var/from_ya/load_var/store_var/load_zp/store_zp`.
+- [x] Ch. 3 floating-point routines (FWA/FWB): clear/set_one/negate/
+      normalise/round/reciprocal/copy/swap/compare, add/sub/mul/div
+      variants, pack/unpack to temps and variables.
+- [ ] Ch. 4 conversions (integer<->FP<->ASCII): the `c*` routines.
+- [ ] Ch. 5 mathematical functions (SIN/COS/TAN/ATN/LOG/EXP/SQR): map
+      Pharo's algorithm notes onto the fn_* handlers.
+- [ ] Ch. 6 random numbers.
+- [ ] Per-routine entry/exit detail (Pharo ch. 2.4 / 3.6) into on_entry/
+      on_exit for the spine routines.
+
 ## Next (bottom-up, by subsystem)
 
 Use `fantasm cfg leaves 2` and `fantasm audit undeclared 2` to pick

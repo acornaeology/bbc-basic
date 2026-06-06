@@ -438,17 +438,18 @@ integer accumulator.
     on_entry={'A': 'value type from zp_var_type (&27)'},
 )
 d.subroutine(
-    0xa1da, 'test_fwa_zero',
-    title='Test whether the FP accumulator is zero',
-    description="""OR the mantissa bytes of the floating-point accumulator
-(&31-&35) together; returns with Z set if the value is zero.
+    0xa1da, 'fwa_sign',
+    title='Get the sign of the FP accumulator',
+    description="""Determine the sign of the floating-point accumulator:
+zero, positive or negative (Z set when FWA is zero). Tests the
+mantissa bytes (&31-&35) and the sign.
 """,
 )
 d.subroutine(
-    0xa3b5, 'unpack_fwa_from_ptr',
-    title='Unpack a floating-point value into the accumulator',
-    description="""Copy the five mantissa/exponent bytes addressed by (&4B) into
-the floating-point accumulator (&30-&34).
+    0xa3b5, 'fwa_unpack_var',
+    title='Unpack a floating-point variable into FWA',
+    description="""Unpack the packed five-byte floating-point value addressed by
+(&4B/&4C) into the floating-point accumulator (FWA).
 """,
 )
 d.subroutine(
@@ -480,6 +481,143 @@ d.subroutine(
 integer accumulator (zp_iwa) and drop it.
 """,
 )
+
+# ----------------------------------------------------------------------
+# Integer-accumulator (IWA, &2A-&2D) arithmetic. These 32-bit signed
+# routines are documented in Pharo ch. 2; the interpreter calls them
+# for INTEGER (%) arithmetic and wherever a value has been coerced to
+# an integer. The two pseudo-variable handlers fn_true / fn_false
+# double as the "IWA = -1" / "IWA = 0" primitives.
+# ----------------------------------------------------------------------
+d.subroutine(
+    0xad93, 'iwa_negate',
+    title='Negate the integer accumulator',
+    description='IWA = -IWA (two\'s-complement negate the 32-bit integer).',
+)
+d.subroutine(
+    0xad71, 'iwa_abs',
+    title='Make the integer accumulator positive',
+    description='IWA = ABS(IWA).',
+)
+d.subroutine(
+    0x9c5b, 'iwa_add',
+    title='Integer add',
+    description='IWA = IWA + the integer operand.',
+)
+d.subroutine(
+    0x9cc2, 'iwa_rsub',
+    title='Reverse integer subtract',
+    description='IWA = operand - IWA.',
+)
+d.subroutine(
+    0x9d6d, 'iwa_mul',
+    title='Integer multiply',
+    description='IWA = IWA * the integer operand.',
+)
+d.subroutine(
+    0x9e0a, 'iwa_div',
+    title='Integer divide',
+    description='IWA = IWA DIV the integer operand.',
+)
+d.subroutine(
+    0x9e01, 'iwa_mod',
+    title='Integer remainder',
+    description='IWA = IWA MOD the integer operand.',
+)
+d.subroutine(
+    0x9aad, 'iwa_test_var',
+    title='Compare an integer variable with the accumulator',
+    description='Compare the integer operand against IWA and set flags.',
+)
+d.subroutine(
+    0xaeea, 'iwa_from_ya',
+    title='Set the integer accumulator to a small integer',
+    description='IWA = 256*Y + A.',
+)
+d.subroutine(
+    0xb336, 'iwa_load_var',
+    title='Load an integer variable into the accumulator',
+    description='Copy a 4-byte integer variable into IWA.',
+)
+d.subroutine(
+    0xb4c6, 'iwa_store_var',
+    title='Store the accumulator into an integer variable',
+    description='Copy IWA into a 4-byte integer variable.',
+)
+d.subroutine(
+    0xaf56, 'iwa_load_zp',
+    title='Load a zero-page integer variable into the accumulator',
+    description='Copy a 4-byte integer from zero page into IWA.',
+)
+d.subroutine(
+    0xbe44, 'iwa_store_zp',
+    title='Store the accumulator into a zero-page integer variable',
+    description='Copy IWA into a 4-byte zero-page integer variable.',
+)
+
+# ----------------------------------------------------------------------
+# Floating-point arithmetic (Pharo ch. 3). BBC BASIC keeps reals in two
+# accumulators: FWA (zp_fwa, &2E-&35) and FWB (zp_fwb, &3B-&42), in an
+# unpacked work form; values are stored packed (5 bytes). Routines that
+# take a "fp var" operand expect (&4B/&4C) to point at it. These are
+# the primitives the maths functions and real arithmetic build on.
+# ----------------------------------------------------------------------
+d.subroutine(0xa686, 'fwa_clear', title='FWA = 0',
+             description='Set the floating-point accumulator to zero.')
+d.subroutine(0xa699, 'fwa_set_one', title='FWA = 1',
+             description='Set the floating-point accumulator to 1.')
+d.subroutine(0xad7e, 'fwa_negate', title='FWA = -FWA',
+             description='Negate the floating-point accumulator.')
+d.subroutine(0xa303, 'fwa_normalise', title='Normalise FWA',
+             description='Normalise the floating-point accumulator.')
+d.subroutine(0xa65c, 'fwa_round', title='Round FWA',
+             description='Round the floating-point accumulator.')
+d.subroutine(0xa6a5, 'fwa_reciprocal', title='FWA = 1 / FWA',
+             description='Reciprocal of the FP accumulator (normalised, rounded).')
+d.subroutine(0xa4dc, 'fwa_copy_from_fwb', title='FWA = FWB',
+             description='Copy FWB into FWA.')
+d.subroutine(0xa4d6, 'fwa_swap_var', title='Swap FWA and a fp variable',
+             description='Exchange the FP accumulator with the fp variable operand.')
+d.subroutine(0xa5ff, 'fwa_compare_var', title='Compare FWA with a fp variable',
+             description='Test the fp variable operand against FWA.')
+# Add / subtract.
+d.subroutine(0xa500, 'fwa_add_var', title='FWA = FWA + fp var',
+             description='Add the fp variable operand to FWA (normalised, rounded).')
+d.subroutine(0xa505, 'fwa_add_fwb', title='FWA = FWA + FWB',
+             description='Add FWB to FWA (normalised, rounded).')
+d.subroutine(0xa50b, 'fwa_add_fwb_raw', title='FWA = FWA + FWB (unrounded)',
+             description='Add FWB to FWA, normalised but not rounded.')
+d.subroutine(0xa4fd, 'fwa_rsub_var', title='FWA = fp var - FWA',
+             description='Reverse subtract: operand minus FWA (normalised, rounded).')
+# Multiply / divide.
+d.subroutine(0xa656, 'fwa_mul_var', title='FWA = FWA * fp var',
+             description='Multiply FWA by the fp variable operand (normalised, rounded).')
+d.subroutine(0xa606, 'fwa_mul_var_raw', title='FWA = FWA * fp var (raw)',
+             description='Multiply FWA by the operand, unnormalised and unrounded.')
+d.subroutine(0xa1f4, 'fwa_mul10', title='FWA = FWA * 10',
+             description='Multiply FWA by ten, unnormalised and unrounded.')
+d.subroutine(0xa6ad, 'fwa_rdiv_var', title='FWA = fp var / FWA',
+             description='Reverse divide: operand divided by FWA (normalised, rounded).')
+d.subroutine(0xa24d, 'fwa_div10', title='FWA = FWA / 10',
+             description='Divide FWA by ten, unnormalised and unrounded.')
+# Pack / unpack between the accumulator and 5-byte stored form.
+d.subroutine(0xa38d, 'fwa_pack_var', title='Pack FWA into a fp variable',
+             description='Pack FWA into the five-byte fp variable at (&4B/&4C).')
+d.subroutine(0xa385, 'fwa_pack_temp1', title='Pack FWA into TEMP1',
+             description='Pack FWA into the floating-point temporary at &046C.')
+d.subroutine(0xa37d, 'fwa_pack_temp2', title='Pack FWA into TEMP2',
+             description='Pack FWA into the floating-point temporary at &0471.')
+d.subroutine(0xa381, 'fwa_pack_temp3', title='Pack FWA into TEMP3',
+             description='Pack FWA into the floating-point temporary at &0476.')
+d.subroutine(0xa3b2, 'fwa_unpack_temp1', title='Unpack TEMP1 into FWA',
+             description='Unpack the floating-point temporary at &046C into FWA.')
+# FWB helpers.
+d.subroutine(0xa453, 'fwb_clear', title='FWB = 0',
+             description='Set the second floating-point accumulator to zero.')
+d.subroutine(0xa21e, 'fwb_copy_from_fwa', title='FWB = FWA',
+             description='Copy FWA into FWB.')
+d.subroutine(0xa34e, 'fwb_unpack_var', title='Unpack a fp variable into FWB',
+             description='Unpack the fp variable at (&4B/&4C) into FWB.')
 
 ir = d.disassemble()
 output = str(

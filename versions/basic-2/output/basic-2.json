@@ -256,7 +256,8 @@
     },
     {
       "addr": 44394,
-      "name": "fn_abs"
+      "name": "fn_abs",
+      "fall_through": true
     },
     {
       "addr": 43220,
@@ -322,7 +323,8 @@
     },
     {
       "addr": 45461,
-      "name": "fn_fn"
+      "name": "fn_fn",
+      "fall_through": true
     },
     {
       "addr": 44985,
@@ -385,7 +387,8 @@
     },
     {
       "addr": 44873,
-      "name": "fn_rnd"
+      "name": "fn_rnd",
+      "fall_through": true
     },
     {
       "addr": 43912,
@@ -405,7 +408,8 @@
     },
     {
       "addr": 44764,
-      "name": "fn_to"
+      "name": "fn_to",
+      "fall_through": true
     },
     {
       "addr": 44228,
@@ -596,7 +600,8 @@
     },
     {
       "addr": 39106,
-      "name": "stmt_if"
+      "name": "stmt_if",
+      "fall_through": true
     },
     {
       "addr": 47684,
@@ -690,7 +695,8 @@
     },
     {
       "addr": 46240,
-      "name": "stmt_width"
+      "name": "stmt_width",
+      "fall_through": true
     },
     {
       "addr": 48834,
@@ -756,7 +762,8 @@
         "zp_var_type (&27)": "result type (integer / real / string)",
         "zp_iwa / zp_fwa": "the result value",
         "&1B": "advanced past the expression"
-      }
+      },
+      "fall_through": true
     },
     {
       "addr": 34849,
@@ -784,16 +791,15 @@
     },
     {
       "addr": 41434,
-      "name": "test_fwa_zero",
-      "title": "Test whether the FP accumulator is zero",
-      "description": "OR the mantissa bytes of the floating-point accumulator\n(&31-&35) together; returns with Z set if the value is zero.\n",
-      "fall_through": true
+      "name": "fwa_sign",
+      "title": "Get the sign of the FP accumulator",
+      "description": "Determine the sign of the floating-point accumulator:\nzero, positive or negative (Z set when FWA is zero). Tests the\nmantissa bytes (&31-&35) and the sign.\n"
     },
     {
       "addr": 41909,
-      "name": "unpack_fwa_from_ptr",
-      "title": "Unpack a floating-point value into the accumulator",
-      "description": "Copy the five mantissa/exponent bytes addressed by (&4B) into\nthe floating-point accumulator (&30-&34).\n"
+      "name": "fwa_unpack_var",
+      "title": "Unpack a floating-point variable into FWA",
+      "description": "Unpack the packed five-byte floating-point value addressed by\n(&4B/&4C) into the floating-point accumulator (FWA).\n"
     },
     {
       "addr": 48532,
@@ -819,6 +825,258 @@
       "name": "unstack_integer",
       "title": "Pop an integer from the BASIC stack",
       "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n"
+    },
+    {
+      "addr": 44435,
+      "name": "iwa_negate",
+      "title": "Negate the integer accumulator",
+      "description": "IWA = -IWA (two's-complement negate the 32-bit integer)."
+    },
+    {
+      "addr": 44401,
+      "name": "iwa_abs",
+      "title": "Make the integer accumulator positive",
+      "description": "IWA = ABS(IWA).",
+      "fall_through": true
+    },
+    {
+      "addr": 40027,
+      "name": "iwa_add",
+      "title": "Integer add",
+      "description": "IWA = IWA + the integer operand.",
+      "fall_through": true
+    },
+    {
+      "addr": 40130,
+      "name": "iwa_rsub",
+      "title": "Reverse integer subtract",
+      "description": "IWA = operand - IWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 40301,
+      "name": "iwa_mul",
+      "title": "Integer multiply",
+      "description": "IWA = IWA * the integer operand.",
+      "fall_through": true
+    },
+    {
+      "addr": 40458,
+      "name": "iwa_div",
+      "title": "Integer divide",
+      "description": "IWA = IWA DIV the integer operand."
+    },
+    {
+      "addr": 40449,
+      "name": "iwa_mod",
+      "title": "Integer remainder",
+      "description": "IWA = IWA MOD the integer operand."
+    },
+    {
+      "addr": 39597,
+      "name": "iwa_test_var",
+      "title": "Compare an integer variable with the accumulator",
+      "description": "Compare the integer operand against IWA and set flags."
+    },
+    {
+      "addr": 44778,
+      "name": "iwa_from_ya",
+      "title": "Set the integer accumulator to a small integer",
+      "description": "IWA = 256*Y + A."
+    },
+    {
+      "addr": 45878,
+      "name": "iwa_load_var",
+      "title": "Load an integer variable into the accumulator",
+      "description": "Copy a 4-byte integer variable into IWA."
+    },
+    {
+      "addr": 46278,
+      "name": "iwa_store_var",
+      "title": "Store the accumulator into an integer variable",
+      "description": "Copy IWA into a 4-byte integer variable."
+    },
+    {
+      "addr": 44886,
+      "name": "iwa_load_zp",
+      "title": "Load a zero-page integer variable into the accumulator",
+      "description": "Copy a 4-byte integer from zero page into IWA."
+    },
+    {
+      "addr": 48708,
+      "name": "iwa_store_zp",
+      "title": "Store the accumulator into a zero-page integer variable",
+      "description": "Copy IWA into a 4-byte zero-page integer variable."
+    },
+    {
+      "addr": 42630,
+      "name": "fwa_clear",
+      "title": "FWA = 0",
+      "description": "Set the floating-point accumulator to zero."
+    },
+    {
+      "addr": 42649,
+      "name": "fwa_set_one",
+      "title": "FWA = 1",
+      "description": "Set the floating-point accumulator to 1."
+    },
+    {
+      "addr": 44414,
+      "name": "fwa_negate",
+      "title": "FWA = -FWA",
+      "description": "Negate the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 41731,
+      "name": "fwa_normalise",
+      "title": "Normalise FWA",
+      "description": "Normalise the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 42588,
+      "name": "fwa_round",
+      "title": "Round FWA",
+      "description": "Round the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 42661,
+      "name": "fwa_reciprocal",
+      "title": "FWA = 1 / FWA",
+      "description": "Reciprocal of the FP accumulator (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42204,
+      "name": "fwa_copy_from_fwb",
+      "title": "FWA = FWB",
+      "description": "Copy FWB into FWA."
+    },
+    {
+      "addr": 42198,
+      "name": "fwa_swap_var",
+      "title": "Swap FWA and a fp variable",
+      "description": "Exchange the FP accumulator with the fp variable operand.",
+      "fall_through": true
+    },
+    {
+      "addr": 42495,
+      "name": "fwa_compare_var",
+      "title": "Compare FWA with a fp variable",
+      "description": "Test the fp variable operand against FWA."
+    },
+    {
+      "addr": 42240,
+      "name": "fwa_add_var",
+      "title": "FWA = FWA + fp var",
+      "description": "Add the fp variable operand to FWA (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42245,
+      "name": "fwa_add_fwb",
+      "title": "FWA = FWA + FWB",
+      "description": "Add FWB to FWA (normalised, rounded)."
+    },
+    {
+      "addr": 42251,
+      "name": "fwa_add_fwb_raw",
+      "title": "FWA = FWA + FWB (unrounded)",
+      "description": "Add FWB to FWA, normalised but not rounded.",
+      "fall_through": true
+    },
+    {
+      "addr": 42237,
+      "name": "fwa_rsub_var",
+      "title": "FWA = fp var - FWA",
+      "description": "Reverse subtract: operand minus FWA (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42582,
+      "name": "fwa_mul_var",
+      "title": "FWA = FWA * fp var",
+      "description": "Multiply FWA by the fp variable operand (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42502,
+      "name": "fwa_mul_var_raw",
+      "title": "FWA = FWA * fp var (raw)",
+      "description": "Multiply FWA by the operand, unnormalised and unrounded."
+    },
+    {
+      "addr": 41460,
+      "name": "fwa_mul10",
+      "title": "FWA = FWA * 10",
+      "description": "Multiply FWA by ten, unnormalised and unrounded."
+    },
+    {
+      "addr": 42669,
+      "name": "fwa_rdiv_var",
+      "title": "FWA = fp var / FWA",
+      "description": "Reverse divide: operand divided by FWA (normalised, rounded)."
+    },
+    {
+      "addr": 41549,
+      "name": "fwa_div10",
+      "title": "FWA = FWA / 10",
+      "description": "Divide FWA by ten, unnormalised and unrounded.",
+      "fall_through": true
+    },
+    {
+      "addr": 41869,
+      "name": "fwa_pack_var",
+      "title": "Pack FWA into a fp variable",
+      "description": "Pack FWA into the five-byte fp variable at (&4B/&4C)."
+    },
+    {
+      "addr": 41861,
+      "name": "fwa_pack_temp1",
+      "title": "Pack FWA into TEMP1",
+      "description": "Pack FWA into the floating-point temporary at &046C.",
+      "fall_through": true
+    },
+    {
+      "addr": 41853,
+      "name": "fwa_pack_temp2",
+      "title": "Pack FWA into TEMP2",
+      "description": "Pack FWA into the floating-point temporary at &0471.",
+      "fall_through": true
+    },
+    {
+      "addr": 41857,
+      "name": "fwa_pack_temp3",
+      "title": "Pack FWA into TEMP3",
+      "description": "Pack FWA into the floating-point temporary at &0476.",
+      "fall_through": true
+    },
+    {
+      "addr": 41906,
+      "name": "fwa_unpack_temp1",
+      "title": "Unpack TEMP1 into FWA",
+      "description": "Unpack the floating-point temporary at &046C into FWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 42067,
+      "name": "fwb_clear",
+      "title": "FWB = 0",
+      "description": "Set the second floating-point accumulator to zero."
+    },
+    {
+      "addr": 41502,
+      "name": "fwb_copy_from_fwa",
+      "title": "FWB = FWA",
+      "description": "Copy FWA into FWB."
+    },
+    {
+      "addr": 41806,
+      "name": "fwb_unpack_var",
+      "title": "Unpack a fp variable into FWB",
+      "description": "Unpack the fp variable at (&4B/&4C) into FWB."
     }
   ],
   "banners": [
@@ -1038,6 +1296,7 @@
     "string_work": 1536,
     "l06ff": 1791,
     "line_input_buf": 1792,
+    "l3185": 12677,
     "l6142": 24898,
     "l7461": 29793,
     "fred_hard_drive_0": 64576,
@@ -13374,9 +13633,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe44",
+      "operand": "iwa_store_zp",
       "target": 48708,
-      "target_label": "sub_cbe44"
+      "target_label": "iwa_store_zp"
     },
     {
       "addr": 34914,
@@ -21552,9 +21811,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 36159,
@@ -39832,9 +40091,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 39079,
@@ -41681,9 +41940,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cad71",
+      "operand": "iwa_abs",
       "target": 44401,
-      "target_label": "sub_cad71"
+      "target_label": "iwa_abs"
     },
     {
       "addr": 39368,
@@ -41784,9 +42043,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cad71",
+      "operand": "iwa_abs",
       "target": 44401,
-      "target_label": "sub_cad71"
+      "target_label": "iwa_abs"
     },
     {
       "addr": 39387,
@@ -42479,9 +42738,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca21e",
+      "operand": "fwb_copy_from_fwa",
       "target": 41502,
-      "target_label": "sub_ca21e"
+      "target_label": "fwb_copy_from_fwa"
     },
     {
       "addr": 39495,
@@ -42505,9 +42764,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 39501,
@@ -42621,9 +42880,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 39522,
@@ -43132,6 +43391,9 @@
       "bytes": [
         165,
         45
+      ],
+      "labels": [
+        "iwa_test_var"
       ],
       "type": "code",
       "mnemonic": "lda",
@@ -45859,6 +46121,9 @@
         160,
         0
       ],
+      "labels": [
+        "iwa_add"
+      ],
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -46287,9 +46552,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 40097,
@@ -46498,6 +46763,9 @@
       "addr": 40130,
       "bytes": [
         56
+      ],
+      "labels": [
+        "iwa_rsub"
       ],
       "type": "code",
       "mnemonic": "sec"
@@ -46804,9 +47072,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4fd",
+      "operand": "fwa_rsub_var",
       "target": 42237,
-      "target_label": "sub_ca4fd"
+      "target_label": "fwa_rsub_var"
     },
     {
       "addr": 40183,
@@ -47128,9 +47396,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 40242,
@@ -47516,6 +47784,9 @@
         165,
         45
       ],
+      "labels": [
+        "iwa_mul"
+      ],
       "type": "code",
       "mnemonic": "lda",
       "operand": "l002d",
@@ -47539,9 +47810,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cad71",
+      "operand": "iwa_abs",
       "target": 44401,
-      "target_label": "sub_cad71"
+      "target_label": "iwa_abs"
     },
     {
       "addr": 40307,
@@ -47562,9 +47833,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe44",
+      "operand": "iwa_store_zp",
       "target": 48708,
-      "target_label": "sub_cbe44"
+      "target_label": "iwa_store_zp"
     },
     {
       "addr": 40312,
@@ -47620,9 +47891,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cad71",
+      "operand": "iwa_abs",
       "target": 44401,
-      "target_label": "sub_cad71"
+      "target_label": "iwa_abs"
     },
     {
       "addr": 40323,
@@ -48023,9 +48294,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caf56",
+      "operand": "iwa_load_zp",
       "target": 44886,
-      "target_label": "sub_caf56"
+      "target_label": "iwa_load_zp"
     },
     {
       "addr": 40384,
@@ -48056,9 +48327,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cad93",
+      "operand": "iwa_negate",
       "target": 44435,
-      "target_label": "cad93"
+      "target_label": "iwa_negate"
     },
     {
       "addr": 40390,
@@ -48236,9 +48507,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9e01",
+      "operand": "iwa_mod",
       "target": 40449,
-      "target_label": "c9e01"
+      "target_label": "iwa_mod"
     },
     {
       "addr": 40416,
@@ -48258,9 +48529,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9e0a",
+      "operand": "iwa_div",
       "target": 40458,
-      "target_label": "c9e0a"
+      "target_label": "iwa_div"
     },
     {
       "addr": 40420,
@@ -48381,9 +48652,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6ad",
+      "operand": "fwa_rdiv_var",
       "target": 42669,
-      "target_label": "sub_ca6ad"
+      "target_label": "fwa_rdiv_var"
     },
     {
       "addr": 40443,
@@ -48427,7 +48698,7 @@
         153
       ],
       "labels": [
-        "c9e01"
+        "iwa_mod"
       ],
       "xref_summaries": [
         "&9e01 referenced 1 time by &9dde"
@@ -48482,7 +48753,7 @@
         153
       ],
       "labels": [
-        "c9e0a"
+        "iwa_div"
       ],
       "xref_summaries": [
         "&9e0a referenced 1 time by &9de2"
@@ -48903,9 +49174,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 40528,
@@ -48972,9 +49243,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 40540,
@@ -49033,9 +49304,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 40551,
@@ -49080,9 +49351,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca37d",
+      "operand": "fwa_pack_temp2",
       "target": 41853,
-      "target_label": "sub_ca37d"
+      "target_label": "fwa_pack_temp2"
     },
     {
       "addr": 40559,
@@ -49106,9 +49377,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 40565,
@@ -49171,9 +49442,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 40580,
@@ -49215,9 +49486,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 40587,
@@ -49228,9 +49499,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 40590,
@@ -49742,9 +50013,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca1f4",
+      "operand": "fwa_mul10",
       "target": 41460,
-      "target_label": "sub_ca1f4"
+      "target_label": "fwa_mul10"
     },
     {
       "addr": 40666,
@@ -50100,9 +50371,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 40722,
@@ -50203,9 +50474,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 40739,
@@ -50314,9 +50585,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca24d",
+      "operand": "fwa_div10",
       "target": 41549,
-      "target_label": "sub_ca24d"
+      "target_label": "fwa_div10"
     },
     {
       "addr": 40756,
@@ -50395,9 +50666,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 40768,
@@ -50578,9 +50849,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 40799,
@@ -50668,9 +50939,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca24d",
+      "operand": "fwa_div10",
       "target": 41549,
-      "target_label": "sub_ca24d"
+      "target_label": "fwa_div10"
     },
     {
       "addr": 40814,
@@ -50723,9 +50994,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 40823,
@@ -50760,9 +51031,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca50b",
+      "operand": "fwa_add_fwb_raw",
       "target": 42251,
-      "target_label": "sub_ca50b"
+      "target_label": "fwa_add_fwb_raw"
     },
     {
       "addr": 40830,
@@ -51007,9 +51278,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 40867,
@@ -52413,9 +52684,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 41080,
@@ -53203,9 +53474,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 41203,
@@ -53293,9 +53564,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 41218,
@@ -53351,9 +53622,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca1f4",
+      "operand": "fwa_mul10",
       "target": 41460,
-      "target_label": "sub_ca1f4"
+      "target_label": "fwa_mul10"
     },
     {
       "addr": 41227,
@@ -53410,9 +53681,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca24d",
+      "operand": "fwa_div10",
       "target": 41549,
-      "target_label": "sub_ca24d"
+      "target_label": "fwa_div10"
     },
     {
       "addr": 41236,
@@ -53457,9 +53728,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca65c",
+      "operand": "fwa_round",
       "target": 42588,
-      "target_label": "ca65c"
+      "target_label": "fwa_round"
     },
     {
       "addr": 41243,
@@ -54745,7 +55016,7 @@
         49
       ],
       "labels": [
-        "test_fwa_zero"
+        "fwa_sign"
       ],
       "xref_summaries": [
         "&a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e"
@@ -54945,7 +55216,7 @@
         24
       ],
       "labels": [
-        "sub_ca1f4"
+        "fwa_mul10"
       ],
       "xref_summaries": [
         "&a1f4 referenced 2 times by &9ed7, &a108"
@@ -55033,9 +55304,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca21e",
+      "operand": "fwb_copy_from_fwa",
       "target": 41502,
-      "target_label": "sub_ca21e"
+      "target_label": "fwb_copy_from_fwa"
     },
     {
       "addr": 41474,
@@ -55231,7 +55502,7 @@
         46
       ],
       "labels": [
-        "sub_ca21e"
+        "fwb_copy_from_fwa"
       ],
       "xref_summaries": [
         "&a21e referenced 5 times by &9a44, &a1ff, &a23f, &a3f8, &a6b2"
@@ -55456,9 +55727,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca21e",
+      "operand": "fwb_copy_from_fwa",
       "target": 41502,
-      "target_label": "sub_ca21e"
+      "target_label": "fwb_copy_from_fwa"
     },
     {
       "addr": 41538,
@@ -55547,7 +55818,7 @@
         56
       ],
       "labels": [
-        "sub_ca24d"
+        "fwa_div10"
       ],
       "xref_summaries": [
         "&a24d referenced 3 times by &9f31, &9f6b, &a111"
@@ -56302,9 +56573,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cad93",
+      "operand": "iwa_negate",
       "target": 44435,
-      "target_label": "cad93"
+      "target_label": "iwa_negate"
     },
     {
       "addr": 41675,
@@ -56464,9 +56735,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 41702,
@@ -56559,9 +56830,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 41713,
@@ -56687,7 +56958,7 @@
         49
       ],
       "labels": [
-        "ca303"
+        "fwa_normalise"
       ],
       "xref_summaries": [
         "&a303 referenced 8 times by &a0ff, &a2e3, &a4b3, &a5dc, &a602, &a659, &aa0e, &af33"
@@ -57180,7 +57451,7 @@
         4
       ],
       "labels": [
-        "sub_ca34e"
+        "fwb_unpack_var"
       ],
       "xref_summaries": [
         "&a34e referenced 7 times by &9a5f, &9f74, &a4d6, &a500, &a60b, &a6ec, &a9df"
@@ -57492,7 +57763,7 @@
         113
       ],
       "labels": [
-        "sub_ca37d"
+        "fwa_pack_temp2"
       ],
       "xref_summaries": [
         "&a37d referenced 2 times by &9e6c, &aa11"
@@ -57524,7 +57795,7 @@
         118
       ],
       "labels": [
-        "sub_ca381"
+        "fwa_pack_temp3"
       ],
       "xref_summaries": [
         "&a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe"
@@ -57560,7 +57831,7 @@
         108
       ],
       "labels": [
-        "sub_ca385"
+        "fwa_pack_temp1"
       ],
       "xref_summaries": [
         "&a385 referenced 9 times by &8d3c, &9f3d, &a6a5, &a7be, &a84b, &a89b, &a9b1, &a9d9, &ab1f"
@@ -57632,7 +57903,7 @@
         0
       ],
       "labels": [
-        "sub_ca38d"
+        "fwa_pack_var"
       ],
       "xref_summaries": [
         "&a38d referenced 7 times by &a4d9, &a6ca, &a7cf, &a9b7, &aa20, &b860, &b882"
@@ -57874,7 +58145,7 @@
         167
       ],
       "labels": [
-        "ca3b2"
+        "fwa_unpack_temp1"
       ],
       "xref_summaries": [
         "&a3b2 referenced 2 times by &aa35, &ba36"
@@ -57896,7 +58167,7 @@
         4
       ],
       "labels": [
-        "unpack_fwa_from_ptr"
+        "fwa_unpack_var"
       ],
       "xref_summaries": [
         "&a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea"
@@ -58361,9 +58632,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca21e",
+      "operand": "fwb_copy_from_fwa",
       "target": 41502,
-      "target_label": "sub_ca21e"
+      "target_label": "fwb_copy_from_fwa"
     },
     {
       "addr": 41979,
@@ -58374,9 +58645,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 41982,
@@ -58423,9 +58694,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca453",
+      "operand": "fwb_clear",
       "target": 42067,
-      "target_label": "sub_ca453"
+      "target_label": "fwb_clear"
     },
     {
       "addr": 41989,
@@ -58436,9 +58707,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 41992,
@@ -58914,7 +59185,7 @@
         0
       ],
       "labels": [
-        "sub_ca453"
+        "fwb_clear"
       ],
       "xref_summaries": [
         "&a453 referenced 3 times by &a402, &a814, &a93f"
@@ -59324,9 +59595,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42129,
@@ -59555,9 +59826,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 42166,
@@ -59750,9 +60021,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4fd",
+      "operand": "fwa_rsub_var",
       "target": 42237,
-      "target_label": "sub_ca4fd"
+      "target_label": "fwa_rsub_var"
     },
     {
       "addr": 42195,
@@ -59763,9 +60034,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cad7e",
+      "operand": "fwa_negate",
       "target": 44414,
-      "target_label": "cad7e"
+      "target_label": "fwa_negate"
     },
     {
       "addr": 42198,
@@ -59775,7 +60046,7 @@
         163
       ],
       "labels": [
-        "sub_ca4d6"
+        "fwa_swap_var"
       ],
       "xref_summaries": [
         "&a4d6 referenced 1 time by &a6d5"
@@ -59785,9 +60056,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 42201,
@@ -59798,9 +60069,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 42204,
@@ -59809,7 +60080,7 @@
         59
       ],
       "labels": [
-        "ca4dc"
+        "fwa_copy_from_fwb"
       ],
       "xref_summaries": [
         "&a4dc referenced 2 times by &a50e, &a559"
@@ -60039,7 +60310,7 @@
         173
       ],
       "labels": [
-        "sub_ca4fd"
+        "fwa_rsub_var"
       ],
       "xref_summaries": [
         "&a4fd referenced 2 times by &9cf4, &a4d0"
@@ -60050,9 +60321,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cad7e",
+      "operand": "fwa_negate",
       "target": 44414,
-      "target_label": "cad7e"
+      "target_label": "fwa_negate"
     },
     {
       "addr": 42240,
@@ -60062,7 +60333,7 @@
         163
       ],
       "labels": [
-        "ca500"
+        "fwa_add_var"
       ],
       "xref_summaries": [
         "&a500 referenced 10 times by &9c9e, &a7dd, &a848, &a863, &a8cc, &a92a, &a930, &aa1d, &aa32, &b774"
@@ -60081,9 +60352,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 42243,
@@ -60105,7 +60376,7 @@
         165
       ],
       "labels": [
-        "sub_ca505"
+        "fwa_add_fwb"
       ],
       "xref_summaries": [
         "&a505 referenced 3 times by &a830, &a94a, &a9e8"
@@ -60117,9 +60388,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca50b",
+      "operand": "fwa_add_fwb_raw",
       "target": 42251,
-      "target_label": "sub_ca50b"
+      "target_label": "fwa_add_fwb_raw"
     },
     {
       "addr": 42248,
@@ -60130,9 +60401,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca65c",
+      "operand": "fwa_round",
       "target": 42588,
-      "target_label": "ca65c"
+      "target_label": "fwa_round"
     },
     {
       "addr": 42251,
@@ -60142,7 +60413,7 @@
         161
       ],
       "labels": [
-        "sub_ca50b"
+        "fwa_add_fwb_raw"
       ],
       "xref_summaries": [
         "&a50b referenced 2 times by &9f7b, &a505"
@@ -60153,9 +60424,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42254,
@@ -60165,9 +60436,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca4dc",
+      "operand": "fwa_copy_from_fwb",
       "target": 42204,
-      "target_label": "ca4dc"
+      "target_label": "fwa_copy_from_fwb"
     },
     {
       "addr": 42256,
@@ -60663,9 +60934,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca4dc",
+      "operand": "fwa_copy_from_fwb",
       "target": 42204,
-      "target_label": "ca4dc"
+      "target_label": "fwa_copy_from_fwb"
     },
     {
       "addr": 42331,
@@ -61271,9 +61542,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 42423,
@@ -61521,9 +61792,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 42463,
@@ -61731,26 +62002,28 @@
     {
       "addr": 42494,
       "bytes": [
-        229,
-        62
+        229
       ],
-      "type": "code",
-      "mnemonic": "sbc",
-      "operand": "l003e",
-      "target": 62,
-      "target_label": "l003e"
+      "type": "byte",
+      "values": [
+        229
+      ]
     },
     {
-      "addr": 42496,
+      "addr": 42495,
       "bytes": [
+        62,
         133,
         49
       ],
+      "labels": [
+        "fwa_compare_var"
+      ],
       "type": "code",
-      "mnemonic": "sta",
-      "operand": "l0031",
-      "target": 49,
-      "target_label": "l0031"
+      "mnemonic": "rol",
+      "operand": "l3185,x",
+      "target": 12677,
+      "target_label": "l3185"
     },
     {
       "addr": 42498,
@@ -61761,9 +62034,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 42501,
@@ -61790,7 +62063,7 @@
         161
       ],
       "labels": [
-        "sub_ca606"
+        "fwa_mul_var_raw"
       ],
       "xref_summaries": [
         "&a606 referenced 2 times by &a656, &af30"
@@ -61801,9 +62074,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42505,
@@ -61826,9 +62099,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 42510,
@@ -61851,9 +62124,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 42515,
@@ -62318,7 +62591,7 @@
         166
       ],
       "labels": [
-        "sub_ca656"
+        "fwa_mul_var"
       ],
       "xref_summaries": [
         "&a656 referenced 12 times by &9d2f, &9e81, &a842, &a845, &a85d, &a9b4, &a9c6, &aa17, &aa2c, &aad4, &ab2c, &abbc"
@@ -62339,9 +62612,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca606",
+      "operand": "fwa_mul_var_raw",
       "target": 42502,
-      "target_label": "sub_ca606"
+      "target_label": "fwa_mul_var_raw"
     },
     {
       "addr": 42585,
@@ -62362,9 +62635,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 42588,
@@ -62373,7 +62646,7 @@
         53
       ],
       "labels": [
-        "ca65c"
+        "fwa_round"
       ],
       "xref_summaries": [
         "&a65c referenced 2 times by &a118, &a508"
@@ -62628,7 +62901,7 @@
         0
       ],
       "labels": [
-        "ca686"
+        "fwa_clear"
       ],
       "xref_summaries": [
         "&a686 referenced 8 times by &9f5c, &9fa0, &a2ee, &a3fb, &a5b4, &a610, &a699, &aaa6"
@@ -62769,7 +63042,7 @@
         166
       ],
       "labels": [
-        "sub_ca699"
+        "fwa_set_one"
       ],
       "xref_summaries": [
         "&a699 referenced 6 times by &9e8b, &9f20, &a6a8, &a9ba, &ab22, &b863"
@@ -62784,9 +63057,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 42652,
@@ -62854,7 +63127,7 @@
         163
       ],
       "labels": [
-        "sub_ca6a5"
+        "fwa_reciprocal"
       ],
       "xref_summaries": [
         "&a6a5 referenced 2 times by &a921, &ab1a"
@@ -62865,9 +63138,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 42664,
@@ -62878,9 +63151,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 42667,
@@ -62902,7 +63175,7 @@
         161
       ],
       "labels": [
-        "sub_ca6ad"
+        "fwa_rdiv_var"
       ],
       "xref_summaries": [
         "&a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8"
@@ -62915,9 +63188,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42672,
@@ -62940,9 +63213,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca21e",
+      "operand": "fwb_copy_from_fwa",
       "target": 41502,
-      "target_label": "sub_ca21e"
+      "target_label": "fwb_copy_from_fwa"
     },
     {
       "addr": 42677,
@@ -62953,9 +63226,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 42680,
@@ -63071,9 +63344,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 42701,
@@ -63122,9 +63395,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4d6",
+      "operand": "fwa_swap_var",
       "target": 42198,
-      "target_label": "sub_ca4d6"
+      "target_label": "fwa_swap_var"
     },
     {
       "addr": 42712,
@@ -63223,9 +63496,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42730,
@@ -63248,9 +63521,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 42735,
@@ -64560,9 +64833,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 42938,
@@ -64597,9 +64870,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 42945,
@@ -64696,9 +64969,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 42962,
@@ -64731,9 +65004,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6ad",
+      "operand": "fwa_rdiv_var",
       "target": 42669,
-      "target_label": "sub_ca6ad"
+      "target_label": "fwa_rdiv_var"
     },
     {
       "addr": 42969,
@@ -64766,9 +65039,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 42976,
@@ -65049,9 +65322,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 43012,
@@ -65148,9 +65421,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca453",
+      "operand": "fwb_clear",
       "target": 42067,
-      "target_label": "sub_ca453"
+      "target_label": "fwb_clear"
     },
     {
       "addr": 43031,
@@ -65335,9 +65608,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca505",
+      "operand": "fwa_add_fwb",
       "target": 42245,
-      "target_label": "sub_ca505"
+      "target_label": "fwa_add_fwb"
     },
     {
       "addr": 43059,
@@ -65417,9 +65690,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43077,
@@ -65430,9 +65703,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43080,
@@ -65443,9 +65716,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43083,
@@ -65456,9 +65729,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 43086,
@@ -65552,9 +65825,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43104,
@@ -65578,9 +65851,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43110,
@@ -65745,9 +66018,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 43166,
@@ -65885,9 +66158,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 43189,
@@ -65920,9 +66193,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6ad",
+      "operand": "fwa_rdiv_var",
       "target": 42669,
-      "target_label": "sub_ca6ad"
+      "target_label": "fwa_rdiv_var"
     },
     {
       "addr": 43195,
@@ -66033,9 +66306,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43215,
@@ -66129,9 +66402,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 43232,
@@ -66202,9 +66475,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 43245,
@@ -66228,9 +66501,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 43251,
@@ -66266,9 +66539,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6ad",
+      "operand": "fwa_rdiv_var",
       "target": 42669,
-      "target_label": "sub_ca6ad"
+      "target_label": "fwa_rdiv_var"
     },
     {
       "addr": 43259,
@@ -66315,9 +66588,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 43268,
@@ -66381,9 +66654,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 43277,
@@ -66526,9 +66799,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6a5",
+      "operand": "fwa_reciprocal",
       "target": 42661,
-      "target_label": "sub_ca6a5"
+      "target_label": "fwa_reciprocal"
     },
     {
       "addr": 43300,
@@ -66574,9 +66847,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43309,
@@ -66600,9 +66873,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43315,
@@ -66613,9 +66886,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cad7e",
+      "operand": "fwa_negate",
       "target": 44414,
-      "target_label": "cad7e"
+      "target_label": "fwa_negate"
     },
     {
       "addr": 43318,
@@ -66670,9 +66943,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 43327,
@@ -66683,9 +66956,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca453",
+      "operand": "fwb_clear",
       "target": 42067,
-      "target_label": "sub_ca453"
+      "target_label": "fwb_clear"
     },
     {
       "addr": 43330,
@@ -66742,9 +67015,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca505",
+      "operand": "fwa_add_fwb",
       "target": 42245,
-      "target_label": "sub_ca505"
+      "target_label": "fwa_add_fwb"
     },
     {
       "addr": 43341,
@@ -67085,9 +67358,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cad7e",
+      "operand": "fwa_negate",
       "target": 44414,
-      "target_label": "cad7e"
+      "target_label": "fwa_negate"
     },
     {
       "addr": 43434,
@@ -67154,9 +67427,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 43444,
@@ -67167,9 +67440,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43447,
@@ -67180,9 +67453,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 43450,
@@ -67193,9 +67466,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 43453,
@@ -67242,9 +67515,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 43462,
@@ -67255,9 +67528,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43465,
@@ -67359,9 +67632,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 43484,
@@ -67385,9 +67658,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca34e",
+      "operand": "fwb_unpack_var",
       "target": 41806,
-      "target_label": "sub_ca34e"
+      "target_label": "fwb_unpack_var"
     },
     {
       "addr": 43490,
@@ -67434,9 +67707,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca505",
+      "operand": "fwa_add_fwb",
       "target": 42245,
-      "target_label": "sub_ca505"
+      "target_label": "fwa_add_fwb"
     },
     {
       "addr": 43499,
@@ -67647,9 +67920,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 43537,
@@ -67660,9 +67933,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca37d",
+      "operand": "fwa_pack_temp2",
       "target": 41853,
-      "target_label": "sub_ca37d"
+      "target_label": "fwa_pack_temp2"
     },
     {
       "addr": 43540,
@@ -67686,9 +67959,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43546,
@@ -67712,9 +67985,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43552,
@@ -67725,9 +67998,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 43555,
@@ -67751,9 +68024,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 43561,
@@ -67777,9 +68050,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43567,
@@ -67803,9 +68076,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 43573,
@@ -67825,9 +68098,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca3b2",
+      "operand": "fwa_unpack_temp1",
       "target": 41906,
-      "target_label": "ca3b2"
+      "target_label": "fwa_unpack_temp1"
     },
     {
       "addr": 43576,
@@ -68356,9 +68629,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca686",
+      "operand": "fwa_clear",
       "target": 42630,
-      "target_label": "ca686"
+      "target_label": "fwa_clear"
     },
     {
       "addr": 43689,
@@ -68476,9 +68749,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca381",
+      "operand": "fwa_pack_temp3",
       "target": 41857,
-      "target_label": "sub_ca381"
+      "target_label": "fwa_pack_temp3"
     },
     {
       "addr": 43713,
@@ -68533,9 +68806,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 43724,
@@ -68595,9 +68868,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43735,
@@ -68851,9 +69124,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca6a5",
+      "operand": "fwa_reciprocal",
       "target": 42661,
-      "target_label": "sub_ca6a5"
+      "target_label": "fwa_reciprocal"
     },
     {
       "addr": 43805,
@@ -68889,9 +69162,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca385",
+      "operand": "fwa_pack_temp1",
       "target": 41861,
-      "target_label": "sub_ca385"
+      "target_label": "fwa_pack_temp1"
     },
     {
       "addr": 43810,
@@ -68902,9 +69175,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 43813,
@@ -68970,9 +69243,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43823,
@@ -69073,9 +69346,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 43841,
@@ -69425,9 +69698,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 43906,
@@ -69808,9 +70081,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca656",
+      "operand": "fwa_mul_var",
       "target": 42582,
-      "target_label": "sub_ca656"
+      "target_label": "fwa_mul_var"
     },
     {
       "addr": 43967,
@@ -71297,9 +71570,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44216,
@@ -72472,7 +72745,7 @@
         45
       ],
       "labels": [
-        "sub_cad71"
+        "iwa_abs"
       ],
       "xref_summaries": [
         "&ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80"
@@ -72497,9 +72770,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cad93",
+      "operand": "iwa_negate",
       "target": 44435,
-      "target_label": "cad93"
+      "target_label": "iwa_negate"
     },
     {
       "addr": 44405,
@@ -72531,9 +72804,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 44410,
@@ -72567,7 +72840,7 @@
         161
       ],
       "labels": [
-        "cad7e"
+        "fwa_negate"
       ],
       "xref_summaries": [
         "&ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91"
@@ -72581,9 +72854,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "test_fwa_zero",
+      "operand": "fwa_sign",
       "target": 41434,
-      "target_label": "test_fwa_zero"
+      "target_label": "fwa_sign"
     },
     {
       "addr": 44417,
@@ -72719,9 +72992,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cad7e",
+      "operand": "fwa_negate",
       "target": 44414,
-      "target_label": "cad7e"
+      "target_label": "fwa_negate"
     },
     {
       "addr": 44435,
@@ -72729,7 +73002,7 @@
         56
       ],
       "labels": [
-        "cad93"
+        "iwa_negate"
       ],
       "xref_summaries": [
         "&ad93 referenced 3 times by &9dc3, &a2c8, &ad73"
@@ -73874,9 +74147,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44611,
@@ -74643,9 +74916,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44743,
@@ -74800,9 +75073,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44764,
@@ -74896,7 +75169,7 @@
         42
       ],
       "labels": [
-        "caeea"
+        "iwa_from_ya"
       ],
       "xref_summaries": [
         "&aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351"
@@ -75048,9 +75321,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44803,
@@ -75088,9 +75361,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44810,
@@ -75315,9 +75588,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca606",
+      "operand": "fwa_mul_var_raw",
       "target": 42502,
-      "target_label": "sub_ca606"
+      "target_label": "fwa_mul_var_raw"
     },
     {
       "addr": 44851,
@@ -75328,9 +75601,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca303",
+      "operand": "fwa_normalise",
       "target": 41731,
-      "target_label": "ca303"
+      "target_label": "fwa_normalise"
     },
     {
       "addr": 44854,
@@ -75404,9 +75677,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe44",
+      "operand": "iwa_store_zp",
       "target": 48708,
-      "target_label": "sub_cbe44"
+      "target_label": "iwa_store_zp"
     },
     {
       "addr": 44868,
@@ -75517,7 +75790,7 @@
         0
       ],
       "labels": [
-        "sub_caf56"
+        "iwa_load_zp"
       ],
       "xref_summaries": [
         "&af56 referenced 2 times by &9dbd, &b326"
@@ -76037,9 +76310,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44966,
@@ -76075,9 +76348,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 44973,
@@ -81139,9 +81412,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe44",
+      "operand": "iwa_store_zp",
       "target": 48708,
-      "target_label": "sub_cbe44"
+      "target_label": "iwa_store_zp"
     },
     {
       "addr": 45795,
@@ -81189,9 +81462,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "unpack_fwa_from_ptr",
+      "operand": "fwa_unpack_var",
       "target": 41909,
-      "target_label": "unpack_fwa_from_ptr"
+      "target_label": "fwa_unpack_var"
     },
     {
       "addr": 45805,
@@ -81451,9 +81724,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe44",
+      "operand": "iwa_store_zp",
       "target": 48708,
-      "target_label": "sub_cbe44"
+      "target_label": "iwa_store_zp"
     },
     {
       "addr": 45848,
@@ -81549,9 +81822,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caf56",
+      "operand": "iwa_load_zp",
       "target": 44886,
-      "target_label": "sub_caf56"
+      "target_label": "iwa_load_zp"
     },
     {
       "addr": 45865,
@@ -81650,6 +81923,9 @@
       "bytes": [
         160,
         3
+      ],
+      "labels": [
+        "iwa_load_var"
       ],
       "type": "code",
       "mnemonic": "ldy",
@@ -81831,9 +82107,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caeea",
+      "operand": "iwa_from_ya",
       "target": 44778,
-      "target_label": "caeea"
+      "target_label": "iwa_from_ya"
     },
     {
       "addr": 45908,
@@ -84043,9 +84319,9 @@
       ],
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cb4c6",
+      "operand": "iwa_store_var",
       "target": 46278,
-      "target_label": "cb4c6"
+      "target_label": "iwa_store_var"
     },
     {
       "addr": 46275,
@@ -84067,7 +84343,7 @@
         0
       ],
       "labels": [
-        "cb4c6"
+        "iwa_store_var"
       ],
       "xref_summaries": [
         "&b4c6 referenced 1 time by &b4c1"
@@ -88302,9 +88578,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca500",
+      "operand": "fwa_add_var",
       "target": 42240,
-      "target_label": "ca500"
+      "target_label": "fwa_add_var"
     },
     {
       "addr": 46967,
@@ -89541,9 +89817,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 47203,
@@ -89554,9 +89830,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca699",
+      "operand": "fwa_set_one",
       "target": 42649,
-      "target_label": "sub_ca699"
+      "target_label": "fwa_set_one"
     },
     {
       "addr": 47206,
@@ -89725,9 +90001,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca38d",
+      "operand": "fwa_pack_var",
       "target": 41869,
-      "target_label": "sub_ca38d"
+      "target_label": "fwa_pack_var"
     },
     {
       "addr": 47237,
@@ -92278,9 +92554,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca3b2",
+      "operand": "fwa_unpack_temp1",
       "target": 41906,
-      "target_label": "ca3b2"
+      "target_label": "fwa_unpack_temp1"
     },
     {
       "addr": 47673,
@@ -98886,7 +99162,7 @@
         42
       ],
       "labels": [
-        "sub_cbe44"
+        "iwa_store_zp"
       ],
       "xref_summaries": [
         "&be44 referenced 5 times by &885f, &9d75, &af41, &b2e0, &b315"
