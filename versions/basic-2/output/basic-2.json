@@ -1481,6 +1481,41 @@
       "name": "find_variable",
       "title": "Find a variable by name",
       "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n"
+    },
+    {
+      "addr": 39721,
+      "name": "eval_or_eor",
+      "title": "Evaluator level 7: OR, EOR",
+      "description": "Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.",
+      "fall_through": true
+    },
+    {
+      "addr": 39794,
+      "name": "eval_and",
+      "title": "Evaluator level 6: AND",
+      "description": "Bitwise AND (&80) on integers.",
+      "fall_through": true
+    },
+    {
+      "addr": 39836,
+      "name": "eval_relational",
+      "title": "Evaluator level 5: < <= = >= > <>",
+      "description": "The relational operators, yielding TRUE (-1) or FALSE (0).",
+      "fall_through": true
+    },
+    {
+      "addr": 40002,
+      "name": "eval_add_sub",
+      "title": "Evaluator level 4: + -",
+      "description": "Addition and subtraction (numeric, or string concatenation).",
+      "fall_through": true
+    },
+    {
+      "addr": 40401,
+      "name": "eval_mul_div",
+      "title": "Evaluator level 3: * / DIV MOD",
+      "description": "Multiplication, division and the integer DIV and MOD operators.",
+      "fall_through": true
     }
   ],
   "banners": [
@@ -22229,9 +22264,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 36156,
@@ -23347,9 +23382,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 36334,
@@ -30909,9 +30944,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 37600,
@@ -32651,9 +32686,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 37885,
@@ -39833,9 +39868,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 38988,
@@ -43250,9 +43285,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9c42",
+      "operand": "eval_add_sub",
       "target": 40002,
-      "target_label": "sub_c9c42"
+      "target_label": "eval_add_sub"
     },
     {
       "addr": 39510,
@@ -43788,9 +43823,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9c42",
+      "operand": "eval_add_sub",
       "target": 40002,
-      "target_label": "sub_c9c42"
+      "target_label": "eval_add_sub"
     },
     {
       "addr": 39592,
@@ -44221,9 +44256,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9c42",
+      "operand": "eval_add_sub",
       "target": 40002,
-      "target_label": "sub_c9c42"
+      "target_label": "eval_add_sub"
     },
     {
       "addr": 39661,
@@ -44556,6 +44591,7 @@
       "labels": [
         "eval_expr"
       ],
+      "comment_inline": "Start evaluating: copy PtrA to the working PtrB",
       "xref_summaries": [
         "&9b1d referenced 11 times by &8821, &886d, &8b53, &8ed2, &93eb, &98c2, &b58c, &b91e, &b99f, &bbb1, &bed2"
       ],
@@ -44646,8 +44682,9 @@
         155
       ],
       "labels": [
-        "sub_c9b29"
+        "eval_or_eor"
       ],
+      "comment_inline": "Evaluate the higher-precedence (AND) operand first",
       "xref_summaries": [
         "&9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d"
       ],
@@ -44671,9 +44708,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b72",
+      "operand": "eval_and",
       "target": 39794,
-      "target_label": "sub_c9b72"
+      "target_label": "eval_and"
     },
     {
       "addr": 39724,
@@ -44684,6 +44721,7 @@
       "labels": [
         "loop_c9b2c"
       ],
+      "comment_inline": "Is the next operator OR or EOR at this level?",
       "xref_summaries": [
         "&9b2c referenced 1 time by &9b53"
       ],
@@ -44778,6 +44816,7 @@
       "labels": [
         "c9b3a"
       ],
+      "comment_inline": "OR: stack the left operand, evaluate the right",
       "xref_summaries": [
         "&9b3a referenced 1 time by &9b2e"
       ],
@@ -44830,6 +44869,7 @@
       "labels": [
         "loop_c9b43"
       ],
+      "comment_inline": "Combine the two integers with OR",
       "xref_summaries": [
         "&9b43 referenced 1 time by &9b4c"
       ],
@@ -44926,6 +44966,7 @@
         208,
         215
       ],
+      "comment_inline": "Loop to handle any further OR / EOR",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9b2c",
@@ -45116,7 +45157,7 @@
         155
       ],
       "labels": [
-        "sub_c9b72"
+        "eval_and"
       ],
       "xref_summaries": [
         "&9b72 referenced 1 time by &9b29"
@@ -45126,9 +45167,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b9c",
+      "operand": "eval_relational",
       "target": 39836,
-      "target_label": "sub_c9b9c"
+      "target_label": "eval_relational"
     },
     {
       "addr": 39797,
@@ -45139,6 +45180,7 @@
       "labels": [
         "loop_c9b75"
       ],
+      "comment_inline": "Apply AND only if the next operator is AND",
       "xref_summaries": [
         "&9b75 referenced 1 time by &9b9a"
       ],
@@ -45221,9 +45263,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b9c",
+      "operand": "eval_relational",
       "target": 39836,
-      "target_label": "sub_c9b9c"
+      "target_label": "eval_relational"
     },
     {
       "addr": 39812,
@@ -45366,7 +45408,7 @@
         156
       ],
       "labels": [
-        "sub_c9b9c"
+        "eval_relational"
       ],
       "xref_summaries": [
         "&9b9c referenced 2 times by &9b72, &9b81"
@@ -45377,9 +45419,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9c42",
+      "operand": "eval_add_sub",
       "target": 40002,
-      "target_label": "sub_c9c42"
+      "target_label": "eval_add_sub"
     },
     {
       "addr": 39839,
@@ -46386,7 +46428,7 @@
         157
       ],
       "labels": [
-        "sub_c9c42"
+        "eval_add_sub"
       ],
       "xref_summaries": [
         "&9c42 referenced 4 times by &9a53, &9aa5, &9aea, &9b9c"
@@ -46399,9 +46441,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9dd1",
+      "operand": "eval_mul_div",
       "target": 40401,
-      "target_label": "sub_c9dd1"
+      "target_label": "eval_mul_div"
     },
     {
       "addr": 40005,
@@ -46412,6 +46454,7 @@
       "labels": [
         "c9c45"
       ],
+      "comment_inline": "Apply + or - if that is the next operator",
       "xref_summaries": [
         "&9c45 referenced 4 times by &9c40, &9c82, &9c86, &9ca5"
       ],
@@ -46897,9 +46940,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9dd1",
+      "operand": "eval_mul_div",
       "target": 40401,
-      "target_label": "sub_c9dd1"
+      "target_label": "eval_mul_div"
     },
     {
       "addr": 40081,
@@ -47418,9 +47461,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9dd1",
+      "operand": "eval_mul_div",
       "target": 40401,
-      "target_label": "sub_c9dd1"
+      "target_label": "eval_mul_div"
     },
     {
       "addr": 40167,
@@ -48856,7 +48899,7 @@
         158
       ],
       "labels": [
-        "sub_c9dd1"
+        "eval_mul_div"
       ],
       "xref_summaries": [
         "&9dd1 referenced 3 times by &9c42, &9c8e, &9ce4"
@@ -71135,9 +71178,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 44064,
@@ -72326,9 +72369,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 44261,
@@ -72398,9 +72441,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 44275,
@@ -74721,9 +74764,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 44633,
@@ -77026,9 +77069,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 45007,
@@ -77215,9 +77258,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 45041,
@@ -77686,9 +77729,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 45116,
@@ -81413,9 +81456,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 45713,
@@ -84695,9 +84738,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 46260,
@@ -90209,9 +90252,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 47186,
@@ -90360,9 +90403,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b29",
+      "operand": "eval_or_eor",
       "target": 39721,
-      "target_label": "sub_c9b29"
+      "target_label": "eval_or_eor"
     },
     {
       "addr": 47216,

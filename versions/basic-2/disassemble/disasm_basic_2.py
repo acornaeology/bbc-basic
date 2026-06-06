@@ -1204,6 +1204,41 @@ d.comment(0x94a7, 'Match: return a pointer to the value', align=Align.INLINE)
 d.comment(0x94b3, 'No match: follow the link to the next entry',
           align=Align.INLINE)
 
+# --- expression evaluator: the operator-precedence ladder ------------
+# eval_expr enters at the lowest precedence and each level calls the
+# next-higher one for its operands, then applies its own operators in a
+# loop. Each level returns the next (unconsumed) operator token in X and
+# the result type in A / zp_var_type. Level 1 (eval_factor) handles
+# unary operators, parentheses, literals and functions.
+for _addr, _name, _title, _desc in [
+    (0x9b29, 'eval_or_eor', 'Evaluator level 7: OR, EOR',
+     'Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.'),
+    (0x9b72, 'eval_and', 'Evaluator level 6: AND',
+     'Bitwise AND (&80) on integers.'),
+    (0x9b9c, 'eval_relational', 'Evaluator level 5: < <= = >= > <>',
+     'The relational operators, yielding TRUE (-1) or FALSE (0).'),
+    (0x9c42, 'eval_add_sub', 'Evaluator level 4: + -',
+     'Addition and subtraction (numeric, or string concatenation).'),
+    (0x9dd1, 'eval_mul_div', 'Evaluator level 3: * / DIV MOD',
+     'Multiplication, division and the integer DIV and MOD operators.'),
+]:
+    d.subroutine(_addr, _name, title=_title, description=_desc)
+
+d.comment(0x9b1d, 'Start evaluating: copy PtrA to the working PtrB',
+          align=Align.INLINE)
+d.comment(0x9b29, 'Evaluate the higher-precedence (AND) operand first',
+          align=Align.INLINE)
+d.comment(0x9b2c, 'Is the next operator OR or EOR at this level?',
+          align=Align.INLINE)
+d.comment(0x9b3a, 'OR: stack the left operand, evaluate the right',
+          align=Align.INLINE)
+d.comment(0x9b43, 'Combine the two integers with OR', align=Align.INLINE)
+d.comment(0x9b53, 'Loop to handle any further OR / EOR', align=Align.INLINE)
+d.comment(0x9b75, 'Apply AND only if the next operator is AND',
+          align=Align.INLINE)
+d.comment(0x9c45, 'Apply + or - if that is the next operator',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

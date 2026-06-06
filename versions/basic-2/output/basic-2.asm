@@ -2520,7 +2520,7 @@ l848a = sub_c847b+15
     jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,    
     bne c8d77                                                         ; 8d37: d0 3e       .>    
-    jsr sub_c9b29                                                     ; 8d39: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).   
     jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..   
     pla                                                               ; 8d3f: 68          h     
     tay                                                               ; 8d40: a8          .     
@@ -2643,7 +2643,7 @@ l848a = sub_c847b+15
     lda zp_print_flag                                                 ; 8de6: a5 15       ..    
     pha                                                               ; 8de8: 48          H     
     dec zp_text_ptr2_off                                              ; 8de9: c6 1b       ..    
-    jsr sub_c9b29                                                     ; 8deb: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).   
     pla                                                               ; 8dee: 68          h     
     sta zp_print_flag                                                 ; 8def: 85 15       ..    
     pla                                                               ; 8df1: 68          h     
@@ -3451,7 +3451,7 @@ l848a = sub_c847b+15
     jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..   
 ; &92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a
 .sub_c92dd
-    jsr sub_c9b29                                                     ; 92dd: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 92dd: 20 29 9b     ).   
     jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..   
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
 .sub_c92e3
@@ -3672,7 +3672,7 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; 93f4: a5 2a       .*    
     pha                                                               ; 93f6: 48          H     
     jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..   
-    jsr sub_c9b29                                                     ; 93fa: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).   
 ; &93fd referenced 1 time by &93ee
 .c93fd
     jsr sub_c92ee                                                     ; 93fd: 20 ee 92     ..   
@@ -4447,7 +4447,7 @@ l848a = sub_c847b+15
     rts                                                               ; 9848: 60          `     
 ; &9849 referenced 2 times by &981f, &bf5f
 .c9849
-    jsr sub_c9b29                                                     ; 9849: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 9849: 20 29 9b     ).   
 ; &984c referenced 4 times by &8b56, &b58f, &bbb4, &beda
 .c984c
     txa                                                               ; 984c: 8a          .     
@@ -4817,7 +4817,7 @@ l848a = sub_c847b+15
 ; &9a50 referenced 1 time by &9aa0
 .loop_c9a50
     jsr stack_real                                                    ; 9a50: 20 51 bd     Q.   
-    jsr sub_c9c42                                                     ; 9a53: 20 42 9c     B.   
+    jsr eval_add_sub                                                  ; 9a53: 20 42 9c     B.   
     stx zp_var_type                                                   ; 9a56: 86 27       .'    
     tay                                                               ; 9a58: a8          .     
     jsr sub_c92fd                                                     ; 9a59: 20 fd 92     ..   
@@ -4872,7 +4872,7 @@ l848a = sub_c847b+15
     beq c9ae7                                                         ; 9a9e: f0 47       .G    
     bmi loop_c9a50                                                    ; 9aa0: 30 ae       0.    
     jsr stack_integer                                                 ; 9aa2: 20 94 bd     ..   
-    jsr sub_c9c42                                                     ; 9aa5: 20 42 9c     B.   
+    jsr eval_add_sub                                                  ; 9aa5: 20 42 9c     B.   
     tay                                                               ; 9aa8: a8          .     
     beq c9a9a                                                         ; 9aa9: f0 ef       ..    
     bmi loop_c9a39                                                    ; 9aab: 30 8c       0.    
@@ -4919,7 +4919,7 @@ l848a = sub_c847b+15
 ; &9ae7 referenced 1 time by &9a9e
 .c9ae7
     jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..   
-    jsr sub_c9c42                                                     ; 9aea: 20 42 9c     B.   
+    jsr eval_add_sub                                                  ; 9aea: 20 42 9c     B.   
     tay                                                               ; 9aed: a8          .     
     bne c9a9a                                                         ; 9aee: d0 aa       ..    
     stx zp_general                                                    ; 9af0: 86 37       .7    
@@ -4967,18 +4967,22 @@ l848a = sub_c847b+15
 ;     &1B: advanced past the expression
 ; &9b1d referenced 11 times by &8821, &886d, &8b53, &8ed2, &93eb, &98c2, &b58c, &b91e, &b99f, &bbb1, &bed2
 .eval_expr
-    lda zp_text_ptr                                                   ; 9b1d: a5 0b       ..    
+    lda zp_text_ptr                                                   ; 9b1d: a5 0b       ..       ; Start evaluating: copy PtrA to the working PtrB
     sta zp_text_ptr2                                                  ; 9b1f: 85 19       ..    
     lda l000c                                                         ; 9b21: a5 0c       ..    
     sta l001a                                                         ; 9b23: 85 1a       ..    
     lda zp_text_ptr_off                                               ; 9b25: a5 0a       ..    
     sta zp_text_ptr2_off                                              ; 9b27: 85 1b       ..    
+; ***************************************************************************************
+; Evaluator level 7: OR, EOR
+;
+; Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.
 ; &9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d
-.sub_c9b29
-    jsr sub_c9b72                                                     ; 9b29: 20 72 9b     r.   
+.eval_or_eor
+    jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first
 ; &9b2c referenced 1 time by &9b53
 .loop_c9b2c
-    cpx #&84                                                          ; 9b2c: e0 84       ..    
+    cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?
     beq c9b3a                                                         ; 9b2e: f0 0a       ..    
     cpx #&82                                                          ; 9b30: e0 82       ..    
     beq c9b55                                                         ; 9b32: f0 21       .!    
@@ -4988,13 +4992,13 @@ l848a = sub_c847b+15
     rts                                                               ; 9b39: 60          `     
 ; &9b3a referenced 1 time by &9b2e
 .c9b3a
-    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.   
+    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
     tay                                                               ; 9b3d: a8          .     
     jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..   
     ldy #3                                                            ; 9b41: a0 03       ..    
 ; &9b43 referenced 1 time by &9b4c
 .loop_c9b43
-    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..    
+    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; Combine the two integers with OR
     ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.   
     sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.   
     dey                                                               ; 9b4b: 88          .     
@@ -5003,7 +5007,7 @@ l848a = sub_c847b+15
 .loop_c9b4e
     jsr sub_cbdff                                                     ; 9b4e: 20 ff bd     ..   
     lda #&40 ; '@'                                                    ; 9b51: a9 40       .@    
-    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..    
+    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
 ; &9b55 referenced 1 time by &9b32
 .c9b55
     jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.   
@@ -5023,12 +5027,16 @@ l848a = sub_c847b+15
     tay                                                               ; 9b6b: a8          .     
     jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..   
     jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..   
+; ***************************************************************************************
+; Evaluator level 6: AND
+;
+; Bitwise AND (&80) on integers.
 ; &9b72 referenced 1 time by &9b29
-.sub_c9b72
-    jsr sub_c9b9c                                                     ; 9b72: 20 9c 9b     ..   
+.eval_and
+    jsr eval_relational                                               ; 9b72: 20 9c 9b     ..   
 ; &9b75 referenced 1 time by &9b9a
 .loop_c9b75
-    cpx #&80                                                          ; 9b75: e0 80       ..    
+    cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND
     beq c9b7a                                                         ; 9b77: f0 01       ..    
     rts                                                               ; 9b79: 60          `     
 ; &9b7a referenced 1 time by &9b77
@@ -5036,7 +5044,7 @@ l848a = sub_c847b+15
     tay                                                               ; 9b7a: a8          .     
     jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..   
     jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..   
-    jsr sub_c9b9c                                                     ; 9b81: 20 9c 9b     ..   
+    jsr eval_relational                                               ; 9b81: 20 9c 9b     ..   
     tay                                                               ; 9b84: a8          .     
     jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..   
     ldy #3                                                            ; 9b88: a0 03       ..    
@@ -5050,9 +5058,13 @@ l848a = sub_c847b+15
     jsr sub_cbdff                                                     ; 9b95: 20 ff bd     ..   
     lda #&40 ; '@'                                                    ; 9b98: a9 40       .@    
     bne loop_c9b75                                                    ; 9b9a: d0 d9       ..    
+; ***************************************************************************************
+; Evaluator level 5: < <= = >= > <>
+;
+; The relational operators, yielding TRUE (-1) or FALSE (0).
 ; &9b9c referenced 2 times by &9b72, &9b81
-.sub_c9b9c
-    jsr sub_c9c42                                                     ; 9b9c: 20 42 9c     B.   
+.eval_relational
+    jsr eval_add_sub                                                  ; 9b9c: 20 42 9c     B.   
     cpx #&3f ; '?'                                                    ; 9b9f: e0 3f       .?    
     bcs return_18                                                     ; 9ba1: b0 04       ..    
     cpx #&3c ; '<'                                                    ; 9ba3: e0 3c       .<    
@@ -5155,12 +5167,16 @@ l848a = sub_c847b+15
     ldx zp_general                                                    ; 9c3d: a6 37       .7    
     tya                                                               ; 9c3f: 98          .     
     beq c9c45                                                         ; 9c40: f0 03       ..    
+; ***************************************************************************************
+; Evaluator level 4: + -
+;
+; Addition and subtraction (numeric, or string concatenation).
 ; &9c42 referenced 4 times by &9a53, &9aa5, &9aea, &9b9c
-.sub_c9c42
-    jsr sub_c9dd1                                                     ; 9c42: 20 d1 9d     ..   
+.eval_add_sub
+    jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..   
 ; &9c45 referenced 4 times by &9c40, &9c82, &9c86, &9ca5
 .c9c45
-    cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+    
+    cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
     beq c9c4e                                                         ; 9c47: f0 05       ..    
     cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-    
     beq c9cb5                                                         ; 9c4b: f0 68       .h    
@@ -5220,7 +5236,7 @@ l848a = sub_c847b+15
 ; &9c8b referenced 1 time by &9c51
 .c9c8b
     jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.   
-    jsr sub_c9dd1                                                     ; 9c8e: 20 d1 9d     ..   
+    jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..   
     tay                                                               ; 9c91: a8          .     
     beq c9c88                                                         ; 9c92: f0 f4       ..    
     stx zp_var_type                                                   ; 9c94: 86 27       .'    
@@ -5284,7 +5300,7 @@ l848a = sub_c847b+15
 ; &9ce1 referenced 1 time by &9cb8
 .c9ce1
     jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.   
-    jsr sub_c9dd1                                                     ; 9ce4: 20 d1 9d     ..   
+    jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..   
     tay                                                               ; 9ce7: a8          .     
     beq c9c88                                                         ; 9ce8: f0 9e       ..    
     stx zp_var_type                                                   ; 9cea: 86 27       .'    
@@ -5443,8 +5459,12 @@ l848a = sub_c847b+15
 ; &9dce referenced 2 times by &9c53, &9cba
 .sub_c9dce
     jsr stack_integer                                                 ; 9dce: 20 94 bd     ..   
+; ***************************************************************************************
+; Evaluator level 3: * / DIV MOD
+;
+; Multiplication, division and the integer DIV and MOD operators.
 ; &9dd1 referenced 3 times by &9c42, &9c8e, &9ce4
-.sub_c9dd1
+.eval_mul_div
     jsr sub_c9e20                                                     ; 9dd1: 20 20 9e      .   
 ; &9dd4 referenced 3 times by &9d36, &9dc8, &9dff
 .c9dd4
@@ -7910,7 +7930,7 @@ l848a = sub_c847b+15
     iny                                                               ; ac17: c8          .     
     sty zp_text_ptr2_off                                              ; ac18: 84 1b       ..    
     jsr sub_c8955                                                     ; ac1a: 20 55 89     U.   
-    jsr sub_c9b29                                                     ; ac1d: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; ac1d: 20 29 9b     ).   
     jsr cbddc                                                         ; ac20: 20 dc bd     ..   
 ; &ac23 referenced 1 time by &ac75
 .cac23
@@ -8079,13 +8099,13 @@ l848a = sub_c847b+15
 ;
 ; Position of one string within another, optionally from a start. INSTR(a$, b$ [,n]).
 .fn_instr
-    jsr sub_c9b29                                                     ; ace2: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).   
     bne cac9b                                                         ; ace5: d0 b4       ..    
     cpx #&2c ; ','                                                    ; ace7: e0 2c       .,    
     bne cad03                                                         ; ace9: d0 18       ..    
     inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..    
     jsr stack_string                                                  ; aced: 20 b2 bd     ..   
-    jsr sub_c9b29                                                     ; acf0: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; acf0: 20 29 9b     ).   
     bne cac9b                                                         ; acf3: d0 a6       ..    
     lda #1                                                            ; acf5: a9 01       ..    
     sta zp_iwa                                                        ; acf7: 85 2a       .*    
@@ -8371,7 +8391,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; ae55: 00          .     
 ; &ae56 referenced 11 times by &8e2b, &9747, &976c, &ab4a, &ad09, &ae1e, &af0c, &afda, &affc, &b05b, &b0cb
 .cae56
-    jsr sub_c9b29                                                     ; ae56: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; ae56: 20 29 9b     ).   
     inc zp_text_ptr2_off                                              ; ae59: e6 1b       ..    
     cpx #&29 ; ')'                                                    ; ae5b: e0 29       .)    
     bne cae61                                                         ; ae5d: d0 02       ..    
@@ -8703,7 +8723,7 @@ l848a = sub_c847b+15
 ;
 ; Leftmost n characters of a string. LEFT$(string, n).
 .fn_lefts
-    jsr sub_c9b29                                                     ; afcc: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).   
     bne cb033                                                         ; afcf: d0 62       .b    
     cpx #&2c ; ','                                                    ; afd1: e0 2c       .,    
     bne cb036                                                         ; afd3: d0 61       .a    
@@ -8725,7 +8745,7 @@ l848a = sub_c847b+15
 ;
 ; Rightmost n characters of a string. RIGHT$(string, n).
 .fn_rights
-    jsr sub_c9b29                                                     ; afee: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; afee: 20 29 9b     ).   
     bne cb033                                                         ; aff1: d0 40       .@    
     cpx #&2c ; ','                                                    ; aff3: e0 2c       .,    
     bne cb036                                                         ; aff5: d0 3f       .?    
@@ -8783,7 +8803,7 @@ l848a = sub_c847b+15
 ;
 ; Substring from a start position. MID$(string, start [,length]).
 .fn_mids
-    jsr sub_c9b29                                                     ; b039: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b039: 20 29 9b     ).   
     bne cb033                                                         ; b03c: d0 f5       ..    
     cpx #&2c ; ','                                                    ; b03e: e0 2c       .,    
     bne cb036                                                         ; b040: d0 f4       ..    
@@ -9183,7 +9203,7 @@ l848a = sub_c847b+15
     bne cb2b5                                                         ; b28c: d0 27       .'    
 ; &b28e referenced 1 time by &b2a5
 .loop_cb28e
-    jsr sub_c9b29                                                     ; b28e: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b28e: 20 29 9b     ).   
     jsr sub_cbd90                                                     ; b291: 20 90 bd     ..   
     lda zp_var_type                                                   ; b294: a5 27       .'    
     sta zp_iwa_3                                                      ; b296: 85 2d       .-    
@@ -9542,7 +9562,7 @@ l848a = sub_c847b+15
     jmp c8c0e                                                         ; b4ae: 4c 0e 8c    L..   
 ; &b4b1 referenced 2 times by &b7d1, &bb2c
 .sub_cb4b1
-    jsr sub_c9b29                                                     ; b4b1: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b4b1: 20 29 9b     ).   
 ; &b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6
 .sub_cb4b4
     jsr sub_cbe0b                                                     ; b4b4: 20 0b be     ..   
@@ -10116,7 +10136,7 @@ l848a = sub_c847b+15
     jmp c8ba3                                                         ; b84c: 4c a3 8b    L..   
 ; &b84f referenced 1 time by &b7f3
 .cb84f
-    jsr sub_c9b29                                                     ; b84f: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b84f: 20 29 9b     ).   
     jsr sub_c92fd                                                     ; b852: 20 fd 92     ..   
     lda zp_for_level                                                  ; b855: a5 26       .&    
     clc                                                               ; b857: 18          .     
@@ -10129,7 +10149,7 @@ l848a = sub_c847b+15
     jsr skip_spaces_ptr2                                              ; b866: 20 8c 8a     ..   
     cmp #&88                                                          ; b869: c9 88       ..    
     bne cb875                                                         ; b86b: d0 08       ..    
-    jsr sub_c9b29                                                     ; b86d: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b86d: 20 29 9b     ).   
     jsr sub_c92fd                                                     ; b870: 20 fd 92     ..   
     ldy zp_text_ptr2_off                                              ; b873: a4 1b       ..    
 ; &b875 referenced 1 time by &b86b
@@ -11537,7 +11557,7 @@ save pydis_start, pydis_end
 ;     caed8:                      18
 ;     fwa_sign:                   17
 ;     zp_fwb_rnd:                 17
-;     sub_c9b29:                  16
+;     eval_or_eor:                16
 ;     unstack_integer:            16
 ;     zp_page:                    16
 ;     l0013:                      15
@@ -11659,6 +11679,7 @@ save pydis_start, pydis_end
 ;     cb751:                       4
 ;     cba5a:                       4
 ;     cbc28:                       4
+;     eval_add_sub:                4
 ;     find_variable:               4
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
@@ -11678,7 +11699,6 @@ save pydis_start, pydis_end
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
 ;     sub_c9531:                   4
-;     sub_c9c42:                   4
 ;     sub_c9e20:                   4
 ;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
@@ -11725,6 +11745,7 @@ save pydis_start, pydis_end
 ;     cbb07:                       3
 ;     cbb7a:                       3
 ;     err_no_room:                 3
+;     eval_mul_div:                3
 ;     fn_true:                     3
 ;     fwa_add_fwb:                 3
 ;     fwa_div10:                   3
@@ -11750,7 +11771,6 @@ save pydis_start, pydis_end
 ;     sub_c94fc:                   3
 ;     sub_c97ba:                   3
 ;     sub_c9970:                   3
-;     sub_c9dd1:                   3
 ;     sub_ca07b:                   3
 ;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
@@ -11902,6 +11922,7 @@ save pydis_start, pydis_end
 ;     cbf82:                       2
 ;     dispatch_token:              2
 ;     err_too_big:                 2
+;     eval_relational:             2
 ;     fp_temp1:                    2
 ;     fwa_add_fwb_raw:             2
 ;     fwa_copy_from_fwb:           2
@@ -11966,7 +11987,6 @@ save pydis_start, pydis_end
 ;     sub_c9923:                   2
 ;     sub_c99be:                   2
 ;     sub_c9b6b:                   2
-;     sub_c9b9c:                   2
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
 ;     sub_ca064:                   2
@@ -12411,6 +12431,7 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     eval_and:                    1
 ;     exec_star_command:           1
 ;     execute_line:                1
 ;     find_proc_fn:                1
@@ -12710,7 +12731,6 @@ save pydis_start, pydis_end
 ;     sub_c9880:                   1
 ;     sub_c9a5f:                   1
 ;     sub_c9a9e:                   1
-;     sub_c9b72:                   1
 ;     sub_ca040:                   1
 ;     sub_ca052:                   1
 ;     sub_ca140:                   1
@@ -13746,13 +13766,8 @@ save pydis_start, pydis_end
 ;     sub_c9a5f
 ;     sub_c9a9d
 ;     sub_c9a9e
-;     sub_c9b29
 ;     sub_c9b6b
-;     sub_c9b72
-;     sub_c9b9c
-;     sub_c9c42
 ;     sub_c9dce
-;     sub_c9dd1
 ;     sub_c9e1d
 ;     sub_c9e20
 ;     sub_ca040
