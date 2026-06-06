@@ -790,8 +790,7 @@
       "addr": 35812,
       "name": "stmt_let",
       "title": "LET",
-      "description": "Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.",
-      "fall_through": true
+      "description": "Assign an expression to a variable; the LET keyword is optional. [LET] var = expr."
     },
     {
       "addr": 37667,
@@ -1479,7 +1478,8 @@
       "addr": 37993,
       "name": "find_variable",
       "title": "Find a variable by name",
-      "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n"
+      "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n",
+      "fall_through": true
     },
     {
       "addr": 39721,
@@ -1527,6 +1527,33 @@
       "name": "find_program_line",
       "title": "Search the program for a line number",
       "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n",
+      "fall_through": true
+    },
+    {
+      "addr": 38274,
+      "name": "parse_lvalue",
+      "title": "Parse an assignment target variable",
+      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 38931,
+      "name": "eval_after_eq",
+      "title": "Expect \"=\" then evaluate the right-hand side",
+      "description": "Skip spaces, require an \"=\" sign, then evaluate the expression\nthat follows, leaving the value in the accumulator with its type in\nzp_var_type.\n"
+    },
+    {
+      "addr": 35870,
+      "name": "assign_string",
+      "title": "Store a string value into a variable",
+      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 46260,
+      "name": "assign_number",
+      "title": "Store a numeric value into a variable",
+      "description": "Assign the current numeric value (integer or real) to the\nvariable whose address is on the stack, in the variable's own type.\n",
       "fall_through": true
     }
   ],
@@ -9835,9 +9862,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 34216,
@@ -9910,9 +9937,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 34231,
@@ -14144,9 +14171,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 34922,
@@ -20084,11 +20111,12 @@
       "labels": [
         "stmt_let"
       ],
+      "comment_inline": "Parse the variable being assigned",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 35815,
@@ -20130,6 +20158,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the destination address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -20143,11 +20172,12 @@
         19,
         152
       ],
+      "comment_inline": "Expect \"=\" and evaluate the right-hand side",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9813",
+      "operand": "eval_after_eq",
       "target": 38931,
-      "target_label": "c9813"
+      "target_label": "eval_after_eq"
     },
     {
       "addr": 35825,
@@ -20167,11 +20197,12 @@
         208,
         25
       ],
+      "comment_inline": "A string variable needs a string value",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 35829,
@@ -20180,11 +20211,12 @@
         30,
         140
       ],
+      "comment_inline": "Store the string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8c1e",
+      "operand": "assign_string",
       "target": 35870,
-      "target_label": "sub_c8c1e"
+      "target_label": "assign_string"
     },
     {
       "addr": 35832,
@@ -20230,9 +20262,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9813",
+      "operand": "eval_after_eq",
       "target": 38931,
-      "target_label": "c9813"
+      "target_label": "eval_after_eq"
     },
     {
       "addr": 35841,
@@ -20252,11 +20284,12 @@
         240,
         9
       ],
+      "comment_inline": "A numeric variable needs a numeric value",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 35845,
@@ -20265,11 +20298,12 @@
         180,
         180
       ],
+      "comment_inline": "Store the number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 35848,
@@ -20312,7 +20346,7 @@
         0
       ],
       "labels": [
-        "c8c0e"
+        "err_type_mismatch"
       ],
       "xref_summaries": [
         "&8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96"
@@ -20388,7 +20422,7 @@
         189
       ],
       "labels": [
-        "sub_c8c1e"
+        "assign_string"
       ],
       "xref_summaries": [
         "&8c1e referenced 3 times by &8bf5, &ba13, &bb3d"
@@ -20432,6 +20466,7 @@
         201,
         128
       ],
+      "comment_inline": "An absolute $-string address?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -20476,6 +20511,7 @@
         197,
         54
       ],
+      "comment_inline": "Does the new string fit the existing allocation?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -20500,6 +20536,7 @@
         165,
         2
       ],
+      "comment_inline": "Otherwise allocate space from the heap",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -27839,9 +27876,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 37092,
@@ -28187,9 +28224,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 37153,
@@ -31192,9 +31229,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 37626,
@@ -31505,9 +31542,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 37675,
@@ -31615,9 +31652,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 37697,
@@ -35318,7 +35355,7 @@
         149
       ],
       "labels": [
-        "sub_c9582"
+        "parse_lvalue"
       ],
       "xref_summaries": [
         "&9582 referenced 9 times by &85a5, &8be4, &90e1, &9328, &b256, &b7c4, &b9e4, &ba7f, &bb1f"
@@ -39579,7 +39616,7 @@
         27
       ],
       "labels": [
-        "c9813"
+        "eval_after_eq"
       ],
       "xref_summaries": [
         "&9813 referenced 4 times by &8bee, &8bfe, &981b, &bf34"
@@ -39638,9 +39675,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9813",
+      "operand": "eval_after_eq",
       "target": 38931,
-      "target_label": "c9813"
+      "target_label": "eval_after_eq"
     },
     {
       "addr": 38941,
@@ -40779,9 +40816,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 39106,
@@ -43755,9 +43792,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 39581,
@@ -46917,9 +46954,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 40075,
@@ -47947,9 +47984,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 40252,
@@ -70865,9 +70902,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 44009,
@@ -71956,9 +71993,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 44190,
@@ -73226,9 +73263,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 44394,
@@ -75517,9 +75554,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 44753,
@@ -77700,9 +77737,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 45110,
@@ -78559,9 +78596,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 45250,
@@ -81127,9 +81164,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 45657,
@@ -84727,9 +84764,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 46257,
@@ -84762,7 +84799,7 @@
         190
       ],
       "labels": [
-        "sub_cb4b4"
+        "assign_number"
       ],
       "xref_summaries": [
         "&b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6"
@@ -89534,9 +89571,9 @@
       "comment_inline": "Parse the control variable (numvar =)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 47047,
@@ -92407,9 +92444,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 47559,
@@ -92611,9 +92648,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 47591,
@@ -92891,9 +92928,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8c1e",
+      "operand": "assign_string",
       "target": 35870,
-      "target_label": "sub_c8c1e"
+      "target_label": "assign_string"
     },
     {
       "addr": 47638,
@@ -93134,9 +93171,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 47676,
@@ -93579,9 +93616,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 47746,
@@ -94118,9 +94155,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b4",
+      "operand": "assign_number",
       "target": 46260,
-      "target_label": "sub_cb4b4"
+      "target_label": "assign_number"
     },
     {
       "addr": 47833,
@@ -94529,9 +94566,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9582",
+      "operand": "parse_lvalue",
       "target": 38274,
-      "target_label": "sub_c9582"
+      "target_label": "parse_lvalue"
     },
     {
       "addr": 47906,
@@ -94678,9 +94715,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8c1e",
+      "operand": "assign_string",
       "target": 35870,
-      "target_label": "sub_c8c1e"
+      "target_label": "assign_string"
     },
     {
       "addr": 47936,
@@ -100631,9 +100668,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 48850,
@@ -101202,9 +101239,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9813",
+      "operand": "eval_after_eq",
       "target": 38931,
-      "target_label": "c9813"
+      "target_label": "eval_after_eq"
     },
     {
       "addr": 48951,
@@ -101742,9 +101779,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8c0e",
+      "operand": "err_type_mismatch",
       "target": 35854,
-      "target_label": "c8c0e"
+      "target_label": "err_type_mismatch"
     },
     {
       "addr": 49049,

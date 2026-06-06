@@ -1311,6 +1311,53 @@ d.comment(0xbbc8, 'Condition true: pop the frame and continue',
           align=Align.INLINE)
 d.comment(0xbbcd, 'Reload the saved loop-start position', align=Align.INLINE)
 
+# --- LET assignment --------------------------------------------------
+d.subroutine(
+    0x9582, 'parse_lvalue',
+    title='Parse an assignment target variable',
+    description="""Parse the variable reference being assigned to and return a
+pointer to its storage plus its type, creating the variable if it
+does not yet exist. Shared by LET and FOR.
+""",
+)
+d.subroutine(
+    0x9813, 'eval_after_eq',
+    title='Expect "=" then evaluate the right-hand side',
+    description="""Skip spaces, require an "=" sign, then evaluate the expression
+that follows, leaving the value in the accumulator with its type in
+zp_var_type.
+""",
+)
+d.subroutine(
+    0x8c1e, 'assign_string',
+    title='Store a string value into a variable',
+    description="""Assign the string in the string buffer to the string variable
+whose descriptor address is on the stack. Reuses the existing
+allocation if the new string fits, otherwise grabs fresh space from
+the heap.
+""",
+)
+d.subroutine(
+    0xb4b4, 'assign_number',
+    title='Store a numeric value into a variable',
+    description="""Assign the current numeric value (integer or real) to the
+variable whose address is on the stack, in the variable's own type.
+""",
+)
+d.label(0x8c0e, 'err_type_mismatch')   # BRK error block: "Type mismatch"
+d.comment(0x8be4, 'Parse the variable being assigned', align=Align.INLINE)
+d.comment(0x8beb, 'Stack the destination address', align=Align.INLINE)
+d.comment(0x8bee, 'Expect "=" and evaluate the right-hand side',
+          align=Align.INLINE)
+d.comment(0x8bf3, 'A string variable needs a string value', align=Align.INLINE)
+d.comment(0x8bf5, 'Store the string', align=Align.INLINE)
+d.comment(0x8c03, 'A numeric variable needs a numeric value', align=Align.INLINE)
+d.comment(0x8c05, 'Store the number', align=Align.INLINE)
+d.comment(0x8c23, 'An absolute $-string address?', align=Align.INLINE)
+d.comment(0x8c2b, 'Does the new string fit the existing allocation?',
+          align=Align.INLINE)
+d.comment(0x8c2f, 'Otherwise allocate space from the heap', align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(
