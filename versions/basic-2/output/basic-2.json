@@ -442,7 +442,8 @@
     },
     {
       "addr": 37577,
-      "name": "stmt_time"
+      "name": "stmt_time",
+      "fall_through": true
     },
     {
       "addr": 37487,
@@ -676,6 +677,85 @@
       "name": "inc_ptr_general",
       "title": "Increment the general 16-bit pointer",
       "description": "Increment the little-endian pointer held in zp_general\n(&37/&38) by one, carrying into the high byte.\n"
+    },
+    {
+      "addr": 38999,
+      "name": "check_end_of_statement",
+      "title": "Check for end of statement",
+      "description": "Skip spaces and require the statement to end here: a colon, an\nend-of-line (&0D), or ELSE. Anything else raises \"Syntax error\".\nAlso polls for Escape.\n"
+    },
+    {
+      "addr": 39709,
+      "name": "eval_expr",
+      "title": "Evaluate an expression",
+      "description": "The interpreter's main expression entry point. Copies the\nprimary text pointer (PtrA: zp_text_ptr / zp_text_ptr_off) to the\nsecondary pointer (PtrB: zp_text_ptr2 / &1B) and evaluates the\nexpression there.\n",
+      "on_exit": {
+        "zp_var_type (&27)": "result type (integer / real / string)",
+        "zp_iwa / zp_fwa": "the result value",
+        "&1B": "advanced past the expression"
+      }
+    },
+    {
+      "addr": 34849,
+      "name": "eval_expr_to_integer",
+      "title": "Evaluate an integer expression",
+      "description": "Evaluate the expression at the text pointer (eval_expr) and\ncoerce the result to an integer (coerce_to_integer), then copy the\nsecondary text offset back to the primary pointer. Used wherever a\nstatement needs an integer argument.\n",
+      "on_exit": {
+        "zp_iwa (&2A)": "4-byte integer result"
+      }
+    },
+    {
+      "addr": 44524,
+      "name": "eval_factor",
+      "title": "Evaluate a factor (evaluator level 1)",
+      "description": "Evaluate the highest-precedence level of an expression at PtrB:\nunary minus, unary plus and NOT; parenthesised sub-expressions;\nthe ?, !, $ and | indirection operators; string literals; and the\nbuilt-in functions.\n"
+    },
+    {
+      "addr": 37616,
+      "name": "coerce_to_integer",
+      "title": "Coerce the current value to an integer",
+      "description": "Check the type of the last evaluated value (in A from\nzp_var_type): a string raises \"Type mismatch\", an integer returns\nunchanged, and a real is converted to a 4-byte integer in the\ninteger accumulator.\n",
+      "on_entry": {
+        "A": "value type from zp_var_type (&27)"
+      }
+    },
+    {
+      "addr": 41434,
+      "name": "test_fwa_zero",
+      "title": "Test whether the FP accumulator is zero",
+      "description": "OR the mantissa bytes of the floating-point accumulator\n(&31-&35) together; returns with Z set if the value is zero.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 41909,
+      "name": "unpack_fwa_from_ptr",
+      "title": "Unpack a floating-point value into the accumulator",
+      "description": "Copy the five mantissa/exponent bytes addressed by (&4B) into\nthe floating-point accumulator (&30-&34).\n"
+    },
+    {
+      "addr": 48532,
+      "name": "stack_integer",
+      "title": "Push the integer accumulator onto the BASIC stack",
+      "description": "Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and\ncopy the integer accumulator (zp_iwa) onto it. Errors if the stack\nwould collide with the heap.\n"
+    },
+    {
+      "addr": 48465,
+      "name": "stack_real",
+      "title": "Push the floating-point accumulator onto the BASIC stack",
+      "description": "Reserve five bytes on the BASIC stack and copy the packed\nfloating-point accumulator onto it.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 48562,
+      "name": "stack_string",
+      "title": "Push the current string onto the BASIC stack",
+      "description": "Copy the string from the string buffer (length zp_strbuf_len,\n&36; text at &0600) onto the BASIC stack, length last.\n"
+    },
+    {
+      "addr": 48618,
+      "name": "unstack_integer",
+      "title": "Pop an integer from the BASIC stack",
+      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n"
     }
   ],
   "banners": [
@@ -9019,9 +9099,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 34223,
@@ -10301,9 +10381,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34426,
@@ -10774,9 +10854,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34504,
@@ -10944,9 +11024,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34529,
@@ -11265,9 +11345,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34586,
@@ -11601,9 +11681,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34643,
@@ -11885,9 +11965,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34693,
@@ -12010,9 +12090,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34714,
@@ -12100,9 +12180,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34728,
@@ -12331,9 +12411,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34769,
@@ -12526,9 +12606,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34803,
@@ -12735,9 +12815,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34840,
@@ -12794,7 +12874,7 @@
         155
       ],
       "labels": [
-        "sub_c8821"
+        "eval_expr_to_integer"
       ],
       "xref_summaries": [
         "&8821 referenced 22 times by &8677, &86c5, &86de, &8717, &8750, &8782, &8797, &87a5, &87ce, &87f0, &8815, &885a, &9188, &92a2, &937a, &9391, &939d, &93f1, &9440, &b44c, &b472, &b4a0"
@@ -12825,9 +12905,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 34852,
@@ -12838,9 +12918,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 34855,
@@ -13208,9 +13288,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 34909,
@@ -13333,9 +13413,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 34928,
@@ -17325,9 +17405,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 35513,
@@ -17424,9 +17504,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 35531,
@@ -17465,9 +17545,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 35539,
@@ -17520,9 +17600,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 35549,
@@ -18250,9 +18330,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 35670,
@@ -18715,9 +18795,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 35739,
@@ -19252,9 +19332,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 35822,
@@ -19337,9 +19417,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 35838,
@@ -19520,9 +19600,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 35873,
@@ -22940,9 +23020,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 36401,
@@ -23824,9 +23904,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 36544,
@@ -23862,9 +23942,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 36551,
@@ -23936,9 +24016,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 36565,
@@ -23962,9 +24042,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 36571,
@@ -24264,9 +24344,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 36628,
@@ -24468,9 +24548,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 36665,
@@ -24541,9 +24621,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 36680,
@@ -24602,9 +24682,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 36691,
@@ -24782,9 +24862,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 36724,
@@ -24947,9 +25027,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 36754,
@@ -26695,9 +26775,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 37045,
@@ -26718,9 +26798,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 37048,
@@ -26767,9 +26847,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 37059,
@@ -26996,9 +27076,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 37099,
@@ -27937,9 +28017,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 37256,
@@ -27950,9 +28030,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37259,
@@ -29592,9 +29672,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37520,
@@ -29702,9 +29782,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37541,
@@ -29724,9 +29804,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37544,
@@ -29859,9 +29939,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37564,
@@ -29915,9 +29995,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37573,
@@ -30089,9 +30169,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 37603,
@@ -30120,9 +30200,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 37606,
@@ -30224,7 +30304,7 @@
         5
       ],
       "labels": [
-        "c92f0"
+        "coerce_to_integer"
       ],
       "xref_summaries": [
         "&92f0 referenced 21 times by &8824, &8e2e, &92e0, &9688, &974a, &976f, &99bf, &99ce, &9b3e, &9b59, &9b6c, &9b7b, &9b85, &ab4d, &ad0c, &af0f, &afdd, &afff, &b05e, &b921, &b9a2"
@@ -30344,9 +30424,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 37629,
@@ -30687,9 +30767,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 37687,
@@ -30940,9 +31020,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37733,
@@ -31105,9 +31185,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37757,
@@ -31221,9 +31301,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37780,
@@ -31234,9 +31314,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37783,
@@ -31281,9 +31361,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37792,
@@ -31294,9 +31374,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 37795,
@@ -31743,9 +31823,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 37870,
@@ -31772,9 +31852,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37876,
@@ -31853,9 +31933,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 37891,
@@ -32193,9 +32273,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 37955,
@@ -36207,9 +36287,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 38539,
@@ -36966,9 +37046,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 38658,
@@ -37359,9 +37439,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 38727,
@@ -37385,9 +37465,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 38733,
@@ -37600,9 +37680,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 38770,
@@ -39090,7 +39170,7 @@
         10
       ],
       "labels": [
-        "c9857"
+        "check_end_of_statement"
       ],
       "xref_summaries": [
         "&9857 referenced 25 times by &8ab6, &8ac8, &8ad0, &8ada, &8b98, &8ebd, &8ec4, &8f45, &8f8f, &928d, &92a5, &92b9, &92c2, &9362, &9394, &93a0, &9880, &b5e3, &b88b, &b8b6, &b8cf, &b8e4, &bb07, &bd11, &bfe4"
@@ -39454,9 +39534,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 39043,
@@ -39908,9 +39988,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 39109,
@@ -41505,9 +41585,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39362,
@@ -41584,9 +41664,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39377,
@@ -42297,9 +42377,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 39486,
@@ -42310,9 +42390,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 39489,
@@ -42362,9 +42442,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 39501,
@@ -42397,9 +42477,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 39507,
@@ -42935,9 +43015,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 39589,
@@ -43365,9 +43445,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 39658,
@@ -43711,7 +43791,7 @@
         11
       ],
       "labels": [
-        "sub_c9b1d"
+        "eval_expr"
       ],
       "xref_summaries": [
         "&9b1d referenced 11 times by &8821, &886d, &8b53, &8ed2, &93eb, &98c2, &b58c, &b91e, &b99f, &bbb1, &bed2"
@@ -43964,9 +44044,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39745,
@@ -44128,9 +44208,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39772,
@@ -44248,9 +44328,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39791,
@@ -44261,9 +44341,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 39794,
@@ -44352,9 +44432,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39806,
@@ -44365,9 +44445,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 39809,
@@ -44399,9 +44479,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 39816,
@@ -45276,9 +45356,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 39960,
@@ -46038,9 +46118,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40078,
@@ -46222,9 +46302,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 40108,
@@ -46235,9 +46315,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40111,
@@ -46556,9 +46636,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40164,
@@ -46708,9 +46788,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 40191,
@@ -46721,9 +46801,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40194,
@@ -46819,9 +46899,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 40212,
@@ -46832,9 +46912,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40215,
@@ -46904,9 +46984,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40227,
@@ -47432,9 +47512,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 40315,
@@ -47992,9 +48072,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 40401,
@@ -48166,9 +48246,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40428,
@@ -48463,9 +48543,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 40480,
@@ -48488,9 +48568,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 40483,
@@ -48662,9 +48742,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 40508,
@@ -48760,9 +48840,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 40528,
@@ -48890,9 +48970,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 40551,
@@ -48963,9 +49043,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 40565,
@@ -49957,9 +50037,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 40722,
@@ -52270,9 +52350,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 41080,
@@ -53060,9 +53140,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 41203,
@@ -54602,7 +54682,7 @@
         49
       ],
       "labels": [
-        "ca1da"
+        "test_fwa_zero"
       ],
       "xref_summaries": [
         "&a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e"
@@ -57753,7 +57833,7 @@
         4
       ],
       "labels": [
-        "sub_ca3b5"
+        "unpack_fwa_from_ptr"
       ],
       "xref_summaries": [
         "&a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea"
@@ -58293,9 +58373,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 41992,
@@ -59181,9 +59261,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42129,
@@ -60010,9 +60090,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42254,
@@ -61658,9 +61738,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42505,
@@ -62772,9 +62852,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42672,
@@ -62810,9 +62890,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 42680,
@@ -63080,9 +63160,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42730,
@@ -64417,9 +64497,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 42938,
@@ -64906,9 +64986,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 43012,
@@ -65742,9 +65822,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 43189,
@@ -65986,9 +66066,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 43232,
@@ -66085,9 +66165,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 43251,
@@ -66172,9 +66252,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 43268,
@@ -66238,9 +66318,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 43277,
@@ -67608,9 +67688,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 43561,
@@ -68390,9 +68470,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 43724,
@@ -68959,9 +69039,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 43847,
@@ -68998,9 +69078,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 43856,
@@ -69051,9 +69131,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 43865,
@@ -69282,9 +69362,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 43906,
@@ -69334,9 +69414,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 43915,
@@ -69933,9 +70013,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44012,
@@ -70005,9 +70085,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 44026,
@@ -70360,9 +70440,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44082,
@@ -70782,9 +70862,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44155,
@@ -71024,9 +71104,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44193,
@@ -71492,9 +71572,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 44272,
@@ -71639,9 +71719,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 44297,
@@ -71665,9 +71745,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 44303,
@@ -72294,9 +72374,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44397,
@@ -72388,9 +72468,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 44410,
@@ -72438,9 +72518,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca1da",
+      "operand": "test_fwa_zero",
       "target": 41434,
-      "target_label": "ca1da"
+      "target_label": "test_fwa_zero"
     },
     {
       "addr": 44417,
@@ -73196,7 +73276,7 @@
         27
       ],
       "labels": [
-        "cadec"
+        "eval_factor"
       ],
       "xref_summaries": [
         "&adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83"
@@ -73264,9 +73344,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44534,
@@ -74585,9 +74665,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 44756,
@@ -74992,9 +75072,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 44818,
@@ -75133,9 +75213,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 44842,
@@ -76187,9 +76267,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 45018,
@@ -76213,9 +76293,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 45024,
@@ -76376,9 +76456,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 45052,
@@ -76402,9 +76482,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 45058,
@@ -76835,9 +76915,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 45125,
@@ -76984,9 +77064,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 45153,
@@ -77435,9 +77515,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 45222,
@@ -77635,9 +77715,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 45256,
@@ -77686,9 +77766,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 45267,
@@ -80565,9 +80645,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 45723,
@@ -80865,9 +80945,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 45773,
@@ -81046,9 +81126,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3b5",
+      "operand": "unpack_fwa_from_ptr",
       "target": 41909,
-      "target_label": "sub_ca3b5"
+      "target_label": "unpack_fwa_from_ptr"
     },
     {
       "addr": 45805,
@@ -81081,9 +81161,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 45811,
@@ -81429,9 +81509,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 45868,
@@ -83175,9 +83255,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 46159,
@@ -83408,9 +83488,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 46197,
@@ -83690,9 +83770,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8821",
+      "operand": "eval_expr_to_integer",
       "target": 34849,
-      "target_label": "sub_c8821"
+      "target_label": "eval_expr_to_integer"
     },
     {
       "addr": 46243,
@@ -85313,9 +85393,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 46479,
@@ -85502,9 +85582,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 46515,
@@ -85614,9 +85694,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 46536,
@@ -85627,9 +85707,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 46539,
@@ -85800,9 +85880,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 46566,
@@ -85826,9 +85906,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdea",
+      "operand": "unstack_integer",
       "target": 48618,
-      "target_label": "sub_cbdea"
+      "target_label": "unstack_integer"
     },
     {
       "addr": 46572,
@@ -88610,9 +88690,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 47054,
@@ -89633,9 +89713,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 47246,
@@ -89843,9 +89923,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 47289,
@@ -89971,9 +90051,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 47314,
@@ -90120,9 +90200,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 47335,
@@ -90431,9 +90511,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 47393,
@@ -90444,9 +90524,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 47396,
@@ -91246,9 +91326,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 47522,
@@ -91259,9 +91339,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c92f0",
+      "operand": "coerce_to_integer",
       "target": 37616,
-      "target_label": "c92f0"
+      "target_label": "coerce_to_integer"
     },
     {
       "addr": 47525,
@@ -91711,9 +91791,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 47604,
@@ -93115,9 +93195,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 47827,
@@ -93411,9 +93491,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 47882,
@@ -93602,9 +93682,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 47916,
@@ -93663,9 +93743,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbd94",
+      "operand": "stack_integer",
       "target": 48532,
-      "target_label": "cbd94"
+      "target_label": "stack_integer"
     },
     {
       "addr": 47928,
@@ -94428,9 +94508,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 48052,
@@ -96599,9 +96679,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 48404,
@@ -97007,7 +97087,7 @@
         4
       ],
       "labels": [
-        "cbd51"
+        "stack_real"
       ],
       "xref_summaries": [
         "&bd51 referenced 12 times by &9a3e, &9a50, &9c8b, &9cac, &9ce1, &9cff, &9d14, &9d20, &9de9, &9e39, &af27, &bd92"
@@ -97434,9 +97514,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbdb2",
+      "operand": "stack_string",
       "target": 48562,
-      "target_label": "cbdb2"
+      "target_label": "stack_string"
     },
     {
       "addr": 48530,
@@ -97446,9 +97526,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cbd51",
+      "operand": "stack_real",
       "target": 48465,
-      "target_label": "cbd51"
+      "target_label": "stack_real"
     },
     {
       "addr": 48532,
@@ -97457,7 +97537,7 @@
         4
       ],
       "labels": [
-        "cbd94"
+        "stack_integer"
       ],
       "xref_summaries": [
         "&bd94 referenced 29 times by &85ac, &8beb, &8bfb, &8ed8, &8f36, &8f71, &90b5, &90e8, &9185, &9334, &9400, &96ff, &9744, &9aa2, &9b6f, &9b7e, &9dce, &9e1d, &ab44, &b0c5, &b298, &b329, &b5b0, &b5c8, &b7cb, &b9f1, &bad0, &bb29, &bb35"
@@ -97674,7 +97754,7 @@
         24
       ],
       "labels": [
-        "cbdb2"
+        "stack_string"
       ],
       "xref_summaries": [
         "&bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90"
@@ -98087,7 +98167,7 @@
         3
       ],
       "labels": [
-        "sub_cbdea"
+        "unstack_integer"
       ],
       "xref_summaries": [
         "&bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9"
@@ -99663,9 +99743,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b1d",
+      "operand": "eval_expr",
       "target": 39709,
-      "target_label": "sub_c9b1d"
+      "target_label": "eval_expr"
     },
     {
       "addr": 48853,
@@ -100650,9 +100730,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cadec",
+      "operand": "eval_factor",
       "target": 44524,
-      "target_label": "cadec"
+      "target_label": "eval_factor"
     },
     {
       "addr": 49030,
@@ -101202,9 +101282,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9857",
+      "operand": "check_end_of_statement",
       "target": 38999,
-      "target_label": "c9857"
+      "target_label": "check_end_of_statement"
     },
     {
       "addr": 49127,

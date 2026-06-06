@@ -302,6 +302,109 @@ d.subroutine(
 d.comment(0x8a9d, 'Loop while the character is a space', align=Align.INLINE)
 d.comment(0x8a92, 'Loop while the character is a space', align=Align.INLINE)
 
+# ----------------------------------------------------------------------
+# Expression evaluator and numeric-stack primitives. The interpreter
+# keeps the current value in the integer accumulator (zp_iwa, &2A-&2D)
+# or the floating-point accumulator (zp_fwa, &2E-&35), with its type in
+# zp_var_type (&27), and spills values onto the BASIC stack (grows down
+# from HIMEM, top in zp_stack_ptr &04). Naming these unlocks the maths
+# functions, PRINT, and the assignment paths.
+# ----------------------------------------------------------------------
+d.subroutine(
+    0x9857, 'check_end_of_statement',
+    title='Check for end of statement',
+    description="""Skip spaces and require the statement to end here: a colon, an
+end-of-line (&0D), or ELSE. Anything else raises "Syntax error".
+Also polls for Escape.
+""",
+)
+d.subroutine(
+    0x9b1d, 'eval_expr',
+    title='Evaluate an expression',
+    description="""The interpreter's main expression entry point. Copies the
+primary text pointer (PtrA: zp_text_ptr / zp_text_ptr_off) to the
+secondary pointer (PtrB: zp_text_ptr2 / &1B) and evaluates the
+expression there.
+""",
+    on_exit={
+        'zp_var_type (&27)': 'result type (integer / real / string)',
+        'zp_iwa / zp_fwa': 'the result value',
+        '&1B': 'advanced past the expression',
+    },
+)
+d.subroutine(
+    0x8821, 'eval_expr_to_integer',
+    title='Evaluate an integer expression',
+    description="""Evaluate the expression at the text pointer (eval_expr) and
+coerce the result to an integer (coerce_to_integer), then copy the
+secondary text offset back to the primary pointer. Used wherever a
+statement needs an integer argument.
+""",
+    on_exit={'zp_iwa (&2A)': '4-byte integer result'},
+)
+d.subroutine(
+    0xadec, 'eval_factor',
+    title='Evaluate a factor (evaluator level 1)',
+    description="""Evaluate the highest-precedence level of an expression at PtrB:
+unary minus, unary plus and NOT; parenthesised sub-expressions;
+the ?, !, $ and | indirection operators; string literals; and the
+built-in functions.
+""",
+)
+d.subroutine(
+    0x92f0, 'coerce_to_integer',
+    title='Coerce the current value to an integer',
+    description="""Check the type of the last evaluated value (in A from
+zp_var_type): a string raises "Type mismatch", an integer returns
+unchanged, and a real is converted to a 4-byte integer in the
+integer accumulator.
+""",
+    on_entry={'A': 'value type from zp_var_type (&27)'},
+)
+d.subroutine(
+    0xa1da, 'test_fwa_zero',
+    title='Test whether the FP accumulator is zero',
+    description="""OR the mantissa bytes of the floating-point accumulator
+(&31-&35) together; returns with Z set if the value is zero.
+""",
+)
+d.subroutine(
+    0xa3b5, 'unpack_fwa_from_ptr',
+    title='Unpack a floating-point value into the accumulator',
+    description="""Copy the five mantissa/exponent bytes addressed by (&4B) into
+the floating-point accumulator (&30-&34).
+""",
+)
+d.subroutine(
+    0xbd94, 'stack_integer',
+    title='Push the integer accumulator onto the BASIC stack',
+    description="""Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and
+copy the integer accumulator (zp_iwa) onto it. Errors if the stack
+would collide with the heap.
+""",
+)
+d.subroutine(
+    0xbd51, 'stack_real',
+    title='Push the floating-point accumulator onto the BASIC stack',
+    description="""Reserve five bytes on the BASIC stack and copy the packed
+floating-point accumulator onto it.
+""",
+)
+d.subroutine(
+    0xbdb2, 'stack_string',
+    title='Push the current string onto the BASIC stack',
+    description="""Copy the string from the string buffer (length zp_strbuf_len,
+&36; text at &0600) onto the BASIC stack, length last.
+""",
+)
+d.subroutine(
+    0xbdea, 'unstack_integer',
+    title='Pop an integer from the BASIC stack',
+    description="""Copy the four-byte integer on top of the BASIC stack into the
+integer accumulator (zp_iwa) and drop it.
+""",
+)
+
 ir = d.disassemble()
 output = str(
     ir.render(

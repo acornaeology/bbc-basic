@@ -1101,7 +1101,7 @@ l848a = sub_c847b+15
     jsr sub_c9582                                                     ; 85a5: 20 82 95     ..   
     beq c8604                                                         ; 85a8: f0 5a       .Z    
     bcs c8604                                                         ; 85aa: b0 58       .X    
-    jsr cbd94                                                         ; 85ac: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 85ac: 20 94 bd     ..   
     jsr sub_cae3a                                                     ; 85af: 20 3a ae     :.   
     sta zp_var_type                                                   ; 85b2: 85 27       .'    
     jsr sub_cb4b4                                                     ; 85b4: 20 b4 b4     ..   
@@ -1234,7 +1234,7 @@ l848a = sub_c847b+15
 .c8673
     cpx #&22                                                          ; 8673: e0 22       ."    
     bcs c86b7                                                         ; 8675: b0 40       .@    
-    jsr sub_c8821                                                     ; 8677: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8677: 20 21 88     !.   
     clc                                                               ; 867a: 18          .     
     lda zp_iwa                                                        ; 867b: a5 2a       .*    
     sbc resint_p                                                      ; 867d: ed 40 04    .@.   
@@ -1286,7 +1286,7 @@ l848a = sub_c847b+15
     jsr sub_c882f                                                     ; 86c2: 20 2f 88     /.   
 ; &86c5 referenced 2 times by &877d, &87c9
 .c86c5
-    jsr sub_c8821                                                     ; 86c5: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 86c5: 20 21 88     !.   
 ; &86c8 referenced 2 times by &86f9, &870b
 .c86c8
     lda l002b                                                         ; 86c8: a5 2b       .+    
@@ -1306,7 +1306,7 @@ l848a = sub_c847b+15
 .c86da
     cmp #&28 ; '('                                                    ; 86da: c9 28       .(    
     bne c8715                                                         ; 86dc: d0 37       .7    
-    jsr sub_c8821                                                     ; 86de: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.   
     jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..   
     cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)    
     bne c86fb                                                         ; 86e6: d0 13       ..    
@@ -1337,7 +1337,7 @@ l848a = sub_c847b+15
 ; &8715 referenced 1 time by &86dc
 .c8715
     dec zp_text_ptr_off                                               ; 8715: c6 0a       ..    
-    jsr sub_c8821                                                     ; 8717: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.   
     jsr skip_spaces                                                   ; 871a: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 871d: c9 2c       .,    
     bne c8735                                                         ; 871f: d0 14       ..    
@@ -1371,7 +1371,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 874e: c6 0a       ..    
 ; &8750 referenced 1 time by &8745
 .c8750
-    jsr sub_c8821                                                     ; 8750: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.   
     jsr skip_spaces                                                   ; 8753: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8756: c9 2c       .,    
     bne c8738                                                         ; 8758: d0 de       ..    
@@ -1400,7 +1400,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 8780: c6 0a       ..    
 ; &8782 referenced 1 time by &8774
 .c8782
-    jsr sub_c8821                                                     ; 8782: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8782: 20 21 88     !.   
     jmp c8735                                                         ; 8785: 4c 35 87    L5.   
 ; &8788 referenced 1 time by &8770
 .c8788
@@ -1413,7 +1413,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 8795: c6 0a       ..    
 ; &8797 referenced 1 time by &878a
 .c8797
-    jsr sub_c8821                                                     ; 8797: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8797: 20 21 88     !.   
 ; &879a referenced 2 times by &8732, &87ad
 .c879a
     ldy #3                                                            ; 879a: a0 03       ..    
@@ -1424,7 +1424,7 @@ l848a = sub_c847b+15
 .c879f
     jsr sub_c882c                                                     ; 879f: 20 2c 88     ,.   
     jsr sub_c882c                                                     ; 87a2: 20 2c 88     ,.   
-    jsr sub_c8821                                                     ; 87a5: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.   
     jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..   
     cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)    
     beq c879a                                                         ; 87ad: f0 eb       ..    
@@ -1447,7 +1447,7 @@ l848a = sub_c847b+15
 ; &87cc referenced 1 time by &87c6
 .c87cc
     dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..    
-    jsr sub_c8821                                                     ; 87ce: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 87ce: 20 21 88     !.   
     pla                                                               ; 87d1: 68          h     
     sta zp_general                                                    ; 87d2: 85 37       .7    
     jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..   
@@ -1467,7 +1467,7 @@ l848a = sub_c847b+15
     jmp c870d                                                         ; 87ed: 4c 0d 87    L..   
 ; &87f0 referenced 1 time by &87bf
 .c87f0
-    jsr sub_c8821                                                     ; 87f0: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 87f0: 20 21 88     !.   
     pla                                                               ; 87f3: 68          h     
     sta zp_general                                                    ; 87f4: 85 37       .7    
     jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..   
@@ -1487,15 +1487,24 @@ l848a = sub_c847b+15
 ; &8813 referenced 1 time by &87b4
 .c8813
     bne c883a                                                         ; 8813: d0 25       .%    
-    jsr sub_c8821                                                     ; 8815: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8815: 20 21 88     !.   
     lda zp_iwa                                                        ; 8818: a5 2a       .*    
     sta zp_opt_flag                                                   ; 881a: 85 28       .(    
     ldy #0                                                            ; 881c: a0 00       ..    
     jmp c862b                                                         ; 881e: 4c 2b 86    L+.   
+; ***************************************************************************************
+; Evaluate an integer expression
+;
+; Evaluate the expression at the text pointer (eval_expr) and coerce the result to an
+; integer (coerce_to_integer), then copy the secondary text offset back to the primary
+; pointer. Used wherever a statement needs an integer argument.
+;
+; On Exit:
+;     ZP_IWA (&2A): 4-byte integer result
 ; &8821 referenced 22 times by &8677, &86c5, &86de, &8717, &8750, &8782, &8797, &87a5, &87ce, &87f0, &8815, &885a, &9188, &92a2, &937a, &9391, &939d, &93f1, &9440, &b44c, &b472, &b4a0
-.sub_c8821
-    jsr sub_c9b1d                                                     ; 8821: 20 1d 9b     ..   
-    jsr c92f0                                                         ; 8824: 20 f0 92     ..   
+.eval_expr_to_integer
+    jsr eval_expr                                                     ; 8821: 20 1d 9b     ..   
+    jsr coerce_to_integer                                             ; 8824: 20 f0 92     ..   
 ; &8827 referenced 3 times by &85b7, &8875, &9121
 .sub_c8827
     ldy zp_text_ptr2_off                                              ; 8827: a4 1b       ..    
@@ -1535,7 +1544,7 @@ l848a = sub_c847b+15
 .c8858
     txa                                                               ; 8858: 8a          .     
     pha                                                               ; 8859: 48          H     
-    jsr sub_c8821                                                     ; 885a: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 885a: 20 21 88     !.   
     ldx #&29 ; ')'                                                    ; 885d: a2 29       .)    
     jsr sub_cbe44                                                     ; 885f: 20 44 be     D.   
     pla                                                               ; 8862: 68          h     
@@ -1550,7 +1559,7 @@ l848a = sub_c847b+15
 .c886a
     lda zp_opt_flag                                                   ; 886a: a5 28       .(    
     pha                                                               ; 886c: 48          H     
-    jsr sub_c9b1d                                                     ; 886d: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; 886d: 20 1d 9b     ..   
     bne loop_c8867                                                    ; 8870: d0 f5       ..    
     pla                                                               ; 8872: 68          h     
     sta zp_opt_flag                                                   ; 8873: 85 28       .(    
@@ -2014,7 +2023,7 @@ l848a = sub_c847b+15
     bne c8aa2                                                         ; 8ab3: d0 ed       ..    
     rts                                                               ; 8ab5: 60          `     
 .stmt_old
-    jsr c9857                                                         ; 8ab6: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.   
     lda zp_page                                                       ; 8ab9: a5 18       ..    
     sta l0038                                                         ; 8abb: 85 38       .8    
     lda #0                                                            ; 8abd: a9 00       ..    
@@ -2023,17 +2032,17 @@ l848a = sub_c847b+15
     jsr sub_cbe6f                                                     ; 8ac3: 20 6f be     o.   
     bne c8af3                                                         ; 8ac6: d0 2b       .+    
 .stmt_end
-    jsr c9857                                                         ; 8ac8: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.   
     jsr sub_cbe6f                                                     ; 8acb: 20 6f be     o.   
     bne c8af6                                                         ; 8ace: d0 26       .&    
 .stmt_stop
-    jsr c9857                                                         ; 8ad0: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.   
     brk                                                               ; 8ad3: 00          .     
     equb &00                                                          ; 8ad4: 00          .     
     equs "STOP"                                                       ; 8ad5: 53 54 4f... STO...
     equb &00                                                          ; 8ad9: 00          .     
 .stmt_new
-    jsr c9857                                                         ; 8ada: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.   
 ; &8add referenced 1 time by &806e
 .immediate_loop
     lda #&0d                                                          ; 8add: a9 0d       ..    
@@ -2106,7 +2115,7 @@ l848a = sub_c847b+15
     lda l01ff                                                         ; 8b4c: ad ff 01    ...   
     cmp #&a4                                                          ; 8b4f: c9 a4       ..    
     bne c8b59                                                         ; 8b51: d0 06       ..    
-    jsr sub_c9b1d                                                     ; 8b53: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; 8b53: 20 1d 9b     ..   
     jmp c984c                                                         ; 8b56: 4c 4c 98    LL.   
 ; &8b59 referenced 2 times by &8b4a, &8b51
 .c8b59
@@ -2156,7 +2165,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 8b96: c6 0a       ..    
 ; &8b98 referenced 4 times by &8d7a, &9353, &b9cc, &ba41
 .c8b98
-    jsr c9857                                                         ; 8b98: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8b98: 20 57 98     W.   
 ; &8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6
 .c8b9b
     ldy #0                                                            ; 8b9b: a0 00       ..    
@@ -2207,7 +2216,7 @@ l848a = sub_c847b+15
 ; &8be9 referenced 1 time by &8bcc
 .c8be9
     bcc c8bfb                                                         ; 8be9: 90 10       ..    
-    jsr cbd94                                                         ; 8beb: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 8beb: 20 94 bd     ..   
     jsr c9813                                                         ; 8bee: 20 13 98     ..   
     lda zp_var_type                                                   ; 8bf1: a5 27       .'    
     bne c8c0e                                                         ; 8bf3: d0 19       ..    
@@ -2215,7 +2224,7 @@ l848a = sub_c847b+15
     jmp c8b9b                                                         ; 8bf8: 4c 9b 8b    L..   
 ; &8bfb referenced 1 time by &8be9
 .c8bfb
-    jsr cbd94                                                         ; 8bfb: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 8bfb: 20 94 bd     ..   
     jsr c9813                                                         ; 8bfe: 20 13 98     ..   
     lda zp_var_type                                                   ; 8c01: a5 27       .'    
     beq c8c0e                                                         ; 8c03: f0 09       ..    
@@ -2232,7 +2241,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; 8c1d: 00          .     
 ; &8c1e referenced 3 times by &8bf5, &ba13, &bb3d
 .sub_c8c1e
-    jsr sub_cbdea                                                     ; 8c1e: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..   
 ; &8c21 referenced 2 times by &b300, &bae0
 .sub_c8c21
     lda l002c                                                         ; 8c21: a5 2c       .,    
@@ -2592,7 +2601,7 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; 8e28: a5 2a       .*    
     pha                                                               ; 8e2a: 48          H     
     jsr cae56                                                         ; 8e2b: 20 56 ae     V.   
-    jsr c92f0                                                         ; 8e2e: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 8e2e: 20 f0 92     ..   
     lda #&1f                                                          ; 8e31: a9 1f       ..    
     jsr oswrch                                                        ; 8e33: 20 ee ff     ..   
     pla                                                               ; 8e36: 68          h     
@@ -2685,11 +2694,11 @@ l848a = sub_c847b+15
     bne c8e6a                                                         ; 8eb9: d0 af       ..    
     beq c8ea4                                                         ; 8ebb: f0 e7       ..    
 .stmt_clg
-    jsr c9857                                                         ; 8ebd: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.   
     lda #&10                                                          ; 8ec0: a9 10       ..    
     bne c8ecc                                                         ; 8ec2: d0 08       ..    
 .stmt_cls
-    jsr c9857                                                         ; 8ec4: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ec4: 20 57 98     W.   
     jsr cbc28                                                         ; 8ec7: 20 28 bc     (.   
     lda #&0c                                                          ; 8eca: a9 0c       ..    
 ; &8ecc referenced 1 time by &8ec2
@@ -2697,9 +2706,9 @@ l848a = sub_c847b+15
     jsr oswrch                                                        ; 8ecc: 20 ee ff     ..   
     jmp c8b9b                                                         ; 8ecf: 4c 9b 8b    L..   
 .stmt_call
-    jsr sub_c9b1d                                                     ; 8ed2: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..   
     jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..   
-    jsr cbd94                                                         ; 8ed8: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 8ed8: 20 94 bd     ..   
     ldy #0                                                            ; 8edb: a0 00       ..    
     sty string_work                                                   ; 8edd: 8c 00 06    ...   
 ; &8ee0 referenced 1 time by &8f09
@@ -2727,7 +2736,7 @@ l848a = sub_c847b+15
 .c8f0c
     dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..    
     jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.   
-    jsr sub_cbdea                                                     ; 8f11: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 8f11: 20 ea bd     ..   
     jsr sub_c8f1e                                                     ; 8f14: 20 1e 8f     ..   
     cld                                                               ; 8f17: d8          .     
     jmp c8b9b                                                         ; 8f18: 4c 9b 8b    L..   
@@ -2748,18 +2757,18 @@ l848a = sub_c847b+15
 .stmt_delete
     jsr sub_c97df                                                     ; 8f31: 20 df 97     ..   
     bcc c8f2e                                                         ; 8f34: 90 f8       ..    
-    jsr cbd94                                                         ; 8f36: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 8f36: 20 94 bd     ..   
     jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,    
     bne c8f2e                                                         ; 8f3e: d0 ee       ..    
     jsr sub_c97df                                                     ; 8f40: 20 df 97     ..   
     bcc c8f2e                                                         ; 8f43: 90 e9       ..    
-    jsr c9857                                                         ; 8f45: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.   
     lda zp_iwa                                                        ; 8f48: a5 2a       .*    
     sta zp_fileblk                                                    ; 8f4a: 85 39       .9    
     lda l002b                                                         ; 8f4c: a5 2b       .+    
     sta l003a                                                         ; 8f4e: 85 3a       .:    
-    jsr sub_cbdea                                                     ; 8f50: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 8f50: 20 ea bd     ..   
 ; &8f53 referenced 1 time by &8f64
 .loop_c8f53
     jsr sub_cbc2d                                                     ; 8f53: 20 2d bc     -.   
@@ -2776,7 +2785,7 @@ l848a = sub_c847b+15
     lda #&0a                                                          ; 8f69: a9 0a       ..    
     jsr caed8                                                         ; 8f6b: 20 d8 ae     ..   
     jsr sub_c97df                                                     ; 8f6e: 20 df 97     ..   
-    jsr cbd94                                                         ; 8f71: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 8f71: 20 94 bd     ..   
     lda #&0a                                                          ; 8f74: a9 0a       ..    
     jsr caed8                                                         ; 8f76: 20 d8 ae     ..   
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..   
@@ -2791,7 +2800,7 @@ l848a = sub_c847b+15
 ; &8f8d referenced 1 time by &8f7e
 .c8f8d
     dec zp_text_ptr_off                                               ; 8f8d: c6 0a       ..    
-    jmp c9857                                                         ; 8f8f: 4c 57 98    LW.   
+    jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.   
 ; &8f92 referenced 2 times by &8fae, &9040
 .sub_c8f92
     lda zp_top                                                        ; 8f92: a5 12       ..    
@@ -2965,14 +2974,14 @@ l848a = sub_c847b+15
     jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.   
     lda zp_iwa                                                        ; 90af: a5 2a       .*    
     pha                                                               ; 90b1: 48          H     
-    jsr sub_cbdea                                                     ; 90b2: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 90b2: 20 ea bd     ..   
 ; &90b5 referenced 2 times by &90d3, &90d7
 .c90b5
-    jsr cbd94                                                         ; 90b5: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 90b5: 20 94 bd     ..   
     jsr sub_c9923                                                     ; 90b8: 20 23 99     #.   
     lda #&20 ; ' '                                                    ; 90bb: a9 20       .     
     jsr sub_cbc02                                                     ; 90bd: 20 02 bc     ..   
-    jsr sub_cbdea                                                     ; 90c0: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 90c0: 20 ea bd     ..   
     jsr sub_c8951                                                     ; 90c3: 20 51 89     Q.   
     jsr sub_cbc8d                                                     ; 90c6: 20 8d bc     ..   
     jsr sub_cbd20                                                     ; 90c9: 20 20 bd      .   
@@ -2994,7 +3003,7 @@ l848a = sub_c847b+15
     jsr sub_c9582                                                     ; 90e1: 20 82 95     ..   
     beq c9127                                                         ; 90e4: f0 41       .A    
     bcs c9127                                                         ; 90e6: b0 3f       .?    
-    jsr cbd94                                                         ; 90e8: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 90e8: 20 94 bd     ..   
     jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..   
     jsr sub_c9222                                                     ; 90ee: 20 22 92     ".   
     lda l002d                                                         ; 90f1: a5 2d       .-    
@@ -3086,8 +3095,8 @@ l848a = sub_c847b+15
     jsr caed8                                                         ; 9182: 20 d8 ae     ..   
 ; &9185 referenced 1 time by &91ae
 .loop_c9185
-    jsr cbd94                                                         ; 9185: 20 94 bd     ..   
-    jsr sub_c8821                                                     ; 9188: 20 21 88     !.   
+    jsr stack_integer                                                 ; 9185: 20 94 bd     ..   
+    jsr eval_expr_to_integer                                          ; 9188: 20 21 88     !.   
     lda l002b                                                         ; 918b: a5 2b       .+    
     and #&c0                                                          ; 918d: 29 c0       ).    
     ora l002c                                                         ; 918f: 05 2c       .,    
@@ -3252,7 +3261,7 @@ l848a = sub_c847b+15
 .c928a
     jmp c8b9b                                                         ; 928a: 4c 9b 8b    L..   
 .stmt_clear
-    jsr c9857                                                         ; 928d: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 928d: 20 57 98     W.   
     jsr sub_cbd20                                                     ; 9290: 20 20 bd      .   
     beq c928a                                                         ; 9293: f0 f5       ..    
 .stmt_trace
@@ -3262,10 +3271,10 @@ l848a = sub_c847b+15
     beq c92b7                                                         ; 929c: f0 19       ..    
     cmp #&87                                                          ; 929e: c9 87       ..    
     beq c92c0                                                         ; 92a0: f0 1e       ..    
-    jsr sub_c8821                                                     ; 92a2: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 92a2: 20 21 88     !.   
 ; &92a5 referenced 1 time by &9298
 .c92a5
-    jsr c9857                                                         ; 92a5: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 92a5: 20 57 98     W.   
     lda zp_iwa                                                        ; 92a8: a5 2a       .*    
     sta zp_trace_max                                                  ; 92aa: 85 21       .!    
     lda l002b                                                         ; 92ac: a5 2b       .+    
@@ -3280,13 +3289,13 @@ l848a = sub_c847b+15
 ; &92b7 referenced 1 time by &929c
 .c92b7
     inc zp_text_ptr_off                                               ; 92b7: e6 0a       ..    
-    jsr c9857                                                         ; 92b9: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 92b9: 20 57 98     W.   
     lda #&ff                                                          ; 92bc: a9 ff       ..    
     bne loop_c92ae                                                    ; 92be: d0 ee       ..    
 ; &92c0 referenced 1 time by &92a0
 .c92c0
     inc zp_text_ptr_off                                               ; 92c0: e6 0a       ..    
-    jsr c9857                                                         ; 92c2: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 92c2: 20 57 98     W.   
     lda #0                                                            ; 92c5: a9 00       ..    
     beq loop_c92b2                                                    ; 92c7: f0 e9       ..    
 .stmt_time
@@ -3303,10 +3312,10 @@ l848a = sub_c847b+15
 ; &92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a
 .sub_c92dd
     jsr sub_c9b29                                                     ; 92dd: 20 29 9b     ).   
-    jmp c92f0                                                         ; 92e0: 4c f0 92    L..   
+    jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..   
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
 .sub_c92e3
-    jsr cadec                                                         ; 92e3: 20 ec ad     ..   
+    jsr eval_factor                                                   ; 92e3: 20 ec ad     ..   
     beq c92f7                                                         ; 92e6: f0 0f       ..    
     bmi c92f4                                                         ; 92e8: 30 0a       0.    
 ; &92ea referenced 2 times by &92f2, &92ff
@@ -3318,8 +3327,17 @@ l848a = sub_c847b+15
 ; &92ee referenced 6 times by &8ed5, &93fd, &b592, &bbb7, &bf37, &bf62
 .sub_c92ee
     lda zp_var_type                                                   ; 92ee: a5 27       .'    
+; ***************************************************************************************
+; Coerce the current value to an integer
+;
+; Check the type of the last evaluated value (in A from zp_var_type): a string raises
+; "Type mismatch", an integer returns unchanged, and a real is converted to a 4-byte
+; integer in the integer accumulator.
+;
+; On Entry:
+;     A: value type from zp_var_type (&27)
 ; &92f0 referenced 21 times by &8824, &8e2e, &92e0, &9688, &974a, &976f, &99bf, &99ce, &9b3e, &9b59, &9b6c, &9b7b, &9b85, &ab4d, &ad0c, &af0f, &afdd, &afff, &b05e, &b921, &b9a2
-.c92f0
+.coerce_to_integer
     beq c92f7                                                         ; 92f0: f0 05       ..    
     bpl return_9                                                      ; 92f2: 10 f6       ..    
 ; &92f4 referenced 1 time by &92e8
@@ -3330,7 +3348,7 @@ l848a = sub_c847b+15
     jmp c8c0e                                                         ; 92f7: 4c 0e 8c    L..   
 ; &92fa referenced 11 times by &9e3c, &a6be, &a7b4, &a7fe, &a8da, &a907, &a98d, &a998, &aa91, &abb1, &abc2
 .sub_c92fa
-    jsr cadec                                                         ; 92fa: 20 ec ad     ..   
+    jsr eval_factor                                                   ; 92fa: 20 ec ad     ..   
 ; &92fd referenced 7 times by &9a59, &9d29, &9de6, &9df2, &9e36, &b852, &b870
 .sub_c92fd
     beq c92f7                                                         ; 92fd: f0 f8       ..    
@@ -3363,7 +3381,7 @@ l848a = sub_c847b+15
     jsr sub_cb30d                                                     ; 932d: 20 0d b3     ..   
     ldy l002c                                                         ; 9330: a4 2c       .,    
     bmi loop_c931b                                                    ; 9332: 30 e7       0.    
-    jsr cbd94                                                         ; 9334: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9334: 20 94 bd     ..   
     lda #0                                                            ; 9337: a9 00       ..    
     jsr caed8                                                         ; 9339: 20 d8 ae     ..   
     sta zp_var_type                                                   ; 933c: 85 27       .'    
@@ -3388,7 +3406,7 @@ l848a = sub_c847b+15
     lda l01ff                                                         ; 935b: ad ff 01    ...   
     cmp #&f2                                                          ; 935e: c9 f2       ..    
     bne c9365                                                         ; 9360: d0 03       ..    
-    jmp c9857                                                         ; 9362: 4c 57 98    LW.   
+    jmp check_end_of_statement                                        ; 9362: 4c 57 98    LW.   
 ; &9365 referenced 2 times by &9359, &9360
 .c9365
     brk                                                               ; 9365: 00          .     
@@ -3408,7 +3426,7 @@ l848a = sub_c847b+15
     equs "Bad "                                                       ; 9374: 42 61 64... Bad...
     equb &eb, &00                                                     ; 9378: eb 00       ..    
 .stmt_gcol
-    jsr sub_c8821                                                     ; 937a: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.   
     lda zp_iwa                                                        ; 937d: a5 2a       .*    
     pha                                                               ; 937f: 48          H     
     jsr sub_c92da                                                     ; 9380: 20 da 92     ..   
@@ -3419,14 +3437,14 @@ l848a = sub_c847b+15
 .stmt_colour
     lda #&11                                                          ; 938e: a9 11       ..    
     pha                                                               ; 9390: 48          H     
-    jsr sub_c8821                                                     ; 9391: 20 21 88     !.   
-    jsr c9857                                                         ; 9394: 20 57 98     W.   
+    jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.   
+    jsr check_end_of_statement                                        ; 9394: 20 57 98     W.   
     jmp c93da                                                         ; 9397: 4c da 93    L..   
 .stmt_mode
     lda #&16                                                          ; 939a: a9 16       ..    
     pha                                                               ; 939c: 48          H     
-    jsr sub_c8821                                                     ; 939d: 20 21 88     !.   
-    jsr c9857                                                         ; 93a0: 20 57 98     W.   
+    jsr eval_expr_to_integer                                          ; 939d: 20 21 88     !.   
+    jsr check_end_of_statement                                        ; 93a0: 20 57 98     W.   
     jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..   
     cpx #&ff                                                          ; 93a6: e0 ff       ..    
     bne c93d7                                                         ; 93a8: d0 2d       .-    
@@ -3470,10 +3488,10 @@ l848a = sub_c847b+15
 ; &93ea referenced 1 time by &93e6
 .c93ea
     pha                                                               ; 93ea: 48          H     
-    jsr sub_c9b1d                                                     ; 93eb: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; 93eb: 20 1d 9b     ..   
     jmp c93fd                                                         ; 93ee: 4c fd 93    L..   
 .stmt_plot
-    jsr sub_c8821                                                     ; 93f1: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.   
     lda zp_iwa                                                        ; 93f4: a5 2a       .*    
     pha                                                               ; 93f6: 48          H     
     jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..   
@@ -3481,7 +3499,7 @@ l848a = sub_c847b+15
 ; &93fd referenced 1 time by &93ee
 .c93fd
     jsr sub_c92ee                                                     ; 93fd: 20 ee 92     ..   
-    jsr cbd94                                                         ; 9400: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9400: 20 94 bd     ..   
     jsr sub_c92da                                                     ; 9403: 20 da 92     ..   
     jsr sub_c9852                                                     ; 9406: 20 52 98     R.   
     lda #&19                                                          ; 9409: a9 19       ..    
@@ -3513,7 +3531,7 @@ l848a = sub_c847b+15
     cmp #&8b                                                          ; 943a: c9 8b       ..    
     beq c9453                                                         ; 943c: f0 15       ..    
     dec zp_text_ptr_off                                               ; 943e: c6 0a       ..    
-    jsr sub_c8821                                                     ; 9440: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 9440: 20 21 88     !.   
     jsr sub_c9456                                                     ; 9443: 20 56 94     V.   
     jsr skip_spaces                                                   ; 9446: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 9449: c9 2c       .,    
@@ -3952,7 +3970,7 @@ l848a = sub_c847b+15
     iny                                                               ; 9682: c8          .     
     sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..    
     jsr cb32c                                                         ; 9685: 20 2c b3     ,.   
-    jsr c92f0                                                         ; 9688: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 9688: 20 f0 92     ..   
     lda l002b                                                         ; 968b: a5 2b       .+    
     pha                                                               ; 968d: 48          H     
     lda zp_iwa                                                        ; 968e: a5 2a       .*    
@@ -4032,7 +4050,7 @@ l848a = sub_c847b+15
     sta l002d                                                         ; 96fd: 85 2d       .-    
 ; &96ff referenced 1 time by &9742
 .loop_c96ff
-    jsr cbd94                                                         ; 96ff: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 96ff: 20 94 bd     ..   
     jsr sub_c92dd                                                     ; 9702: 20 dd 92     ..   
     inc zp_text_ptr2_off                                              ; 9705: e6 1b       ..    
     cpx #&2c ; ','                                                    ; 9707: e0 2c       .,    
@@ -4067,9 +4085,9 @@ l848a = sub_c847b+15
     sbc l002d                                                         ; 973e: e5 2d       .-    
     cmp #3                                                            ; 9740: c9 03       ..    
     bcs loop_c96ff                                                    ; 9742: b0 bb       ..    
-    jsr cbd94                                                         ; 9744: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9744: 20 94 bd     ..   
     jsr cae56                                                         ; 9747: 20 56 ae     V.   
-    jsr c92f0                                                         ; 974a: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 974a: 20 f0 92     ..   
     pla                                                               ; 974d: 68          h     
     sta l0038                                                         ; 974e: 85 38       .8    
     pla                                                               ; 9750: 68          h     
@@ -4089,7 +4107,7 @@ l848a = sub_c847b+15
 ; &976c referenced 1 time by &96f5
 .c976c
     jsr cae56                                                         ; 976c: 20 56 ae     V.   
-    jsr c92f0                                                         ; 976f: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 976f: 20 f0 92     ..   
     pla                                                               ; 9772: 68          h     
     sta l0038                                                         ; 9773: 85 38       .8    
     pla                                                               ; 9775: 68          h     
@@ -4245,8 +4263,13 @@ l848a = sub_c847b+15
 .sub_c9852
     ldy zp_text_ptr2_off                                              ; 9852: a4 1b       ..    
     jmp c9859                                                         ; 9854: 4c 59 98    LY.   
+; ***************************************************************************************
+; Check for end of statement
+;
+; Skip spaces and require the statement to end here: a colon, an end-of-line (&0D), or
+; ELSE. Anything else raises "Syntax error". Also polls for Escape.
 ; &9857 referenced 25 times by &8ab6, &8ac8, &8ad0, &8ada, &8b98, &8ebd, &8ec4, &8f45, &8f8f, &928d, &92a5, &92b9, &92c2, &9362, &9394, &93a0, &9880, &b5e3, &b88b, &b8b6, &b8cf, &b8e4, &bb07, &bd11, &bfe4
-.c9857
+.check_end_of_statement
     ldy zp_text_ptr_off                                               ; 9857: a4 0a       ..    
 ; &9859 referenced 2 times by &858c, &9854
 .c9859
@@ -4286,7 +4309,7 @@ l848a = sub_c847b+15
     rts                                                               ; 987f: 60          `     
 ; &9880 referenced 1 time by &b837
 .sub_c9880
-    jsr c9857                                                         ; 9880: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 9880: 20 57 98     W.   
     dey                                                               ; 9883: 88          .     
     lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..    
     cmp #&3a ; ':'                                                    ; 9886: c9 3a       .:    
@@ -4337,7 +4360,7 @@ l848a = sub_c847b+15
 .loop_c98bf
     jmp c8c0e                                                         ; 98bf: 4c 0e 8c    L..   
 .stmt_if
-    jsr sub_c9b1d                                                     ; 98c2: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..   
     beq loop_c98bf                                                    ; 98c5: f0 f8       ..    
     bpl c98cc                                                         ; 98c7: 10 03       ..    
     jsr ca3e4                                                         ; 98c9: 20 e4 a3     ..   
@@ -4507,14 +4530,14 @@ l848a = sub_c847b+15
 ; &99be referenced 2 times by &9e01, &9e0a
 .sub_c99be
     tay                                                               ; 99be: a8          .     
-    jsr c92f0                                                         ; 99bf: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..   
     lda l002d                                                         ; 99c2: a5 2d       .-    
     pha                                                               ; 99c4: 48          H     
     jsr sub_cad71                                                     ; 99c5: 20 71 ad     q.   
     jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..   
     stx zp_var_type                                                   ; 99cb: 86 27       .'    
     tay                                                               ; 99cd: a8          .     
-    jsr c92f0                                                         ; 99ce: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..   
     pla                                                               ; 99d1: 68          h     
     sta l0038                                                         ; 99d2: 85 38       .8    
     eor l002d                                                         ; 99d4: 45 2d       E-    
@@ -4585,16 +4608,16 @@ l848a = sub_c847b+15
 ; &9a39 referenced 1 time by &9aab
 .loop_c9a39
     stx zp_var_type                                                   ; 9a39: 86 27       .'    
-    jsr sub_cbdea                                                     ; 9a3b: 20 ea bd     ..   
-    jsr cbd51                                                         ; 9a3e: 20 51 bd     Q.   
+    jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..   
+    jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.   
     jsr ca2be                                                         ; 9a41: 20 be a2     ..   
     jsr sub_ca21e                                                     ; 9a44: 20 1e a2     ..   
     jsr sub_cbd7e                                                     ; 9a47: 20 7e bd     ~.   
-    jsr sub_ca3b5                                                     ; 9a4a: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; 9a4a: 20 b5 a3     ..   
     jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.   
 ; &9a50 referenced 1 time by &9aa0
 .loop_c9a50
-    jsr cbd51                                                         ; 9a50: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9a50: 20 51 bd     Q.   
     jsr sub_c9c42                                                     ; 9a53: 20 42 9c     B.   
     stx zp_var_type                                                   ; 9a56: 86 27       .'    
     tay                                                               ; 9a58: a8          .     
@@ -4649,7 +4672,7 @@ l848a = sub_c847b+15
 .sub_c9a9e
     beq c9ae7                                                         ; 9a9e: f0 47       .G    
     bmi loop_c9a50                                                    ; 9aa0: 30 ae       0.    
-    jsr cbd94                                                         ; 9aa2: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9aa2: 20 94 bd     ..   
     jsr sub_c9c42                                                     ; 9aa5: 20 42 9c     B.   
     tay                                                               ; 9aa8: a8          .     
     beq c9a9a                                                         ; 9aa9: f0 ef       ..    
@@ -4691,7 +4714,7 @@ l848a = sub_c847b+15
     rts                                                               ; 9ae6: 60          `     
 ; &9ae7 referenced 1 time by &9a9e
 .c9ae7
-    jsr cbdb2                                                         ; 9ae7: 20 b2 bd     ..   
+    jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..   
     jsr sub_c9c42                                                     ; 9aea: 20 42 9c     B.   
     tay                                                               ; 9aed: a8          .     
     bne c9a9a                                                         ; 9aee: d0 aa       ..    
@@ -4727,8 +4750,19 @@ l848a = sub_c847b+15
     ldx zp_general                                                    ; 9b19: a6 37       .7    
     plp                                                               ; 9b1b: 28          (     
     rts                                                               ; 9b1c: 60          `     
+; ***************************************************************************************
+; Evaluate an expression
+;
+; The interpreter's main expression entry point. Copies the primary text pointer (PtrA:
+; zp_text_ptr / zp_text_ptr_off) to the secondary pointer (PtrB: zp_text_ptr2 / &1B) and
+; evaluates the expression there.
+;
+; On Exit:
+;     ZP_VAR_TYPE (&27): result type (integer / real / string)
+;     ZP_IWA / ZP_FWA: the result value
+;     &1B: advanced past the expression
 ; &9b1d referenced 11 times by &8821, &886d, &8b53, &8ed2, &93eb, &98c2, &b58c, &b91e, &b99f, &bbb1, &bed2
-.sub_c9b1d
+.eval_expr
     lda zp_text_ptr                                                   ; 9b1d: a5 0b       ..    
     sta zp_text_ptr2                                                  ; 9b1f: 85 19       ..    
     lda l000c                                                         ; 9b21: a5 0c       ..    
@@ -4752,7 +4786,7 @@ l848a = sub_c847b+15
 .c9b3a
     jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.   
     tay                                                               ; 9b3d: a8          .     
-    jsr c92f0                                                         ; 9b3e: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..   
     ldy #3                                                            ; 9b41: a0 03       ..    
 ; &9b43 referenced 1 time by &9b4c
 .loop_c9b43
@@ -4770,7 +4804,7 @@ l848a = sub_c847b+15
 .c9b55
     jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.   
     tay                                                               ; 9b58: a8          .     
-    jsr c92f0                                                         ; 9b59: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..   
     ldy #3                                                            ; 9b5c: a0 03       ..    
 ; &9b5e referenced 1 time by &9b67
 .loop_c9b5e
@@ -4783,8 +4817,8 @@ l848a = sub_c847b+15
 ; &9b6b referenced 2 times by &9b3a, &9b55
 .sub_c9b6b
     tay                                                               ; 9b6b: a8          .     
-    jsr c92f0                                                         ; 9b6c: 20 f0 92     ..   
-    jsr cbd94                                                         ; 9b6f: 20 94 bd     ..   
+    jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..   
+    jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..   
 ; &9b72 referenced 1 time by &9b29
 .sub_c9b72
     jsr sub_c9b9c                                                     ; 9b72: 20 9c 9b     ..   
@@ -4796,11 +4830,11 @@ l848a = sub_c847b+15
 ; &9b7a referenced 1 time by &9b77
 .c9b7a
     tay                                                               ; 9b7a: a8          .     
-    jsr c92f0                                                         ; 9b7b: 20 f0 92     ..   
-    jsr cbd94                                                         ; 9b7e: 20 94 bd     ..   
+    jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..   
+    jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..   
     jsr sub_c9b9c                                                     ; 9b81: 20 9c 9b     ..   
     tay                                                               ; 9b84: a8          .     
-    jsr c92f0                                                         ; 9b85: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..   
     ldy #3                                                            ; 9b88: a0 03       ..    
 ; &9b8a referenced 1 time by &9b93
 .loop_c9b8a
@@ -4891,7 +4925,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; 9c14: 00          .     
 ; &9c15 referenced 1 time by &9c4f
 .loop_c9c15
-    jsr cbdb2                                                         ; 9c15: 20 b2 bd     ..   
+    jsr stack_string                                                  ; 9c15: 20 b2 bd     ..   
     jsr sub_c9e20                                                     ; 9c18: 20 20 9e      .   
     tay                                                               ; 9c1b: a8          .     
     bne c9c88                                                         ; 9c1c: d0 6a       .j    
@@ -4968,7 +5002,7 @@ l848a = sub_c847b+15
     jmp c8c0e                                                         ; 9c88: 4c 0e 8c    L..   
 ; &9c8b referenced 1 time by &9c51
 .c9c8b
-    jsr cbd51                                                         ; 9c8b: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.   
     jsr sub_c9dd1                                                     ; 9c8e: 20 d1 9d     ..   
     tay                                                               ; 9c91: a8          .     
     beq c9c88                                                         ; 9c92: f0 f4       ..    
@@ -4987,8 +5021,8 @@ l848a = sub_c847b+15
 ; &9ca7 referenced 1 time by &9c59
 .c9ca7
     stx zp_var_type                                                   ; 9ca7: 86 27       .'    
-    jsr sub_cbdea                                                     ; 9ca9: 20 ea bd     ..   
-    jsr cbd51                                                         ; 9cac: 20 51 bd     Q.   
+    jsr unstack_integer                                               ; 9ca9: 20 ea bd     ..   
+    jsr stack_real                                                    ; 9cac: 20 51 bd     Q.   
     jsr ca2be                                                         ; 9caf: 20 be a2     ..   
     jmp c9c9b                                                         ; 9cb2: 4c 9b 9c    L..   
 ; &9cb5 referenced 1 time by &9c4b
@@ -5019,7 +5053,7 @@ l848a = sub_c847b+15
     jmp c9c77                                                         ; 9cde: 4c 77 9c    Lw.   
 ; &9ce1 referenced 1 time by &9cb8
 .c9ce1
-    jsr cbd51                                                         ; 9ce1: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.   
     jsr sub_c9dd1                                                     ; 9ce4: 20 d1 9d     ..   
     tay                                                               ; 9ce7: a8          .     
     beq c9c88                                                         ; 9ce8: f0 9e       ..    
@@ -5034,8 +5068,8 @@ l848a = sub_c847b+15
 ; &9cfa referenced 1 time by &9cc0
 .c9cfa
     stx zp_var_type                                                   ; 9cfa: 86 27       .'    
-    jsr sub_cbdea                                                     ; 9cfc: 20 ea bd     ..   
-    jsr cbd51                                                         ; 9cff: 20 51 bd     Q.   
+    jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..   
+    jsr stack_real                                                    ; 9cff: 20 51 bd     Q.   
     jsr ca2be                                                         ; 9d02: 20 be a2     ..   
     jsr sub_cbd7e                                                     ; 9d05: 20 7e bd     ~.   
     jsr sub_ca4d0                                                     ; 9d08: 20 d0 a4     ..   
@@ -5045,8 +5079,8 @@ l848a = sub_c847b+15
     jsr ca2be                                                         ; 9d0e: 20 be a2     ..   
 ; &9d11 referenced 1 time by &9d5a
 .loop_c9d11
-    jsr sub_cbdea                                                     ; 9d11: 20 ea bd     ..   
-    jsr cbd51                                                         ; 9d14: 20 51 bd     Q.   
+    jsr unstack_integer                                               ; 9d11: 20 ea bd     ..   
+    jsr stack_real                                                    ; 9d14: 20 51 bd     Q.   
     jsr ca2be                                                         ; 9d17: 20 be a2     ..   
     jmp c9d2c                                                         ; 9d1a: 4c 2c 9d    L,.   
 ; &9d1d referenced 3 times by &9d45, &9d4c, &9d50
@@ -5054,7 +5088,7 @@ l848a = sub_c847b+15
     jsr ca2be                                                         ; 9d1d: 20 be a2     ..   
 ; &9d20 referenced 1 time by &9d3f
 .loop_c9d20
-    jsr cbd51                                                         ; 9d20: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9d20: 20 51 bd     Q.   
     jsr sub_c9e20                                                     ; 9d23: 20 20 9e      .   
     stx zp_var_type                                                   ; 9d26: 86 27       .'    
     tay                                                               ; 9d28: a8          .     
@@ -5106,7 +5140,7 @@ l848a = sub_c847b+15
     jsr sub_cad71                                                     ; 9d70: 20 71 ad     q.   
     ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9    
     jsr sub_cbe44                                                     ; 9d75: 20 44 be     D.   
-    jsr sub_cbdea                                                     ; 9d78: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..   
     pla                                                               ; 9d7b: 68          h     
     eor l002d                                                         ; 9d7c: 45 2d       E-    
     sta zp_general                                                    ; 9d7e: 85 37       .7    
@@ -5164,7 +5198,7 @@ l848a = sub_c847b+15
     jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.   
 ; &9dce referenced 2 times by &9c53, &9cba
 .sub_c9dce
-    jsr cbd94                                                         ; 9dce: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9dce: 20 94 bd     ..   
 ; &9dd1 referenced 3 times by &9c42, &9c8e, &9ce4
 .sub_c9dd1
     jsr sub_c9e20                                                     ; 9dd1: 20 20 9e      .   
@@ -5183,7 +5217,7 @@ l848a = sub_c847b+15
 .c9de5
     tay                                                               ; 9de5: a8          .     
     jsr sub_c92fd                                                     ; 9de6: 20 fd 92     ..   
-    jsr cbd51                                                         ; 9de9: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9de9: 20 51 bd     Q.   
     jsr sub_c9e20                                                     ; 9dec: 20 20 9e      .   
     stx zp_var_type                                                   ; 9def: 86 27       .'    
     tay                                                               ; 9df1: a8          .     
@@ -5212,10 +5246,10 @@ l848a = sub_c847b+15
     jmp c9dbd                                                         ; 9e1a: 4c bd 9d    L..   
 ; &9e1d referenced 2 times by &99c8, &9d52
 .sub_c9e1d
-    jsr cbd94                                                         ; 9e1d: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9e1d: 20 94 bd     ..   
 ; &9e20 referenced 4 times by &9c18, &9d23, &9dd1, &9dec
 .sub_c9e20
-    jsr cadec                                                         ; 9e20: 20 ec ad     ..   
+    jsr eval_factor                                                   ; 9e20: 20 ec ad     ..   
 ; &9e23 referenced 2 times by &9e57, &9e86
 .c9e23
     pha                                                               ; 9e23: 48          H     
@@ -5235,7 +5269,7 @@ l848a = sub_c847b+15
 .c9e35
     tay                                                               ; 9e35: a8          .     
     jsr sub_c92fd                                                     ; 9e36: 20 fd 92     ..   
-    jsr cbd51                                                         ; 9e39: 20 51 bd     Q.   
+    jsr stack_real                                                    ; 9e39: 20 51 bd     Q.   
     jsr sub_c92fa                                                     ; 9e3c: 20 fa 92     ..   
     lda l0030                                                         ; 9e3f: a5 30       .0    
     cmp #&87                                                          ; 9e41: c9 87       ..    
@@ -5243,7 +5277,7 @@ l848a = sub_c847b+15
     jsr sub_ca486                                                     ; 9e45: 20 86 a4     ..   
     bne c9e59                                                         ; 9e48: d0 0f       ..    
     jsr sub_cbd7e                                                     ; 9e4a: 20 7e bd     ~.   
-    jsr sub_ca3b5                                                     ; 9e4d: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; 9e4d: 20 b5 a3     ..   
     lda l004a                                                         ; 9e50: a5 4a       .J    
     jsr sub_cab12                                                     ; 9e52: 20 12 ab     ..   
     lda #&ff                                                          ; 9e55: a9 ff       ..    
@@ -5255,14 +5289,14 @@ l848a = sub_c847b+15
     sta l004b                                                         ; 9e5e: 85 4b       .K    
     lda l0005                                                         ; 9e60: a5 05       ..    
     sta l004c                                                         ; 9e62: 85 4c       .L    
-    jsr sub_ca3b5                                                     ; 9e64: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; 9e64: 20 b5 a3     ..   
     lda l004a                                                         ; 9e67: a5 4a       .J    
     jsr sub_cab12                                                     ; 9e69: 20 12 ab     ..   
 ; &9e6c referenced 1 time by &9e8e
 .loop_c9e6c
     jsr sub_ca37d                                                     ; 9e6c: 20 7d a3     }.   
     jsr sub_cbd7e                                                     ; 9e6f: 20 7e bd     ~.   
-    jsr sub_ca3b5                                                     ; 9e72: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; 9e72: 20 b5 a3     ..   
     jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..   
     jsr caad1                                                         ; 9e78: 20 d1 aa     ..   
     jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..   
@@ -5369,7 +5403,7 @@ l848a = sub_c847b+15
     jsr ca2be                                                         ; 9f0c: 20 be a2     ..   
 ; &9f0f referenced 1 time by &9f0a
 .c9f0f
-    jsr ca1da                                                         ; 9f0f: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; 9f0f: 20 da a1     ..   
     bne loop_c9ec8                                                    ; 9f12: d0 b4       ..    
     lda zp_general                                                    ; 9f14: a5 37       .7    
     bne c9f1d                                                         ; 9f16: d0 05       ..    
@@ -5614,7 +5648,7 @@ l848a = sub_c847b+15
 .ca072
     clc                                                               ; a072: 18          .     
     stx l0035                                                         ; a073: 86 35       .5    
-    jsr ca1da                                                         ; a075: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a075: 20 da a1     ..   
     lda #&ff                                                          ; a078: a9 ff       ..    
     rts                                                               ; a07a: 60          `     
 ; &a07b referenced 3 times by &ac60, &ac6b, &ae2a
@@ -5691,7 +5725,7 @@ l848a = sub_c847b+15
     lda l0049                                                         ; a0ea: a5 49       .I    
     ora l0048                                                         ; a0ec: 05 48       .H    
     beq ca11f                                                         ; a0ee: f0 2f       ./    
-    jsr ca1da                                                         ; a0f0: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a0f0: 20 da a1     ..   
     beq ca11b                                                         ; a0f3: f0 26       .&    
 ; &a0f5 referenced 1 time by &a127
 .loop_ca0f5
@@ -5849,8 +5883,13 @@ l848a = sub_c847b+15
     sta l0031                                                         ; a1d6: 85 31       .1    
     pla                                                               ; a1d8: 68          h     
     rts                                                               ; a1d9: 60          `     
+; ***************************************************************************************
+; Test whether the FP accumulator is zero
+;
+; OR the mantissa bytes of the floating-point accumulator (&31-&35) together; returns
+; with Z set if the value is zero.
 ; &a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e
-.ca1da
+.test_fwa_zero
     lda l0031                                                         ; a1da: a5 31       .1    
     ora l0032                                                         ; a1dc: 05 32       .2    
     ora l0033                                                         ; a1de: 05 33       .3    
@@ -6156,8 +6195,13 @@ l848a = sub_c847b+15
 ; &a3b2 referenced 2 times by &aa35, &ba36
 .ca3b2
     jsr sub_ca7f5                                                     ; a3b2: 20 f5 a7     ..   
+; ***************************************************************************************
+; Unpack a floating-point value into the accumulator
+;
+; Copy the five mantissa/exponent bytes addressed by (&4B) into the floating-point
+; accumulator (&30-&34).
 ; &a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea
-.sub_ca3b5
+.unpack_fwa_from_ptr
     ldy #4                                                            ; a3b5: a0 04       ..    
     lda (l004b),y                                                     ; a3b7: b1 4b       .K    
     sta l0034                                                         ; a3b9: 85 34       .4    
@@ -6209,7 +6253,7 @@ l848a = sub_c847b+15
     lda l0030                                                         ; a3fe: a5 30       .0    
     bpl loop_ca3f8                                                    ; a400: 10 f6       ..    
     jsr sub_ca453                                                     ; a402: 20 53 a4     S.   
-    jsr ca1da                                                         ; a405: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a405: 20 da a1     ..   
     bne ca43c                                                         ; a408: d0 32       .2    
     beq ca468                                                         ; a40a: f0 5c       .\    
 ; &a40c referenced 2 times by &a43a, &a44e
@@ -6296,7 +6340,7 @@ l848a = sub_c847b+15
     bmi ca491                                                         ; a488: 30 07       0.    
     lda #0                                                            ; a48a: a9 00       ..    
     sta l004a                                                         ; a48c: 85 4a       .J    
-    jmp ca1da                                                         ; a48e: 4c da a1    L..   
+    jmp test_fwa_zero                                                 ; a48e: 4c da a1    L..   
 ; &a491 referenced 1 time by &a488
 .ca491
     jsr sub_ca3fe                                                     ; a491: 20 fe a3     ..   
@@ -6383,7 +6427,7 @@ l848a = sub_c847b+15
     jmp ca65c                                                         ; a508: 4c 5c a6    L\.   
 ; &a50b referenced 2 times by &9f7b, &a505
 .sub_ca50b
-    jsr ca1da                                                         ; a50b: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a50b: 20 da a1     ..   
     beq ca4dc                                                         ; a50e: f0 cc       ..    
     ldy #0                                                            ; a510: a0 00       ..    
     sec                                                               ; a512: 38          8     
@@ -6546,7 +6590,7 @@ l848a = sub_c847b+15
     rts                                                               ; a605: 60          `     
 ; &a606 referenced 2 times by &a656, &af30
 .sub_ca606
-    jsr ca1da                                                         ; a606: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a606: 20 da a1     ..   
     beq return_27                                                     ; a609: f0 fa       ..    
     jsr sub_ca34e                                                     ; a60b: 20 4e a3     N.   
     bne ca613                                                         ; a60e: d0 03       ..    
@@ -6662,10 +6706,10 @@ l848a = sub_c847b+15
     bne ca6e7                                                         ; a6ab: d0 3a       .:    
 ; &a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8
 .sub_ca6ad
-    jsr ca1da                                                         ; a6ad: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a6ad: 20 da a1     ..   
     beq ca6bb                                                         ; a6b0: f0 09       ..    
     jsr sub_ca21e                                                     ; a6b2: 20 1e a2     ..   
-    jsr sub_ca3b5                                                     ; a6b5: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; a6b5: 20 b5 a3     ..   
     bne ca6f1                                                         ; a6b8: d0 37       .7    
     rts                                                               ; a6ba: 60          `     
 ; &a6bb referenced 2 times by &a6b0, &a6ef
@@ -6691,7 +6735,7 @@ l848a = sub_c847b+15
     rts                                                               ; a6e6: 60          `     
 ; &a6e7 referenced 3 times by &a6ab, &a6e1, &a9eb
 .ca6e7
-    jsr ca1da                                                         ; a6e7: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a6e7: 20 da a1     ..   
     beq return_28                                                     ; a6ea: f0 ac       ..    
     jsr sub_ca34e                                                     ; a6ec: 20 4e a3     N.   
     beq ca6bb                                                         ; a6ef: f0 ca       ..    
@@ -6822,7 +6866,7 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..   
 ; &a7b7 referenced 1 time by &a9c0
 .ca7b7
-    jsr ca1da                                                         ; a7b7: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a7b7: 20 da a1     ..   
     beq ca7e6                                                         ; a7ba: f0 2a       .*    
     bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.    
     jsr sub_ca385                                                     ; a7be: 20 85 a3     ..   
@@ -6875,7 +6919,7 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..   
 ; &a801 referenced 1 time by &9e75
 .sub_ca801
-    jsr ca1da                                                         ; a801: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a801: 20 da a1     ..   
     beq ca808                                                         ; a804: f0 02       ..    
     bpl ca814                                                         ; a806: 10 0c       ..    
 ; &a808 referenced 1 time by &a804
@@ -6951,7 +6995,7 @@ l848a = sub_c847b+15
     sta l004b                                                         ; a8ac: 85 4b       .K    
     lda l004e                                                         ; a8ae: a5 4e       .N    
     sta l004c                                                         ; a8b0: 85 4c       .L    
-    jsr sub_ca3b5                                                     ; a8b2: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; a8b2: 20 b5 a3     ..   
 ; &a8b5 referenced 1 time by &a8d1
 .loop_ca8b5
     jsr sub_ca7f5                                                     ; a8b5: 20 f5 a7     ..   
@@ -6975,7 +7019,7 @@ l848a = sub_c847b+15
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
     jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..   
-    jsr ca1da                                                         ; a8dd: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a8dd: 20 da a1     ..   
     bpl ca8ea                                                         ; a8e0: 10 08       ..    
     lsr zp_fwa                                                        ; a8e2: 46 2e       F.    
     jsr ca8ea                                                         ; a8e4: 20 ea a8     ..   
@@ -6984,7 +7028,7 @@ l848a = sub_c847b+15
 .ca8ea
     jsr sub_ca381                                                     ; a8ea: 20 81 a3     ..   
     jsr sub_ca9b1                                                     ; a8ed: 20 b1 a9     ..   
-    jsr ca1da                                                         ; a8f0: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a8f0: 20 da a1     ..   
     beq ca8fe                                                         ; a8f3: f0 09       ..    
     jsr sub_ca7f1                                                     ; a8f5: 20 f1 a7     ..   
     jsr sub_ca6ad                                                     ; a8f8: 20 ad a6     ..   
@@ -6992,7 +7036,7 @@ l848a = sub_c847b+15
 ; &a8fe referenced 2 times by &a8f3, &abcb
 .ca8fe
     jsr sub_caa55                                                     ; a8fe: 20 55 aa     U.   
-    jsr sub_ca3b5                                                     ; a901: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; a901: 20 b5 a3     ..   
 ; &a904 referenced 2 times by &a90d, &a93a
 .ca904
     lda #&ff                                                          ; a904: a9 ff       ..    
@@ -7001,7 +7045,7 @@ l848a = sub_c847b+15
     jsr sub_c92fa                                                     ; a907: 20 fa 92     ..   
 ; &a90a referenced 1 time by &a8fb
 .ca90a
-    jsr ca1da                                                         ; a90a: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; a90a: 20 da a1     ..   
     beq ca904                                                         ; a90d: f0 f5       ..    
     bpl ca91b                                                         ; a90f: 10 0a       ..    
     lsr zp_fwa                                                        ; a911: 46 2e       F.    
@@ -7124,7 +7168,7 @@ l848a = sub_c847b+15
     jsr ca500                                                         ; aa1d: 20 00 a5     ..   
     jsr sub_ca38d                                                     ; aa20: 20 8d a3     ..   
     jsr sub_ca7ed                                                     ; aa23: 20 ed a7     ..   
-    jsr sub_ca3b5                                                     ; aa26: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; aa26: 20 b5 a3     ..   
     jsr sub_caa4c                                                     ; aa29: 20 4c aa     L.   
     jsr sub_ca656                                                     ; aa2c: 20 56 a6     V.   
     jsr sub_ca7f5                                                     ; aa2f: 20 f5 a7     ..   
@@ -7202,7 +7246,7 @@ l848a = sub_c847b+15
     sta l004b                                                         ; aac3: 85 4b       .K    
     lda #&aa                                                          ; aac5: a9 aa       ..    
     sta l004c                                                         ; aac7: 85 4c       .L    
-    jsr sub_ca3b5                                                     ; aac9: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; aac9: 20 b5 a3     ..   
     lda l004a                                                         ; aacc: a5 4a       .J    
     jsr sub_cab12                                                     ; aace: 20 12 ab     ..   
 ; &aad1 referenced 3 times by &9e78, &a954, &a9d0
@@ -7258,15 +7302,15 @@ l848a = sub_c847b+15
     jmp caeea                                                         ; ab3e: 4c ea ae    L..   
 .fn_point
     jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..   
-    jsr cbd94                                                         ; ab44: 20 94 bd     ..   
+    jsr stack_integer                                                 ; ab44: 20 94 bd     ..   
     jsr skip_spaces_expect_comma                                      ; ab47: 20 ae 8a     ..   
     jsr cae56                                                         ; ab4a: 20 56 ae     V.   
-    jsr c92f0                                                         ; ab4d: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; ab4d: 20 f0 92     ..   
     lda zp_iwa                                                        ; ab50: a5 2a       .*    
     pha                                                               ; ab52: 48          H     
     lda l002b                                                         ; ab53: a5 2b       .+    
     pha                                                               ; ab55: 48          H     
-    jsr sub_cbdea                                                     ; ab56: 20 ea bd     ..   
+    jsr unstack_integer                                               ; ab56: 20 ea bd     ..   
     pla                                                               ; ab59: 68          h     
     sta l002d                                                         ; ab5a: 85 2d       .-    
     pla                                                               ; ab5c: 68          h     
@@ -7289,12 +7333,12 @@ l848a = sub_c847b+15
     jmp caed8                                                         ; ab7c: 4c d8 ae    L..   
 ; &ab7f referenced 1 time by &ab8d
 .loop_cab7f
-    jsr ca1da                                                         ; ab7f: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; ab7f: 20 da a1     ..   
     beq caba2                                                         ; ab82: f0 1e       ..    
     bpl caba0                                                         ; ab84: 10 1a       ..    
     bmi cab9d                                                         ; ab86: 30 15       0.    
 .fn_sgn
-    jsr cadec                                                         ; ab88: 20 ec ad     ..   
+    jsr eval_factor                                                   ; ab88: 20 ec ad     ..   
     beq cabe6                                                         ; ab8b: f0 59       .Y    
     bmi loop_cab7f                                                    ; ab8d: 30 f0       0.    
     lda l002d                                                         ; ab8f: a5 2d       .-    
@@ -7359,13 +7403,13 @@ l848a = sub_c847b+15
 .cabe6
     jmp c8c0e                                                         ; abe6: 4c 0e 8c    L..   
 .fn_eval
-    jsr cadec                                                         ; abe9: 20 ec ad     ..   
+    jsr eval_factor                                                   ; abe9: 20 ec ad     ..   
     bne cabe6                                                         ; abec: d0 f8       ..    
     inc zp_strbuf_len                                                 ; abee: e6 36       .6    
     ldy zp_strbuf_len                                                 ; abf0: a4 36       .6    
     lda #&0d                                                          ; abf2: a9 0d       ..    
     sta l05ff,y                                                       ; abf4: 99 ff 05    ...   
-    jsr cbdb2                                                         ; abf7: 20 b2 bd     ..   
+    jsr stack_string                                                  ; abf7: 20 b2 bd     ..   
     lda zp_text_ptr2                                                  ; abfa: a5 19       ..    
     pha                                                               ; abfc: 48          H     
     lda l001a                                                         ; abfd: a5 1a       ..    
@@ -7401,7 +7445,7 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; ac2c: a5 27       .'    
     rts                                                               ; ac2e: 60          `     
 .fn_val
-    jsr cadec                                                         ; ac2f: 20 ec ad     ..   
+    jsr eval_factor                                                   ; ac2f: 20 ec ad     ..   
     bne cac9b                                                         ; ac32: d0 67       .g    
 ; &ac34 referenced 1 time by &bad3
 .sub_cac34
@@ -7443,7 +7487,7 @@ l848a = sub_c847b+15
     sta zp_var_type                                                   ; ac73: 85 27       .'    
     jmp cac23                                                         ; ac75: 4c 23 ac    L#.   
 .fn_int
-    jsr cadec                                                         ; ac78: 20 ec ad     ..   
+    jsr eval_factor                                                   ; ac78: 20 ec ad     ..   
     beq cac9b                                                         ; ac7b: f0 1e       ..    
     bpl return_30                                                     ; ac7d: 10 1b       ..    
     lda zp_fwa                                                        ; ac7f: a5 2e       ..    
@@ -7468,7 +7512,7 @@ l848a = sub_c847b+15
 .cac9b
     jmp c8c0e                                                         ; ac9b: 4c 0e 8c    L..   
 .fn_asc
-    jsr cadec                                                         ; ac9e: 20 ec ad     ..   
+    jsr eval_factor                                                   ; ac9e: 20 ec ad     ..   
     bne cac9b                                                         ; aca1: d0 f8       ..    
     lda zp_strbuf_len                                                 ; aca3: a5 36       .6    
     beq fn_true                                                       ; aca5: f0 1d       ..    
@@ -7516,7 +7560,7 @@ l848a = sub_c847b+15
     cpx #&2c ; ','                                                    ; ace7: e0 2c       .,    
     bne cad03                                                         ; ace9: d0 18       ..    
     inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..    
-    jsr cbdb2                                                         ; aced: 20 b2 bd     ..   
+    jsr stack_string                                                  ; aced: 20 b2 bd     ..   
     jsr sub_c9b29                                                     ; acf0: 20 29 9b     ).   
     bne cac9b                                                         ; acf3: d0 a6       ..    
     lda #1                                                            ; acf5: a9 01       ..    
@@ -7531,9 +7575,9 @@ l848a = sub_c847b+15
     jmp c8aa2                                                         ; ad03: 4c a2 8a    L..   
 ; &ad06 referenced 1 time by &ad01
 .cad06
-    jsr cbdb2                                                         ; ad06: 20 b2 bd     ..   
+    jsr stack_string                                                  ; ad06: 20 b2 bd     ..   
     jsr cae56                                                         ; ad09: 20 56 ae     V.   
-    jsr c92f0                                                         ; ad0c: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; ad0c: 20 f0 92     ..   
     jsr sub_cbdcb                                                     ; ad0f: 20 cb bd     ..   
 ; &ad12 referenced 1 time by &acfd
 .cad12
@@ -7601,7 +7645,7 @@ l848a = sub_c847b+15
 .cad67
     jmp c8c0e                                                         ; ad67: 4c 0e 8c    L..   
 .fn_abs
-    jsr cadec                                                         ; ad6a: 20 ec ad     ..   
+    jsr eval_factor                                                   ; ad6a: 20 ec ad     ..   
     beq cad67                                                         ; ad6d: f0 f8       ..    
     bmi cad77                                                         ; ad6f: 30 06       0.    
 ; &ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80
@@ -7611,12 +7655,12 @@ l848a = sub_c847b+15
     bpl cadaa                                                         ; ad75: 10 33       .3    
 ; &ad77 referenced 1 time by &ad6f
 .cad77
-    jsr ca1da                                                         ; ad77: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; ad77: 20 da a1     ..   
     bpl cad89                                                         ; ad7a: 10 0d       ..    
     bmi cad83                                                         ; ad7c: 30 05       0.    
 ; &ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91
 .cad7e
-    jsr ca1da                                                         ; ad7e: 20 da a1     ..   
+    jsr test_fwa_zero                                                 ; ad7e: 20 da a1     ..   
     beq cad89                                                         ; ad81: f0 06       ..    
 ; &ad83 referenced 1 time by &ad7c
 .cad83
@@ -7703,13 +7747,19 @@ l848a = sub_c847b+15
 ; &ade9 referenced 1 time by &add0
 .cade9
     jmp c8e98                                                         ; ade9: 4c 98 8e    L..   
+; ***************************************************************************************
+; Evaluate a factor (evaluator level 1)
+;
+; Evaluate the highest-precedence level of an expression at PtrB: unary minus, unary plus
+; and NOT; parenthesised sub-expressions; the ?, !, $ and | indirection operators; string
+; literals; and the built-in functions.
 ; &adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83
-.cadec
+.eval_factor
     ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..    
     inc zp_text_ptr2_off                                              ; adee: e6 1b       ..    
     lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..    
     cmp #&20 ; ' '                                                    ; adf2: c9 20       .     
-    beq cadec                                                         ; adf4: f0 f6       ..    
+    beq eval_factor                                                   ; adf4: f0 f6       ..    
     cmp #&2d ; '-'                                                    ; adf6: c9 2d       .-    
     beq loop_cad8c                                                    ; adf8: f0 92       ..    
     cmp #&22                                                          ; adfa: c9 22       ."    
@@ -7851,7 +7901,7 @@ l848a = sub_c847b+15
 .loop_caece
     jmp c8c0e                                                         ; aece: 4c 0e 8c    L..   
 .fn_len
-    jsr cadec                                                         ; aed1: 20 ec ad     ..   
+    jsr eval_factor                                                   ; aed1: 20 ec ad     ..   
     bne loop_caece                                                    ; aed4: d0 f8       ..    
     lda zp_strbuf_len                                                 ; aed6: a5 36       .6    
 ; &aed8 referenced 18 times by &8f6b, &8f76, &9182, &9339, &96f8, &ab6a, &ab73, &ab7c, &aba2, &acaa, &ad4f, &aecc, &aef9, &afbc, &b5a9, &b810, &bf75, &bf93
@@ -7890,7 +7940,7 @@ l848a = sub_c847b+15
 .loop_caf0a
     inc zp_text_ptr2_off                                              ; af0a: e6 1b       ..    
     jsr cae56                                                         ; af0c: 20 56 ae     V.   
-    jsr c92f0                                                         ; af0f: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; af0f: 20 f0 92     ..   
     lda l002d                                                         ; af12: a5 2d       .-    
     bmi caf3f                                                         ; af14: 30 29       0)    
     ora l002c                                                         ; af16: 05 2c       .,    
@@ -7903,7 +7953,7 @@ l848a = sub_c847b+15
 ; &af24 referenced 1 time by &af1a
 .caf24
     jsr ca2be                                                         ; af24: 20 be a2     ..   
-    jsr cbd51                                                         ; af27: 20 51 bd     Q.   
+    jsr stack_real                                                    ; af27: 20 51 bd     Q.   
     jsr caf69                                                         ; af2a: 20 69 af     i.   
     jsr sub_cbd7e                                                     ; af2d: 20 7e bd     ~.   
     jsr sub_ca606                                                     ; af30: 20 06 a6     ..   
@@ -8011,9 +8061,9 @@ l848a = sub_c847b+15
     cpx #&2c ; ','                                                    ; afd1: e0 2c       .,    
     bne cb036                                                         ; afd3: d0 61       .a    
     inc zp_text_ptr2_off                                              ; afd5: e6 1b       ..    
-    jsr cbdb2                                                         ; afd7: 20 b2 bd     ..   
+    jsr stack_string                                                  ; afd7: 20 b2 bd     ..   
     jsr cae56                                                         ; afda: 20 56 ae     V.   
-    jsr c92f0                                                         ; afdd: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; afdd: 20 f0 92     ..   
     jsr sub_cbdcb                                                     ; afe0: 20 cb bd     ..   
     lda zp_iwa                                                        ; afe3: a5 2a       .*    
     cmp zp_strbuf_len                                                 ; afe5: c5 36       .6    
@@ -8029,9 +8079,9 @@ l848a = sub_c847b+15
     cpx #&2c ; ','                                                    ; aff3: e0 2c       .,    
     bne cb036                                                         ; aff5: d0 3f       .?    
     inc zp_text_ptr2_off                                              ; aff7: e6 1b       ..    
-    jsr cbdb2                                                         ; aff9: 20 b2 bd     ..   
+    jsr stack_string                                                  ; aff9: 20 b2 bd     ..   
     jsr cae56                                                         ; affc: 20 56 ae     V.   
-    jsr c92f0                                                         ; afff: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; afff: 20 f0 92     ..   
     jsr sub_cbdcb                                                     ; b002: 20 cb bd     ..   
     lda zp_strbuf_len                                                 ; b005: a5 36       .6    
     sec                                                               ; b007: 38          8     
@@ -8078,7 +8128,7 @@ l848a = sub_c847b+15
     bne cb033                                                         ; b03c: d0 f5       ..    
     cpx #&2c ; ','                                                    ; b03e: e0 2c       .,    
     bne cb036                                                         ; b040: d0 f4       ..    
-    jsr cbdb2                                                         ; b042: 20 b2 bd     ..   
+    jsr stack_string                                                  ; b042: 20 b2 bd     ..   
     inc zp_text_ptr2_off                                              ; b045: e6 1b       ..    
     jsr sub_c92dd                                                     ; b047: 20 dd 92     ..   
     lda zp_iwa                                                        ; b04a: a5 2a       .*    
@@ -8091,7 +8141,7 @@ l848a = sub_c847b+15
     cpx #&2c ; ','                                                    ; b057: e0 2c       .,    
     bne cb036                                                         ; b059: d0 db       ..    
     jsr cae56                                                         ; b05b: 20 56 ae     V.   
-    jsr c92f0                                                         ; b05e: 20 f0 92     ..   
+    jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..   
 ; &b061 referenced 1 time by &b055
 .cb061
     jsr sub_cbdcb                                                     ; b061: 20 cb bd     ..   
@@ -8140,7 +8190,7 @@ l848a = sub_c847b+15
 .cb0a1
     tya                                                               ; b0a1: 98          .     
     pha                                                               ; b0a2: 48          H     
-    jsr cadec                                                         ; b0a3: 20 ec ad     ..   
+    jsr eval_factor                                                   ; b0a3: 20 ec ad     ..   
     beq cb0bf                                                         ; b0a6: f0 17       ..    
     tay                                                               ; b0a8: a8          .     
     pla                                                               ; b0a9: 68          h     
@@ -8161,11 +8211,11 @@ l848a = sub_c847b+15
     jmp c8c0e                                                         ; b0bf: 4c 0e 8c    L..   
 .fn_strings
     jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..   
-    jsr cbd94                                                         ; b0c5: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b0c5: 20 94 bd     ..   
     jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..   
     jsr cae56                                                         ; b0cb: 20 56 ae     V.   
     bne cb0bf                                                         ; b0ce: d0 ef       ..    
-    jsr sub_cbdea                                                     ; b0d0: 20 ea bd     ..   
+    jsr unstack_integer                                               ; b0d0: 20 ea bd     ..   
     ldy zp_strbuf_len                                                 ; b0d3: a4 36       .6    
     beq cb0f5                                                         ; b0d5: f0 1e       ..    
     lda zp_iwa                                                        ; b0d7: a5 2a       .*    
@@ -8466,7 +8516,7 @@ l848a = sub_c847b+15
     jsr sub_cbd90                                                     ; b291: 20 90 bd     ..   
     lda zp_var_type                                                   ; b294: a5 27       .'    
     sta l002d                                                         ; b296: 85 2d       .-    
-    jsr cbd94                                                         ; b298: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b298: 20 94 bd     ..   
     pla                                                               ; b29b: 68          h     
     tax                                                               ; b29c: aa          .     
     inx                                                               ; b29d: e8          .     
@@ -8497,7 +8547,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; b2c9: 00          .     
 ; &b2ca referenced 2 times by &b2b3, &b305
 .cb2ca
-    jsr sub_cbdea                                                     ; b2ca: 20 ea bd     ..   
+    jsr unstack_integer                                               ; b2ca: 20 ea bd     ..   
     pla                                                               ; b2cd: 68          h     
     sta zp_iwa                                                        ; b2ce: 85 2a       .*    
     pla                                                               ; b2d0: 68          h     
@@ -8513,11 +8563,11 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; b2e3: a5 27       .'    
     bpl cb2f0                                                         ; b2e5: 10 09       ..    
     jsr sub_cbd7e                                                     ; b2e7: 20 7e bd     ~.   
-    jsr sub_ca3b5                                                     ; b2ea: 20 b5 a3     ..   
+    jsr unpack_fwa_from_ptr                                           ; b2ea: 20 b5 a3     ..   
     jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..   
 ; &b2f0 referenced 1 time by &b2e5
 .cb2f0
-    jsr sub_cbdea                                                     ; b2f0: 20 ea bd     ..   
+    jsr unstack_integer                                               ; b2f0: 20 ea bd     ..   
 ; &b2f3 referenced 1 time by &b2ed
 .cb2f3
     jsr sub_cb4b7                                                     ; b2f3: 20 b7 b4     ..   
@@ -8554,7 +8604,7 @@ l848a = sub_c847b+15
     jsr sub_caf56                                                     ; b326: 20 56 af     V.   
 ; &b329 referenced 2 times by &b320, &b322
 .cb329
-    jmp cbd94                                                         ; b329: 4c 94 bd    L..   
+    jmp stack_integer                                                 ; b329: 4c 94 bd    L..   
 ; &b32c referenced 3 times by &9685, &ae27, &b318
 .cb32c
     ldy l002c                                                         ; b32c: a4 2c       .,    
@@ -8728,7 +8778,7 @@ l848a = sub_c847b+15
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
     equb &9e, &3a, &e0, &8b, &f1, &3a, &e0, &0d                       ; b444: 9e 3a e0... .:....
 .stmt_sound
-    jsr sub_c8821                                                     ; b44c: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.   
     ldx #3                                                            ; b44f: a2 03       ..    
 ; &b451 referenced 1 time by &b45f
 .loop_cb451
@@ -8752,7 +8802,7 @@ l848a = sub_c847b+15
     ldx #5                                                            ; b46e: a2 05       ..    
     bne cb48f                                                         ; b470: d0 1d       ..    
 .stmt_envelope
-    jsr sub_c8821                                                     ; b472: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.   
     ldx #&0d                                                          ; b475: a2 0d       ..    
 ; &b477 referenced 1 time by &b482
 .loop_cb477
@@ -8782,7 +8832,7 @@ l848a = sub_c847b+15
     jsr osword                                                        ; b49a: 20 f1 ff     ..      ; ENVELOPE command
     jmp c8b9b                                                         ; b49d: 4c 9b 8b    L..   
 .stmt_width
-    jsr sub_c8821                                                     ; b4a0: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.   
     jsr sub_c9852                                                     ; b4a3: 20 52 98     R.   
     ldy zp_iwa                                                        ; b4a6: a4 2a       .*    
     dey                                                               ; b4a8: 88          .     
@@ -8957,7 +9007,7 @@ l848a = sub_c847b+15
 ; &b58a referenced 1 time by &b5a1
 .loop_cb58a
     inc zp_text_ptr_off                                               ; b58a: e6 0a       ..    
-    jsr sub_c9b1d                                                     ; b58c: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; b58c: 20 1d 9b     ..   
     jsr c984c                                                         ; b58f: 20 4c 98     L.   
     jsr sub_c92ee                                                     ; b592: 20 ee 92     ..   
     lda zp_iwa                                                        ; b595: a5 2a       .*    
@@ -8974,7 +9024,7 @@ l848a = sub_c847b+15
     jsr caed8                                                         ; b5a9: 20 d8 ae     ..   
     jsr sub_c97df                                                     ; b5ac: 20 df 97     ..   
     php                                                               ; b5af: 08          .     
-    jsr cbd94                                                         ; b5b0: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b5b0: 20 94 bd     ..   
     lda #&ff                                                          ; b5b3: a9 ff       ..    
     sta zp_iwa                                                        ; b5b5: 85 2a       .*    
     lda #&7f                                                          ; b5b7: a9 7f       ..    
@@ -8984,8 +9034,8 @@ l848a = sub_c847b+15
     jsr skip_spaces                                                   ; b5be: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b5c1: c9 2c       .,    
     beq cb5d8                                                         ; b5c3: f0 13       ..    
-    jsr sub_cbdea                                                     ; b5c5: 20 ea bd     ..   
-    jsr cbd94                                                         ; b5c8: 20 94 bd     ..   
+    jsr unstack_integer                                               ; b5c5: 20 ea bd     ..   
+    jsr stack_integer                                                 ; b5c8: 20 94 bd     ..   
     dec zp_text_ptr_off                                               ; b5cb: c6 0a       ..    
     bpl cb5db                                                         ; b5cd: 10 0c       ..    
 ; &b5cf referenced 1 time by &b5bc
@@ -9003,9 +9053,9 @@ l848a = sub_c847b+15
     sta l0031                                                         ; b5dd: 85 31       .1    
     lda l002b                                                         ; b5df: a5 2b       .+    
     sta l0032                                                         ; b5e1: 85 32       .2    
-    jsr c9857                                                         ; b5e3: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b5e3: 20 57 98     W.   
     jsr sub_cbe6f                                                     ; b5e6: 20 6f be     o.   
-    jsr sub_cbdea                                                     ; b5e9: 20 ea bd     ..   
+    jsr unstack_integer                                               ; b5e9: 20 ea bd     ..   
     jsr sub_c9970                                                     ; b5ec: 20 70 99     p.   
     lda l003d                                                         ; b5ef: a5 3d       .=    
     sta zp_text_ptr                                                   ; b5f1: 85 0b       ..    
@@ -9280,7 +9330,7 @@ l848a = sub_c847b+15
     jsr sub_c9582                                                     ; b7c4: 20 82 95     ..   
     beq cb7a4                                                         ; b7c7: f0 db       ..    
     bcs cb7a4                                                         ; b7c9: b0 d9       ..    
-    jsr cbd94                                                         ; b7cb: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..   
     jsr sub_c9841                                                     ; b7ce: 20 41 98     A.   
     jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..   
     ldy zp_for_level                                                  ; b7d4: a4 26       .&    
@@ -9373,7 +9423,7 @@ l848a = sub_c847b+15
     jsr sub_cb99a                                                     ; b888: 20 9a b9     ..   
 ; &b88b referenced 1 time by &b97a
 .cb88b
-    jsr c9857                                                         ; b88b: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b88b: 20 57 98     W.   
     ldy zp_gosub_level                                                ; b88e: a4 25       .%    
     cpy #&1a                                                          ; b890: c0 1a       ..    
     bcs cb8a2                                                         ; b892: b0 0e       ..    
@@ -9394,7 +9444,7 @@ l848a = sub_c847b+15
     equs "&No "                                                       ; b8b0: 26 4e 6f... &No...
     equb &e4, &00                                                     ; b8b4: e4 00       ..    
 .stmt_return
-    jsr c9857                                                         ; b8b6: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.   
     ldx zp_gosub_level                                                ; b8b9: a6 25       .%    
     beq loop_cb8af                                                    ; b8bb: f0 f2       ..    
     dec zp_gosub_level                                                ; b8bd: c6 25       .%    
@@ -9405,7 +9455,7 @@ l848a = sub_c847b+15
     jmp c8b9b                                                         ; b8c9: 4c 9b 8b    L..   
 .stmt_goto
     jsr sub_cb99a                                                     ; b8cc: 20 9a b9     ..   
-    jsr c9857                                                         ; b8cf: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.   
 ; &b8d2 referenced 3 times by &98ee, &b8a0, &b967
 .cb8d2
     lda zp_trace_flag                                                 ; b8d2: a5 20       .     
@@ -9422,7 +9472,7 @@ l848a = sub_c847b+15
     jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..   
 ; &b8e4 referenced 1 time by &b8f7
 .loop_cb8e4
-    jsr c9857                                                         ; b8e4: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.   
     lda #&33 ; '3'                                                    ; b8e7: a9 33       .3    
     sta zp_error_vec                                                  ; b8e9: 85 16       ..    
     lda #&b4                                                          ; b8eb: a9 b4       ..    
@@ -9452,8 +9502,8 @@ l848a = sub_c847b+15
     cmp #&85                                                          ; b918: c9 85       ..    
     beq loop_cb8f2                                                    ; b91a: f0 d6       ..    
     dec zp_text_ptr_off                                               ; b91c: c6 0a       ..    
-    jsr sub_c9b1d                                                     ; b91e: 20 1d 9b     ..   
-    jsr c92f0                                                         ; b921: 20 f0 92     ..   
+    jsr eval_expr                                                     ; b91e: 20 1d 9b     ..   
+    jsr coerce_to_integer                                             ; b921: 20 f0 92     ..   
     ldy zp_text_ptr2_off                                              ; b924: a4 1b       ..    
     iny                                                               ; b926: c8          .     
     sty zp_text_ptr_off                                               ; b927: 84 0a       ..    
@@ -9537,8 +9587,8 @@ l848a = sub_c847b+15
 .sub_cb99a
     jsr sub_c97df                                                     ; b99a: 20 df 97     ..   
     bcs cb9af                                                         ; b99d: b0 10       ..    
-    jsr sub_c9b1d                                                     ; b99f: 20 1d 9b     ..   
-    jsr c92f0                                                         ; b9a2: 20 f0 92     ..   
+    jsr eval_expr                                                     ; b99f: 20 1d 9b     ..   
+    jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..   
     lda zp_text_ptr2_off                                              ; b9a5: a5 1b       ..    
     sta zp_text_ptr_off                                               ; b9a7: 85 0a       ..    
     lda l002b                                                         ; b9a9: a5 2b       .+    
@@ -9585,7 +9635,7 @@ l848a = sub_c847b+15
     pla                                                               ; b9ed: 68          h     
     sta l004d                                                         ; b9ee: 85 4d       .M    
     php                                                               ; b9f0: 08          .     
-    jsr cbd94                                                         ; b9f1: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b9f1: 20 94 bd     ..   
     ldy l004d                                                         ; b9f4: a4 4d       .M    
     jsr osbget                                                        ; b9f6: 20 d7 ff     ..   
     sta zp_var_type                                                   ; b9f9: 85 27       .'    
@@ -9732,7 +9782,7 @@ l848a = sub_c847b+15
 .cbacd
     plp                                                               ; bacd: 28          (     
     bcs cbadc                                                         ; bace: b0 0c       ..    
-    jsr cbd94                                                         ; bad0: 20 94 bd     ..   
+    jsr stack_integer                                                 ; bad0: 20 94 bd     ..   
     jsr sub_cac34                                                     ; bad3: 20 34 ac     4.   
     jsr sub_cb4b4                                                     ; bad6: 20 b4 b4     ..   
     jmp cba5a                                                         ; bad9: 4c 5a ba    LZ.   
@@ -9760,7 +9810,7 @@ l848a = sub_c847b+15
     jsr sub_cbe55                                                     ; bb04: 20 55 be     U.   
 ; &bb07 referenced 3 times by &baf5, &baf9, &bafd
 .cbb07
-    jsr c9857                                                         ; bb07: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; bb07: 20 57 98     W.   
     lda l003d                                                         ; bb0a: a5 3d       .=    
     sta zp_data_ptr                                                   ; bb0c: 85 1c       ..    
     lda l003e                                                         ; bb0e: a5 3e       .>    
@@ -9778,13 +9828,13 @@ l848a = sub_c847b+15
     beq cbb15                                                         ; bb22: f0 f1       ..    
     bcs cbb32                                                         ; bb24: b0 0c       ..    
     jsr sub_cbb50                                                     ; bb26: 20 50 bb     P.   
-    jsr cbd94                                                         ; bb29: 20 94 bd     ..   
+    jsr stack_integer                                                 ; bb29: 20 94 bd     ..   
     jsr sub_cb4b1                                                     ; bb2c: 20 b1 b4     ..   
     jmp cbb40                                                         ; bb2f: 4c 40 bb    L@.   
 ; &bb32 referenced 1 time by &bb24
 .cbb32
     jsr sub_cbb50                                                     ; bb32: 20 50 bb     P.   
-    jsr cbd94                                                         ; bb35: 20 94 bd     ..   
+    jsr stack_integer                                                 ; bb35: 20 94 bd     ..   
     jsr sub_cadad                                                     ; bb38: 20 ad ad     ..   
     sta zp_var_type                                                   ; bb3b: 85 27       .'    
     jsr sub_c8c1e                                                     ; bb3d: 20 1e 8c     ..   
@@ -9864,7 +9914,7 @@ l848a = sub_c847b+15
 .return_36
     rts                                                               ; bbb0: 60          `     
 .stmt_until
-    jsr sub_c9b1d                                                     ; bbb1: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..   
     jsr c984c                                                         ; bbb4: 20 4c 98     L.   
     jsr sub_c92ee                                                     ; bbb7: 20 ee 92     ..   
     ldx zp_repeat_level                                               ; bbba: a6 24       .$    
@@ -10085,7 +10135,7 @@ l848a = sub_c847b+15
 .return_38
     rts                                                               ; bd10: 60          `     
 .stmt_run
-    jsr c9857                                                         ; bd11: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; bd11: 20 57 98     W.   
 ; &bd14 referenced 1 time by &bf2d
 .cbd14
     jsr sub_cbd20                                                     ; bd14: 20 20 bd      .   
@@ -10126,8 +10176,13 @@ l848a = sub_c847b+15
     sta zp_gosub_level                                                ; bd4c: 85 25       .%    
     sta zp_data_ptr                                                   ; bd4e: 85 1c       ..    
     rts                                                               ; bd50: 60          `     
+; ***************************************************************************************
+; Push the floating-point accumulator onto the BASIC stack
+;
+; Reserve five bytes on the BASIC stack and copy the packed floating-point accumulator
+; onto it.
 ; &bd51 referenced 12 times by &9a3e, &9a50, &9c8b, &9cac, &9ce1, &9cff, &9d14, &9d20, &9de9, &9e39, &af27, &bd92
-.cbd51
+.stack_real
     lda zp_stack_ptr                                                  ; bd51: a5 04       ..    
     sec                                                               ; bd53: 38          8     
     sbc #5                                                            ; bd54: e9 05       ..    
@@ -10167,10 +10222,15 @@ l848a = sub_c847b+15
     rts                                                               ; bd8f: 60          `     
 ; &bd90 referenced 2 times by &b291, &b31c
 .sub_cbd90
-    beq cbdb2                                                         ; bd90: f0 20       .     
-    bmi cbd51                                                         ; bd92: 30 bd       0.    
+    beq stack_string                                                  ; bd90: f0 20       .     
+    bmi stack_real                                                    ; bd92: 30 bd       0.    
+; ***************************************************************************************
+; Push the integer accumulator onto the BASIC stack
+;
+; Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and copy the integer
+; accumulator (zp_iwa) onto it. Errors if the stack would collide with the heap.
 ; &bd94 referenced 29 times by &85ac, &8beb, &8bfb, &8ed8, &8f36, &8f71, &90b5, &90e8, &9185, &9334, &9400, &96ff, &9744, &9aa2, &9b6f, &9b7e, &9dce, &9e1d, &ab44, &b0c5, &b298, &b329, &b5b0, &b5c8, &b7cb, &b9f1, &bad0, &bb29, &bb35
-.cbd94
+.stack_integer
     lda zp_stack_ptr                                                  ; bd94: a5 04       ..    
     sec                                                               ; bd96: 38          8     
     sbc #4                                                            ; bd97: e9 04       ..    
@@ -10188,8 +10248,13 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; bdad: a5 2a       .*    
     sta (zp_stack_ptr),y                                              ; bdaf: 91 04       ..    
     rts                                                               ; bdb1: 60          `     
+; ***************************************************************************************
+; Push the current string onto the BASIC stack
+;
+; Copy the string from the string buffer (length zp_strbuf_len, &36; text at &0600) onto
+; the BASIC stack, length last.
 ; &bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90
-.cbdb2
+.stack_string
     clc                                                               ; bdb2: 18          .     
     lda zp_stack_ptr                                                  ; bdb3: a5 04       ..    
     sbc zp_strbuf_len                                                 ; bdb5: e5 36       .6    
@@ -10232,8 +10297,13 @@ l848a = sub_c847b+15
     bcc return_39                                                     ; bde5: 90 23       .#    
     inc l0005                                                         ; bde7: e6 05       ..    
     rts                                                               ; bde9: 60          `     
+; ***************************************************************************************
+; Pop an integer from the BASIC stack
+;
+; Copy the four-byte integer on top of the BASIC stack into the integer accumulator
+; (zp_iwa) and drop it.
 ; &bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9
-.sub_cbdea
+.unstack_integer
     ldy #3                                                            ; bdea: a0 03       ..    
     lda (zp_stack_ptr),y                                              ; bdec: b1 04       ..    
     sta l002d                                                         ; bdee: 85 2d       .-    
@@ -10401,7 +10471,7 @@ l848a = sub_c847b+15
     jmp c8c0e                                                         ; becf: 4c 0e 8c    L..   
 ; &bed2 referenced 2 times by &bec2, &bedd
 .sub_cbed2
-    jsr sub_c9b1d                                                     ; bed2: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; bed2: 20 1d 9b     ..   
     bne loop_cbecf                                                    ; bed5: d0 f8       ..    
     jsr sub_cbeb2                                                     ; bed7: 20 b2 be     ..   
     jmp c984c                                                         ; beda: 4c 4c 98    LL.   
@@ -10500,7 +10570,7 @@ l848a = sub_c847b+15
 ; &bf82 referenced 2 times by &bf7a, &bf7e
 .cbf82
     pha                                                               ; bf82: 48          H     
-    jsr cadec                                                         ; bf83: 20 ec ad     ..   
+    jsr eval_factor                                                   ; bf83: 20 ec ad     ..   
     bne cbf96                                                         ; bf86: d0 0e       ..    
     jsr sub_cbeba                                                     ; bf88: 20 ba be     ..   
     ldx #0                                                            ; bf8b: a2 00       ..    
@@ -10557,7 +10627,7 @@ l848a = sub_c847b+15
     bpl loop_cbfd9                                                    ; bfdf: 10 f8       ..    
     jmp (zp_general)                                                  ; bfe1: 6c 37 00    l7.   
 .stmt_report
-    jsr c9857                                                         ; bfe4: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; bfe4: 20 57 98     W.   
     jsr sub_cbc25                                                     ; bfe7: 20 25 bc     %.   
     ldy #1                                                            ; bfea: a0 01       ..    
 ; &bfec referenced 1 time by &bff4
@@ -10609,16 +10679,16 @@ save pydis_start, pydis_end
 ;     l003c:                      39
 ;     l0040:                      37
 ;     l004b:                      31
-;     cbd94:                      29
+;     stack_integer:              29
 ;     l004d:                      28
 ;     zp_vartop:                  28
 ;     string_work:                27
-;     c9857:                      25
+;     check_end_of_statement:     25
 ;     l0041:                      25
 ;     c8b9b:                      23
+;     eval_expr_to_integer:       22
 ;     l001a:                      22
-;     sub_c8821:                  22
-;     c92f0:                      21
+;     coerce_to_integer:          21
 ;     l0005:                      21
 ;     l0049:                      21
 ;     skip_spaces_ptr2:           21
@@ -10629,36 +10699,36 @@ save pydis_start, pydis_end
 ;     l004e:                      19
 ;     c8c0e:                      18
 ;     caed8:                      18
-;     ca1da:                      17
 ;     l0042:                      17
+;     test_fwa_zero:              17
 ;     sub_c9b29:                  16
-;     sub_cbdea:                  16
+;     unstack_integer:            16
 ;     zp_page:                    16
 ;     l0013:                      15
 ;     zp_for_level:               15
 ;     l004c:                      14
-;     cadec:                      13
 ;     cb558:                      13
+;     eval_factor:                13
 ;     ca2be:                      12
-;     cbd51:                      12
 ;     oswrch:                     12
+;     stack_real:                 12
 ;     sub_ca656:                  12
 ;     ca066:                      11
 ;     cae56:                      11
 ;     caeea:                      11
+;     eval_expr:                  11
 ;     osbyte:                     11
 ;     sub_c92fa:                  11
-;     sub_c9b1d:                  11
 ;     sub_cbd7e:                  11
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
 ;     ca500:                      10
 ;     sub_c92e3:                  10
 ;     sub_c97df:                  10
-;     sub_ca3b5:                  10
+;     unpack_fwa_from_ptr:        10
 ;     cb565:                       9
-;     cbdb2:                       9
 ;     l0048:                       9
+;     stack_string:                9
 ;     sub_c9582:                   9
 ;     sub_ca385:                   9
 ;     zp_print_flag:               9
@@ -12017,7 +12087,6 @@ save pydis_start, pydis_end
 ;     c92a5
 ;     c92b7
 ;     c92c0
-;     c92f0
 ;     c92f4
 ;     c92f7
 ;     c9341
@@ -12083,7 +12152,6 @@ save pydis_start, pydis_end
 ;     c9838
 ;     c9849
 ;     c984c
-;     c9857
 ;     c9859
 ;     c9861
 ;     c986d
@@ -12205,7 +12273,6 @@ save pydis_start, pydis_end
 ;     ca170
 ;     ca174
 ;     ca197
-;     ca1da
 ;     ca1ed
 ;     ca1ff
 ;     ca208
@@ -12326,7 +12393,6 @@ save pydis_start, pydis_end
 ;     cadc9
 ;     cade1
 ;     cade9
-;     cadec
 ;     cae05
 ;     cae10
 ;     cae20
@@ -12482,9 +12548,6 @@ save pydis_start, pydis_end
 ;     cbce1
 ;     cbcea
 ;     cbd14
-;     cbd51
-;     cbd94
-;     cbdb2
 ;     cbdc6
 ;     cbddc
 ;     cbde1
@@ -12837,7 +12900,6 @@ save pydis_start, pydis_end
 ;     sub_c834e
 ;     sub_c847b
 ;     sub_c85ba
-;     sub_c8821
 ;     sub_c8827
 ;     sub_c882c
 ;     sub_c882f
@@ -12900,7 +12962,6 @@ save pydis_start, pydis_end
 ;     sub_c9a5f
 ;     sub_c9a9d
 ;     sub_c9a9e
-;     sub_c9b1d
 ;     sub_c9b29
 ;     sub_c9b6b
 ;     sub_c9b72
@@ -12930,7 +12991,6 @@ save pydis_start, pydis_end
 ;     sub_ca381
 ;     sub_ca385
 ;     sub_ca38d
-;     sub_ca3b5
 ;     sub_ca3e7
 ;     sub_ca3fe
 ;     sub_ca453
@@ -12997,7 +13057,6 @@ save pydis_start, pydis_end
 ;     sub_cbd7e
 ;     sub_cbd90
 ;     sub_cbdcb
-;     sub_cbdea
 ;     sub_cbdff
 ;     sub_cbe0b
 ;     sub_cbe0d
