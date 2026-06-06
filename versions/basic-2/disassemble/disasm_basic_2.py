@@ -1295,6 +1295,22 @@ d.comment(0xb8d2, 'TRACE: report the destination line number',
 d.comment(0xb8dd, 'Point the interpreter at the destination line',
           align=Align.INLINE)
 
+# --- REPEAT / UNTIL: condition loop on a 20-entry stack --------------
+# REPEAT saves the loop-start position in parallel arrays at &05A4 (low)
+# / &05B8 (high), indexed by zp_repeat_level; UNTIL exits when the
+# condition is true, otherwise loops back.
+d.label(0xbba6, 'err_no_repeat')         # UNTIL with no REPEAT pending
+d.label(0xbbd6, 'err_too_many_repeats')  # REPEAT stack full
+d.comment(0xbbe4, 'Index the REPEAT stack', align=Align.INLINE)
+d.comment(0xbbe6, 'At most 20 nested REPEATs', align=Align.INLINE)
+d.comment(0xbbed, 'Push the loop-start position', align=Align.INLINE)
+d.comment(0xbbb1, 'Evaluate the UNTIL condition', align=Align.INLINE)
+d.comment(0xbbba, 'UNTIL with no REPEAT pending: error', align=Align.INLINE)
+d.comment(0xbbc6, 'Condition false: loop back to the REPEAT', align=Align.INLINE)
+d.comment(0xbbc8, 'Condition true: pop the frame and continue',
+          align=Align.INLINE)
+d.comment(0xbbcd, 'Reload the saved loop-start position', align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

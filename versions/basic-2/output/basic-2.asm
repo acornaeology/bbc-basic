@@ -10687,7 +10687,7 @@ l848a = sub_c847b+15
     equs "*Out of "                                                   ; bb9d: 2a 4f 75... *Ou...
     equb &dc                                                          ; bba5: dc          .     
 ; &bba6 referenced 1 time by &bbbc
-.loop_cbba6
+.err_no_repeat
     brk                                                               ; bba6: 00          .     
     equs "+No "                                                       ; bba7: 2b 4e 6f... +No...
     equb &f5, &00                                                     ; bbab: f5 00       ..    
@@ -10703,25 +10703,25 @@ l848a = sub_c847b+15
 ;
 ; End a REPEAT loop: loop back unless the condition is true. UNTIL expr.
 .stmt_until
-    jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..   
+    jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..      ; Evaluate the UNTIL condition
     jsr c984c                                                         ; bbb4: 20 4c 98     L.   
     jsr sub_c92ee                                                     ; bbb7: 20 ee 92     ..   
-    ldx zp_repeat_level                                               ; bbba: a6 24       .$    
-    beq loop_cbba6                                                    ; bbbc: f0 e8       ..    
+    ldx zp_repeat_level                                               ; bbba: a6 24       .$       ; UNTIL with no REPEAT pending: error
+    beq err_no_repeat                                                 ; bbbc: f0 e8       ..    
     lda zp_iwa                                                        ; bbbe: a5 2a       .*    
     ora zp_iwa_1                                                      ; bbc0: 05 2b       .+    
     ora zp_iwa_2                                                      ; bbc2: 05 2c       .,    
     ora zp_iwa_3                                                      ; bbc4: 05 2d       .-    
-    beq cbbcd                                                         ; bbc6: f0 05       ..    
-    dec zp_repeat_level                                               ; bbc8: c6 24       .$    
+    beq cbbcd                                                         ; bbc6: f0 05       ..       ; Condition false: loop back to the REPEAT
+    dec zp_repeat_level                                               ; bbc8: c6 24       .$       ; Condition true: pop the frame and continue
     jmp statement_loop                                                ; bbca: 4c 9b 8b    L..   
 ; &bbcd referenced 1 time by &bbc6
 .cbbcd
-    ldy l05a3,x                                                       ; bbcd: bc a3 05    ...   
+    ldy l05a3,x                                                       ; bbcd: bc a3 05    ...      ; Reload the saved loop-start position
     lda l05b7,x                                                       ; bbd0: bd b7 05    ...   
     jmp cb8dd                                                         ; bbd3: 4c dd b8    L..   
 ; &bbd6 referenced 1 time by &bbe8
-.loop_cbbd6
+.err_too_many_repeats
     brk                                                               ; bbd6: 00          .     
     equs ",Too many "                                                 ; bbd7: 2c 54 6f... ,To...
     equb &f5, &73, &00                                                ; bbe1: f5 73 00    .s.   
@@ -10730,11 +10730,11 @@ l848a = sub_c847b+15
 ;
 ; Begin a REPEAT...UNTIL loop, stacking the loop position. REPEAT.
 .stmt_repeat
-    ldx zp_repeat_level                                               ; bbe4: a6 24       .$    
-    cpx #&14                                                          ; bbe6: e0 14       ..    
-    bcs loop_cbbd6                                                    ; bbe8: b0 ec       ..    
+    ldx zp_repeat_level                                               ; bbe4: a6 24       .$       ; Index the REPEAT stack
+    cpx #&14                                                          ; bbe6: e0 14       ..       ; At most 20 nested REPEATs
+    bcs err_too_many_repeats                                          ; bbe8: b0 ec       ..    
     jsr c986d                                                         ; bbea: 20 6d 98     m.   
-    lda zp_text_ptr                                                   ; bbed: a5 0b       ..    
+    lda zp_text_ptr                                                   ; bbed: a5 0b       ..       ; Push the loop-start position
     sta l05a4,x                                                       ; bbef: 9d a4 05    ...   
     lda l000c                                                         ; bbf2: a5 0c       ..    
     sta l05b8,x                                                       ; bbf4: 9d b8 05    ...   
@@ -12441,8 +12441,10 @@ save pydis_start, pydis_end
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
 ;     err_no_gosub:                1
+;     err_no_repeat:               1
 ;     err_no_such_line:            1
 ;     err_too_many_gosubs:         1
+;     err_too_many_repeats:        1
 ;     eval_and:                    1
 ;     exec_star_command:           1
 ;     execute_line:                1
@@ -12679,8 +12681,6 @@ save pydis_start, pydis_end
 ;     loop_cbabd:                  1
 ;     loop_cbb6f:                  1
 ;     loop_cbb85:                  1
-;     loop_cbba6:                  1
-;     loop_cbbd6:                  1
 ;     loop_cbc9e:                  1
 ;     loop_cbd07:                  1
 ;     loop_cbd33:                  1
@@ -13661,8 +13661,6 @@ save pydis_start, pydis_end
 ;     loop_cbabd
 ;     loop_cbb6f
 ;     loop_cbb85
-;     loop_cbba6
-;     loop_cbbd6
 ;     loop_cbc9e
 ;     loop_cbd07
 ;     loop_cbd33

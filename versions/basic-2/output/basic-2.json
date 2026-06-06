@@ -95311,7 +95311,7 @@
         0
       ],
       "labels": [
-        "loop_cbba6"
+        "err_no_repeat"
       ],
       "xref_summaries": [
         "&bba6 referenced 1 time by &bbbc"
@@ -95403,6 +95403,7 @@
       "labels": [
         "stmt_until"
       ],
+      "comment_inline": "Evaluate the UNTIL condition",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -95441,6 +95442,7 @@
         166,
         36
       ],
+      "comment_inline": "UNTIL with no REPEAT pending: error",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_repeat_level",
@@ -95455,9 +95457,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cbba6",
+      "operand": "err_no_repeat",
       "target": 48038,
-      "target_label": "loop_cbba6"
+      "target_label": "err_no_repeat"
     },
     {
       "addr": 48062,
@@ -95513,6 +95515,7 @@
         240,
         5
       ],
+      "comment_inline": "Condition false: loop back to the REPEAT",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbbcd",
@@ -95525,6 +95528,7 @@
         198,
         36
       ],
+      "comment_inline": "Condition true: pop the frame and continue",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_repeat_level",
@@ -95554,6 +95558,7 @@
       "labels": [
         "cbbcd"
       ],
+      "comment_inline": "Reload the saved loop-start position",
       "xref_summaries": [
         "&bbcd referenced 1 time by &bbc6"
       ],
@@ -95598,7 +95603,7 @@
         0
       ],
       "labels": [
-        "loop_cbbd6"
+        "err_too_many_repeats"
       ],
       "xref_summaries": [
         "&bbd6 referenced 1 time by &bbe8"
@@ -95649,6 +95654,7 @@
       "labels": [
         "stmt_repeat"
       ],
+      "comment_inline": "Index the REPEAT stack",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_repeat_level",
@@ -95661,6 +95667,7 @@
         224,
         20
       ],
+      "comment_inline": "At most 20 nested REPEATs",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&14"
@@ -95673,9 +95680,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_cbbd6",
+      "operand": "err_too_many_repeats",
       "target": 48086,
-      "target_label": "loop_cbbd6"
+      "target_label": "err_too_many_repeats"
     },
     {
       "addr": 48106,
@@ -95696,6 +95703,7 @@
         165,
         11
       ],
+      "comment_inline": "Push the loop-start position",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
