@@ -183,13 +183,21 @@ Documents the BBC BASIC language from the user's side: every statement and funct
 
 The best reference to the ROM internals: zero-page maps, the keyword table format, the interpreter loop, variable storage, and the floating-point routines. Read the relevant section before annotating each subsystem.
 
-### tobylobster's BBC BASIC II disassembly
-
-An exhaustively annotated disassembly — the gold-standard source of labels and structural understanding.
-
 ### J.G. Harston's source reconstruction
 
-A multi-target reconstruction (`Basic2/Basic2.src`) that reassembles with the BBC BASIC assembler to byte-identical ROMs, with informative block comments and zero-page maps. A local copy is under `docs/disasm/MDFS/`.
+A multi-target reconstruction (`Basic2/Basic2.src`) that reassembles with the BBC BASIC assembler to byte-identical ROMs, with informative block comments and zero-page maps. A local copy is under `docs/disasm/MDFS/`. This is the primary external source of BBC BASIC II label names.
+
+### tobylobster's BBC BASIC tokeniser
+
+The [`basic_tokens`](https://github.com/TobyLobster/basic_tokens) Python tokeniser/detokeniser is a clean cross-reference for the keyword/token table and the tokenising rules (a local checkout is at `/Users/rjs/Code/basic_tokens`).
+
+### Toby Nelson's OS 1.20 reassembly
+
+A fully-annotated reassembly of the BBC Micro MOS (ACME syntax), local at `/Users/rjs/Code/os120`. Invaluable for the OS zero-page / workspace names and the exact semantics of the OSBYTE / OSWORD / vector calls BASIC makes.
+
+### hoglet's BBC BASIC 4r32 disassembly
+
+A byte-identical disassembly of [BBC BASIC 4r32](https://github.com/hoglet67/BBCBasic4r32) — a later, reorganised cousin of BASIC II. Addresses differ, but the structure and label names are useful for cross-referencing when BASIC II code is unclear.
 
 
 ## Lint checks

@@ -15,13 +15,13 @@
             "icon": "chip"
         },
         {
-            "label": "tobylobster's fully-commented BBC BASIC II disassembly",
-            "url": "https://github.com/tobylobster/BBC-BASIC-II-disassembly",
+            "label": "J.G. Harston's BBC BASIC source reconstruction (mdfs.net)",
+            "url": "https://mdfs.net/Software/BBCBasic/BBC/",
             "icon": "ref"
         },
         {
-            "label": "J.G. Harston's BBC BASIC source reconstruction (mdfs.net)",
-            "url": "https://mdfs.net/Software/BBCBasic/BBC/",
+            "label": "hoglet's BBC BASIC 4r32 disassembly",
+            "url": "https://github.com/hoglet67/BBCBasic4r32",
             "icon": "ref"
         },
         {

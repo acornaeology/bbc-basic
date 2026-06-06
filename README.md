@@ -12,8 +12,8 @@ This repository contains an annotated disassembly of the Acorn BBC BASIC ROM, pr
   - [Formatted disassembly on acornaeology.uk](https://acornaeology.uk/bbc-basic/2.html)
   - [Disassembly source on GitHub](https://github.com/acornaeology/bbc-basic/blob/master/versions/basic-2/output/basic-2.asm)
   - [BBC BASIC II in The BBC Micro ROM Library](https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d)
-  - [tobylobster's fully-commented BBC BASIC II disassembly](https://github.com/tobylobster/BBC-BASIC-II-disassembly)
   - [J.G. Harston's BBC BASIC source reconstruction (mdfs.net)](https://mdfs.net/Software/BBCBasic/BBC/)
+  - [hoglet's BBC BASIC 4r32 disassembly](https://github.com/hoglet67/BBCBasic4r32)
   - [The Advanced BASIC ROM User Guide (Colin Pharo)](https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf)
 
 ## How it works
@@ -48,10 +48,12 @@ beebasm -i versions/basic-2/output/basic-2.asm -o basic-2.rom
   A detailed reference to the internals of the BBC BASIC ROM: zero-page usage, the keyword table, the interpreter loop, variable storage, and the floating-point routines.
 - [BBC Microcomputer System User Guide (John Coll)](https://archive.org/details/BBCUserGuide)
   The official BBC Micro user guide. Much of it documents the BBC BASIC language: statements, functions, operators, and the assembler.
-- [tobylobster's fully-commented BBC BASIC II disassembly](https://github.com/tobylobster/BBC-BASIC-II-disassembly)
-  An exhaustively annotated disassembly of BBC BASIC II — the best public source of labels and structural understanding.
 - [J.G. Harston's BBC BASIC source reconstruction](https://mdfs.net/Software/BBCBasic/BBC/)
-  A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation.
+  A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation. The primary external source of BBC BASIC II labels.
+- [tobylobster's BBC BASIC tokeniser/detokeniser](https://github.com/TobyLobster/basic_tokens)
+  A Python BBC BASIC tokeniser and detokeniser — a clean reference for the keyword/token table and the tokenising rules.
+- [hoglet's BBC BASIC 4r32 disassembly](https://github.com/hoglet67/BBCBasic4r32)
+  A byte-identical disassembly of BBC BASIC 4r32. A later, reorganised cousin of BASIC II, useful for cross-referencing structure and label names.
 - [BBC BASIC II in The BBC Micro ROM Library](https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d)
   The exact ROM image catalogued by tobylobster's ROM library, identified by MD5.
 

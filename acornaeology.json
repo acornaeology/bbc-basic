@@ -18,16 +18,22 @@
             "note": "The official BBC Micro user guide. Much of it documents the BBC BASIC language: statements, functions, operators, and the assembler."
         },
         {
-            "label": "tobylobster's fully-commented BBC BASIC II disassembly",
-            "url": "https://github.com/tobylobster/BBC-BASIC-II-disassembly",
-            "icon": "ref",
-            "note": "An exhaustively annotated disassembly of BBC BASIC II — the best public source of labels and structural understanding."
-        },
-        {
             "label": "J.G. Harston's BBC BASIC source reconstruction",
             "url": "https://mdfs.net/Software/BBCBasic/BBC/",
             "icon": "ref",
-            "note": "A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation."
+            "note": "A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation. The primary external source of BBC BASIC II labels."
+        },
+        {
+            "label": "tobylobster's BBC BASIC tokeniser/detokeniser",
+            "url": "https://github.com/TobyLobster/basic_tokens",
+            "icon": "ref",
+            "note": "A Python BBC BASIC tokeniser and detokeniser — a clean reference for the keyword/token table and the tokenising rules."
+        },
+        {
+            "label": "hoglet's BBC BASIC 4r32 disassembly",
+            "url": "https://github.com/hoglet67/BBCBasic4r32",
+            "icon": "ref",
+            "note": "A byte-identical disassembly of BBC BASIC 4r32. A later, reorganised cousin of BASIC II, useful for cross-referencing structure and label names."
         },
         {
             "label": "BBC BASIC II in The BBC Micro ROM Library",
