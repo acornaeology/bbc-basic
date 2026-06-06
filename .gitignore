@@ -7,3 +7,6 @@ build/
 .claude/
 uv.lock
 versions/*/context/
+
+# JGH correlation outputs (regenerate with tools/correlate_jgh.py)
+tools/*.tsv
