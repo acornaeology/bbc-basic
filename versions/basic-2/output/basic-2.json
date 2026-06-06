@@ -631,6 +631,51 @@
     {
       "addr": 48834,
       "name": "stmt_oscli"
+    },
+    {
+      "addr": 35479,
+      "name": "skip_spaces",
+      "title": "Skip spaces at the text pointer",
+      "description": "Advance the primary text pointer past any spaces and return the\nfirst non-space character. The workhorse of the tokeniser and\ninterpreter: most statements call it between syntax elements.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B)": "points at the line being interpreted",
+        "zp_text_ptr_off (&0A)": "offset of the next character"
+      },
+      "on_exit": {
+        "A": "first non-space character",
+        "Y": "its offset within the line",
+        "zp_text_ptr_off (&0A)": "advanced past that character"
+      }
+    },
+    {
+      "addr": 35468,
+      "name": "skip_spaces_ptr2",
+      "title": "Skip spaces at the secondary text pointer",
+      "description": "As skip_spaces, but works on the secondary text pointer\n(zp_text_ptr2, &19) and its offset (&1B). Used while the primary\npointer is preserved, e.g. when scanning ahead during assignment.\n",
+      "on_exit": {
+        "A": "first non-space character",
+        "Y": "its offset",
+        "&1B": "advanced past that character"
+      }
+    },
+    {
+      "addr": 35502,
+      "name": "skip_spaces_expect_comma",
+      "title": "Skip spaces and require a comma",
+      "description": "Call skip_spaces, then check the character is a comma. Raises\n\"Missing ,\" if it is not. Used by statements that take a\ncomma-separated argument list.\n"
+    },
+    {
+      "addr": 35138,
+      "name": "read_via_ptr_general",
+      "title": "Read a byte via the general pointer, then advance it",
+      "description": "Load the byte at (zp_general),Y and fall through to\ninc_ptr_general to step the 16-bit pointer on by one.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35140,
+      "name": "inc_ptr_general",
+      "title": "Increment the general 16-bit pointer",
+      "description": "Increment the little-endian pointer held in zp_general\n(&37/&38) by one, carrying into the high byte.\n"
     }
   ],
   "banners": [
@@ -7939,9 +7984,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34059,
@@ -9050,9 +9095,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34239,
@@ -10664,9 +10709,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34494,
@@ -10848,9 +10893,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34522,
@@ -10905,9 +10950,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34532,
@@ -10940,9 +10985,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34539,
@@ -10988,9 +11033,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34549,
@@ -11066,9 +11111,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34562,
@@ -11101,9 +11146,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34569,
@@ -11226,9 +11271,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34589,
@@ -11274,9 +11319,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34599,
@@ -11493,9 +11538,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34634,
@@ -11562,9 +11607,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34646,
@@ -11610,9 +11655,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34656,
@@ -11755,9 +11800,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34681,
@@ -11902,9 +11947,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34705,
@@ -12061,9 +12106,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34731,
@@ -12202,9 +12247,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34756,
@@ -12312,9 +12357,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34775,
@@ -12369,9 +12414,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34785,
@@ -12507,9 +12552,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34809,
@@ -12542,9 +12587,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 34816,
@@ -14394,9 +14439,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35100,
@@ -14407,9 +14452,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35103,
@@ -14420,9 +14465,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35106,
@@ -14669,7 +14714,7 @@
         55
       ],
       "labels": [
-        "sub_c8942"
+        "read_via_ptr_general"
       ],
       "xref_summaries": [
         "&8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6"
@@ -14693,7 +14738,7 @@
         55
       ],
       "labels": [
-        "sub_c8944"
+        "inc_ptr_general"
       ],
       "xref_summaries": [
         "&8944 referenced 8 times by &8919, &891c, &891f, &894b, &8961, &89bc, &89d9, &8a79"
@@ -14776,9 +14821,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35150,
@@ -14943,9 +14988,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35172,
@@ -15513,9 +15558,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35263,
@@ -15697,9 +15742,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35292,
@@ -16796,9 +16841,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8944",
+      "operand": "inc_ptr_general",
       "target": 35140,
-      "target_label": "sub_c8944"
+      "target_label": "inc_ptr_general"
     },
     {
       "addr": 35452,
@@ -16928,7 +16973,7 @@
         27
       ],
       "labels": [
-        "c8a8c"
+        "skip_spaces_ptr2"
       ],
       "xref_summaries": [
         "&8a8c referenced 21 times by &8a94, &8aae, &8d32, &8e43, &8ee3, &9841, &ac50, &ac5b, &ac66, &adad, &ae02, &b094, &b287, &b2a0, &b7ea, &b813, &b866, &babd, &bb60, &bb6f, &bfb5"
@@ -16992,6 +17037,7 @@
         201,
         32
       ],
+      "comment_inline": "Loop while the character is a space",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -17004,9 +17050,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 35478,
@@ -17032,7 +17078,7 @@
         10
       ],
       "labels": [
-        "c8a97"
+        "skip_spaces"
       ],
       "xref_summaries": [
         "&8a97 referenced 48 times by &8508, &85bc, &86bb, &86d7, &86e1, &86e8, &86f2, &86ff, &8706, &871a, &8724, &8747, &8753, &875d, &8776, &878e, &87a8, &87c1, &87d4, &87de, &87f6, &87fd, &8a9f, &8b38, &8d89, &8d9a, &8dc3, &8e8a, &8f39, &8f79, &912f, &91a9, &920b, &9349, &942f, &9446, &b13f, &b1f9, &b279, &b5be, &b5cf, &b75c, &b8f2, &b915, &b9da, &ba44, &baee, &bb15"
@@ -17123,6 +17169,7 @@
         201,
         32
       ],
+      "comment_inline": "Loop while the character is a space",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -17135,9 +17182,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 35489,
@@ -17211,7 +17258,7 @@
         138
       ],
       "labels": [
-        "sub_c8aae"
+        "skip_spaces_expect_comma"
       ],
       "xref_summaries": [
         "&8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c"
@@ -17225,9 +17272,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 35505,
@@ -18031,9 +18078,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 35643,
@@ -21307,9 +21354,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 36149,
@@ -21857,9 +21904,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36236,
@@ -21951,9 +21998,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36253,
@@ -22229,9 +22276,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36294,
@@ -22991,9 +23038,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 36422,
@@ -23475,9 +23522,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36493,
@@ -23966,9 +24013,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 36582,
@@ -24427,9 +24474,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36668,
@@ -24764,9 +24811,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 36732,
@@ -27358,9 +27405,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37170,
@@ -28089,9 +28136,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37292,
@@ -28713,9 +28760,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37390,
@@ -29993,9 +30040,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8aae",
+      "operand": "skip_spaces_expect_comma",
       "target": 35502,
-      "target_label": "sub_c8aae"
+      "target_label": "skip_spaces_expect_comma"
     },
     {
       "addr": 37597,
@@ -30748,9 +30795,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37708,
@@ -31751,9 +31798,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8aae",
+      "operand": "skip_spaces_expect_comma",
       "target": 35502,
-      "target_label": "sub_c8aae"
+      "target_label": "skip_spaces_expect_comma"
     },
     {
       "addr": 37882,
@@ -32039,9 +32086,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37938,
@@ -32165,9 +32212,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 37961,
@@ -38886,9 +38933,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 38980,
@@ -68918,9 +68965,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8aae",
+      "operand": "skip_spaces_expect_comma",
       "target": 35502,
-      "target_label": "sub_c8aae"
+      "target_label": "skip_spaces_expect_comma"
     },
     {
       "addr": 43850,
@@ -70501,9 +70548,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 44115,
@@ -70558,9 +70605,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 44126,
@@ -70627,9 +70674,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 44137,
@@ -72729,9 +72776,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 44464,
@@ -73298,9 +73345,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 44549,
@@ -77289,9 +77336,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 45207,
@@ -77594,9 +77641,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8aae",
+      "operand": "skip_spaces_expect_comma",
       "target": 35502,
-      "target_label": "sub_c8aae"
+      "target_label": "skip_spaces_expect_comma"
     },
     {
       "addr": 45259,
@@ -78347,9 +78394,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 45378,
@@ -79498,9 +79545,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 45564,
@@ -80342,9 +80389,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 45692,
@@ -80417,9 +80464,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 45706,
@@ -80564,9 +80611,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 45731,
@@ -82536,9 +82583,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8942",
+      "operand": "read_via_ptr_general",
       "target": 35138,
-      "target_label": "sub_c8942"
+      "target_label": "read_via_ptr_general"
     },
     {
       "addr": 46044,
@@ -82619,9 +82666,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8942",
+      "operand": "read_via_ptr_general",
       "target": 35138,
-      "target_label": "sub_c8942"
+      "target_label": "read_via_ptr_general"
     },
     {
       "addr": 46059,
@@ -82666,9 +82713,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8942",
+      "operand": "read_via_ptr_general",
       "target": 35138,
-      "target_label": "sub_c8942"
+      "target_label": "read_via_ptr_general"
     },
     {
       "addr": 46068,
@@ -82691,9 +82738,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8942",
+      "operand": "read_via_ptr_general",
       "target": 35138,
-      "target_label": "sub_c8942"
+      "target_label": "read_via_ptr_general"
     },
     {
       "addr": 46073,
@@ -85525,9 +85572,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 46529,
@@ -85619,9 +85666,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 46546,
@@ -87971,9 +88018,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 46943,
@@ -88712,9 +88759,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47085,
@@ -88917,9 +88964,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47126,
@@ -89370,9 +89417,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47209,
@@ -90145,9 +90192,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47349,
@@ -90330,9 +90377,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47384,
@@ -91525,9 +91572,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47581,
@@ -92170,9 +92217,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47687,
@@ -92936,9 +92983,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47808,
@@ -93219,9 +93266,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47857,
@@ -93441,9 +93488,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a97",
+      "operand": "skip_spaces",
       "target": 35479,
-      "target_label": "c8a97"
+      "target_label": "skip_spaces"
     },
     {
       "addr": 47896,
@@ -93864,9 +93911,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47971,
@@ -93952,9 +93999,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 47986,
@@ -100380,9 +100427,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8aae",
+      "operand": "skip_spaces_expect_comma",
       "target": 35502,
-      "target_label": "sub_c8aae"
+      "target_label": "skip_spaces_expect_comma"
     },
     {
       "addr": 48991,
@@ -100884,9 +100931,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8a8c",
+      "operand": "skip_spaces_ptr2",
       "target": 35468,
-      "target_label": "c8a8c"
+      "target_label": "skip_spaces_ptr2"
     },
     {
       "addr": 49080,

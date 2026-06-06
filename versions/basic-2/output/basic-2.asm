@@ -998,7 +998,7 @@ l848a = sub_c847b+15
     sta zp_opt_flag                                                   ; 8506: 85 28       .(    
 ; &8508 referenced 1 time by &85a2
 .c8508
-    jsr c8a97                                                         ; 8508: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8508: 20 97 8a     ..   
     cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]    
     beq loop_c84fd                                                    ; 850d: f0 ee       ..    
     jsr c986d                                                         ; 850f: 20 6d 98     m.   
@@ -1115,7 +1115,7 @@ l848a = sub_c847b+15
 ; &85ba referenced 1 time by &8514
 .sub_c85ba
     ldx #3                                                            ; 85ba: a2 03       ..    
-    jsr c8a97                                                         ; 85bc: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 85bc: 20 97 8a     ..   
     ldy #0                                                            ; 85bf: a0 00       ..    
     sty l003d                                                         ; 85c1: 84 3d       .=    
     cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:    
@@ -1286,7 +1286,7 @@ l848a = sub_c847b+15
 .c86b7
     cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)    
     bcs c86d3                                                         ; 86b9: b0 18       ..    
-    jsr c8a97                                                         ; 86bb: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 86be: c9 23       .#    
     bne c86da                                                         ; 86c0: d0 18       ..    
     jsr sub_c882f                                                     ; 86c2: 20 2f 88     /.   
@@ -1307,20 +1307,20 @@ l848a = sub_c847b+15
 .c86d3
     cpx #&36 ; '6'                                                    ; 86d3: e0 36       .6    
     bne c873f                                                         ; 86d5: d0 68       .h    
-    jsr c8a97                                                         ; 86d7: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..   
 ; &86da referenced 1 time by &86c0
 .c86da
     cmp #&28 ; '('                                                    ; 86da: c9 28       .(    
     bne c8715                                                         ; 86dc: d0 37       .7    
     jsr sub_c8821                                                     ; 86de: 20 21 88     !.   
-    jsr c8a97                                                         ; 86e1: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..   
     cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)    
     bne c86fb                                                         ; 86e6: d0 13       ..    
-    jsr c8a97                                                         ; 86e8: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,    
     bne c870d                                                         ; 86ed: d0 1e       ..    
     jsr sub_c882c                                                     ; 86ef: 20 2c 88     ,.   
-    jsr c8a97                                                         ; 86f2: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..   
     cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y    
     bne c870d                                                         ; 86f7: d0 14       ..    
     beq c86c8                                                         ; 86f9: f0 cd       ..    
@@ -1328,10 +1328,10 @@ l848a = sub_c847b+15
 .c86fb
     cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,    
     bne c870d                                                         ; 86fd: d0 0e       ..    
-    jsr c8a97                                                         ; 86ff: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86ff: 20 97 8a     ..   
     cmp #&58 ; 'X'                                                    ; 8702: c9 58       .X    
     bne c870d                                                         ; 8704: d0 07       ..    
-    jsr c8a97                                                         ; 8706: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8706: 20 97 8a     ..   
     cmp #&29 ; ')'                                                    ; 8709: c9 29       .)    
     beq c86c8                                                         ; 870b: f0 bb       ..    
 ; &870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed
@@ -1344,11 +1344,11 @@ l848a = sub_c847b+15
 .c8715
     dec zp_text_ptr_off                                               ; 8715: c6 0a       ..    
     jsr sub_c8821                                                     ; 8717: 20 21 88     !.   
-    jsr c8a97                                                         ; 871a: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 871a: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 871d: c9 2c       .,    
     bne c8735                                                         ; 871f: d0 14       ..    
     jsr sub_c882c                                                     ; 8721: 20 2c 88     ,.   
-    jsr c8a97                                                         ; 8724: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8724: 20 97 8a     ..   
     cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X    
     beq c8735                                                         ; 8729: f0 0a       ..    
     cmp #&59 ; 'Y'                                                    ; 872b: c9 59       .Y    
@@ -1371,18 +1371,18 @@ l848a = sub_c847b+15
     bcs c876e                                                         ; 8741: b0 2b       .+    
     cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-    
     bcs c8750                                                         ; 8745: b0 09       ..    
-    jsr c8a97                                                         ; 8747: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8747: 20 97 8a     ..   
     cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A    
     beq c8767                                                         ; 874c: f0 19       ..    
     dec zp_text_ptr_off                                               ; 874e: c6 0a       ..    
 ; &8750 referenced 1 time by &8745
 .c8750
     jsr sub_c8821                                                     ; 8750: 20 21 88     !.   
-    jsr c8a97                                                         ; 8753: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8753: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8756: c9 2c       .,    
     bne c8738                                                         ; 8758: d0 de       ..    
     jsr sub_c882c                                                     ; 875a: 20 2c 88     ,.   
-    jsr c8a97                                                         ; 875d: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 875d: 20 97 8a     ..   
     cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X    
     beq c8738                                                         ; 8762: f0 d4       ..    
     jmp c870d                                                         ; 8764: 4c 0d 87    L..   
@@ -1397,7 +1397,7 @@ l848a = sub_c847b+15
     bcs c8788                                                         ; 8770: b0 16       ..    
     cpx #&31 ; '1'                                                    ; 8772: e0 31       .1    
     beq c8782                                                         ; 8774: f0 0c       ..    
-    jsr c8a97                                                         ; 8776: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8776: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 8779: c9 23       .#    
     bne c8780                                                         ; 877b: d0 03       ..    
     jmp c86c5                                                         ; 877d: 4c c5 86    L..   
@@ -1413,7 +1413,7 @@ l848a = sub_c847b+15
     cpx #&33 ; '3'                                                    ; 8788: e0 33       .3    
     beq c8797                                                         ; 878a: f0 0b       ..    
     bcs c87b2                                                         ; 878c: b0 24       .$    
-    jsr c8a97                                                         ; 878e: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 878e: 20 97 8a     ..   
     cmp #&28 ; '('                                                    ; 8791: c9 28       .(    
     beq c879f                                                         ; 8793: f0 0a       ..    
     dec zp_text_ptr_off                                               ; 8795: c6 0a       ..    
@@ -1431,7 +1431,7 @@ l848a = sub_c847b+15
     jsr sub_c882c                                                     ; 879f: 20 2c 88     ,.   
     jsr sub_c882c                                                     ; 87a2: 20 2c 88     ,.   
     jsr sub_c8821                                                     ; 87a5: 20 21 88     !.   
-    jsr c8a97                                                         ; 87a8: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..   
     cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)    
     beq c879a                                                         ; 87ad: f0 eb       ..    
     jmp c870d                                                         ; 87af: 4c 0d 87    L..   
@@ -1445,7 +1445,7 @@ l848a = sub_c847b+15
     pha                                                               ; 87bc: 48          H     
     cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7    
     bcs c87f0                                                         ; 87bf: b0 2f       ./    
-    jsr c8a97                                                         ; 87c1: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#    
     bne c87cc                                                         ; 87c6: d0 04       ..    
     pla                                                               ; 87c8: 68          h     
@@ -1456,13 +1456,13 @@ l848a = sub_c847b+15
     jsr sub_c8821                                                     ; 87ce: 20 21 88     !.   
     pla                                                               ; 87d1: 68          h     
     sta zp_general                                                    ; 87d2: 85 37       .7    
-    jsr c8a97                                                         ; 87d4: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,    
     beq c87de                                                         ; 87d9: f0 03       ..    
     jmp c8735                                                         ; 87db: 4c 35 87    L5.   
 ; &87de referenced 1 time by &87d9
 .c87de
-    jsr c8a97                                                         ; 87de: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87de: 20 97 8a     ..   
     and #&1f                                                          ; 87e1: 29 1f       ).    
     cmp zp_general                                                    ; 87e3: c5 37       .7    
     bne c87ed                                                         ; 87e5: d0 06       ..    
@@ -1476,10 +1476,10 @@ l848a = sub_c847b+15
     jsr sub_c8821                                                     ; 87f0: 20 21 88     !.   
     pla                                                               ; 87f3: 68          h     
     sta zp_general                                                    ; 87f4: 85 37       .7    
-    jsr c8a97                                                         ; 87f6: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,    
     bne c8810                                                         ; 87fb: d0 13       ..    
-    jsr c8a97                                                         ; 87fd: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..   
     and #&1f                                                          ; 8800: 29 1f       ).    
     cmp zp_general                                                    ; 8802: c5 37       .7    
     bne c87ed                                                         ; 8804: d0 e7       ..    
@@ -1670,9 +1670,9 @@ l848a = sub_c847b+15
     lsr a                                                             ; 8914: 4a          J     
     eor #&54 ; 'T'                                                    ; 8915: 49 54       IT    
     sta (zp_general),y                                                ; 8917: 91 37       .7    
-    jsr sub_c8944                                                     ; 8919: 20 44 89     D.   
-    jsr sub_c8944                                                     ; 891c: 20 44 89     D.   
-    jsr sub_c8944                                                     ; 891f: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 8919: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 891c: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 891f: 20 44 89     D.   
     ldy #0                                                            ; 8922: a0 00       ..    
 ; &8924 referenced 3 times by &8928, &8930, &8938
 .c8924
@@ -1701,11 +1701,21 @@ l848a = sub_c847b+15
     cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..    
     bne c8936                                                         ; 893f: d0 f5       ..    
     rts                                                               ; 8941: 60          `     
+; ***************************************************************************************
+; Read a byte via the general pointer, then advance it
+;
+; Load the byte at (zp_general),Y and fall through to inc_ptr_general to step the 16-bit
+; pointer on by one.
 ; &8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6
-.sub_c8942
+.read_via_ptr_general
     lda (zp_general),y                                                ; 8942: b1 37       .7    
+; ***************************************************************************************
+; Increment the general 16-bit pointer
+;
+; Increment the little-endian pointer held in zp_general (&37/&38) by one, carrying into
+; the high byte.
 ; &8944 referenced 8 times by &8919, &891c, &891f, &894b, &8961, &89bc, &89d9, &8a79
-.sub_c8944
+.inc_ptr_general
     inc zp_general                                                    ; 8944: e6 37       .7    
     bne return_3                                                      ; 8946: d0 02       ..    
     inc l0038                                                         ; 8948: e6 38       .8    
@@ -1714,7 +1724,7 @@ l848a = sub_c847b+15
     rts                                                               ; 894a: 60          `     
 ; &894b referenced 3 times by &896a, &8980, &bfdc
 .sub_c894b
-    jsr sub_c8944                                                     ; 894b: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 894b: 20 44 89     D.   
     lda (zp_general),y                                                ; 894e: b1 37       .7    
     rts                                                               ; 8950: 60          `     
 ; &8951 referenced 1 time by &90c3
@@ -1733,7 +1743,7 @@ l848a = sub_c847b+15
     bne c8966                                                         ; 895f: d0 05       ..    
 ; &8961 referenced 5 times by &8985, &8994, &8998, &89e9, &8a89
 .c8961
-    jsr sub_c8944                                                     ; 8961: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 8961: 20 44 89     D.   
     bne c8957                                                         ; 8964: d0 f1       ..    
 ; &8966 referenced 1 time by &895f
 .c8966
@@ -1792,7 +1802,7 @@ l848a = sub_c847b+15
     lda (zp_general),y                                                ; 89b5: b1 37       .7    
     jsr sub_c893d                                                     ; 89b7: 20 3d 89     =.   
     bcc c89c2                                                         ; 89ba: 90 06       ..    
-    jsr sub_c8944                                                     ; 89bc: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 89bc: 20 44 89     D.   
     jmp c89b5                                                         ; 89bf: 4c b5 89    L..   
 ; &89c2 referenced 2 times by &89ba, &89d7
 .c89c2
@@ -1812,7 +1822,7 @@ l848a = sub_c847b+15
     lda (zp_general),y                                                ; 89d2: b1 37       .7    
     jsr sub_c8926                                                     ; 89d4: 20 26 89     &.   
     bcc c89c2                                                         ; 89d7: 90 e9       ..    
-    jsr sub_c8944                                                     ; 89d9: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 89d9: 20 44 89     D.   
     jmp c89d2                                                         ; 89dc: 4c d2 89    L..   
 ; &89df referenced 1 time by &89aa
 .c89df
@@ -1932,7 +1942,7 @@ l848a = sub_c847b+15
     lda (zp_general),y                                                ; 8a72: b1 37       .7    
     jsr sub_c8926                                                     ; 8a74: 20 26 89     &.   
     bcc c8a7f                                                         ; 8a77: 90 06       ..    
-    jsr sub_c8944                                                     ; 8a79: 20 44 89     D.   
+    jsr inc_ptr_general                                               ; 8a79: 20 44 89     D.   
     jmp c8a72                                                         ; 8a7c: 4c 72 8a    Lr.   
 ; &8a7f referenced 1 time by &8a77
 .c8a7f
@@ -1948,23 +1958,49 @@ l848a = sub_c847b+15
     lsr a                                                             ; 8a86: 4a          J     
     bcs return_4                                                      ; 8a87: b0 0d       ..    
     jmp c8961                                                         ; 8a89: 4c 61 89    La.   
+; ***************************************************************************************
+; Skip spaces at the secondary text pointer
+;
+; As skip_spaces, but works on the secondary text pointer (zp_text_ptr2, &19) and its
+; offset (&1B). Used while the primary pointer is preserved, e.g. when scanning ahead
+; during assignment.
+;
+; On Exit:
+;     A: first non-space character
+;     Y: its offset
+;     &1B: advanced past that character
 ; &8a8c referenced 21 times by &8a94, &8aae, &8d32, &8e43, &8ee3, &9841, &ac50, &ac5b, &ac66, &adad, &ae02, &b094, &b287, &b2a0, &b7ea, &b813, &b866, &babd, &bb60, &bb6f, &bfb5
-.c8a8c
+.skip_spaces_ptr2
     ldy zp_text_ptr2_off                                              ; 8a8c: a4 1b       ..    
     inc zp_text_ptr2_off                                              ; 8a8e: e6 1b       ..    
     lda (zp_text_ptr2),y                                              ; 8a90: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; 8a92: c9 20       .     
-    beq c8a8c                                                         ; 8a94: f0 f6       ..    
+    cmp #&20 ; ' '                                                    ; 8a92: c9 20       .        ; Loop while the character is a space
+    beq skip_spaces_ptr2                                              ; 8a94: f0 f6       ..    
 ; &8a96 referenced 1 time by &8a87
 .return_4
     rts                                                               ; 8a96: 60          `     
+; ***************************************************************************************
+; Skip spaces at the text pointer
+;
+; Advance the primary text pointer past any spaces and return the first non-space
+; character. The workhorse of the tokeniser and interpreter: most statements call it
+; between syntax elements.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B): points at the line being interpreted
+;     ZP_TEXT_PTR_OFF (&0A): offset of the next character
+;
+; On Exit:
+;     A: first non-space character
+;     Y: its offset within the line
+;     ZP_TEXT_PTR_OFF (&0A): advanced past that character
 ; &8a97 referenced 48 times by &8508, &85bc, &86bb, &86d7, &86e1, &86e8, &86f2, &86ff, &8706, &871a, &8724, &8747, &8753, &875d, &8776, &878e, &87a8, &87c1, &87d4, &87de, &87f6, &87fd, &8a9f, &8b38, &8d89, &8d9a, &8dc3, &8e8a, &8f39, &8f79, &912f, &91a9, &920b, &9349, &942f, &9446, &b13f, &b1f9, &b279, &b5be, &b5cf, &b75c, &b8f2, &b915, &b9da, &ba44, &baee, &bb15
-.c8a97
+.skip_spaces
     ldy zp_text_ptr_off                                               ; 8a97: a4 0a       ..    
     inc zp_text_ptr_off                                               ; 8a99: e6 0a       ..    
     lda (zp_text_ptr),y                                               ; 8a9b: b1 0b       ..    
-    cmp #&20 ; ' '                                                    ; 8a9d: c9 20       .     
-    beq c8a97                                                         ; 8a9f: f0 f6       ..    
+    cmp #&20 ; ' '                                                    ; 8a9d: c9 20       .        ; Loop while the character is a space
+    beq skip_spaces                                                   ; 8a9f: f0 f6       ..    
     rts                                                               ; 8aa1: 60          `     
 ; &8aa2 referenced 4 times by &8ab3, &8e21, &ad03, &b036
 .c8aa2
@@ -1972,9 +2008,14 @@ l848a = sub_c847b+15
     equb &05                                                          ; 8aa3: 05          .     
     equs "Missing ,"                                                  ; 8aa4: 4d 69 73... Mis...
     equb &00                                                          ; 8aad: 00          .     
+; ***************************************************************************************
+; Skip spaces and require a comma
+;
+; Call skip_spaces, then check the character is a comma. Raises "Missing ," if it is not.
+; Used by statements that take a comma-separated argument list.
 ; &8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c
-.sub_c8aae
-    jsr c8a8c                                                         ; 8aae: 20 8c 8a     ..   
+.skip_spaces_expect_comma
+    jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,    
     bne c8aa2                                                         ; 8ab3: d0 ed       ..    
     rts                                                               ; 8ab5: 60          `     
@@ -2053,7 +2094,7 @@ l848a = sub_c847b+15
     jmp c8af3                                                         ; 8b35: 4c f3 8a    L..   
 ; &8b38 referenced 1 time by &8b30
 .c8b38
-    jsr c8a97                                                         ; 8b38: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..   
     cmp #&c6                                                          ; 8b3b: c9 c6       ..    
     bcs c8bb1                                                         ; 8b3d: b0 72       .r    
     bcc c8bbf                                                         ; 8b3f: 90 7e       .~    
@@ -2392,7 +2433,7 @@ l848a = sub_c847b+15
 .c8d30
     tya                                                               ; 8d30: 98          .     
     pha                                                               ; 8d31: 48          H     
-    jsr c8a8c                                                         ; 8d32: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,    
     bne c8d77                                                         ; 8d37: d0 3e       .>    
     jsr sub_c9b29                                                     ; 8d39: 20 29 9b     ).   
@@ -2451,7 +2492,7 @@ l848a = sub_c847b+15
     lda #0                                                            ; 8d83: a9 00       ..    
     sta zp_print_bytes                                                ; 8d85: 85 14       ..    
     sta zp_print_flag                                                 ; 8d87: 85 15       ..    
-    jsr c8a97                                                         ; 8d89: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8d89: 20 97 8a     ..   
     cmp #&3a ; ':'                                                    ; 8d8c: c9 3a       .:    
     beq c8d80                                                         ; 8d8e: f0 f0       ..    
     cmp #&0d                                                          ; 8d90: c9 0d       ..    
@@ -2460,7 +2501,7 @@ l848a = sub_c847b+15
     beq c8d80                                                         ; 8d96: f0 e8       ..    
     bne c8dd2                                                         ; 8d98: d0 38       .8    
 .stmt_print
-    jsr c8a97                                                         ; 8d9a: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#    
     beq loop_c8d2b                                                    ; 8d9f: f0 8a       ..    
     dec zp_text_ptr_off                                               ; 8da1: c6 0a       ..    
@@ -2491,7 +2532,7 @@ l848a = sub_c847b+15
     ror zp_print_flag                                                 ; 8dc1: 66 15       f.    
 ; &8dc3 referenced 3 times by &8de1, &8e10, &8e1f
 .c8dc3
-    jsr c8a97                                                         ; 8dc3: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..   
     cmp #&3a ; ':'                                                    ; 8dc6: c9 3a       .:    
     beq c8d7d                                                         ; 8dc8: f0 b3       ..    
     cmp #&0d                                                          ; 8dca: c9 0d       ..    
@@ -2567,7 +2608,7 @@ l848a = sub_c847b+15
 ; &8e40 referenced 1 time by &8e82
 .loop_c8e40
     jsr sub_c92dd                                                     ; 8e40: 20 dd 92     ..   
-    jsr c8a8c                                                         ; 8e43: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; 8e43: 20 8c 8a     ..   
     cmp #&29 ; ')'                                                    ; 8e46: c9 29       .)    
     bne loop_c8e24                                                    ; 8e48: d0 da       ..    
     lda zp_iwa                                                        ; 8e4a: a5 2a       .*    
@@ -2619,7 +2660,7 @@ l848a = sub_c847b+15
     rts                                                               ; 8e89: 60          `     
 ; &8e8a referenced 2 times by &ba5a, &ba5f
 .sub_c8e8a
-    jsr c8a97                                                         ; 8e8a: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..   
     jsr sub_c8e70                                                     ; 8e8d: 20 70 8e     p.   
     bcc return_6                                                      ; 8e90: 90 f7       ..    
     cmp #&22                                                          ; 8e92: c9 22       ."    
@@ -2670,7 +2711,7 @@ l848a = sub_c847b+15
 ; &8ee0 referenced 1 time by &8f09
 .c8ee0
     sty l06ff                                                         ; 8ee0: 8c ff 06    ...   
-    jsr c8a8c                                                         ; 8ee3: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,    
     bne c8f0c                                                         ; 8ee8: d0 22       ."    
     ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..    
@@ -2714,7 +2755,7 @@ l848a = sub_c847b+15
     jsr sub_c97df                                                     ; 8f31: 20 df 97     ..   
     bcc c8f2e                                                         ; 8f34: 90 f8       ..    
     jsr cbd94                                                         ; 8f36: 20 94 bd     ..   
-    jsr c8a97                                                         ; 8f39: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,    
     bne c8f2e                                                         ; 8f3e: d0 ee       ..    
     jsr sub_c97df                                                     ; 8f40: 20 df 97     ..   
@@ -2744,7 +2785,7 @@ l848a = sub_c847b+15
     jsr cbd94                                                         ; 8f71: 20 94 bd     ..   
     lda #&0a                                                          ; 8f74: a9 0a       ..    
     jsr caed8                                                         ; 8f76: 20 d8 ae     ..   
-    jsr c8a97                                                         ; 8f79: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,    
     bne c8f8d                                                         ; 8f7e: d0 0d       ..    
     jsr sub_c97df                                                     ; 8f80: 20 df 97     ..   
@@ -2997,7 +3038,7 @@ l848a = sub_c847b+15
     equb &de, &00                                                     ; 912d: de 00       ..    
 ; &912f referenced 1 time by &9215
 .stmt_dim
-    jsr c8a97                                                         ; 912f: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 912f: 20 97 8a     ..   
     tya                                                               ; 9132: 98          .     
     clc                                                               ; 9133: 18          .     
     adc zp_text_ptr                                                   ; 9134: 65 0b       e.    
@@ -3070,7 +3111,7 @@ l848a = sub_c847b+15
     tya                                                               ; 91a4: 98          .     
     pha                                                               ; 91a5: 48          H     
     jsr sub_c9231                                                     ; 91a6: 20 31 92     1.   
-    jsr c8a97                                                         ; 91a9: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 91a9: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 91ac: c9 2c       .,    
     beq loop_c9185                                                    ; 91ae: f0 d5       ..    
     cmp #&29 ; ')'                                                    ; 91b0: c9 29       .)    
@@ -3131,7 +3172,7 @@ l848a = sub_c847b+15
     bne c91fc                                                         ; 9209: d0 f1       ..    
 ; &920b referenced 1 time by &9124
 .c920b
-    jsr c8a97                                                         ; 920b: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 920b: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 920e: c9 2c       .,    
     beq c9215                                                         ; 9210: f0 03       ..    
     jmp c8b96                                                         ; 9212: 4c 96 8b    L..   
@@ -3264,7 +3305,7 @@ l848a = sub_c847b+15
     jmp c8b9b                                                         ; 92d7: 4c 9b 8b    L..   
 ; &92da referenced 4 times by &9380, &9403, &b459, &b47c
 .sub_c92da
-    jsr sub_c8aae                                                     ; 92da: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..   
 ; &92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a
 .sub_c92dd
     jsr sub_c9b29                                                     ; 92dd: 20 29 9b     ).   
@@ -3339,7 +3380,7 @@ l848a = sub_c847b+15
     inc l0106,x                                                       ; 9342: fe 06 01    ...   
     ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..    
     sty zp_text_ptr_off                                               ; 9347: 84 0a       ..    
-    jsr c8a97                                                         ; 9349: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 9349: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 934c: c9 2c       .,    
     beq stmt_local                                                    ; 934e: f0 d3       ..    
     jmp c8b96                                                         ; 9350: 4c 96 8b    L..   
@@ -3441,7 +3482,7 @@ l848a = sub_c847b+15
     jsr sub_c8821                                                     ; 93f1: 20 21 88     !.   
     lda zp_iwa                                                        ; 93f4: a5 2a       .*    
     pha                                                               ; 93f6: 48          H     
-    jsr sub_c8aae                                                     ; 93f7: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..   
     jsr sub_c9b29                                                     ; 93fa: 20 29 9b     ).   
 ; &93fd referenced 1 time by &93ee
 .c93fd
@@ -3468,7 +3509,7 @@ l848a = sub_c847b+15
     jsr oswrch                                                        ; 942c: 20 ee ff     ..   
 ; &942f referenced 1 time by &944b
 .stmt_vdu
-    jsr c8a97                                                         ; 942f: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 942f: 20 97 8a     ..   
 ; &9432 referenced 1 time by &944f
 .loop_c9432
     cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:    
@@ -3480,7 +3521,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 943e: c6 0a       ..    
     jsr sub_c8821                                                     ; 9440: 20 21 88     !.   
     jsr sub_c9456                                                     ; 9443: 20 56 94     V.   
-    jsr c8a97                                                         ; 9446: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 9446: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 9449: c9 2c       .,    
     beq stmt_vdu                                                      ; 944b: f0 e2       ..    
     cmp #&3b ; ';'                                                    ; 944d: c9 3b       .;    
@@ -4194,7 +4235,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; 9840: 00          .     
 ; &9841 referenced 2 times by &8bd2, &b7ce
 .sub_c9841
-    jsr c8a8c                                                         ; 9841: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..   
     cmp #&3d ; '='                                                    ; 9844: c9 3d       .=    
     bne loop_c9821                                                    ; 9846: d0 d9       ..    
     rts                                                               ; 9848: 60          `     
@@ -7224,7 +7265,7 @@ l848a = sub_c847b+15
 .fn_point
     jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..   
     jsr cbd94                                                         ; ab44: 20 94 bd     ..   
-    jsr sub_c8aae                                                     ; ab47: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; ab47: 20 ae 8a     ..   
     jsr cae56                                                         ; ab4a: 20 56 ae     V.   
     jsr c92f0                                                         ; ab4d: 20 f0 92     ..   
     lda zp_iwa                                                        ; ab50: a5 2a       .*    
@@ -7385,12 +7426,12 @@ l848a = sub_c847b+15
     sta zp_text_ptr2                                                  ; ac4a: 85 19       ..    
     lda #6                                                            ; ac4c: a9 06       ..    
     sta l001a                                                         ; ac4e: 85 1a       ..    
-    jsr c8a8c                                                         ; ac50: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; ac50: 20 8c 8a     ..   
     cmp #&2d ; '-'                                                    ; ac53: c9 2d       .-    
     beq cac66                                                         ; ac55: f0 0f       ..    
     cmp #&2b ; '+'                                                    ; ac57: c9 2b       .+    
     bne cac5e                                                         ; ac59: d0 03       ..    
-    jsr c8a8c                                                         ; ac5b: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; ac5b: 20 8c 8a     ..   
 ; &ac5e referenced 1 time by &ac59
 .cac5e
     dec zp_text_ptr2_off                                              ; ac5e: c6 1b       ..    
@@ -7398,7 +7439,7 @@ l848a = sub_c847b+15
     jmp cac73                                                         ; ac63: 4c 73 ac    Ls.   
 ; &ac66 referenced 1 time by &ac55
 .cac66
-    jsr c8a8c                                                         ; ac66: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; ac66: 20 8c 8a     ..   
     dec zp_text_ptr2_off                                              ; ac69: c6 1b       ..    
     jsr sub_ca07b                                                     ; ac6b: 20 7b a0     {.   
     bcc cac73                                                         ; ac6e: 90 03       ..    
@@ -7621,7 +7662,7 @@ l848a = sub_c847b+15
     rts                                                               ; adac: 60          `     
 ; &adad referenced 2 times by &baba, &bb38
 .sub_cadad
-    jsr c8a8c                                                         ; adad: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; adad: 20 8c 8a     ..   
     cmp #&22                                                          ; adb0: c9 22       ."    
     beq cadc9                                                         ; adb2: f0 15       ..    
     ldx #0                                                            ; adb4: a2 00       ..    
@@ -7683,7 +7724,7 @@ l848a = sub_c847b+15
     bne cae05                                                         ; ae00: d0 03       ..    
 ; &ae02 referenced 1 time by &ad8c
 .sub_cae02
-    jsr c8a8c                                                         ; ae02: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; ae02: 20 8c 8a     ..   
 ; &ae05 referenced 1 time by &ae00
 .cae05
     cmp #&8e                                                          ; ae05: c9 8e       ..    
@@ -8095,7 +8136,7 @@ l848a = sub_c847b+15
     lda #0                                                            ; b091: a9 00       ..    
     rts                                                               ; b093: 60          `     
 .fn_strs
-    jsr c8a8c                                                         ; b094: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..   
     ldy #&ff                                                          ; b097: a0 ff       ..    
     cmp #&7e ; '~'                                                    ; b099: c9 7e       .~    
     beq cb0a1                                                         ; b09b: f0 04       ..    
@@ -8127,7 +8168,7 @@ l848a = sub_c847b+15
 .fn_strings
     jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..   
     jsr cbd94                                                         ; b0c5: 20 94 bd     ..   
-    jsr sub_c8aae                                                     ; b0c8: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..   
     jsr cae56                                                         ; b0cb: 20 56 ae     V.   
     bne cb0bf                                                         ; b0ce: d0 ef       ..    
     jsr sub_cbdea                                                     ; b0d0: 20 ea bd     ..   
@@ -8207,7 +8248,7 @@ l848a = sub_c847b+15
 .cb13c
     iny                                                               ; b13c: c8          .     
     sty zp_text_ptr_off                                               ; b13d: 84 0a       ..    
-    jsr c8a97                                                         ; b13f: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b13f: 20 97 8a     ..   
     tya                                                               ; b142: 98          .     
     tax                                                               ; b143: aa          .     
     clc                                                               ; b144: 18          .     
@@ -8327,7 +8368,7 @@ l848a = sub_c847b+15
     lda #0                                                            ; b1f4: a9 00       ..    
     pha                                                               ; b1f6: 48          H     
     sta zp_text_ptr_off                                               ; b1f7: 85 0a       ..    
-    jsr c8a97                                                         ; b1f9: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b1f9: 20 97 8a     ..   
     cmp #&28 ; '('                                                    ; b1fc: c9 28       .(    
     beq cb24d                                                         ; b1fe: f0 4d       .M    
     dec zp_text_ptr_off                                               ; b200: c6 0a       ..    
@@ -8415,14 +8456,14 @@ l848a = sub_c847b+15
     txa                                                               ; b274: 8a          .     
     pha                                                               ; b275: 48          H     
     jsr sub_cb30d                                                     ; b276: 20 0d b3     ..   
-    jsr c8a97                                                         ; b279: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b279: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b27c: c9 2c       .,    
     beq cb24d                                                         ; b27e: f0 cd       ..    
     cmp #&29 ; ')'                                                    ; b280: c9 29       .)    
     bne cb2b5                                                         ; b282: d0 31       .1    
     lda #0                                                            ; b284: a9 00       ..    
     pha                                                               ; b286: 48          H     
-    jsr c8a8c                                                         ; b287: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b287: 20 8c 8a     ..   
     cmp #&28 ; '('                                                    ; b28a: c9 28       .(    
     bne cb2b5                                                         ; b28c: d0 27       .'    
 ; &b28e referenced 1 time by &b2a5
@@ -8437,7 +8478,7 @@ l848a = sub_c847b+15
     inx                                                               ; b29d: e8          .     
     txa                                                               ; b29e: 8a          .     
     pha                                                               ; b29f: 48          H     
-    jsr c8a8c                                                         ; b2a0: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b2a0: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; b2a3: c9 2c       .,    
     beq loop_cb28e                                                    ; b2a5: f0 e7       ..    
     cmp #&29 ; ')'                                                    ; b2a7: c9 29       .)    
@@ -8640,20 +8681,20 @@ l848a = sub_c847b+15
     ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..    
 ; &b3d9 referenced 1 time by &b3ff
 .loop_cb3d9
-    jsr sub_c8942                                                     ; b3d9: 20 42 89     B.   
+    jsr read_via_ptr_general                                          ; b3d9: 20 42 89     B.   
     cmp #&0d                                                          ; b3dc: c9 0d       ..    
     bne cb3f9                                                         ; b3de: d0 19       ..    
     cpx zp_general                                                    ; b3e0: e4 37       .7    
     lda l000c                                                         ; b3e2: a5 0c       ..    
     sbc l0038                                                         ; b3e4: e5 38       .8    
     bcc return_33                                                     ; b3e6: 90 19       ..    
-    jsr sub_c8942                                                     ; b3e8: 20 42 89     B.   
+    jsr read_via_ptr_general                                          ; b3e8: 20 42 89     B.   
     ora #0                                                            ; b3eb: 09 00       ..    
     bmi return_33                                                     ; b3ed: 30 12       0.    
     sta l0009                                                         ; b3ef: 85 09       ..    
-    jsr sub_c8942                                                     ; b3f1: 20 42 89     B.   
+    jsr read_via_ptr_general                                          ; b3f1: 20 42 89     B.   
     sta zp_erl                                                        ; b3f4: 85 08       ..    
-    jsr sub_c8942                                                     ; b3f6: 20 42 89     B.   
+    jsr read_via_ptr_general                                          ; b3f6: 20 42 89     B.   
 ; &b3f9 referenced 1 time by &b3de
 .cb3f9
     cpx zp_general                                                    ; b3f9: e4 37       .7    
@@ -8946,7 +8987,7 @@ l848a = sub_c847b+15
     sta l002b                                                         ; b5b9: 85 2b       .+    
     plp                                                               ; b5bb: 28          (     
     bcc cb5cf                                                         ; b5bc: 90 11       ..    
-    jsr c8a97                                                         ; b5be: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b5be: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b5c1: c9 2c       .,    
     beq cb5d8                                                         ; b5c3: f0 13       ..    
     jsr sub_cbdea                                                     ; b5c5: 20 ea bd     ..   
@@ -8955,7 +8996,7 @@ l848a = sub_c847b+15
     bpl cb5db                                                         ; b5cd: 10 0c       ..    
 ; &b5cf referenced 1 time by &b5bc
 .cb5cf
-    jsr c8a97                                                         ; b5cf: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b5cf: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b5d2: c9 2c       .,    
     beq cb5d8                                                         ; b5d4: f0 02       ..    
     dec zp_text_ptr_off                                               ; b5d6: c6 0a       ..    
@@ -9187,7 +9228,7 @@ l848a = sub_c847b+15
     sta zp_for_level                                                  ; b756: 85 26       .&    
     ldy zp_text_ptr2_off                                              ; b758: a4 1b       ..    
     sty zp_text_ptr_off                                               ; b75a: 84 0a       ..    
-    jsr c8a97                                                         ; b75c: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b75c: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b75f: c9 2c       .,    
     bne cb7a1                                                         ; b761: d0 3e       .>    
     jmp stmt_next                                                     ; b763: 4c 95 b6    L..   
@@ -9258,7 +9299,7 @@ l848a = sub_c847b+15
     lda zp_fileblk                                                    ; b7e4: a5 39       .9    
     sta l0502,y                                                       ; b7e6: 99 02 05    ...   
     tax                                                               ; b7e9: aa          .     
-    jsr c8a8c                                                         ; b7ea: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b7ea: 20 8c 8a     ..   
     cmp #&b8                                                          ; b7ed: c9 b8       ..    
     bne loop_cb7bd                                                    ; b7ef: d0 cc       ..    
     cpx #5                                                            ; b7f1: e0 05       ..    
@@ -9275,7 +9316,7 @@ l848a = sub_c847b+15
     sta l050b,y                                                       ; b80b: 99 0b 05    ...   
     lda #1                                                            ; b80e: a9 01       ..    
     jsr caed8                                                         ; b810: 20 d8 ae     ..   
-    jsr c8a8c                                                         ; b813: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..   
     cmp #&88                                                          ; b816: c9 88       ..    
     bne cb81f                                                         ; b818: d0 05       ..    
     jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..   
@@ -9317,7 +9358,7 @@ l848a = sub_c847b+15
     sta l004c                                                         ; b85e: 85 4c       .L    
     jsr sub_ca38d                                                     ; b860: 20 8d a3     ..   
     jsr sub_ca699                                                     ; b863: 20 99 a6     ..   
-    jsr c8a8c                                                         ; b866: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; b866: 20 8c 8a     ..   
     cmp #&88                                                          ; b869: c9 88       ..    
     bne cb875                                                         ; b86b: d0 08       ..    
     jsr sub_c9b29                                                     ; b86d: 20 29 9b     ).   
@@ -9395,7 +9436,7 @@ l848a = sub_c847b+15
     jmp c8b9b                                                         ; b8ef: 4c 9b 8b    L..   
 ; &b8f2 referenced 1 time by &b91a
 .loop_cb8f2
-    jsr c8a97                                                         ; b8f2: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b8f2: 20 97 8a     ..   
     cmp #&87                                                          ; b8f5: c9 87       ..    
     beq loop_cb8e4                                                    ; b8f7: f0 eb       ..    
     ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..    
@@ -9413,7 +9454,7 @@ l848a = sub_c847b+15
     equs " syntax"                                                    ; b90d: 20 73 79...  sy...
     equb &00                                                          ; b914: 00          .     
 .stmt_on
-    jsr c8a97                                                         ; b915: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b915: 20 97 8a     ..   
     cmp #&85                                                          ; b918: c9 85       ..    
     beq loop_cb8f2                                                    ; b91a: f0 d6       ..    
     dec zp_text_ptr_off                                               ; b91c: c6 0a       ..    
@@ -9538,7 +9579,7 @@ l848a = sub_c847b+15
     sty l004d                                                         ; b9d8: 84 4d       .M    
 ; &b9da referenced 2 times by &ba16, &ba3c
 .cb9da
-    jsr c8a97                                                         ; b9da: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; b9da: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,    
     bne loop_cb9ca                                                    ; b9df: d0 e9       ..    
     lda l004d                                                         ; b9e1: a5 4d       .M    
@@ -9605,7 +9646,7 @@ l848a = sub_c847b+15
     pla                                                               ; ba40: 68          h     
     jmp c8b98                                                         ; ba41: 4c 98 8b    L..   
 .stmt_input
-    jsr c8a97                                                         ; ba44: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; ba44: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; ba47: c9 23       .#    
     beq loop_cb9cf                                                    ; ba49: f0 84       ..    
     cmp #&86                                                          ; ba4b: c9 86       ..    
@@ -9683,7 +9724,7 @@ l848a = sub_c847b+15
     jsr sub_cadad                                                     ; baba: 20 ad ad     ..   
 ; &babd referenced 1 time by &bac6
 .loop_cbabd
-    jsr c8a8c                                                         ; babd: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; babd: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; bac0: c9 2c       .,    
     beq cbaca                                                         ; bac2: f0 06       ..    
     cmp #&0d                                                          ; bac4: c9 0d       ..    
@@ -9712,7 +9753,7 @@ l848a = sub_c847b+15
     sty l003d                                                         ; bae8: 84 3d       .=    
     ldy zp_page                                                       ; baea: a4 18       ..    
     sty l003e                                                         ; baec: 84 3e       .>    
-    jsr c8a97                                                         ; baee: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; baee: 20 97 8a     ..   
     dec zp_text_ptr_off                                               ; baf1: c6 0a       ..    
     cmp #&3a ; ':'                                                    ; baf3: c9 3a       .:    
     beq cbb07                                                         ; baf5: f0 10       ..    
@@ -9733,7 +9774,7 @@ l848a = sub_c847b+15
     jmp c8b9b                                                         ; bb12: 4c 9b 8b    L..   
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .cbb15
-    jsr c8a97                                                         ; bb15: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; bb15: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; bb18: c9 2c       .,    
     beq stmt_read                                                     ; bb1a: f0 03       ..    
     jmp c8b96                                                         ; bb1c: 4c 96 8b    L..   
@@ -9773,7 +9814,7 @@ l848a = sub_c847b+15
     sta l001a                                                         ; bb5a: 85 1a       ..    
     ldy #0                                                            ; bb5c: a0 00       ..    
     sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..    
-    jsr c8a8c                                                         ; bb60: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; bb60: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; bb63: c9 2c       .,    
     beq return_36                                                     ; bb65: f0 49       .I    
     cmp #&dc                                                          ; bb67: c9 dc       ..    
@@ -9782,7 +9823,7 @@ l848a = sub_c847b+15
     beq cbb7a                                                         ; bb6d: f0 0b       ..    
 ; &bb6f referenced 1 time by &bb78
 .loop_cbb6f
-    jsr c8a8c                                                         ; bb6f: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; bb6f: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; bb72: c9 2c       .,    
     beq return_36                                                     ; bb74: f0 3a       .:    
     cmp #&0d                                                          ; bb76: c9 0d       ..    
@@ -10442,7 +10483,7 @@ l848a = sub_c847b+15
 .stmt_bput
     jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..   
     pha                                                               ; bf5b: 48          H     
-    jsr sub_c8aae                                                     ; bf5c: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; bf5c: 20 ae 8a     ..   
     jsr c9849                                                         ; bf5f: 20 49 98     I.   
     jsr sub_c92ee                                                     ; bf62: 20 ee 92     ..   
     pla                                                               ; bf65: 68          h     
@@ -10493,7 +10534,7 @@ l848a = sub_c847b+15
     sta l001a                                                         ; bfb3: 85 1a       ..    
 ; &bfb5 referenced 3 times by &acb8, &bf4c, &bf6f
 .sub_cbfb5
-    jsr c8a8c                                                         ; bfb5: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..   
     cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#    
     bne cbfc3                                                         ; bfba: d0 07       ..    
     jsr sub_c92e3                                                     ; bfbc: 20 e3 92     ..   
@@ -10543,1260 +10584,1260 @@ l848a = sub_c847b+15
 save pydis_start, pydis_end
 
 ; Label references by decreasing frequency:
-;     zp_iwa:            187
-;     zp_general:        142
-;     l002b:             111
-;     zp_text_ptr_off:    92
-;     zp_text_ptr2_off:   90
-;     zp_stack_ptr:       85
-;     zp_text_ptr:        75
-;     l0031:              73
-;     l002c:              70
-;     l0038:              66
-;     l003d:              65
-;     zp_fileblk:         62
-;     l002d:              61
-;     l0032:              61
-;     l0034:              61
-;     zp_fwb:             59
-;     l0033:              58
-;     l003e:              56
-;     l0030:              55
-;     l003f:              55
-;     zp_strbuf_len:      52
-;     c8a97:              48
-;     zp_fwa:             48
-;     zp_text_ptr2:       48
-;     l003a:              45
-;     l0035:              42
-;     l000c:              41
-;     zp_var_type:        41
-;     l003c:              39
-;     l0040:              37
-;     l004b:              31
-;     cbd94:              29
-;     l004d:              28
-;     zp_vartop:          28
-;     string_work:        27
-;     c9857:              25
-;     l0041:              25
-;     c8b9b:              23
-;     l001a:              22
-;     sub_c8821:          22
-;     c8a8c:              21
-;     c92f0:              21
-;     l0005:              21
-;     l0049:              21
-;     zp_top:             21
-;     l0003:              20
-;     l002f:              20
-;     l004a:              20
-;     l004e:              19
-;     c8c0e:              18
-;     caed8:              18
-;     ca1da:              17
-;     l0042:              17
-;     sub_c9b29:          16
-;     sub_cbdea:          16
-;     zp_page:            16
-;     l0013:              15
-;     zp_for_level:       15
-;     l004c:              14
-;     cadec:              13
-;     cb558:              13
-;     ca2be:              12
-;     cbd51:              12
-;     oswrch:             12
-;     sub_ca656:          12
-;     ca066:              11
-;     cae56:              11
-;     caeea:              11
-;     osbyte:             11
-;     sub_c92fa:          11
-;     sub_c9b1d:          11
-;     sub_cbd7e:          11
-;     zp_opt_flag:        11
-;     c8ba3:              10
-;     ca500:              10
-;     sub_c92e3:          10
-;     sub_c97df:          10
-;     sub_ca3b5:          10
-;     cb565:               9
-;     cbdb2:               9
-;     l0048:               9
-;     sub_c9582:           9
-;     sub_ca385:           9
-;     zp_print_flag:       9
-;     c870d:               8
-;     c9127:               8
-;     c986d:               8
-;     ca099:               8
-;     ca303:               8
-;     ca686:               8
-;     l0007:               8
-;     l05ff:               8
-;     sub_c8944:           8
-;     sub_c92dd:           8
-;     sub_c9852:           8
-;     sub_cbc25:           8
-;     zp_himem:            8
-;     zp_print_bytes:      8
-;     c862b:               7
-;     c8b96:               7
-;     c982a:               7
-;     c9bb5:               7
-;     sub_c882c:           7
-;     sub_c92fd:           7
-;     sub_ca34e:           7
-;     sub_ca38d:           7
-;     zp_count:            7
-;     c8af3:               6
-;     c8af6:               6
-;     c9bb4:               6
-;     c9c88:               6
-;     cae43:               6
-;     cb2b5:               6
-;     cbddc:               6
-;     l0001:               6
-;     l0017:               6
-;     osbget:              6
-;     osbput:              6
-;     sub_c92ee:           6
-;     sub_ca381:           6
-;     sub_ca699:           6
-;     sub_ca7f5:           6
-;     sub_cb4b4:           6
-;     sub_cbdcb:           6
-;     sub_cbe6f:           6
-;     zp_error_vec:        6
-;     zp_fp_temp:          6
-;     zp_lomem:            6
-;     c8735:               5
-;     c8957:               5
-;     c8961:               5
-;     c8e6a:               5
-;     c9a93:               5
-;     c9fe6:               5
-;     ca208:               5
-;     ca3e4:               5
-;     ca5b7:               5
-;     cac9b:               5
-;     cad7e:               5
-;     cb741:               5
-;     cb97d:               5
-;     l0044:               5
-;     osword:              5
-;     resint_at:           5
-;     return_22:           5
-;     sub_c8926:           5
-;     sub_c8aae:           5
-;     sub_c9a9d:           5
-;     sub_ca21e:           5
-;     sub_ca242:           5
-;     sub_cbd20:           5
-;     sub_cbe0d:           5
-;     sub_cbe44:           5
-;     sub_cbfa9:           5
-;     zp_gosub_level:      5
-;     zp_repeat_level:     5
-;     zp_trace_flag:       5
-;     c8604:               4
-;     c88d5:               4
-;     c8aa2:               4
-;     c8b98:               4
-;     c8d30:               4
-;     c9372:               4
-;     c9479:               4
-;     c94b3:               4
-;     c9641:               4
-;     c9813:               4
-;     c984c:               4
-;     c9877:               4
-;     c9c45:               4
-;     ca46c:               4
-;     cb036:               4
-;     cb751:               4
-;     cba5a:               4
-;     cbc28:               4
-;     l000f:               4
-;     l0011:               4
-;     l001d:               4
-;     l0045:               4
-;     l0046:               4
-;     l0441:               4
-;     resint_p:            4
-;     return_23:           4
-;     sub_c8942:           4
-;     sub_c9222:           4
-;     sub_c92da:           4
-;     sub_c92eb:           4
-;     sub_c9456:           4
-;     sub_c9469:           4
-;     sub_c9531:           4
-;     sub_c9c42:           4
-;     sub_c9e20:           4
-;     sub_ca3fe:           4
-;     sub_ca6ad:           4
-;     sub_ca7e9:           4
-;     sub_ca897:           4
-;     sub_cad71:           4
-;     sub_cb99a:           4
-;     sub_cbe2e:           4
-;     zp_asm_opcode:       4
-;     zp_data_ptr:         4
-;     zp_rnd_seed:         4
-;     c8620:               3
-;     c8738:               3
-;     c8858:               3
-;     c8924:               3
-;     c8936:               3
-;     c89b5:               3
-;     c8cb7:               3
-;     c8d7d:               3
-;     c8d80:               3
-;     c8dbb:               3
-;     c8dc3:               3
-;     c8e0e:               3
-;     c8f2e:               3
-;     c91fc:               3
-;     c9218:               3
-;     c92f7:               3
-;     c9453:               3
-;     c961b:               3
-;     c9960:               3
-;     c99a4:               3
-;     c9d0e:               3
-;     c9d1d:               3
-;     c9dd4:               3
-;     c9ed1:               3
-;     ca0e8:               3
-;     ca387:               3
-;     ca590:               3
-;     ca6e7:               3
-;     ca724:               3
-;     ca76c:               3
-;     ca7f7:               3
-;     ca99e:               3
-;     caad1:               3
-;     cad93:               3
-;     caea2:               3
-;     cb033:               3
-;     cb32c:               3
-;     cb8d2:               3
-;     cbb07:               3
-;     cbb7a:               3
-;     fn_true:             3
-;     l0009:               3
-;     l000e:               3
-;     l00fd:               3
-;     l0401:               3
-;     return_12:           3
-;     return_19:           3
-;     return_25:           3
-;     return_33:           3
-;     return_36:           3
-;     return_39:           3
-;     return_8:            3
-;     sub_c8827:           3
-;     sub_c882f:           3
-;     sub_c8832:           3
-;     sub_c894b:           3
-;     sub_c8c1e:           3
-;     sub_c909f:           3
-;     sub_c94fc:           3
-;     sub_c97ba:           3
-;     sub_c9970:           3
-;     sub_c9dd1:           3
-;     sub_ca07b:           3
-;     sub_ca24d:           3
-;     sub_ca453:           3
-;     sub_ca505:           3
-;     sub_ca7ed:           3
-;     sub_ca9d3:           3
-;     sub_cab12:           3
-;     sub_cb50e:           3
-;     sub_cb577:           3
-;     sub_cbd3a:           3
-;     sub_cbe0b:           3
-;     sub_cbfb5:           3
-;     zp_erl:              3
-;     zp_listo:            3
-;     zp_width:            3
-;     c8556:               2
-;     c8650:               2
-;     c866f:               2
-;     c8691:               2
-;     c86a6:               2
-;     c86a8:               2
-;     c86c5:               2
-;     c86c8:               2
-;     c879a:               2
-;     c87ed:               2
-;     c8810:               2
-;     c889d:               2
-;     c88da:               2
-;     c896a:               2
-;     c89c2:               2
-;     c89d0:               2
-;     c89d2:               2
-;     c89e3:               2
-;     c8a0d:               2
-;     c8a19:               2
-;     c8a37:               2
-;     c8a54:               2
-;     c8b59:               2
-;     c8b87:               2
-;     c8bb1:               2
-;     c8bbf:               2
-;     c8c43:               2
-;     c8c5f:               2
-;     c8c84:               2
-;     c8d26:               2
-;     c8e5f:               2
-;     c8e98:               2
-;     c8ea4:               2
-;     c8fdf:               2
-;     c901a:               2
-;     c901c:               2
-;     c903a:               2
-;     c9043:               2
-;     c9071:               2
-;     c90b5:               2
-;     c916b:               2
-;     c928a:               2
-;     c9365:               2
-;     c93d7:               2
-;     c93da:               2
-;     c946f:               2
-;     c9501:               2
-;     c9556:               2
-;     c955b:               2
-;     c956d:               2
-;     c957f:               2
-;     c95ff:               2
-;     c9677:               2
-;     c96d7:               2
-;     c97d1:               2
-;     c9838:               2
-;     c9849:               2
-;     c9859:               2
-;     c98bc:               2
-;     c98e3:               2
-;     c9978:               2
-;     c99a7:               2
-;     c9a9a:               2
-;     c9c03:               2
-;     c9c9b:               2
-;     c9ca1:               2
-;     c9d39:               2
-;     c9e23:               2
-;     c9eb7:               2
-;     c9ef9:               2
-;     c9efb:               2
-;     c9f39:               2
-;     c9f5c:               2
-;     ca072:               2
-;     ca111:               2
-;     ca118:               2
-;     ca170:               2
-;     ca174:               2
-;     ca197:               2
-;     ca313:               2
-;     ca336:               2
-;     ca3b2:               2
-;     ca40c:               2
-;     ca43c:               2
-;     ca450:               2
-;     ca4dc:               2
-;     ca659:               2
-;     ca65c:               2
-;     ca66c:               2
-;     ca67c:               2
-;     ca6bb:               2
-;     ca8ea:               2
-;     ca8fe:               2
-;     ca904:               2
-;     ca91b:               2
-;     ca936:               2
-;     ca9aa:               2
-;     ca9c3:               2
-;     caa4e:               2
-;     caab8:               2
-;     cab9d:               2
-;     caba0:               2
-;     cabb8:               2
-;     cabe6:               2
-;     cac73:               2
-;     cac95:               2
-;     cad3c:               2
-;     cad52:               2
-;     cad67:               2
-;     cad89:               2
-;     cadc9:               2
-;     caf69:               2
-;     cafc2:               2
-;     cb02e:               2
-;     cb0bf:               2
-;     cb0f5:               2
-;     cb11a:               2
-;     cb12d:               2
-;     cb24d:               2
-;     cb2ca:               2
-;     cb329:               2
-;     cb354:               2
-;     cb48f:               2
-;     cb4ae:               2
-;     cb4e9:               2
-;     cb51e:               2
-;     cb5d8:               2
-;     cb639:               2
-;     cb678:               2
-;     cb688:               2
-;     cb68e:               2
-;     cb6be:               2
-;     cb6d7:               2
-;     cb7a4:               2
-;     cb944:               2
-;     cb9af:               2
-;     cb9c4:               2
-;     cb9da:               2
-;     cbb15:               2
-;     cbc55:               2
-;     cbcd6:               2
-;     cbe41:               2
-;     cbe9e:               2
-;     cbf82:               2
-;     fp_temp1:            2
-;     l0010:               2
-;     l0022:               2
-;     l0100:               2
-;     l01ff:               2
-;     l0402:               2
-;     l0403:               2
-;     l043d:               2
-;     l04f1:               2
-;     l04f2:               2
-;     l04f3:               2
-;     l04f5:               2
-;     l04f7:               2
-;     l04fc:               2
-;     l06ff:               2
-;     osargs:              2
-;     oscli:               2
-;     osfile:              2
-;     osfind:              2
-;     osrdch:              2
-;     resint_o:            2
-;     return_1:            2
-;     return_10:           2
-;     return_13:           2
-;     return_2:            2
-;     return_21:           2
-;     return_26:           2
-;     return_28:           2
-;     return_3:            2
-;     return_31:           2
-;     return_35:           2
-;     return_9:            2
-;     stmt_data:           2
-;     sub_c887c:           2
-;     sub_c8c21:           2
-;     sub_c8e70:           2
-;     sub_c8e8a:           2
-;     sub_c8f1e:           2
-;     sub_c8f69:           2
-;     sub_c8f92:           2
-;     sub_c9236:           2
-;     sub_c95c9:           2
-;     sub_c95dd:           2
-;     sub_c96df:           2
-;     sub_c97eb:           2
-;     sub_c9841:           2
-;     sub_c9890:           2
-;     sub_c9905:           2
-;     sub_c991f:           2
-;     sub_c9923:           2
-;     sub_c99be:           2
-;     sub_c9b6b:           2
-;     sub_c9b9c:           2
-;     sub_c9dce:           2
-;     sub_c9e1d:           2
-;     sub_c9edf:           2
-;     sub_ca064:           2
-;     sub_ca178:           2
-;     sub_ca1f4:           2
-;     sub_ca23f:           2
-;     sub_ca37d:           2
-;     sub_ca486:           2
-;     sub_ca4d0:           2
-;     sub_ca4fd:           2
-;     sub_ca50b:           2
-;     sub_ca606:           2
-;     sub_ca6a5:           2
-;     sub_ca7f1:           2
-;     sub_caa48:           2
-;     sub_caa4c:           2
-;     sub_caa55:           2
-;     sub_cadad:           2
-;     sub_caf56:           2
-;     sub_caf87:           2
-;     sub_cafad:           2
-;     sub_cb30d:           2
-;     sub_cb4b1:           2
-;     sub_cb545:           2
-;     sub_cb562:           2
-;     sub_cbb50:           2
-;     sub_cbc02:           2
-;     sub_cbc2d:           2
-;     sub_cbc81:           2
-;     sub_cbc8d:           2
-;     sub_cbd90:           2
-;     sub_cbdff:           2
-;     sub_cbe62:           2
-;     sub_cbe92:           2
-;     sub_cbeba:           2
-;     sub_cbed2:           2
-;     sub_cbedd:           2
-;     sub_cbfcf:           2
-;     wrchv:               2
-;     zp_trace_max:        2
-;     brkv:                1
-;     brkv+1:              1
-;     c8063:               1
-;     c8504:               1
-;     c8508:               1
-;     c8536:               1
-;     c854c:               1
-;     c8565:               1
-;     c8577:               1
-;     c857b:               1
-;     c857e:               1
-;     c858c:               1
-;     c859f:               1
-;     c85a2:               1
-;     c85f1:               1
-;     c8601:               1
-;     c8607:               1
-;     c8643:               1
-;     c865b:               1
-;     c8665:               1
-;     c8673:               1
-;     c86a5:               1
-;     c86ad:               1
-;     c86b2:               1
-;     c86b7:               1
-;     c86cc:               1
-;     c86d3:               1
-;     c86da:               1
-;     c86fb:               1
-;     c8715:               1
-;     c873f:               1
-;     c8750:               1
-;     c8767:               1
-;     c876e:               1
-;     c8780:               1
-;     c8782:               1
-;     c8788:               1
-;     c8797:               1
-;     c879c:               1
-;     c879f:               1
-;     c87b2:               1
-;     c87cc:               1
-;     c87de:               1
-;     c87f0:               1
-;     c8813:               1
-;     c883a:               1
-;     c886a:               1
-;     c8966:               1
-;     c897c:               1
-;     c898c:               1
-;     c8996:               1
-;     c89a3:               1
-;     c89df:               1
-;     c89e9:               1
-;     c89ec:               1
-;     c89f8:               1
-;     c8a18:               1
-;     c8a25:               1
-;     c8a30:               1
-;     c8a48:               1
-;     c8a66:               1
-;     c8a6d:               1
-;     c8a72:               1
-;     c8a7f:               1
-;     c8a81:               1
-;     c8a86:               1
-;     c8b0b:               1
-;     c8b38:               1
-;     c8b73:               1
-;     c8bdf:               1
-;     c8be9:               1
-;     c8bfb:               1
-;     c8c0b:               1
-;     c8ca2:               1
-;     c8cb4:               1
-;     c8ce5:               1
-;     c8cee:               1
-;     c8cff:               1
-;     c8d03:               1
-;     c8d57:               1
-;     c8d64:               1
-;     c8d77:               1
-;     c8dd2:               1
-;     c8e5b:               1
-;     c8ea7:               1
-;     c8ecc:               1
-;     c8ee0:               1
-;     c8f0c:               1
-;     c8f1b:               1
-;     c8f8d:               1
-;     c8fd6:               1
-;     c8fe7:               1
-;     c900d:               1
-;     c903d:               1
-;     c9080:               1
-;     c90df:               1
-;     c913c:               1
-;     c915e:               1
-;     c9168:               1
-;     c91b7:               1
-;     c91d2:               1
-;     c9203:               1
-;     c920b:               1
-;     c9215:               1
-;     c924b:               1
-;     c925a:               1
-;     c92a5:               1
-;     c92b7:               1
-;     c92c0:               1
-;     c92f4:               1
-;     c9341:               1
-;     c9353:               1
-;     c936b:               1
-;     c93ea:               1
-;     c93fd:               1
-;     c949a:               1
-;     c94a7:               1
-;     c94d4:               1
-;     c94e1:               1
-;     c9516:               1
-;     c9541:               1
-;     c954d:               1
-;     c9571:               1
-;     c957a:               1
-;     c95a5:               1
-;     c95a7:               1
-;     c95b0:               1
-;     c95bf:               1
-;     c960e:               1
-;     c9615:               1
-;     c962d:               1
-;     c9635:               1
-;     c9654:               1
-;     c9661:               1
-;     c9665:               1
-;     c9673:               1
-;     c967b:               1
-;     c967f:               1
-;     c9681:               1
-;     c969f:               1
-;     c96a6:               1
-;     c96af:               1
-;     c96c9:               1
-;     c976c:               1
-;     c977d:               1
-;     c979b:               1
-;     c97a3:               1
-;     c97ad:               1
-;     c9805:               1
-;     c9861:               1
-;     c98ac:               1
-;     c98b7:               1
-;     c98cc:               1
-;     c98e1:               1
-;     c98f1:               1
-;     c9902:               1
-;     c9925:               1
-;     c9943:               1
-;     c994f:               1
-;     c998e:               1
-;     c9a33:               1
-;     c9a35:               1
-;     c9a62:               1
-;     c9ae5:               1
-;     c9ae7:               1
-;     c9aff:               1
-;     c9b11:               1
-;     c9b15:               1
-;     c9b3a:               1
-;     c9b55:               1
-;     c9b7a:               1
-;     c9ba8:               1
-;     c9bc0:               1
-;     c9bd4:               1
-;     c9bdf:               1
-;     c9be8:               1
-;     c9bfa:               1
-;     c9c4e:               1
-;     c9c77:               1
-;     c9c8b:               1
-;     c9ca7:               1
-;     c9cb5:               1
-;     c9ce1:               1
-;     c9cf1:               1
-;     c9cfa:               1
-;     c9d2c:               1
-;     c9d3c:               1
-;     c9d4e:               1
-;     c9d69:               1
-;     c9da6:               1
-;     c9dbb:               1
-;     c9dbd:               1
-;     c9dc6:               1
-;     c9de5:               1
-;     c9e01:               1
-;     c9e0a:               1
-;     c9e35:               1
-;     c9e59:               1
-;     c9e88:               1
-;     c9e96:               1
-;     c9ebf:               1
-;     c9ee8:               1
-;     c9ef5:               1
-;     c9f0f:               1
-;     c9f1d:               1
-;     c9f25:               1
-;     c9f31:               1
-;     c9f34:               1
-;     c9f71:               1
-;     c9f92:               1
-;     c9f9c:               1
-;     c9fa0:               1
-;     c9fad:               1
-;     c9fc3:               1
-;     c9fcf:               1
-;     c9fe4:               1
-;     c9ff4:               1
-;     ca00f:               1
-;     ca011:               1
-;     ca015:               1
-;     ca028:               1
-;     ca038:               1
-;     ca063:               1
-;     ca0a0:               1
-;     ca0a8:               1
-;     ca0c2:               1
-;     ca0c8:               1
-;     ca0e1:               1
-;     ca11b:               1
-;     ca11f:               1
-;     ca14e:               1
-;     ca1ed:               1
-;     ca1ff:               1
-;     ca20b:               1
-;     ca258:               1
-;     ca2cd:               1
-;     ca2fd:               1
-;     ca33a:               1
-;     ca37a:               1
-;     ca3e1:               1
-;     ca466:               1
-;     ca468:               1
-;     ca491:               1
-;     ca4ae:               1
-;     ca4b0:               1
-;     ca4b3:               1
-;     ca53d:               1
-;     ca552:               1
-;     ca579:               1
-;     ca58c:               1
-;     ca5df:               1
-;     ca5e3:               1
-;     ca613:               1
-;     ca61d:               1
-;     ca625:               1
-;     ca652:               1
-;     ca676:               1
-;     ca6f1:               1
-;     ca701:               1
-;     ca70a:               1
-;     ca726:               1
-;     ca73f:               1
-;     ca76e:               1
-;     ca787:               1
-;     ca7b7:               1
-;     ca7e6:               1
-;     ca808:               1
-;     ca814:               1
-;     ca82a:               1
-;     ca82c:               1
-;     ca8aa:               1
-;     ca90a:               1
-;     ca916:               1
-;     ca927:               1
-;     caa0e:               1
-;     caa35:               1
-;     caa38:               1
-;     caa5d:               1
-;     caaa2:               1
-;     caaac:               1
-;     cab1e:               1
-;     cab25:               1
-;     caba2:               1
-;     caba5:               1
-;     cac0f:               1
-;     cac23:               1
-;     cac5e:               1
-;     cac66:               1
-;     cad03:               1
-;     cad06:               1
-;     cad12:               1
-;     cad1a:               1
-;     cad4d:               1
-;     cad59:               1
-;     cad77:               1
-;     cad83:               1
-;     cadaa:               1
-;     cadc5:               1
-;     cade1:               1
-;     cade9:               1
-;     cae05:               1
-;     cae10:               1
-;     cae20:               1
-;     cae2a:               1
-;     cae30:               1
-;     cae61:               1
-;     cae6d:               1
-;     cae8d:               1
-;     caeaa:               1
-;     caf24:               1
-;     caf3f:               1
-;     caf6c:               1
-;     cafeb:               1
-;     cb023:               1
-;     cb061:               1
-;     cb06f:               1
-;     cb07f:               1
-;     cb0a1:               1
-;     cb0b9:               1
-;     cb0f8:               1
-;     cb0fb:               1
-;     cb112:               1
-;     cb13c:               1
-;     cb14d:               1
-;     cb1ca:               1
-;     cb1e9:               1
-;     cb1f4:               1
-;     cb202:               1
-;     cb226:               1
-;     cb24a:               1
-;     cb2f0:               1
-;     cb2f3:               1
-;     cb2f9:               1
-;     cb303:               1
-;     cb318:               1
-;     cb34f:               1
-;     cb37f:               1
-;     cb384:               1
-;     cb3a7:               1
-;     cb3ba:               1
-;     cb3c0:               1
-;     cb3f9:               1
-;     cb413:               1
-;     cb4c6:               1
-;     cb4e0:               1
-;     cb536:               1
-;     cb542:               1
-;     cb556:               1
-;     cb567:               1
-;     cb571:               1
-;     cb5cf:               1
-;     cb5db:               1
-;     cb602:               1
-;     cb60f:               1
-;     cb61d:               1
-;     cb637:               1
-;     cb651:               1
-;     cb668:               1
-;     cb66e:               1
-;     cb67e:               1
-;     cb6a3:               1
-;     cb73f:               1
-;     cb766:               1
-;     cb79d:               1
-;     cb7a1:               1
-;     cb81f:               1
-;     cb837:               1
-;     cb84f:               1
-;     cb875:               1
-;     cb88b:               1
-;     cb8a2:               1
-;     cb8d9:               1
-;     cb8dd:               1
-;     cb931:               1
-;     cb95c:               1
-;     cb96a:               1
-;     cb977:               1
-;     cb995:               1
-;     cb9b5:               1
-;     cba13:               1
-;     cba19:               1
-;     cba2b:               1
-;     cba39:               1
-;     cba52:               1
-;     cba69:               1
-;     cba99:               1
-;     cbaa2:               1
-;     cbab0:               1
-;     cbaca:               1
-;     cbacd:               1
-;     cbadc:               1
-;     cbb32:               1
-;     cbb40:               1
-;     cbb9c:               1
-;     cbbad:               1
-;     cbbcd:               1
-;     cbc09:               1
-;     cbc53:               1
-;     cbc5d:               1
-;     cbc66:               1
-;     cbc6d:               1
-;     cbc7c:               1
-;     cbc88:               1
-;     cbce1:               1
-;     cbcea:               1
-;     cbd14:               1
-;     cbdc6:               1
-;     cbde1:               1
-;     cbe34:               1
-;     cbe5f:               1
-;     cbe90:               1
-;     cbe9b:               1
-;     cbf96:               1
-;     cbfc3:               1
-;     cbfdc:               1
-;     cbff6:               1
-;     fn_asn:              1
-;     fn_ln:               1
-;     for_gosub_stack:     1
-;     immediate_loop:      1
-;     l0047:               1
-;     l0061:               1
-;     l0064:               1
-;     l00c9:               1
-;     l00ff:               1
-;     l0106:               1
-;     l047f:               1
-;     l04f4:               1
-;     l04f6:               1
-;     l04f9:               1
-;     l04fa:               1
-;     l04fb:               1
-;     l04fe:               1
-;     l04ff:               1
-;     l0501:               1
-;     l0502:               1
-;     l0503:               1
-;     l0504:               1
-;     l0505:               1
-;     l0506:               1
-;     l0508:               1
-;     l0509:               1
-;     l050a:               1
-;     l050b:               1
-;     l050d:               1
-;     l050e:               1
-;     l05a3:               1
-;     l05a4:               1
-;     l05b7:               1
-;     l05b8:               1
-;     l05cb:               1
-;     l05cc:               1
-;     l05e5:               1
-;     l05e6:               1
-;     l6142:               1
-;     l7461:               1
-;     l82df:               1
-;     l8351:               1
-;     l8450:               1
-;     l848a:               1
-;     l84c4:               1
-;     l996b:               1
-;     l99b9:               1
-;     loop_c84fd:          1
-;     loop_c853c:          1
-;     loop_c8544:          1
-;     loop_c8567:          1
-;     loop_c8571:          1
-;     loop_c8581:          1
-;     loop_c85a5:          1
-;     loop_c85d5:          1
-;     loop_c85e6:          1
-;     loop_c85f5:          1
-;     loop_c872f:          1
-;     loop_c8864:          1
-;     loop_c8867:          1
-;     loop_c888d:          1
-;     loop_c88ec:          1
-;     loop_c8980:          1
-;     loop_c89cb:          1
-;     loop_c89fe:          1
-;     loop_c8b41:          1
-;     loop_c8b44:          1
-;     loop_c8b47:          1
-;     loop_c8b60:          1
-;     loop_c8b82:          1
-;     loop_c8c97:          1
-;     loop_c8ca9:          1
-;     loop_c8cdd:          1
-;     loop_c8ce9:          1
-;     loop_c8cf5:          1
-;     loop_c8d2b:          1
-;     loop_c8d4d:          1
-;     loop_c8d59:          1
-;     loop_c8d6c:          1
-;     loop_c8d83:          1
-;     loop_c8da6:          1
-;     loop_c8dad:          1
-;     loop_c8db5:          1
-;     loop_c8dc1:          1
-;     loop_c8e08:          1
-;     loop_c8e14:          1
-;     loop_c8e21:          1
-;     loop_c8e24:          1
-;     loop_c8e40:          1
-;     loop_c8e58:          1
-;     loop_c8e67:          1
-;     loop_c8f53:          1
-;     loop_c8fb1:          1
-;     loop_c8fea:          1
-;     loop_c90dc:          1
-;     loop_c9185:          1
-;     loop_c923a:          1
-;     loop_c92ae:          1
-;     loop_c92b2:          1
-;     loop_c931b:          1
-;     loop_c942a:          1
-;     loop_c9432:          1
-;     loop_c9495:          1
-;     loop_c94cf:          1
-;     loop_c9507:          1
-;     loop_c9527:          1
-;     loop_c9533:          1
-;     loop_c9595:          1
-;     loop_c95d4:          1
-;     loop_c96ff:          1
-;     loop_c97dd:          1
-;     loop_c9821:          1
-;     loop_c985a:          1
-;     loop_c98bf:          1
-;     loop_c98de:          1
-;     loop_c98f3:          1
-;     loop_c9929:          1
-;     loop_c992e:          1
-;     loop_c9948:          1
-;     loop_c995a:          1
-;     loop_c9980:          1
-;     loop_c99f4:          1
-;     loop_c9a01:          1
-;     loop_c9a39:          1
-;     loop_c9a50:          1
-;     loop_c9b03:          1
-;     loop_c9b2c:          1
-;     loop_c9b43:          1
-;     loop_c9b4e:          1
-;     loop_c9b5e:          1
-;     loop_c9b75:          1
-;     loop_c9b8a:          1
-;     loop_c9c15:          1
-;     loop_c9c2d:          1
-;     loop_c9d11:          1
-;     loop_c9d20:          1
-;     loop_c9d8b:          1
-;     loop_c9dcb:          1
-;     loop_c9e24:          1
-;     loop_c9e6c:          1
-;     loop_c9e90:          1
-;     loop_c9e9a:          1
-;     loop_c9eb0:          1
-;     loop_c9ec8:          1
-;     loop_c9f20:          1
-;     loop_c9f6b:          1
-;     loop_c9f7e:          1
-;     loop_c9fdb:          1
-;     loop_c9fe8:          1
-;     loop_ca002:          1
-;     loop_ca055:          1
-;     loop_ca0f5:          1
-;     loop_ca108:          1
-;     loop_ca139:          1
-;     loop_ca2e6:          1
-;     loop_ca3f8:          1
-;     loop_ca528:          1
-;     loop_ca543:          1
-;     loop_ca564:          1
-;     loop_ca57f:          1
-;     loop_ca629:          1
-;     loop_ca63a:          1
-;     loop_ca70c:          1
-;     loop_ca754:          1
-;     loop_ca7a9:          1
-;     loop_ca7cf:          1
-;     loop_ca8b5:          1
-;     loop_cab7f:          1
-;     loop_cacaa:          1
-;     loop_cacd6:          1
-;     loop_cad42:          1
-;     loop_cad4f:          1
-;     loop_cad55:          1
-;     loop_cad8c:          1
-;     loop_cadb6:          1
-;     loop_cadcb:          1
-;     loop_cadcc:          1
-;     loop_cae79:          1
-;     loop_cae93:          1
-;     loop_caec7:          1
-;     loop_caece:          1
-;     loop_caf0a:          1
-;     loop_caf78:          1
-;     loop_caf89:          1
-;     loop_cb017:          1
-;     loop_cb083:          1
-;     loop_cb0df:          1
-;     loop_cb0e1:          1
-;     loop_cb0fe:          1
-;     loop_cb122:          1
-;     loop_cb158:          1
-;     loop_cb18a:          1
-;     loop_cb1a6:          1
-;     loop_cb21c:          1
-;     loop_cb236:          1
-;     loop_cb28e:          1
-;     loop_cb39d:          1
-;     loop_cb3ad:          1
-;     loop_cb3d9:          1
-;     loop_cb451:          1
-;     loop_cb477:          1
-;     loop_cb520:          1
-;     loop_cb538:          1
-;     loop_cb580:          1
-;     loop_cb58a:          1
-;     loop_cb5fc:          1
-;     loop_cb64b:          1
-;     loop_cb6a0:          1
-;     loop_cb6a9:          1
-;     loop_cb7b0:          1
-;     loop_cb7bd:          1
-;     loop_cb8af:          1
-;     loop_cb8e4:          1
-;     loop_cb8f2:          1
-;     loop_cb90a:          1
-;     loop_cb96c:          1
-;     loop_cb980:          1
-;     loop_cb9c7:          1
-;     loop_cb9ca:          1
-;     loop_cb9cf:          1
-;     loop_cba0a:          1
-;     loop_cba21:          1
-;     loop_cba2d:          1
-;     loop_cba3f:          1
-;     loop_cba5f:          1
-;     loop_cbabd:          1
-;     loop_cbb6f:          1
-;     loop_cbb85:          1
-;     loop_cbba6:          1
-;     loop_cbbd6:          1
-;     loop_cbc9e:          1
-;     loop_cbd07:          1
-;     loop_cbd33:          1
-;     loop_cbdbe:          1
-;     loop_cbdd4:          1
-;     loop_cbe78:          1
-;     loop_cbecf:          1
-;     loop_cbfd9:          1
-;     loop_cbfec:          1
-;     osasci:              1
-;     osnewl:              1
-;     resint_a:            1
-;     resint_c:            1
-;     resint_x:            1
-;     resint_y:            1
-;     return_11:           1
-;     return_14:           1
-;     return_15:           1
-;     return_16:           1
-;     return_17:           1
-;     return_18:           1
-;     return_20:           1
-;     return_24:           1
-;     return_27:           1
-;     return_29:           1
-;     return_30:           1
-;     return_32:           1
-;     return_34:           1
-;     return_37:           1
-;     return_38:           1
-;     return_4:            1
-;     return_40:           1
-;     return_5:            1
-;     return_6:            1
-;     return_7:            1
-;     stmt_dim:            1
-;     stmt_local:          1
-;     stmt_next:           1
-;     stmt_read:           1
-;     stmt_vdu:            1
-;     sub_c85ba:           1
-;     sub_c8897:           1
-;     sub_c88f5:           1
-;     sub_c893d:           1
-;     sub_c8951:           1
-;     sub_c8955:           1
-;     sub_c8cc1:           1
-;     sub_c8f9a:           1
-;     sub_c9231:           1
-;     sub_c945b:           1
-;     sub_c94ed:           1
-;     sub_c9539:           1
-;     sub_c9559:           1
-;     sub_c95d5:           1
-;     sub_c9807:           1
-;     sub_c987b:           1
-;     sub_c9880:           1
-;     sub_c9a5f:           1
-;     sub_c9a9e:           1
-;     sub_c9b72:           1
-;     sub_ca040:           1
-;     sub_ca052:           1
-;     sub_ca140:           1
-;     sub_ca14b:           1
-;     sub_ca2a4:           1
-;     sub_ca2ed:           1
-;     sub_ca3e7:           1
-;     sub_ca4b6:           1
-;     sub_ca4c7:           1
-;     sub_ca4d6:           1
-;     sub_ca4e8:           1
-;     sub_ca801:           1
-;     sub_ca9b1:           1
-;     sub_caa94:           1
-;     sub_caada:           1
-;     sub_cac34:           1
-;     sub_cad8f:           1
-;     sub_cae02:           1
-;     sub_cae3a:           1
-;     sub_cb197:           1
-;     sub_cb1c8:           1
-;     sub_cb3c5:           1
-;     sub_cb4b7:           1
-;     sub_cb550:           1
-;     sub_cbbfc:           1
-;     sub_cbd2f:           1
-;     sub_cbe55:           1
-;     sub_cbe56:           1
-;     sub_cbe93:           1
-;     sub_cbeb2:           1
-;     sub_cbee7:           1
+;     zp_iwa:                    187
+;     zp_general:                142
+;     l002b:                     111
+;     zp_text_ptr_off:            92
+;     zp_text_ptr2_off:           90
+;     zp_stack_ptr:               85
+;     zp_text_ptr:                75
+;     l0031:                      73
+;     l002c:                      70
+;     l0038:                      66
+;     l003d:                      65
+;     zp_fileblk:                 62
+;     l002d:                      61
+;     l0032:                      61
+;     l0034:                      61
+;     zp_fwb:                     59
+;     l0033:                      58
+;     l003e:                      56
+;     l0030:                      55
+;     l003f:                      55
+;     zp_strbuf_len:              52
+;     skip_spaces:                48
+;     zp_fwa:                     48
+;     zp_text_ptr2:               48
+;     l003a:                      45
+;     l0035:                      42
+;     l000c:                      41
+;     zp_var_type:                41
+;     l003c:                      39
+;     l0040:                      37
+;     l004b:                      31
+;     cbd94:                      29
+;     l004d:                      28
+;     zp_vartop:                  28
+;     string_work:                27
+;     c9857:                      25
+;     l0041:                      25
+;     c8b9b:                      23
+;     l001a:                      22
+;     sub_c8821:                  22
+;     c92f0:                      21
+;     l0005:                      21
+;     l0049:                      21
+;     skip_spaces_ptr2:           21
+;     zp_top:                     21
+;     l0003:                      20
+;     l002f:                      20
+;     l004a:                      20
+;     l004e:                      19
+;     c8c0e:                      18
+;     caed8:                      18
+;     ca1da:                      17
+;     l0042:                      17
+;     sub_c9b29:                  16
+;     sub_cbdea:                  16
+;     zp_page:                    16
+;     l0013:                      15
+;     zp_for_level:               15
+;     l004c:                      14
+;     cadec:                      13
+;     cb558:                      13
+;     ca2be:                      12
+;     cbd51:                      12
+;     oswrch:                     12
+;     sub_ca656:                  12
+;     ca066:                      11
+;     cae56:                      11
+;     caeea:                      11
+;     osbyte:                     11
+;     sub_c92fa:                  11
+;     sub_c9b1d:                  11
+;     sub_cbd7e:                  11
+;     zp_opt_flag:                11
+;     c8ba3:                      10
+;     ca500:                      10
+;     sub_c92e3:                  10
+;     sub_c97df:                  10
+;     sub_ca3b5:                  10
+;     cb565:                       9
+;     cbdb2:                       9
+;     l0048:                       9
+;     sub_c9582:                   9
+;     sub_ca385:                   9
+;     zp_print_flag:               9
+;     c870d:                       8
+;     c9127:                       8
+;     c986d:                       8
+;     ca099:                       8
+;     ca303:                       8
+;     ca686:                       8
+;     inc_ptr_general:             8
+;     l0007:                       8
+;     l05ff:                       8
+;     sub_c92dd:                   8
+;     sub_c9852:                   8
+;     sub_cbc25:                   8
+;     zp_himem:                    8
+;     zp_print_bytes:              8
+;     c862b:                       7
+;     c8b96:                       7
+;     c982a:                       7
+;     c9bb5:                       7
+;     sub_c882c:                   7
+;     sub_c92fd:                   7
+;     sub_ca34e:                   7
+;     sub_ca38d:                   7
+;     zp_count:                    7
+;     c8af3:                       6
+;     c8af6:                       6
+;     c9bb4:                       6
+;     c9c88:                       6
+;     cae43:                       6
+;     cb2b5:                       6
+;     cbddc:                       6
+;     l0001:                       6
+;     l0017:                       6
+;     osbget:                      6
+;     osbput:                      6
+;     sub_c92ee:                   6
+;     sub_ca381:                   6
+;     sub_ca699:                   6
+;     sub_ca7f5:                   6
+;     sub_cb4b4:                   6
+;     sub_cbdcb:                   6
+;     sub_cbe6f:                   6
+;     zp_error_vec:                6
+;     zp_fp_temp:                  6
+;     zp_lomem:                    6
+;     c8735:                       5
+;     c8957:                       5
+;     c8961:                       5
+;     c8e6a:                       5
+;     c9a93:                       5
+;     c9fe6:                       5
+;     ca208:                       5
+;     ca3e4:                       5
+;     ca5b7:                       5
+;     cac9b:                       5
+;     cad7e:                       5
+;     cb741:                       5
+;     cb97d:                       5
+;     l0044:                       5
+;     osword:                      5
+;     resint_at:                   5
+;     return_22:                   5
+;     skip_spaces_expect_comma:    5
+;     sub_c8926:                   5
+;     sub_c9a9d:                   5
+;     sub_ca21e:                   5
+;     sub_ca242:                   5
+;     sub_cbd20:                   5
+;     sub_cbe0d:                   5
+;     sub_cbe44:                   5
+;     sub_cbfa9:                   5
+;     zp_gosub_level:              5
+;     zp_repeat_level:             5
+;     zp_trace_flag:               5
+;     c8604:                       4
+;     c88d5:                       4
+;     c8aa2:                       4
+;     c8b98:                       4
+;     c8d30:                       4
+;     c9372:                       4
+;     c9479:                       4
+;     c94b3:                       4
+;     c9641:                       4
+;     c9813:                       4
+;     c984c:                       4
+;     c9877:                       4
+;     c9c45:                       4
+;     ca46c:                       4
+;     cb036:                       4
+;     cb751:                       4
+;     cba5a:                       4
+;     cbc28:                       4
+;     l000f:                       4
+;     l0011:                       4
+;     l001d:                       4
+;     l0045:                       4
+;     l0046:                       4
+;     l0441:                       4
+;     read_via_ptr_general:        4
+;     resint_p:                    4
+;     return_23:                   4
+;     sub_c9222:                   4
+;     sub_c92da:                   4
+;     sub_c92eb:                   4
+;     sub_c9456:                   4
+;     sub_c9469:                   4
+;     sub_c9531:                   4
+;     sub_c9c42:                   4
+;     sub_c9e20:                   4
+;     sub_ca3fe:                   4
+;     sub_ca6ad:                   4
+;     sub_ca7e9:                   4
+;     sub_ca897:                   4
+;     sub_cad71:                   4
+;     sub_cb99a:                   4
+;     sub_cbe2e:                   4
+;     zp_asm_opcode:               4
+;     zp_data_ptr:                 4
+;     zp_rnd_seed:                 4
+;     c8620:                       3
+;     c8738:                       3
+;     c8858:                       3
+;     c8924:                       3
+;     c8936:                       3
+;     c89b5:                       3
+;     c8cb7:                       3
+;     c8d7d:                       3
+;     c8d80:                       3
+;     c8dbb:                       3
+;     c8dc3:                       3
+;     c8e0e:                       3
+;     c8f2e:                       3
+;     c91fc:                       3
+;     c9218:                       3
+;     c92f7:                       3
+;     c9453:                       3
+;     c961b:                       3
+;     c9960:                       3
+;     c99a4:                       3
+;     c9d0e:                       3
+;     c9d1d:                       3
+;     c9dd4:                       3
+;     c9ed1:                       3
+;     ca0e8:                       3
+;     ca387:                       3
+;     ca590:                       3
+;     ca6e7:                       3
+;     ca724:                       3
+;     ca76c:                       3
+;     ca7f7:                       3
+;     ca99e:                       3
+;     caad1:                       3
+;     cad93:                       3
+;     caea2:                       3
+;     cb033:                       3
+;     cb32c:                       3
+;     cb8d2:                       3
+;     cbb07:                       3
+;     cbb7a:                       3
+;     fn_true:                     3
+;     l0009:                       3
+;     l000e:                       3
+;     l00fd:                       3
+;     l0401:                       3
+;     return_12:                   3
+;     return_19:                   3
+;     return_25:                   3
+;     return_33:                   3
+;     return_36:                   3
+;     return_39:                   3
+;     return_8:                    3
+;     sub_c8827:                   3
+;     sub_c882f:                   3
+;     sub_c8832:                   3
+;     sub_c894b:                   3
+;     sub_c8c1e:                   3
+;     sub_c909f:                   3
+;     sub_c94fc:                   3
+;     sub_c97ba:                   3
+;     sub_c9970:                   3
+;     sub_c9dd1:                   3
+;     sub_ca07b:                   3
+;     sub_ca24d:                   3
+;     sub_ca453:                   3
+;     sub_ca505:                   3
+;     sub_ca7ed:                   3
+;     sub_ca9d3:                   3
+;     sub_cab12:                   3
+;     sub_cb50e:                   3
+;     sub_cb577:                   3
+;     sub_cbd3a:                   3
+;     sub_cbe0b:                   3
+;     sub_cbfb5:                   3
+;     zp_erl:                      3
+;     zp_listo:                    3
+;     zp_width:                    3
+;     c8556:                       2
+;     c8650:                       2
+;     c866f:                       2
+;     c8691:                       2
+;     c86a6:                       2
+;     c86a8:                       2
+;     c86c5:                       2
+;     c86c8:                       2
+;     c879a:                       2
+;     c87ed:                       2
+;     c8810:                       2
+;     c889d:                       2
+;     c88da:                       2
+;     c896a:                       2
+;     c89c2:                       2
+;     c89d0:                       2
+;     c89d2:                       2
+;     c89e3:                       2
+;     c8a0d:                       2
+;     c8a19:                       2
+;     c8a37:                       2
+;     c8a54:                       2
+;     c8b59:                       2
+;     c8b87:                       2
+;     c8bb1:                       2
+;     c8bbf:                       2
+;     c8c43:                       2
+;     c8c5f:                       2
+;     c8c84:                       2
+;     c8d26:                       2
+;     c8e5f:                       2
+;     c8e98:                       2
+;     c8ea4:                       2
+;     c8fdf:                       2
+;     c901a:                       2
+;     c901c:                       2
+;     c903a:                       2
+;     c9043:                       2
+;     c9071:                       2
+;     c90b5:                       2
+;     c916b:                       2
+;     c928a:                       2
+;     c9365:                       2
+;     c93d7:                       2
+;     c93da:                       2
+;     c946f:                       2
+;     c9501:                       2
+;     c9556:                       2
+;     c955b:                       2
+;     c956d:                       2
+;     c957f:                       2
+;     c95ff:                       2
+;     c9677:                       2
+;     c96d7:                       2
+;     c97d1:                       2
+;     c9838:                       2
+;     c9849:                       2
+;     c9859:                       2
+;     c98bc:                       2
+;     c98e3:                       2
+;     c9978:                       2
+;     c99a7:                       2
+;     c9a9a:                       2
+;     c9c03:                       2
+;     c9c9b:                       2
+;     c9ca1:                       2
+;     c9d39:                       2
+;     c9e23:                       2
+;     c9eb7:                       2
+;     c9ef9:                       2
+;     c9efb:                       2
+;     c9f39:                       2
+;     c9f5c:                       2
+;     ca072:                       2
+;     ca111:                       2
+;     ca118:                       2
+;     ca170:                       2
+;     ca174:                       2
+;     ca197:                       2
+;     ca313:                       2
+;     ca336:                       2
+;     ca3b2:                       2
+;     ca40c:                       2
+;     ca43c:                       2
+;     ca450:                       2
+;     ca4dc:                       2
+;     ca659:                       2
+;     ca65c:                       2
+;     ca66c:                       2
+;     ca67c:                       2
+;     ca6bb:                       2
+;     ca8ea:                       2
+;     ca8fe:                       2
+;     ca904:                       2
+;     ca91b:                       2
+;     ca936:                       2
+;     ca9aa:                       2
+;     ca9c3:                       2
+;     caa4e:                       2
+;     caab8:                       2
+;     cab9d:                       2
+;     caba0:                       2
+;     cabb8:                       2
+;     cabe6:                       2
+;     cac73:                       2
+;     cac95:                       2
+;     cad3c:                       2
+;     cad52:                       2
+;     cad67:                       2
+;     cad89:                       2
+;     cadc9:                       2
+;     caf69:                       2
+;     cafc2:                       2
+;     cb02e:                       2
+;     cb0bf:                       2
+;     cb0f5:                       2
+;     cb11a:                       2
+;     cb12d:                       2
+;     cb24d:                       2
+;     cb2ca:                       2
+;     cb329:                       2
+;     cb354:                       2
+;     cb48f:                       2
+;     cb4ae:                       2
+;     cb4e9:                       2
+;     cb51e:                       2
+;     cb5d8:                       2
+;     cb639:                       2
+;     cb678:                       2
+;     cb688:                       2
+;     cb68e:                       2
+;     cb6be:                       2
+;     cb6d7:                       2
+;     cb7a4:                       2
+;     cb944:                       2
+;     cb9af:                       2
+;     cb9c4:                       2
+;     cb9da:                       2
+;     cbb15:                       2
+;     cbc55:                       2
+;     cbcd6:                       2
+;     cbe41:                       2
+;     cbe9e:                       2
+;     cbf82:                       2
+;     fp_temp1:                    2
+;     l0010:                       2
+;     l0022:                       2
+;     l0100:                       2
+;     l01ff:                       2
+;     l0402:                       2
+;     l0403:                       2
+;     l043d:                       2
+;     l04f1:                       2
+;     l04f2:                       2
+;     l04f3:                       2
+;     l04f5:                       2
+;     l04f7:                       2
+;     l04fc:                       2
+;     l06ff:                       2
+;     osargs:                      2
+;     oscli:                       2
+;     osfile:                      2
+;     osfind:                      2
+;     osrdch:                      2
+;     resint_o:                    2
+;     return_1:                    2
+;     return_10:                   2
+;     return_13:                   2
+;     return_2:                    2
+;     return_21:                   2
+;     return_26:                   2
+;     return_28:                   2
+;     return_3:                    2
+;     return_31:                   2
+;     return_35:                   2
+;     return_9:                    2
+;     stmt_data:                   2
+;     sub_c887c:                   2
+;     sub_c8c21:                   2
+;     sub_c8e70:                   2
+;     sub_c8e8a:                   2
+;     sub_c8f1e:                   2
+;     sub_c8f69:                   2
+;     sub_c8f92:                   2
+;     sub_c9236:                   2
+;     sub_c95c9:                   2
+;     sub_c95dd:                   2
+;     sub_c96df:                   2
+;     sub_c97eb:                   2
+;     sub_c9841:                   2
+;     sub_c9890:                   2
+;     sub_c9905:                   2
+;     sub_c991f:                   2
+;     sub_c9923:                   2
+;     sub_c99be:                   2
+;     sub_c9b6b:                   2
+;     sub_c9b9c:                   2
+;     sub_c9dce:                   2
+;     sub_c9e1d:                   2
+;     sub_c9edf:                   2
+;     sub_ca064:                   2
+;     sub_ca178:                   2
+;     sub_ca1f4:                   2
+;     sub_ca23f:                   2
+;     sub_ca37d:                   2
+;     sub_ca486:                   2
+;     sub_ca4d0:                   2
+;     sub_ca4fd:                   2
+;     sub_ca50b:                   2
+;     sub_ca606:                   2
+;     sub_ca6a5:                   2
+;     sub_ca7f1:                   2
+;     sub_caa48:                   2
+;     sub_caa4c:                   2
+;     sub_caa55:                   2
+;     sub_cadad:                   2
+;     sub_caf56:                   2
+;     sub_caf87:                   2
+;     sub_cafad:                   2
+;     sub_cb30d:                   2
+;     sub_cb4b1:                   2
+;     sub_cb545:                   2
+;     sub_cb562:                   2
+;     sub_cbb50:                   2
+;     sub_cbc02:                   2
+;     sub_cbc2d:                   2
+;     sub_cbc81:                   2
+;     sub_cbc8d:                   2
+;     sub_cbd90:                   2
+;     sub_cbdff:                   2
+;     sub_cbe62:                   2
+;     sub_cbe92:                   2
+;     sub_cbeba:                   2
+;     sub_cbed2:                   2
+;     sub_cbedd:                   2
+;     sub_cbfcf:                   2
+;     wrchv:                       2
+;     zp_trace_max:                2
+;     brkv:                        1
+;     brkv+1:                      1
+;     c8063:                       1
+;     c8504:                       1
+;     c8508:                       1
+;     c8536:                       1
+;     c854c:                       1
+;     c8565:                       1
+;     c8577:                       1
+;     c857b:                       1
+;     c857e:                       1
+;     c858c:                       1
+;     c859f:                       1
+;     c85a2:                       1
+;     c85f1:                       1
+;     c8601:                       1
+;     c8607:                       1
+;     c8643:                       1
+;     c865b:                       1
+;     c8665:                       1
+;     c8673:                       1
+;     c86a5:                       1
+;     c86ad:                       1
+;     c86b2:                       1
+;     c86b7:                       1
+;     c86cc:                       1
+;     c86d3:                       1
+;     c86da:                       1
+;     c86fb:                       1
+;     c8715:                       1
+;     c873f:                       1
+;     c8750:                       1
+;     c8767:                       1
+;     c876e:                       1
+;     c8780:                       1
+;     c8782:                       1
+;     c8788:                       1
+;     c8797:                       1
+;     c879c:                       1
+;     c879f:                       1
+;     c87b2:                       1
+;     c87cc:                       1
+;     c87de:                       1
+;     c87f0:                       1
+;     c8813:                       1
+;     c883a:                       1
+;     c886a:                       1
+;     c8966:                       1
+;     c897c:                       1
+;     c898c:                       1
+;     c8996:                       1
+;     c89a3:                       1
+;     c89df:                       1
+;     c89e9:                       1
+;     c89ec:                       1
+;     c89f8:                       1
+;     c8a18:                       1
+;     c8a25:                       1
+;     c8a30:                       1
+;     c8a48:                       1
+;     c8a66:                       1
+;     c8a6d:                       1
+;     c8a72:                       1
+;     c8a7f:                       1
+;     c8a81:                       1
+;     c8a86:                       1
+;     c8b0b:                       1
+;     c8b38:                       1
+;     c8b73:                       1
+;     c8bdf:                       1
+;     c8be9:                       1
+;     c8bfb:                       1
+;     c8c0b:                       1
+;     c8ca2:                       1
+;     c8cb4:                       1
+;     c8ce5:                       1
+;     c8cee:                       1
+;     c8cff:                       1
+;     c8d03:                       1
+;     c8d57:                       1
+;     c8d64:                       1
+;     c8d77:                       1
+;     c8dd2:                       1
+;     c8e5b:                       1
+;     c8ea7:                       1
+;     c8ecc:                       1
+;     c8ee0:                       1
+;     c8f0c:                       1
+;     c8f1b:                       1
+;     c8f8d:                       1
+;     c8fd6:                       1
+;     c8fe7:                       1
+;     c900d:                       1
+;     c903d:                       1
+;     c9080:                       1
+;     c90df:                       1
+;     c913c:                       1
+;     c915e:                       1
+;     c9168:                       1
+;     c91b7:                       1
+;     c91d2:                       1
+;     c9203:                       1
+;     c920b:                       1
+;     c9215:                       1
+;     c924b:                       1
+;     c925a:                       1
+;     c92a5:                       1
+;     c92b7:                       1
+;     c92c0:                       1
+;     c92f4:                       1
+;     c9341:                       1
+;     c9353:                       1
+;     c936b:                       1
+;     c93ea:                       1
+;     c93fd:                       1
+;     c949a:                       1
+;     c94a7:                       1
+;     c94d4:                       1
+;     c94e1:                       1
+;     c9516:                       1
+;     c9541:                       1
+;     c954d:                       1
+;     c9571:                       1
+;     c957a:                       1
+;     c95a5:                       1
+;     c95a7:                       1
+;     c95b0:                       1
+;     c95bf:                       1
+;     c960e:                       1
+;     c9615:                       1
+;     c962d:                       1
+;     c9635:                       1
+;     c9654:                       1
+;     c9661:                       1
+;     c9665:                       1
+;     c9673:                       1
+;     c967b:                       1
+;     c967f:                       1
+;     c9681:                       1
+;     c969f:                       1
+;     c96a6:                       1
+;     c96af:                       1
+;     c96c9:                       1
+;     c976c:                       1
+;     c977d:                       1
+;     c979b:                       1
+;     c97a3:                       1
+;     c97ad:                       1
+;     c9805:                       1
+;     c9861:                       1
+;     c98ac:                       1
+;     c98b7:                       1
+;     c98cc:                       1
+;     c98e1:                       1
+;     c98f1:                       1
+;     c9902:                       1
+;     c9925:                       1
+;     c9943:                       1
+;     c994f:                       1
+;     c998e:                       1
+;     c9a33:                       1
+;     c9a35:                       1
+;     c9a62:                       1
+;     c9ae5:                       1
+;     c9ae7:                       1
+;     c9aff:                       1
+;     c9b11:                       1
+;     c9b15:                       1
+;     c9b3a:                       1
+;     c9b55:                       1
+;     c9b7a:                       1
+;     c9ba8:                       1
+;     c9bc0:                       1
+;     c9bd4:                       1
+;     c9bdf:                       1
+;     c9be8:                       1
+;     c9bfa:                       1
+;     c9c4e:                       1
+;     c9c77:                       1
+;     c9c8b:                       1
+;     c9ca7:                       1
+;     c9cb5:                       1
+;     c9ce1:                       1
+;     c9cf1:                       1
+;     c9cfa:                       1
+;     c9d2c:                       1
+;     c9d3c:                       1
+;     c9d4e:                       1
+;     c9d69:                       1
+;     c9da6:                       1
+;     c9dbb:                       1
+;     c9dbd:                       1
+;     c9dc6:                       1
+;     c9de5:                       1
+;     c9e01:                       1
+;     c9e0a:                       1
+;     c9e35:                       1
+;     c9e59:                       1
+;     c9e88:                       1
+;     c9e96:                       1
+;     c9ebf:                       1
+;     c9ee8:                       1
+;     c9ef5:                       1
+;     c9f0f:                       1
+;     c9f1d:                       1
+;     c9f25:                       1
+;     c9f31:                       1
+;     c9f34:                       1
+;     c9f71:                       1
+;     c9f92:                       1
+;     c9f9c:                       1
+;     c9fa0:                       1
+;     c9fad:                       1
+;     c9fc3:                       1
+;     c9fcf:                       1
+;     c9fe4:                       1
+;     c9ff4:                       1
+;     ca00f:                       1
+;     ca011:                       1
+;     ca015:                       1
+;     ca028:                       1
+;     ca038:                       1
+;     ca063:                       1
+;     ca0a0:                       1
+;     ca0a8:                       1
+;     ca0c2:                       1
+;     ca0c8:                       1
+;     ca0e1:                       1
+;     ca11b:                       1
+;     ca11f:                       1
+;     ca14e:                       1
+;     ca1ed:                       1
+;     ca1ff:                       1
+;     ca20b:                       1
+;     ca258:                       1
+;     ca2cd:                       1
+;     ca2fd:                       1
+;     ca33a:                       1
+;     ca37a:                       1
+;     ca3e1:                       1
+;     ca466:                       1
+;     ca468:                       1
+;     ca491:                       1
+;     ca4ae:                       1
+;     ca4b0:                       1
+;     ca4b3:                       1
+;     ca53d:                       1
+;     ca552:                       1
+;     ca579:                       1
+;     ca58c:                       1
+;     ca5df:                       1
+;     ca5e3:                       1
+;     ca613:                       1
+;     ca61d:                       1
+;     ca625:                       1
+;     ca652:                       1
+;     ca676:                       1
+;     ca6f1:                       1
+;     ca701:                       1
+;     ca70a:                       1
+;     ca726:                       1
+;     ca73f:                       1
+;     ca76e:                       1
+;     ca787:                       1
+;     ca7b7:                       1
+;     ca7e6:                       1
+;     ca808:                       1
+;     ca814:                       1
+;     ca82a:                       1
+;     ca82c:                       1
+;     ca8aa:                       1
+;     ca90a:                       1
+;     ca916:                       1
+;     ca927:                       1
+;     caa0e:                       1
+;     caa35:                       1
+;     caa38:                       1
+;     caa5d:                       1
+;     caaa2:                       1
+;     caaac:                       1
+;     cab1e:                       1
+;     cab25:                       1
+;     caba2:                       1
+;     caba5:                       1
+;     cac0f:                       1
+;     cac23:                       1
+;     cac5e:                       1
+;     cac66:                       1
+;     cad03:                       1
+;     cad06:                       1
+;     cad12:                       1
+;     cad1a:                       1
+;     cad4d:                       1
+;     cad59:                       1
+;     cad77:                       1
+;     cad83:                       1
+;     cadaa:                       1
+;     cadc5:                       1
+;     cade1:                       1
+;     cade9:                       1
+;     cae05:                       1
+;     cae10:                       1
+;     cae20:                       1
+;     cae2a:                       1
+;     cae30:                       1
+;     cae61:                       1
+;     cae6d:                       1
+;     cae8d:                       1
+;     caeaa:                       1
+;     caf24:                       1
+;     caf3f:                       1
+;     caf6c:                       1
+;     cafeb:                       1
+;     cb023:                       1
+;     cb061:                       1
+;     cb06f:                       1
+;     cb07f:                       1
+;     cb0a1:                       1
+;     cb0b9:                       1
+;     cb0f8:                       1
+;     cb0fb:                       1
+;     cb112:                       1
+;     cb13c:                       1
+;     cb14d:                       1
+;     cb1ca:                       1
+;     cb1e9:                       1
+;     cb1f4:                       1
+;     cb202:                       1
+;     cb226:                       1
+;     cb24a:                       1
+;     cb2f0:                       1
+;     cb2f3:                       1
+;     cb2f9:                       1
+;     cb303:                       1
+;     cb318:                       1
+;     cb34f:                       1
+;     cb37f:                       1
+;     cb384:                       1
+;     cb3a7:                       1
+;     cb3ba:                       1
+;     cb3c0:                       1
+;     cb3f9:                       1
+;     cb413:                       1
+;     cb4c6:                       1
+;     cb4e0:                       1
+;     cb536:                       1
+;     cb542:                       1
+;     cb556:                       1
+;     cb567:                       1
+;     cb571:                       1
+;     cb5cf:                       1
+;     cb5db:                       1
+;     cb602:                       1
+;     cb60f:                       1
+;     cb61d:                       1
+;     cb637:                       1
+;     cb651:                       1
+;     cb668:                       1
+;     cb66e:                       1
+;     cb67e:                       1
+;     cb6a3:                       1
+;     cb73f:                       1
+;     cb766:                       1
+;     cb79d:                       1
+;     cb7a1:                       1
+;     cb81f:                       1
+;     cb837:                       1
+;     cb84f:                       1
+;     cb875:                       1
+;     cb88b:                       1
+;     cb8a2:                       1
+;     cb8d9:                       1
+;     cb8dd:                       1
+;     cb931:                       1
+;     cb95c:                       1
+;     cb96a:                       1
+;     cb977:                       1
+;     cb995:                       1
+;     cb9b5:                       1
+;     cba13:                       1
+;     cba19:                       1
+;     cba2b:                       1
+;     cba39:                       1
+;     cba52:                       1
+;     cba69:                       1
+;     cba99:                       1
+;     cbaa2:                       1
+;     cbab0:                       1
+;     cbaca:                       1
+;     cbacd:                       1
+;     cbadc:                       1
+;     cbb32:                       1
+;     cbb40:                       1
+;     cbb9c:                       1
+;     cbbad:                       1
+;     cbbcd:                       1
+;     cbc09:                       1
+;     cbc53:                       1
+;     cbc5d:                       1
+;     cbc66:                       1
+;     cbc6d:                       1
+;     cbc7c:                       1
+;     cbc88:                       1
+;     cbce1:                       1
+;     cbcea:                       1
+;     cbd14:                       1
+;     cbdc6:                       1
+;     cbde1:                       1
+;     cbe34:                       1
+;     cbe5f:                       1
+;     cbe90:                       1
+;     cbe9b:                       1
+;     cbf96:                       1
+;     cbfc3:                       1
+;     cbfdc:                       1
+;     cbff6:                       1
+;     fn_asn:                      1
+;     fn_ln:                       1
+;     for_gosub_stack:             1
+;     immediate_loop:              1
+;     l0047:                       1
+;     l0061:                       1
+;     l0064:                       1
+;     l00c9:                       1
+;     l00ff:                       1
+;     l0106:                       1
+;     l047f:                       1
+;     l04f4:                       1
+;     l04f6:                       1
+;     l04f9:                       1
+;     l04fa:                       1
+;     l04fb:                       1
+;     l04fe:                       1
+;     l04ff:                       1
+;     l0501:                       1
+;     l0502:                       1
+;     l0503:                       1
+;     l0504:                       1
+;     l0505:                       1
+;     l0506:                       1
+;     l0508:                       1
+;     l0509:                       1
+;     l050a:                       1
+;     l050b:                       1
+;     l050d:                       1
+;     l050e:                       1
+;     l05a3:                       1
+;     l05a4:                       1
+;     l05b7:                       1
+;     l05b8:                       1
+;     l05cb:                       1
+;     l05cc:                       1
+;     l05e5:                       1
+;     l05e6:                       1
+;     l6142:                       1
+;     l7461:                       1
+;     l82df:                       1
+;     l8351:                       1
+;     l8450:                       1
+;     l848a:                       1
+;     l84c4:                       1
+;     l996b:                       1
+;     l99b9:                       1
+;     loop_c84fd:                  1
+;     loop_c853c:                  1
+;     loop_c8544:                  1
+;     loop_c8567:                  1
+;     loop_c8571:                  1
+;     loop_c8581:                  1
+;     loop_c85a5:                  1
+;     loop_c85d5:                  1
+;     loop_c85e6:                  1
+;     loop_c85f5:                  1
+;     loop_c872f:                  1
+;     loop_c8864:                  1
+;     loop_c8867:                  1
+;     loop_c888d:                  1
+;     loop_c88ec:                  1
+;     loop_c8980:                  1
+;     loop_c89cb:                  1
+;     loop_c89fe:                  1
+;     loop_c8b41:                  1
+;     loop_c8b44:                  1
+;     loop_c8b47:                  1
+;     loop_c8b60:                  1
+;     loop_c8b82:                  1
+;     loop_c8c97:                  1
+;     loop_c8ca9:                  1
+;     loop_c8cdd:                  1
+;     loop_c8ce9:                  1
+;     loop_c8cf5:                  1
+;     loop_c8d2b:                  1
+;     loop_c8d4d:                  1
+;     loop_c8d59:                  1
+;     loop_c8d6c:                  1
+;     loop_c8d83:                  1
+;     loop_c8da6:                  1
+;     loop_c8dad:                  1
+;     loop_c8db5:                  1
+;     loop_c8dc1:                  1
+;     loop_c8e08:                  1
+;     loop_c8e14:                  1
+;     loop_c8e21:                  1
+;     loop_c8e24:                  1
+;     loop_c8e40:                  1
+;     loop_c8e58:                  1
+;     loop_c8e67:                  1
+;     loop_c8f53:                  1
+;     loop_c8fb1:                  1
+;     loop_c8fea:                  1
+;     loop_c90dc:                  1
+;     loop_c9185:                  1
+;     loop_c923a:                  1
+;     loop_c92ae:                  1
+;     loop_c92b2:                  1
+;     loop_c931b:                  1
+;     loop_c942a:                  1
+;     loop_c9432:                  1
+;     loop_c9495:                  1
+;     loop_c94cf:                  1
+;     loop_c9507:                  1
+;     loop_c9527:                  1
+;     loop_c9533:                  1
+;     loop_c9595:                  1
+;     loop_c95d4:                  1
+;     loop_c96ff:                  1
+;     loop_c97dd:                  1
+;     loop_c9821:                  1
+;     loop_c985a:                  1
+;     loop_c98bf:                  1
+;     loop_c98de:                  1
+;     loop_c98f3:                  1
+;     loop_c9929:                  1
+;     loop_c992e:                  1
+;     loop_c9948:                  1
+;     loop_c995a:                  1
+;     loop_c9980:                  1
+;     loop_c99f4:                  1
+;     loop_c9a01:                  1
+;     loop_c9a39:                  1
+;     loop_c9a50:                  1
+;     loop_c9b03:                  1
+;     loop_c9b2c:                  1
+;     loop_c9b43:                  1
+;     loop_c9b4e:                  1
+;     loop_c9b5e:                  1
+;     loop_c9b75:                  1
+;     loop_c9b8a:                  1
+;     loop_c9c15:                  1
+;     loop_c9c2d:                  1
+;     loop_c9d11:                  1
+;     loop_c9d20:                  1
+;     loop_c9d8b:                  1
+;     loop_c9dcb:                  1
+;     loop_c9e24:                  1
+;     loop_c9e6c:                  1
+;     loop_c9e90:                  1
+;     loop_c9e9a:                  1
+;     loop_c9eb0:                  1
+;     loop_c9ec8:                  1
+;     loop_c9f20:                  1
+;     loop_c9f6b:                  1
+;     loop_c9f7e:                  1
+;     loop_c9fdb:                  1
+;     loop_c9fe8:                  1
+;     loop_ca002:                  1
+;     loop_ca055:                  1
+;     loop_ca0f5:                  1
+;     loop_ca108:                  1
+;     loop_ca139:                  1
+;     loop_ca2e6:                  1
+;     loop_ca3f8:                  1
+;     loop_ca528:                  1
+;     loop_ca543:                  1
+;     loop_ca564:                  1
+;     loop_ca57f:                  1
+;     loop_ca629:                  1
+;     loop_ca63a:                  1
+;     loop_ca70c:                  1
+;     loop_ca754:                  1
+;     loop_ca7a9:                  1
+;     loop_ca7cf:                  1
+;     loop_ca8b5:                  1
+;     loop_cab7f:                  1
+;     loop_cacaa:                  1
+;     loop_cacd6:                  1
+;     loop_cad42:                  1
+;     loop_cad4f:                  1
+;     loop_cad55:                  1
+;     loop_cad8c:                  1
+;     loop_cadb6:                  1
+;     loop_cadcb:                  1
+;     loop_cadcc:                  1
+;     loop_cae79:                  1
+;     loop_cae93:                  1
+;     loop_caec7:                  1
+;     loop_caece:                  1
+;     loop_caf0a:                  1
+;     loop_caf78:                  1
+;     loop_caf89:                  1
+;     loop_cb017:                  1
+;     loop_cb083:                  1
+;     loop_cb0df:                  1
+;     loop_cb0e1:                  1
+;     loop_cb0fe:                  1
+;     loop_cb122:                  1
+;     loop_cb158:                  1
+;     loop_cb18a:                  1
+;     loop_cb1a6:                  1
+;     loop_cb21c:                  1
+;     loop_cb236:                  1
+;     loop_cb28e:                  1
+;     loop_cb39d:                  1
+;     loop_cb3ad:                  1
+;     loop_cb3d9:                  1
+;     loop_cb451:                  1
+;     loop_cb477:                  1
+;     loop_cb520:                  1
+;     loop_cb538:                  1
+;     loop_cb580:                  1
+;     loop_cb58a:                  1
+;     loop_cb5fc:                  1
+;     loop_cb64b:                  1
+;     loop_cb6a0:                  1
+;     loop_cb6a9:                  1
+;     loop_cb7b0:                  1
+;     loop_cb7bd:                  1
+;     loop_cb8af:                  1
+;     loop_cb8e4:                  1
+;     loop_cb8f2:                  1
+;     loop_cb90a:                  1
+;     loop_cb96c:                  1
+;     loop_cb980:                  1
+;     loop_cb9c7:                  1
+;     loop_cb9ca:                  1
+;     loop_cb9cf:                  1
+;     loop_cba0a:                  1
+;     loop_cba21:                  1
+;     loop_cba2d:                  1
+;     loop_cba3f:                  1
+;     loop_cba5f:                  1
+;     loop_cbabd:                  1
+;     loop_cbb6f:                  1
+;     loop_cbb85:                  1
+;     loop_cbba6:                  1
+;     loop_cbbd6:                  1
+;     loop_cbc9e:                  1
+;     loop_cbd07:                  1
+;     loop_cbd33:                  1
+;     loop_cbdbe:                  1
+;     loop_cbdd4:                  1
+;     loop_cbe78:                  1
+;     loop_cbecf:                  1
+;     loop_cbfd9:                  1
+;     loop_cbfec:                  1
+;     osasci:                      1
+;     osnewl:                      1
+;     resint_a:                    1
+;     resint_c:                    1
+;     resint_x:                    1
+;     resint_y:                    1
+;     return_11:                   1
+;     return_14:                   1
+;     return_15:                   1
+;     return_16:                   1
+;     return_17:                   1
+;     return_18:                   1
+;     return_20:                   1
+;     return_24:                   1
+;     return_27:                   1
+;     return_29:                   1
+;     return_30:                   1
+;     return_32:                   1
+;     return_34:                   1
+;     return_37:                   1
+;     return_38:                   1
+;     return_4:                    1
+;     return_40:                   1
+;     return_5:                    1
+;     return_6:                    1
+;     return_7:                    1
+;     stmt_dim:                    1
+;     stmt_local:                  1
+;     stmt_next:                   1
+;     stmt_read:                   1
+;     stmt_vdu:                    1
+;     sub_c85ba:                   1
+;     sub_c8897:                   1
+;     sub_c88f5:                   1
+;     sub_c893d:                   1
+;     sub_c8951:                   1
+;     sub_c8955:                   1
+;     sub_c8cc1:                   1
+;     sub_c8f9a:                   1
+;     sub_c9231:                   1
+;     sub_c945b:                   1
+;     sub_c94ed:                   1
+;     sub_c9539:                   1
+;     sub_c9559:                   1
+;     sub_c95d5:                   1
+;     sub_c9807:                   1
+;     sub_c987b:                   1
+;     sub_c9880:                   1
+;     sub_c9a5f:                   1
+;     sub_c9a9e:                   1
+;     sub_c9b72:                   1
+;     sub_ca040:                   1
+;     sub_ca052:                   1
+;     sub_ca140:                   1
+;     sub_ca14b:                   1
+;     sub_ca2a4:                   1
+;     sub_ca2ed:                   1
+;     sub_ca3e7:                   1
+;     sub_ca4b6:                   1
+;     sub_ca4c7:                   1
+;     sub_ca4d6:                   1
+;     sub_ca4e8:                   1
+;     sub_ca801:                   1
+;     sub_ca9b1:                   1
+;     sub_caa94:                   1
+;     sub_caada:                   1
+;     sub_cac34:                   1
+;     sub_cad8f:                   1
+;     sub_cae02:                   1
+;     sub_cae3a:                   1
+;     sub_cb197:                   1
+;     sub_cb1c8:                   1
+;     sub_cb3c5:                   1
+;     sub_cb4b7:                   1
+;     sub_cb550:                   1
+;     sub_cbbfc:                   1
+;     sub_cbd2f:                   1
+;     sub_cbe55:                   1
+;     sub_cbe56:                   1
+;     sub_cbe93:                   1
+;     sub_cbeb2:                   1
+;     sub_cbee7:                   1
 
 ; Automatically generated labels:
 ;     c8063
@@ -11898,8 +11939,6 @@ save pydis_start, pydis_end
 ;     c8a7f
 ;     c8a81
 ;     c8a86
-;     c8a8c
-;     c8a97
 ;     c8aa2
 ;     c8af3
 ;     c8af6
@@ -12813,12 +12852,9 @@ save pydis_start, pydis_end
 ;     sub_c88f5
 ;     sub_c8926
 ;     sub_c893d
-;     sub_c8942
-;     sub_c8944
 ;     sub_c894b
 ;     sub_c8951
 ;     sub_c8955
-;     sub_c8aae
 ;     sub_c8c1e
 ;     sub_c8c21
 ;     sub_c8cc1

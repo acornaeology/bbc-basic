@@ -1,0 +1,56 @@
+# BBC BASIC II annotation progress
+
+Tracks the bottom-up annotation of the disassembly. Verify must stay
+byte-identical and lint clean after every batch
+(`uv run fantasm disassemble 2 && uv run fantasm verify 2 &&
+uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
+
+## Foundations (done)
+
+- [x] Bootstrap: round-trip byte-identical, CI, docs.
+- [x] Zero-page / RAM map imported from Pharo ch. 7 (`zp_*`, resident
+      integer variables, FP temporaries, variable table, stacks/buffers).
+- [x] Keyword table bannered at `&8071`; tokeniser flag bits documented.
+- [x] Statement/function dispatch decoded: action-address tables at
+      `&836D`/`&83DF` seeded with `code_ptr`; all 114 handlers traced and
+      declared as subroutines (`fn_*` / `stmt_*`).
+- [x] Header noted; `language_startup` (`&8023`) annotated;
+      `immediate_loop` (`&8ADD`), `brk_handler` (`&B402`) named.
+
+## Core leaf utilities
+
+- [x] `skip_spaces` (`&8A97`) — skip spaces at the primary text pointer.
+- [x] `skip_spaces_ptr2` (`&8A8C`) — same, secondary pointer.
+- [x] `skip_spaces_expect_comma` (`&8AAE`).
+- [x] `read_via_ptr_general` (`&8942`), `inc_ptr_general` (`&8944`).
+- [ ] Remaining high-call utilities from `fantasm audit undeclared 2`
+      (e.g. `&8821`, `&8C1E`, `&8821`, the `&882C`/`&882F`/`&8832` group).
+
+## Next (bottom-up, by subsystem)
+
+Use `fantasm cfg leaves 2` and `fantasm audit undeclared 2` to pick
+self-contained routines first, then climb.
+
+- [ ] Tokeniser / line-entry path (`&8451` data table + the code that
+      consumes it; the immediate loop at `&8ADD`).
+- [ ] Expression evaluator and the integer/FP accumulator primitives
+      (`zp_iwa` `&2A`, `zp_fwa` `&2E`, `zp_fwb` `&3B`) — needed before
+      the maths functions read cleanly.
+- [ ] Floating-point pack/unpack and arithmetic (Pharo ch. 3).
+- [ ] Maths functions: `fn_abs`, `fn_sqr`, `fn_sin`/`fn_cos`, … (Pharo
+      ch. 5 documents the algorithms and entry/exit conventions).
+- [ ] Variable storage and lookup (`var_ptr_table` `&0480`; Pharo ch. 7.5).
+- [ ] Simple statement handlers: `stmt_end`, `stmt_stop`, `stmt_clear`, …
+- [ ] Print / number formatting (`@%`, `zp_print_flag`, `zp_count`).
+
+## Notes
+
+- The `keyword_table` banner currently shows as the container for the
+  interpreter core above the lowest handler (`&8AB6`); this resolves as
+  the core routines between `&8451` and `&8AB6` get declared.
+- There is a further data table at `&8451` (after the action tables) —
+  identify and banner it.
+- References: Pharo's *Advanced BASIC ROM User Guide* (internals),
+  J.G. Harston's `Basic2.src` (labels/structure; local under
+  `docs/disasm/MDFS/`), Toby Nelson's OS 1.20 (`/Users/rjs/Code/os120`)
+  for MOS call semantics.

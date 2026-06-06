@@ -244,6 +244,66 @@ for _i in range(NUM_DISPATCH_TOKENS):
     d.subroutine(_target, _name)
     _declared_handlers[_target] = _name
 
+# ----------------------------------------------------------------------
+# Core leaf utilities, named bottom-up from the call graph. These are
+# called all over the interpreter, so naming them lifts readability
+# across the whole listing.
+# ----------------------------------------------------------------------
+d.subroutine(
+    0x8a97, 'skip_spaces',
+    title='Skip spaces at the text pointer',
+    description="""Advance the primary text pointer past any spaces and return the
+first non-space character. The workhorse of the tokeniser and
+interpreter: most statements call it between syntax elements.
+""",
+    on_entry={
+        'zp_text_ptr (&0B)': 'points at the line being interpreted',
+        'zp_text_ptr_off (&0A)': 'offset of the next character',
+    },
+    on_exit={
+        'A': 'first non-space character',
+        'Y': 'its offset within the line',
+        'zp_text_ptr_off (&0A)': 'advanced past that character',
+    },
+)
+d.subroutine(
+    0x8a8c, 'skip_spaces_ptr2',
+    title='Skip spaces at the secondary text pointer',
+    description="""As skip_spaces, but works on the secondary text pointer
+(zp_text_ptr2, &19) and its offset (&1B). Used while the primary
+pointer is preserved, e.g. when scanning ahead during assignment.
+""",
+    on_exit={
+        'A': 'first non-space character',
+        'Y': 'its offset',
+        '&1B': 'advanced past that character',
+    },
+)
+d.subroutine(
+    0x8aae, 'skip_spaces_expect_comma',
+    title='Skip spaces and require a comma',
+    description="""Call skip_spaces, then check the character is a comma. Raises
+"Missing ," if it is not. Used by statements that take a
+comma-separated argument list.
+""",
+)
+d.subroutine(
+    0x8942, 'read_via_ptr_general',
+    title='Read a byte via the general pointer, then advance it',
+    description="""Load the byte at (zp_general),Y and fall through to
+inc_ptr_general to step the 16-bit pointer on by one.
+""",
+)
+d.subroutine(
+    0x8944, 'inc_ptr_general',
+    title='Increment the general 16-bit pointer',
+    description="""Increment the little-endian pointer held in zp_general
+(&37/&38) by one, carrying into the high byte.
+""",
+)
+d.comment(0x8a9d, 'Loop while the character is a space', align=Align.INLINE)
+d.comment(0x8a92, 'Loop while the character is a space', align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(
