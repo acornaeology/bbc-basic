@@ -193,13 +193,35 @@ d.label(0x0029, 'zp_asm_opcode')      # Assembler: opcode byte
 
 # Zero page (Pharo ch. 7.2 "Zero Page Multiple Use Locations"). These
 # overlap by design; the labels mark each region's primary use.
-d.label(0x002a, 'zp_iwa')             # Integer work area / accumulator
-d.label(0x002e, 'zp_fwa')             # Floating point work area A
+# Integer work area / accumulator (IWA): 32-bit signed, little-endian.
+d.label(0x002a, 'zp_iwa')             # IWA byte 0 (least significant)
+d.label(0x002b, 'zp_iwa_1')
+d.label(0x002c, 'zp_iwa_2')
+d.label(0x002d, 'zp_iwa_3')           # IWA byte 3 (most significant)
+# Floating point work area A (FWA), the unpacked 8-byte accumulator.
+d.label(0x002e, 'zp_fwa_sign')        # Sign (bit 7 set = negative)
+d.label(0x002f, 'zp_fwa_ovf')         # Overflow / guard byte
+d.label(0x0030, 'zp_fwa_exp')         # Exponent (excess-128; 0 = value 0)
+d.label(0x0031, 'zp_fwa_m1')          # Mantissa MSB (normalised: bit 7 = 1)
+d.label(0x0032, 'zp_fwa_m2')
+d.label(0x0033, 'zp_fwa_m3')
+d.label(0x0034, 'zp_fwa_m4')          # Mantissa LSB
+d.label(0x0035, 'zp_fwa_rnd')         # Rounding byte (extra precision)
 d.label(0x0036, 'zp_strbuf_len')      # Length of the string buffer
 d.label(0x0037, 'zp_general')         # General work area (&37-&3A)
 d.label(0x0039, 'zp_fileblk')         # LOAD/SAVE control block (&39-&44)
-d.label(0x003b, 'zp_fwb')             # Floating point work area B
+# Floating point work area B (FWB), same layout as FWA.
+d.label(0x003b, 'zp_fwb_sign')
+d.label(0x003c, 'zp_fwb_ovf')
+d.label(0x003d, 'zp_fwb_exp')
+d.label(0x003e, 'zp_fwb_m1')
+d.label(0x003f, 'zp_fwb_m2')
+d.label(0x0040, 'zp_fwb_m3')
+d.label(0x0041, 'zp_fwb_m4')
+d.label(0x0042, 'zp_fwb_rnd')
 d.label(0x0043, 'zp_fp_temp')         # Floating point temporary area
+d.label(0x004b, 'zp_fp_ptr')          # Pointer to a packed fp variable
+d.label(0x004c, 'zp_fp_ptr_1')        # (high byte; used by the FP routines)
 
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
@@ -967,6 +989,42 @@ d.subroutine(
     title='RND(-X): seed the generator',
     description='Seed the random work area from X (RND(-X)).',
 )
+
+# ======================================================================
+# Inline comments, added bottom-up from the call-graph leaves. The aim
+# is to explain intent and the structures involved, not to restate the
+# opcodes (the field labels already carry much of that).
+# ======================================================================
+
+# --- fwa_sign: sign of FWA, returned in A as +1 / 0 / -1 -------------
+d.comment(0xa1e2, 'FWA is zero exactly when the whole mantissa is',
+          align=Align.INLINE)
+d.comment(0xa1e4, 'zero (a normalised non-zero value has bit 7 set)',
+          align=Align.INLINE)
+d.comment(0xa1e6, 'Non-zero: the sign lives in bit 7 of the sign byte',
+          align=Align.INLINE)
+d.comment(0xa1ea, 'Positive: return +1 (negative path returns -1)',
+          align=Align.INLINE)
+
+# --- iwa_from_ya: build a 16-bit (unsigned) integer in the IWA -------
+d.comment(0xaeee, 'Clear the top 16 bits: the result is 0-65535',
+          align=Align.INLINE)
+d.comment(0xaef4, 'Report the value as an integer (type &40)',
+          align=Align.INLINE)
+
+# --- fwa_unpack_var: packed 5-byte -> unpacked 8-byte FWA ------------
+d.comment(0xa3b5, 'Copy the packed value, exponent last',
+          align=Align.INLINE)
+d.comment(0xa3c8, 'Packed mantissa MSB holds the sign in bit 7',
+          align=Align.INLINE)
+d.comment(0xa3cf, 'Clear the rounding and overflow bytes (Y=0)',
+          align=Align.INLINE)
+d.comment(0xa3d3, 'A=exponent; OR the mantissa to test for zero',
+          align=Align.INLINE)
+d.comment(0xa3db, 'All zero: leave the mantissa MSB clear',
+          align=Align.INLINE)
+d.comment(0xa3df, 'Non-zero: restore the implied leading 1',
+          align=Align.INLINE)
 
 ir = d.disassemble()
 output = str(
