@@ -1744,25 +1744,25 @@ l848a = sub_c847b+15
 ; through the buffer using the general pointer (zp_general, &37).
 ; &8951 referenced 1 time by &90c3
 .tokenise_line
-    ldy #0                                                            ; 8951: a0 00       ..    
+    ldy #0                                                            ; 8951: a0 00       ..       ; Tokeniser state (&3B/&3C): start of statement
     sty zp_fwb_sign                                                   ; 8953: 84 3b       .;    
 ; &8955 referenced 1 time by &ac1a
 .sub_c8955
     sty zp_fwb_ovf                                                    ; 8955: 84 3c       .<    
 ; &8957 referenced 5 times by &8964, &8974, &897a, &89c8, &8b2a
 .c8957
-    lda (zp_general),y                                                ; 8957: b1 37       .7    
+    lda (zp_general),y                                                ; 8957: b1 37       .7       ; Scan the next source character
     cmp #&0d                                                          ; 8959: c9 0d       ..    
-    beq return_3                                                      ; 895b: f0 ed       ..    
+    beq return_3                                                      ; 895b: f0 ed       ..       ; Carriage return ends the line
     cmp #&20 ; ' '                                                    ; 895d: c9 20       .     
-    bne c8966                                                         ; 895f: d0 05       ..    
+    bne c8966                                                         ; 895f: d0 05       ..       ; Skip spaces
 ; &8961 referenced 5 times by &8985, &8994, &8998, &89e9, &8a89
 .c8961
     jsr inc_ptr_general                                               ; 8961: 20 44 89     D.   
     bne c8957                                                         ; 8964: d0 f1       ..    
 ; &8966 referenced 1 time by &895f
 .c8966
-    cmp #&26 ; '&'                                                    ; 8966: c9 26       .&    
+    cmp #&26 ; '&'                                                    ; 8966: c9 26       .&       ; An "&" introduces a hex constant: copy it unchanged
     bne c897c                                                         ; 8968: d0 12       ..    
 ; &896a referenced 2 times by &8970, &8978
 .c896a
@@ -1776,7 +1776,7 @@ l848a = sub_c847b+15
     bcs c8957                                                         ; 897a: b0 db       ..    
 ; &897c referenced 1 time by &8968
 .c897c
-    cmp #&22                                                          ; 897c: c9 22       ."    
+    cmp #&22                                                          ; 897c: c9 22       ."       ; A quote starts a string literal: copy it verbatim
     bne c898c                                                         ; 897e: d0 0c       ..    
 ; &8980 referenced 1 time by &8989
 .loop_c8980
@@ -1788,7 +1788,7 @@ l848a = sub_c847b+15
     rts                                                               ; 898b: 60          `     
 ; &898c referenced 1 time by &897e
 .c898c
-    cmp #&3a ; ':'                                                    ; 898c: c9 3a       .:    
+    cmp #&3a ; ':'                                                    ; 898c: c9 3a       .:       ; A colon starts a new statement: reset the state
     bne c8996                                                         ; 898e: d0 06       ..    
     sty zp_fwb_sign                                                   ; 8990: 84 3b       .;    
     sty zp_fwb_ovf                                                    ; 8992: 84 3c       .<    
@@ -1797,7 +1797,7 @@ l848a = sub_c847b+15
 .c8996
     cmp #&2c ; ','                                                    ; 8996: c9 2c       .,    
     beq c8961                                                         ; 8998: f0 c7       ..    
-    cmp #&2a ; '*'                                                    ; 899a: c9 2a       .*    
+    cmp #&2a ; '*'                                                    ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
     bne c89a3                                                         ; 899c: d0 05       ..    
     lda zp_fwb_sign                                                   ; 899e: a5 3b       .;    
     bne c89e3                                                         ; 89a0: d0 41       .A    

@@ -1148,6 +1148,25 @@ d.comment(0x8bb7, 'Handler high byte from action_table_hi', align=Align.INLINE)
 d.comment(0x8bbc, 'Jump to the keyword handler', align=Align.INLINE)
 d.label(0x8b73, 'exec_star_command')   # embedded *command -> OSCLI
 
+# --- tokeniser character scan (front end of tokenise) ----------------
+# Walks the source line at (zp_general), passing literals through
+# untouched and resetting state at statement boundaries; keyword
+# matching against keyword_table follows. NB &3B/&3C (normally FWB) are
+# reused here as tokeniser state: start-of-statement and quote flags.
+d.comment(0x8951, 'Tokeniser state (&3B/&3C): start of statement',
+          align=Align.INLINE)
+d.comment(0x8957, 'Scan the next source character', align=Align.INLINE)
+d.comment(0x895b, 'Carriage return ends the line', align=Align.INLINE)
+d.comment(0x895f, 'Skip spaces', align=Align.INLINE)
+d.comment(0x8966, 'An "&" introduces a hex constant: copy it unchanged',
+          align=Align.INLINE)
+d.comment(0x897c, 'A quote starts a string literal: copy it verbatim',
+          align=Align.INLINE)
+d.comment(0x898c, 'A colon starts a new statement: reset the state',
+          align=Align.INLINE)
+d.comment(0x899a, 'A "*" at statement start: rest is a *command',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

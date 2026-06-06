@@ -15654,6 +15654,7 @@
       "labels": [
         "tokenise_line"
       ],
+      "comment_inline": "Tokeniser state (&3B/&3C): start of statement",
       "xref_summaries": [
         "&8951 referenced 1 time by &90c3"
       ],
@@ -15706,6 +15707,7 @@
       "labels": [
         "c8957"
       ],
+      "comment_inline": "Scan the next source character",
       "xref_summaries": [
         "&8957 referenced 5 times by &8964, &8974, &897a, &89c8, &8b2a"
       ],
@@ -15738,6 +15740,7 @@
         240,
         237
       ],
+      "comment_inline": "Carriage return ends the line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_3",
@@ -15760,6 +15763,7 @@
         208,
         5
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8966",
@@ -15813,6 +15817,7 @@
       "labels": [
         "c8966"
       ],
+      "comment_inline": "An \"&\" introduces a hex constant: copy it unchanged",
       "xref_summaries": [
         "&8966 referenced 1 time by &895f"
       ],
@@ -15948,6 +15953,7 @@
       "labels": [
         "c897c"
       ],
+      "comment_inline": "A quote starts a string literal: copy it verbatim",
       "xref_summaries": [
         "&897c referenced 1 time by &8968"
       ],
@@ -16053,6 +16059,7 @@
       "labels": [
         "c898c"
       ],
+      "comment_inline": "A colon starts a new statement: reset the state",
       "xref_summaries": [
         "&898c referenced 1 time by &897e"
       ],
@@ -16148,6 +16155,7 @@
         201,
         42
       ],
+      "comment_inline": "A \"*\" at statement start: rest is a *command",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2a"
