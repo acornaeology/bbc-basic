@@ -164,8 +164,10 @@ d.comment(0x806d, 'Enable IRQs and enter the immediate loop', align=Align.INLINE
 # two-byte pointers are stored low byte first.
 # ----------------------------------------------------------------------
 d.label(0x0000, 'zp_lomem')           # Start of BASIC variables
-d.label(0x0002, 'zp_vartop')          # End of BASIC variables
-d.label(0x0004, 'zp_stack_ptr')       # Most recent BASIC-stack entry
+d.label(0x0002, 'zp_vartop')          # End of BASIC variables (heap top)
+d.label(0x0003, 'zp_vartop_1')
+d.label(0x0004, 'zp_stack_ptr')       # Top of the BASIC value stack
+d.label(0x0005, 'zp_stack_ptr_1')
 d.label(0x0006, 'zp_himem')           # Start of screen / top of BASIC
 d.label(0x0008, 'zp_erl')             # Line number that last errored
 d.label(0x000a, 'zp_text_ptr_off')    # Offset into current text line
@@ -1025,6 +1027,68 @@ d.comment(0xa3db, 'All zero: leave the mantissa MSB clear',
           align=Align.INLINE)
 d.comment(0xa3df, 'Non-zero: restore the implied leading 1',
           align=Align.INLINE)
+
+# --- renames discovered during the leaf pass --------------------------
+d.subroutine(
+    0xa2a4, 'fwa_round_carry',
+    title='Add to the rounding byte and ripple the carry up',
+    description="""Add A to the FWA rounding byte, then propagate any carry up
+through the mantissa (m4 -> m1). A carry out of the top renormalises
+the exponent (and may overflow). Used to round the mantissa up.
+""",
+)
+d.label(0xa66c, 'err_too_big')   # BRK error block: "Too big"
+d.label(0x8cb7, 'err_no_room')   # BRK error block: "No room"
+
+# --- reserve_stack: the common stack-overflow check for the pushers ---
+d.subroutine(
+    0xbe2e, 'reserve_stack',
+    title='Set the stack pointer and check for room',
+    description="""Set the BASIC value-stack pointer to a new top (low byte in A,
+borrow already taken into the high byte) and check it has not run
+down into the top of variable storage (zp_vartop). Raises "No room"
+on collision; otherwise returns with the stack lowered.
+""",
+    on_entry={'A': 'proposed new stack-pointer low byte',
+              'carry': 'clear if the subtraction borrowed'},
+)
+d.comment(0xbe36, 'Compare the new top against the heap top', align=Align.INLINE)
+d.comment(0xbe41, 'Stack meets heap: No room', align=Align.INLINE)
+
+# --- BASIC value-stack push/pop primitives ---------------------------
+d.comment(0xbd97, 'Lower the stack by 4 bytes (an integer)', align=Align.INLINE)
+d.comment(0xbd54, 'Lower the stack by 5 bytes (a packed real)',
+          align=Align.INLINE)
+d.comment(0xbd62, 'Pack: fold the sign into the mantissa MSB', align=Align.INLINE)
+d.comment(0xbdb5, 'Lower the stack by length+1 bytes (carry clear)',
+          align=Align.INLINE)
+
+# --- fwa_pack_var: unpacked FWA -> packed 5-byte at (zp_fp_ptr) -------
+d.comment(0xa396, 'Isolate the sign bit', align=Align.INLINE)
+d.comment(0xa39c, 'Drop the implied leading 1 from the mantissa MSB',
+          align=Align.INLINE)
+d.comment(0xa39e, 'and fold the sign back into its bit 7', align=Align.INLINE)
+
+# --- fwa_normalise: shift the mantissa until bit 7 of m1 is set -------
+d.comment(0xa305, 'Top bit already set: nothing to do', align=Align.INLINE)
+d.comment(0xa30d, 'Mantissa entirely zero: the value is zero',
+          align=Align.INLINE)
+d.comment(0xa313, 'Shift up a whole byte while the MSB byte is zero',
+          align=Align.INLINE)
+d.comment(0xa32c, 'each byte shift advances the exponent by 8',
+          align=Align.INLINE)
+d.comment(0xa33a, 'Then shift left one bit at a time to normalise',
+          align=Align.INLINE)
+
+# --- fwa_round: round FWA using the rounding byte ---------------------
+d.comment(0xa65c, 'The rounding byte holds the bits below the LSB',
+          align=Align.INLINE)
+d.comment(0xa660, 'Below half: round down (truncate)', align=Align.INLINE)
+d.comment(0xa662, 'Exactly half: special-case the LSB', align=Align.INLINE)
+d.comment(0xa664, 'Above half: round up by adding 1', align=Align.INLINE)
+d.comment(0xa67c, 'Clear the now-spent rounding byte', align=Align.INLINE)
+d.comment(0xa680, 'A carry may have overflowed the mantissa', align=Align.INLINE)
+d.comment(0xa684, 'Overflowed the exponent range: Too big', align=Align.INLINE)
 
 ir = d.disassemble()
 output = str(

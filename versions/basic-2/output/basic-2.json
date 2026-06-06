@@ -1318,7 +1318,8 @@
       "addr": 41549,
       "name": "fwa_div10",
       "title": "FWA = FWA / 10",
-      "description": "Divide FWA by ten, unnormalised and unrounded."
+      "description": "Divide FWA by ten, unnormalised and unrounded.",
+      "fall_through": true
     },
     {
       "addr": 41869,
@@ -1451,6 +1452,22 @@
       "name": "rnd_seed",
       "title": "RND(-X): seed the generator",
       "description": "Seed the random work area from X (RND(-X))."
+    },
+    {
+      "addr": 41636,
+      "name": "fwa_round_carry",
+      "title": "Add to the rounding byte and ripple the carry up",
+      "description": "Add A to the FWA rounding byte, then propagate any carry up\nthrough the mantissa (m4 -> m1). A carry out of the top renormalises\nthe exponent (and may overflow). Used to round the mantissa up.\n"
+    },
+    {
+      "addr": 48686,
+      "name": "reserve_stack",
+      "title": "Set the stack pointer and check for room",
+      "description": "Set the BASIC value-stack pointer to a new top (low byte in A,\nborrow already taken into the high byte) and check it has not run\ndown into the top of variable storage (zp_vartop). Raises \"No room\"\non collision; otherwise returns with the stack lowered.\n",
+      "on_entry": {
+        "A": "proposed new stack-pointer low byte",
+        "carry": "clear if the subtraction borrowed"
+      }
     }
   ],
   "banners": [
@@ -1480,9 +1497,9 @@
     "zp_lomem": 0,
     "l0001": 1,
     "zp_vartop": 2,
-    "l0003": 3,
+    "zp_vartop_1": 3,
     "zp_stack_ptr": 4,
-    "l0005": 5,
+    "zp_stack_ptr_1": 5,
     "zp_himem": 6,
     "l0007": 7,
     "zp_erl": 8,
@@ -20422,9 +20439,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 35893,
@@ -20624,9 +20641,9 @@
       ],
       "type": "code",
       "mnemonic": "eor",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 35925,
@@ -20750,9 +20767,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 35942,
@@ -20792,9 +20809,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 35949,
@@ -20804,9 +20821,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8cb7",
+      "operand": "err_no_room",
       "target": 36023,
-      "target_label": "c8cb7"
+      "target_label": "err_no_room"
     },
     {
       "addr": 35951,
@@ -20828,9 +20845,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 35955,
@@ -21295,7 +21312,7 @@
         0
       ],
       "labels": [
-        "c8cb7"
+        "err_no_room"
       ],
       "xref_summaries": [
         "&8cb7 referenced 3 times by &8c6d, &9553, &be41"
@@ -27898,9 +27915,9 @@
       ],
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37121,
@@ -27930,9 +27947,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 37126,
@@ -27978,9 +27995,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37134,
@@ -28014,9 +28031,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37140,
@@ -29163,9 +29180,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37332,
@@ -29251,9 +29268,9 @@
       ],
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37346,
@@ -29295,9 +29312,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 37353,
@@ -29331,9 +29348,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37359,
@@ -30163,9 +30180,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 37484,
@@ -30264,9 +30281,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37502,
@@ -32175,9 +32192,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 37814,
@@ -32267,9 +32284,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 37830,
@@ -32371,9 +32388,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 37847,
@@ -34419,9 +34436,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 38168,
@@ -34720,9 +34737,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 38209,
@@ -34741,9 +34758,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 38211,
@@ -34753,9 +34770,9 @@
       ],
       "type": "code",
       "mnemonic": "cpy",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 38213,
@@ -34855,9 +34872,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8cb7",
+      "operand": "err_no_room",
       "target": 36023,
-      "target_label": "c8cb7"
+      "target_label": "err_no_room"
     },
     {
       "addr": 38230,
@@ -44097,9 +44114,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 39653,
@@ -46759,9 +46776,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 40070,
@@ -49653,9 +49670,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 40546,
@@ -56696,7 +56713,7 @@
         53
       ],
       "labels": [
-        "sub_ca2a4"
+        "fwa_round_carry"
       ],
       "xref_summaries": [
         "&a2a4 referenced 1 time by &a666"
@@ -57363,6 +57380,7 @@
         48,
         229
       ],
+      "comment_inline": "Top bit already set: nothing to do",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "return_23",
@@ -57411,6 +57429,7 @@
         5,
         53
       ],
+      "comment_inline": "Mantissa entirely zero: the value is zero",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_rnd",
@@ -57450,6 +57469,7 @@
       "labels": [
         "ca313"
       ],
+      "comment_inline": "Shift up a whole byte while the MSB byte is zero",
       "xref_summaries": [
         "&a313 referenced 2 times by &a330, &a334"
       ],
@@ -57609,6 +57629,7 @@
         233,
         8
       ],
+      "comment_inline": "each byte shift advances the exponent by 8",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#8"
@@ -57704,6 +57725,7 @@
       "labels": [
         "ca33a"
       ],
+      "comment_inline": "Then shift left one bit at a time to normalise",
       "xref_summaries": [
         "&a33a referenced 1 time by &a317"
       ],
@@ -58349,6 +58371,7 @@
         41,
         128
       ],
+      "comment_inline": "Isolate the sign bit",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -58383,6 +58406,7 @@
         41,
         127
       ],
+      "comment_inline": "Drop the implied leading 1 from the mantissa MSB",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -58393,6 +58417,7 @@
         5,
         46
       ],
+      "comment_inline": "and fold the sign back into its bit 7",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_sign",
@@ -59558,9 +59583,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca66c",
+      "operand": "err_too_big",
       "target": 42604,
-      "target_label": "ca66c"
+      "target_label": "err_too_big"
     },
     {
       "addr": 42067,
@@ -63032,6 +63057,7 @@
       "labels": [
         "fwa_round"
       ],
+      "comment_inline": "The rounding byte holds the bits below the LSB",
       "xref_summaries": [
         "&a65c referenced 2 times by &a118, &a508"
       ],
@@ -63061,6 +63087,7 @@
         144,
         26
       ],
+      "comment_inline": "Below half: round down (truncate)",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca67c",
@@ -63073,6 +63100,7 @@
         240,
         18
       ],
+      "comment_inline": "Exactly half: special-case the LSB",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca676",
@@ -63085,6 +63113,7 @@
         169,
         255
       ],
+      "comment_inline": "Above half: round up by adding 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -63098,9 +63127,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca2a4",
+      "operand": "fwa_round_carry",
       "target": 41636,
-      "target_label": "sub_ca2a4"
+      "target_label": "fwa_round_carry"
     },
     {
       "addr": 42601,
@@ -63121,7 +63150,7 @@
         0
       ],
       "labels": [
-        "ca66c"
+        "err_too_big"
       ],
       "xref_summaries": [
         "&a66c referenced 2 times by &a450, &a684"
@@ -63219,6 +63248,7 @@
       "labels": [
         "ca67c"
       ],
+      "comment_inline": "Clear the now-spent rounding byte",
       "xref_summaries": [
         "&a67c referenced 2 times by &a660, &a669"
       ],
@@ -63248,6 +63278,7 @@
         165,
         47
       ],
+      "comment_inline": "A carry may have overflowed the mantissa",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_ovf",
@@ -63272,11 +63303,12 @@
         16,
         230
       ],
+      "comment_inline": "Overflowed the exponent range: Too big",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca66c",
+      "operand": "err_too_big",
       "target": 42604,
-      "target_label": "ca66c"
+      "target_label": "err_too_big"
     },
     {
       "addr": 42630,
@@ -70889,9 +70921,9 @@
       ],
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 44039,
@@ -72632,9 +72664,9 @@
       ],
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 44328,
@@ -76262,9 +76294,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0003,x",
+      "operand": "zp_vartop_1,x",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 44900,
@@ -79775,9 +79807,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe2e",
+      "operand": "reserve_stack",
       "target": 48686,
-      "target_label": "sub_cbe2e"
+      "target_label": "reserve_stack"
     },
     {
       "addr": 45473,
@@ -80867,9 +80899,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 45642,
@@ -97563,9 +97595,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 48428,
@@ -97738,9 +97770,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48454,
@@ -97854,6 +97886,7 @@
         233,
         5
       ],
+      "comment_inline": "Lower the stack by 5 bytes (a packed real)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#5"
@@ -97867,9 +97900,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe2e",
+      "operand": "reserve_stack",
       "target": 48686,
-      "target_label": "sub_cbe2e"
+      "target_label": "reserve_stack"
     },
     {
       "addr": 48473,
@@ -97931,6 +97964,7 @@
         41,
         128
       ],
+      "comment_inline": "Pack: fold the sign into the mantissa MSB",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -98178,9 +98212,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48521,
@@ -98212,9 +98246,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48527,
@@ -98321,6 +98355,7 @@
         233,
         4
       ],
+      "comment_inline": "Lower the stack by 4 bytes (an integer)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#4"
@@ -98334,9 +98369,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe2e",
+      "operand": "reserve_stack",
       "target": 48686,
-      "target_label": "sub_cbe2e"
+      "target_label": "reserve_stack"
     },
     {
       "addr": 48540,
@@ -98519,6 +98554,7 @@
         229,
         54
       ],
+      "comment_inline": "Lower the stack by length+1 bytes (carry clear)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_strbuf_len",
@@ -98534,9 +98570,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe2e",
+      "operand": "reserve_stack",
       "target": 48686,
-      "target_label": "sub_cbe2e"
+      "target_label": "reserve_stack"
     },
     {
       "addr": 48570,
@@ -98876,9 +98912,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48617,
@@ -99114,9 +99150,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48650,
@@ -99201,9 +99237,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0003,x",
+      "operand": "zp_vartop_1,x",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 48659,
@@ -99363,9 +99399,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48685,
@@ -99382,7 +99418,7 @@
         4
       ],
       "labels": [
-        "sub_cbe2e"
+        "reserve_stack"
       ],
       "xref_summaries": [
         "&be2e referenced 4 times by &b19e, &bd56, &bd99, &bdb7"
@@ -99419,9 +99455,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48692,
@@ -99440,9 +99476,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0005",
+      "operand": "zp_stack_ptr_1",
       "target": 5,
-      "target_label": "l0005"
+      "target_label": "zp_stack_ptr_1"
     },
     {
       "addr": 48694,
@@ -99450,11 +99486,12 @@
         196,
         3
       ],
+      "comment_inline": "Compare the new top against the heap top",
       "type": "code",
       "mnemonic": "cpy",
-      "operand": "l0003",
+      "operand": "zp_vartop_1",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 48696,
@@ -99531,6 +99568,7 @@
       "labels": [
         "cbe41"
       ],
+      "comment_inline": "Stack meets heap: No room",
       "xref_summaries": [
         "&be41 referenced 2 times by &be38, &be3e"
       ],
@@ -99540,9 +99578,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8cb7",
+      "operand": "err_no_room",
       "target": 36023,
-      "target_label": "c8cb7"
+      "target_label": "err_no_room"
     },
     {
       "addr": 48708,
@@ -99649,9 +99687,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0003,x",
+      "operand": "zp_vartop_1,x",
       "target": 3,
-      "target_label": "l0003"
+      "target_label": "zp_vartop_1"
     },
     {
       "addr": 48724,

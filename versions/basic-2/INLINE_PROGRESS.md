@@ -41,14 +41,18 @@ Cross-references: `tools/jgh_correlation.tsv` (regenerate with
 - [x] fwa_sign (&A1DA) — returns +1/0/-1; zero iff mantissa all zero.
 - [x] iwa_from_ya (&AEEA) — unsigned 0-65535 into IWA.
 - [x] fwa_unpack_var (&A3B5) — packed 5-byte -> unpacked 8-byte FWA.
-- [ ] fwa_pack_var (&A38D), pack/unpack temps (mostly self-documenting
-      now; add the sign-fold comment).
-- [ ] fwa_normalise (&A303), fwa_round (&A65C)
-- [ ] stack_integer (&BD94), unstack_integer (&BDEA), stack_real,
-      stack_string
+- [x] fwa_pack_var (&A38D) — sign-fold into mantissa bit 7.
+- [x] fwa_normalise (&A303) — byte then bit shift to set mantissa MSB.
+- [x] fwa_round (&A65C) + fwa_round_carry (&A2A4, renamed).
+- [x] stack/unstack: stack_integer/real/string, unstack_integer; the
+      shared reserve_stack (&BE2E, renamed) heap-collision check.
 - [ ] skip_spaces (&8A97), skip_spaces_ptr2 (&8A8C) — enrich
+- [ ] Move up: fwa arithmetic (add/mul/div), then evaluator.
 
 ## Done
 
-- Batch 1 (in progress): FWA/FWB/IWA field labels; fwa_clear, fwa_sign,
-  iwa_from_ya, fwa_unpack_var.
+- Batch 1: FWA/FWB/IWA field labels; fwa_clear, fwa_sign, iwa_from_ya,
+  fwa_unpack/pack_var, fwa_normalise, fwa_round, the stack push/pop
+  primitives and reserve_stack. Renames: fwa_round_carry, reserve_stack,
+  err_too_big, err_no_room; labelled zp_fp_ptr, zp_stack_ptr_1,
+  zp_vartop_1.
