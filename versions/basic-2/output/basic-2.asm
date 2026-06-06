@@ -2099,8 +2099,6 @@ l848a = sub_c847b+15
     jsr oscli                                                         ; 8b7a: 20 f7 ff     ..   
 ; &8b7d referenced 2 times by &8b89, &b907
 .stmt_data
-.stmt_def
-.stmt_rem
     lda #&0d                                                          ; 8b7d: a9 0d       ..    
     ldy zp_text_ptr_off                                               ; 8b7f: a4 0a       ..    
     dey                                                               ; 8b81: 88          .     
@@ -11001,8 +10999,6 @@ save pydis_start, pydis_end
 ;     return_35:           2
 ;     return_9:            2
 ;     stmt_data:           2
-;     stmt_def:            2
-;     stmt_rem:            2
 ;     sub_c887c:           2
 ;     sub_c8c21:           2
 ;     sub_c8e70:           2

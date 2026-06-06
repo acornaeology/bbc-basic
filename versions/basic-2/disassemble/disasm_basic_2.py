@@ -218,19 +218,31 @@ KEYWORD_HANDLERS = {
 
 d.label(ACTION_TABLE_LO, 'action_table_lo')
 d.label(ACTION_TABLE_HI, 'action_table_hi')
+
+# Read the ROM so we can resolve each table entry to its handler address
+# and declare it as a subroutine (which gives fantasm's call graph real
+# structure). Several tokens share a handler (e.g. DATA and DEF both
+# dispatch to the same "skip to end of line" routine), so declare each
+# distinct target only once; the duplicate table entries render
+# symbolically against the first declaration.
+_rom_bytes = Path(_rom_filepath).read_bytes()
+_declared_handlers: dict[int, str] = {}
 for _i in range(NUM_DISPATCH_TOKENS):
     _token = FIRST_DISPATCH_TOKEN + _i
+    # Seed the trace and render the split table entry symbolically.
+    d.code_ptr(ACTION_TABLE_LO + _i, ACTION_TABLE_HI + _i)
     _base = KEYWORD_HANDLERS.get(_token)
     if _base is None:
-        # Token &CE: unused gap in the keyword table; seed the entry so
-        # the table still round-trips symbolically and the target traces.
-        d.code_ptr(ACTION_TABLE_LO + _i, ACTION_TABLE_HI + _i)
-        continue
-    _prefix = 'fn_' if _token <= 0xc5 else 'stmt_'
-    d.code_ptr(
-        ACTION_TABLE_LO + _i, ACTION_TABLE_HI + _i,
-        label_name=_prefix + _base,
+        continue  # Token &CE: unused gap in the keyword table.
+    _target = (
+        _rom_bytes[(ACTION_TABLE_LO - 0x8000) + _i]
+        | (_rom_bytes[(ACTION_TABLE_HI - 0x8000) + _i] << 8)
     )
+    if _target in _declared_handlers:
+        continue
+    _name = ('fn_' if _token <= 0xc5 else 'stmt_') + _base
+    d.subroutine(_target, _name)
+    _declared_handlers[_target] = _name
 
 ir = d.disassemble()
 output = str(

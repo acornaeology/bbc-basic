@@ -165,6 +165,472 @@
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
       "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising:\n\n  bit 0  conditional: do not tokenise if followed by a letter\n  bit 1  enter \"middle of statement\" mode\n  bit 2  enter \"start of statement\" mode\n  bit 3  FN/PROC: do not tokenise the following name\n  bit 4  start tokenising a line number (after GOTO etc.)\n  bit 5  do not tokenise the rest of the line (REM, DATA)\n  bit 6  pseudo-variable: add &40 to the token at the start of\n         a statement (so e.g. PTR is &8F as a function and &CF\n         as an assignment target)\n\nEntries are ordered so that the first acceptable abbreviation of\neach keyword is unambiguous. The table runs to the action-address\ntables at action_table_lo.\n"
+    },
+    {
+      "addr": 49016,
+      "name": "fn_openin",
+      "fall_through": true
+    },
+    {
+      "addr": 48967,
+      "name": "fn_ptr"
+    },
+    {
+      "addr": 44736,
+      "name": "fn_page"
+    },
+    {
+      "addr": 44724,
+      "name": "fn_time"
+    },
+    {
+      "addr": 44796,
+      "name": "fn_lomem"
+    },
+    {
+      "addr": 44803,
+      "name": "fn_himem"
+    },
+    {
+      "addr": 44394,
+      "name": "fn_abs"
+    },
+    {
+      "addr": 43220,
+      "name": "fn_acs"
+    },
+    {
+      "addr": 43827,
+      "name": "fn_adval"
+    },
+    {
+      "addr": 44190,
+      "name": "fn_asc"
+    },
+    {
+      "addr": 43226,
+      "name": "fn_asn"
+    },
+    {
+      "addr": 43271,
+      "name": "fn_atn"
+    },
+    {
+      "addr": 49007,
+      "name": "fn_bget"
+    },
+    {
+      "addr": 43405,
+      "name": "fn_cos"
+    },
+    {
+      "addr": 44791,
+      "name": "fn_count"
+    },
+    {
+      "addr": 43970,
+      "name": "fn_deg",
+      "fall_through": true
+    },
+    {
+      "addr": 44959,
+      "name": "fn_erl"
+    },
+    {
+      "addr": 44966,
+      "name": "fn_err"
+    },
+    {
+      "addr": 44009,
+      "name": "fn_eval"
+    },
+    {
+      "addr": 43665,
+      "name": "fn_exp"
+    },
+    {
+      "addr": 48966,
+      "name": "fn_ext",
+      "fall_through": true
+    },
+    {
+      "addr": 44746,
+      "name": "fn_false"
+    },
+    {
+      "addr": 45461,
+      "name": "fn_fn"
+    },
+    {
+      "addr": 44985,
+      "name": "fn_get"
+    },
+    {
+      "addr": 44205,
+      "name": "fn_inkey"
+    },
+    {
+      "addr": 44258,
+      "name": "fn_instr"
+    },
+    {
+      "addr": 44152,
+      "name": "fn_int"
+    },
+    {
+      "addr": 44753,
+      "name": "fn_len",
+      "fall_through": true
+    },
+    {
+      "addr": 43006,
+      "name": "fn_ln"
+    },
+    {
+      "addr": 43944,
+      "name": "fn_log",
+      "fall_through": true
+    },
+    {
+      "addr": 44241,
+      "name": "fn_not"
+    },
+    {
+      "addr": 49024,
+      "name": "fn_openup"
+    },
+    {
+      "addr": 49020,
+      "name": "fn_openout",
+      "fall_through": true
+    },
+    {
+      "addr": 43979,
+      "name": "fn_pi"
+    },
+    {
+      "addr": 43841,
+      "name": "fn_point"
+    },
+    {
+      "addr": 43885,
+      "name": "fn_pos"
+    },
+    {
+      "addr": 43953,
+      "name": "fn_rad"
+    },
+    {
+      "addr": 44873,
+      "name": "fn_rnd"
+    },
+    {
+      "addr": 43912,
+      "name": "fn_sgn"
+    },
+    {
+      "addr": 43416,
+      "name": "fn_sin"
+    },
+    {
+      "addr": 42932,
+      "name": "fn_sqr"
+    },
+    {
+      "addr": 42686,
+      "name": "fn_tan"
+    },
+    {
+      "addr": 44764,
+      "name": "fn_to"
+    },
+    {
+      "addr": 44228,
+      "name": "fn_true"
+    },
+    {
+      "addr": 43986,
+      "name": "fn_usr"
+    },
+    {
+      "addr": 44079,
+      "name": "fn_val"
+    },
+    {
+      "addr": 43894,
+      "name": "fn_vpos",
+      "fall_through": true
+    },
+    {
+      "addr": 46013,
+      "name": "fn_chrs"
+    },
+    {
+      "addr": 44991,
+      "name": "fn_gets"
+    },
+    {
+      "addr": 45094,
+      "name": "fn_inkeys"
+    },
+    {
+      "addr": 45004,
+      "name": "fn_lefts"
+    },
+    {
+      "addr": 45113,
+      "name": "fn_mids"
+    },
+    {
+      "addr": 45038,
+      "name": "fn_rights"
+    },
+    {
+      "addr": 45204,
+      "name": "fn_strs"
+    },
+    {
+      "addr": 45250,
+      "name": "fn_strings"
+    },
+    {
+      "addr": 44216,
+      "name": "fn_eof",
+      "fall_through": true
+    },
+    {
+      "addr": 37036,
+      "name": "stmt_auto"
+    },
+    {
+      "addr": 36657,
+      "name": "stmt_delete"
+    },
+    {
+      "addr": 48932,
+      "name": "stmt_load"
+    },
+    {
+      "addr": 46492,
+      "name": "stmt_list"
+    },
+    {
+      "addr": 35546,
+      "name": "stmt_new",
+      "fall_through": true
+    },
+    {
+      "addr": 35510,
+      "name": "stmt_old",
+      "fall_through": true
+    },
+    {
+      "addr": 36771,
+      "name": "stmt_renumber"
+    },
+    {
+      "addr": 48883,
+      "name": "stmt_save"
+    },
+    {
+      "addr": 48944,
+      "name": "stmt_ptr"
+    },
+    {
+      "addr": 37507,
+      "name": "stmt_page"
+    },
+    {
+      "addr": 37577,
+      "name": "stmt_time"
+    },
+    {
+      "addr": 37487,
+      "name": "stmt_lomem",
+      "fall_through": true
+    },
+    {
+      "addr": 37469,
+      "name": "stmt_himem"
+    },
+    {
+      "addr": 46156,
+      "name": "stmt_sound",
+      "fall_through": true
+    },
+    {
+      "addr": 48984,
+      "name": "stmt_bput"
+    },
+    {
+      "addr": 36562,
+      "name": "stmt_call"
+    },
+    {
+      "addr": 48938,
+      "name": "stmt_chain"
+    },
+    {
+      "addr": 37517,
+      "name": "stmt_clear",
+      "fall_through": true
+    },
+    {
+      "addr": 49049,
+      "name": "stmt_close"
+    },
+    {
+      "addr": 36541,
+      "name": "stmt_clg",
+      "fall_through": true
+    },
+    {
+      "addr": 36548,
+      "name": "stmt_cls"
+    },
+    {
+      "addr": 35709,
+      "name": "stmt_data",
+      "fall_through": true
+    },
+    {
+      "addr": 37167,
+      "name": "stmt_dim"
+    },
+    {
+      "addr": 37864,
+      "name": "stmt_draw"
+    },
+    {
+      "addr": 35528,
+      "name": "stmt_end",
+      "fall_through": true
+    },
+    {
+      "addr": 37718,
+      "name": "stmt_endproc"
+    },
+    {
+      "addr": 46194,
+      "name": "stmt_envelope"
+    },
+    {
+      "addr": 47044,
+      "name": "stmt_for"
+    },
+    {
+      "addr": 47240,
+      "name": "stmt_gosub"
+    },
+    {
+      "addr": 47308,
+      "name": "stmt_goto"
+    },
+    {
+      "addr": 37754,
+      "name": "stmt_gcol"
+    },
+    {
+      "addr": 39106,
+      "name": "stmt_if"
+    },
+    {
+      "addr": 47684,
+      "name": "stmt_input"
+    },
+    {
+      "addr": 35812,
+      "name": "stmt_let",
+      "fall_through": true
+    },
+    {
+      "addr": 37667,
+      "name": "stmt_local"
+    },
+    {
+      "addr": 37786,
+      "name": "stmt_mode"
+    },
+    {
+      "addr": 37860,
+      "name": "stmt_move",
+      "fall_through": true
+    },
+    {
+      "addr": 46741,
+      "name": "stmt_next"
+    },
+    {
+      "addr": 47381,
+      "name": "stmt_on"
+    },
+    {
+      "addr": 37935,
+      "name": "stmt_vdu"
+    },
+    {
+      "addr": 37873,
+      "name": "stmt_plot",
+      "fall_through": true
+    },
+    {
+      "addr": 36250,
+      "name": "stmt_print",
+      "fall_through": true
+    },
+    {
+      "addr": 37636,
+      "name": "stmt_proc",
+      "fall_through": true
+    },
+    {
+      "addr": 47903,
+      "name": "stmt_read"
+    },
+    {
+      "addr": 48100,
+      "name": "stmt_repeat"
+    },
+    {
+      "addr": 49124,
+      "name": "stmt_report"
+    },
+    {
+      "addr": 47846,
+      "name": "stmt_restore"
+    },
+    {
+      "addr": 47286,
+      "name": "stmt_return"
+    },
+    {
+      "addr": 48401,
+      "name": "stmt_run"
+    },
+    {
+      "addr": 35536,
+      "name": "stmt_stop"
+    },
+    {
+      "addr": 37774,
+      "name": "stmt_colour"
+    },
+    {
+      "addr": 37525,
+      "name": "stmt_trace",
+      "fall_through": true
+    },
+    {
+      "addr": 48049,
+      "name": "stmt_until"
+    },
+    {
+      "addr": 46240,
+      "name": "stmt_width"
+    },
+    {
+      "addr": 48834,
+      "name": "stmt_oscli"
     }
   ],
   "banners": [
@@ -17982,9 +18448,7 @@
         13
       ],
       "labels": [
-        "stmt_data",
-        "stmt_def",
-        "stmt_rem"
+        "stmt_data"
       ],
       "xref_summaries": [
         "&8b7d referenced 2 times by &8b89, &b907"
