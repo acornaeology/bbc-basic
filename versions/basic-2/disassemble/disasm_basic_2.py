@@ -1239,6 +1239,27 @@ d.comment(0x9b75, 'Apply AND only if the next operator is AND',
 d.comment(0x9c45, 'Apply + or - if that is the next operator',
           align=Align.INLINE)
 
+# --- FOR / NEXT: counted loops on the FOR stack ----------------------
+# Each FOR pushes a 15-byte frame on the FOR/GOSUB stack (&0500),
+# indexed by zp_for_level (= 15 * the nesting depth): the control-
+# variable pointer, the limit and the step, plus the loop-back position.
+d.comment(0xb7c4, 'Parse the control variable (numvar =)', align=Align.INLINE)
+d.comment(0xb7cb, 'Evaluate and assign the initial value', align=Align.INLINE)
+d.comment(0xb7d4, 'Index the FOR stack by nesting level', align=Align.INLINE)
+d.comment(0xb7d6, 'At most 10 nested FOR loops (10 * 15)', align=Align.INLINE)
+d.comment(0xb7da, 'Save the control-variable pointer in the frame',
+          align=Align.INLINE)
+d.comment(0xb7ed, 'Require the TO keyword', align=Align.INLINE)
+d.comment(0xb7fa, 'Save the loop limit in the frame', align=Align.INLINE)
+d.comment(0xb816, 'Optional STEP (otherwise step defaults to 1)',
+          align=Align.INLINE)
+d.comment(0xb695, 'Parse the optional control variable', align=Align.INLINE)
+d.comment(0xb6a9, 'Find the matching FOR frame on the stack', align=Align.INLINE)
+d.comment(0xb6be, 'Not this loop: discard the frame and look outward',
+          align=Align.INLINE)
+d.comment(0xb6d7, 'Found: reload the control variable to update it',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

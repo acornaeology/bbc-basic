@@ -9906,7 +9906,7 @@ l848a = sub_c847b+15
 ; [var,...].
 ; &b695 referenced 1 time by &b763
 .stmt_next
-    jsr sub_c95c9                                                     ; b695: 20 c9 95     ..   
+    jsr sub_c95c9                                                     ; b695: 20 c9 95     ..      ; Parse the optional control variable
     bne cb6a3                                                         ; b698: d0 09       ..    
     ldx zp_for_level                                                  ; b69a: a6 26       .&    
     beq cb68e                                                         ; b69c: f0 f0       ..    
@@ -9921,7 +9921,7 @@ l848a = sub_c847b+15
     beq cb68e                                                         ; b6a7: f0 e5       ..    
 ; &b6a9 referenced 1 time by &b6c5
 .loop_cb6a9
-    lda zp_iwa                                                        ; b6a9: a5 2a       .*    
+    lda zp_iwa                                                        ; b6a9: a5 2a       .*       ; Find the matching FOR frame on the stack
     cmp l04f1,x                                                       ; b6ab: dd f1 04    ...   
     bne cb6be                                                         ; b6ae: d0 0e       ..    
     lda zp_iwa_1                                                      ; b6b0: a5 2b       .+    
@@ -9932,7 +9932,7 @@ l848a = sub_c847b+15
     beq cb6d7                                                         ; b6bc: f0 19       ..    
 ; &b6be referenced 2 times by &b6ae, &b6b5
 .cb6be
-    txa                                                               ; b6be: 8a          .     
+    txa                                                               ; b6be: 8a          .        ; Not this loop: discard the frame and look outward
     sec                                                               ; b6bf: 38          8     
     sbc #&0f                                                          ; b6c0: e9 0f       ..    
     tax                                                               ; b6c2: aa          .     
@@ -9943,7 +9943,7 @@ l848a = sub_c847b+15
     equb &e3, &00                                                     ; b6d5: e3 00       ..    
 ; &b6d7 referenced 2 times by &b69e, &b6bc
 .cb6d7
-    lda l04f1,x                                                       ; b6d7: bd f1 04    ...   
+    lda l04f1,x                                                       ; b6d7: bd f1 04    ...      ; Found: reload the control variable to update it
     sta zp_iwa                                                        ; b6da: 85 2a       .*    
     lda l04f2,x                                                       ; b6dc: bd f2 04    ...   
     sta zp_iwa_1                                                      ; b6df: 85 2b       .+    
@@ -10071,16 +10071,16 @@ l848a = sub_c847b+15
 ; Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO
 ; limit [STEP step].
 .stmt_for
-    jsr sub_c9582                                                     ; b7c4: 20 82 95     ..   
+    jsr sub_c9582                                                     ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)
     beq cb7a4                                                         ; b7c7: f0 db       ..    
     bcs cb7a4                                                         ; b7c9: b0 d9       ..    
-    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..   
+    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Evaluate and assign the initial value
     jsr sub_c9841                                                     ; b7ce: 20 41 98     A.   
     jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..   
-    ldy zp_for_level                                                  ; b7d4: a4 26       .&    
-    cpy #&96                                                          ; b7d6: c0 96       ..    
+    ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level
+    cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)
     bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..    
-    lda zp_general                                                    ; b7da: a5 37       .7    
+    lda zp_general                                                    ; b7da: a5 37       .7       ; Save the control-variable pointer in the frame
     sta for_gosub_stack,y                                             ; b7dc: 99 00 05    ...   
     lda l0038                                                         ; b7df: a5 38       .8    
     sta l0501,y                                                       ; b7e1: 99 01 05    ...   
@@ -10088,13 +10088,13 @@ l848a = sub_c847b+15
     sta l0502,y                                                       ; b7e6: 99 02 05    ...   
     tax                                                               ; b7e9: aa          .     
     jsr skip_spaces_ptr2                                              ; b7ea: 20 8c 8a     ..   
-    cmp #&b8                                                          ; b7ed: c9 b8       ..    
+    cmp #&b8                                                          ; b7ed: c9 b8       ..       ; Require the TO keyword
     bne loop_cb7bd                                                    ; b7ef: d0 cc       ..    
     cpx #5                                                            ; b7f1: e0 05       ..    
     beq cb84f                                                         ; b7f3: f0 5a       .Z    
     jsr sub_c92dd                                                     ; b7f5: 20 dd 92     ..   
     ldy zp_for_level                                                  ; b7f8: a4 26       .&    
-    lda zp_iwa                                                        ; b7fa: a5 2a       .*    
+    lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Save the loop limit in the frame
     sta l0508,y                                                       ; b7fc: 99 08 05    ...   
     lda zp_iwa_1                                                      ; b7ff: a5 2b       .+    
     sta l0509,y                                                       ; b801: 99 09 05    ...   
@@ -10105,7 +10105,7 @@ l848a = sub_c847b+15
     lda #1                                                            ; b80e: a9 01       ..    
     jsr caed8                                                         ; b810: 20 d8 ae     ..   
     jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..   
-    cmp #&88                                                          ; b816: c9 88       ..    
+    cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)
     bne cb81f                                                         ; b818: d0 05       ..    
     jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..   
     ldy zp_text_ptr2_off                                              ; b81d: a4 1b       ..    

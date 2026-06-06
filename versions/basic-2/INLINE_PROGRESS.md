@@ -51,7 +51,11 @@ Cross-references: `tools/jgh_correlation.tsv` (regenerate with
 - [x] Interpreter core: execute_line, statement_loop, dispatch_token,
       check_eq_star_bracket (exec_star_command renamed).
 - [ ] Tokeniser / line-entry (sub_c97df, c8957, skip_spaces enrich).
-- [ ] FP multiply / divide; variable lookup; PRINT.
+- [x] Tokeniser front-end (c8957).
+- [x] Variable / PROC / FN lookup (find_variable, find_proc_fn).
+- [x] Expression-evaluator ladder (levels 7-3 named + documented).
+- [ ] Control flow: FOR/NEXT, GOSUB/RETURN, REPEAT/UNTIL (stack frames).
+- [ ] FP multiply / divide; PRINT / number formatting; LET store.
 
 ## Done
 
