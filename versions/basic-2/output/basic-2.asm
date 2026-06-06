@@ -415,8 +415,8 @@ oscli            = &fff7
 ;
 ; Reached from the language entry when the MOS starts BASIC (A = 1). Reads HIMEM and PAGE
 ; from the MOS, clears the print and formatting state, seeds the random-number generator
-; if it is cold, installs the BASIC error handler in BRKV, and jumps to the immediate (">
-; ") loop.
+; if it is cold, installs the BASIC error handler in BRKV, and jumps to
+; start_new_program, which clears any program and enters the immediate ("> ") loop.
 ; &8023 referenced 1 time by &8002
 .language_startup
     lda #osbyte_read_himem                                            ; 8023: a9 84       ..    
@@ -456,7 +456,7 @@ oscli            = &fff7
     lda #&b4                                                          ; 8068: a9 b4       ..    
     sta brkv+1                                                        ; 806a: 8d 03 02    ...   
     cli                                                               ; 806d: 58          X        ; Enable IRQs and enter the immediate loop
-    jmp immediate_loop                                                ; 806e: 4c dd 8a    L..   
+    jmp start_new_program                                             ; 806e: 4c dd 8a    L..   
 ; ***************************************************************************************
 ; Keyword / tokeniser table
 ;
@@ -981,8 +981,12 @@ l848a = sub_c847b+15
     equb &c6, &e6, &e0, &c0                                           ; 84f1: c6 e6 e0... ......
     equs " L "                                                        ; 84f5: 20 4c 20     L    
     equb &a2, &a0, &81, &86, &84                                      ; 84f8: a2 a0 81... ......
+; ***************************************************************************************
+; Finish the inline assembler
+;
+; Leave the inline 6502 assembler (reached at "]") and resume interpreting BASIC.
 ; &84fd referenced 1 time by &850d
-.loop_c84fd
+.assembler_exit
     lda #&ff                                                          ; 84fd: a9 ff       ..    
     sta zp_opt_flag                                                   ; 84ff: 85 28       .(    
     jmp c8ba3                                                         ; 8501: 4c a3 8b    L..   
@@ -994,7 +998,7 @@ l848a = sub_c847b+15
 .c8508
     jsr skip_spaces                                                   ; 8508: 20 97 8a     ..   
     cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]    
-    beq loop_c84fd                                                    ; 850d: f0 ee       ..    
+    beq assembler_exit                                                ; 850d: f0 ee       ..    
     jsr c986d                                                         ; 850f: 20 6d 98     m.   
     dec zp_text_ptr_off                                               ; 8512: c6 0a       ..    
     jsr sub_c85ba                                                     ; 8514: 20 ba 85     ..   
@@ -1089,7 +1093,7 @@ l848a = sub_c847b+15
     lda l000c                                                         ; 8596: a5 0c       ..    
     cmp #7                                                            ; 8598: c9 07       ..    
     bne c859f                                                         ; 859a: d0 03       ..    
-    jmp c8af6                                                         ; 859c: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; 859c: 4c f6 8a    L..   
 ; &859f referenced 1 time by &859a
 .c859f
     jsr sub_c9890                                                     ; 859f: 20 90 98     ..   
@@ -1730,8 +1734,14 @@ l848a = sub_c847b+15
     jsr inc_ptr_general                                               ; 894b: 20 44 89     D.   
     lda (zp_general),y                                                ; 894e: b1 37       .7    
     rts                                                               ; 8950: 60          `     
+; ***************************************************************************************
+; Tokenise a line
+;
+; Convert the line being entered into its internal form, replacing keywords with tokens
+; via the keyword_table while leaving strings, line numbers and names intact. Works
+; through the buffer using the general pointer (zp_general, &37).
 ; &8951 referenced 1 time by &90c3
-.sub_c8951
+.tokenise_line
     ldy #0                                                            ; 8951: a0 00       ..    
     sty zp_fwb                                                        ; 8953: 84 3b       .;    
 ; &8955 referenced 1 time by &ac1a
@@ -2034,7 +2044,7 @@ l848a = sub_c847b+15
 .stmt_end
     jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.   
     jsr sub_cbe6f                                                     ; 8acb: 20 6f be     o.   
-    bne c8af6                                                         ; 8ace: d0 26       .&    
+    bne immediate_loop                                                ; 8ace: d0 26       .&    
 .stmt_stop
     jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.   
     brk                                                               ; 8ad3: 00          .     
@@ -2043,8 +2053,13 @@ l848a = sub_c847b+15
     equb &00                                                          ; 8ad9: 00          .     
 .stmt_new
     jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.   
+; ***************************************************************************************
+; Clear program and enter the immediate loop
+;
+; Entered from language_startup. Sets up an empty program (as the NEW command does) and
+; falls through into the immediate loop.
 ; &8add referenced 1 time by &806e
-.immediate_loop
+.start_new_program
     lda #&0d                                                          ; 8add: a9 0d       ..    
     ldy zp_page                                                       ; 8adf: a4 18       ..    
     sty l0013                                                         ; 8ae1: 84 13       ..    
@@ -2060,8 +2075,14 @@ l848a = sub_c847b+15
 ; &8af3 referenced 6 times by &8ac6, &8b35, &8f66, &903a, &90d9, &bf27
 .c8af3
     jsr sub_cbd20                                                     ; 8af3: 20 20 bd      .   
+; ***************************************************************************************
+; Immediate ("> ") loop
+;
+; Print the prompt, read a line into the input buffer, and tokenise it. A line that
+; begins with a line number is inserted into the program; otherwise it is executed
+; immediately.
 ; &8af6 referenced 6 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a
-.c8af6
+.immediate_loop
     ldy #7                                                            ; 8af6: a0 07       ..    
     sty l000c                                                         ; 8af8: 84 0c       ..    
     ldy #0                                                            ; 8afa: a0 00       ..    
@@ -2072,8 +2093,13 @@ l848a = sub_c847b+15
     sta l0017                                                         ; 8b04: 85 17       ..    
     lda #&3e ; '>'                                                    ; 8b06: a9 3e       .>    
     jsr sub_cbc02                                                     ; 8b08: 20 02 bc     ..   
+; ***************************************************************************************
+; Execute the line at the program pointer
+;
+; Run the tokenised statements on the line addressed by the program pointer (zp_text_ptr,
+; &0B), starting at offset zp_text_ptr_off.
 ; &8b0b referenced 1 time by &bd1d
-.c8b0b
+.execute_line
     lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3    
     sta zp_error_vec                                                  ; 8b0d: 85 16       ..    
     lda #&b4                                                          ; 8b0f: a9 b4       ..    
@@ -2099,11 +2125,11 @@ l848a = sub_c847b+15
 .c8b38
     jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..   
     cmp #&c6                                                          ; 8b3b: c9 c6       ..    
-    bcs c8bb1                                                         ; 8b3d: b0 72       .r    
-    bcc c8bbf                                                         ; 8b3f: 90 7e       .~    
+    bcs dispatch_token                                                ; 8b3d: b0 72       .r    
+    bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~    
 ; &8b41 referenced 1 time by &8b8f
 .loop_c8b41
-    jmp c8af6                                                         ; 8b41: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; 8b41: 4c f6 8a    L..   
 ; &8b44 referenced 1 time by &8b6f
 .loop_c8b44
     jmp c8504                                                         ; 8b44: 4c 04 85    L..   
@@ -2123,8 +2149,14 @@ l848a = sub_c847b+15
     equb &07                                                          ; 8b5a: 07          .     
     equs "No "                                                        ; 8b5b: 4e 6f 20    No    
     equb &a4, &00                                                     ; 8b5e: a4 00       ..    
+; ***************************************************************************************
+; Check for =, * and [ statements
+;
+; Recognise the statement forms that are not introduced by a token: "=" (return a value
+; from FN), "*" (pass the rest of the line to OSCLI), and "[" (enter the inline
+; assembler).
 ; &8b60 referenced 1 time by &8bce
-.loop_c8b60
+.check_eq_star_bracket
     ldy zp_text_ptr_off                                               ; 8b60: a4 0a       ..    
     dey                                                               ; 8b62: 88          .     
     lda (zp_text_ptr),y                                               ; 8b63: b1 0b       ..    
@@ -2166,8 +2198,14 @@ l848a = sub_c847b+15
 ; &8b98 referenced 4 times by &8d7a, &9353, &b9cc, &ba41
 .c8b98
     jsr check_end_of_statement                                        ; 8b98: 20 57 98     W.   
+; ***************************************************************************************
+; Statement execution loop
+;
+; The main interpreter loop: fetch the next statement's leading token and dispatch it,
+; then advance to the next statement (after a colon) or line. Returns here after each
+; statement completes.
 ; &8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6
-.c8b9b
+.statement_loop
     ldy #0                                                            ; 8b9b: a0 00       ..    
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..    
     cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:    
@@ -2180,17 +2218,32 @@ l848a = sub_c847b+15
     cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .     
     beq c8ba3                                                         ; 8bab: f0 f6       ..    
     cmp #&cf                                                          ; 8bad: c9 cf       ..    
-    bcc c8bbf                                                         ; 8baf: 90 0e       ..    
+    bcc try_variable_assignment                                       ; 8baf: 90 0e       ..    
+; ***************************************************************************************
+; Dispatch a tokenised function or command
+;
+; Index the action-address table by (token - &8E): load the handler address into
+; zp_general (&37/&38) and JMP (&0037). This is the indirect jump that reaches every fn_*
+; / stmt_* handler.
+;
+; On Entry:
+;     A: a command/function token (&8E-&FF)
 ; &8bb1 referenced 2 times by &8b3d, &ae0d
-.c8bb1
+.dispatch_token
     tax                                                               ; 8bb1: aa          .     
     lda l82df,x                                                       ; 8bb2: bd df 82    ...   
     sta zp_general                                                    ; 8bb5: 85 37       .7    
     lda l8351,x                                                       ; 8bb7: bd 51 83    .Q.   
     sta l0038                                                         ; 8bba: 85 38       .8    
     jmp (zp_general)                                                  ; 8bbc: 6c 37 00    l7.   
+; ***************************************************************************************
+; Not a command token: try an assignment
+;
+; Reached when the statement does not begin with a command token: treat it as an
+; implied-LET variable assignment, or one of the =, * (OSCLI) or [ (assembler) special
+; statement forms.
 ; &8bbf referenced 2 times by &8b3f, &8baf
-.c8bbf
+.try_variable_assignment
     ldx zp_text_ptr                                                   ; 8bbf: a6 0b       ..    
     stx zp_text_ptr2                                                  ; 8bc1: 86 19       ..    
     ldx l000c                                                         ; 8bc3: a6 0c       ..    
@@ -2198,7 +2251,7 @@ l848a = sub_c847b+15
     sty zp_text_ptr2_off                                              ; 8bc7: 84 1b       ..    
     jsr sub_c95dd                                                     ; 8bc9: 20 dd 95     ..   
     bne c8be9                                                         ; 8bcc: d0 1b       ..    
-    bcs loop_c8b60                                                    ; 8bce: b0 90       ..    
+    bcs check_eq_star_bracket                                         ; 8bce: b0 90       ..    
     stx zp_text_ptr2_off                                              ; 8bd0: 86 1b       ..    
     jsr sub_c9841                                                     ; 8bd2: 20 41 98     A.   
     jsr sub_c94fc                                                     ; 8bd5: 20 fc 94     ..   
@@ -2221,7 +2274,7 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; 8bf1: a5 27       .'    
     bne c8c0e                                                         ; 8bf3: d0 19       ..    
     jsr sub_c8c1e                                                     ; 8bf5: 20 1e 8c     ..   
-    jmp c8b9b                                                         ; 8bf8: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8bf8: 4c 9b 8b    L..   
 ; &8bfb referenced 1 time by &8be9
 .c8bfb
     jsr stack_integer                                                 ; 8bfb: 20 94 bd     ..   
@@ -2229,7 +2282,7 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; 8c01: a5 27       .'    
     beq c8c0e                                                         ; 8c03: f0 09       ..    
     jsr sub_cb4b4                                                     ; 8c05: 20 b4 b4     ..   
-    jmp c8b9b                                                         ; 8c08: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8c08: 4c 9b 8b    L..   
 ; &8c0b referenced 1 time by &8be7
 .c8c0b
     jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.   
@@ -2704,7 +2757,7 @@ l848a = sub_c847b+15
 ; &8ecc referenced 1 time by &8ec2
 .c8ecc
     jsr oswrch                                                        ; 8ecc: 20 ee ff     ..   
-    jmp c8b9b                                                         ; 8ecf: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8ecf: 4c 9b 8b    L..   
 .stmt_call
     jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..   
     jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..   
@@ -2739,7 +2792,7 @@ l848a = sub_c847b+15
     jsr unstack_integer                                               ; 8f11: 20 ea bd     ..   
     jsr sub_c8f1e                                                     ; 8f14: 20 1e 8f     ..   
     cld                                                               ; 8f17: d8          .     
-    jmp c8b9b                                                         ; 8f18: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8f18: 4c 9b 8b    L..   
 ; &8f1b referenced 1 time by &8eef
 .c8f1b
     jmp cae43                                                         ; 8f1b: 4c 43 ae    LC.   
@@ -2982,7 +3035,7 @@ l848a = sub_c847b+15
     lda #&20 ; ' '                                                    ; 90bb: a9 20       .     
     jsr sub_cbc02                                                     ; 90bd: 20 02 bc     ..   
     jsr unstack_integer                                               ; 90c0: 20 ea bd     ..   
-    jsr sub_c8951                                                     ; 90c3: 20 51 89     Q.   
+    jsr tokenise_line                                                 ; 90c3: 20 51 89     Q.   
     jsr sub_cbc8d                                                     ; 90c6: 20 8d bc     ..   
     jsr sub_cbd20                                                     ; 90c9: 20 20 bd      .   
     pla                                                               ; 90cc: 68          h     
@@ -3242,7 +3295,7 @@ l848a = sub_c847b+15
     lda l002b                                                         ; 9266: a5 2b       .+    
     sta l0007                                                         ; 9268: 85 07       ..    
     sta l0005                                                         ; 926a: 85 05       ..    
-    jmp c8b9b                                                         ; 926c: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 926c: 4c 9b 8b    L..   
 .stmt_lomem
     jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..   
     lda zp_iwa                                                        ; 9272: a5 2a       .*    
@@ -3259,7 +3312,7 @@ l848a = sub_c847b+15
     sta zp_page                                                       ; 9288: 85 18       ..    
 ; &928a referenced 2 times by &9281, &9293
 .c928a
-    jmp c8b9b                                                         ; 928a: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 928a: 4c 9b 8b    L..   
 .stmt_clear
     jsr check_end_of_statement                                        ; 928d: 20 57 98     W.   
     jsr sub_cbd20                                                     ; 9290: 20 20 bd      .   
@@ -3285,7 +3338,7 @@ l848a = sub_c847b+15
 ; &92b2 referenced 1 time by &92c7
 .loop_c92b2
     sta zp_trace_flag                                                 ; 92b2: 85 20       .     
-    jmp c8b9b                                                         ; 92b4: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 92b4: 4c 9b 8b    L..   
 ; &92b7 referenced 1 time by &929c
 .c92b7
     inc zp_text_ptr_off                                               ; 92b7: e6 0a       ..    
@@ -3305,7 +3358,7 @@ l848a = sub_c847b+15
     sty zp_fwa                                                        ; 92d0: 84 2e       ..    
     lda #osword_write_clock                                           ; 92d2: a9 02       ..    
     jsr osword                                                        ; 92d4: 20 f1 ff     ..      ; Write system clock
-    jmp c8b9b                                                         ; 92d7: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 92d7: 4c 9b 8b    L..   
 ; &92da referenced 4 times by &9380, &9403, &b459, &b47c
 .sub_c92da
     jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..   
@@ -3364,7 +3417,7 @@ l848a = sub_c847b+15
     lda #&f2                                                          ; 9310: a9 f2       ..    
     jsr sub_cb197                                                     ; 9312: 20 97 b1     ..   
     jsr sub_c9852                                                     ; 9315: 20 52 98     R.   
-    jmp c8b9b                                                         ; 9318: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 9318: 4c 9b 8b    L..   
 ; &931b referenced 1 time by &9332
 .loop_c931b
     ldy #3                                                            ; 931b: a0 03       ..    
@@ -3479,7 +3532,7 @@ l848a = sub_c847b+15
     pla                                                               ; 93da: 68          h     
     jsr oswrch                                                        ; 93db: 20 ee ff     ..   
     jsr sub_c9456                                                     ; 93de: 20 56 94     V.   
-    jmp c8b9b                                                         ; 93e1: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..   
 .stmt_move
     lda #4                                                            ; 93e4: a9 04       ..    
     bne c93ea                                                         ; 93e6: d0 02       ..    
@@ -3514,7 +3567,7 @@ l848a = sub_c847b+15
     jsr sub_c9456                                                     ; 941f: 20 56 94     V.   
     lda l002b                                                         ; 9422: a5 2b       .+    
     jsr oswrch                                                        ; 9424: 20 ee ff     ..   
-    jmp c8b9b                                                         ; 9427: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 9427: 4c 9b 8b    L..   
 ; &942a referenced 1 time by &9451
 .loop_c942a
     lda l002b                                                         ; 942a: a5 2b       .+    
@@ -4355,7 +4408,7 @@ l848a = sub_c847b+15
     rts                                                               ; 98bb: 60          `     
 ; &98bc referenced 2 times by &988e, &9893
 .c98bc
-    jmp c8af6                                                         ; 98bc: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; 98bc: 4c f6 8a    L..   
 ; &98bf referenced 1 time by &98c5
 .loop_c98bf
     jmp c8c0e                                                         ; 98bf: 4c 0e 8c    L..   
@@ -7775,7 +7828,7 @@ l848a = sub_c847b+15
     bcc cae10                                                         ; ae07: 90 07       ..    
     cmp #&c6                                                          ; ae09: c9 c6       ..    
     bcs cae43                                                         ; ae0b: b0 36       .6    
-    jmp c8bb1                                                         ; ae0d: 4c b1 8b    L..   
+    jmp dispatch_token                                                ; ae0d: 4c b1 8b    L..   
 ; &ae10 referenced 1 time by &ae07
 .cae10
     cmp #&3f ; '?'                                                    ; ae10: c9 3f       .?    
@@ -8830,14 +8883,14 @@ l848a = sub_c847b+15
     ldx #<(zp_general)                                                ; b496: a2 37       .7    
     ldy #>(zp_general)                                                ; b498: a0 00       ..    
     jsr osword                                                        ; b49a: 20 f1 ff     ..      ; ENVELOPE command
-    jmp c8b9b                                                         ; b49d: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b49d: 4c 9b 8b    L..   
 .stmt_width
     jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.   
     jsr sub_c9852                                                     ; b4a3: 20 52 98     R.   
     ldy zp_iwa                                                        ; b4a6: a4 2a       .*    
     dey                                                               ; b4a8: 88          .     
     sty zp_width                                                      ; b4a9: 84 23       .#    
-    jmp c8b9b                                                         ; b4ab: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..   
 ; &b4ae referenced 2 times by &b4bf, &b4e2
 .cb4ae
     jmp c8c0e                                                         ; b4ae: 4c 0e 8c    L..   
@@ -9012,7 +9065,7 @@ l848a = sub_c847b+15
     jsr sub_c92ee                                                     ; b592: 20 ee 92     ..   
     lda zp_iwa                                                        ; b595: a5 2a       .*    
     sta zp_listo                                                      ; b597: 85 1f       ..    
-    jmp c8af6                                                         ; b599: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; b599: 4c f6 8a    L..   
 .stmt_list
     iny                                                               ; b59c: c8          .     
     lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..    
@@ -9086,7 +9139,7 @@ l848a = sub_c847b+15
     lda l002b                                                         ; b614: a5 2b       .+    
     sbc l0032                                                         ; b616: e5 32       .2    
     bcc cb61d                                                         ; b618: 90 03       ..    
-    jmp c8af6                                                         ; b61a: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; b61a: 4c f6 8a    L..   
 ; &b61d referenced 1 time by &b618
 .cb61d
     jsr sub_c9923                                                     ; b61d: 20 23 99     #.   
@@ -9452,7 +9505,7 @@ l848a = sub_c847b+15
     lda l05e5,x                                                       ; b8c2: bd e5 05    ...   
     sty zp_text_ptr                                                   ; b8c5: 84 0b       ..    
     sta l000c                                                         ; b8c7: 85 0c       ..    
-    jmp c8b9b                                                         ; b8c9: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..   
 .stmt_goto
     jsr sub_cb99a                                                     ; b8cc: 20 9a b9     ..   
     jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.   
@@ -9477,7 +9530,7 @@ l848a = sub_c847b+15
     sta zp_error_vec                                                  ; b8e9: 85 16       ..    
     lda #&b4                                                          ; b8eb: a9 b4       ..    
     sta l0017                                                         ; b8ed: 85 17       ..    
-    jmp c8b9b                                                         ; b8ef: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b8ef: 4c 9b 8b    L..   
 ; &b8f2 referenced 1 time by &b91a
 .loop_cb8f2
     jsr skip_spaces                                                   ; b8f2: 20 97 8a     ..   
@@ -9815,7 +9868,7 @@ l848a = sub_c847b+15
     sta zp_data_ptr                                                   ; bb0c: 85 1c       ..    
     lda l003e                                                         ; bb0e: a5 3e       .>    
     sta l001d                                                         ; bb10: 85 1d       ..    
-    jmp c8b9b                                                         ; bb12: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bb12: 4c 9b 8b    L..   
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .cbb15
     jsr skip_spaces                                                   ; bb15: 20 97 8a     ..   
@@ -9925,7 +9978,7 @@ l848a = sub_c847b+15
     ora l002d                                                         ; bbc4: 05 2d       .-    
     beq cbbcd                                                         ; bbc6: f0 05       ..    
     dec zp_repeat_level                                               ; bbc8: c6 24       .$    
-    jmp c8b9b                                                         ; bbca: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bbca: 4c 9b 8b    L..   
 ; &bbcd referenced 1 time by &bbc6
 .cbbcd
     ldy l05a3,x                                                       ; bbcd: bc a3 05    ...   
@@ -10142,7 +10195,7 @@ l848a = sub_c847b+15
     lda zp_page                                                       ; bd17: a5 18       ..    
     sta l000c                                                         ; bd19: 85 0c       ..    
     stx zp_text_ptr                                                   ; bd1b: 86 0b       ..    
-    jmp c8b0b                                                         ; bd1d: 4c 0b 8b    L..   
+    jmp execute_line                                                  ; bd1d: 4c 0b 8b    L..   
 ; &bd20 referenced 5 times by &8af3, &90c9, &9290, &bcc9, &bd14
 .sub_cbd20
     lda zp_top                                                        ; bd20: a5 12       ..    
@@ -10465,7 +10518,7 @@ l848a = sub_c847b+15
     ldx #0                                                            ; bec5: a2 00       ..    
     ldy #6                                                            ; bec7: a0 06       ..    
     jsr oscli                                                         ; bec9: 20 f7 ff     ..   
-    jmp c8b9b                                                         ; becc: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; becc: 4c 9b 8b    L..   
 ; &becf referenced 1 time by &bed5
 .loop_cbecf
     jmp c8c0e                                                         ; becf: 4c 0e 8c    L..   
@@ -10513,7 +10566,7 @@ l848a = sub_c847b+15
     tay                                                               ; bf1b: a8          .     
     ldx #&37 ; '7'                                                    ; bf1c: a2 37       .7    
     jsr osfile                                                        ; bf1e: 20 dd ff     ..   
-    jmp c8b9b                                                         ; bf21: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bf21: 4c 9b 8b    L..   
 .stmt_load
     jsr sub_cbe62                                                     ; bf24: 20 62 be     b.   
     jmp c8af3                                                         ; bf27: 4c f3 8a    L..   
@@ -10530,7 +10583,7 @@ l848a = sub_c847b+15
     ldx #&2a ; '*'                                                    ; bf3c: a2 2a       .*    
     lda #1                                                            ; bf3e: a9 01       ..    
     jsr osargs                                                        ; bf40: 20 da ff     ..      ; Write sequential file pointer from zero page address X (A=1)
-    jmp c8b9b                                                         ; bf43: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bf43: 4c 9b 8b    L..   
 .fn_ext
     sec                                                               ; bf46: 38          8     
 .fn_ptr
@@ -10554,7 +10607,7 @@ l848a = sub_c847b+15
     tay                                                               ; bf66: a8          .     
     lda zp_iwa                                                        ; bf67: a5 2a       .*    
     jsr osbput                                                        ; bf69: 20 d4 ff     ..   
-    jmp c8b9b                                                         ; bf6c: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bf6c: 4c 9b 8b    L..   
 .fn_bget
     jsr sub_cbfb5                                                     ; bf6f: 20 b5 bf     ..   
     jsr osbget                                                        ; bf72: 20 d7 ff     ..   
@@ -10587,7 +10640,7 @@ l848a = sub_c847b+15
     ldy zp_iwa                                                        ; bf9f: a4 2a       .*    
     lda #osfind_close                                                 ; bfa1: a9 00       ..    
     jsr osfind                                                        ; bfa3: 20 ce ff     ..      ; osfind: close one or all files
-    jmp c8b9b                                                         ; bfa6: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bfa6: 4c 9b 8b    L..   
 ; &bfa9 referenced 5 times by &8d2d, &b9d1, &bf30, &bf58, &bf99
 .sub_cbfa9
     lda zp_text_ptr_off                                               ; bfa9: a5 0a       ..    
@@ -10639,7 +10692,7 @@ l848a = sub_c847b+15
     bne loop_cbfec                                                    ; bff4: d0 f6       ..    
 ; &bff6 referenced 1 time by &bfee
 .cbff6
-    jmp c8b9b                                                         ; bff6: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bff6: 4c 9b 8b    L..   
     equb &00                                                          ; bff9: 00          .     
     equs "Roger"                                                      ; bffa: 52 6f 67... Rog...
     equb &00                                                          ; bfff: 00          .     
@@ -10685,7 +10738,7 @@ save pydis_start, pydis_end
 ;     string_work:                27
 ;     check_end_of_statement:     25
 ;     l0041:                      25
-;     c8b9b:                      23
+;     statement_loop:             23
 ;     eval_expr_to_integer:       22
 ;     l001a:                      22
 ;     coerce_to_integer:          21
@@ -10756,12 +10809,12 @@ save pydis_start, pydis_end
 ;     sub_ca38d:                   7
 ;     zp_count:                    7
 ;     c8af3:                       6
-;     c8af6:                       6
 ;     c9bb4:                       6
 ;     c9c88:                       6
 ;     cae43:                       6
 ;     cb2b5:                       6
 ;     cbddc:                       6
+;     immediate_loop:              6
 ;     l0001:                       6
 ;     l0017:                       6
 ;     osbget:                      6
@@ -10951,8 +11004,6 @@ save pydis_start, pydis_end
 ;     c8a54:                       2
 ;     c8b59:                       2
 ;     c8b87:                       2
-;     c8bb1:                       2
-;     c8bbf:                       2
 ;     c8c43:                       2
 ;     c8c5f:                       2
 ;     c8c84:                       2
@@ -11071,6 +11122,7 @@ save pydis_start, pydis_end
 ;     cbe41:                       2
 ;     cbe9e:                       2
 ;     cbf82:                       2
+;     dispatch_token:              2
 ;     fp_temp1:                    2
 ;     l0010:                       2
 ;     l0022:                       2
@@ -11163,8 +11215,10 @@ save pydis_start, pydis_end
 ;     sub_cbed2:                   2
 ;     sub_cbedd:                   2
 ;     sub_cbfcf:                   2
+;     try_variable_assignment:     2
 ;     wrchv:                       2
 ;     zp_trace_max:                2
+;     assembler_exit:              1
 ;     brkv:                        1
 ;     brkv+1:                      1
 ;     c8063:                       1
@@ -11231,7 +11285,6 @@ save pydis_start, pydis_end
 ;     c8a7f:                       1
 ;     c8a81:                       1
 ;     c8a86:                       1
-;     c8b0b:                       1
 ;     c8b38:                       1
 ;     c8b73:                       1
 ;     c8bdf:                       1
@@ -11581,10 +11634,11 @@ save pydis_start, pydis_end
 ;     cbfc3:                       1
 ;     cbfdc:                       1
 ;     cbff6:                       1
+;     check_eq_star_bracket:       1
+;     execute_line:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
 ;     for_gosub_stack:             1
-;     immediate_loop:              1
 ;     l0047:                       1
 ;     l0061:                       1
 ;     l0064:                       1
@@ -11629,7 +11683,6 @@ save pydis_start, pydis_end
 ;     l996b:                       1
 ;     l99b9:                       1
 ;     language_startup:            1
-;     loop_c84fd:                  1
 ;     loop_c853c:                  1
 ;     loop_c8544:                  1
 ;     loop_c8567:                  1
@@ -11650,7 +11703,6 @@ save pydis_start, pydis_end
 ;     loop_c8b41:                  1
 ;     loop_c8b44:                  1
 ;     loop_c8b47:                  1
-;     loop_c8b60:                  1
 ;     loop_c8b82:                  1
 ;     loop_c8c97:                  1
 ;     loop_c8ca9:                  1
@@ -11847,6 +11899,7 @@ save pydis_start, pydis_end
 ;     return_5:                    1
 ;     return_6:                    1
 ;     return_7:                    1
+;     start_new_program:           1
 ;     stmt_dim:                    1
 ;     stmt_local:                  1
 ;     stmt_next:                   1
@@ -11856,7 +11909,6 @@ save pydis_start, pydis_end
 ;     sub_c8897:                   1
 ;     sub_c88f5:                   1
 ;     sub_c893d:                   1
-;     sub_c8951:                   1
 ;     sub_c8955:                   1
 ;     sub_c8cc1:                   1
 ;     sub_c8f9a:                   1
@@ -11903,6 +11955,7 @@ save pydis_start, pydis_end
 ;     sub_cbe93:                   1
 ;     sub_cbeb2:                   1
 ;     sub_cbee7:                   1
+;     tokenise_line:               1
 
 ; Automatically generated labels:
 ;     c8063
@@ -12006,18 +12059,13 @@ save pydis_start, pydis_end
 ;     c8a86
 ;     c8aa2
 ;     c8af3
-;     c8af6
-;     c8b0b
 ;     c8b38
 ;     c8b59
 ;     c8b73
 ;     c8b87
 ;     c8b96
 ;     c8b98
-;     c8b9b
 ;     c8ba3
-;     c8bb1
-;     c8bbf
 ;     c8bdf
 ;     c8be9
 ;     c8bfb
@@ -12665,7 +12713,6 @@ save pydis_start, pydis_end
 ;     l84c4
 ;     l996b
 ;     l99b9
-;     loop_c84fd
 ;     loop_c853c
 ;     loop_c8544
 ;     loop_c8567
@@ -12686,7 +12733,6 @@ save pydis_start, pydis_end
 ;     loop_c8b41
 ;     loop_c8b44
 ;     loop_c8b47
-;     loop_c8b60
 ;     loop_c8b82
 ;     loop_c8c97
 ;     loop_c8ca9
@@ -12910,7 +12956,6 @@ save pydis_start, pydis_end
 ;     sub_c8926
 ;     sub_c893d
 ;     sub_c894b
-;     sub_c8951
 ;     sub_c8955
 ;     sub_c8c1e
 ;     sub_c8c21

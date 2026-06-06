@@ -60,7 +60,6 @@ d.entry(0xb402)  # BASIC error handler, installed into BRKV at startup
 # ----------------------------------------------------------------------
 # Language entry and startup.
 # ----------------------------------------------------------------------
-d.label(0x8add, 'immediate_loop')   # The ">" prompt / command loop
 d.label(0xb402, 'brk_handler')      # Reached via BRKV on any error
 
 d.subroutine(
@@ -69,8 +68,85 @@ d.subroutine(
     description="""Reached from the language entry when the MOS starts BASIC
 (A = 1). Reads HIMEM and PAGE from the MOS, clears the print and
 formatting state, seeds the random-number generator if it is cold,
-installs the BASIC error handler in BRKV, and jumps to the
+installs the BASIC error handler in BRKV, and jumps to
+start_new_program, which clears any program and enters the
 immediate ("> ") loop.
+""",
+)
+
+# ----------------------------------------------------------------------
+# Interpreter core: the immediate loop, line execution, the statement
+# loop, and the token dispatch that drives the fn_*/stmt_* handlers.
+# ----------------------------------------------------------------------
+d.subroutine(
+    0x8add, 'start_new_program',
+    title='Clear program and enter the immediate loop',
+    description="""Entered from language_startup. Sets up an empty program (as the
+NEW command does) and falls through into the immediate loop.
+""",
+)
+d.subroutine(
+    0x8af6, 'immediate_loop',
+    title='Immediate ("> ") loop',
+    description="""Print the prompt, read a line into the input buffer, and
+tokenise it. A line that begins with a line number is inserted into
+the program; otherwise it is executed immediately.
+""",
+)
+d.subroutine(
+    0x8b0b, 'execute_line',
+    title='Execute the line at the program pointer',
+    description="""Run the tokenised statements on the line addressed by the
+program pointer (zp_text_ptr, &0B), starting at offset zp_text_ptr_off.
+""",
+)
+d.subroutine(
+    0x8b9b, 'statement_loop',
+    title='Statement execution loop',
+    description="""The main interpreter loop: fetch the next statement's leading
+token and dispatch it, then advance to the next statement (after a
+colon) or line. Returns here after each statement completes.
+""",
+)
+d.subroutine(
+    0x8bb1, 'dispatch_token',
+    title='Dispatch a tokenised function or command',
+    description="""Index the action-address table by (token - &8E): load the
+handler address into zp_general (&37/&38) and JMP (&0037). This is
+the indirect jump that reaches every fn_* / stmt_* handler.
+""",
+    on_entry={'A': 'a command/function token (&8E-&FF)'},
+)
+d.subroutine(
+    0x8bbf, 'try_variable_assignment',
+    title='Not a command token: try an assignment',
+    description="""Reached when the statement does not begin with a command token:
+treat it as an implied-LET variable assignment, or one of the
+=, * (OSCLI) or [ (assembler) special statement forms.
+""",
+)
+d.subroutine(
+    0x8b60, 'check_eq_star_bracket',
+    title='Check for =, * and [ statements',
+    description="""Recognise the statement forms that are not introduced by a
+token: "=" (return a value from FN), "*" (pass the rest of the line
+to OSCLI), and "[" (enter the inline assembler).
+""",
+)
+d.subroutine(
+    0x8951, 'tokenise_line',
+    title='Tokenise a line',
+    description="""Convert the line being entered into its internal form, replacing
+keywords with tokens via the keyword_table while leaving strings,
+line numbers and names intact. Works through the buffer using the
+general pointer (zp_general, &37).
+""",
+)
+d.subroutine(
+    0x84fd, 'assembler_exit',
+    title='Finish the inline assembler',
+    description="""Leave the inline 6502 assembler (reached at "]") and resume
+interpreting BASIC.
 """,
 )
 d.comment(0x8035, 'LISTO = 0: no LIST indentation', align=Align.INLINE)

@@ -158,13 +158,76 @@
       "addr": 32803,
       "name": "language_startup",
       "title": "Language startup",
-      "description": "Reached from the language entry when the MOS starts BASIC\n(A = 1). Reads HIMEM and PAGE from the MOS, clears the print and\nformatting state, seeds the random-number generator if it is cold,\ninstalls the BASIC error handler in BRKV, and jumps to the\nimmediate (\"> \") loop.\n"
+      "description": "Reached from the language entry when the MOS starts BASIC\n(A = 1). Reads HIMEM and PAGE from the MOS, clears the print and\nformatting state, seeds the random-number generator if it is cold,\ninstalls the BASIC error handler in BRKV, and jumps to\nstart_new_program, which clears any program and enters the\nimmediate (\"> \") loop.\n"
+    },
+    {
+      "addr": 35549,
+      "name": "start_new_program",
+      "title": "Clear program and enter the immediate loop",
+      "description": "Entered from language_startup. Sets up an empty program (as the\nNEW command does) and falls through into the immediate loop.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35574,
+      "name": "immediate_loop",
+      "title": "Immediate (\"> \") loop",
+      "description": "Print the prompt, read a line into the input buffer, and\ntokenise it. A line that begins with a line number is inserted into\nthe program; otherwise it is executed immediately.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35595,
+      "name": "execute_line",
+      "title": "Execute the line at the program pointer",
+      "description": "Run the tokenised statements on the line addressed by the\nprogram pointer (zp_text_ptr, &0B), starting at offset zp_text_ptr_off.\n"
+    },
+    {
+      "addr": 35739,
+      "name": "statement_loop",
+      "title": "Statement execution loop",
+      "description": "The main interpreter loop: fetch the next statement's leading\ntoken and dispatch it, then advance to the next statement (after a\ncolon) or line. Returns here after each statement completes.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35761,
+      "name": "dispatch_token",
+      "title": "Dispatch a tokenised function or command",
+      "description": "Index the action-address table by (token - &8E): load the\nhandler address into zp_general (&37/&38) and JMP (&0037). This is\nthe indirect jump that reaches every fn_* / stmt_* handler.\n",
+      "on_entry": {
+        "A": "a command/function token (&8E-&FF)"
+      }
+    },
+    {
+      "addr": 35775,
+      "name": "try_variable_assignment",
+      "title": "Not a command token: try an assignment",
+      "description": "Reached when the statement does not begin with a command token:\ntreat it as an implied-LET variable assignment, or one of the\n=, * (OSCLI) or [ (assembler) special statement forms.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35680,
+      "name": "check_eq_star_bracket",
+      "title": "Check for =, * and [ statements",
+      "description": "Recognise the statement forms that are not introduced by a\ntoken: \"=\" (return a value from FN), \"*\" (pass the rest of the line\nto OSCLI), and \"[\" (enter the inline assembler).\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35153,
+      "name": "tokenise_line",
+      "title": "Tokenise a line",
+      "description": "Convert the line being entered into its internal form, replacing\nkeywords with tokens via the keyword_table while leaving strings,\nline numbers and names intact. Works through the buffer using the\ngeneral pointer (zp_general, &37).\n"
+    },
+    {
+      "addr": 34045,
+      "name": "assembler_exit",
+      "title": "Finish the inline assembler",
+      "description": "Leave the inline 6502 assembler (reached at \"]\") and resume\ninterpreting BASIC.\n"
     },
     {
       "addr": 32881,
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
-      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising:\n\n  bit 0  conditional: do not tokenise if followed by a letter\n  bit 1  enter \"middle of statement\" mode\n  bit 2  enter \"start of statement\" mode\n  bit 3  FN/PROC: do not tokenise the following name\n  bit 4  start tokenising a line number (after GOTO etc.)\n  bit 5  do not tokenise the rest of the line (REM, DATA)\n  bit 6  pseudo-variable: add &40 to the token at the start of\n         a statement (so e.g. PTR is &8F as a function and &CF\n         as an assignment target)\n\nEntries are ordered so that the first acceptable abbreviation of\neach keyword is unambiguous. The table runs to the action-address\ntables at action_table_lo.\n"
+      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising:\n\n  bit 0  conditional: do not tokenise if followed by a letter\n  bit 1  enter \"middle of statement\" mode\n  bit 2  enter \"start of statement\" mode\n  bit 3  FN/PROC: do not tokenise the following name\n  bit 4  start tokenising a line number (after GOTO etc.)\n  bit 5  do not tokenise the rest of the line (REM, DATA)\n  bit 6  pseudo-variable: add &40 to the token at the start of\n         a statement (so e.g. PTR is &8F as a function and &CF\n         as an assignment target)\n\nEntries are ordered so that the first acceptable abbreviation of\neach keyword is unambiguous. The table runs to the action-address\ntables at action_table_lo.\n",
+      "fall_through": true
     },
     {
       "addr": 49016,
@@ -1678,9 +1741,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "immediate_loop",
+      "operand": "start_new_program",
       "target": 35549,
-      "target_label": "immediate_loop"
+      "target_label": "start_new_program"
     },
     {
       "addr": 32881,
@@ -7985,7 +8048,7 @@
         255
       ],
       "labels": [
-        "loop_c84fd"
+        "assembler_exit"
       ],
       "xref_summaries": [
         "&84fd referenced 1 time by &850d"
@@ -8093,9 +8156,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c84fd",
+      "operand": "assembler_exit",
       "target": 34045,
-      "target_label": "loop_c84fd"
+      "target_label": "assembler_exit"
     },
     {
       "addr": 34063,
@@ -8996,9 +9059,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 34207,
@@ -14939,7 +15002,7 @@
         0
       ],
       "labels": [
-        "sub_c8951"
+        "tokenise_line"
       ],
       "xref_summaries": [
         "&8951 referenced 1 time by &90c3"
@@ -17529,9 +17592,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 35536,
@@ -17611,7 +17674,7 @@
         13
       ],
       "labels": [
-        "immediate_loop"
+        "start_new_program"
       ],
       "xref_summaries": [
         "&8add referenced 1 time by &806e"
@@ -17777,7 +17840,7 @@
         7
       ],
       "labels": [
-        "c8af6"
+        "immediate_loop"
       ],
       "xref_summaries": [
         "&8af6 referenced 6 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a"
@@ -17902,7 +17965,7 @@
         51
       ],
       "labels": [
-        "c8b0b"
+        "execute_line"
       ],
       "xref_summaries": [
         "&8b0b referenced 1 time by &bd1d"
@@ -18187,9 +18250,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8bb1",
+      "operand": "dispatch_token",
       "target": 35761,
-      "target_label": "c8bb1"
+      "target_label": "dispatch_token"
     },
     {
       "addr": 35647,
@@ -18199,9 +18262,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8bbf",
+      "operand": "try_variable_assignment",
       "target": 35775,
-      "target_label": "c8bbf"
+      "target_label": "try_variable_assignment"
     },
     {
       "addr": 35649,
@@ -18221,9 +18284,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 35652,
@@ -18404,7 +18467,7 @@
         10
       ],
       "labels": [
-        "loop_c8b60"
+        "check_eq_star_bracket"
       ],
       "xref_summaries": [
         "&8b60 referenced 1 time by &8bce"
@@ -18806,7 +18869,7 @@
         0
       ],
       "labels": [
-        "c8b9b"
+        "statement_loop"
       ],
       "xref_summaries": [
         "&8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6"
@@ -18968,9 +19031,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8bbf",
+      "operand": "try_variable_assignment",
       "target": 35775,
-      "target_label": "c8bbf"
+      "target_label": "try_variable_assignment"
     },
     {
       "addr": 35761,
@@ -18978,7 +19041,7 @@
         170
       ],
       "labels": [
-        "c8bb1"
+        "dispatch_token"
       ],
       "xref_summaries": [
         "&8bb1 referenced 2 times by &8b3d, &ae0d"
@@ -19060,7 +19123,7 @@
         11
       ],
       "labels": [
-        "c8bbf"
+        "try_variable_assignment"
       ],
       "xref_summaries": [
         "&8bbf referenced 2 times by &8b3f, &8baf"
@@ -19156,9 +19219,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c8b60",
+      "operand": "check_eq_star_bracket",
       "target": 35680,
-      "target_label": "loop_c8b60"
+      "target_label": "check_eq_star_bracket"
     },
     {
       "addr": 35792,
@@ -19395,9 +19458,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 35835,
@@ -19480,9 +19543,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 35851,
@@ -24000,9 +24063,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 36562,
@@ -24378,9 +24441,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 36635,
@@ -26860,9 +26923,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8951",
+      "operand": "tokenise_line",
       "target": 35153,
-      "target_label": "sub_c8951"
+      "target_label": "tokenise_line"
     },
     {
       "addr": 37062,
@@ -29480,9 +29543,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37487,
@@ -29656,9 +29719,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37517,
@@ -29905,9 +29968,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37559,
@@ -30102,9 +30165,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37594,
@@ -30600,9 +30663,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37659,
@@ -31755,9 +31818,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37860,
@@ -32117,9 +32180,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 37930,
@@ -39950,9 +40013,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 39103,
@@ -73498,9 +73561,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8bb1",
+      "operand": "dispatch_token",
       "target": 35761,
-      "target_label": "c8bb1"
+      "target_label": "dispatch_token"
     },
     {
       "addr": 44560,
@@ -83754,9 +83817,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 46240,
@@ -83828,9 +83891,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 46254,
@@ -85456,9 +85519,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 46492,
@@ -86217,9 +86280,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af6",
+      "operand": "immediate_loop",
       "target": 35574,
-      "target_label": "c8af6"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 46621,
@@ -90022,9 +90085,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 47308,
@@ -90257,9 +90320,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 47346,
@@ -93552,9 +93615,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 47893,
@@ -94643,9 +94706,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 48077,
@@ -96750,9 +96813,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b0b",
+      "operand": "execute_line",
       "target": 35595,
-      "target_label": "c8b0b"
+      "target_label": "execute_line"
     },
     {
       "addr": 48416,
@@ -99698,9 +99761,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 48847,
@@ -100196,9 +100259,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 48932,
@@ -100367,9 +100430,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 48966,
@@ -100594,9 +100657,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 49007,
@@ -100909,9 +100972,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 49065,
@@ -101393,9 +101456,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b9b",
+      "operand": "statement_loop",
       "target": 35739,
-      "target_label": "c8b9b"
+      "target_label": "statement_loop"
     },
     {
       "addr": 49145,
