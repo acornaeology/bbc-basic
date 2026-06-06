@@ -1,0 +1,39 @@
+{
+    "slug": "bbc-basic",
+    "name": "Acorn BBC BASIC",
+    "description": "BBC BASIC is the BASIC interpreter built into the BBC Micro, written by Roger Wilson (now Sophie Wilson) at Acorn Computers. It is a 16 kB sideways language ROM combining a line editor, a keyword tokeniser and de-tokeniser, a statement interpreter, an expression evaluator with full operator precedence, integer and 40-bit floating-point arithmetic, string handling, and variable storage. BBC BASIC is renowned for its structured-programming features — named procedures and functions (PROC/FN) with local variables, REPEAT/UNTIL loops, and IF/THEN/ELSE — and for its built-in 6502 assembler, which lets machine code be written inline and assembled directly from a BASIC program. Version II is the most widely used BBC Micro release.",
+    "glossary": "GLOSSARY.md",
+    "versions": ["2"],
+    "references": [
+        {
+            "label": "The Advanced BASIC ROM User Guide (Colin Pharo)",
+            "url": "https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf",
+            "icon": "doc",
+            "note": "A detailed reference to the internals of the BBC BASIC ROM: zero-page usage, the keyword table, the interpreter loop, variable storage, and the floating-point routines."
+        },
+        {
+            "label": "BBC Microcomputer System User Guide (John Coll)",
+            "url": "https://archive.org/details/BBCUserGuide",
+            "icon": "doc",
+            "note": "The official BBC Micro user guide. Much of it documents the BBC BASIC language: statements, functions, operators, and the assembler."
+        },
+        {
+            "label": "tobylobster's fully-commented BBC BASIC II disassembly",
+            "url": "https://github.com/tobylobster/BBC-BASIC-II-disassembly",
+            "icon": "ref",
+            "note": "An exhaustively annotated disassembly of BBC BASIC II — the best public source of labels and structural understanding."
+        },
+        {
+            "label": "J.G. Harston's BBC BASIC source reconstruction",
+            "url": "https://mdfs.net/Software/BBCBasic/BBC/",
+            "icon": "ref",
+            "note": "A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation."
+        },
+        {
+            "label": "BBC BASIC II in The BBC Micro ROM Library",
+            "url": "https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d",
+            "icon": "chip",
+            "note": "The exact ROM image catalogued by tobylobster's ROM library, identified by MD5."
+        }
+    ]
+}

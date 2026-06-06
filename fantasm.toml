@@ -1,0 +1,22 @@
+# fantasm project configuration. See docs/configuration.md for the schema.
+
+[project]
+name = "bbc-basic"
+
+[rom]
+# Default CPU for opcode decoding: "6502" (NMOS) or "65c02" (CMOS).
+# BBC BASIC II predates the 65C02, so the NMOS 6502 is correct.
+cpu = "6502"
+# BBC BASIC II is a 16 kB sideways ROM mapped at &8000-&BFFF.
+base_address = 0x8000
+
+[versions]
+prefixes = ["basic"]
+
+# Zero-page locations, MOS entry points, and Model B hardware
+# registers are declared via the driver's environments and d.label()
+# calls; fantasm's lint reads them straight from the JSON, so no
+# [memory] block is needed.
+
+[[versions.entry]]
+id = "2"

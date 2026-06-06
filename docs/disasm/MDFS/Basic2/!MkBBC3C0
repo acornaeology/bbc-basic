@@ -1,0 +1,12 @@
+| Assemble 6502 BBC HiBASIC 3 for BBC at &C000
+| Strip out some code to squeeze into top 16K with mini-MOS
+|
+RmEnsure B6502 0.00 RmLoad <Obey$Dir>.^.ARM.6502_BASIC
+Dir <Obey$Dir>
+B6502 -quit <Obey$Dir>.Basic2/src C0Basic310 bbc 3.10 C000 drop
+*LOAD zero FC00
+*LOAD zero FD00
+*LOAD C0Basic310 C000
+*LOAD net::Software.Tube.6502.Mini65_C0 FD00
+*SAVE C0Basic310 C000+4000 C000 C000
+*ACCESS C0Basic310 r/r

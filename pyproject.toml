@@ -1,0 +1,32 @@
+[project]
+name = "bbc-basic"
+version = "0.1.0"
+description = "Annotated disassembly of Acorn BBC BASIC II for the BBC Micro"
+license = "MIT"
+authors = [
+    { name = "Robert Smallshire" },
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fantasm>=0.15",
+    "dasmos>=1.8",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=3.0",
+]
+
+[tool.uv]
+index-url = "https://pypi.org/simple"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+# This repo is annotated-disassembly content, not a published library.
+only-include = ["versions"]
