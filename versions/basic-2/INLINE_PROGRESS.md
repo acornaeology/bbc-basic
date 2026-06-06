@@ -47,7 +47,11 @@ Cross-references: `tools/jgh_correlation.tsv` (regenerate with
 - [x] stack/unstack: stack_integer/real/string, unstack_integer; the
       shared reserve_stack (&BE2E, renamed) heap-collision check.
 - [ ] skip_spaces (&8A97), skip_spaces_ptr2 (&8A8C) — enrich
-- [ ] Move up: fwa arithmetic (add/mul/div), then evaluator.
+- [x] FP addition path (fwa_add_var/fwb, alignment + add/subtract).
+- [x] Interpreter core: execute_line, statement_loop, dispatch_token,
+      check_eq_star_bracket (exec_star_command renamed).
+- [ ] Tokeniser / line-entry (sub_c97df, c8957, skip_spaces enrich).
+- [ ] FP multiply / divide; variable lookup; PRINT.
 
 ## Done
 

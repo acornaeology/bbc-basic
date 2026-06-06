@@ -1118,6 +1118,36 @@ d.comment(0xa594, 'Same sign: add; opposite: subtract smaller from larger',
 d.comment(0xa5b4, 'Equal magnitudes of opposite sign cancel to zero',
           align=Align.INLINE)
 
+# --- interpreter core: execute_line / statement_loop / dispatch ------
+d.comment(0x8b0b, 'Restore the default error handler (ON ERROR OFF)',
+          align=Align.INLINE)
+d.comment(0x8b13, 'OPT = &FF: not inside the [ ] assembler', align=Align.INLINE)
+d.comment(0x8b19, 'Reset the 6502 hardware stack', align=Align.INLINE)
+d.comment(0x8b1a, 'Clear the DATA pointer and the BASIC stacks',
+          align=Align.INLINE)
+d.comment(0x8b1e, 'Point the general pointer at the line text',
+          align=Align.INLINE)
+d.comment(0x8b2d, 'Tokenise; carry set if the line starts with a number',
+          align=Align.INLINE)
+d.comment(0x8b32, 'Numbered line: insert it into the program', align=Align.INLINE)
+d.comment(0x8b3b, 'Token >= &C6 is a command: dispatch it', align=Align.INLINE)
+d.comment(0x8b3f, 'Otherwise treat it as a variable assignment',
+          align=Align.INLINE)
+d.comment(0x8b65, '"=" returns a value from a function (FN)', align=Align.INLINE)
+d.comment(0x8b69, '"*" passes the rest of the line to OSCLI', align=Align.INLINE)
+d.comment(0x8b6d, '"[" enters the inline assembler', align=Align.INLINE)
+d.comment(0x8b9b, 'Fetch the next character of the statement',
+          align=Align.INLINE)
+d.comment(0x8b9f, 'A colon separates statements on a line', align=Align.INLINE)
+d.comment(0x8ba3, 'Skip spaces to the next statement', align=Align.INLINE)
+d.comment(0x8bad, 'Below &CF: a variable assignment, not a command',
+          align=Align.INLINE)
+d.comment(0x8bb2, 'Handler low byte = action_table_lo[token - &8E]',
+          align=Align.INLINE)
+d.comment(0x8bb7, 'Handler high byte from action_table_hi', align=Align.INLINE)
+d.comment(0x8bbc, 'Jump to the keyword handler', align=Align.INLINE)
+d.label(0x8b73, 'exec_star_command')   # embedded *command -> OSCLI
+
 ir = d.disassemble()
 output = str(
     ir.render(

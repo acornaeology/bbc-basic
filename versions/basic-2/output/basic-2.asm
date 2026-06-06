@@ -2118,33 +2118,33 @@ l848a = sub_c847b+15
 ; &0B), starting at offset zp_text_ptr_off.
 ; &8b0b referenced 1 time by &bd1d
 .execute_line
-    lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3    
+    lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3       ; Restore the default error handler (ON ERROR OFF)
     sta zp_error_vec                                                  ; 8b0d: 85 16       ..    
     lda #&b4                                                          ; 8b0f: a9 b4       ..    
     sta l0017                                                         ; 8b11: 85 17       ..    
-    ldx #&ff                                                          ; 8b13: a2 ff       ..    
+    ldx #&ff                                                          ; 8b13: a2 ff       ..       ; OPT = &FF: not inside the [ ] assembler
     stx zp_opt_flag                                                   ; 8b15: 86 28       .(    
     stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<    
-    txs                                                               ; 8b19: 9a          .     
-    jsr sub_cbd3a                                                     ; 8b1a: 20 3a bd     :.   
+    txs                                                               ; 8b19: 9a          .        ; Reset the 6502 hardware stack
+    jsr sub_cbd3a                                                     ; 8b1a: 20 3a bd     :.      ; Clear the DATA pointer and the BASIC stacks
     tay                                                               ; 8b1d: a8          .     
-    lda zp_text_ptr                                                   ; 8b1e: a5 0b       ..    
+    lda zp_text_ptr                                                   ; 8b1e: a5 0b       ..       ; Point the general pointer at the line text
     sta zp_general                                                    ; 8b20: 85 37       .7    
     lda l000c                                                         ; 8b22: a5 0c       ..    
     sta l0038                                                         ; 8b24: 85 38       .8    
     sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;    
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..    
     jsr c8957                                                         ; 8b2a: 20 57 89     W.   
-    jsr sub_c97df                                                     ; 8b2d: 20 df 97     ..   
+    jsr sub_c97df                                                     ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
     bcc c8b38                                                         ; 8b30: 90 06       ..    
-    jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..   
+    jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
     jmp c8af3                                                         ; 8b35: 4c f3 8a    L..   
 ; &8b38 referenced 1 time by &8b30
 .c8b38
     jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..   
-    cmp #&c6                                                          ; 8b3b: c9 c6       ..    
+    cmp #&c6                                                          ; 8b3b: c9 c6       ..       ; Token >= &C6 is a command: dispatch it
     bcs dispatch_token                                                ; 8b3d: b0 72       .r    
-    bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~    
+    bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~       ; Otherwise treat it as a variable assignment
 ; &8b41 referenced 1 time by &8b8f
 .loop_c8b41
     jmp immediate_loop                                                ; 8b41: 4c f6 8a    L..   
@@ -2178,15 +2178,15 @@ l848a = sub_c847b+15
     ldy zp_text_ptr_off                                               ; 8b60: a4 0a       ..    
     dey                                                               ; 8b62: 88          .     
     lda (zp_text_ptr),y                                               ; 8b63: b1 0b       ..    
-    cmp #&3d ; '='                                                    ; 8b65: c9 3d       .=    
+    cmp #&3d ; '='                                                    ; 8b65: c9 3d       .=       ; "=" returns a value from a function (FN)
     beq loop_c8b47                                                    ; 8b67: f0 de       ..    
-    cmp #&2a ; '*'                                                    ; 8b69: c9 2a       .*    
-    beq c8b73                                                         ; 8b6b: f0 06       ..    
-    cmp #&5b ; '['                                                    ; 8b6d: c9 5b       .[    
+    cmp #&2a ; '*'                                                    ; 8b69: c9 2a       .*       ; "*" passes the rest of the line to OSCLI
+    beq exec_star_command                                             ; 8b6b: f0 06       ..    
+    cmp #&5b ; '['                                                    ; 8b6d: c9 5b       .[       ; "[" enters the inline assembler
     beq loop_c8b44                                                    ; 8b6f: f0 d3       ..    
     bne c8b96                                                         ; 8b71: d0 23       .#    
 ; &8b73 referenced 1 time by &8b6b
-.c8b73
+.exec_star_command
     jsr c986d                                                         ; 8b73: 20 6d 98     m.   
     ldx zp_text_ptr                                                   ; 8b76: a6 0b       ..    
     ldy l000c                                                         ; 8b78: a4 0c       ..    
@@ -2230,18 +2230,18 @@ l848a = sub_c847b+15
 ; statement completes.
 ; &8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6
 .statement_loop
-    ldy #0                                                            ; 8b9b: a0 00       ..    
+    ldy #0                                                            ; 8b9b: a0 00       ..       ; Fetch the next character of the statement
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..    
-    cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:    
+    cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
     bne c8b87                                                         ; 8ba1: d0 e4       ..    
 ; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
 .c8ba3
-    ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..    
+    ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..       ; Skip spaces to the next statement
     inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..    
     lda (zp_text_ptr),y                                               ; 8ba7: b1 0b       ..    
     cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .     
     beq c8ba3                                                         ; 8bab: f0 f6       ..    
-    cmp #&cf                                                          ; 8bad: c9 cf       ..    
+    cmp #&cf                                                          ; 8bad: c9 cf       ..       ; Below &CF: a variable assignment, not a command
     bcc try_variable_assignment                                       ; 8baf: 90 0e       ..    
 ; ***************************************************************************************
 ; Dispatch a tokenised function or command
@@ -2255,11 +2255,11 @@ l848a = sub_c847b+15
 ; &8bb1 referenced 2 times by &8b3d, &ae0d
 .dispatch_token
     tax                                                               ; 8bb1: aa          .     
-    lda l82df,x                                                       ; 8bb2: bd df 82    ...   
+    lda l82df,x                                                       ; 8bb2: bd df 82    ...      ; Handler low byte = action_table_lo[token - &8E]
     sta zp_general                                                    ; 8bb5: 85 37       .7    
-    lda l8351,x                                                       ; 8bb7: bd 51 83    .Q.   
+    lda l8351,x                                                       ; 8bb7: bd 51 83    .Q.      ; Handler high byte from action_table_hi
     sta l0038                                                         ; 8bba: 85 38       .8    
-    jmp (zp_general)                                                  ; 8bbc: 6c 37 00    l7.   
+    jmp (zp_general)                                                  ; 8bbc: 6c 37 00    l7.      ; Jump to the keyword handler
 ; ***************************************************************************************
 ; Not a command token: try an assignment
 ;
@@ -12057,7 +12057,6 @@ save pydis_start, pydis_end
 ;     c8a81:                       1
 ;     c8a86:                       1
 ;     c8b38:                       1
-;     c8b73:                       1
 ;     c8bdf:                       1
 ;     c8be9:                       1
 ;     c8bfb:                       1
@@ -12399,6 +12398,7 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     exec_star_command:           1
 ;     execute_line:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
@@ -12832,7 +12832,6 @@ save pydis_start, pydis_end
 ;     c8af3
 ;     c8b38
 ;     c8b59
-;     c8b73
 ;     c8b87
 ;     c8b96
 ;     c8b98

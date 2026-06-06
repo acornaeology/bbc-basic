@@ -18617,6 +18617,7 @@
       "labels": [
         "execute_line"
       ],
+      "comment_inline": "Restore the default error handler (ON ERROR OFF)",
       "xref_summaries": [
         "&8b0b referenced 1 time by &bd1d"
       ],
@@ -18667,6 +18668,7 @@
         162,
         255
       ],
+      "comment_inline": "OPT = &FF: not inside the [ ] assembler",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -18700,6 +18702,7 @@
       "bytes": [
         154
       ],
+      "comment_inline": "Reset the 6502 hardware stack",
       "type": "code",
       "mnemonic": "txs"
     },
@@ -18710,6 +18713,7 @@
         58,
         189
       ],
+      "comment_inline": "Clear the DATA pointer and the BASIC stacks",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbd3a",
@@ -18730,6 +18734,7 @@
         165,
         11
       ],
+      "comment_inline": "Point the general pointer at the line text",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -18816,6 +18821,7 @@
         223,
         151
       ],
+      "comment_inline": "Tokenise; carry set if the line starts with a number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -18841,6 +18847,7 @@
         141,
         188
       ],
+      "comment_inline": "Numbered line: insert it into the program",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc8d",
@@ -18888,6 +18895,7 @@
         201,
         198
       ],
+      "comment_inline": "Token >= &C6 is a command: dispatch it",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&c6"
@@ -18910,6 +18918,7 @@
         144,
         126
       ],
+      "comment_inline": "Otherwise treat it as a variable assignment",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "try_variable_assignment",
@@ -19157,6 +19166,7 @@
         201,
         61
       ],
+      "comment_inline": "\"=\" returns a value from a function (FN)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3d"
@@ -19179,6 +19189,7 @@
         201,
         42
       ],
+      "comment_inline": "\"*\" passes the rest of the line to OSCLI",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2a"
@@ -19191,9 +19202,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8b73",
+      "operand": "exec_star_command",
       "target": 35699,
-      "target_label": "c8b73"
+      "target_label": "exec_star_command"
     },
     {
       "addr": 35693,
@@ -19201,6 +19212,7 @@
         201,
         91
       ],
+      "comment_inline": "\"[\" enters the inline assembler",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&5b"
@@ -19237,7 +19249,7 @@
         152
       ],
       "labels": [
-        "c8b73"
+        "exec_star_command"
       ],
       "xref_summaries": [
         "&8b73 referenced 1 time by &8b6b"
@@ -19521,6 +19533,7 @@
       "labels": [
         "statement_loop"
       ],
+      "comment_inline": "Fetch the next character of the statement",
       "xref_summaries": [
         "&8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6"
       ],
@@ -19571,6 +19584,7 @@
         201,
         58
       ],
+      "comment_inline": "A colon separates statements on a line",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -19596,6 +19610,7 @@
       "labels": [
         "c8ba3"
       ],
+      "comment_inline": "Skip spaces to the next statement",
       "xref_summaries": [
         "&8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9"
       ],
@@ -19669,6 +19684,7 @@
         201,
         207
       ],
+      "comment_inline": "Below &CF: a variable assignment, not a command",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&cf"
@@ -19710,6 +19726,7 @@
         223,
         130
       ],
+      "comment_inline": "Handler low byte = action_table_lo[token - &8E]",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l82df,x",
@@ -19735,6 +19752,7 @@
         81,
         131
       ],
+      "comment_inline": "Handler high byte from action_table_hi",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l8351,x",
@@ -19760,6 +19778,7 @@
         55,
         0
       ],
+      "comment_inline": "Jump to the keyword handler",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(zp_general)",
