@@ -4679,8 +4679,13 @@ l848a = sub_c847b+15
 ; &996b referenced 1 time by &9930
 .l996b
     equb &01, &0a, &64, &e8, &10                                      ; 996b: 01 0a 64... ..d...
+; ***************************************************************************************
+; Search the program for a line number
+;
+; Walk the program text looking for the given line number, returning a pointer to the
+; line (carry set if found).
 ; &9970 referenced 3 times by &b5ec, &b9af, &bc2d
-.sub_c9970
+.find_program_line
     ldy #0                                                            ; 9970: a0 00       ..    
     sty zp_fwb_exp                                                    ; 9972: 84 3d       .=    
     lda zp_page                                                       ; 9974: a5 18       ..    
@@ -9790,7 +9795,7 @@ l848a = sub_c847b+15
     jsr check_end_of_statement                                        ; b5e3: 20 57 98     W.   
     jsr sub_cbe6f                                                     ; b5e6: 20 6f be     o.   
     jsr unstack_integer                                               ; b5e9: 20 ea bd     ..   
-    jsr sub_c9970                                                     ; b5ec: 20 70 99     p.   
+    jsr find_program_line                                             ; b5ec: 20 70 99     p.   
     lda zp_fwb_exp                                                    ; b5ef: a5 3d       .=    
     sta zp_text_ptr                                                   ; b5f1: 85 0b       ..    
     lda zp_fwb_m1                                                     ; b5f3: a5 3e       .>    
@@ -10168,26 +10173,26 @@ l848a = sub_c847b+15
 ;
 ; Call a subroutine at a line number, stacking the return position. GOSUB line.
 .stmt_gosub
-    jsr sub_cb99a                                                     ; b888: 20 9a b9     ..   
+    jsr find_line_target                                              ; b888: 20 9a b9     ..      ; Resolve the destination line
 ; &b88b referenced 1 time by &b97a
 .cb88b
     jsr check_end_of_statement                                        ; b88b: 20 57 98     W.   
-    ldy zp_gosub_level                                                ; b88e: a4 25       .%    
-    cpy #&1a                                                          ; b890: c0 1a       ..    
-    bcs cb8a2                                                         ; b892: b0 0e       ..    
-    lda zp_text_ptr                                                   ; b894: a5 0b       ..    
+    ldy zp_gosub_level                                                ; b88e: a4 25       .%       ; Index the GOSUB return stack
+    cpy #&1a                                                          ; b890: c0 1a       ..       ; At most 26 nested GOSUBs
+    bcs err_too_many_gosubs                                           ; b892: b0 0e       ..    
+    lda zp_text_ptr                                                   ; b894: a5 0b       ..       ; Push the return position (text pointer)
     sta l05cc,y                                                       ; b896: 99 cc 05    ...   
     lda l000c                                                         ; b899: a5 0c       ..    
     sta l05e6,y                                                       ; b89b: 99 e6 05    ...   
     inc zp_gosub_level                                                ; b89e: e6 25       .%    
     bcc cb8d2                                                         ; b8a0: 90 30       .0    
 ; &b8a2 referenced 1 time by &b892
-.cb8a2
+.err_too_many_gosubs
     brk                                                               ; b8a2: 00          .     
     equs "%Too many "                                                 ; b8a3: 25 54 6f... %To...
     equb &e4, &73                                                     ; b8ad: e4 73       .s    
 ; &b8af referenced 1 time by &b8bb
-.loop_cb8af
+.err_no_gosub
     brk                                                               ; b8af: 00          .     
     equs "&No "                                                       ; b8b0: 26 4e 6f... &No...
     equb &e4, &00                                                     ; b8b4: e4 00       ..    
@@ -10197,24 +10202,24 @@ l848a = sub_c847b+15
 ; Return from a GOSUB to the stacked return position. RETURN.
 .stmt_return
     jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.   
-    ldx zp_gosub_level                                                ; b8b9: a6 25       .%    
-    beq loop_cb8af                                                    ; b8bb: f0 f2       ..    
-    dec zp_gosub_level                                                ; b8bd: c6 25       .%    
+    ldx zp_gosub_level                                                ; b8b9: a6 25       .%       ; RETURN with nothing on the GOSUB stack: error
+    beq err_no_gosub                                                  ; b8bb: f0 f2       ..    
+    dec zp_gosub_level                                                ; b8bd: c6 25       .%       ; Pop the return position
     ldy l05cb,x                                                       ; b8bf: bc cb 05    ...   
     lda l05e5,x                                                       ; b8c2: bd e5 05    ...   
     sty zp_text_ptr                                                   ; b8c5: 84 0b       ..    
     sta l000c                                                         ; b8c7: 85 0c       ..    
-    jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..      ; Resume execution after the GOSUB
 ; ***************************************************************************************
 ; GOTO
 ;
 ; Jump to a line number. GOTO line.
 .stmt_goto
-    jsr sub_cb99a                                                     ; b8cc: 20 9a b9     ..   
+    jsr find_line_target                                              ; b8cc: 20 9a b9     ..   
     jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.   
 ; &b8d2 referenced 3 times by &98ee, &b8a0, &b967
 .cb8d2
-    lda zp_trace_flag                                                 ; b8d2: a5 20       .     
+    lda zp_trace_flag                                                 ; b8d2: a5 20       .        ; TRACE: report the destination line number
     beq cb8d9                                                         ; b8d4: f0 03       ..    
     jsr sub_c9905                                                     ; b8d6: 20 05 99     ..   
 ; &b8d9 referenced 1 time by &b8d4
@@ -10223,7 +10228,7 @@ l848a = sub_c847b+15
     lda zp_fwb_m1                                                     ; b8db: a5 3e       .>    
 ; &b8dd referenced 1 time by &bbd3
 .cb8dd
-    sty zp_text_ptr                                                   ; b8dd: 84 0b       ..    
+    sty zp_text_ptr                                                   ; b8dd: 84 0b       ..       ; Point the interpreter at the destination line
     sta l000c                                                         ; b8df: 85 0c       ..    
     jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..   
 ; &b8e4 referenced 1 time by &b8f7
@@ -10302,7 +10307,7 @@ l848a = sub_c847b+15
     sty zp_text_ptr_off                                               ; b95a: 84 0a       ..    
 ; &b95c referenced 1 time by &b940
 .cb95c
-    jsr sub_cb99a                                                     ; b95c: 20 9a b9     ..   
+    jsr find_line_target                                              ; b95c: 20 9a b9     ..   
     pla                                                               ; b95f: 68          h     
     cmp #&e4                                                          ; b960: c9 e4       ..    
     beq cb96a                                                         ; b962: f0 06       ..    
@@ -10344,8 +10349,14 @@ l848a = sub_c847b+15
 .cb995
     sty zp_text_ptr_off                                               ; b995: 84 0a       ..    
     jmp c98e3                                                         ; b997: 4c e3 98    L..   
+; ***************************************************************************************
+; Resolve a line-number operand to a program line
+;
+; Read a line-number argument (an embedded tokenised line number or an evaluated integer
+; expression) and locate that line in the program via find_program_line. Used by GOTO,
+; GOSUB and RESTORE. Raises "No such line" if absent.
 ; &b99a referenced 4 times by &b888, &b8cc, &b95c, &baff
-.sub_cb99a
+.find_line_target
     jsr sub_c97df                                                     ; b99a: 20 df 97     ..   
     bcs cb9af                                                         ; b99d: b0 10       ..    
     jsr eval_expr                                                     ; b99f: 20 1d 9b     ..   
@@ -10357,11 +10368,11 @@ l848a = sub_c847b+15
     sta zp_iwa_1                                                      ; b9ad: 85 2b       .+    
 ; &b9af referenced 2 times by &98e8, &b99d
 .cb9af
-    jsr sub_c9970                                                     ; b9af: 20 70 99     p.   
-    bcs cb9b5                                                         ; b9b2: b0 01       ..    
+    jsr find_program_line                                             ; b9af: 20 70 99     p.   
+    bcs err_no_such_line                                              ; b9b2: b0 01       ..    
     rts                                                               ; b9b4: 60          `     
 ; &b9b5 referenced 1 time by &b9b2
-.cb9b5
+.err_no_such_line
     brk                                                               ; b9b5: 00          .     
     equs ")No such line"                                              ; b9b6: 29 4e 6f... )No...
     equb &00                                                          ; b9c3: 00          .     
@@ -10575,7 +10586,7 @@ l848a = sub_c847b+15
     beq cbb07                                                         ; baf9: f0 0c       ..    
     cmp #&8b                                                          ; bafb: c9 8b       ..    
     beq cbb07                                                         ; bafd: f0 08       ..    
-    jsr sub_cb99a                                                     ; baff: 20 9a b9     ..   
+    jsr find_line_target                                              ; baff: 20 9a b9     ..   
     ldy #1                                                            ; bb02: a0 01       ..    
     jsr sub_cbe55                                                     ; bb04: 20 55 be     U.   
 ; &bb07 referenced 3 times by &baf5, &baf9, &bafd
@@ -10765,7 +10776,7 @@ l848a = sub_c847b+15
     rts                                                               ; bc2c: 60          `     
 ; &bc2d referenced 2 times by &8f53, &bc8f
 .sub_cbc2d
-    jsr sub_c9970                                                     ; bc2d: 20 70 99     p.   
+    jsr find_program_line                                             ; bc2d: 20 70 99     p.   
     bcs return_37                                                     ; bc30: b0 4e       .N    
     lda zp_fwb_exp                                                    ; bc32: a5 3d       .=    
     sbc #2                                                            ; bc34: e9 02       ..    
@@ -11680,6 +11691,7 @@ save pydis_start, pydis_end
 ;     cba5a:                       4
 ;     cbc28:                       4
 ;     eval_add_sub:                4
+;     find_line_target:            4
 ;     find_variable:               4
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
@@ -11702,7 +11714,6 @@ save pydis_start, pydis_end
 ;     sub_c9e20:                   4
 ;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
-;     sub_cb99a:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
 ;     zp_rnd_seed:                 4
@@ -11746,6 +11757,7 @@ save pydis_start, pydis_end
 ;     cbb7a:                       3
 ;     err_no_room:                 3
 ;     eval_mul_div:                3
+;     find_program_line:           3
 ;     fn_true:                     3
 ;     fwa_add_fwb:                 3
 ;     fwa_div10:                   3
@@ -11770,7 +11782,6 @@ save pydis_start, pydis_end
 ;     sub_c909f:                   3
 ;     sub_c94fc:                   3
 ;     sub_c97ba:                   3
-;     sub_c9970:                   3
 ;     sub_ca07b:                   3
 ;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
@@ -12384,7 +12395,6 @@ save pydis_start, pydis_end
 ;     cb84f:                       1
 ;     cb875:                       1
 ;     cb88b:                       1
-;     cb8a2:                       1
 ;     cb8d9:                       1
 ;     cb8dd:                       1
 ;     cb931:                       1
@@ -12392,7 +12402,6 @@ save pydis_start, pydis_end
 ;     cb96a:                       1
 ;     cb977:                       1
 ;     cb995:                       1
-;     cb9b5:                       1
 ;     cba13:                       1
 ;     cba19:                       1
 ;     cba2b:                       1
@@ -12431,6 +12440,9 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     err_no_gosub:                1
+;     err_no_such_line:            1
+;     err_too_many_gosubs:         1
 ;     eval_and:                    1
 ;     exec_star_command:           1
 ;     execute_line:                1
@@ -12651,7 +12663,6 @@ save pydis_start, pydis_end
 ;     loop_cb6a9:                  1
 ;     loop_cb7b0:                  1
 ;     loop_cb7bd:                  1
-;     loop_cb8af:                  1
 ;     loop_cb8e4:                  1
 ;     loop_cb8f2:                  1
 ;     loop_cb90a:                  1
@@ -13328,7 +13339,6 @@ save pydis_start, pydis_end
 ;     cb84f
 ;     cb875
 ;     cb88b
-;     cb8a2
 ;     cb8d2
 ;     cb8d9
 ;     cb8dd
@@ -13340,7 +13350,6 @@ save pydis_start, pydis_end
 ;     cb97d
 ;     cb995
 ;     cb9af
-;     cb9b5
 ;     cb9c4
 ;     cb9da
 ;     cba13
@@ -13636,7 +13645,6 @@ save pydis_start, pydis_end
 ;     loop_cb6a9
 ;     loop_cb7b0
 ;     loop_cb7bd
-;     loop_cb8af
 ;     loop_cb8e4
 ;     loop_cb8f2
 ;     loop_cb90a
@@ -13761,7 +13769,6 @@ save pydis_start, pydis_end
 ;     sub_c9905
 ;     sub_c991f
 ;     sub_c9923
-;     sub_c9970
 ;     sub_c99be
 ;     sub_c9a5f
 ;     sub_c9a9d
@@ -13818,7 +13825,6 @@ save pydis_start, pydis_end
 ;     sub_cb550
 ;     sub_cb562
 ;     sub_cb577
-;     sub_cb99a
 ;     sub_cbb50
 ;     sub_cbbfc
 ;     sub_cbc02

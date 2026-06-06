@@ -778,8 +778,7 @@
       "addr": 39106,
       "name": "stmt_if",
       "title": "IF",
-      "description": "Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE or the end of the line. IF expr [THEN] ... [ELSE ...].",
-      "fall_through": true
+      "description": "Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE or the end of the line. IF expr [THEN] ... [ELSE ...]."
     },
     {
       "addr": 47684,
@@ -1515,6 +1514,19 @@
       "name": "eval_mul_div",
       "title": "Evaluator level 3: * / DIV MOD",
       "description": "Multiplication, division and the integer DIV and MOD operators.",
+      "fall_through": true
+    },
+    {
+      "addr": 47514,
+      "name": "find_line_target",
+      "title": "Resolve a line-number operand to a program line",
+      "description": "Read a line-number argument (an embedded tokenised line number\nor an evaluated integer expression) and locate that line in the\nprogram via find_program_line. Used by GOTO, GOSUB and RESTORE.\nRaises \"No such line\" if absent.\n"
+    },
+    {
+      "addr": 39280,
+      "name": "find_program_line",
+      "title": "Search the program for a line number",
+      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n",
       "fall_through": true
     }
   ],
@@ -41906,7 +41918,7 @@
         0
       ],
       "labels": [
-        "sub_c9970"
+        "find_program_line"
       ],
       "xref_summaries": [
         "&9970 referenced 3 times by &b5ec, &b9af, &bc2d"
@@ -86783,9 +86795,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9970",
+      "operand": "find_program_line",
       "target": 39280,
-      "target_label": "sub_c9970"
+      "target_label": "find_program_line"
     },
     {
       "addr": 46575,
@@ -90565,11 +90577,12 @@
       "labels": [
         "stmt_gosub"
       ],
+      "comment_inline": "Resolve the destination line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb99a",
+      "operand": "find_line_target",
       "target": 47514,
-      "target_label": "sub_cb99a"
+      "target_label": "find_line_target"
     },
     {
       "addr": 47243,
@@ -90599,6 +90612,7 @@
         164,
         37
       ],
+      "comment_inline": "Index the GOSUB return stack",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_gosub_level",
@@ -90611,6 +90625,7 @@
         192,
         26
       ],
+      "comment_inline": "At most 26 nested GOSUBs",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&1a"
@@ -90623,9 +90638,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb8a2",
+      "operand": "err_too_many_gosubs",
       "target": 47266,
-      "target_label": "cb8a2"
+      "target_label": "err_too_many_gosubs"
     },
     {
       "addr": 47252,
@@ -90633,6 +90648,7 @@
         165,
         11
       ],
+      "comment_inline": "Push the return position (text pointer)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -90707,7 +90723,7 @@
         0
       ],
       "labels": [
-        "cb8a2"
+        "err_too_many_gosubs"
       ],
       "xref_summaries": [
         "&b8a2 referenced 1 time by &b892"
@@ -90753,7 +90769,7 @@
         0
       ],
       "labels": [
-        "loop_cb8af"
+        "err_no_gosub"
       ],
       "xref_summaries": [
         "&b8af referenced 1 time by &b8bb"
@@ -90809,6 +90825,7 @@
         166,
         37
       ],
+      "comment_inline": "RETURN with nothing on the GOSUB stack: error",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_gosub_level",
@@ -90823,9 +90840,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb8af",
+      "operand": "err_no_gosub",
       "target": 47279,
-      "target_label": "loop_cb8af"
+      "target_label": "err_no_gosub"
     },
     {
       "addr": 47293,
@@ -90833,6 +90850,7 @@
         198,
         37
       ],
+      "comment_inline": "Pop the return position",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_gosub_level",
@@ -90896,6 +90914,7 @@
         155,
         139
       ],
+      "comment_inline": "Resume execution after the GOSUB",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -90914,9 +90933,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb99a",
+      "operand": "find_line_target",
       "target": 47514,
-      "target_label": "sub_cb99a"
+      "target_label": "find_line_target"
     },
     {
       "addr": 47311,
@@ -90940,6 +90959,7 @@
       "labels": [
         "cb8d2"
       ],
+      "comment_inline": "TRACE: report the destination line number",
       "xref_summaries": [
         "&b8d2 referenced 3 times by &98ee, &b8a0, &b967"
       ],
@@ -91021,6 +91041,7 @@
       "labels": [
         "cb8dd"
       ],
+      "comment_inline": "Point the interpreter at the destination line",
       "xref_summaries": [
         "&b8dd referenced 1 time by &bbd3"
       ],
@@ -91777,9 +91798,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb99a",
+      "operand": "find_line_target",
       "target": 47514,
-      "target_label": "sub_cb99a"
+      "target_label": "find_line_target"
     },
     {
       "addr": 47455,
@@ -92164,7 +92185,7 @@
         151
       ],
       "labels": [
-        "sub_cb99a"
+        "find_line_target"
       ],
       "xref_summaries": [
         "&b99a referenced 4 times by &b888, &b8cc, &b95c, &baff"
@@ -92296,9 +92317,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9970",
+      "operand": "find_program_line",
       "target": 39280,
-      "target_label": "sub_c9970"
+      "target_label": "find_program_line"
     },
     {
       "addr": 47538,
@@ -92308,9 +92329,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb9b5",
+      "operand": "err_no_such_line",
       "target": 47541,
-      "target_label": "cb9b5"
+      "target_label": "err_no_such_line"
     },
     {
       "addr": 47540,
@@ -92326,7 +92347,7 @@
         0
       ],
       "labels": [
-        "cb9b5"
+        "err_no_such_line"
       ],
       "xref_summaries": [
         "&b9b5 referenced 1 time by &b9b2"
@@ -94320,9 +94341,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb99a",
+      "operand": "find_line_target",
       "target": 47514,
-      "target_label": "sub_cb99a"
+      "target_label": "find_line_target"
     },
     {
       "addr": 47874,
@@ -96081,9 +96102,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9970",
+      "operand": "find_program_line",
       "target": 39280,
-      "target_label": "sub_c9970"
+      "target_label": "find_program_line"
     },
     {
       "addr": 48176,

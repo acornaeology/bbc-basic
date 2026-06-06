@@ -1260,6 +1260,41 @@ d.comment(0xb6be, 'Not this loop: discard the frame and look outward',
 d.comment(0xb6d7, 'Found: reload the control variable to update it',
           align=Align.INLINE)
 
+# --- GOSUB / GOTO / RETURN and line lookup ---------------------------
+# The GOSUB stack keeps 26 return text-pointers in parallel arrays at
+# &05CC (low) / &05E6 (high), indexed by zp_gosub_level.
+d.subroutine(
+    0xb99a, 'find_line_target',
+    title='Resolve a line-number operand to a program line',
+    description="""Read a line-number argument (an embedded tokenised line number
+or an evaluated integer expression) and locate that line in the
+program via find_program_line. Used by GOTO, GOSUB and RESTORE.
+Raises "No such line" if absent.
+""",
+)
+d.subroutine(
+    0x9970, 'find_program_line',
+    title='Search the program for a line number',
+    description="""Walk the program text looking for the given line number,
+returning a pointer to the line (carry set if found).
+""",
+)
+d.label(0xb8a2, 'err_too_many_gosubs')   # GOSUB stack full
+d.label(0xb8af, 'err_no_gosub')          # RETURN with no GOSUB pending
+d.label(0xb9b5, 'err_no_such_line')      # line number not in the program
+d.comment(0xb888, 'Resolve the destination line', align=Align.INLINE)
+d.comment(0xb88e, 'Index the GOSUB return stack', align=Align.INLINE)
+d.comment(0xb890, 'At most 26 nested GOSUBs', align=Align.INLINE)
+d.comment(0xb894, 'Push the return position (text pointer)', align=Align.INLINE)
+d.comment(0xb8b9, 'RETURN with nothing on the GOSUB stack: error',
+          align=Align.INLINE)
+d.comment(0xb8bd, 'Pop the return position', align=Align.INLINE)
+d.comment(0xb8c9, 'Resume execution after the GOSUB', align=Align.INLINE)
+d.comment(0xb8d2, 'TRACE: report the destination line number',
+          align=Align.INLINE)
+d.comment(0xb8dd, 'Point the interpreter at the destination line',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(
