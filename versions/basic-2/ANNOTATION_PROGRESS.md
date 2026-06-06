@@ -48,9 +48,14 @@ uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
       handlers (SIN/COS/TAN/ASN/ACS/ATN/LN/LOG/EXP/SQR/DEG/RAD/PI), each
       noting the pure FWA-in routine a few bytes on.
 - [x] Ch. 6 random numbers: rnd_integer/fraction/repeat/range/seed.
-- [ ] Per-routine entry/exit detail (Pharo ch. 2.4 / 3.6 / 4.3 / 5.2 /
-      6.3) into on_entry/on_exit for the spine routines (registers and
-      zero-page side effects are documented there).
+- [x] Entry/exit detail for the highest-value conventions: integer
+      routines (Pharo ch. 2.4) — including the insight that the binary
+      ops take their second operand via the BASIC stack pointer
+      (&04/&05) — and the conversions (ch. 4.3: SWA / &36 / &15 / @%).
+      The FP-operand convention (&4B/&4C) is documented in the FP
+      section header. Remaining per-routine register-kill detail for FP
+      / maths / random (uniform: arg in FWA, result in FWA, registers
+      destroyed) can be folded in on demand from ch. 3.6 / 5.2 / 6.3.
 
 ## Next (bottom-up, by subsystem)
 

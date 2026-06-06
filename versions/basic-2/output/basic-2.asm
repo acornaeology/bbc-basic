@@ -5033,7 +5033,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Integer add
 ;
-; IWA = IWA + the integer operand.
+; IWA = IWA + the integer operand on the BASIC stack.
+;
+; On Entry:
+;     ZP_IWA (&2A): one 32-bit operand
+;     (ZP_STACK_PTR) (&04): the other operand on the BASIC stack
+;     X: 4
+;
+; On Exit:
+;     ZP_IWA: the sum
 .iwa_add
     ldy #0                                                            ; 9c5b: a0 00       ..    
     clc                                                               ; 9c5d: 18          .     
@@ -5102,7 +5110,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Reverse integer subtract
 ;
-; IWA = operand - IWA.
+; IWA = stacked operand - IWA.
+;
+; On Entry:
+;     ZP_IWA (&2A): the subtrahend
+;     (ZP_STACK_PTR) (&04): the minuend on the BASIC stack
+;     X: 4
+;
+; On Exit:
+;     ZP_IWA: operand - IWA
 .iwa_rsub
     sec                                                               ; 9cc2: 38          8     
     ldy #0                                                            ; 9cc3: a0 00       ..    
@@ -5208,7 +5224,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Integer multiply
 ;
-; IWA = IWA * the integer operand.
+; IWA = IWA * the stacked operand. A product wider than &FFFF is truncated to 16
+; significant bits.
+;
+; On Entry:
+;     ZP_IWA (&2A): one factor
+;     (ZP_STACK_PTR) (&04): the other factor on the BASIC stack
+;     ZP_VAR_TYPE (&27): 4
+;
+; On Exit:
+;     ZP_IWA: the product
 .iwa_mul
     lda l002d                                                         ; 9d6d: a5 2d       .-    
     pha                                                               ; 9d6f: 48          H     
@@ -5305,7 +5330,13 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Integer remainder
 ;
-; IWA = IWA MOD the integer operand.
+; IWA = IWA MOD the integer operand. Raises "Division by zero" if the divisor is zero.
+;
+; On Entry:
+;     ZP_IWA (&2A): the dividend
+;
+; On Exit:
+;     ZP_IWA: the remainder
 ; &9e01 referenced 1 time by &9dde
 .iwa_mod
     jsr sub_c99be                                                     ; 9e01: 20 be 99     ..   
@@ -5315,7 +5346,13 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Integer divide
 ;
-; IWA = IWA DIV the integer operand.
+; IWA = IWA DIV the integer operand. Raises "Division by zero" if the divisor is zero.
+;
+; On Entry:
+;     ZP_IWA (&2A): the dividend
+;
+; On Exit:
+;     ZP_IWA: the quotient
 ; &9e0a referenced 1 time by &9de2
 .iwa_div
     jsr sub_c99be                                                     ; 9e0a: 20 be 99     ..   
@@ -5455,8 +5492,17 @@ l848a = sub_c847b+15
 ; Convert the current value to an ASCII number
 ;
 ; Convert the integer (IWA) or real (FWA) value to an ASCII string in the string work
-; area, in decimal or hex per the radix flag (&15) and the @% print format. Underlies
-; PRINT and STR$. Returns the length in zp_strbuf_len.
+; area, in decimal or hex per the radix flag and the @% print format. Underlies PRINT and
+; STR$.
+;
+; On Entry:
+;     ZP_PRINT_FLAG (&15): 0 for decimal, -1 for hexadecimal
+;     @% (&0400): print format fields
+;     Y: &FF
+;
+; On Exit:
+;     STRING WORK AREA (&0600): the ASCII result
+;     ZP_STRBUF_LEN (&36): length of the result
 ; &9edf referenced 2 times by &8dfb, &b0b9
 .number_to_ascii
     ldx l0402                                                         ; 9edf: ae 02 04    ...   
@@ -7704,9 +7750,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Convert an ASCII number to a value
 ;
-; Convert the ASCII number in the string work area (length in zp_strbuf_len) to a value:
-; an integer in IWA or a real in FWA. On exit A and zp_var_type indicate the type (&40
-; integer, &FF real). Underlies VAL and numeric tokenising.
+; Convert the ASCII number in the string work area to a value: an integer in IWA or a
+; real in FWA. Underlies VAL and numeric tokenising. A binary zero is appended to the
+; SWA.
+;
+; On Entry:
+;     ZP_STRBUF_LEN (&36): length of the ASCII number in the SWA
+;     STRING WORK AREA (&0600): the ASCII number
+;
+; On Exit:
+;     ZP_IWA / ZP_FWA: the result (integer or real)
+;     A, ZP_VAR_TYPE (&27): type: &40 = integer, &FF = real
 ; &ac34 referenced 1 time by &bad3
 .ascii_to_number
     ldy zp_strbuf_len                                                 ; ac34: a4 36       .6    
@@ -7912,6 +7966,13 @@ l848a = sub_c847b+15
 ; Make the integer accumulator positive
 ;
 ; IWA = ABS(IWA).
+;
+; On Entry:
+;     ZP_IWA (&2A): 32-bit integer
+;
+; On Exit:
+;     ZP_IWA: made positive
+;     X: preserved
 ; &ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80
 .iwa_abs
     bit l002d                                                         ; ad71: 24 2d       $-    
@@ -7950,6 +8011,13 @@ l848a = sub_c847b+15
 ; Negate the integer accumulator
 ;
 ; IWA = -IWA (two's-complement negate the 32-bit integer).
+;
+; On Entry:
+;     ZP_IWA (&2A): 32-bit integer
+;
+; On Exit:
+;     ZP_IWA: negated
+;     X: preserved (A, Y, P destroyed)
 ; &ad93 referenced 3 times by &9dc3, &a2c8, &ad73
 .iwa_negate
     sec                                                               ; ad93: 38          8     
@@ -8192,6 +8260,13 @@ l848a = sub_c847b+15
 ; Set the integer accumulator to a small integer
 ;
 ; IWA = 256*Y + A.
+;
+; On Entry:
+;     A: low byte
+;     Y: high byte
+;
+; On Exit:
+;     ZP_IWA: 256*Y + A (sign-extended)
 ; &aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351
 .iwa_from_ya
     sta zp_iwa                                                        ; aeea: 85 2a       .*    
@@ -8268,7 +8343,7 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Load a zero-page integer variable into the accumulator
 ;
-; Copy a 4-byte integer from zero page into IWA.
+; Copy a 4-byte integer from a zero-page location into IWA.
 ; &af56 referenced 2 times by &9dbd, &b326
 .iwa_load_zp
     lda zp_lomem,x                                                    ; af56: b5 00       ..    
@@ -8916,7 +8991,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Load an integer variable into the accumulator
 ;
-; Copy a 4-byte integer variable into IWA.
+; Copy the 4-byte integer addressed by zp_iwa into IWA.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): a pointer to the 4-byte integer variable
+;
+; On Exit:
+;     ZP_IWA: the loaded integer
+;     X: preserved
 .iwa_load_var
     ldy #3                                                            ; b336: a0 03       ..    
     lda (zp_iwa),y                                                    ; b338: b1 2a       .*    
@@ -9165,7 +9247,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Store the accumulator into an integer variable
 ;
-; Copy IWA into a 4-byte integer variable.
+; Copy IWA into the 4-byte integer variable addressed by &37.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): a pointer to the integer variable
+;     &39: non-zero
+;
+; On Exit:
+;     X: preserved
 ; &b4c6 referenced 1 time by &b4c1
 .iwa_store_var
     ldy #0                                                            ; b4c6: a0 00       ..    

@@ -526,36 +526,65 @@ d.subroutine(
     0xad93, 'iwa_negate',
     title='Negate the integer accumulator',
     description='IWA = -IWA (two\'s-complement negate the 32-bit integer).',
+    on_entry={'zp_iwa (&2A)': '32-bit integer'},
+    on_exit={'zp_iwa': 'negated', 'X': 'preserved (A, Y, P destroyed)'},
 )
 d.subroutine(
     0xad71, 'iwa_abs',
     title='Make the integer accumulator positive',
     description='IWA = ABS(IWA).',
+    on_entry={'zp_iwa (&2A)': '32-bit integer'},
+    on_exit={'zp_iwa': 'made positive', 'X': 'preserved'},
 )
 d.subroutine(
     0x9c5b, 'iwa_add',
     title='Integer add',
-    description='IWA = IWA + the integer operand.',
+    description='IWA = IWA + the integer operand on the BASIC stack.',
+    on_entry={
+        'zp_iwa (&2A)': 'one 32-bit operand',
+        '(zp_stack_ptr) (&04)': 'the other operand on the BASIC stack',
+        'X': '4',
+    },
+    on_exit={'zp_iwa': 'the sum'},
 )
 d.subroutine(
     0x9cc2, 'iwa_rsub',
     title='Reverse integer subtract',
-    description='IWA = operand - IWA.',
+    description='IWA = stacked operand - IWA.',
+    on_entry={
+        'zp_iwa (&2A)': 'the subtrahend',
+        '(zp_stack_ptr) (&04)': 'the minuend on the BASIC stack',
+        'X': '4',
+    },
+    on_exit={'zp_iwa': 'operand - IWA'},
 )
 d.subroutine(
     0x9d6d, 'iwa_mul',
     title='Integer multiply',
-    description='IWA = IWA * the integer operand.',
+    description="""IWA = IWA * the stacked operand. A product wider than
+&FFFF is truncated to 16 significant bits.""",
+    on_entry={
+        'zp_iwa (&2A)': 'one factor',
+        '(zp_stack_ptr) (&04)': 'the other factor on the BASIC stack',
+        'zp_var_type (&27)': '4',
+    },
+    on_exit={'zp_iwa': 'the product'},
 )
 d.subroutine(
     0x9e0a, 'iwa_div',
     title='Integer divide',
-    description='IWA = IWA DIV the integer operand.',
+    description="""IWA = IWA DIV the integer operand. Raises "Division by
+zero" if the divisor is zero.""",
+    on_entry={'zp_iwa (&2A)': 'the dividend'},
+    on_exit={'zp_iwa': 'the quotient'},
 )
 d.subroutine(
     0x9e01, 'iwa_mod',
     title='Integer remainder',
-    description='IWA = IWA MOD the integer operand.',
+    description="""IWA = IWA MOD the integer operand. Raises "Division by
+zero" if the divisor is zero.""",
+    on_entry={'zp_iwa (&2A)': 'the dividend'},
+    on_exit={'zp_iwa': 'the remainder'},
 )
 d.subroutine(
     0x9aad, 'iwa_test_var',
@@ -566,21 +595,30 @@ d.subroutine(
     0xaeea, 'iwa_from_ya',
     title='Set the integer accumulator to a small integer',
     description='IWA = 256*Y + A.',
+    on_entry={'A': 'low byte', 'Y': 'high byte'},
+    on_exit={'zp_iwa': '256*Y + A (sign-extended)'},
 )
 d.subroutine(
     0xb336, 'iwa_load_var',
     title='Load an integer variable into the accumulator',
-    description='Copy a 4-byte integer variable into IWA.',
+    description='Copy the 4-byte integer addressed by zp_iwa into IWA.',
+    on_entry={'zp_iwa (&2A/&2B)': 'a pointer to the 4-byte integer variable'},
+    on_exit={'zp_iwa': 'the loaded integer', 'X': 'preserved'},
 )
 d.subroutine(
     0xb4c6, 'iwa_store_var',
     title='Store the accumulator into an integer variable',
-    description='Copy IWA into a 4-byte integer variable.',
+    description='Copy IWA into the 4-byte integer variable addressed by &37.',
+    on_entry={
+        '(zp_general) (&37/&38)': 'a pointer to the integer variable',
+        '&39': 'non-zero',
+    },
+    on_exit={'X': 'preserved'},
 )
 d.subroutine(
     0xaf56, 'iwa_load_zp',
     title='Load a zero-page integer variable into the accumulator',
-    description='Copy a 4-byte integer from zero page into IWA.',
+    description='Copy a 4-byte integer from a zero-page location into IWA.',
 )
 d.subroutine(
     0xbe44, 'iwa_store_zp',
@@ -662,20 +700,35 @@ d.subroutine(0xa34e, 'fwb_unpack_var', title='Unpack a fp variable into FWB',
 d.subroutine(
     0xac34, 'ascii_to_number',
     title='Convert an ASCII number to a value',
-    description="""Convert the ASCII number in the string work area (length in
-zp_strbuf_len) to a value: an integer in IWA or a real in FWA.
-On exit A and zp_var_type indicate the type (&40 integer, &FF real).
-Underlies VAL and numeric tokenising.
+    description="""Convert the ASCII number in the string work area to a value:
+an integer in IWA or a real in FWA. Underlies VAL and numeric
+tokenising. A binary zero is appended to the SWA.
 """,
+    on_entry={
+        'zp_strbuf_len (&36)': 'length of the ASCII number in the SWA',
+        'string work area (&0600)': 'the ASCII number',
+    },
+    on_exit={
+        'zp_iwa / zp_fwa': 'the result (integer or real)',
+        'A, zp_var_type (&27)': 'type: &40 = integer, &FF = real',
+    },
 )
 d.subroutine(
     0x9edf, 'number_to_ascii',
     title='Convert the current value to an ASCII number',
     description="""Convert the integer (IWA) or real (FWA) value to an ASCII
 string in the string work area, in decimal or hex per the radix
-flag (&15) and the @% print format. Underlies PRINT and STR$.
-Returns the length in zp_strbuf_len.
+flag and the @% print format. Underlies PRINT and STR$.
 """,
+    on_entry={
+        'zp_print_flag (&15)': '0 for decimal, -1 for hexadecimal',
+        '@% (&0400)': 'print format fields',
+        'Y': '&FF',
+    },
+    on_exit={
+        'string work area (&0600)': 'the ASCII result',
+        'zp_strbuf_len (&36)': 'length of the result',
+    },
 )
 d.subroutine(
     0xa3e4, 'fwa_to_int',
