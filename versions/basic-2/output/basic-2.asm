@@ -7708,6 +7708,10 @@ l848a = sub_c847b+15
 ; &ab32 referenced 1 time by &ab26
 .return_29
     rts                                                               ; ab32: 60          `     
+; ***************************************************************************************
+; ADVAL
+;
+; Read an analogue (A/D) channel or a buffer status. ADVAL numeric.
 .fn_adval
     jsr sub_c92e3                                                     ; ab33: 20 e3 92     ..   
     ldx zp_iwa                                                        ; ab36: a6 2a       .*    
@@ -7715,6 +7719,10 @@ l848a = sub_c847b+15
     jsr osbyte                                                        ; ab3a: 20 f4 ff     ..      ; Read ADC channel X or buffer status
     txa                                                               ; ab3d: 8a          .     
     jmp iwa_from_ya                                                   ; ab3e: 4c ea ae    L..   
+; ***************************************************************************************
+; POINT
+;
+; Logical colour of a graphics point. POINT(x, y).
 .fn_point
     jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..   
     jsr stack_integer                                                 ; ab44: 20 94 bd     ..   
@@ -7736,11 +7744,19 @@ l848a = sub_c847b+15
     lda zp_fwa                                                        ; ab66: a5 2e       ..    
     bmi cab9d                                                         ; ab68: 30 33       03    
     jmp caed8                                                         ; ab6a: 4c d8 ae    L..   
+; ***************************************************************************************
+; POS
+;
+; Horizontal text-cursor position in the window. POS.
 .fn_pos
     lda #osbyte_read_text_cursor_pos                                  ; ab6d: a9 86       ..    
     jsr osbyte                                                        ; ab6f: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
     txa                                                               ; ab72: 8a          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
     jmp caed8                                                         ; ab73: 4c d8 ae    L..   
+; ***************************************************************************************
+; VPOS
+;
+; Vertical text-cursor position in the window. VPOS.
 .fn_vpos
     lda #osbyte_read_text_cursor_pos                                  ; ab76: a9 86       ..    
     jsr osbyte                                                        ; ab78: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
@@ -7752,6 +7768,10 @@ l848a = sub_c847b+15
     beq caba2                                                         ; ab82: f0 1e       ..    
     bpl caba0                                                         ; ab84: 10 1a       ..    
     bmi cab9d                                                         ; ab86: 30 15       0.    
+; ***************************************************************************************
+; SGN
+;
+; Sign of a number: -1, 0 or +1. SGN numeric.
 .fn_sgn
     jsr eval_factor                                                   ; ab88: 20 ec ad     ..   
     beq cabe6                                                         ; ab8b: f0 59       .Y    
@@ -7818,6 +7838,10 @@ l848a = sub_c847b+15
     inc l0030                                                         ; abce: e6 30       .0    
     tay                                                               ; abd0: a8          .     
     rts                                                               ; abd1: 60          `     
+; ***************************************************************************************
+; USR
+;
+; Call machine code and return the result registers packed into a value. USR address.
 .fn_usr
     jsr sub_c92e3                                                     ; abd2: 20 e3 92     ..   
     jsr sub_c8f1e                                                     ; abd5: 20 1e 8f     ..   
@@ -7833,6 +7857,10 @@ l848a = sub_c847b+15
 ; &abe6 referenced 2 times by &ab8b, &abec
 .cabe6
     jmp c8c0e                                                         ; abe6: 4c 0e 8c    L..   
+; ***************************************************************************************
+; EVAL
+;
+; Evaluate a string as a BASIC expression. EVAL string.
 .fn_eval
     jsr eval_factor                                                   ; abe9: 20 ec ad     ..   
     bne cabe6                                                         ; abec: d0 f8       ..    
@@ -7875,6 +7903,10 @@ l848a = sub_c847b+15
     sta zp_text_ptr2                                                  ; ac2a: 85 19       ..    
     lda zp_var_type                                                   ; ac2c: a5 27       .'    
     rts                                                               ; ac2e: 60          `     
+; ***************************************************************************************
+; VAL
+;
+; Number parsed from the start of a string. VAL string.
 .fn_val
     jsr eval_factor                                                   ; ac2f: 20 ec ad     ..   
     bne cac9b                                                         ; ac32: d0 67       .g    
@@ -7931,6 +7963,10 @@ l848a = sub_c847b+15
 .cac73
     sta zp_var_type                                                   ; ac73: 85 27       .'    
     jmp cac23                                                         ; ac75: 4c 23 ac    L#.   
+; ***************************************************************************************
+; INT
+;
+; Integer part (floor) of a number. INT numeric.
 .fn_int
     jsr eval_factor                                                   ; ac78: 20 ec ad     ..   
     beq cac9b                                                         ; ac7b: f0 1e       ..    
@@ -7956,6 +7992,10 @@ l848a = sub_c847b+15
 ; &ac9b referenced 5 times by &ac32, &ac7b, &aca1, &ace5, &acf3
 .cac9b
     jmp c8c0e                                                         ; ac9b: 4c 0e 8c    L..   
+; ***************************************************************************************
+; ASC
+;
+; ASCII code of the first character of a string, or -1 if empty. ASC string.
 .fn_asc
     jsr eval_factor                                                   ; ac9e: 20 ec ad     ..   
     bne cac9b                                                         ; aca1: d0 f8       ..    
@@ -7965,12 +8005,20 @@ l848a = sub_c847b+15
 ; &acaa referenced 1 time by &acc2
 .loop_cacaa
     jmp caed8                                                         ; acaa: 4c d8 ae    L..   
+; ***************************************************************************************
+; INKEY
+;
+; Read a key within a time limit, test a key, or read the machine ID. INKEY numeric.
 .fn_inkey
     jsr sub_cafad                                                     ; acad: 20 ad af     ..   
     cpy #0                                                            ; acb0: c0 00       ..    
     bne fn_true                                                       ; acb2: d0 10       ..    
     txa                                                               ; acb4: 8a          .     
     jmp iwa_from_ya                                                   ; acb5: 4c ea ae    L..   
+; ***************************************************************************************
+; EOF
+;
+; TRUE when at the end of an open file. EOF#channel.
 .fn_eof
     jsr sub_cbfb5                                                     ; acb8: 20 b5 bf     ..   
     tax                                                               ; acbb: aa          .     
@@ -7978,6 +8026,10 @@ l848a = sub_c847b+15
     jsr osbyte                                                        ; acbe: 20 f4 ff     ..      ; Check for end-of-file on file handle Y
     txa                                                               ; acc1: 8a          .        ; X=0 means EOF reached, X=&FF means data remaining
     beq loop_cacaa                                                    ; acc2: f0 e6       ..    
+; ***************************************************************************************
+; TRUE
+;
+; The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive.
 ; &acc4 referenced 3 times by &ab9d, &aca5, &acb2
 .fn_true
     lda #&ff                                                          ; acc4: a9 ff       ..    
@@ -7987,6 +8039,10 @@ l848a = sub_c847b+15
     sta l002d                                                         ; accc: 85 2d       .-    
     lda #&40 ; '@'                                                    ; acce: a9 40       .@    
     rts                                                               ; acd0: 60          `     
+; ***************************************************************************************
+; NOT
+;
+; Bitwise NOT (one's complement) of an integer. NOT numeric.
 .fn_not
     jsr sub_c92e3                                                     ; acd1: 20 e3 92     ..   
     ldx #3                                                            ; acd4: a2 03       ..    
@@ -7999,6 +8055,10 @@ l848a = sub_c847b+15
     bpl loop_cacd6                                                    ; acdd: 10 f7       ..    
     lda #&40 ; '@'                                                    ; acdf: a9 40       .@    
     rts                                                               ; ace1: 60          `     
+; ***************************************************************************************
+; INSTR
+;
+; Position of one string within another, optionally from a start. INSTR(a$, b$ [,n]).
 .fn_instr
     jsr sub_c9b29                                                     ; ace2: 20 29 9b     ).   
     bne cac9b                                                         ; ace5: d0 b4       ..    
@@ -8089,6 +8149,10 @@ l848a = sub_c847b+15
 ; &ad67 referenced 2 times by &ad6d, &ad8f
 .cad67
     jmp c8c0e                                                         ; ad67: 4c 0e 8c    L..   
+; ***************************************************************************************
+; ABS
+;
+; Absolute value of a number. ABS numeric.
 .fn_abs
     jsr eval_factor                                                   ; ad6a: 20 ec ad     ..   
     beq cad67                                                         ; ad6d: f0 f8       ..    
@@ -8351,6 +8415,10 @@ l848a = sub_c847b+15
     equb &1c                                                          ; aeab: 1c          .     
     equs "Bad HEX"                                                    ; aeac: 42 61 64... Bad...
     equb &00                                                          ; aeb3: 00          .     
+; ***************************************************************************************
+; =TIME
+;
+; Read the centisecond elapsed-time clock. TIME.
 .fn_time
     ldx #<(zp_iwa)                                                    ; aeb4: a2 2a       .*    
     ldy #>(zp_iwa)                                                    ; aeb6: a0 00       ..    
@@ -8358,6 +8426,10 @@ l848a = sub_c847b+15
     jsr osword                                                        ; aeba: 20 f1 ff     ..      ; Read system clock
     lda #&40 ; '@'                                                    ; aebd: a9 40       .@    
     rts                                                               ; aebf: 60          `     
+; ***************************************************************************************
+; =PAGE
+;
+; Read PAGE, the start of the BASIC program. PAGE.
 .fn_page
     lda #0                                                            ; aec0: a9 00       ..    
     ldy zp_page                                                       ; aec2: a4 18       ..    
@@ -8365,12 +8437,20 @@ l848a = sub_c847b+15
 ; &aec7 referenced 1 time by &aee2
 .loop_caec7
     jmp cae43                                                         ; aec7: 4c 43 ae    LC.   
+; ***************************************************************************************
+; FALSE
+;
+; The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive.
 .fn_false
     lda #0                                                            ; aeca: a9 00       ..    
     beq caed8                                                         ; aecc: f0 0a       ..    
 ; &aece referenced 1 time by &aed4
 .loop_caece
     jmp c8c0e                                                         ; aece: 4c 0e 8c    L..   
+; ***************************************************************************************
+; LEN
+;
+; Length of a string. LEN string.
 .fn_len
     jsr eval_factor                                                   ; aed1: 20 ec ad     ..   
     bne loop_caece                                                    ; aed4: d0 f8       ..    
@@ -8379,6 +8459,11 @@ l848a = sub_c847b+15
 .caed8
     ldy #0                                                            ; aed8: a0 00       ..    
     beq iwa_from_ya                                                   ; aeda: f0 0e       ..    
+; ***************************************************************************************
+; TO
+;
+; The TO keyword of FOR. It has no standalone action; reaching it as a statement token is
+; an error.
 .fn_to
     ldy zp_text_ptr2_off                                              ; aedc: a4 1b       ..    
     lda (zp_text_ptr2),y                                              ; aede: b1 19       ..    
@@ -8407,13 +8492,25 @@ l848a = sub_c847b+15
     sta l002d                                                         ; aef2: 85 2d       .-    
     lda #&40 ; '@'                                                    ; aef4: a9 40       .@    
     rts                                                               ; aef6: 60          `     
+; ***************************************************************************************
+; COUNT
+;
+; Characters printed since the last newline. COUNT.
 .fn_count
     lda zp_count                                                      ; aef7: a5 1e       ..    
     jmp caed8                                                         ; aef9: 4c d8 ae    L..   
+; ***************************************************************************************
+; =LOMEM
+;
+; Read LOMEM, the start of variable storage. LOMEM.
 .fn_lomem
     lda zp_lomem                                                      ; aefc: a5 00       ..    
     ldy l0001                                                         ; aefe: a4 01       ..    
     jmp iwa_from_ya                                                   ; af00: 4c ea ae    L..   
+; ***************************************************************************************
+; =HIMEM
+;
+; Read HIMEM, the top of memory for BASIC. HIMEM.
 .fn_himem
     lda zp_himem                                                      ; af03: a5 06       ..    
     ldy l0007                                                         ; af05: a4 07       ..    
@@ -8459,6 +8556,10 @@ l848a = sub_c847b+15
     lda #&40 ; '@'                                                    ; af44: a9 40       .@    
     sta l0011                                                         ; af46: 85 11       ..    
     rts                                                               ; af48: 60          `     
+; ***************************************************************************************
+; RND
+;
+; Random number; the form depends on the argument (see rnd_*). RND[(numeric)].
 .fn_rnd
     ldy zp_text_ptr2_off                                              ; af49: a4 1b       ..    
     lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..    
@@ -8535,10 +8636,18 @@ l848a = sub_c847b+15
     dey                                                               ; af9b: 88          .     
     bne loop_caf89                                                    ; af9c: d0 eb       ..    
     rts                                                               ; af9e: 60          `     
+; ***************************************************************************************
+; ERL
+;
+; Line number where the last error occurred. ERL.
 .fn_erl
     ldy l0009                                                         ; af9f: a4 09       ..    
     lda zp_erl                                                        ; afa1: a5 08       ..    
     jmp iwa_from_ya                                                   ; afa3: 4c ea ae    L..   
+; ***************************************************************************************
+; ERR
+;
+; Error number of the last error. ERR.
 .fn_err
     ldy #0                                                            ; afa6: a0 00       ..    
     lda (l00fd),y                                                     ; afa8: b1 fd       ..    
@@ -8550,9 +8659,17 @@ l848a = sub_c847b+15
     ldx zp_iwa                                                        ; afb2: a6 2a       .*    
     ldy l002b                                                         ; afb4: a4 2b       .+    
     jmp osbyte                                                        ; afb6: 4c f4 ff    L..      ; INKEY: Scan for a key with positive X, or read internal key number EOR 128 for negative X
+; ***************************************************************************************
+; GET
+;
+; Wait for a key and return its ASCII code. GET.
 .fn_get
     jsr osrdch                                                        ; afb9: 20 e0 ff     ..      ; X=ASCII code typed (positive timeout) or internal key number EOR 128 (negative scan) / Y=0 if a key was pressed, Y=&FF on time-out, Y=&1B on Escape
     jmp caed8                                                         ; afbc: 4c d8 ae    L..   
+; ***************************************************************************************
+; GET$
+;
+; Read a key as a one-character string, or a byte / line from a file. GET$[#channel].
 .fn_gets
     jsr osrdch                                                        ; afbf: 20 e0 ff     ..   
 ; &afc2 referenced 2 times by &b02c, &b3c2
@@ -8562,6 +8679,10 @@ l848a = sub_c847b+15
     sta zp_strbuf_len                                                 ; afc7: 85 36       .6    
     lda #0                                                            ; afc9: a9 00       ..    
     rts                                                               ; afcb: 60          `     
+; ***************************************************************************************
+; LEFT$
+;
+; Leftmost n characters of a string. LEFT$(string, n).
 .fn_lefts
     jsr sub_c9b29                                                     ; afcc: 20 29 9b     ).   
     bne cb033                                                         ; afcf: d0 62       .b    
@@ -8580,6 +8701,10 @@ l848a = sub_c847b+15
 .cafeb
     lda #0                                                            ; afeb: a9 00       ..    
     rts                                                               ; afed: 60          `     
+; ***************************************************************************************
+; RIGHT$
+;
+; Rightmost n characters of a string. RIGHT$(string, n).
 .fn_rights
     jsr sub_c9b29                                                     ; afee: 20 29 9b     ).   
     bne cb033                                                         ; aff1: d0 40       .@    
@@ -8614,6 +8739,10 @@ l848a = sub_c847b+15
 ; &b025 referenced 2 times by &b00c, &b013
 .return_31
     rts                                                               ; b025: 60          `     
+; ***************************************************************************************
+; INKEY$
+;
+; Read a key within a time limit as a string. INKEY$ numeric.
 .fn_inkeys
     jsr sub_cafad                                                     ; b026: 20 ad af     ..   
     txa                                                               ; b029: 8a          .     
@@ -8630,6 +8759,10 @@ l848a = sub_c847b+15
 ; &b036 referenced 4 times by &afd3, &aff5, &b040, &b059
 .cb036
     jmp c8aa2                                                         ; b036: 4c a2 8a    L..   
+; ***************************************************************************************
+; MID$
+;
+; Substring from a start position. MID$(string, start [,length]).
 .fn_mids
     jsr sub_c9b29                                                     ; b039: 20 29 9b     ).   
     bne cb033                                                         ; b03c: d0 f5       ..    
@@ -8686,6 +8819,10 @@ l848a = sub_c847b+15
     sty zp_strbuf_len                                                 ; b08f: 84 36       .6    
     lda #0                                                            ; b091: a9 00       ..    
     rts                                                               ; b093: 60          `     
+; ***************************************************************************************
+; STR$
+;
+; String form of a number (STR$~ for hex). STR$[~] numeric.
 .fn_strs
     jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..   
     ldy #&ff                                                          ; b097: a0 ff       ..    
@@ -8716,6 +8853,10 @@ l848a = sub_c847b+15
 ; &b0bf referenced 2 times by &b0a6, &b0ce
 .cb0bf
     jmp c8c0e                                                         ; b0bf: 4c 0e 8c    L..   
+; ***************************************************************************************
+; STRING$
+;
+; A string repeated n times. STRING$(n, string).
 .fn_strings
     jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..   
     jsr stack_integer                                                 ; b0c5: 20 94 bd     ..   
@@ -8849,6 +8990,10 @@ l848a = sub_c847b+15
     equb &1e                                                          ; b18b: 1e          .     
     equs "Bad call"                                                   ; b18c: 42 61 64... Bad...
     equb &00                                                          ; b194: 00          .     
+; ***************************************************************************************
+; FN
+;
+; Call a user-defined function and return its value. FNname[(params)].
 .fn_fn
     lda #&a4                                                          ; b195: a9 a4       ..    
 ; &b197 referenced 1 time by &9312
@@ -9224,6 +9369,10 @@ l848a = sub_c847b+15
 .cb3ba
     sty zp_strbuf_len                                                 ; b3ba: 84 36       .6    
     rts                                                               ; b3bc: 60          `     
+; ***************************************************************************************
+; CHR$
+;
+; One-character string for an ASCII code. CHR$ numeric.
 .fn_chrs
     jsr sub_c92e3                                                     ; b3bd: 20 e3 92     ..   
 ; &b3c0 referenced 1 time by &b3a9
@@ -11153,8 +11302,16 @@ l848a = sub_c847b+15
     lda #1                                                            ; bf3e: a9 01       ..    
     jsr osargs                                                        ; bf40: 20 da ff     ..      ; Write sequential file pointer from zero page address X (A=1)
     jmp statement_loop                                                ; bf43: 4c 9b 8b    L..   
+; ***************************************************************************************
+; EXT
+;
+; Length (extent) of an open file. EXT#channel.
 .fn_ext
     sec                                                               ; bf46: 38          8     
+; ***************************************************************************************
+; =PTR
+;
+; Read the sequential pointer of an open file. PTR#channel.
 .fn_ptr
     lda #0                                                            ; bf47: a9 00       ..    
     rol a                                                             ; bf49: 2a          *     
@@ -11181,16 +11338,32 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; bf67: a5 2a       .*    
     jsr osbput                                                        ; bf69: 20 d4 ff     ..   
     jmp statement_loop                                                ; bf6c: 4c 9b 8b    L..   
+; ***************************************************************************************
+; BGET
+;
+; Read a byte from an open file. BGET#channel.
 .fn_bget
     jsr sub_cbfb5                                                     ; bf6f: 20 b5 bf     ..   
     jsr osbget                                                        ; bf72: 20 d7 ff     ..   
     jmp caed8                                                         ; bf75: 4c d8 ae    L..   
+; ***************************************************************************************
+; OPENIN
+;
+; Open a file for input, returning its channel (0 if not found). OPENIN string.
 .fn_openin
     lda #&40 ; '@'                                                    ; bf78: a9 40       .@    
     bne cbf82                                                         ; bf7a: d0 06       ..    
+; ***************************************************************************************
+; OPENOUT
+;
+; Create a file for output, returning its channel. OPENOUT string.
 .fn_openout
     lda #&80                                                          ; bf7c: a9 80       ..    
     bne cbf82                                                         ; bf7e: d0 02       ..    
+; ***************************************************************************************
+; OPENUP
+;
+; Open a file for update (read and write), returning its channel. OPENUP string.
 .fn_openup
     lda #&c0                                                          ; bf80: a9 c0       ..    
 ; &bf82 referenced 2 times by &bf7a, &bf7e

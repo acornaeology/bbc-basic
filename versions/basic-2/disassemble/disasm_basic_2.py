@@ -317,6 +317,82 @@ HANDLER_INFO = {
     'fn_rad': ('RAD', 'FWA = FWA degrees expressed in radians. '
                       'Pure routine at &ABB4.'),
     'fn_pi': ('PI', 'FWA = pi (3.14159265). Takes no argument.'),
+    # Non-maths function handlers.
+    'fn_abs': ('ABS', 'Absolute value of a number. ABS numeric.'),
+    'fn_int': ('INT', 'Integer part (floor) of a number. INT numeric.'),
+    'fn_sgn': ('SGN', 'Sign of a number: -1, 0 or +1. SGN numeric.'),
+    'fn_not': ('NOT', 'Bitwise NOT (one\'s complement) of an integer. '
+                      'NOT numeric.'),
+    'fn_true': ('TRUE', 'The constant TRUE (-1). Sets IWA = -1; this is '
+                        'also the ineg1 integer primitive.'),
+    'fn_false': ('FALSE', 'The constant FALSE (0). Sets IWA = 0; this is '
+                          'also the izero integer primitive.'),
+    'fn_to': ('TO', 'The TO keyword of FOR. It has no standalone action; '
+                    'reaching it as a statement token is an error.'),
+    'fn_asc': ('ASC', 'ASCII code of the first character of a string, or '
+                      '-1 if empty. ASC string.'),
+    'fn_len': ('LEN', 'Length of a string. LEN string.'),
+    'fn_val': ('VAL', 'Number parsed from the start of a string. '
+                      'VAL string.'),
+    'fn_eval': ('EVAL', 'Evaluate a string as a BASIC expression. '
+                        'EVAL string.'),
+    'fn_instr': ('INSTR', 'Position of one string within another, '
+                          'optionally from a start. INSTR(a$, b$ [,n]).'),
+    'fn_count': ('COUNT', 'Characters printed since the last newline. '
+                          'COUNT.'),
+    'fn_pos': ('POS', 'Horizontal text-cursor position in the window. POS.'),
+    'fn_vpos': ('VPOS', 'Vertical text-cursor position in the window. VPOS.'),
+    'fn_point': ('POINT', 'Logical colour of a graphics point. '
+                          'POINT(x, y).'),
+    'fn_erl': ('ERL', 'Line number where the last error occurred. ERL.'),
+    'fn_err': ('ERR', 'Error number of the last error. ERR.'),
+    'fn_get': ('GET', 'Wait for a key and return its ASCII code. GET.'),
+    'fn_inkey': ('INKEY', 'Read a key within a time limit, test a key, or '
+                          'read the machine ID. INKEY numeric.'),
+    'fn_adval': ('ADVAL', 'Read an analogue (A/D) channel or a buffer '
+                          'status. ADVAL numeric.'),
+    'fn_usr': ('USR', 'Call machine code and return the result registers '
+                      'packed into a value. USR address.'),
+    'fn_rnd': ('RND', 'Random number; the form depends on the argument '
+                      '(see rnd_*). RND[(numeric)].'),
+    # File functions.
+    'fn_openin': ('OPENIN', 'Open a file for input, returning its channel '
+                            '(0 if not found). OPENIN string.'),
+    'fn_openout': ('OPENOUT', 'Create a file for output, returning its '
+                              'channel. OPENOUT string.'),
+    'fn_openup': ('OPENUP', 'Open a file for update (read and write), '
+                            'returning its channel. OPENUP string.'),
+    'fn_bget': ('BGET', 'Read a byte from an open file. BGET#channel.'),
+    'fn_ext': ('EXT', 'Length (extent) of an open file. EXT#channel.'),
+    'fn_eof': ('EOF', 'TRUE when at the end of an open file. EOF#channel.'),
+    # Pseudo-variable reads (the assignment forms are the stmt_* twins).
+    'fn_ptr': ('=PTR', 'Read the sequential pointer of an open file. '
+                       'PTR#channel.'),
+    'fn_page': ('=PAGE', 'Read PAGE, the start of the BASIC program. PAGE.'),
+    'fn_time': ('=TIME', 'Read the centisecond elapsed-time clock. TIME.'),
+    'fn_lomem': ('=LOMEM', 'Read LOMEM, the start of variable storage. '
+                           'LOMEM.'),
+    'fn_himem': ('=HIMEM', 'Read HIMEM, the top of memory for BASIC. '
+                           'HIMEM.'),
+    # String functions.
+    'fn_chrs': ('CHR$', 'One-character string for an ASCII code. '
+                        'CHR$ numeric.'),
+    'fn_strs': ('STR$', 'String form of a number (STR$~ for hex). '
+                        'STR$[~] numeric.'),
+    'fn_strings': ('STRING$', 'A string repeated n times. '
+                              'STRING$(n, string).'),
+    'fn_lefts': ('LEFT$', 'Leftmost n characters of a string. '
+                          'LEFT$(string, n).'),
+    'fn_rights': ('RIGHT$', 'Rightmost n characters of a string. '
+                            'RIGHT$(string, n).'),
+    'fn_mids': ('MID$', 'Substring from a start position. '
+                        'MID$(string, start [,length]).'),
+    'fn_gets': ('GET$', 'Read a key as a one-character string, or a byte / '
+                        'line from a file. GET$[#channel].'),
+    'fn_inkeys': ('INKEY$', 'Read a key within a time limit as a string. '
+                            'INKEY$ numeric.'),
+    'fn_fn': ('FN', 'Call a user-defined function and return its value. '
+                    'FNname[(params)].'),
     # Statement handlers (behaviour written here; syntax forms cross-
     # checked against JGH and the BBC User Guide).
     'stmt_auto': ('AUTO', 'Generate line numbers automatically during '

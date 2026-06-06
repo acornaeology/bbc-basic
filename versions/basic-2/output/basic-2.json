@@ -232,32 +232,46 @@
     {
       "addr": 49016,
       "name": "fn_openin",
+      "title": "OPENIN",
+      "description": "Open a file for input, returning its channel (0 if not found). OPENIN string.",
       "fall_through": true
     },
     {
       "addr": 48967,
-      "name": "fn_ptr"
+      "name": "fn_ptr",
+      "title": "=PTR",
+      "description": "Read the sequential pointer of an open file. PTR#channel."
     },
     {
       "addr": 44736,
-      "name": "fn_page"
+      "name": "fn_page",
+      "title": "=PAGE",
+      "description": "Read PAGE, the start of the BASIC program. PAGE."
     },
     {
       "addr": 44724,
-      "name": "fn_time"
+      "name": "fn_time",
+      "title": "=TIME",
+      "description": "Read the centisecond elapsed-time clock. TIME."
     },
     {
       "addr": 44796,
-      "name": "fn_lomem"
+      "name": "fn_lomem",
+      "title": "=LOMEM",
+      "description": "Read LOMEM, the start of variable storage. LOMEM."
     },
     {
       "addr": 44803,
       "name": "fn_himem",
+      "title": "=HIMEM",
+      "description": "Read HIMEM, the top of memory for BASIC. HIMEM.",
       "fall_through": true
     },
     {
       "addr": 44394,
       "name": "fn_abs",
+      "title": "ABS",
+      "description": "Absolute value of a number. ABS numeric.",
       "fall_through": true
     },
     {
@@ -268,11 +282,15 @@
     },
     {
       "addr": 43827,
-      "name": "fn_adval"
+      "name": "fn_adval",
+      "title": "ADVAL",
+      "description": "Read an analogue (A/D) channel or a buffer status. ADVAL numeric."
     },
     {
       "addr": 44190,
-      "name": "fn_asc"
+      "name": "fn_asc",
+      "title": "ASC",
+      "description": "ASCII code of the first character of a string, or -1 if empty. ASC string."
     },
     {
       "addr": 43226,
@@ -288,7 +306,9 @@
     },
     {
       "addr": 49007,
-      "name": "fn_bget"
+      "name": "fn_bget",
+      "title": "BGET",
+      "description": "Read a byte from an open file. BGET#channel."
     },
     {
       "addr": 43405,
@@ -298,7 +318,9 @@
     },
     {
       "addr": 44791,
-      "name": "fn_count"
+      "name": "fn_count",
+      "title": "COUNT",
+      "description": "Characters printed since the last newline. COUNT."
     },
     {
       "addr": 43970,
@@ -309,15 +331,21 @@
     },
     {
       "addr": 44959,
-      "name": "fn_erl"
+      "name": "fn_erl",
+      "title": "ERL",
+      "description": "Line number where the last error occurred. ERL."
     },
     {
       "addr": 44966,
-      "name": "fn_err"
+      "name": "fn_err",
+      "title": "ERR",
+      "description": "Error number of the last error. ERR."
     },
     {
       "addr": 44009,
-      "name": "fn_eval"
+      "name": "fn_eval",
+      "title": "EVAL",
+      "description": "Evaluate a string as a BASIC expression. EVAL string."
     },
     {
       "addr": 43665,
@@ -328,36 +356,52 @@
     {
       "addr": 48966,
       "name": "fn_ext",
+      "title": "EXT",
+      "description": "Length (extent) of an open file. EXT#channel.",
       "fall_through": true
     },
     {
       "addr": 44746,
-      "name": "fn_false"
+      "name": "fn_false",
+      "title": "FALSE",
+      "description": "The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive."
     },
     {
       "addr": 45461,
       "name": "fn_fn",
+      "title": "FN",
+      "description": "Call a user-defined function and return its value. FNname[(params)].",
       "fall_through": true
     },
     {
       "addr": 44985,
-      "name": "fn_get"
+      "name": "fn_get",
+      "title": "GET",
+      "description": "Wait for a key and return its ASCII code. GET."
     },
     {
       "addr": 44205,
-      "name": "fn_inkey"
+      "name": "fn_inkey",
+      "title": "INKEY",
+      "description": "Read a key within a time limit, test a key, or read the machine ID. INKEY numeric."
     },
     {
       "addr": 44258,
-      "name": "fn_instr"
+      "name": "fn_instr",
+      "title": "INSTR",
+      "description": "Position of one string within another, optionally from a start. INSTR(a$, b$ [,n])."
     },
     {
       "addr": 44152,
-      "name": "fn_int"
+      "name": "fn_int",
+      "title": "INT",
+      "description": "Integer part (floor) of a number. INT numeric."
     },
     {
       "addr": 44753,
       "name": "fn_len",
+      "title": "LEN",
+      "description": "Length of a string. LEN string.",
       "fall_through": true
     },
     {
@@ -375,15 +419,21 @@
     },
     {
       "addr": 44241,
-      "name": "fn_not"
+      "name": "fn_not",
+      "title": "NOT",
+      "description": "Bitwise NOT (one's complement) of an integer. NOT numeric."
     },
     {
       "addr": 49024,
-      "name": "fn_openup"
+      "name": "fn_openup",
+      "title": "OPENUP",
+      "description": "Open a file for update (read and write), returning its channel. OPENUP string."
     },
     {
       "addr": 49020,
       "name": "fn_openout",
+      "title": "OPENOUT",
+      "description": "Create a file for output, returning its channel. OPENOUT string.",
       "fall_through": true
     },
     {
@@ -394,11 +444,15 @@
     },
     {
       "addr": 43841,
-      "name": "fn_point"
+      "name": "fn_point",
+      "title": "POINT",
+      "description": "Logical colour of a graphics point. POINT(x, y)."
     },
     {
       "addr": 43885,
-      "name": "fn_pos"
+      "name": "fn_pos",
+      "title": "POS",
+      "description": "Horizontal text-cursor position in the window. POS."
     },
     {
       "addr": 43953,
@@ -409,11 +463,15 @@
     {
       "addr": 44873,
       "name": "fn_rnd",
+      "title": "RND",
+      "description": "Random number; the form depends on the argument (see rnd_*). RND[(numeric)].",
       "fall_through": true
     },
     {
       "addr": 43912,
-      "name": "fn_sgn"
+      "name": "fn_sgn",
+      "title": "SGN",
+      "description": "Sign of a number: -1, 0 or +1. SGN numeric."
     },
     {
       "addr": 43416,
@@ -436,61 +494,89 @@
     {
       "addr": 44764,
       "name": "fn_to",
+      "title": "TO",
+      "description": "The TO keyword of FOR. It has no standalone action; reaching it as a statement token is an error.",
       "fall_through": true
     },
     {
       "addr": 44228,
-      "name": "fn_true"
+      "name": "fn_true",
+      "title": "TRUE",
+      "description": "The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive."
     },
     {
       "addr": 43986,
-      "name": "fn_usr"
+      "name": "fn_usr",
+      "title": "USR",
+      "description": "Call machine code and return the result registers packed into a value. USR address."
     },
     {
       "addr": 44079,
       "name": "fn_val",
+      "title": "VAL",
+      "description": "Number parsed from the start of a string. VAL string.",
       "fall_through": true
     },
     {
       "addr": 43894,
       "name": "fn_vpos",
+      "title": "VPOS",
+      "description": "Vertical text-cursor position in the window. VPOS.",
       "fall_through": true
     },
     {
       "addr": 46013,
-      "name": "fn_chrs"
+      "name": "fn_chrs",
+      "title": "CHR$",
+      "description": "One-character string for an ASCII code. CHR$ numeric."
     },
     {
       "addr": 44991,
-      "name": "fn_gets"
+      "name": "fn_gets",
+      "title": "GET$",
+      "description": "Read a key as a one-character string, or a byte / line from a file. GET$[#channel]."
     },
     {
       "addr": 45094,
-      "name": "fn_inkeys"
+      "name": "fn_inkeys",
+      "title": "INKEY$",
+      "description": "Read a key within a time limit as a string. INKEY$ numeric."
     },
     {
       "addr": 45004,
-      "name": "fn_lefts"
+      "name": "fn_lefts",
+      "title": "LEFT$",
+      "description": "Leftmost n characters of a string. LEFT$(string, n)."
     },
     {
       "addr": 45113,
-      "name": "fn_mids"
+      "name": "fn_mids",
+      "title": "MID$",
+      "description": "Substring from a start position. MID$(string, start [,length])."
     },
     {
       "addr": 45038,
-      "name": "fn_rights"
+      "name": "fn_rights",
+      "title": "RIGHT$",
+      "description": "Rightmost n characters of a string. RIGHT$(string, n)."
     },
     {
       "addr": 45204,
-      "name": "fn_strs"
+      "name": "fn_strs",
+      "title": "STR$",
+      "description": "String form of a number (STR$~ for hex). STR$[~] numeric."
     },
     {
       "addr": 45250,
-      "name": "fn_strings"
+      "name": "fn_strings",
+      "title": "STRING$",
+      "description": "A string repeated n times. STRING$(n, string)."
     },
     {
       "addr": 44216,
       "name": "fn_eof",
+      "title": "EOF",
+      "description": "TRUE when at the end of an open file. EOF#channel.",
       "fall_through": true
     },
     {

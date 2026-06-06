@@ -63,9 +63,11 @@ uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
       syntax description, attached via HANDLER_INFO in the dispatch loop.
       Syntax forms cross-checked against JGH banners and the User Guide.
 - [x] Maths `fn_*` handlers described (Pharo ch. 5).
-- [ ] Remaining `fn_*` handlers (non-maths: OPENIN/PTR/PAGE reads,
-      ASC/CHR$/LEN/VAL/INSTR/GET/INKEY, EOF/EXT/COUNT, etc.).
-- [ ] Per-statement inline comments (next density pass).
+- [x] All non-maths `fn_*` handlers described (file functions, string
+      functions, pseudo-variable reads, ASC/LEN/VAL/INSTR/GET/INKEY,
+      etc.). Every distinct handler now carries a banner; DEF and REM
+      share the DATA skip-to-end handler.
+- [ ] Per-statement / per-routine inline comments (next density pass).
 
 ## Next (bottom-up, by subsystem)
 
