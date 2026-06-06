@@ -2597,13 +2597,13 @@ l848a = sub_c847b+15
 ; separators. PRINT [~][items][;][,].
 .stmt_print
     jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..   
-    cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#    
+    cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
     beq loop_c8d2b                                                    ; 8d9f: f0 8a       ..    
     dec zp_text_ptr_off                                               ; 8da1: c6 0a       ..    
     jmp c8dbb                                                         ; 8da3: 4c bb 8d    L..   
 ; &8da6 referenced 1 time by &8dd8
 .loop_c8da6
-    lda resint_at                                                     ; 8da6: ad 00 04    ...   
+    lda resint_at                                                     ; 8da6: ad 00 04    ...      ; Comma: pad with spaces to the next @% field
     beq c8dbb                                                         ; 8da9: f0 10       ..    
     lda zp_count                                                      ; 8dab: a5 1e       ..    
 ; &8dad referenced 1 time by &8db2
@@ -2620,11 +2620,11 @@ l848a = sub_c847b+15
 ; &8dbb referenced 3 times by &8da3, &8da9, &8dad
 .c8dbb
     clc                                                               ; 8dbb: 18          .     
-    lda resint_at                                                     ; 8dbc: ad 00 04    ...   
+    lda resint_at                                                     ; 8dbc: ad 00 04    ...      ; Take the field width from @% (&0400)
     sta zp_print_bytes                                                ; 8dbf: 85 14       ..    
 ; &8dc1 referenced 1 time by &8dd4
 .loop_c8dc1
-    ror zp_print_flag                                                 ; 8dc1: 66 15       f.    
+    ror zp_print_flag                                                 ; 8dc1: 66 15       f.       ; A tilde "~" switches to hexadecimal
 ; &8dc3 referenced 3 times by &8de1, &8e10, &8e1f
 .c8dc3
     jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..   
@@ -2638,18 +2638,18 @@ l848a = sub_c847b+15
 .c8dd2
     cmp #&7e ; '~'                                                    ; 8dd2: c9 7e       .~    
     beq loop_c8dc1                                                    ; 8dd4: f0 eb       ..    
-    cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,    
+    cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
     beq loop_c8da6                                                    ; 8dd8: f0 cc       ..    
-    cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;    
+    cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
     beq loop_c8d83                                                    ; 8ddc: f0 a5       ..    
-    jsr sub_c8e70                                                     ; 8dde: 20 70 8e     p.   
+    jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
     bcc c8dc3                                                         ; 8de1: 90 e0       ..    
     lda zp_print_bytes                                                ; 8de3: a5 14       ..    
     pha                                                               ; 8de5: 48          H     
     lda zp_print_flag                                                 ; 8de6: a5 15       ..    
     pha                                                               ; 8de8: 48          H     
     dec zp_text_ptr2_off                                              ; 8de9: c6 1b       ..    
-    jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).      ; Evaluate the expression to print
     pla                                                               ; 8dee: 68          h     
     sta zp_print_flag                                                 ; 8def: 85 15       ..    
     pla                                                               ; 8df1: 68          h     
@@ -2657,9 +2657,9 @@ l848a = sub_c847b+15
     lda zp_text_ptr2_off                                              ; 8df4: a5 1b       ..    
     sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..    
     tya                                                               ; 8df8: 98          .     
-    beq c8e0e                                                         ; 8df9: f0 13       ..    
-    jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..   
-    lda zp_print_bytes                                                ; 8dfe: a5 14       ..    
+    beq c8e0e                                                         ; 8df9: f0 13       ..       ; A string value: print it directly
+    jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..      ; A number: convert to an ASCII string
+    lda zp_print_bytes                                                ; 8dfe: a5 14       ..       ; and right-justify it within the field width
     sec                                                               ; 8e00: 38          8     
     sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6    
     bcc c8e0e                                                         ; 8e03: 90 09       ..    
@@ -2735,8 +2735,14 @@ l848a = sub_c847b+15
     ldy zp_text_ptr2_off                                              ; 8e6b: a4 1b       ..    
     sty zp_text_ptr_off                                               ; 8e6d: 84 0a       ..    
     rts                                                               ; 8e6f: 60          `     
+; ***************************************************************************************
+; Handle the PRINT ' TAB and SPC items
+;
+; Recognise and act on the special PRINT items: apostrophe (force a newline), TAB(x[,y])
+; and SPC(n). Returns carry clear when it consumed one, so the caller skips ordinary
+; expression printing.
 ; &8e70 referenced 2 times by &8dde, &8e8d
-.sub_c8e70
+.print_special_item
     ldx zp_text_ptr                                                   ; 8e70: a6 0b       ..    
     stx zp_text_ptr2                                                  ; 8e72: 86 19       ..    
     ldx l000c                                                         ; 8e74: a6 0c       ..    
@@ -2756,7 +2762,7 @@ l848a = sub_c847b+15
 ; &8e8a referenced 2 times by &ba5a, &ba5f
 .sub_c8e8a
     jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..   
-    jsr sub_c8e70                                                     ; 8e8d: 20 70 8e     p.   
+    jsr print_special_item                                            ; 8e8d: 20 70 8e     p.   
     bcc return_6                                                      ; 8e90: 90 f7       ..    
     cmp #&22                                                          ; 8e92: c9 22       ."    
     beq c8ea7                                                         ; 8e94: f0 11       ..    
@@ -11986,6 +11992,7 @@ save pydis_start, pydis_end
 ;     osfile:                      2
 ;     osfind:                      2
 ;     osrdch:                      2
+;     print_special_item:          2
 ;     resint_o:                    2
 ;     return_1:                    2
 ;     return_10:                   2
@@ -12002,7 +12009,6 @@ save pydis_start, pydis_end
 ;     stmt_data:                   2
 ;     sub_c887c:                   2
 ;     sub_c8c21:                   2
-;     sub_c8e70:                   2
 ;     sub_c8e8a:                   2
 ;     sub_c8f1e:                   2
 ;     sub_c8f69:                   2
@@ -13745,7 +13751,6 @@ save pydis_start, pydis_end
 ;     sub_c8955
 ;     sub_c8c21
 ;     sub_c8cc1
-;     sub_c8e70
 ;     sub_c8e8a
 ;     sub_c8f1e
 ;     sub_c8f69

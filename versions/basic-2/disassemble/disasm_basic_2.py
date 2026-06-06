@@ -1358,6 +1358,34 @@ d.comment(0x8c2b, 'Does the new string fit the existing allocation?',
           align=Align.INLINE)
 d.comment(0x8c2f, 'Otherwise allocate space from the heap', align=Align.INLINE)
 
+# --- PRINT: items, separators and @% formatting ----------------------
+# The field width and hex/decimal flag come from @% (resint_at, &0400);
+# zp_print_bytes is the current field width and zp_print_flag selects
+# hex. Items are evaluated then printed, numbers right-justified.
+d.subroutine(
+    0x8e70, 'print_special_item',
+    title="Handle the PRINT ' TAB and SPC items",
+    description="""Recognise and act on the special PRINT items: apostrophe
+(force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when
+it consumed one, so the caller skips ordinary expression printing.
+""",
+)
+d.comment(0x8d9d, 'A leading # directs output to a file (PRINT#)',
+          align=Align.INLINE)
+d.comment(0x8da6, 'Comma: pad with spaces to the next @% field',
+          align=Align.INLINE)
+d.comment(0x8dbc, 'Take the field width from @% (&0400)', align=Align.INLINE)
+d.comment(0x8dc1, 'A tilde "~" switches to hexadecimal', align=Align.INLINE)
+d.comment(0x8dd6, 'Comma: advance to the next print field', align=Align.INLINE)
+d.comment(0x8dda, 'Semicolon: print the next item with no gap',
+          align=Align.INLINE)
+d.comment(0x8dde, "Handle the ' TAB and SPC print items", align=Align.INLINE)
+d.comment(0x8deb, 'Evaluate the expression to print', align=Align.INLINE)
+d.comment(0x8df9, 'A string value: print it directly', align=Align.INLINE)
+d.comment(0x8dfb, 'A number: convert to an ASCII string', align=Align.INLINE)
+d.comment(0x8dfe, 'and right-justify it within the field width',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

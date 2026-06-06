@@ -840,8 +840,7 @@
       "addr": 36250,
       "name": "stmt_print",
       "title": "PRINT",
-      "description": "Print expressions to the screen, or a file with #, with formatting controlled by @% and separators. PRINT [~][items][;][,].",
-      "fall_through": true
+      "description": "Print expressions to the screen, or a file with #, with formatting controlled by @% and separators. PRINT [~][items][;][,]."
     },
     {
       "addr": 37636,
@@ -1554,6 +1553,13 @@
       "name": "assign_number",
       "title": "Store a numeric value into a variable",
       "description": "Assign the current numeric value (integer or real) to the\nvariable whose address is on the stack, in the variable's own type.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 36464,
+      "name": "print_special_item",
+      "title": "Handle the PRINT ' TAB and SPC items",
+      "description": "Recognise and act on the special PRINT items: apostrophe\n(force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when\nit consumed one, so the caller skips ordinary expression printing.\n",
       "fall_through": true
     }
   ],
@@ -22932,6 +22938,7 @@
         201,
         35
       ],
+      "comment_inline": "A leading # directs output to a file (PRINT#)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&23"
@@ -22983,6 +22990,7 @@
       "labels": [
         "loop_c8da6"
       ],
+      "comment_inline": "Comma: pad with spaces to the next @% field",
       "xref_summaries": [
         "&8da6 referenced 1 time by &8dd8"
       ],
@@ -23141,6 +23149,7 @@
         0,
         4
       ],
+      "comment_inline": "Take the field width from @% (&0400)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "resint_at",
@@ -23168,6 +23177,7 @@
       "labels": [
         "loop_c8dc1"
       ],
+      "comment_inline": "A tilde \"~\" switches to hexadecimal",
       "xref_summaries": [
         "&8dc1 referenced 1 time by &8dd4"
       ],
@@ -23307,6 +23317,7 @@
         201,
         44
       ],
+      "comment_inline": "Comma: advance to the next print field",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -23329,6 +23340,7 @@
         201,
         59
       ],
+      "comment_inline": "Semicolon: print the next item with no gap",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3b"
@@ -23352,11 +23364,12 @@
         112,
         142
       ],
+      "comment_inline": "Handle the ' TAB and SPC print items",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8e70",
+      "operand": "print_special_item",
       "target": 36464,
-      "target_label": "sub_c8e70"
+      "target_label": "print_special_item"
     },
     {
       "addr": 36321,
@@ -23429,6 +23442,7 @@
         41,
         155
       ],
+      "comment_inline": "Evaluate the expression to print",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -23513,6 +23527,7 @@
         240,
         19
       ],
+      "comment_inline": "A string value: print it directly",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e0e",
@@ -23526,6 +23541,7 @@
         223,
         158
       ],
+      "comment_inline": "A number: convert to an ASCII string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "number_to_ascii",
@@ -23538,6 +23554,7 @@
         165,
         20
       ],
+      "comment_inline": "and right-justify it within the field width",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_bytes",
@@ -24261,7 +24278,7 @@
         11
       ],
       "labels": [
-        "sub_c8e70"
+        "print_special_item"
       ],
       "xref_summaries": [
         "&8e70 referenced 2 times by &8dde, &8e8d"
@@ -24459,9 +24476,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8e70",
+      "operand": "print_special_item",
       "target": 36464,
-      "target_label": "sub_c8e70"
+      "target_label": "print_special_item"
     },
     {
       "addr": 36496,
