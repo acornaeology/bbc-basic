@@ -290,6 +290,35 @@ KEYWORD_HANDLERS = {
     0xff: 'oscli',
 }
 
+# Optional (title, description) for individual handlers, attached when
+# the handler is declared below. The mathematical functions (Pharo
+# ch. 5) each evaluate their argument into the floating-point
+# accumulator then fall into a pure routine (argument already in FWA)
+# a few bytes later, whose address is noted.
+HANDLER_INFO = {
+    'fn_sin': ('SIN', 'FWA = sin(FWA), argument in radians. '
+                      'Pure routine at &A99B.'),
+    'fn_cos': ('COS', 'FWA = cos(FWA), argument in radians. '
+                      'Pure routine at &A990.'),
+    'fn_tan': ('TAN', 'FWA = tan(FWA), argument in radians. '
+                      'Pure routine at &A6C1.'),
+    'fn_asn': ('ASN', 'FWA = arcsin(FWA), result in radians. '
+                      'Pure routine at &A8DD.'),
+    'fn_acs': ('ACS', 'FWA = arccos(FWA), result in radians. '
+                      'Computed as arcsin then adjusted at &A927.'),
+    'fn_atn': ('ATN', 'FWA = arctan(FWA), result in radians. '
+                      'Pure routine at &A90A.'),
+    'fn_ln': ('LN', 'FWA = natural log of FWA. Pure routine at &A801.'),
+    'fn_log': ('LOG', 'FWA = base-10 log of FWA. Pure routine at &ABAB.'),
+    'fn_exp': ('EXP', 'FWA = e to the power FWA. Pure routine at &AA94.'),
+    'fn_sqr': ('SQR', 'FWA = square root of FWA. Pure routine at &A7B7.'),
+    'fn_deg': ('DEG', 'FWA = FWA radians expressed in degrees. '
+                      'Pure routine at &ABC5.'),
+    'fn_rad': ('RAD', 'FWA = FWA degrees expressed in radians. '
+                      'Pure routine at &ABB4.'),
+    'fn_pi': ('PI', 'FWA = pi (3.14159265). Takes no argument.'),
+}
+
 d.label(ACTION_TABLE_LO, 'action_table_lo')
 d.label(ACTION_TABLE_HI, 'action_table_hi')
 
@@ -315,7 +344,11 @@ for _i in range(NUM_DISPATCH_TOKENS):
     if _target in _declared_handlers:
         continue
     _name = ('fn_' if _token <= 0xc5 else 'stmt_') + _base
-    d.subroutine(_target, _name)
+    _info = HANDLER_INFO.get(_name)
+    if _info:
+        d.subroutine(_target, _name, title=_info[0], description=_info[1])
+    else:
+        d.subroutine(_target, _name)
     _declared_handlers[_target] = _name
 
 # ----------------------------------------------------------------------
@@ -618,6 +651,78 @@ d.subroutine(0xa21e, 'fwb_copy_from_fwa', title='FWB = FWA',
              description='Copy FWA into FWB.')
 d.subroutine(0xa34e, 'fwb_unpack_var', title='Unpack a fp variable into FWB',
              description='Unpack the fp variable at (&4B/&4C) into FWB.')
+
+# ----------------------------------------------------------------------
+# Conversions (Pharo ch. 4). The interpreter converts between ASCII (in
+# the string work area, SWA, &0600; length in zp_strbuf_len, &36), the
+# integer accumulator and the floating-point accumulator. The radix
+# flag (&15) selects decimal (0) or hex (-1); the @% fields at &0400
+# control print formatting.
+# ----------------------------------------------------------------------
+d.subroutine(
+    0xac34, 'ascii_to_number',
+    title='Convert an ASCII number to a value',
+    description="""Convert the ASCII number in the string work area (length in
+zp_strbuf_len) to a value: an integer in IWA or a real in FWA.
+On exit A and zp_var_type indicate the type (&40 integer, &FF real).
+Underlies VAL and numeric tokenising.
+""",
+)
+d.subroutine(
+    0x9edf, 'number_to_ascii',
+    title='Convert the current value to an ASCII number',
+    description="""Convert the integer (IWA) or real (FWA) value to an ASCII
+string in the string work area, in decimal or hex per the radix
+flag (&15) and the @% print format. Underlies PRINT and STR$.
+Returns the length in zp_strbuf_len.
+""",
+)
+d.subroutine(
+    0xa3e4, 'fwa_to_int',
+    title='Convert the FP accumulator to an integer',
+    description='Convert FWA to a 4-byte integer in IWA (variant 1).',
+)
+d.subroutine(
+    0xa3fe, 'fwa_to_int2',
+    title='Convert the FP accumulator to an integer (variant 2)',
+    description='Convert FWA to a 4-byte integer in IWA (variant 2).',
+)
+d.subroutine(
+    0xa2be, 'int_to_fwa',
+    title='Convert the integer accumulator to floating point',
+    description='Convert the integer in IWA to a real in FWA.',
+)
+
+# ----------------------------------------------------------------------
+# Random numbers (Pharo ch. 6). RND has several forms, each a separate
+# entry reached from fn_rnd. The five-byte random work area (RWA) is
+# zp_rnd_seed (&0D-&11).
+# ----------------------------------------------------------------------
+d.subroutine(
+    0xaf51, 'rnd_integer',
+    title='RND: random 32-bit integer',
+    description='Step the generator; IWA = a full-range random integer.',
+)
+d.subroutine(
+    0xaf69, 'rnd_fraction',
+    title='RND(1): random fraction',
+    description='Step the generator; FWA = a real in 0 to 0.999999.',
+)
+d.subroutine(
+    0xaf6c, 'rnd_repeat',
+    title='RND(0): repeat the last RND(1)',
+    description='FWA = the value last returned by rnd_fraction.',
+)
+d.subroutine(
+    0xaf24, 'rnd_range',
+    title='RND(X): random integer 1 to X',
+    description='Step the generator; IWA = a random integer from 1 to X.',
+)
+d.subroutine(
+    0xaf3f, 'rnd_seed',
+    title='RND(-X): seed the generator',
+    description='Seed the random work area from X (RND(-X)).',
+)
 
 ir = d.disassemble()
 output = str(

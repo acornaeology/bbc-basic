@@ -41,12 +41,16 @@ uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
 - [x] Ch. 3 floating-point routines (FWA/FWB): clear/set_one/negate/
       normalise/round/reciprocal/copy/swap/compare, add/sub/mul/div
       variants, pack/unpack to temps and variables.
-- [ ] Ch. 4 conversions (integer<->FP<->ASCII): the `c*` routines.
-- [ ] Ch. 5 mathematical functions (SIN/COS/TAN/ATN/LOG/EXP/SQR): map
-      Pharo's algorithm notes onto the fn_* handlers.
-- [ ] Ch. 6 random numbers.
-- [ ] Per-routine entry/exit detail (Pharo ch. 2.4 / 3.6) into on_entry/
-      on_exit for the spine routines.
+- [x] Ch. 4 conversions: ascii_to_number, number_to_ascii (the shared
+      &9EDF int/FP -> decimal/hex routine), fwa_to_int/fwa_to_int2,
+      int_to_fwa.
+- [x] Ch. 5 mathematical functions: descriptions attached to the fn_*
+      handlers (SIN/COS/TAN/ASN/ACS/ATN/LN/LOG/EXP/SQR/DEG/RAD/PI), each
+      noting the pure FWA-in routine a few bytes on.
+- [x] Ch. 6 random numbers: rnd_integer/fraction/repeat/range/seed.
+- [ ] Per-routine entry/exit detail (Pharo ch. 2.4 / 3.6 / 4.3 / 5.2 /
+      6.3) into on_entry/on_exit for the spine routines (registers and
+      zero-page side effects are documented there).
 
 ## Next (bottom-up, by subsystem)
 

@@ -252,7 +252,8 @@
     },
     {
       "addr": 44803,
-      "name": "fn_himem"
+      "name": "fn_himem",
+      "fall_through": true
     },
     {
       "addr": 44394,
@@ -261,7 +262,9 @@
     },
     {
       "addr": 43220,
-      "name": "fn_acs"
+      "name": "fn_acs",
+      "title": "ACS",
+      "description": "FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927."
     },
     {
       "addr": 43827,
@@ -273,11 +276,15 @@
     },
     {
       "addr": 43226,
-      "name": "fn_asn"
+      "name": "fn_asn",
+      "title": "ASN",
+      "description": "FWA = arcsin(FWA), result in radians. Pure routine at &A8DD."
     },
     {
       "addr": 43271,
-      "name": "fn_atn"
+      "name": "fn_atn",
+      "title": "ATN",
+      "description": "FWA = arctan(FWA), result in radians. Pure routine at &A90A."
     },
     {
       "addr": 49007,
@@ -285,7 +292,9 @@
     },
     {
       "addr": 43405,
-      "name": "fn_cos"
+      "name": "fn_cos",
+      "title": "COS",
+      "description": "FWA = cos(FWA), argument in radians. Pure routine at &A990."
     },
     {
       "addr": 44791,
@@ -294,6 +303,8 @@
     {
       "addr": 43970,
       "name": "fn_deg",
+      "title": "DEG",
+      "description": "FWA = FWA radians expressed in degrees. Pure routine at &ABC5.",
       "fall_through": true
     },
     {
@@ -310,7 +321,9 @@
     },
     {
       "addr": 43665,
-      "name": "fn_exp"
+      "name": "fn_exp",
+      "title": "EXP",
+      "description": "FWA = e to the power FWA. Pure routine at &AA94."
     },
     {
       "addr": 48966,
@@ -349,11 +362,15 @@
     },
     {
       "addr": 43006,
-      "name": "fn_ln"
+      "name": "fn_ln",
+      "title": "LN",
+      "description": "FWA = natural log of FWA. Pure routine at &A801."
     },
     {
       "addr": 43944,
       "name": "fn_log",
+      "title": "LOG",
+      "description": "FWA = base-10 log of FWA. Pure routine at &ABAB.",
       "fall_through": true
     },
     {
@@ -371,7 +388,9 @@
     },
     {
       "addr": 43979,
-      "name": "fn_pi"
+      "name": "fn_pi",
+      "title": "PI",
+      "description": "FWA = pi (3.14159265). Takes no argument."
     },
     {
       "addr": 43841,
@@ -383,7 +402,9 @@
     },
     {
       "addr": 43953,
-      "name": "fn_rad"
+      "name": "fn_rad",
+      "title": "RAD",
+      "description": "FWA = FWA degrees expressed in radians. Pure routine at &ABB4."
     },
     {
       "addr": 44873,
@@ -396,15 +417,21 @@
     },
     {
       "addr": 43416,
-      "name": "fn_sin"
+      "name": "fn_sin",
+      "title": "SIN",
+      "description": "FWA = sin(FWA), argument in radians. Pure routine at &A99B."
     },
     {
       "addr": 42932,
-      "name": "fn_sqr"
+      "name": "fn_sqr",
+      "title": "SQR",
+      "description": "FWA = square root of FWA. Pure routine at &A7B7."
     },
     {
       "addr": 42686,
-      "name": "fn_tan"
+      "name": "fn_tan",
+      "title": "TAN",
+      "description": "FWA = tan(FWA), argument in radians. Pure routine at &A6C1."
     },
     {
       "addr": 44764,
@@ -421,7 +448,8 @@
     },
     {
       "addr": 44079,
-      "name": "fn_val"
+      "name": "fn_val",
+      "fall_through": true
     },
     {
       "addr": 43894,
@@ -1023,8 +1051,7 @@
       "addr": 41549,
       "name": "fwa_div10",
       "title": "FWA = FWA / 10",
-      "description": "Divide FWA by ten, unnormalised and unrounded.",
-      "fall_through": true
+      "description": "Divide FWA by ten, unnormalised and unrounded."
     },
     {
       "addr": 41869,
@@ -1077,6 +1104,69 @@
       "name": "fwb_unpack_var",
       "title": "Unpack a fp variable into FWB",
       "description": "Unpack the fp variable at (&4B/&4C) into FWB."
+    },
+    {
+      "addr": 44084,
+      "name": "ascii_to_number",
+      "title": "Convert an ASCII number to a value",
+      "description": "Convert the ASCII number in the string work area (length in\nzp_strbuf_len) to a value: an integer in IWA or a real in FWA.\nOn exit A and zp_var_type indicate the type (&40 integer, &FF real).\nUnderlies VAL and numeric tokenising.\n"
+    },
+    {
+      "addr": 40671,
+      "name": "number_to_ascii",
+      "title": "Convert the current value to an ASCII number",
+      "description": "Convert the integer (IWA) or real (FWA) value to an ASCII\nstring in the string work area, in decimal or hex per the radix\nflag (&15) and the @% print format. Underlies PRINT and STR$.\nReturns the length in zp_strbuf_len.\n"
+    },
+    {
+      "addr": 41956,
+      "name": "fwa_to_int",
+      "title": "Convert the FP accumulator to an integer",
+      "description": "Convert FWA to a 4-byte integer in IWA (variant 1)."
+    },
+    {
+      "addr": 41982,
+      "name": "fwa_to_int2",
+      "title": "Convert the FP accumulator to an integer (variant 2)",
+      "description": "Convert FWA to a 4-byte integer in IWA (variant 2)."
+    },
+    {
+      "addr": 41662,
+      "name": "int_to_fwa",
+      "title": "Convert the integer accumulator to floating point",
+      "description": "Convert the integer in IWA to a real in FWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 44881,
+      "name": "rnd_integer",
+      "title": "RND: random 32-bit integer",
+      "description": "Step the generator; IWA = a full-range random integer.",
+      "fall_through": true
+    },
+    {
+      "addr": 44905,
+      "name": "rnd_fraction",
+      "title": "RND(1): random fraction",
+      "description": "Step the generator; FWA = a real in 0 to 0.999999.",
+      "fall_through": true
+    },
+    {
+      "addr": 44908,
+      "name": "rnd_repeat",
+      "title": "RND(0): repeat the last RND(1)",
+      "description": "FWA = the value last returned by rnd_fraction."
+    },
+    {
+      "addr": 44836,
+      "name": "rnd_range",
+      "title": "RND(X): random integer 1 to X",
+      "description": "Step the generator; IWA = a random integer from 1 to X."
+    },
+    {
+      "addr": 44863,
+      "name": "rnd_seed",
+      "title": "RND(-X): seed the generator",
+      "description": "Seed the random work area from X (RND(-X))."
     }
   ],
   "banners": [
@@ -23013,9 +23103,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9edf",
+      "operand": "number_to_ascii",
       "target": 40671,
-      "target_label": "sub_c9edf"
+      "target_label": "number_to_ascii"
     },
     {
       "addr": 36350,
@@ -30690,9 +30780,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca3e4",
+      "operand": "fwa_to_int",
       "target": 41956,
-      "target_label": "ca3e4"
+      "target_label": "fwa_to_int"
     },
     {
       "addr": 37623,
@@ -30798,9 +30888,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 37636,
@@ -40347,9 +40437,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca3e4",
+      "operand": "fwa_to_int",
       "target": 41956,
-      "target_label": "ca3e4"
+      "target_label": "fwa_to_int"
     },
     {
       "addr": 39116,
@@ -42725,9 +42815,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 39492,
@@ -46516,9 +46606,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40091,
@@ -46656,9 +46746,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40114,
@@ -47037,9 +47127,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40177,
@@ -47145,9 +47235,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40197,
@@ -47208,9 +47298,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40209,
@@ -47256,9 +47346,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40218,
@@ -47293,9 +47383,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40224,
@@ -49553,9 +49643,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca3e4",
+      "operand": "fwa_to_int",
       "target": 41956,
-      "target_label": "ca3e4"
+      "target_label": "fwa_to_int"
     },
     {
       "addr": 40598,
@@ -50050,7 +50140,7 @@
         4
       ],
       "labels": [
-        "sub_c9edf"
+        "number_to_ascii"
       ],
       "xref_summaries": [
         "&9edf referenced 2 times by &8dfb, &b0b9"
@@ -50349,9 +50439,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 40719,
@@ -56493,7 +56583,7 @@
         0
       ],
       "labels": [
-        "ca2be"
+        "int_to_fwa"
       ],
       "xref_summaries": [
         "&a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6"
@@ -58483,7 +58573,7 @@
         163
       ],
       "labels": [
-        "ca3e4"
+        "fwa_to_int"
       ],
       "xref_summaries": [
         "&a3e4 referenced 5 times by &92f4, &98c9, &9e93, &af36, &b4c3"
@@ -58497,9 +58587,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3fe",
+      "operand": "fwa_to_int2",
       "target": 41982,
-      "target_label": "sub_ca3fe"
+      "target_label": "fwa_to_int2"
     },
     {
       "addr": 41959,
@@ -58656,7 +58746,7 @@
         48
       ],
       "labels": [
-        "sub_ca3fe"
+        "fwa_to_int2"
       ],
       "xref_summaries": [
         "&a3fe referenced 4 times by &a3e4, &a491, &a9ee, &ac82"
@@ -59617,9 +59707,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3fe",
+      "operand": "fwa_to_int2",
       "target": 41982,
-      "target_label": "sub_ca3fe"
+      "target_label": "fwa_to_int2"
     },
     {
       "addr": 42132,
@@ -67733,9 +67823,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3fe",
+      "operand": "fwa_to_int2",
       "target": 41982,
-      "target_label": "sub_ca3fe"
+      "target_label": "fwa_to_int2"
     },
     {
       "addr": 43505,
@@ -70799,7 +70889,7 @@
         54
       ],
       "labels": [
-        "sub_cac34"
+        "ascii_to_number"
       ],
       "xref_summaries": [
         "&ac34 referenced 1 time by &bad3"
@@ -71255,9 +71345,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3fe",
+      "operand": "fwa_to_int2",
       "target": 41982,
-      "target_label": "sub_ca3fe"
+      "target_label": "fwa_to_int2"
     },
     {
       "addr": 44165,
@@ -75432,9 +75522,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "caf3f",
+      "operand": "rnd_seed",
       "target": 44863,
-      "target_label": "caf3f"
+      "target_label": "rnd_seed"
     },
     {
       "addr": 44822,
@@ -75468,9 +75558,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "caf24",
+      "operand": "rnd_range",
       "target": 44836,
-      "target_label": "caf24"
+      "target_label": "rnd_range"
     },
     {
       "addr": 44828,
@@ -75492,9 +75582,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caf6c",
+      "operand": "rnd_repeat",
       "target": 44908,
-      "target_label": "caf6c"
+      "target_label": "rnd_repeat"
     },
     {
       "addr": 44832,
@@ -75514,9 +75604,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caf69",
+      "operand": "rnd_fraction",
       "target": 44905,
-      "target_label": "caf69"
+      "target_label": "rnd_fraction"
     },
     {
       "addr": 44836,
@@ -75526,7 +75616,7 @@
         162
       ],
       "labels": [
-        "caf24"
+        "rnd_range"
       ],
       "xref_summaries": [
         "&af24 referenced 1 time by &af1a"
@@ -75536,9 +75626,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 44839,
@@ -75562,9 +75652,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caf69",
+      "operand": "rnd_fraction",
       "target": 44905,
-      "target_label": "caf69"
+      "target_label": "rnd_fraction"
     },
     {
       "addr": 44845,
@@ -75614,9 +75704,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca3e4",
+      "operand": "fwa_to_int",
       "target": 41956,
-      "target_label": "ca3e4"
+      "target_label": "fwa_to_int"
     },
     {
       "addr": 44857,
@@ -75656,7 +75746,7 @@
         13
       ],
       "labels": [
-        "caf3f"
+        "rnd_seed"
       ],
       "xref_summaries": [
         "&af3f referenced 1 time by &af14"
@@ -75766,6 +75856,9 @@
         32,
         135,
         175
+      ],
+      "labels": [
+        "rnd_integer"
       ],
       "type": "code",
       "mnemonic": "jsr",
@@ -75915,7 +76008,7 @@
         175
       ],
       "labels": [
-        "caf69"
+        "rnd_fraction"
       ],
       "xref_summaries": [
         "&af69 referenced 2 times by &af22, &af2a"
@@ -75937,7 +76030,7 @@
         0
       ],
       "labels": [
-        "caf6c"
+        "rnd_repeat"
       ],
       "xref_summaries": [
         "&af6c referenced 1 time by &af1e"
@@ -77981,9 +78074,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9edf",
+      "operand": "number_to_ascii",
       "target": 40671,
-      "target_label": "sub_c9edf"
+      "target_label": "number_to_ascii"
     },
     {
       "addr": 45244,
@@ -84332,9 +84425,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca3e4",
+      "operand": "fwa_to_int",
       "target": 41956,
-      "target_label": "ca3e4"
+      "target_label": "fwa_to_int"
     },
     {
       "addr": 46278,
@@ -84570,9 +84663,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca2be",
+      "operand": "int_to_fwa",
       "target": 41662,
-      "target_label": "ca2be"
+      "target_label": "int_to_fwa"
     },
     {
       "addr": 46313,
@@ -93547,9 +93640,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cac34",
+      "operand": "ascii_to_number",
       "target": 44084,
-      "target_label": "sub_cac34"
+      "target_label": "ascii_to_number"
     },
     {
       "addr": 47830,

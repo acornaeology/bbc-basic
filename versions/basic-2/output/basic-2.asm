@@ -2621,7 +2621,7 @@ l848a = sub_c847b+15
     sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..    
     tya                                                               ; 8df8: 98          .     
     beq c8e0e                                                         ; 8df9: f0 13       ..    
-    jsr sub_c9edf                                                     ; 8dfb: 20 df 9e     ..   
+    jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..   
     lda zp_print_bytes                                                ; 8dfe: a5 14       ..    
     sec                                                               ; 8e00: 38          8     
     sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6    
@@ -3397,7 +3397,7 @@ l848a = sub_c847b+15
     bpl return_9                                                      ; 92f2: 10 f6       ..    
 ; &92f4 referenced 1 time by &92e8
 .c92f4
-    jmp ca3e4                                                         ; 92f4: 4c e4 a3    L..   
+    jmp fwa_to_int                                                    ; 92f4: 4c e4 a3    L..   
 ; &92f7 referenced 3 times by &92e6, &92f0, &92fd
 .c92f7
     jmp c8c0e                                                         ; 92f7: 4c 0e 8c    L..   
@@ -3408,7 +3408,7 @@ l848a = sub_c847b+15
 .sub_c92fd
     beq c92f7                                                         ; 92fd: f0 f8       ..    
     bmi return_9                                                      ; 92ff: 30 e9       0.    
-    jmp ca2be                                                         ; 9301: 4c be a2    L..   
+    jmp int_to_fwa                                                    ; 9301: 4c be a2    L..   
 .stmt_proc
     lda zp_text_ptr                                                   ; 9304: a5 0b       ..    
     sta zp_text_ptr2                                                  ; 9306: 85 19       ..    
@@ -4418,7 +4418,7 @@ l848a = sub_c847b+15
     jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..   
     beq loop_c98bf                                                    ; 98c5: f0 f8       ..    
     bpl c98cc                                                         ; 98c7: 10 03       ..    
-    jsr ca3e4                                                         ; 98c9: 20 e4 a3     ..   
+    jsr fwa_to_int                                                    ; 98c9: 20 e4 a3     ..   
 ; &98cc referenced 1 time by &98c7
 .c98cc
     ldy zp_text_ptr2_off                                              ; 98cc: a4 1b       ..    
@@ -4665,7 +4665,7 @@ l848a = sub_c847b+15
     stx zp_var_type                                                   ; 9a39: 86 27       .'    
     jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..   
     jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.   
-    jsr ca2be                                                         ; 9a41: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9a41: 20 be a2     ..   
     jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..   
     jsr sub_cbd7e                                                     ; 9a47: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..   
@@ -5073,7 +5073,7 @@ l848a = sub_c847b+15
     beq c9c88                                                         ; 9c92: f0 f4       ..    
     stx zp_var_type                                                   ; 9c94: 86 27       .'    
     bmi c9c9b                                                         ; 9c96: 30 03       0.    
-    jsr ca2be                                                         ; 9c98: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9c98: 20 be a2     ..   
 ; &9c9b referenced 2 times by &9c96, &9cb2
 .c9c9b
     jsr sub_cbd7e                                                     ; 9c9b: 20 7e bd     ~.   
@@ -5088,7 +5088,7 @@ l848a = sub_c847b+15
     stx zp_var_type                                                   ; 9ca7: 86 27       .'    
     jsr unstack_integer                                               ; 9ca9: 20 ea bd     ..   
     jsr stack_real                                                    ; 9cac: 20 51 bd     Q.   
-    jsr ca2be                                                         ; 9caf: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9caf: 20 be a2     ..   
     jmp c9c9b                                                         ; 9cb2: 4c 9b 9c    L..   
 ; &9cb5 referenced 1 time by &9c4b
 .c9cb5
@@ -5129,7 +5129,7 @@ l848a = sub_c847b+15
     beq c9c88                                                         ; 9ce8: f0 9e       ..    
     stx zp_var_type                                                   ; 9cea: 86 27       .'    
     bmi c9cf1                                                         ; 9cec: 30 03       0.    
-    jsr ca2be                                                         ; 9cee: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9cee: 20 be a2     ..   
 ; &9cf1 referenced 1 time by &9cec
 .c9cf1
     jsr sub_cbd7e                                                     ; 9cf1: 20 7e bd     ~.   
@@ -5140,22 +5140,22 @@ l848a = sub_c847b+15
     stx zp_var_type                                                   ; 9cfa: 86 27       .'    
     jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..   
     jsr stack_real                                                    ; 9cff: 20 51 bd     Q.   
-    jsr ca2be                                                         ; 9d02: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d02: 20 be a2     ..   
     jsr sub_cbd7e                                                     ; 9d05: 20 7e bd     ~.   
     jsr sub_ca4d0                                                     ; 9d08: 20 d0 a4     ..   
     jmp c9ca1                                                         ; 9d0b: 4c a1 9c    L..   
 ; &9d0e referenced 3 times by &9d60, &9d67, &9d6b
 .c9d0e
-    jsr ca2be                                                         ; 9d0e: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d0e: 20 be a2     ..   
 ; &9d11 referenced 1 time by &9d5a
 .loop_c9d11
     jsr unstack_integer                                               ; 9d11: 20 ea bd     ..   
     jsr stack_real                                                    ; 9d14: 20 51 bd     Q.   
-    jsr ca2be                                                         ; 9d17: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d17: 20 be a2     ..   
     jmp c9d2c                                                         ; 9d1a: 4c 2c 9d    L,.   
 ; &9d1d referenced 3 times by &9d45, &9d4c, &9d50
 .c9d1d
-    jsr ca2be                                                         ; 9d1d: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d1d: 20 be a2     ..   
 ; &9d20 referenced 1 time by &9d3f
 .loop_c9d20
     jsr stack_real                                                    ; 9d20: 20 51 bd     Q.   
@@ -5396,7 +5396,7 @@ l848a = sub_c847b+15
 .loop_c9e90
     tya                                                               ; 9e90: 98          .     
     bpl c9e96                                                         ; 9e91: 10 03       ..    
-    jsr ca3e4                                                         ; 9e93: 20 e4 a3     ..   
+    jsr fwa_to_int                                                    ; 9e93: 20 e4 a3     ..   
 ; &9e96 referenced 1 time by &9e91
 .c9e96
     ldx #0                                                            ; 9e96: a2 00       ..    
@@ -5451,8 +5451,14 @@ l848a = sub_c847b+15
     jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..   
     dec l0049                                                         ; 9eda: c6 49       .I    
     jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..   
+; ***************************************************************************************
+; Convert the current value to an ASCII number
+;
+; Convert the integer (IWA) or real (FWA) value to an ASCII string in the string work
+; area, in decimal or hex per the radix flag (&15) and the @% print format. Underlies
+; PRINT and STR$. Returns the length in zp_strbuf_len.
 ; &9edf referenced 2 times by &8dfb, &b0b9
-.sub_c9edf
+.number_to_ascii
     ldx l0402                                                         ; 9edf: ae 02 04    ...   
     cpx #3                                                            ; 9ee2: e0 03       ..    
     bcc c9ee8                                                         ; 9ee4: 90 02       ..    
@@ -5483,7 +5489,7 @@ l848a = sub_c847b+15
     bmi loop_c9e90                                                    ; 9f07: 30 87       0.    
     tya                                                               ; 9f09: 98          .     
     bmi c9f0f                                                         ; 9f0a: 30 03       0.    
-    jsr ca2be                                                         ; 9f0c: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9f0c: 20 be a2     ..   
 ; &9f0f referenced 1 time by &9f0a
 .c9f0f
     jsr fwa_sign                                                      ; 9f0f: 20 da a1     ..   
@@ -6125,8 +6131,12 @@ l848a = sub_c847b+15
 ; &a2bd referenced 5 times by &a2a8, &a2ac, &a2b0, &a2b4, &a2b8
 .return_22
     rts                                                               ; a2bd: 60          `     
+; ***************************************************************************************
+; Convert the integer accumulator to floating point
+;
+; Convert the integer in IWA to a real in FWA.
 ; &a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6
-.ca2be
+.int_to_fwa
     ldx #0                                                            ; a2be: a2 00       ..    
     stx l0035                                                         ; a2c0: 86 35       .5    
     stx l002f                                                         ; a2c2: 86 2f       ./    
@@ -6353,9 +6363,13 @@ l848a = sub_c847b+15
 .ca3e1
     sta l0031                                                         ; a3e1: 85 31       .1    
     rts                                                               ; a3e3: 60          `     
+; ***************************************************************************************
+; Convert the FP accumulator to an integer
+;
+; Convert FWA to a 4-byte integer in IWA (variant 1).
 ; &a3e4 referenced 5 times by &92f4, &98c9, &9e93, &af36, &b4c3
-.ca3e4
-    jsr sub_ca3fe                                                     ; a3e4: 20 fe a3     ..   
+.fwa_to_int
+    jsr fwa_to_int2                                                   ; a3e4: 20 fe a3     ..   
 ; &a3e7 referenced 1 time by &ac95
 .sub_ca3e7
     lda l0031                                                         ; a3e7: a5 31       .1    
@@ -6371,8 +6385,12 @@ l848a = sub_c847b+15
 .loop_ca3f8
     jsr fwb_copy_from_fwa                                             ; a3f8: 20 1e a2     ..   
     jmp fwa_clear                                                     ; a3fb: 4c 86 a6    L..   
+; ***************************************************************************************
+; Convert the FP accumulator to an integer (variant 2)
+;
+; Convert FWA to a 4-byte integer in IWA (variant 2).
 ; &a3fe referenced 4 times by &a3e4, &a491, &a9ee, &ac82
-.sub_ca3fe
+.fwa_to_int2
     lda l0030                                                         ; a3fe: a5 30       .0    
     bpl loop_ca3f8                                                    ; a400: 10 f6       ..    
     jsr fwb_clear                                                     ; a402: 20 53 a4     S.   
@@ -6470,7 +6488,7 @@ l848a = sub_c847b+15
     jmp fwa_sign                                                      ; a48e: 4c da a1    L..   
 ; &a491 referenced 1 time by &a488
 .ca491
-    jsr sub_ca3fe                                                     ; a491: 20 fe a3     ..   
+    jsr fwa_to_int2                                                   ; a491: 20 fe a3     ..   
     lda l0034                                                         ; a494: a5 34       .4    
     sta l004a                                                         ; a496: 85 4a       .J    
     jsr sub_ca4e8                                                     ; a498: 20 e8 a4     ..   
@@ -6899,6 +6917,10 @@ l848a = sub_c847b+15
 ; &a6bb referenced 2 times by &a6b0, &a6ef
 .ca6bb
     jmp c99a7                                                         ; a6bb: 4c a7 99    L..   
+; ***************************************************************************************
+; TAN
+;
+; FWA = tan(FWA), argument in radians. Pure routine at &A6C1.
 .fn_tan
     jsr sub_c92fa                                                     ; a6be: 20 fa 92     ..   
     jsr sub_ca9d3                                                     ; a6c1: 20 d3 a9     ..   
@@ -7046,6 +7068,10 @@ l848a = sub_c847b+15
     equb &15                                                          ; a7aa: 15          .     
     equs "-ve root"                                                   ; a7ab: 2d 76 65... -ve...
     equb &00                                                          ; a7b3: 00          .     
+; ***************************************************************************************
+; SQR
+;
+; FWA = square root of FWA. Pure routine at &A7B7.
 .fn_sqr
     jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..   
 ; &a7b7 referenced 1 time by &a9c0
@@ -7098,6 +7124,10 @@ l848a = sub_c847b+15
     lda #4                                                            ; a7f9: a9 04       ..    
     sta l004c                                                         ; a7fb: 85 4c       .L    
     rts                                                               ; a7fd: 60          `     
+; ***************************************************************************************
+; LN
+;
+; FWA = natural log of FWA. Pure routine at &A801.
 ; &a7fe referenced 1 time by &aba8
 .fn_ln
     jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..   
@@ -7197,9 +7227,17 @@ l848a = sub_c847b+15
     dec l0048                                                         ; a8cf: c6 48       .H    
     bne loop_ca8b5                                                    ; a8d1: d0 e2       ..    
     rts                                                               ; a8d3: 60          `     
+; ***************************************************************************************
+; ACS
+;
+; FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927.
 .fn_acs
     jsr fn_asn                                                        ; a8d4: 20 da a8     ..   
     jmp ca927                                                         ; a8d7: 4c 27 a9    L'.   
+; ***************************************************************************************
+; ASN
+;
+; FWA = arcsin(FWA), result in radians. Pure routine at &A8DD.
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
     jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..   
@@ -7225,6 +7263,10 @@ l848a = sub_c847b+15
 .ca904
     lda #&ff                                                          ; a904: a9 ff       ..    
     rts                                                               ; a906: 60          `     
+; ***************************************************************************************
+; ATN
+;
+; FWA = arctan(FWA), result in radians. Pure routine at &A90A.
 .fn_atn
     jsr sub_c92fa                                                     ; a907: 20 fa 92     ..   
 ; &a90a referenced 1 time by &a8fb
@@ -7278,11 +7320,19 @@ l848a = sub_c847b+15
     equs "bW/"                                                        ; a985: 62 57 2f    bW/   
     equb &80                                                          ; a988: 80          .     
     equs "mc8,"                                                       ; a989: 6d 63 38... mc8...
+; ***************************************************************************************
+; COS
+;
+; FWA = cos(FWA), argument in radians. Pure routine at &A990.
 .fn_cos
     jsr sub_c92fa                                                     ; a98d: 20 fa 92     ..   
     jsr sub_ca9d3                                                     ; a990: 20 d3 a9     ..   
     inc l004a                                                         ; a993: e6 4a       .J    
     jmp ca99e                                                         ; a995: 4c 9e a9    L..   
+; ***************************************************************************************
+; SIN
+;
+; FWA = sin(FWA), argument in radians. Pure routine at &A99B.
 .fn_sin
     jsr sub_c92fa                                                     ; a998: 20 fa 92     ..   
     jsr sub_ca9d3                                                     ; a99b: 20 d3 a9     ..   
@@ -7327,7 +7377,7 @@ l848a = sub_c847b+15
     dec l003d                                                         ; a9e6: c6 3d       .=    
     jsr fwa_add_fwb                                                   ; a9e8: 20 05 a5     ..   
     jsr ca6e7                                                         ; a9eb: 20 e7 a6     ..   
-    jsr sub_ca3fe                                                     ; a9ee: 20 fe a3     ..   
+    jsr fwa_to_int2                                                   ; a9ee: 20 fe a3     ..   
     lda l0034                                                         ; a9f1: a5 34       .4    
     sta l004a                                                         ; a9f3: 85 4a       .J    
     ora l0033                                                         ; a9f5: 05 33       .3    
@@ -7397,6 +7447,10 @@ l848a = sub_c847b+15
     equb &ab, &82, &d5                                                ; aa81: ab 82 d5    ...   
     equs "UW|"                                                        ; aa84: 55 57 7c    UW|   
     equb &83, &c0, &00, &00, &05, &81, &00, &00, &00, &00             ; aa87: 83 c0 00... ......
+; ***************************************************************************************
+; EXP
+;
+; FWA = e to the power FWA. Pure routine at &AA94.
 .fn_exp
     jsr sub_c92fa                                                     ; aa91: 20 fa 92     ..   
 ; &aa94 referenced 1 time by &9e7b
@@ -7545,11 +7599,19 @@ l848a = sub_c847b+15
 .caba5
     lda #&40 ; '@'                                                    ; aba5: a9 40       .@    
     rts                                                               ; aba7: 60          `     
+; ***************************************************************************************
+; LOG
+;
+; FWA = base-10 log of FWA. Pure routine at &ABAB.
 .fn_log
     jsr fn_ln                                                         ; aba8: 20 fe a7     ..   
     ldy #&69 ; 'i'                                                    ; abab: a0 69       .i    
     lda #&a8                                                          ; abad: a9 a8       ..    
     bne cabb8                                                         ; abaf: d0 07       ..    
+; ***************************************************************************************
+; RAD
+;
+; FWA = FWA degrees expressed in radians. Pure routine at &ABB4.
 .fn_rad
     jsr sub_c92fa                                                     ; abb1: 20 fa 92     ..   
     ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h    
@@ -7561,11 +7623,19 @@ l848a = sub_c847b+15
     jsr fwa_mul_var                                                   ; abbc: 20 56 a6     V.   
     lda #&ff                                                          ; abbf: a9 ff       ..    
     rts                                                               ; abc1: 60          `     
+; ***************************************************************************************
+; DEG
+;
+; FWA = FWA radians expressed in degrees. Pure routine at &ABC5.
 .fn_deg
     jsr sub_c92fa                                                     ; abc2: 20 fa 92     ..   
     ldy #&6d ; 'm'                                                    ; abc5: a0 6d       .m    
     lda #&aa                                                          ; abc7: a9 aa       ..    
     bne cabb8                                                         ; abc9: d0 ed       ..    
+; ***************************************************************************************
+; PI
+;
+; FWA = pi (3.14159265). Takes no argument.
 .fn_pi
     jsr ca8fe                                                         ; abcb: 20 fe a8     ..   
     inc l0030                                                         ; abce: e6 30       .0    
@@ -7631,8 +7701,14 @@ l848a = sub_c847b+15
 .fn_val
     jsr eval_factor                                                   ; ac2f: 20 ec ad     ..   
     bne cac9b                                                         ; ac32: d0 67       .g    
+; ***************************************************************************************
+; Convert an ASCII number to a value
+;
+; Convert the ASCII number in the string work area (length in zp_strbuf_len) to a value:
+; an integer in IWA or a real in FWA. On exit A and zp_var_type indicate the type (&40
+; integer, &FF real). Underlies VAL and numeric tokenising.
 ; &ac34 referenced 1 time by &bad3
-.sub_cac34
+.ascii_to_number
     ldy zp_strbuf_len                                                 ; ac34: a4 36       .6    
     lda #0                                                            ; ac36: a9 00       ..    
     sta string_work,y                                                 ; ac38: 99 00 06    ...   
@@ -7676,7 +7752,7 @@ l848a = sub_c847b+15
     bpl return_30                                                     ; ac7d: 10 1b       ..    
     lda zp_fwa                                                        ; ac7f: a5 2e       ..    
     php                                                               ; ac81: 08          .     
-    jsr sub_ca3fe                                                     ; ac82: 20 fe a3     ..   
+    jsr fwa_to_int2                                                   ; ac82: 20 fe a3     ..   
     plp                                                               ; ac85: 28          (     
     bpl cac95                                                         ; ac86: 10 0d       ..    
     lda l003e                                                         ; ac88: a5 3e       .>    
@@ -8142,28 +8218,36 @@ l848a = sub_c847b+15
     jsr cae56                                                         ; af0c: 20 56 ae     V.   
     jsr coerce_to_integer                                             ; af0f: 20 f0 92     ..   
     lda l002d                                                         ; af12: a5 2d       .-    
-    bmi caf3f                                                         ; af14: 30 29       0)    
+    bmi rnd_seed                                                      ; af14: 30 29       0)    
     ora l002c                                                         ; af16: 05 2c       .,    
     ora l002b                                                         ; af18: 05 2b       .+    
-    bne caf24                                                         ; af1a: d0 08       ..    
+    bne rnd_range                                                     ; af1a: d0 08       ..    
     lda zp_iwa                                                        ; af1c: a5 2a       .*    
-    beq caf6c                                                         ; af1e: f0 4c       .L    
+    beq rnd_repeat                                                    ; af1e: f0 4c       .L    
     cmp #1                                                            ; af20: c9 01       ..    
-    beq caf69                                                         ; af22: f0 45       .E    
+    beq rnd_fraction                                                  ; af22: f0 45       .E    
+; ***************************************************************************************
+; RND(X): random integer 1 to X
+;
+; Step the generator; IWA = a random integer from 1 to X.
 ; &af24 referenced 1 time by &af1a
-.caf24
-    jsr ca2be                                                         ; af24: 20 be a2     ..   
+.rnd_range
+    jsr int_to_fwa                                                    ; af24: 20 be a2     ..   
     jsr stack_real                                                    ; af27: 20 51 bd     Q.   
-    jsr caf69                                                         ; af2a: 20 69 af     i.   
+    jsr rnd_fraction                                                  ; af2a: 20 69 af     i.   
     jsr sub_cbd7e                                                     ; af2d: 20 7e bd     ~.   
     jsr fwa_mul_var_raw                                               ; af30: 20 06 a6     ..   
     jsr fwa_normalise                                                 ; af33: 20 03 a3     ..   
-    jsr ca3e4                                                         ; af36: 20 e4 a3     ..   
+    jsr fwa_to_int                                                    ; af36: 20 e4 a3     ..   
     jsr sub_c9222                                                     ; af39: 20 22 92     ".   
     lda #&40 ; '@'                                                    ; af3c: a9 40       .@    
     rts                                                               ; af3e: 60          `     
+; ***************************************************************************************
+; RND(-X): seed the generator
+;
+; Seed the random work area from X (RND(-X)).
 ; &af3f referenced 1 time by &af14
-.caf3f
+.rnd_seed
     ldx #&0d                                                          ; af3f: a2 0d       ..    
     jsr iwa_store_zp                                                  ; af41: 20 44 be     D.   
     lda #&40 ; '@'                                                    ; af44: a9 40       .@    
@@ -8174,6 +8258,11 @@ l848a = sub_c847b+15
     lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..    
     cmp #&28 ; '('                                                    ; af4d: c9 28       .(    
     beq loop_caf0a                                                    ; af4f: f0 b9       ..    
+; ***************************************************************************************
+; RND: random 32-bit integer
+;
+; Step the generator; IWA = a full-range random integer.
+.rnd_integer
     jsr sub_caf87                                                     ; af51: 20 87 af     ..   
     ldx #&0d                                                          ; af54: a2 0d       ..    
 ; ***************************************************************************************
@@ -8192,11 +8281,19 @@ l848a = sub_c847b+15
     sta l002d                                                         ; af64: 85 2d       .-    
     lda #&40 ; '@'                                                    ; af66: a9 40       .@    
     rts                                                               ; af68: 60          `     
+; ***************************************************************************************
+; RND(1): random fraction
+;
+; Step the generator; FWA = a real in 0 to 0.999999.
 ; &af69 referenced 2 times by &af22, &af2a
-.caf69
+.rnd_fraction
     jsr sub_caf87                                                     ; af69: 20 87 af     ..   
+; ***************************************************************************************
+; RND(0): repeat the last RND(1)
+;
+; FWA = the value last returned by rnd_fraction.
 ; &af6c referenced 1 time by &af1e
-.caf6c
+.rnd_repeat
     ldx #0                                                            ; af6c: a2 00       ..    
     stx zp_fwa                                                        ; af6e: 86 2e       ..    
     stx l002f                                                         ; af70: 86 2f       ./    
@@ -8407,7 +8504,7 @@ l848a = sub_c847b+15
     rts                                                               ; b0b8: 60          `     
 ; &b0b9 referenced 1 time by &b0af
 .cb0b9
-    jsr sub_c9edf                                                     ; b0b9: 20 df 9e     ..   
+    jsr number_to_ascii                                               ; b0b9: 20 df 9e     ..   
     lda #0                                                            ; b0bc: a9 00       ..    
     rts                                                               ; b0be: 60          `     
 ; &b0bf referenced 2 times by &b0a6, &b0ce
@@ -9064,7 +9161,7 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; b4bd: a5 27       .'    
     beq cb4ae                                                         ; b4bf: f0 ed       ..    
     bpl iwa_store_var                                                 ; b4c1: 10 03       ..    
-    jsr ca3e4                                                         ; b4c3: 20 e4 a3     ..   
+    jsr fwa_to_int                                                    ; b4c3: 20 e4 a3     ..   
 ; ***************************************************************************************
 ; Store the accumulator into an integer variable
 ;
@@ -9093,7 +9190,7 @@ l848a = sub_c847b+15
     lda zp_var_type                                                   ; b4e0: a5 27       .'    
     beq cb4ae                                                         ; b4e2: f0 ca       ..    
     bmi cb4e9                                                         ; b4e4: 30 03       0.    
-    jsr ca2be                                                         ; b4e6: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; b4e6: 20 be a2     ..   
 ; &b4e9 referenced 2 times by &b4e4, &b77f
 .cb4e9
     ldy #0                                                            ; b4e9: a0 00       ..    
@@ -9996,7 +10093,7 @@ l848a = sub_c847b+15
     plp                                                               ; bacd: 28          (     
     bcs cbadc                                                         ; bace: b0 0c       ..    
     jsr stack_integer                                                 ; bad0: 20 94 bd     ..   
-    jsr sub_cac34                                                     ; bad3: 20 34 ac     4.   
+    jsr ascii_to_number                                               ; bad3: 20 34 ac     4.   
     jsr sub_cb4b4                                                     ; bad6: 20 b4 b4     ..   
     jmp cba5a                                                         ; bad9: 4c 5a ba    LZ.   
 ; &badc referenced 1 time by &bace
@@ -10926,8 +11023,8 @@ save pydis_start, pydis_end
 ;     l004c:                      14
 ;     cb558:                      13
 ;     eval_factor:                13
-;     ca2be:                      12
 ;     fwa_mul_var:                12
+;     int_to_fwa:                 12
 ;     oswrch:                     12
 ;     stack_real:                 12
 ;     ca066:                      11
@@ -11000,12 +11097,12 @@ save pydis_start, pydis_end
 ;     c9a93:                       5
 ;     c9fe6:                       5
 ;     ca208:                       5
-;     ca3e4:                       5
 ;     ca5b7:                       5
 ;     cac9b:                       5
 ;     cb741:                       5
 ;     cb97d:                       5
 ;     fwa_negate:                  5
+;     fwa_to_int:                  5
 ;     fwb_copy_from_fwa:           5
 ;     iwa_store_zp:                5
 ;     l0044:                       5
@@ -11041,6 +11138,7 @@ save pydis_start, pydis_end
 ;     cba5a:                       4
 ;     cbc28:                       4
 ;     fwa_rdiv_var:                4
+;     fwa_to_int2:                 4
 ;     iwa_abs:                     4
 ;     l000f:                       4
 ;     l0011:                       4
@@ -11059,7 +11157,6 @@ save pydis_start, pydis_end
 ;     sub_c9531:                   4
 ;     sub_c9c42:                   4
 ;     sub_c9e20:                   4
-;     sub_ca3fe:                   4
 ;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
 ;     sub_cb99a:                   4
@@ -11250,7 +11347,6 @@ save pydis_start, pydis_end
 ;     cad67:                       2
 ;     cad89:                       2
 ;     cadc9:                       2
-;     caf69:                       2
 ;     cafc2:                       2
 ;     cb02e:                       2
 ;     cb0bf:                       2
@@ -11309,6 +11405,7 @@ save pydis_start, pydis_end
 ;     l04f7:                       2
 ;     l04fc:                       2
 ;     l06ff:                       2
+;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
 ;     osfile:                      2
@@ -11326,6 +11423,7 @@ save pydis_start, pydis_end
 ;     return_31:                   2
 ;     return_35:                   2
 ;     return_9:                    2
+;     rnd_fraction:                2
 ;     stmt_data:                   2
 ;     sub_c887c:                   2
 ;     sub_c8c21:                   2
@@ -11349,7 +11447,6 @@ save pydis_start, pydis_end
 ;     sub_c9b9c:                   2
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
-;     sub_c9edf:                   2
 ;     sub_ca064:                   2
 ;     sub_ca178:                   2
 ;     sub_ca23f:                   2
@@ -11382,6 +11479,7 @@ save pydis_start, pydis_end
 ;     try_variable_assignment:     2
 ;     wrchv:                       2
 ;     zp_trace_max:                2
+;     ascii_to_number:             1
 ;     assembler_exit:              1
 ;     brkv:                        1
 ;     brkv+1:                      1
@@ -11689,9 +11787,6 @@ save pydis_start, pydis_end
 ;     cae6d:                       1
 ;     cae8d:                       1
 ;     caeaa:                       1
-;     caf24:                       1
-;     caf3f:                       1
-;     caf6c:                       1
 ;     cafeb:                       1
 ;     cb023:                       1
 ;     cb061:                       1
@@ -12065,6 +12160,9 @@ save pydis_start, pydis_end
 ;     return_5:                    1
 ;     return_6:                    1
 ;     return_7:                    1
+;     rnd_range:                   1
+;     rnd_repeat:                  1
+;     rnd_seed:                    1
 ;     start_new_program:           1
 ;     stmt_dim:                    1
 ;     stmt_local:                  1
@@ -12104,7 +12202,6 @@ save pydis_start, pydis_end
 ;     sub_ca9b1:                   1
 ;     sub_caa94:                   1
 ;     sub_caada:                   1
-;     sub_cac34:                   1
 ;     sub_cad8f:                   1
 ;     sub_cae02:                   1
 ;     sub_cae3a:                   1
@@ -12489,7 +12586,6 @@ save pydis_start, pydis_end
 ;     ca208
 ;     ca20b
 ;     ca258
-;     ca2be
 ;     ca2cd
 ;     ca2fd
 ;     ca313
@@ -12498,7 +12594,6 @@ save pydis_start, pydis_end
 ;     ca37a
 ;     ca387
 ;     ca3e1
-;     ca3e4
 ;     ca40c
 ;     ca43c
 ;     ca450
@@ -12609,10 +12704,6 @@ save pydis_start, pydis_end
 ;     caea2
 ;     caeaa
 ;     caed8
-;     caf24
-;     caf3f
-;     caf69
-;     caf6c
 ;     cafc2
 ;     cafeb
 ;     cb023
@@ -13170,7 +13261,6 @@ save pydis_start, pydis_end
 ;     sub_c9dd1
 ;     sub_c9e1d
 ;     sub_c9e20
-;     sub_c9edf
 ;     sub_ca040
 ;     sub_ca052
 ;     sub_ca064
@@ -13183,7 +13273,6 @@ save pydis_start, pydis_end
 ;     sub_ca2a4
 ;     sub_ca2ed
 ;     sub_ca3e7
-;     sub_ca3fe
 ;     sub_ca486
 ;     sub_ca4b6
 ;     sub_ca4c7
@@ -13203,7 +13292,6 @@ save pydis_start, pydis_end
 ;     sub_caa94
 ;     sub_caada
 ;     sub_cab12
-;     sub_cac34
 ;     sub_cad8f
 ;     sub_cadad
 ;     sub_cae02
