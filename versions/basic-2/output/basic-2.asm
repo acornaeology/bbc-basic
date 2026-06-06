@@ -3199,7 +3199,7 @@ l848a = sub_c847b+15
 .c916b
     sty zp_fileblk                                                    ; 916b: 84 39       .9    
     stx zp_text_ptr_off                                               ; 916d: 86 0a       ..    
-    jsr sub_c9469                                                     ; 916f: 20 69 94     i.   
+    jsr find_variable                                                 ; 916f: 20 69 94     i.   
     bne c9127                                                         ; 9172: d0 b3       ..    
     jsr sub_c94fc                                                     ; 9174: 20 fc 94     ..   
     ldx #1                                                            ; 9177: a2 01       ..    
@@ -3727,30 +3727,43 @@ l848a = sub_c847b+15
 .sub_c9456
     lda zp_iwa                                                        ; 9456: a5 2a       .*    
     jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..   
+; ***************************************************************************************
+; Find a PROC or FN definition by name
+;
+; Search the PROC (token &F2) or FN linked list for a definition whose name starts at
+; (zp_general)+1. Shares the chain walk with find_variable; returns a pointer to the
+; body, or "not found".
 ; &945b referenced 1 time by &b1e1
-.sub_c945b
+.find_proc_fn
     ldy #1                                                            ; 945b: a0 01       ..    
     lda (zp_general),y                                                ; 945d: b1 37       .7    
-    ldy #&f6                                                          ; 945f: a0 f6       ..    
+    ldy #&f6                                                          ; 945f: a0 f6       ..       ; Index the PROC / FN entries of the variable table
     cmp #&f2                                                          ; 9461: c9 f2       ..    
     beq c946f                                                         ; 9463: f0 0a       ..    
     ldy #&f8                                                          ; 9465: a0 f8       ..    
     bne c946f                                                         ; 9467: d0 06       ..    
+; ***************************************************************************************
+; Find a variable by name
+;
+; Search the heap for a variable whose name starts at (zp_general)+1. The initial
+; character selects one of the per-letter linked lists via the variable table; the chain
+; is walked comparing the rest of the name. On a match, returns a pointer to the value in
+; zp_iwa/zp_iwa_1; otherwise reports it is not present.
 ; &9469 referenced 4 times by &916f, &965a, &96bc, &96df
-.sub_c9469
+.find_variable
     ldy #1                                                            ; 9469: a0 01       ..    
     lda (zp_general),y                                                ; 946b: b1 37       .7    
-    asl a                                                             ; 946d: 0a          .     
+    asl a                                                             ; 946d: 0a          .        ; Two bytes per entry: double the initial letter
     tay                                                               ; 946e: a8          .     
 ; &946f referenced 2 times by &9463, &9467
 .c946f
-    lda resint_at,y                                                   ; 946f: b9 00 04    ...   
+    lda resint_at,y                                                   ; 946f: b9 00 04    ...      ; Head of the chain from the variable table (&0400+2*ch)
     sta l003a                                                         ; 9472: 85 3a       .:    
     lda l0401,y                                                       ; 9474: b9 01 04    ...   
     sta zp_fwb_sign                                                   ; 9477: 85 3b       .;    
 ; &9479 referenced 4 times by &94ca, &94d2, &94d6, &94df
 .c9479
-    lda zp_fwb_sign                                                   ; 9479: a5 3b       .;    
+    lda zp_fwb_sign                                                   ; 9479: a5 3b       .;       ; End of the chain: variable not found
     beq return_10                                                     ; 947b: f0 35       .5    
     ldy #0                                                            ; 947d: a0 00       ..    
     lda (l003a),y                                                     ; 947f: b1 3a       .:    
@@ -3768,7 +3781,7 @@ l848a = sub_c847b+15
     bcs c94a7                                                         ; 9493: b0 12       ..    
 ; &9495 referenced 1 time by &94a0
 .loop_c9495
-    iny                                                               ; 9495: c8          .     
+    iny                                                               ; 9495: c8          .        ; Compare the rest of the name against this entry
     lda (l003a),y                                                     ; 9496: b1 3a       .:    
     beq c94b3                                                         ; 9498: f0 19       ..    
 ; &949a referenced 1 time by &948b
@@ -3782,7 +3795,7 @@ l848a = sub_c847b+15
     bne c94b3                                                         ; 94a5: d0 0c       ..    
 ; &94a7 referenced 1 time by &9493
 .c94a7
-    tya                                                               ; 94a7: 98          .     
+    tya                                                               ; 94a7: 98          .        ; Match: return a pointer to the value
     adc l003a                                                         ; 94a8: 65 3a       e:    
     sta zp_iwa                                                        ; 94aa: 85 2a       .*    
     lda zp_fwb_sign                                                   ; 94ac: a5 3b       .;    
@@ -3793,7 +3806,7 @@ l848a = sub_c847b+15
     rts                                                               ; 94b2: 60          `     
 ; &94b3 referenced 4 times by &9490, &9498, &949c, &94a5
 .c94b3
-    lda zp_fwb_exp                                                    ; 94b3: a5 3d       .=    
+    lda zp_fwb_exp                                                    ; 94b3: a5 3d       .=       ; No match: follow the link to the next entry
     beq return_10                                                     ; 94b5: f0 fb       ..    
     ldy #0                                                            ; 94b7: a0 00       ..    
     lda (zp_fwb_ovf),y                                                ; 94b9: b1 3c       .<    
@@ -4111,7 +4124,7 @@ l848a = sub_c847b+15
     sty zp_fileblk                                                    ; 9654: 84 39       .9    
     cmp #&28 ; '('                                                    ; 9656: c9 28       .(    
     beq c96a6                                                         ; 9658: f0 4c       .L    
-    jsr sub_c9469                                                     ; 965a: 20 69 94     i.   
+    jsr find_variable                                                 ; 965a: 20 69 94     i.   
     beq c9677                                                         ; 965d: f0 18       ..    
     stx zp_text_ptr2_off                                              ; 965f: 86 1b       ..    
 ; &9661 referenced 1 time by &96ac
@@ -4187,7 +4200,7 @@ l848a = sub_c847b+15
     lda (zp_general),y                                                ; 96b6: b1 37       .7    
     cmp #&28 ; '('                                                    ; 96b8: c9 28       .(    
     beq c96c9                                                         ; 96ba: f0 0d       ..    
-    jsr sub_c9469                                                     ; 96bc: 20 69 94     i.   
+    jsr find_variable                                                 ; 96bc: 20 69 94     i.   
     beq c9677                                                         ; 96bf: f0 b6       ..    
     stx zp_text_ptr2_off                                              ; 96c1: 86 1b       ..    
     lda #&81                                                          ; 96c3: a9 81       ..    
@@ -4212,7 +4225,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; 96de: 00          .     
 ; &96df referenced 2 times by &96a9, &96ce
 .sub_c96df
-    jsr sub_c9469                                                     ; 96df: 20 69 94     i.   
+    jsr find_variable                                                 ; 96df: 20 69 94     i.   
     beq c96d7                                                         ; 96e2: f0 f3       ..    
     stx zp_text_ptr2_off                                              ; 96e4: 86 1b       ..    
     lda zp_iwa_2                                                      ; 96e6: a5 2c       .,    
@@ -9054,7 +9067,7 @@ l848a = sub_c847b+15
     stx zp_text_ptr2_off                                              ; b1dc: 86 1b       ..    
     dey                                                               ; b1de: 88          .     
     sty zp_fileblk                                                    ; b1df: 84 39       .9    
-    jsr sub_c945b                                                     ; b1e1: 20 5b 94     [.   
+    jsr find_proc_fn                                                  ; b1e1: 20 5b 94     [.   
     bne cb1e9                                                         ; b1e4: d0 03       ..    
     jmp cb112                                                         ; b1e6: 4c 12 b1    L..   
 ; &b1e9 referenced 1 time by &b1e4
@@ -11646,6 +11659,7 @@ save pydis_start, pydis_end
 ;     cb751:                       4
 ;     cba5a:                       4
 ;     cbc28:                       4
+;     find_variable:               4
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
 ;     iwa_abs:                     4
@@ -11663,7 +11677,6 @@ save pydis_start, pydis_end
 ;     sub_c92da:                   4
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
-;     sub_c9469:                   4
 ;     sub_c9531:                   4
 ;     sub_c9c42:                   4
 ;     sub_c9e20:                   4
@@ -12400,6 +12413,7 @@ save pydis_start, pydis_end
 ;     check_eq_star_bracket:       1
 ;     exec_star_command:           1
 ;     execute_line:                1
+;     find_proc_fn:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
 ;     for_gosub_stack:             1
@@ -12687,7 +12701,6 @@ save pydis_start, pydis_end
 ;     sub_c8cc1:                   1
 ;     sub_c8f9a:                   1
 ;     sub_c9231:                   1
-;     sub_c945b:                   1
 ;     sub_c94ed:                   1
 ;     sub_c9539:                   1
 ;     sub_c9559:                   1
@@ -13706,8 +13719,6 @@ save pydis_start, pydis_end
 ;     sub_c92fa
 ;     sub_c92fd
 ;     sub_c9456
-;     sub_c945b
-;     sub_c9469
 ;     sub_c94ed
 ;     sub_c94fc
 ;     sub_c9531

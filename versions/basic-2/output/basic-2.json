@@ -1468,6 +1468,19 @@
         "A": "proposed new stack-pointer low byte",
         "carry": "clear if the subtraction borrowed"
       }
+    },
+    {
+      "addr": 37979,
+      "name": "find_proc_fn",
+      "title": "Find a PROC or FN definition by name",
+      "description": "Search the PROC (token &F2) or FN linked list for a definition\nwhose name starts at (zp_general)+1. Shares the chain walk with\nfind_variable; returns a pointer to the body, or \"not found\".\n",
+      "fall_through": true
+    },
+    {
+      "addr": 37993,
+      "name": "find_variable",
+      "title": "Find a variable by name",
+      "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n"
     }
   ],
   "banners": [
@@ -28636,9 +28649,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9469",
+      "operand": "find_variable",
       "target": 37993,
-      "target_label": "sub_c9469"
+      "target_label": "find_variable"
     },
     {
       "addr": 37234,
@@ -33167,7 +33180,7 @@
         1
       ],
       "labels": [
-        "sub_c945b"
+        "find_proc_fn"
       ],
       "xref_summaries": [
         "&945b referenced 1 time by &b1e1"
@@ -33197,6 +33210,7 @@
         160,
         246
       ],
+      "comment_inline": "Index the PROC / FN entries of the variable table",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&f6"
@@ -33252,7 +33266,7 @@
         1
       ],
       "labels": [
-        "sub_c9469"
+        "find_variable"
       ],
       "xref_summaries": [
         "&9469 referenced 4 times by &916f, &965a, &96bc, &96df"
@@ -33284,6 +33298,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "Two bytes per entry: double the initial letter",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -33305,6 +33320,7 @@
       "labels": [
         "c946f"
       ],
+      "comment_inline": "Head of the chain from the variable table (&0400+2*ch)",
       "xref_summaries": [
         "&946f referenced 2 times by &9463, &9467"
       ],
@@ -33364,6 +33380,7 @@
       "labels": [
         "c9479"
       ],
+      "comment_inline": "End of the chain: variable not found",
       "xref_summaries": [
         "&9479 referenced 4 times by &94ca, &94d2, &94d6, &94df"
       ],
@@ -33549,6 +33566,7 @@
       "labels": [
         "loop_c9495"
       ],
+      "comment_inline": "Compare the rest of the name against this entry",
       "xref_summaries": [
         "&9495 referenced 1 time by &94a0"
       ],
@@ -33679,6 +33697,7 @@
       "labels": [
         "c94a7"
       ],
+      "comment_inline": "Match: return a pointer to the value",
       "xref_summaries": [
         "&94a7 referenced 1 time by &9493"
       ],
@@ -33773,6 +33792,7 @@
       "labels": [
         "c94b3"
       ],
+      "comment_inline": "No match: follow the link to the next entry",
       "xref_summaries": [
         "&94b3 referenced 4 times by &9490, &9498, &949c, &94a5"
       ],
@@ -36695,9 +36715,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9469",
+      "operand": "find_variable",
       "target": 37993,
-      "target_label": "sub_c9469"
+      "target_label": "find_variable"
     },
     {
       "addr": 38493,
@@ -37366,9 +37386,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9469",
+      "operand": "find_variable",
       "target": 37993,
-      "target_label": "sub_c9469"
+      "target_label": "find_variable"
     },
     {
       "addr": 38591,
@@ -37593,9 +37613,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9469",
+      "operand": "find_variable",
       "target": 37993,
-      "target_label": "sub_c9469"
+      "target_label": "find_variable"
     },
     {
       "addr": 38626,
@@ -80278,9 +80298,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c945b",
+      "operand": "find_proc_fn",
       "target": 37979,
-      "target_label": "sub_c945b"
+      "target_label": "find_proc_fn"
     },
     {
       "addr": 45540,

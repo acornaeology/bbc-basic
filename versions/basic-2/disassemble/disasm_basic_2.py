@@ -1167,6 +1167,43 @@ d.comment(0x898c, 'A colon starts a new statement: reset the state',
 d.comment(0x899a, 'A "*" at statement start: rest is a *command',
           align=Align.INLINE)
 
+# --- variable / PROC / FN lookup -------------------------------------
+# Variables live in linked lists, one per initial character (plus PROC
+# and FN lists), headed by the pointers in var_ptr_table. Each entry is
+# a 2-byte link to the next, the rest of the name (first letter implied
+# by the list) and a NUL, then the value. The chain pointer is held in
+# &3A-&3D (the FWB / general bytes, reused here).
+d.subroutine(
+    0x945b, 'find_proc_fn',
+    title='Find a PROC or FN definition by name',
+    description="""Search the PROC (token &F2) or FN linked list for a definition
+whose name starts at (zp_general)+1. Shares the chain walk with
+find_variable; returns a pointer to the body, or "not found".
+""",
+)
+d.subroutine(
+    0x9469, 'find_variable',
+    title='Find a variable by name',
+    description="""Search the heap for a variable whose name starts at
+(zp_general)+1. The initial character selects one of the per-letter
+linked lists via the variable table; the chain is walked comparing
+the rest of the name. On a match, returns a pointer to the value in
+zp_iwa/zp_iwa_1; otherwise reports it is not present.
+""",
+)
+d.comment(0x945f, 'Index the PROC / FN entries of the variable table',
+          align=Align.INLINE)
+d.comment(0x946d, 'Two bytes per entry: double the initial letter',
+          align=Align.INLINE)
+d.comment(0x946f, 'Head of the chain from the variable table (&0400+2*ch)',
+          align=Align.INLINE)
+d.comment(0x9479, 'End of the chain: variable not found', align=Align.INLINE)
+d.comment(0x9495, 'Compare the rest of the name against this entry',
+          align=Align.INLINE)
+d.comment(0x94a7, 'Match: return a pointer to the value', align=Align.INLINE)
+d.comment(0x94b3, 'No match: follow the link to the next entry',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(
