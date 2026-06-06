@@ -1386,6 +1386,41 @@ d.comment(0x8dfb, 'A number: convert to an ASCII string', align=Align.INLINE)
 d.comment(0x8dfe, 'and right-justify it within the field width',
           align=Align.INLINE)
 
+# --- PROC / FN / LOCAL / ENDPROC -------------------------------------
+d.subroutine(
+    0xb197, 'call_proc_fn',
+    title='Enter a PROC or FN',
+    description="""The procedure/function call mechanism. First copies the live
+6502 hardware stack onto the BASIC value stack and resets the
+hardware stack -- this is how BBC BASIC lets PROCs and FNs nest far
+beyond the 256-byte 6502 stack. Then pushes the call context (the
+PROC/FN token and the caller's text pointers), locates the named
+definition, binds any parameters, and transfers control to the body.
+ENDPROC / =expr unwind this frame.
+""",
+    on_entry={'A': 'PROC token &F2 or FN token &A4'},
+)
+d.subroutine(
+    0xb30d, 'stack_local',
+    title='Save a variable for LOCAL',
+    description="""Push a variable's current value and identity onto the BASIC
+stack so ENDPROC can restore it, implementing LOCAL.
+""",
+)
+d.comment(0x9304, "Remember the call site in PtrB", align=Align.INLINE)
+d.comment(0x9310, 'Enter the procedure (PROC token &F2)', align=Align.INLINE)
+d.comment(0xb199, 'Copy the 6502 stack onto the BASIC stack', align=Align.INLINE)
+d.comment(0xb19e, 'so procedures can nest far beyond 256 bytes',
+          align=Align.INLINE)
+d.comment(0xb1b4, "Push the call context and return pointers", align=Align.INLINE)
+d.comment(0x9323, 'LOCAL is only meaningful inside a PROC/FN', align=Align.INLINE)
+d.comment(0x932d, "Save the variable's value for restoration", align=Align.INLINE)
+d.comment(0x9337, 'Initialise the local to zero / empty', align=Align.INLINE)
+d.comment(0x934c, 'A comma introduces another LOCAL', align=Align.INLINE)
+d.comment(0x9356, 'ENDPROC needs a PROC frame on the stack', align=Align.INLINE)
+d.comment(0x935e, 'The framed call must be a PROC', align=Align.INLINE)
+d.comment(0x9362, 'Return to the caller, restoring locals', align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(

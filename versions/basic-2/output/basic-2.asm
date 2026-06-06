@@ -3512,14 +3512,14 @@ l848a = sub_c847b+15
 ; Call a named procedure, stacking parameters and the return position.
 ; PROCname[(params)].
 .stmt_proc
-    lda zp_text_ptr                                                   ; 9304: a5 0b       ..    
+    lda zp_text_ptr                                                   ; 9304: a5 0b       ..       ; Remember the call site in PtrB
     sta zp_text_ptr2                                                  ; 9306: 85 19       ..    
     lda l000c                                                         ; 9308: a5 0c       ..    
     sta l001a                                                         ; 930a: 85 1a       ..    
     lda zp_text_ptr_off                                               ; 930c: a5 0a       ..    
     sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..    
-    lda #&f2                                                          ; 9310: a9 f2       ..    
-    jsr sub_cb197                                                     ; 9312: 20 97 b1     ..   
+    lda #&f2                                                          ; 9310: a9 f2       ..       ; Enter the procedure (PROC token &F2)
+    jsr call_proc_fn                                                  ; 9312: 20 97 b1     ..   
     jsr sub_c9852                                                     ; 9315: 20 52 98     R.   
     jmp statement_loop                                                ; 9318: 4c 9b 8b    L..   
 ; &931b referenced 1 time by &9332
@@ -3534,16 +3534,16 @@ l848a = sub_c847b+15
 ; Make variables local to the current PROC/FN, stacking their old values. LOCAL var,...
 ; &9323 referenced 1 time by &934e
 .stmt_local
-    tsx                                                               ; 9323: ba          .     
+    tsx                                                               ; 9323: ba          .        ; LOCAL is only meaningful inside a PROC/FN
     cpx #&fc                                                          ; 9324: e0 fc       ..    
     bcs c936b                                                         ; 9326: b0 43       .C    
     jsr parse_lvalue                                                  ; 9328: 20 82 95     ..   
     beq c9353                                                         ; 932b: f0 26       .&    
-    jsr sub_cb30d                                                     ; 932d: 20 0d b3     ..   
+    jsr stack_local                                                   ; 932d: 20 0d b3     ..      ; Save the variable's value for restoration
     ldy zp_iwa_2                                                      ; 9330: a4 2c       .,    
     bmi loop_c931b                                                    ; 9332: 30 e7       0.    
     jsr stack_integer                                                 ; 9334: 20 94 bd     ..   
-    lda #0                                                            ; 9337: a9 00       ..    
+    lda #0                                                            ; 9337: a9 00       ..       ; Initialise the local to zero / empty
     jsr caed8                                                         ; 9339: 20 d8 ae     ..   
     sta zp_var_type                                                   ; 933c: 85 27       .'    
     jsr assign_number                                                 ; 933e: 20 b4 b4     ..   
@@ -3554,7 +3554,7 @@ l848a = sub_c847b+15
     ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..    
     sty zp_text_ptr_off                                               ; 9347: 84 0a       ..    
     jsr skip_spaces                                                   ; 9349: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 934c: c9 2c       .,    
+    cmp #&2c ; ','                                                    ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
     beq stmt_local                                                    ; 934e: f0 d3       ..    
     jmp c8b96                                                         ; 9350: 4c 96 8b    L..   
 ; &9353 referenced 1 time by &932b
@@ -3565,13 +3565,13 @@ l848a = sub_c847b+15
 ;
 ; Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC.
 .stmt_endproc
-    tsx                                                               ; 9356: ba          .     
+    tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
     cpx #&fc                                                          ; 9357: e0 fc       ..    
     bcs c9365                                                         ; 9359: b0 0a       ..    
     lda l01ff                                                         ; 935b: ad ff 01    ...   
-    cmp #&f2                                                          ; 935e: c9 f2       ..    
+    cmp #&f2                                                          ; 935e: c9 f2       ..       ; The framed call must be a PROC
     bne c9365                                                         ; 9360: d0 03       ..    
-    jmp check_end_of_statement                                        ; 9362: 4c 57 98    LW.   
+    jmp check_end_of_statement                                        ; 9362: 4c 57 98    LW.      ; Return to the caller, restoring locals
 ; &9365 referenced 2 times by &9359, &9360
 .c9365
     brk                                                               ; 9365: 00          .     
@@ -9062,14 +9062,25 @@ l848a = sub_c847b+15
 ; Call a user-defined function and return its value. FNname[(params)].
 .fn_fn
     lda #&a4                                                          ; b195: a9 a4       ..    
+; ***************************************************************************************
+; Enter a PROC or FN
+;
+; The procedure/function call mechanism. First copies the live 6502 hardware stack onto
+; the BASIC value stack and resets the hardware stack -- this is how BBC BASIC lets PROCs
+; and FNs nest far beyond the 256-byte 6502 stack. Then pushes the call context (the
+; PROC/FN token and the caller's text pointers), locates the named definition, binds any
+; parameters, and transfers control to the body. ENDPROC / =expr unwind this frame.
+;
+; On Entry:
+;     A: PROC token &F2 or FN token &A4
 ; &b197 referenced 1 time by &9312
-.sub_cb197
+.call_proc_fn
     sta zp_var_type                                                   ; b197: 85 27       .'    
-    tsx                                                               ; b199: ba          .     
+    tsx                                                               ; b199: ba          .        ; Copy the 6502 stack onto the BASIC stack
     txa                                                               ; b19a: 8a          .     
     clc                                                               ; b19b: 18          .     
     adc zp_stack_ptr                                                  ; b19c: 65 04       e.    
-    jsr reserve_stack                                                 ; b19e: 20 2e be     ..   
+    jsr reserve_stack                                                 ; b19e: 20 2e be     ..      ; so procedures can nest far beyond 256 bytes
     ldy #0                                                            ; b1a1: a0 00       ..    
     txa                                                               ; b1a3: 8a          .     
     sta (zp_stack_ptr),y                                              ; b1a4: 91 04       ..    
@@ -9083,7 +9094,7 @@ l848a = sub_c847b+15
     bne loop_cb1a6                                                    ; b1af: d0 f5       ..    
     txs                                                               ; b1b1: 9a          .     
     lda zp_var_type                                                   ; b1b2: a5 27       .'    
-    pha                                                               ; b1b4: 48          H     
+    pha                                                               ; b1b4: 48          H        ; Push the call context and return pointers
     lda zp_text_ptr_off                                               ; b1b5: a5 0a       ..    
     pha                                                               ; b1b7: 48          H     
     lda zp_text_ptr                                                   ; b1b8: a5 0b       ..    
@@ -9217,7 +9228,7 @@ l848a = sub_c847b+15
     inx                                                               ; b273: e8          .     
     txa                                                               ; b274: 8a          .     
     pha                                                               ; b275: 48          H     
-    jsr sub_cb30d                                                     ; b276: 20 0d b3     ..   
+    jsr stack_local                                                   ; b276: 20 0d b3     ..   
     jsr skip_spaces                                                   ; b279: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; b27c: c9 2c       .,    
     beq cb24d                                                         ; b27e: f0 cd       ..    
@@ -9303,8 +9314,13 @@ l848a = sub_c847b+15
     lda l004e                                                         ; b307: a5 4e       .N    
     pha                                                               ; b309: 48          H     
     jmp cb202                                                         ; b30a: 4c 02 b2    L..   
+; ***************************************************************************************
+; Save a variable for LOCAL
+;
+; Push a variable's current value and identity onto the BASIC stack so ENDPROC can
+; restore it, implementing LOCAL.
 ; &b30d referenced 2 times by &932d, &b276
-.sub_cb30d
+.stack_local
     ldy zp_iwa_2                                                      ; b30d: a4 2c       .,    
     cpy #4                                                            ; b30f: c0 04       ..    
     bne cb318                                                         ; b311: d0 05       ..    
@@ -12006,6 +12022,7 @@ save pydis_start, pydis_end
 ;     return_35:                   2
 ;     return_9:                    2
 ;     rnd_fraction:                2
+;     stack_local:                 2
 ;     stmt_data:                   2
 ;     sub_c887c:                   2
 ;     sub_c8c21:                   2
@@ -12039,7 +12056,6 @@ save pydis_start, pydis_end
 ;     sub_cadad:                   2
 ;     sub_caf87:                   2
 ;     sub_cafad:                   2
-;     sub_cb30d:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -12366,6 +12382,7 @@ save pydis_start, pydis_end
 ;     cae8d:                       1
 ;     caeaa:                       1
 ;     cafeb:                       1
+;     call_proc_fn:                1
 ;     cb023:                       1
 ;     cb061:                       1
 ;     cb06f:                       1
@@ -12785,7 +12802,6 @@ save pydis_start, pydis_end
 ;     sub_cad8f:                   1
 ;     sub_cae02:                   1
 ;     sub_cae3a:                   1
-;     sub_cb197:                   1
 ;     sub_cb1c8:                   1
 ;     sub_cb3c5:                   1
 ;     sub_cb4b7:                   1
@@ -13833,9 +13849,7 @@ save pydis_start, pydis_end
 ;     sub_cae3a
 ;     sub_caf87
 ;     sub_cafad
-;     sub_cb197
 ;     sub_cb1c8
-;     sub_cb30d
 ;     sub_cb3c5
 ;     sub_cb4b1
 ;     sub_cb4b7

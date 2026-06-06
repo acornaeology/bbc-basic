@@ -1561,6 +1561,22 @@
       "title": "Handle the PRINT ' TAB and SPC items",
       "description": "Recognise and act on the special PRINT items: apostrophe\n(force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when\nit consumed one, so the caller skips ordinary expression printing.\n",
       "fall_through": true
+    },
+    {
+      "addr": 45463,
+      "name": "call_proc_fn",
+      "title": "Enter a PROC or FN",
+      "description": "The procedure/function call mechanism. First copies the live\n6502 hardware stack onto the BASIC value stack and resets the\nhardware stack -- this is how BBC BASIC lets PROCs and FNs nest far\nbeyond the 256-byte 6502 stack. Then pushes the call context (the\nPROC/FN token and the caller's text pointers), locates the named\ndefinition, binds any parameters, and transfers control to the body.\nENDPROC / =expr unwind this frame.\n",
+      "on_entry": {
+        "A": "PROC token &F2 or FN token &A4"
+      }
+    },
+    {
+      "addr": 45837,
+      "name": "stack_local",
+      "title": "Save a variable for LOCAL",
+      "description": "Push a variable's current value and identity onto the BASIC\nstack so ENDPROC can restore it, implementing LOCAL.\n",
+      "fall_through": true
     }
   ],
   "banners": [
@@ -31343,6 +31359,7 @@
       "labels": [
         "stmt_proc"
       ],
+      "comment_inline": "Remember the call site in PtrB",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -31415,6 +31432,7 @@
         169,
         242
       ],
+      "comment_inline": "Enter the procedure (PROC token &F2)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&f2"
@@ -31428,9 +31446,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb197",
+      "operand": "call_proc_fn",
       "target": 45463,
-      "target_label": "sub_cb197"
+      "target_label": "call_proc_fn"
     },
     {
       "addr": 37653,
@@ -31519,6 +31537,7 @@
       "labels": [
         "stmt_local"
       ],
+      "comment_inline": "LOCAL is only meaningful inside a PROC/FN",
       "xref_summaries": [
         "&9323 referenced 1 time by &934e"
       ],
@@ -31582,11 +31601,12 @@
         13,
         179
       ],
+      "comment_inline": "Save the variable's value for restoration",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb30d",
+      "operand": "stack_local",
       "target": 45837,
-      "target_label": "sub_cb30d"
+      "target_label": "stack_local"
     },
     {
       "addr": 37680,
@@ -31631,6 +31651,7 @@
         169,
         0
       ],
+      "comment_inline": "Initialise the local to zero / empty",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -31746,6 +31767,7 @@
         201,
         44
       ],
+      "comment_inline": "A comma introduces another LOCAL",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -31805,6 +31827,7 @@
       "labels": [
         "stmt_endproc"
       ],
+      "comment_inline": "ENDPROC needs a PROC frame on the stack",
       "type": "code",
       "mnemonic": "tsx"
     },
@@ -31849,6 +31872,7 @@
         201,
         242
       ],
+      "comment_inline": "The framed call must be a PROC",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&f2"
@@ -31872,6 +31896,7 @@
         87,
         152
       ],
+      "comment_inline": "Return to the caller, restoring locals",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "check_end_of_statement",
@@ -79918,7 +79943,7 @@
         39
       ],
       "labels": [
-        "sub_cb197"
+        "call_proc_fn"
       ],
       "xref_summaries": [
         "&b197 referenced 1 time by &9312"
@@ -79937,6 +79962,7 @@
       "bytes": [
         186
       ],
+      "comment_inline": "Copy the 6502 stack onto the BASIC stack",
       "type": "code",
       "mnemonic": "tsx"
     },
@@ -79975,6 +80001,7 @@
         46,
         190
       ],
+      "comment_inline": "so procedures can nest far beyond 256 bytes",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "reserve_stack",
@@ -80108,6 +80135,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "Push the call context and return pointers",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -81390,9 +81418,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb30d",
+      "operand": "stack_local",
       "target": 45837,
-      "target_label": "sub_cb30d"
+      "target_label": "stack_local"
     },
     {
       "addr": 45689,
@@ -82259,7 +82287,7 @@
         44
       ],
       "labels": [
-        "sub_cb30d"
+        "stack_local"
       ],
       "xref_summaries": [
         "&b30d referenced 2 times by &932d, &b276"
