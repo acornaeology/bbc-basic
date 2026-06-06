@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "fantasm>=0.15",
-    "dasmos>=1.8",
+    "dasmos>=1.9",
 ]
 
 [dependency-groups]

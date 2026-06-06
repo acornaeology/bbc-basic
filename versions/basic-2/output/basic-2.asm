@@ -361,8 +361,9 @@ oscli            = &fff7
 ;
 ; MOS dispatches JMP &8000 on language startup.
 ;
-; Byte 0 is &c9 (non-standard placeholder); MOS would still execute JMP &8000 on language
-; startup so this ROM relies on never being asked.
+; Byte 0 is &c9 — the language entry is inline code, not a JMP abs. This ROM declares
+; itself a language (rom_type bit 6 set) and the MOS enters by calling &8000 directly, so
+; the bytes are executed in place (e.g. BBC BASIC's CMP #1 / BEQ / RTS).
 ;
 ; Reason code in A on entry:
 ;
@@ -373,18 +374,10 @@ oscli            = &fff7
 ; | 2 | Request next byte of softkey expansion (Electron) |
 ; | 3 | Request length of softkey expansion (Electron)    |
 .language_entry
-    equb &c9, &01, &f0                                                ; 8000: c9 01 f0    ...      ; Language entry: CMP #1 / BEQ language_startup / RTS
-; ***************************************************************************************
-; Service-entry slot (3 bytes)
-;
-; MOS calls JMP &8003 for service-call dispatch — unrecognised * commands, OSWORDs,
-; OSBYTEs, *HELP, filing-system init / select, paged-ROM scans, and many other events.
-; The reason code arrives in A.
-;
-; Byte 0 is &1f (non-standard); a ROM that never wants to handle service calls would set
-; rom_type bit 7 clear and use a placeholder here.
-.service_entry
-    equb &1f, &60, &ea                                                ; 8003: 1f 60 ea    .`.   
+    cmp #1                                                            ; 8000: c9 01       ..    
+    beq language_startup                                              ; 8002: f0 1f       ..    
+    rts                                                               ; 8004: 60          `     
+    equb &ea                                                          ; 8005: ea          .     
 ; ***************************************************************************************
 ; ROM identification
 ;
@@ -424,6 +417,7 @@ oscli            = &fff7
 ; from the MOS, clears the print and formatting state, seeds the random-number generator
 ; if it is cold, installs the BASIC error handler in BRKV, and jumps to the immediate (">
 ; ") loop.
+; &8023 referenced 1 time by &8002
 .language_startup
     lda #osbyte_read_himem                                            ; 8023: a9 84       ..    
     jsr osbyte                                                        ; 8025: 20 f4 ff     ..      ; Read top of available user RAM (HIMEM)
@@ -11564,6 +11558,7 @@ save pydis_start, pydis_end
 ;     l84c4:                       1
 ;     l996b:                       1
 ;     l99b9:                       1
+;     language_startup:            1
 ;     loop_c84fd:                  1
 ;     loop_c853c:                  1
 ;     loop_c8544:                  1
@@ -13025,11 +13020,11 @@ save pydis_start, pydis_end
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14420 bytes (88%)
-;     Data                     = 1964 bytes (12%)
+;     Code                     = 14425 bytes (88%)
+;     Data                     = 1959 bytes (12%)
 ;
-;     Number of instructions   = 7129
-;     Number of data bytes     = 949 bytes
+;     Number of instructions   = 7132
+;     Number of data bytes     = 944 bytes
 ;     Number of data words     = 0 bytes
 ;     Number of string bytes   = 1015 bytes
 ;     Number of strings        = 189

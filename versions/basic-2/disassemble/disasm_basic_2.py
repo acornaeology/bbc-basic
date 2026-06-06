@@ -43,25 +43,23 @@ d.load(_rom_filepath, 0x8000)
 # filing-system or FDC environments: BBC BASIC is a language ROM.
 d.use_environment('acorn_mos')
 d.use_environment('acorn_model_b_hardware')
-d.use_environment('acorn_sideways_rom')
+# BASIC's language entry at &8000 is inline code (CMP #1 / BEQ start /
+# RTS), not a JMP abs, so tell the environment to seed it as code. The
+# ROM type byte (&60) has bit 7 clear: BASIC has no service entry, so
+# the bytes at &8003 are the tail of the language-entry instructions,
+# not a separate handler.
+d.use_environment(
+    'acorn_sideways_rom', language_entry='code', service_entry='none',
+)
 
-# Code entry points. BASIC's language entry at &8000 is inline code
-# (CMP #1 / BEQ start / RTS), not a JMP abs, so the sideways-ROM
-# environment cannot auto-seed it. The ROM type byte (&60) has bit 7
-# clear, so BASIC has no service entry: the bytes at &8003 are the tail
-# of the language-entry instructions, not a separate handler.
-d.entry(0x8000)
-d.entry(0x8023)  # Language startup (the BEQ target)
+# Code entry points. The language entry (&8000) and language_startup
+# (&8023, the BEQ target) are reached by the trace from the env-seeded
+# language entry, so they need no explicit entry() here.
 d.entry(0xb402)  # BASIC error handler, installed into BRKV at startup
 
 # ----------------------------------------------------------------------
 # Language entry and startup.
 # ----------------------------------------------------------------------
-d.comment(
-    0x8000,
-    'Language entry: CMP #1 / BEQ language_startup / RTS',
-    align=Align.INLINE,
-)
 d.label(0x8add, 'immediate_loop')   # The ">" prompt / command loop
 d.label(0xb402, 'brk_handler')      # Reached via BRKV on any error
 
