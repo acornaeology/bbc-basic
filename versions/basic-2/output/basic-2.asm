@@ -2034,6 +2034,10 @@ l848a = sub_c847b+15
     cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,    
     bne c8aa2                                                         ; 8ab3: d0 ed       ..    
     rts                                                               ; 8ab5: 60          `     
+; ***************************************************************************************
+; OLD
+;
+; Recover the program cleared by NEW, if memory is intact. OLD.
 .stmt_old
     jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.   
     lda zp_page                                                       ; 8ab9: a5 18       ..    
@@ -2043,16 +2047,28 @@ l848a = sub_c847b+15
     sta (zp_general),y                                                ; 8ac1: 91 37       .7    
     jsr sub_cbe6f                                                     ; 8ac3: 20 6f be     o.   
     bne c8af3                                                         ; 8ac6: d0 2b       .+    
+; ***************************************************************************************
+; END
+;
+; End the program and return to the immediate prompt. END.
 .stmt_end
     jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.   
     jsr sub_cbe6f                                                     ; 8acb: 20 6f be     o.   
     bne immediate_loop                                                ; 8ace: d0 26       .&    
+; ***************************************************************************************
+; STOP
+;
+; Stop the program, reporting "STOP at line nnnn". STOP.
 .stmt_stop
     jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.   
     brk                                                               ; 8ad3: 00          .     
     equb &00                                                          ; 8ad4: 00          .     
     equs "STOP"                                                       ; 8ad5: 53 54 4f... STO...
     equb &00                                                          ; 8ad9: 00          .     
+; ***************************************************************************************
+; NEW
+;
+; Clear the current program and its variables. NEW.
 .stmt_new
     jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.   
 ; ***************************************************************************************
@@ -2175,6 +2191,12 @@ l848a = sub_c847b+15
     ldx zp_text_ptr                                                   ; 8b76: a6 0b       ..    
     ldy l000c                                                         ; 8b78: a4 0c       ..    
     jsr oscli                                                         ; 8b7a: 20 f7 ff     ..   
+; ***************************************************************************************
+; DATA / DEF / REM / ELSE
+;
+; Skip to the end of the line. DATA introduces inline data (read by READ), DEF a PROC/FN
+; definition, REM a comment, and ELSE the alternative of a taken IF: none execute inline,
+; so all four share this skip-to-end handler.
 ; &8b7d referenced 2 times by &8b89, &b907
 .stmt_data
     lda #&0d                                                          ; 8b7d: a9 0d       ..    
@@ -2265,6 +2287,10 @@ l848a = sub_c847b+15
 .c8bdf
     jsr sub_c9531                                                     ; 8bdf: 20 31 95     1.   
     dec zp_text_ptr_off                                               ; 8be2: c6 0a       ..    
+; ***************************************************************************************
+; LET
+;
+; Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.
 .stmt_let
     jsr sub_c9582                                                     ; 8be4: 20 82 95     ..   
     beq c8c0b                                                         ; 8be7: f0 22       ."    
@@ -2558,6 +2584,11 @@ l848a = sub_c847b+15
     cmp #&8b                                                          ; 8d94: c9 8b       ..    
     beq c8d80                                                         ; 8d96: f0 e8       ..    
     bne c8dd2                                                         ; 8d98: d0 38       .8    
+; ***************************************************************************************
+; PRINT
+;
+; Print expressions to the screen, or a file with #, with formatting controlled by @% and
+; separators. PRINT [~][items][;][,].
 .stmt_print
     jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#    
@@ -2748,10 +2779,18 @@ l848a = sub_c847b+15
     cmp #&22                                                          ; 8eb7: c9 22       ."    
     bne c8e6a                                                         ; 8eb9: d0 af       ..    
     beq c8ea4                                                         ; 8ebb: f0 e7       ..    
+; ***************************************************************************************
+; CLG
+;
+; Clear the graphics window to the graphics background colour. CLG.
 .stmt_clg
     jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.   
     lda #&10                                                          ; 8ec0: a9 10       ..    
     bne c8ecc                                                         ; 8ec2: d0 08       ..    
+; ***************************************************************************************
+; CLS
+;
+; Clear the text window to the text background colour. CLS.
 .stmt_cls
     jsr check_end_of_statement                                        ; 8ec4: 20 57 98     W.   
     jsr cbc28                                                         ; 8ec7: 20 28 bc     (.   
@@ -2760,6 +2799,11 @@ l848a = sub_c847b+15
 .c8ecc
     jsr oswrch                                                        ; 8ecc: 20 ee ff     ..   
     jmp statement_loop                                                ; 8ecf: 4c 9b 8b    L..   
+; ***************************************************************************************
+; CALL
+;
+; Call machine code, passing the resident integer variables and an optional parameter
+; block. CALL address [,params...].
 .stmt_call
     jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..   
     jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..   
@@ -2809,6 +2853,10 @@ l848a = sub_c847b+15
 ; &8f2e referenced 3 times by &8f34, &8f3e, &8f43
 .c8f2e
     jmp c982a                                                         ; 8f2e: 4c 2a 98    L*.   
+; ***************************************************************************************
+; DELETE
+;
+; Delete a range of program lines. DELETE start, end.
 .stmt_delete
     jsr sub_c97df                                                     ; 8f31: 20 df 97     ..   
     bcc c8f2e                                                         ; 8f34: 90 f8       ..    
@@ -2869,6 +2917,10 @@ l848a = sub_c847b+15
     lda #1                                                            ; 8f9e: a9 01       ..    
     sta zp_general                                                    ; 8fa0: 85 37       .7    
     rts                                                               ; 8fa2: 60          `     
+; ***************************************************************************************
+; RENUMBER
+;
+; Renumber program lines and fix up line references. RENUMBER [start[,step]].
 .stmt_renumber
     jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.   
     ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9    
@@ -3025,6 +3077,11 @@ l848a = sub_c847b+15
 ; &90ab referenced 1 time by &90a6
 .return_7
     rts                                                               ; 90ab: 60          `     
+; ***************************************************************************************
+; AUTO
+;
+; Generate line numbers automatically during program entry until Escape. AUTO
+; [start[,step]].
 .stmt_auto
     jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.   
     lda zp_iwa                                                        ; 90af: a5 2a       .*    
@@ -3094,6 +3151,10 @@ l848a = sub_c847b+15
     equb &0a                                                          ; 9128: 0a          .     
     equs "Bad "                                                       ; 9129: 42 61 64... Bad...
     equb &de, &00                                                     ; 912d: de 00       ..    
+; ***************************************************************************************
+; DIM
+;
+; Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size.
 ; &912f referenced 1 time by &9215
 .stmt_dim
     jsr skip_spaces                                                   ; 912f: 20 97 8a     ..   
@@ -3289,6 +3350,10 @@ l848a = sub_c847b+15
 ; &925a referenced 1 time by &9249
 .c925a
     jmp c9127                                                         ; 925a: 4c 27 91    L'.   
+; ***************************************************************************************
+; HIMEM=
+;
+; Set HIMEM, the top of memory available to BASIC. HIMEM = address.
 .stmt_himem
     jsr sub_c92eb                                                     ; 925d: 20 eb 92     ..   
     lda zp_iwa                                                        ; 9260: a5 2a       .*    
@@ -3298,6 +3363,10 @@ l848a = sub_c847b+15
     sta l0007                                                         ; 9268: 85 07       ..    
     sta l0005                                                         ; 926a: 85 05       ..    
     jmp statement_loop                                                ; 926c: 4c 9b 8b    L..   
+; ***************************************************************************************
+; LOMEM=
+;
+; Set LOMEM, the start of variable storage. LOMEM = address.
 .stmt_lomem
     jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..   
     lda zp_iwa                                                        ; 9272: a5 2a       .*    
@@ -3308,6 +3377,10 @@ l848a = sub_c847b+15
     sta l0003                                                         ; 927c: 85 03       ..    
     jsr sub_cbd2f                                                     ; 927e: 20 2f bd     /.   
     beq c928a                                                         ; 9281: f0 07       ..    
+; ***************************************************************************************
+; PAGE=
+;
+; Set PAGE, the start of the BASIC program. PAGE = address.
 .stmt_page
     jsr sub_c92eb                                                     ; 9283: 20 eb 92     ..   
     lda l002b                                                         ; 9286: a5 2b       .+    
@@ -3315,10 +3388,18 @@ l848a = sub_c847b+15
 ; &928a referenced 2 times by &9281, &9293
 .c928a
     jmp statement_loop                                                ; 928a: 4c 9b 8b    L..   
+; ***************************************************************************************
+; CLEAR
+;
+; Discard all variables and the stack. CLEAR.
 .stmt_clear
     jsr check_end_of_statement                                        ; 928d: 20 57 98     W.   
     jsr sub_cbd20                                                     ; 9290: 20 20 bd      .   
     beq c928a                                                         ; 9293: f0 f5       ..    
+; ***************************************************************************************
+; TRACE
+;
+; Trace executed line numbers for debugging. TRACE ON | OFF | line.
 .stmt_trace
     jsr sub_c97df                                                     ; 9295: 20 df 97     ..   
     bcs c92a5                                                         ; 9298: b0 0b       ..    
@@ -3353,6 +3434,10 @@ l848a = sub_c847b+15
     jsr check_end_of_statement                                        ; 92c2: 20 57 98     W.   
     lda #0                                                            ; 92c5: a9 00       ..    
     beq loop_c92b2                                                    ; 92c7: f0 e9       ..    
+; ***************************************************************************************
+; TIME=
+;
+; Set the centisecond elapsed-time clock. TIME = value.
 .stmt_time
     jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..   
     ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*    
@@ -3409,6 +3494,11 @@ l848a = sub_c847b+15
     beq c92f7                                                         ; 92fd: f0 f8       ..    
     bmi return_9                                                      ; 92ff: 30 e9       0.    
     jmp int_to_fwa                                                    ; 9301: 4c be a2    L..   
+; ***************************************************************************************
+; PROC
+;
+; Call a named procedure, stacking parameters and the return position.
+; PROCname[(params)].
 .stmt_proc
     lda zp_text_ptr                                                   ; 9304: a5 0b       ..    
     sta zp_text_ptr2                                                  ; 9306: 85 19       ..    
@@ -3426,6 +3516,10 @@ l848a = sub_c847b+15
     lda #0                                                            ; 931d: a9 00       ..    
     sta (zp_iwa),y                                                    ; 931f: 91 2a       .*    
     beq c9341                                                         ; 9321: f0 1e       ..    
+; ***************************************************************************************
+; LOCAL
+;
+; Make variables local to the current PROC/FN, stacking their old values. LOCAL var,...
 ; &9323 referenced 1 time by &934e
 .stmt_local
     tsx                                                               ; 9323: ba          .     
@@ -3454,6 +3548,10 @@ l848a = sub_c847b+15
 ; &9353 referenced 1 time by &932b
 .c9353
     jmp c8b98                                                         ; 9353: 4c 98 8b    L..   
+; ***************************************************************************************
+; ENDPROC
+;
+; Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC.
 .stmt_endproc
     tsx                                                               ; 9356: ba          .     
     cpx #&fc                                                          ; 9357: e0 fc       ..    
@@ -3480,6 +3578,10 @@ l848a = sub_c847b+15
     equb &19                                                          ; 9373: 19          .     
     equs "Bad "                                                       ; 9374: 42 61 64... Bad...
     equb &eb, &00                                                     ; 9378: eb 00       ..    
+; ***************************************************************************************
+; GCOL
+;
+; Set the graphics colour and plotting action. GCOL action, colour.
 .stmt_gcol
     jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.   
     lda zp_iwa                                                        ; 937d: a5 2a       .*    
@@ -3489,12 +3591,20 @@ l848a = sub_c847b+15
     lda #&12                                                          ; 9386: a9 12       ..    
     jsr oswrch                                                        ; 9388: 20 ee ff     ..   
     jmp c93da                                                         ; 938b: 4c da 93    L..   
+; ***************************************************************************************
+; COLOUR
+;
+; Select the text colour or redefine a logical colour. COLOUR n.
 .stmt_colour
     lda #&11                                                          ; 938e: a9 11       ..    
     pha                                                               ; 9390: 48          H     
     jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.   
     jsr check_end_of_statement                                        ; 9394: 20 57 98     W.   
     jmp c93da                                                         ; 9397: 4c da 93    L..   
+; ***************************************************************************************
+; MODE
+;
+; Select a screen mode, resetting the display. MODE n.
 .stmt_mode
     lda #&16                                                          ; 939a: a9 16       ..    
     pha                                                               ; 939c: 48          H     
@@ -3535,9 +3645,17 @@ l848a = sub_c847b+15
     jsr oswrch                                                        ; 93db: 20 ee ff     ..   
     jsr sub_c9456                                                     ; 93de: 20 56 94     V.   
     jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..   
+; ***************************************************************************************
+; MOVE
+;
+; Move the graphics cursor without drawing (PLOT 4). MOVE x, y.
 .stmt_move
     lda #4                                                            ; 93e4: a9 04       ..    
     bne c93ea                                                         ; 93e6: d0 02       ..    
+; ***************************************************************************************
+; DRAW
+;
+; Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y.
 .stmt_draw
     lda #5                                                            ; 93e8: a9 05       ..    
 ; &93ea referenced 1 time by &93e6
@@ -3545,6 +3663,10 @@ l848a = sub_c847b+15
     pha                                                               ; 93ea: 48          H     
     jsr eval_expr                                                     ; 93eb: 20 1d 9b     ..   
     jmp c93fd                                                         ; 93ee: 4c fd 93    L..   
+; ***************************************************************************************
+; PLOT
+;
+; Plot a point, line or shape with a given mode. PLOT mode, x, y.
 .stmt_plot
     jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.   
     lda zp_iwa                                                        ; 93f4: a5 2a       .*    
@@ -3574,6 +3696,10 @@ l848a = sub_c847b+15
 .loop_c942a
     lda l002b                                                         ; 942a: a5 2b       .+    
     jsr oswrch                                                        ; 942c: 20 ee ff     ..   
+; ***************************************************************************************
+; VDU
+;
+; Send bytes to the VDU drivers; ";" sends a 16-bit word. VDU n[,|;]...
 ; &942f referenced 1 time by &944b
 .stmt_vdu
     jsr skip_spaces                                                   ; 942f: 20 97 8a     ..   
@@ -4414,6 +4540,11 @@ l848a = sub_c847b+15
 ; &98bf referenced 1 time by &98c5
 .loop_c98bf
     jmp c8c0e                                                         ; 98bf: 4c 0e 8c    L..   
+; ***************************************************************************************
+; IF
+;
+; Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE
+; or the end of the line. IF expr [THEN] ... [ELSE ...].
 .stmt_if
     jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..   
     beq loop_c98bf                                                    ; 98c5: f0 f8       ..    
@@ -9165,6 +9296,10 @@ l848a = sub_c847b+15
     equb &f6, &3a, &e7, &9e, &f1                                      ; b433: f6 3a e7... .:....
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
     equb &9e, &3a, &e0, &8b, &f1, &3a, &e0, &0d                       ; b444: 9e 3a e0... .:....
+; ***************************************************************************************
+; SOUND
+;
+; Make a sound on a channel. SOUND channel, amplitude, pitch, duration.
 .stmt_sound
     jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.   
     ldx #3                                                            ; b44f: a2 03       ..    
@@ -9189,6 +9324,10 @@ l848a = sub_c847b+15
     ldy #7                                                            ; b46c: a0 07       ..    
     ldx #5                                                            ; b46e: a2 05       ..    
     bne cb48f                                                         ; b470: d0 1d       ..    
+; ***************************************************************************************
+; ENVELOPE
+;
+; Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters).
 .stmt_envelope
     jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.   
     ldx #&0d                                                          ; b475: a2 0d       ..    
@@ -9219,6 +9358,10 @@ l848a = sub_c847b+15
     ldy #>(zp_general)                                                ; b498: a0 00       ..    
     jsr osword                                                        ; b49a: 20 f1 ff     ..      ; ENVELOPE command
     jmp statement_loop                                                ; b49d: 4c 9b 8b    L..   
+; ***************************************************************************************
+; WIDTH
+;
+; Set the output line width for PRINT. WIDTH n.
 .stmt_width
     jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.   
     jsr sub_c9852                                                     ; b4a3: 20 52 98     R.   
@@ -9412,6 +9555,10 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; b595: a5 2a       .*    
     sta zp_listo                                                      ; b597: 85 1f       ..    
     jmp immediate_loop                                                ; b599: 4c f6 8a    L..   
+; ***************************************************************************************
+; LIST
+;
+; List program lines, de-tokenising them. LIST [start[,end]].
 .stmt_list
     iny                                                               ; b59c: c8          .     
     lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..    
@@ -9564,6 +9711,11 @@ l848a = sub_c847b+15
     brk                                                               ; b68e: 00          .     
     equs " No "                                                       ; b68f: 20 4e 6f...  No...
     equb &e3, &00                                                     ; b693: e3 00       ..    
+; ***************************************************************************************
+; NEXT
+;
+; End a FOR loop: update the counter and loop back unless the limit is passed. NEXT
+; [var,...].
 ; &b695 referenced 1 time by &b763
 .stmt_next
     jsr sub_c95c9                                                     ; b695: 20 c9 95     ..   
@@ -9725,6 +9877,11 @@ l848a = sub_c847b+15
     brk                                                               ; b7bd: 00          .     
     equs "$No "                                                       ; b7be: 24 4e 6f... $No...
     equb &b8, &00                                                     ; b7c2: b8 00       ..    
+; ***************************************************************************************
+; FOR
+;
+; Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO
+; limit [STEP step].
 .stmt_for
     jsr sub_c9582                                                     ; b7c4: 20 82 95     ..   
     beq cb7a4                                                         ; b7c7: f0 db       ..    
@@ -9818,6 +9975,10 @@ l848a = sub_c847b+15
     sta l004c                                                         ; b880: 85 4c       .L    
     jsr fwa_pack_var                                                  ; b882: 20 8d a3     ..   
     jmp cb837                                                         ; b885: 4c 37 b8    L7.   
+; ***************************************************************************************
+; GOSUB
+;
+; Call a subroutine at a line number, stacking the return position. GOSUB line.
 .stmt_gosub
     jsr sub_cb99a                                                     ; b888: 20 9a b9     ..   
 ; &b88b referenced 1 time by &b97a
@@ -9842,6 +10003,10 @@ l848a = sub_c847b+15
     brk                                                               ; b8af: 00          .     
     equs "&No "                                                       ; b8b0: 26 4e 6f... &No...
     equb &e4, &00                                                     ; b8b4: e4 00       ..    
+; ***************************************************************************************
+; RETURN
+;
+; Return from a GOSUB to the stacked return position. RETURN.
 .stmt_return
     jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.   
     ldx zp_gosub_level                                                ; b8b9: a6 25       .%    
@@ -9852,6 +10017,10 @@ l848a = sub_c847b+15
     sty zp_text_ptr                                                   ; b8c5: 84 0b       ..    
     sta l000c                                                         ; b8c7: 85 0c       ..    
     jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..   
+; ***************************************************************************************
+; GOTO
+;
+; Jump to a line number. GOTO line.
 .stmt_goto
     jsr sub_cb99a                                                     ; b8cc: 20 9a b9     ..   
     jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.   
@@ -9896,6 +10065,11 @@ l848a = sub_c847b+15
     equb &27, &ee                                                     ; b90b: 27 ee       '.    
     equs " syntax"                                                    ; b90d: 20 73 79...  sy...
     equb &00                                                          ; b914: 00          .     
+; ***************************************************************************************
+; ON
+;
+; ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list |
+; ON ERROR stmts.
 .stmt_on
     jsr skip_spaces                                                   ; b915: 20 97 8a     ..   
     cmp #&85                                                          ; b918: c9 85       ..    
@@ -10088,6 +10262,11 @@ l848a = sub_c847b+15
     pla                                                               ; ba3f: 68          h     
     pla                                                               ; ba40: 68          h     
     jmp c8b98                                                         ; ba41: 4c 98 8b    L..   
+; ***************************************************************************************
+; INPUT
+;
+; Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt]
+; var,...
 .stmt_input
     jsr skip_spaces                                                   ; ba44: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; ba47: c9 23       .#    
@@ -10191,6 +10370,10 @@ l848a = sub_c847b+15
     sta zp_var_type                                                   ; bade: 85 27       .'    
     jsr sub_c8c21                                                     ; bae0: 20 21 8c     !.   
     jmp cba5a                                                         ; bae3: 4c 5a ba    LZ.   
+; ***************************************************************************************
+; RESTORE
+;
+; Reset the DATA pointer, optionally to a given line. RESTORE [line].
 .stmt_restore
     ldy #0                                                            ; bae6: a0 00       ..    
     sty l003d                                                         ; bae8: 84 3d       .=    
@@ -10221,6 +10404,10 @@ l848a = sub_c847b+15
     cmp #&2c ; ','                                                    ; bb18: c9 2c       .,    
     beq stmt_read                                                     ; bb1a: f0 03       ..    
     jmp c8b96                                                         ; bb1c: 4c 96 8b    L..   
+; ***************************************************************************************
+; READ
+;
+; Read values from DATA statements into variables. READ var,...
 ; &bb1f referenced 1 time by &bb1a
 .stmt_read
     jsr sub_c9582                                                     ; bb1f: 20 82 95     ..   
@@ -10312,6 +10499,10 @@ l848a = sub_c847b+15
 ; &bbb0 referenced 3 times by &bb65, &bb69, &bb74
 .return_36
     rts                                                               ; bbb0: 60          `     
+; ***************************************************************************************
+; UNTIL
+;
+; End a REPEAT loop: loop back unless the condition is true. UNTIL expr.
 .stmt_until
     jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..   
     jsr c984c                                                         ; bbb4: 20 4c 98     L.   
@@ -10335,6 +10526,10 @@ l848a = sub_c847b+15
     brk                                                               ; bbd6: 00          .     
     equs ",Too many "                                                 ; bbd7: 2c 54 6f... ,To...
     equb &f5, &73, &00                                                ; bbe1: f5 73 00    .s.   
+; ***************************************************************************************
+; REPEAT
+;
+; Begin a REPEAT...UNTIL loop, stacking the loop position. REPEAT.
 .stmt_repeat
     ldx zp_repeat_level                                               ; bbe4: a6 24       .$    
     cpx #&14                                                          ; bbe6: e0 14       ..    
@@ -10533,6 +10728,10 @@ l848a = sub_c847b+15
 ; &bd10 referenced 1 time by &bc9c
 .return_38
     rts                                                               ; bd10: 60          `     
+; ***************************************************************************************
+; RUN
+;
+; Run the current program from the start. RUN.
 .stmt_run
     jsr check_end_of_statement                                        ; bd11: 20 57 98     W.   
 ; &bd14 referenced 1 time by &bf2d
@@ -10863,6 +11062,10 @@ l848a = sub_c847b+15
     lda #&0d                                                          ; bebc: a9 0d       ..    
     sta string_work,y                                                 ; bebe: 99 00 06    ...   
     rts                                                               ; bec1: 60          `     
+; ***************************************************************************************
+; OSCLI
+;
+; Pass a string to the OS command-line interpreter. OSCLI string.
 .stmt_oscli
     jsr sub_cbed2                                                     ; bec2: 20 d2 be     ..   
     ldx #0                                                            ; bec5: a2 00       ..    
@@ -10893,6 +11096,10 @@ l848a = sub_c847b+15
     sty l003c                                                         ; beee: 84 3c       .<    
     lda #0                                                            ; bef0: a9 00       ..    
     rts                                                               ; bef2: 60          `     
+; ***************************************************************************************
+; SAVE
+;
+; Save the current program to the filing system. SAVE string.
 .stmt_save
     jsr sub_cbe6f                                                     ; bef3: 20 6f be     o.   
     lda zp_top                                                        ; bef6: a5 12       ..    
@@ -10917,12 +11124,24 @@ l848a = sub_c847b+15
     ldx #&37 ; '7'                                                    ; bf1c: a2 37       .7    
     jsr osfile                                                        ; bf1e: 20 dd ff     ..   
     jmp statement_loop                                                ; bf21: 4c 9b 8b    L..   
+; ***************************************************************************************
+; LOAD
+;
+; Load a BASIC program without running it. LOAD string.
 .stmt_load
     jsr sub_cbe62                                                     ; bf24: 20 62 be     b.   
     jmp c8af3                                                         ; bf27: 4c f3 8a    L..   
+; ***************************************************************************************
+; CHAIN
+;
+; Load a BASIC program and run it. CHAIN string.
 .stmt_chain
     jsr sub_cbe62                                                     ; bf2a: 20 62 be     b.   
     jmp cbd14                                                         ; bf2d: 4c 14 bd    L..   
+; ***************************************************************************************
+; PTR#=
+;
+; Set the sequential pointer of an open file. PTR#channel = position.
 .stmt_ptr
     jsr sub_cbfa9                                                     ; bf30: 20 a9 bf     ..   
     pha                                                               ; bf33: 48          H     
@@ -10947,6 +11166,10 @@ l848a = sub_c847b+15
     jsr osargs                                                        ; bf52: 20 da ff     ..   
     lda #&40 ; '@'                                                    ; bf55: a9 40       .@    
     rts                                                               ; bf57: 60          `     
+; ***************************************************************************************
+; BPUT
+;
+; Write a byte to an open file. BPUT#channel, value.
 .stmt_bput
     jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..   
     pha                                                               ; bf5b: 48          H     
@@ -10984,6 +11207,10 @@ l848a = sub_c847b+15
 ; &bf96 referenced 1 time by &bf86
 .cbf96
     jmp c8c0e                                                         ; bf96: 4c 0e 8c    L..   
+; ***************************************************************************************
+; CLOSE
+;
+; Close an open file, or all files with #0. CLOSE#channel.
 .stmt_close
     jsr sub_cbfa9                                                     ; bf99: 20 a9 bf     ..   
     jsr sub_c9852                                                     ; bf9c: 20 52 98     R.   
@@ -11029,6 +11256,10 @@ l848a = sub_c847b+15
     jsr sub_c894b                                                     ; bfdc: 20 4b 89     K.   
     bpl loop_cbfd9                                                    ; bfdf: 10 f8       ..    
     jmp (zp_general)                                                  ; bfe1: 6c 37 00    l7.   
+; ***************************************************************************************
+; REPORT
+;
+; Print the message for the last error. REPORT.
 .stmt_report
     jsr check_end_of_statement                                        ; bfe4: 20 57 98     W.   
     jsr sub_cbc25                                                     ; bfe7: 20 25 bc     %.   

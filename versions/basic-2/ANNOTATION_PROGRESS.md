@@ -57,6 +57,16 @@ uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py`).
       / maths / random (uniform: arg in FWA, result in FWA, registers
       destroyed) can be folded in on demand from ch. 3.6 / 5.2 / 6.3.
 
+## Statement / function handlers
+
+- [x] All `stmt_*` statement handlers (AUTO..WIDTH) carry a behaviour +
+      syntax description, attached via HANDLER_INFO in the dispatch loop.
+      Syntax forms cross-checked against JGH banners and the User Guide.
+- [x] Maths `fn_*` handlers described (Pharo ch. 5).
+- [ ] Remaining `fn_*` handlers (non-maths: OPENIN/PTR/PAGE reads,
+      ASC/CHR$/LEN/VAL/INSTR/GET/INKEY, EOF/EXT/COUNT, etc.).
+- [ ] Per-statement inline comments (next density pass).
+
 ## Next (bottom-up, by subsystem)
 
 Use `fantasm cfg leaves 2` and `fantasm audit undeclared 2` to pick

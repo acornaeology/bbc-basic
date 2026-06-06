@@ -317,6 +317,121 @@ HANDLER_INFO = {
     'fn_rad': ('RAD', 'FWA = FWA degrees expressed in radians. '
                       'Pure routine at &ABB4.'),
     'fn_pi': ('PI', 'FWA = pi (3.14159265). Takes no argument.'),
+    # Statement handlers (behaviour written here; syntax forms cross-
+    # checked against JGH and the BBC User Guide).
+    'stmt_auto': ('AUTO', 'Generate line numbers automatically during '
+                          'program entry until Escape. AUTO [start[,step]].'),
+    'stmt_bput': ('BPUT', 'Write a byte to an open file. '
+                          'BPUT#channel, value.'),
+    'stmt_call': ('CALL', 'Call machine code, passing the resident integer '
+                          'variables and an optional parameter block. '
+                          'CALL address [,params...].'),
+    'stmt_chain': ('CHAIN', 'Load a BASIC program and run it. CHAIN string.'),
+    'stmt_clear': ('CLEAR', 'Discard all variables and the stack. CLEAR.'),
+    'stmt_clg': ('CLG', 'Clear the graphics window to the graphics '
+                        'background colour. CLG.'),
+    'stmt_close': ('CLOSE', 'Close an open file, or all files with #0. '
+                            'CLOSE#channel.'),
+    'stmt_cls': ('CLS', 'Clear the text window to the text background '
+                        'colour. CLS.'),
+    'stmt_colour': ('COLOUR', 'Select the text colour or redefine a logical '
+                              'colour. COLOUR n.'),
+    'stmt_data': ('DATA / DEF / REM / ELSE',
+                  'Skip to the end of the line. DATA introduces inline data '
+                  '(read by READ), DEF a PROC/FN definition, REM a comment, '
+                  'and ELSE the alternative of a taken IF: none execute '
+                  'inline, so all four share this skip-to-end handler.'),
+    'stmt_delete': ('DELETE', 'Delete a range of program lines. '
+                              'DELETE start, end.'),
+    'stmt_dim': ('DIM', 'Dimension an array, or reserve a block of bytes. '
+                        'DIM var(subscripts) | DIM var size.'),
+    'stmt_draw': ('DRAW', 'Draw a line from the graphics cursor to a point '
+                          '(PLOT 5). DRAW x, y.'),
+    'stmt_end': ('END', 'End the program and return to the immediate '
+                        'prompt. END.'),
+    'stmt_endproc': ('ENDPROC', 'Return from a procedure, restoring LOCAL '
+                                'values and the caller\'s text pointer. '
+                                'ENDPROC.'),
+    'stmt_envelope': ('ENVELOPE', 'Define a pitch/amplitude envelope for '
+                                  'SOUND. ENVELOPE n,t,... (14 parameters).'),
+    'stmt_for': ('FOR', 'Begin a counted loop, stacking the control '
+                        'variable, limit and step. '
+                        'FOR var = start TO limit [STEP step].'),
+    'stmt_gcol': ('GCOL', 'Set the graphics colour and plotting action. '
+                          'GCOL action, colour.'),
+    'stmt_gosub': ('GOSUB', 'Call a subroutine at a line number, stacking '
+                            'the return position. GOSUB line.'),
+    'stmt_goto': ('GOTO', 'Jump to a line number. GOTO line.'),
+    'stmt_himem': ('HIMEM=', 'Set HIMEM, the top of memory available to '
+                             'BASIC. HIMEM = address.'),
+    'stmt_if': ('IF', 'Conditional execution: evaluate the expression and '
+                      'run the THEN part, else skip to ELSE or the end of '
+                      'the line. IF expr [THEN] ... [ELSE ...].'),
+    'stmt_input': ('INPUT', 'Read values from the keyboard, or a file with '
+                            '#, into variables. INPUT [LINE] [prompt] '
+                            'var,...'),
+    'stmt_let': ('LET', 'Assign an expression to a variable; the LET '
+                        'keyword is optional. [LET] var = expr.'),
+    'stmt_list': ('LIST', 'List program lines, de-tokenising them. '
+                          'LIST [start[,end]].'),
+    'stmt_load': ('LOAD', 'Load a BASIC program without running it. '
+                          'LOAD string.'),
+    'stmt_local': ('LOCAL', 'Make variables local to the current PROC/FN, '
+                            'stacking their old values. LOCAL var,...'),
+    'stmt_lomem': ('LOMEM=', 'Set LOMEM, the start of variable storage. '
+                             'LOMEM = address.'),
+    'stmt_mode': ('MODE', 'Select a screen mode, resetting the display. '
+                          'MODE n.'),
+    'stmt_move': ('MOVE', 'Move the graphics cursor without drawing '
+                          '(PLOT 4). MOVE x, y.'),
+    'stmt_new': ('NEW', 'Clear the current program and its variables. NEW.'),
+    'stmt_next': ('NEXT', 'End a FOR loop: update the counter and loop back '
+                          'unless the limit is passed. NEXT [var,...].'),
+    'stmt_old': ('OLD', 'Recover the program cleared by NEW, if memory is '
+                        'intact. OLD.'),
+    'stmt_on': ('ON', 'ON expr GOTO/GOSUB computed jump, or ON ERROR error '
+                      'trapping. ON expr GOTO/GOSUB list | ON ERROR stmts.'),
+    'stmt_oscli': ('OSCLI', 'Pass a string to the OS command-line '
+                            'interpreter. OSCLI string.'),
+    'stmt_page': ('PAGE=', 'Set PAGE, the start of the BASIC program. '
+                           'PAGE = address.'),
+    'stmt_plot': ('PLOT', 'Plot a point, line or shape with a given mode. '
+                          'PLOT mode, x, y.'),
+    'stmt_print': ('PRINT', 'Print expressions to the screen, or a file '
+                            'with #, with formatting controlled by @% and '
+                            'separators. PRINT [~][items][;][,].'),
+    'stmt_proc': ('PROC', 'Call a named procedure, stacking parameters and '
+                          'the return position. PROCname[(params)].'),
+    'stmt_ptr': ('PTR#=', 'Set the sequential pointer of an open file. '
+                          'PTR#channel = position.'),
+    'stmt_read': ('READ', 'Read values from DATA statements into variables. '
+                          'READ var,...'),
+    'stmt_renumber': ('RENUMBER', 'Renumber program lines and fix up line '
+                                  'references. RENUMBER [start[,step]].'),
+    'stmt_repeat': ('REPEAT', 'Begin a REPEAT...UNTIL loop, stacking the '
+                              'loop position. REPEAT.'),
+    'stmt_report': ('REPORT', 'Print the message for the last error. '
+                              'REPORT.'),
+    'stmt_restore': ('RESTORE', 'Reset the DATA pointer, optionally to a '
+                                'given line. RESTORE [line].'),
+    'stmt_return': ('RETURN', 'Return from a GOSUB to the stacked return '
+                              'position. RETURN.'),
+    'stmt_run': ('RUN', 'Run the current program from the start. RUN.'),
+    'stmt_save': ('SAVE', 'Save the current program to the filing system. '
+                          'SAVE string.'),
+    'stmt_sound': ('SOUND', 'Make a sound on a channel. '
+                            'SOUND channel, amplitude, pitch, duration.'),
+    'stmt_stop': ('STOP', 'Stop the program, reporting "STOP at line nnnn". '
+                          'STOP.'),
+    'stmt_time': ('TIME=', 'Set the centisecond elapsed-time clock. '
+                           'TIME = value.'),
+    'stmt_trace': ('TRACE', 'Trace executed line numbers for debugging. '
+                            'TRACE ON | OFF | line.'),
+    'stmt_until': ('UNTIL', 'End a REPEAT loop: loop back unless the '
+                           'condition is true. UNTIL expr.'),
+    'stmt_vdu': ('VDU', 'Send bytes to the VDU drivers; ";" sends a 16-bit '
+                        'word. VDU n[,|;]...'),
+    'stmt_width': ('WIDTH', 'Set the output line width for PRINT. WIDTH n.'),
 }
 
 d.label(ACTION_TABLE_LO, 'action_table_lo')

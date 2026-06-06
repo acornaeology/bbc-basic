@@ -495,240 +495,350 @@
     },
     {
       "addr": 37036,
-      "name": "stmt_auto"
+      "name": "stmt_auto",
+      "title": "AUTO",
+      "description": "Generate line numbers automatically during program entry until Escape. AUTO [start[,step]]."
     },
     {
       "addr": 36657,
-      "name": "stmt_delete"
+      "name": "stmt_delete",
+      "title": "DELETE",
+      "description": "Delete a range of program lines. DELETE start, end."
     },
     {
       "addr": 48932,
-      "name": "stmt_load"
+      "name": "stmt_load",
+      "title": "LOAD",
+      "description": "Load a BASIC program without running it. LOAD string."
     },
     {
       "addr": 46492,
-      "name": "stmt_list"
+      "name": "stmt_list",
+      "title": "LIST",
+      "description": "List program lines, de-tokenising them. LIST [start[,end]]."
     },
     {
       "addr": 35546,
       "name": "stmt_new",
+      "title": "NEW",
+      "description": "Clear the current program and its variables. NEW.",
       "fall_through": true
     },
     {
       "addr": 35510,
       "name": "stmt_old",
+      "title": "OLD",
+      "description": "Recover the program cleared by NEW, if memory is intact. OLD.",
       "fall_through": true
     },
     {
       "addr": 36771,
-      "name": "stmt_renumber"
+      "name": "stmt_renumber",
+      "title": "RENUMBER",
+      "description": "Renumber program lines and fix up line references. RENUMBER [start[,step]]."
     },
     {
       "addr": 48883,
-      "name": "stmt_save"
+      "name": "stmt_save",
+      "title": "SAVE",
+      "description": "Save the current program to the filing system. SAVE string."
     },
     {
       "addr": 48944,
-      "name": "stmt_ptr"
+      "name": "stmt_ptr",
+      "title": "PTR#=",
+      "description": "Set the sequential pointer of an open file. PTR#channel = position."
     },
     {
       "addr": 37507,
-      "name": "stmt_page"
+      "name": "stmt_page",
+      "title": "PAGE=",
+      "description": "Set PAGE, the start of the BASIC program. PAGE = address."
     },
     {
       "addr": 37577,
       "name": "stmt_time",
+      "title": "TIME=",
+      "description": "Set the centisecond elapsed-time clock. TIME = value.",
       "fall_through": true
     },
     {
       "addr": 37487,
       "name": "stmt_lomem",
+      "title": "LOMEM=",
+      "description": "Set LOMEM, the start of variable storage. LOMEM = address.",
       "fall_through": true
     },
     {
       "addr": 37469,
-      "name": "stmt_himem"
+      "name": "stmt_himem",
+      "title": "HIMEM=",
+      "description": "Set HIMEM, the top of memory available to BASIC. HIMEM = address."
     },
     {
       "addr": 46156,
       "name": "stmt_sound",
+      "title": "SOUND",
+      "description": "Make a sound on a channel. SOUND channel, amplitude, pitch, duration.",
       "fall_through": true
     },
     {
       "addr": 48984,
-      "name": "stmt_bput"
+      "name": "stmt_bput",
+      "title": "BPUT",
+      "description": "Write a byte to an open file. BPUT#channel, value."
     },
     {
       "addr": 36562,
-      "name": "stmt_call"
+      "name": "stmt_call",
+      "title": "CALL",
+      "description": "Call machine code, passing the resident integer variables and an optional parameter block. CALL address [,params...]."
     },
     {
       "addr": 48938,
-      "name": "stmt_chain"
+      "name": "stmt_chain",
+      "title": "CHAIN",
+      "description": "Load a BASIC program and run it. CHAIN string."
     },
     {
       "addr": 37517,
       "name": "stmt_clear",
+      "title": "CLEAR",
+      "description": "Discard all variables and the stack. CLEAR.",
       "fall_through": true
     },
     {
       "addr": 49049,
-      "name": "stmt_close"
+      "name": "stmt_close",
+      "title": "CLOSE",
+      "description": "Close an open file, or all files with #0. CLOSE#channel."
     },
     {
       "addr": 36541,
       "name": "stmt_clg",
+      "title": "CLG",
+      "description": "Clear the graphics window to the graphics background colour. CLG.",
       "fall_through": true
     },
     {
       "addr": 36548,
-      "name": "stmt_cls"
+      "name": "stmt_cls",
+      "title": "CLS",
+      "description": "Clear the text window to the text background colour. CLS."
     },
     {
       "addr": 35709,
       "name": "stmt_data",
+      "title": "DATA / DEF / REM / ELSE",
+      "description": "Skip to the end of the line. DATA introduces inline data (read by READ), DEF a PROC/FN definition, REM a comment, and ELSE the alternative of a taken IF: none execute inline, so all four share this skip-to-end handler.",
       "fall_through": true
     },
     {
       "addr": 37167,
-      "name": "stmt_dim"
+      "name": "stmt_dim",
+      "title": "DIM",
+      "description": "Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size."
     },
     {
       "addr": 37864,
-      "name": "stmt_draw"
+      "name": "stmt_draw",
+      "title": "DRAW",
+      "description": "Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y."
     },
     {
       "addr": 35528,
       "name": "stmt_end",
+      "title": "END",
+      "description": "End the program and return to the immediate prompt. END.",
       "fall_through": true
     },
     {
       "addr": 37718,
-      "name": "stmt_endproc"
+      "name": "stmt_endproc",
+      "title": "ENDPROC",
+      "description": "Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC."
     },
     {
       "addr": 46194,
-      "name": "stmt_envelope"
+      "name": "stmt_envelope",
+      "title": "ENVELOPE",
+      "description": "Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters)."
     },
     {
       "addr": 47044,
-      "name": "stmt_for"
+      "name": "stmt_for",
+      "title": "FOR",
+      "description": "Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO limit [STEP step]."
     },
     {
       "addr": 47240,
-      "name": "stmt_gosub"
+      "name": "stmt_gosub",
+      "title": "GOSUB",
+      "description": "Call a subroutine at a line number, stacking the return position. GOSUB line."
     },
     {
       "addr": 47308,
-      "name": "stmt_goto"
+      "name": "stmt_goto",
+      "title": "GOTO",
+      "description": "Jump to a line number. GOTO line."
     },
     {
       "addr": 37754,
-      "name": "stmt_gcol"
+      "name": "stmt_gcol",
+      "title": "GCOL",
+      "description": "Set the graphics colour and plotting action. GCOL action, colour."
     },
     {
       "addr": 39106,
       "name": "stmt_if",
+      "title": "IF",
+      "description": "Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE or the end of the line. IF expr [THEN] ... [ELSE ...].",
       "fall_through": true
     },
     {
       "addr": 47684,
-      "name": "stmt_input"
+      "name": "stmt_input",
+      "title": "INPUT",
+      "description": "Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt] var,..."
     },
     {
       "addr": 35812,
       "name": "stmt_let",
+      "title": "LET",
+      "description": "Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.",
       "fall_through": true
     },
     {
       "addr": 37667,
-      "name": "stmt_local"
+      "name": "stmt_local",
+      "title": "LOCAL",
+      "description": "Make variables local to the current PROC/FN, stacking their old values. LOCAL var,..."
     },
     {
       "addr": 37786,
-      "name": "stmt_mode"
+      "name": "stmt_mode",
+      "title": "MODE",
+      "description": "Select a screen mode, resetting the display. MODE n."
     },
     {
       "addr": 37860,
       "name": "stmt_move",
+      "title": "MOVE",
+      "description": "Move the graphics cursor without drawing (PLOT 4). MOVE x, y.",
       "fall_through": true
     },
     {
       "addr": 46741,
-      "name": "stmt_next"
+      "name": "stmt_next",
+      "title": "NEXT",
+      "description": "End a FOR loop: update the counter and loop back unless the limit is passed. NEXT [var,...]."
     },
     {
       "addr": 47381,
-      "name": "stmt_on"
+      "name": "stmt_on",
+      "title": "ON",
+      "description": "ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list | ON ERROR stmts."
     },
     {
       "addr": 37935,
-      "name": "stmt_vdu"
+      "name": "stmt_vdu",
+      "title": "VDU",
+      "description": "Send bytes to the VDU drivers; \";\" sends a 16-bit word. VDU n[,|;]..."
     },
     {
       "addr": 37873,
       "name": "stmt_plot",
+      "title": "PLOT",
+      "description": "Plot a point, line or shape with a given mode. PLOT mode, x, y.",
       "fall_through": true
     },
     {
       "addr": 36250,
       "name": "stmt_print",
+      "title": "PRINT",
+      "description": "Print expressions to the screen, or a file with #, with formatting controlled by @% and separators. PRINT [~][items][;][,].",
       "fall_through": true
     },
     {
       "addr": 37636,
       "name": "stmt_proc",
+      "title": "PROC",
+      "description": "Call a named procedure, stacking parameters and the return position. PROCname[(params)].",
       "fall_through": true
     },
     {
       "addr": 47903,
-      "name": "stmt_read"
+      "name": "stmt_read",
+      "title": "READ",
+      "description": "Read values from DATA statements into variables. READ var,..."
     },
     {
       "addr": 48100,
-      "name": "stmt_repeat"
+      "name": "stmt_repeat",
+      "title": "REPEAT",
+      "description": "Begin a REPEAT...UNTIL loop, stacking the loop position. REPEAT."
     },
     {
       "addr": 49124,
-      "name": "stmt_report"
+      "name": "stmt_report",
+      "title": "REPORT",
+      "description": "Print the message for the last error. REPORT."
     },
     {
       "addr": 47846,
-      "name": "stmt_restore"
+      "name": "stmt_restore",
+      "title": "RESTORE",
+      "description": "Reset the DATA pointer, optionally to a given line. RESTORE [line]."
     },
     {
       "addr": 47286,
-      "name": "stmt_return"
+      "name": "stmt_return",
+      "title": "RETURN",
+      "description": "Return from a GOSUB to the stacked return position. RETURN."
     },
     {
       "addr": 48401,
-      "name": "stmt_run"
+      "name": "stmt_run",
+      "title": "RUN",
+      "description": "Run the current program from the start. RUN."
     },
     {
       "addr": 35536,
-      "name": "stmt_stop"
+      "name": "stmt_stop",
+      "title": "STOP",
+      "description": "Stop the program, reporting \"STOP at line nnnn\". STOP."
     },
     {
       "addr": 37774,
-      "name": "stmt_colour"
+      "name": "stmt_colour",
+      "title": "COLOUR",
+      "description": "Select the text colour or redefine a logical colour. COLOUR n."
     },
     {
       "addr": 37525,
       "name": "stmt_trace",
+      "title": "TRACE",
+      "description": "Trace executed line numbers for debugging. TRACE ON | OFF | line.",
       "fall_through": true
     },
     {
       "addr": 48049,
-      "name": "stmt_until"
+      "name": "stmt_until",
+      "title": "UNTIL",
+      "description": "End a REPEAT loop: loop back unless the condition is true. UNTIL expr."
     },
     {
       "addr": 46240,
       "name": "stmt_width",
+      "title": "WIDTH",
+      "description": "Set the output line width for PRINT. WIDTH n.",
       "fall_through": true
     },
     {
       "addr": 48834,
-      "name": "stmt_oscli"
+      "name": "stmt_oscli",
+      "title": "OSCLI",
+      "description": "Pass a string to the OS command-line interpreter. OSCLI string."
     },
     {
       "addr": 35479,
