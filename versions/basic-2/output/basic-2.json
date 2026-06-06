@@ -45,6 +45,14 @@
       "value": 129
     },
     {
+      "name": "osbyte_vdu_queue_size",
+      "value": 218
+    },
+    {
+      "name": "osbyte_acknowledge_escape",
+      "value": 126
+    },
+    {
       "name": "osword_envelope",
       "value": 8
     },
@@ -145,6 +153,12 @@
     {
       "addr": 65527,
       "name": "oscli"
+    },
+    {
+      "addr": 32803,
+      "name": "language_startup",
+      "title": "Language startup",
+      "description": "Reached from the language entry when the MOS starts BASIC\n(A = 1). Reads HIMEM and PAGE from the MOS, clears the print and\nformatting state, seeds the random-number generator if it is cold,\ninstalls the BASIC error handler in BRKV, and jumps to the\nimmediate (\"> \") loop.\n"
     },
     {
       "addr": 32881,
@@ -479,6 +493,7 @@
       "comments_before_label": [
         "# BASIC v&01"
       ],
+      "comment_inline": "Language entry: CMP #1 / BEQ language_startup / RTS",
       "type": "byte",
       "values": [
         201,
@@ -642,6 +657,9 @@
         169,
         132
       ],
+      "labels": [
+        "language_startup"
+      ],
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_himem"
@@ -738,6 +756,7 @@
         134,
         31
       ],
+      "comment_inline": "LISTO = 0: no LIST indentation",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_listo",
@@ -751,6 +770,7 @@
         2,
         4
       ],
+      "comment_inline": "@% high two bytes = 0",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l0402",
@@ -784,6 +804,7 @@
         134,
         35
       ],
+      "comment_inline": "WIDTH = &FF: no automatic line wrap",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_width",
@@ -807,6 +828,7 @@
         0,
         4
       ],
+      "comment_inline": "@% = &0000090A: default PRINT format",
       "type": "code",
       "mnemonic": "stx",
       "operand": "resint_at",
@@ -850,6 +872,7 @@
         37,
         17
       ],
+      "comment_inline": "OR the RND seed bytes (&0D-&11) together",
       "type": "code",
       "mnemonic": "and",
       "operand": "l0011",
@@ -910,6 +933,7 @@
         208,
         12
       ],
+      "comment_inline": "Seed already non-zero: leave it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8063",
@@ -922,6 +946,7 @@
         169,
         65
       ],
+      "comment_inline": "Cold seed: set RND to \"ARW\" (&575241)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&41"
@@ -991,6 +1016,7 @@
       "labels": [
         "c8063"
       ],
+      "comment_inline": "Install brk_handler (&B402) into BRKV",
       "xref_summaries": [
         "&8063 referenced 1 time by &8055"
       ],
@@ -1041,6 +1067,7 @@
       "bytes": [
         88
       ],
+      "comment_inline": "Enable IRQs and enter the immediate loop",
       "type": "code",
       "mnemonic": "cli"
     },
@@ -1053,9 +1080,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8add",
+      "operand": "immediate_loop",
       "target": 35549,
-      "target_label": "c8add"
+      "target_label": "immediate_loop"
     },
     {
       "addr": 32881,
@@ -14175,11 +14202,23 @@
         177,
         55
       ],
-      "type": "byte",
-      "values": [
-        177,
-        55
-      ]
+      "labels": [
+        "sub_c8942"
+      ],
+      "xref_summaries": [
+        "&8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6"
+      ],
+      "references": [
+        46041,
+        46056,
+        46065,
+        46070
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "(zp_general),y",
+      "target": 55,
+      "target_label": "zp_general"
     },
     {
       "addr": 35140,
@@ -16972,7 +17011,7 @@
         13
       ],
       "labels": [
-        "c8add"
+        "immediate_loop"
       ],
       "xref_summaries": [
         "&8add referenced 1 time by &806e"
@@ -18247,7 +18286,7 @@
         "c8ba3"
       ],
       "xref_summaries": [
-        "&8ba3 referenced 9 times by &8501, &8b94, &8bab, &98de, &b20b, &b74e, &b84c, &b8e1, &bbf9"
+        "&8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9"
       ],
       "references": [
         34049,
@@ -18255,6 +18294,7 @@
         35755,
         39134,
         45579,
+        46128,
         46926,
         47180,
         47329,
@@ -81893,115 +81933,660 @@
       "addr": 46021,
       "bytes": [
         160,
-        0,
+        0
+      ],
+      "labels": [
+        "sub_cb3c5"
+      ],
+      "xref_summaries": [
+        "&b3c5 referenced 1 time by &b402"
+      ],
+      "references": [
+        46082
+      ],
+      "type": "code",
+      "mnemonic": "ldy",
+      "operand": "#0"
+    },
+    {
+      "addr": 46023,
+      "bytes": [
         132,
-        8,
+        8
+      ],
+      "type": "code",
+      "mnemonic": "sty",
+      "operand": "zp_erl",
+      "target": 8,
+      "target_label": "zp_erl"
+    },
+    {
+      "addr": 46025,
+      "bytes": [
         132,
-        9,
+        9
+      ],
+      "type": "code",
+      "mnemonic": "sty",
+      "operand": "l0009",
+      "target": 9,
+      "target_label": "l0009"
+    },
+    {
+      "addr": 46027,
+      "bytes": [
         166,
-        24,
+        24
+      ],
+      "type": "code",
+      "mnemonic": "ldx",
+      "operand": "zp_page",
+      "target": 24,
+      "target_label": "zp_page"
+    },
+    {
+      "addr": 46029,
+      "bytes": [
         134,
-        56,
+        56
+      ],
+      "type": "code",
+      "mnemonic": "stx",
+      "operand": "l0038",
+      "target": 56,
+      "target_label": "l0038"
+    },
+    {
+      "addr": 46031,
+      "bytes": [
         132,
-        55,
+        55
+      ],
+      "type": "code",
+      "mnemonic": "sty",
+      "operand": "zp_general",
+      "target": 55,
+      "target_label": "zp_general"
+    },
+    {
+      "addr": 46033,
+      "bytes": [
         166,
-        12,
+        12
+      ],
+      "type": "code",
+      "mnemonic": "ldx",
+      "operand": "l000c",
+      "target": 12,
+      "target_label": "l000c"
+    },
+    {
+      "addr": 46035,
+      "bytes": [
         224,
-        7,
+        7
+      ],
+      "type": "code",
+      "mnemonic": "cpx",
+      "operand": "#7"
+    },
+    {
+      "addr": 46037,
+      "bytes": [
         240,
-        42,
+        42
+      ],
+      "type": "code",
+      "mnemonic": "beq",
+      "operand": "return_33",
+      "target": 46081,
+      "target_label": "return_33"
+    },
+    {
+      "addr": 46039,
+      "bytes": [
         166,
-        11,
+        11
+      ],
+      "type": "code",
+      "mnemonic": "ldx",
+      "operand": "zp_text_ptr",
+      "target": 11,
+      "target_label": "zp_text_ptr"
+    },
+    {
+      "addr": 46041,
+      "bytes": [
         32,
         66,
-        137,
+        137
+      ],
+      "labels": [
+        "loop_cb3d9"
+      ],
+      "xref_summaries": [
+        "&b3d9 referenced 1 time by &b3ff"
+      ],
+      "references": [
+        46079
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_c8942",
+      "target": 35138,
+      "target_label": "sub_c8942"
+    },
+    {
+      "addr": 46044,
+      "bytes": [
         201,
-        13,
+        13
+      ],
+      "type": "code",
+      "mnemonic": "cmp",
+      "operand": "#&0d"
+    },
+    {
+      "addr": 46046,
+      "bytes": [
         208,
-        25,
+        25
+      ],
+      "type": "code",
+      "mnemonic": "bne",
+      "operand": "cb3f9",
+      "target": 46073,
+      "target_label": "cb3f9"
+    },
+    {
+      "addr": 46048,
+      "bytes": [
         228,
-        55,
+        55
+      ],
+      "type": "code",
+      "mnemonic": "cpx",
+      "operand": "zp_general",
+      "target": 55,
+      "target_label": "zp_general"
+    },
+    {
+      "addr": 46050,
+      "bytes": [
         165,
-        12,
+        12
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "l000c",
+      "target": 12,
+      "target_label": "l000c"
+    },
+    {
+      "addr": 46052,
+      "bytes": [
         229,
-        56,
+        56
+      ],
+      "type": "code",
+      "mnemonic": "sbc",
+      "operand": "l0038",
+      "target": 56,
+      "target_label": "l0038"
+    },
+    {
+      "addr": 46054,
+      "bytes": [
         144,
-        25,
+        25
+      ],
+      "type": "code",
+      "mnemonic": "bcc",
+      "operand": "return_33",
+      "target": 46081,
+      "target_label": "return_33"
+    },
+    {
+      "addr": 46056,
+      "bytes": [
         32,
         66,
-        137,
+        137
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_c8942",
+      "target": 35138,
+      "target_label": "sub_c8942"
+    },
+    {
+      "addr": 46059,
+      "bytes": [
         9,
-        0,
+        0
+      ],
+      "type": "code",
+      "mnemonic": "ora",
+      "operand": "#0"
+    },
+    {
+      "addr": 46061,
+      "bytes": [
         48,
-        18,
+        18
+      ],
+      "type": "code",
+      "mnemonic": "bmi",
+      "operand": "return_33",
+      "target": 46081,
+      "target_label": "return_33"
+    },
+    {
+      "addr": 46063,
+      "bytes": [
         133,
-        9,
+        9
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "l0009",
+      "target": 9,
+      "target_label": "l0009"
+    },
+    {
+      "addr": 46065,
+      "bytes": [
         32,
         66,
-        137,
+        137
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_c8942",
+      "target": 35138,
+      "target_label": "sub_c8942"
+    },
+    {
+      "addr": 46068,
+      "bytes": [
         133,
-        8,
+        8
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "zp_erl",
+      "target": 8,
+      "target_label": "zp_erl"
+    },
+    {
+      "addr": 46070,
+      "bytes": [
         32,
         66,
-        137,
+        137
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_c8942",
+      "target": 35138,
+      "target_label": "sub_c8942"
+    },
+    {
+      "addr": 46073,
+      "bytes": [
         228,
-        55,
+        55
+      ],
+      "labels": [
+        "cb3f9"
+      ],
+      "xref_summaries": [
+        "&b3f9 referenced 1 time by &b3de"
+      ],
+      "references": [
+        46046
+      ],
+      "type": "code",
+      "mnemonic": "cpx",
+      "operand": "zp_general",
+      "target": 55,
+      "target_label": "zp_general"
+    },
+    {
+      "addr": 46075,
+      "bytes": [
         165,
-        12,
+        12
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "l000c",
+      "target": 12,
+      "target_label": "l000c"
+    },
+    {
+      "addr": 46077,
+      "bytes": [
         229,
-        56,
+        56
+      ],
+      "type": "code",
+      "mnemonic": "sbc",
+      "operand": "l0038",
+      "target": 56,
+      "target_label": "l0038"
+    },
+    {
+      "addr": 46079,
+      "bytes": [
         176,
-        216,
-        96,
+        216
+      ],
+      "type": "code",
+      "mnemonic": "bcs",
+      "operand": "loop_cb3d9",
+      "target": 46041,
+      "target_label": "loop_cb3d9"
+    },
+    {
+      "addr": 46081,
+      "bytes": [
+        96
+      ],
+      "labels": [
+        "return_33"
+      ],
+      "xref_summaries": [
+        "&b401 referenced 3 times by &b3d5, &b3e6, &b3ed"
+      ],
+      "references": [
+        46037,
+        46054,
+        46061
+      ],
+      "type": "code",
+      "mnemonic": "rts"
+    },
+    {
+      "addr": 46082,
+      "bytes": [
         32,
         197,
-        179,
+        179
+      ],
+      "labels": [
+        "brk_handler"
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_cb3c5",
+      "target": 46021,
+      "target_label": "sub_cb3c5"
+    },
+    {
+      "addr": 46085,
+      "bytes": [
         132,
-        32,
+        32
+      ],
+      "type": "code",
+      "mnemonic": "sty",
+      "operand": "zp_trace_flag",
+      "target": 32,
+      "target_label": "zp_trace_flag"
+    },
+    {
+      "addr": 46087,
+      "bytes": [
         177,
-        253,
+        253
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "(l00fd),y",
+      "target": 253,
+      "target_label": "l00fd"
+    },
+    {
+      "addr": 46089,
+      "bytes": [
         208,
-        8,
+        8
+      ],
+      "type": "code",
+      "mnemonic": "bne",
+      "operand": "cb413",
+      "target": 46099,
+      "target_label": "cb413"
+    },
+    {
+      "addr": 46091,
+      "bytes": [
         169,
-        51,
+        51
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "#&33"
+    },
+    {
+      "addr": 46093,
+      "bytes": [
         133,
-        22,
+        22
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "zp_error_vec",
+      "target": 22,
+      "target_label": "zp_error_vec"
+    },
+    {
+      "addr": 46095,
+      "bytes": [
         169,
-        180,
+        180
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "#&b4"
+    },
+    {
+      "addr": 46097,
+      "bytes": [
         133,
-        23,
+        23
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "l0017",
+      "target": 23,
+      "target_label": "l0017"
+    },
+    {
+      "addr": 46099,
+      "bytes": [
         165,
-        22,
+        22
+      ],
+      "labels": [
+        "cb413"
+      ],
+      "xref_summaries": [
+        "&b413 referenced 1 time by &b409"
+      ],
+      "references": [
+        46089
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "zp_error_vec",
+      "target": 22,
+      "target_label": "zp_error_vec"
+    },
+    {
+      "addr": 46101,
+      "bytes": [
         133,
-        11,
+        11
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "zp_text_ptr",
+      "target": 11,
+      "target_label": "zp_text_ptr"
+    },
+    {
+      "addr": 46103,
+      "bytes": [
         165,
-        23,
+        23
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "l0017",
+      "target": 23,
+      "target_label": "l0017"
+    },
+    {
+      "addr": 46105,
+      "bytes": [
         133,
-        12,
+        12
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "l000c",
+      "target": 12,
+      "target_label": "l000c"
+    },
+    {
+      "addr": 46107,
+      "bytes": [
         32,
         58,
-        189,
-        170,
+        189
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_cbd3a",
+      "target": 48442,
+      "target_label": "sub_cbd3a"
+    },
+    {
+      "addr": 46110,
+      "bytes": [
+        170
+      ],
+      "type": "code",
+      "mnemonic": "tax"
+    },
+    {
+      "addr": 46111,
+      "bytes": [
         134,
-        10,
+        10
+      ],
+      "type": "code",
+      "mnemonic": "stx",
+      "operand": "zp_text_ptr_off",
+      "target": 10,
+      "target_label": "zp_text_ptr_off"
+    },
+    {
+      "addr": 46113,
+      "bytes": [
         169,
-        218,
+        218
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "#osbyte_vdu_queue_size"
+    },
+    {
+      "addr": 46115,
+      "bytes": [
         32,
         244,
-        255,
+        255
+      ],
+      "comment_inline": "osbyte: vdu queue size",
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "osbyte",
+      "target": 65524,
+      "target_label": "osbyte"
+    },
+    {
+      "addr": 46118,
+      "bytes": [
         169,
-        126,
+        126
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "#osbyte_acknowledge_escape"
+    },
+    {
+      "addr": 46120,
+      "bytes": [
         32,
         244,
-        255,
+        255
+      ],
+      "comment_inline": "Clear escape condition and perform escape effects",
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "osbyte",
+      "target": 65524,
+      "target_label": "osbyte"
+    },
+    {
+      "addr": 46123,
+      "bytes": [
         162,
-        255,
+        255
+      ],
+      "type": "code",
+      "mnemonic": "ldx",
+      "operand": "#&ff"
+    },
+    {
+      "addr": 46125,
+      "bytes": [
         134,
-        40,
-        154,
+        40
+      ],
+      "type": "code",
+      "mnemonic": "stx",
+      "operand": "zp_opt_flag",
+      "target": 40,
+      "target_label": "zp_opt_flag"
+    },
+    {
+      "addr": 46127,
+      "bytes": [
+        154
+      ],
+      "type": "code",
+      "mnemonic": "txs"
+    },
+    {
+      "addr": 46128,
+      "bytes": [
         76,
         163,
-        139,
+        139
+      ],
+      "type": "code",
+      "mnemonic": "jmp",
+      "operand": "c8ba3",
+      "target": 35747,
+      "target_label": "c8ba3"
+    },
+    {
+      "addr": 46131,
+      "bytes": [
         246,
         58,
         231,
@@ -82010,116 +82595,6 @@
       ],
       "type": "byte",
       "values": [
-        160,
-        0,
-        132,
-        8,
-        132,
-        9,
-        166,
-        24,
-        134,
-        56,
-        132,
-        55,
-        166,
-        12,
-        224,
-        7,
-        240,
-        42,
-        166,
-        11,
-        32,
-        66,
-        137,
-        201,
-        13,
-        208,
-        25,
-        228,
-        55,
-        165,
-        12,
-        229,
-        56,
-        144,
-        25,
-        32,
-        66,
-        137,
-        9,
-        0,
-        48,
-        18,
-        133,
-        9,
-        32,
-        66,
-        137,
-        133,
-        8,
-        32,
-        66,
-        137,
-        228,
-        55,
-        165,
-        12,
-        229,
-        56,
-        176,
-        216,
-        96,
-        32,
-        197,
-        179,
-        132,
-        32,
-        177,
-        253,
-        208,
-        8,
-        169,
-        51,
-        133,
-        22,
-        169,
-        180,
-        133,
-        23,
-        165,
-        22,
-        133,
-        11,
-        165,
-        23,
-        133,
-        12,
-        32,
-        58,
-        189,
-        170,
-        134,
-        10,
-        169,
-        218,
-        32,
-        244,
-        255,
-        169,
-        126,
-        32,
-        244,
-        255,
-        162,
-        255,
-        134,
-        40,
-        154,
-        76,
-        163,
-        139,
         246,
         58,
         231,
@@ -82987,9 +83462,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_33",
+      "operand": "return_34",
       "target": 46303,
-      "target_label": "return_33"
+      "target_label": "return_34"
     },
     {
       "addr": 46288,
@@ -83093,7 +83568,7 @@
         96
       ],
       "labels": [
-        "return_33"
+        "return_34"
       ],
       "xref_summaries": [
         "&b4df referenced 1 time by &b4ce"
@@ -84181,9 +84656,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_34",
+      "operand": "return_35",
       "target": 46473,
-      "target_label": "return_34"
+      "target_label": "return_35"
     },
     {
       "addr": 46459,
@@ -84201,9 +84676,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_34",
+      "operand": "return_35",
       "target": 46473,
-      "target_label": "return_34"
+      "target_label": "return_35"
     },
     {
       "addr": 46462,
@@ -84278,7 +84753,7 @@
         96
       ],
       "labels": [
-        "return_34"
+        "return_35"
       ],
       "xref_summaries": [
         "&b589 referenced 2 times by &b579, &b57c"
@@ -92947,9 +93422,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_35",
+      "operand": "return_36",
       "target": 48048,
-      "target_label": "return_35"
+      "target_label": "return_36"
     },
     {
       "addr": 47975,
@@ -92969,9 +93444,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_35",
+      "operand": "return_36",
       "target": 48048,
-      "target_label": "return_35"
+      "target_label": "return_36"
     },
     {
       "addr": 47979,
@@ -93035,9 +93510,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_35",
+      "operand": "return_36",
       "target": 48048,
-      "target_label": "return_35"
+      "target_label": "return_36"
     },
     {
       "addr": 47990,
@@ -93410,7 +93885,7 @@
         96
       ],
       "labels": [
-        "return_35"
+        "return_36"
       ],
       "xref_summaries": [
         "&bbb0 referenced 3 times by &bb65, &bb69, &bb74"
@@ -94144,9 +94619,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "return_36",
+      "operand": "return_37",
       "target": 48256,
-      "target_label": "return_36"
+      "target_label": "return_37"
     },
     {
       "addr": 48178,
@@ -94655,7 +95130,7 @@
         96
       ],
       "labels": [
-        "return_36"
+        "return_37"
       ],
       "xref_summaries": [
         "&bc80 referenced 1 time by &bc30"
@@ -94858,9 +95333,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "return_37",
+      "operand": "return_38",
       "target": 48400,
-      "target_label": "return_37"
+      "target_label": "return_38"
     },
     {
       "addr": 48286,
@@ -95583,7 +96058,7 @@
         96
       ],
       "labels": [
-        "return_37"
+        "return_38"
       ],
       "xref_summaries": [
         "&bd10 referenced 1 time by &bc9c"
@@ -95868,10 +96343,11 @@
         "sub_cbd3a"
       ],
       "xref_summaries": [
-        "&bd3a referenced 2 times by &8b1a, &bd2c"
+        "&bd3a referenced 3 times by &8b1a, &b41b, &bd2c"
       ],
       "references": [
         35610,
+        46107,
         48428
       ],
       "type": "code",
@@ -97062,9 +97538,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "return_38",
+      "operand": "return_39",
       "target": 48650,
-      "target_label": "return_38"
+      "target_label": "return_39"
     },
     {
       "addr": 48615,
@@ -97300,9 +97776,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "return_38",
+      "operand": "return_39",
       "target": 48650,
-      "target_label": "return_38"
+      "target_label": "return_39"
     },
     {
       "addr": 48648,
@@ -97322,7 +97798,7 @@
         96
       ],
       "labels": [
-        "return_38"
+        "return_39"
       ],
       "xref_summaries": [
         "&be0a referenced 3 times by &bde5, &be06, &be29"
@@ -97549,9 +98025,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "return_38",
+      "operand": "return_39",
       "target": 48650,
-      "target_label": "return_38"
+      "target_label": "return_39"
     },
     {
       "addr": 48683,
@@ -97674,9 +98150,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "return_39",
+      "operand": "return_40",
       "target": 48704,
-      "target_label": "return_39"
+      "target_label": "return_40"
     },
     {
       "addr": 48700,
@@ -97708,7 +98184,7 @@
         96
       ],
       "labels": [
-        "return_39"
+        "return_40"
       ],
       "xref_summaries": [
         "&be40 referenced 1 time by &be3a"

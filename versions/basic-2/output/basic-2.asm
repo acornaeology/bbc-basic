@@ -9,6 +9,8 @@ osbyte_read_text_cursor_pos          = &86
 osbyte_check_eof                     = &7f
 osword_read_clock                    = &01
 osbyte_inkey                         = &81
+osbyte_vdu_queue_size                = &da
+osbyte_acknowledge_escape            = &7e
 osword_envelope                      = &08
 osfile_load                          = &ff
 osbyte_read_high_order_address       = &82
@@ -32,15 +34,15 @@ zp_himem         = &06
 l0007            = &07
 ; &07 referenced 8 times by &802a, &8fcd, &9268, &93b6, &93d3, &af05, &bcc0, &bd42
 zp_erl           = &08
-; &08 referenced 1 time by &afa1
+; &08 referenced 3 times by &afa1, &b3c7, &b3f4
 l0009            = &09
-; &09 referenced 1 time by &af9f
+; &09 referenced 3 times by &af9f, &b3c9, &b3ef
 zp_text_ptr_off  = &0a
-; &0a referenced 91 times by &8512, &8517, &8577, &857e, &85d3, &85d5, &85d7, &8617, &8715, &874e, &8780, &8795, &87cc, &8829, &883c, &883e, &8a97, &8a99, &8b28, &8b60, &8b7f, &8b96, &8ba3, &8ba5, &8be2, &8d2b, &8d78, &8da1, &8df6, &8e6d, &8e78, &8f8b, &8f8d, &905f, &906d, &90df, &9149, &916d, &92b7, &92c0, &930c, &9347, &943e, &95d1, &97dd, &97df, &9801, &980f, &9857, &9879, &98b9, &98ce, &98e1, &98f1, &98fe, &9b25, &b13d, &b1b5, &b1f7, &b200, &b22d, &b25d, &b58a, &b5cb, &b5d6, &b60d, &b637, &b65c, &b75a, &b81f, &b875, &b8f9, &b91c, &b927, &b942, &b95a, &b96a, &b978, &b97d, &b995, &b9a7, &b9ca, &b9cf, &b9d6, &b9eb, &ba4f, &ba77, &ba8c, &baf1, &bb52, &bfa9
+; &0a referenced 92 times by &8512, &8517, &8577, &857e, &85d3, &85d5, &85d7, &8617, &8715, &874e, &8780, &8795, &87cc, &8829, &883c, &883e, &8a97, &8a99, &8b28, &8b60, &8b7f, &8b96, &8ba3, &8ba5, &8be2, &8d2b, &8d78, &8da1, &8df6, &8e6d, &8e78, &8f8b, &8f8d, &905f, &906d, &90df, &9149, &916d, &92b7, &92c0, &930c, &9347, &943e, &95d1, &97dd, &97df, &9801, &980f, &9857, &9879, &98b9, &98ce, &98e1, &98f1, &98fe, &9b25, &b13d, &b1b5, &b1f7, &b200, &b22d, &b25d, &b41f, &b58a, &b5cb, &b5d6, &b60d, &b637, &b65c, &b75a, &b81f, &b875, &b8f9, &b91c, &b927, &b942, &b95a, &b96a, &b978, &b97d, &b995, &b9a7, &b9ca, &b9cf, &b9d6, &b9eb, &ba4f, &ba77, &ba8c, &baf1, &bb52, &bfa9
 zp_text_ptr      = &0b
-; &0b referenced 73 times by &8567, &8582, &8590, &85d9, &861a, &8840, &8a9b, &8afc, &8b1e, &8b63, &8b76, &8b83, &8b9d, &8ba7, &8bbf, &8e70, &9013, &9016, &901c, &9027, &902d, &9030, &9032, &9062, &9134, &9304, &95c9, &97e1, &97ec, &97f4, &97fc, &9807, &985b, &986f, &9871, &9884, &9891, &989c, &98a0, &98af, &98b1, &98f3, &9b1d, &b102, &b118, &b11c, &b123, &b12f, &b132, &b134, &b145, &b17b, &b1b8, &b1ed, &b22a, &b2bc, &b59d, &b5f1, &b602, &b607, &b639, &b747, &b83c, &b894, &b8c5, &b8dd, &b8ff, &b944, &b96c, &b980, &bbed, &bd1b, &bfad
+; &0b referenced 75 times by &8567, &8582, &8590, &85d9, &861a, &8840, &8a9b, &8afc, &8b1e, &8b63, &8b76, &8b83, &8b9d, &8ba7, &8bbf, &8e70, &9013, &9016, &901c, &9027, &902d, &9030, &9032, &9062, &9134, &9304, &95c9, &97e1, &97ec, &97f4, &97fc, &9807, &985b, &986f, &9871, &9884, &9891, &989c, &98a0, &98af, &98b1, &98f3, &9b1d, &b102, &b118, &b11c, &b123, &b12f, &b132, &b134, &b145, &b17b, &b1b8, &b1ed, &b22a, &b2bc, &b3d7, &b415, &b59d, &b5f1, &b602, &b607, &b639, &b747, &b83c, &b894, &b8c5, &b8dd, &b8ff, &b944, &b96c, &b980, &bbed, &bd1b, &bfad
 l000c            = &0c
-; &0c referenced 37 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
+; &0c referenced 41 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b3d1, &b3e2, &b3fb, &b419, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
 zp_rnd_seed      = &0d
 ; &0d referenced 4 times by &804d, &8059, &af78, &af91
 l000e            = &0e
@@ -60,11 +62,11 @@ zp_print_bytes   = &14
 zp_print_flag    = &15
 ; &15 referenced 9 times by &8d87, &8dc1, &8de6, &8def, &91b8, &91c6, &91f1, &9f05, &b0aa
 zp_error_vec     = &16
-; &16 referenced 4 times by &8b00, &8b0d, &b8e9, &b901
+; &16 referenced 6 times by &8b00, &8b0d, &b40d, &b413, &b8e9, &b901
 l0017            = &17
-; &17 referenced 4 times by &8b04, &8b11, &b8ed, &b905
+; &17 referenced 6 times by &8b04, &8b11, &b411, &b417, &b8ed, &b905
 zp_page          = &18
-; &18 referenced 15 times by &8031, &8ab9, &8adf, &8f9a, &900d, &9288, &9974, &aec2, &b112, &baea, &bd17, &bd3a, &be6f, &bee3, &bf06
+; &18 referenced 16 times by &8031, &8ab9, &8adf, &8f9a, &900d, &9288, &9974, &aec2, &b112, &b3cb, &baea, &bd17, &bd3a, &be6f, &bee3, &bf06
 zp_text_ptr2     = &19
 ; &19 referenced 48 times by &8a90, &8bc1, &8e72, &8ea8, &8eb5, &9306, &95cb, &95d7, &95ee, &95f9, &9606, &9663, &9809, &9817, &9b1f, &9bc3, &9beb, &9e28, &a09a, &a141, &a14c, &a159, &abfa, &ac08, &ac2a, &ac3b, &ac4a, &adb6, &adcc, &addb, &adf0, &ae79, &aede, &af4b, &b1c2, &b205, &b212, &b250, &b263, &bab4, &bb43, &bb56, &bb7c, &bb82, &bb86, &bb92, &bb94, &bfaf
 l001a            = &1a
@@ -80,7 +82,7 @@ zp_count         = &1e
 zp_listo         = &1f
 ; &1f referenced 3 times by &8035, &b577, &b597
 zp_trace_flag    = &20
-; &20 referenced 4 times by &8ae7, &92b2, &9895, &b8d2
+; &20 referenced 5 times by &8ae7, &92b2, &9895, &b405, &b8d2
 zp_trace_max     = &21
 ; &21 referenced 2 times by &92aa, &9907
 l0022            = &22
@@ -96,7 +98,7 @@ zp_for_level     = &26
 zp_var_type      = &27
 ; &27 referenced 41 times by &85b2, &8bf1, &8c01, &8d41, &911c, &92ee, &933c, &99cb, &9a39, &9a56, &9a62, &9b37, &9c94, &9ca1, &9ca7, &9cea, &9cfa, &9d26, &9d34, &9d55, &9dc6, &9def, &9dfb, &9f3b, &9f77, &ac2c, &ac73, &b197, &b1b2, &b24a, &b294, &b2dc, &b2e3, &b4bd, &b4e0, &b784, &b9f9, &b9fe, &ba19, &bade, &bb3b
 zp_opt_flag      = &28
-; &28 referenced 10 times by &84ff, &8506, &8519, &8632, &8691, &881a, &886a, &8873, &8b15, &ae30
+; &28 referenced 11 times by &84ff, &8506, &8519, &8632, &8691, &881a, &886a, &8873, &8b15, &ae30, &b42d
 zp_asm_opcode    = &29
 ; &29 referenced 4 times by &8623, &8651, &8832, &8837
 zp_iwa           = &2a
@@ -126,9 +128,9 @@ l0035            = &35
 zp_strbuf_len    = &36
 ; &36 referenced 52 times by &8534, &864c, &8c2b, &8c37, &8c86, &8c9d, &8d64, &8e01, &8e0e, &8e1b, &9af2, &9afa, &9b13, &9c25, &9c2b, &9c3b, &9f01, &a000, &a00f, &a068, &a06f, &abee, &abf0, &ac34, &aca3, &ad31, &ad3e, &ade2, &aed6, &afc7, &afe5, &afe9, &b005, &b011, &b030, &b069, &b074, &b08f, &b0d3, &b0eb, &b0f3, &b0f8, &b38c, &b39b, &b3ba, &ba05, &baa5, &bdb5, &bdba, &bdc6, &bdcf, &beba
 zp_general       = &37
-; &37 referenced 138 times by &8529, &862e, &87d2, &87e3, &87f4, &8802, &887f, &888b, &8890, &889e, &88e0, &88ec, &88f9, &8902, &8917, &8944, &894e, &8957, &89b5, &89d2, &8a03, &8a07, &8a32, &8a41, &8a72, &8abf, &8ac1, &8b20, &8bb5, &8bbc, &8cd0, &8cd7, &8ce9, &8cf9, &8d07, &8d10, &8d15, &8d1a, &8d23, &8fa0, &8fb3, &8fba, &8fec, &8ff2, &8ff7, &9045, &9056, &905b, &9064, &90a0, &90a2, &90a4, &913e, &9162, &91d8, &91ef, &91f6, &91fc, &9415, &945d, &946b, &949a, &94d4, &94ef, &94fe, &9528, &955b, &9610, &961b, &9651, &96b6, &9716, &9721, &9726, &973c, &9751, &9776, &97ad, &97c6, &97cb, &994f, &9955, &99d6, &9af0, &9b19, &9c1f, &9c3d, &9d7e, &9db8, &9e15, &9ee8, &9f14, &9f44, &9f5a, &9faf, &9fc3, &9ff8, &a02b, &ac0a, &ad23, &ad42, &ad5f, &b0b1, &b15c, &b1cc, &b399, &b39e, &b490, &b4ca, &b4d3, &b4d8, &b4dd, &b4ed, &b4fc, &b501, &b506, &b50b, &b50e, &b525, &b6f1, &b710, &b716, &b72a, &b779, &b7da, &bc09, &bc36, &bc48, &bc4b, &bc4d, &bc55, &bc6d, &bc88, &bcb5, &bcd8, &beb4, &bfd0, &bfe1
+; &37 referenced 142 times by &8529, &862e, &87d2, &87e3, &87f4, &8802, &887f, &888b, &8890, &889e, &88e0, &88ec, &88f9, &8902, &8917, &8942, &8944, &894e, &8957, &89b5, &89d2, &8a03, &8a07, &8a32, &8a41, &8a72, &8abf, &8ac1, &8b20, &8bb5, &8bbc, &8cd0, &8cd7, &8ce9, &8cf9, &8d07, &8d10, &8d15, &8d1a, &8d23, &8fa0, &8fb3, &8fba, &8fec, &8ff2, &8ff7, &9045, &9056, &905b, &9064, &90a0, &90a2, &90a4, &913e, &9162, &91d8, &91ef, &91f6, &91fc, &9415, &945d, &946b, &949a, &94d4, &94ef, &94fe, &9528, &955b, &9610, &961b, &9651, &96b6, &9716, &9721, &9726, &973c, &9751, &9776, &97ad, &97c6, &97cb, &994f, &9955, &99d6, &9af0, &9b19, &9c1f, &9c3d, &9d7e, &9db8, &9e15, &9ee8, &9f14, &9f44, &9f5a, &9faf, &9fc3, &9ff8, &a02b, &ac0a, &ad23, &ad42, &ad5f, &b0b1, &b15c, &b1cc, &b399, &b39e, &b3cf, &b3e0, &b3f9, &b490, &b4ca, &b4d3, &b4d8, &b4dd, &b4ed, &b4fc, &b501, &b506, &b50b, &b50e, &b525, &b6f1, &b710, &b716, &b72a, &b779, &b7da, &bc09, &bc36, &bc48, &bc4b, &bc4d, &bc55, &bc6d, &bc88, &bcb5, &bcd8, &beb4, &bfd0, &bfe1
 l0038            = &38
-; &38 referenced 63 times by &8524, &8536, &8552, &8639, &8886, &88e6, &8948, &8abb, &8b24, &8bba, &8f9c, &9068, &90a8, &9143, &91d4, &91fa, &9201, &9207, &941a, &9615, &9713, &9719, &974e, &9773, &97b3, &99d2, &9e04, &9efb, &9f42, &9f4e, &9f56, &9f67, &9f98, &9fa9, &9fab, &9fb7, &9ff4, &ac11, &ad28, &ad63, &b1d1, &b394, &b516, &b521, &b52c, &b52e, &b538, &b6fb, &b718, &b71d, &b72c, &b77d, &b7df, &bc0b, &bc40, &bc51, &bc60, &bc69, &bc86, &bcb9, &bcdf, &beb8, &bfd3
+; &38 referenced 66 times by &8524, &8536, &8552, &8639, &8886, &88e6, &8948, &8abb, &8b24, &8bba, &8f9c, &9068, &90a8, &9143, &91d4, &91fa, &9201, &9207, &941a, &9615, &9713, &9719, &974e, &9773, &97b3, &99d2, &9e04, &9efb, &9f42, &9f4e, &9f56, &9f67, &9f98, &9fa9, &9fab, &9fb7, &9ff4, &ac11, &ad28, &ad63, &b1d1, &b394, &b3cd, &b3e4, &b3fd, &b516, &b521, &b52c, &b52e, &b538, &b6fb, &b718, &b71d, &b72c, &b77d, &b7df, &bc0b, &bc40, &bc51, &bc60, &bc69, &bc86, &bcb9, &bcdf, &beb8, &bfd3
 zp_fileblk       = &39
 ; &39 referenced 62 times by &8530, &8630, &8654, &8881, &888e, &88e4, &88ee, &89f2, &89f8, &89ff, &8a0e, &8a19, &8a1d, &8a28, &8a2a, &8a39, &8cc1, &8cd4, &8cdf, &8d0a, &8d1d, &8f4a, &8f5c, &8ff4, &8ffc, &8ffe, &916b, &948e, &949e, &94c8, &94d8, &9523, &952c, &9654, &96a7, &96b1, &96ca, &972c, &975e, &99f7, &9a01, &9af8, &9b11, &9d8d, &9dae, &9e0d, &b160, &b1df, &b4b7, &b4cc, &b51a, &b532, &b705, &b71f, &b724, &b72e, &b7e4, &bc0f, &bcac, &bcd6, &bce3, &bee1
 l003a            = &3a
@@ -180,7 +182,7 @@ l0064            = &64
 l00c9            = &c9
 ; &c9 referenced 1 time by &aa59
 l00fd            = &fd
-; &fd referenced 2 times by &afa8, &bfec
+; &fd referenced 3 times by &afa8, &b407, &bfec
 l00ff            = &ff
 ; &ff referenced 1 time by &987b
 l0100            = &0100
@@ -345,7 +347,7 @@ oswrch           = &ffee
 osword           = &fff1
 ; &fff1 referenced 5 times by &92d4, &ab63, &aeba, &b49a, &bc1d
 osbyte           = &fff4
-; &fff4 referenced 9 times by &8025, &802e, &93be, &ab3a, &ab6f, &ab78, &acbe, &afb6, &bee9
+; &fff4 referenced 11 times by &8025, &802e, &93be, &ab3a, &ab6f, &ab78, &acbe, &afb6, &b423, &b428, &bee9
 oscli            = &fff7
 ; &fff7 referenced 2 times by &8b7a, &bec9
 
@@ -371,7 +373,7 @@ oscli            = &fff7
 ; | 2 | Request next byte of softkey expansion (Electron) |
 ; | 3 | Request length of softkey expansion (Electron)    |
 .language_entry
-    equb &c9, &01, &f0                                                ; 8000: c9 01 f0    ...   
+    equb &c9, &01, &f0                                                ; 8000: c9 01 f0    ...      ; Language entry: CMP #1 / BEQ language_startup / RTS
 ; ***************************************************************************************
 ; Service-entry slot (3 bytes)
 ;
@@ -415,6 +417,14 @@ oscli            = &fff7
     equb &00                                                          ; 801e: 00          .        ; NUL terminator
 .tube_reloc_addr
     equb &00, &80, &00, &00                                           ; 801f: 00 80 00... ......   ; Tube relocation address (32-bit LE) — where the ROM body relocates on a Tube co-processor
+; ***************************************************************************************
+; Language startup
+;
+; Reached from the language entry when the MOS starts BASIC (A = 1). Reads HIMEM and PAGE
+; from the MOS, clears the print and formatting state, seeds the random-number generator
+; if it is cold, installs the BASIC error handler in BRKV, and jumps to the immediate (">
+; ") loop.
+.language_startup
     lda #osbyte_read_himem                                            ; 8023: a9 84       ..    
     jsr osbyte                                                        ; 8025: 20 f4 ff     ..      ; Read top of available user RAM (HIMEM)
     stx zp_himem                                                      ; 8028: 86 06       ..       ; X and Y contain the address of HIMEM (low, high)
@@ -423,23 +433,23 @@ oscli            = &fff7
     jsr osbyte                                                        ; 802e: 20 f4 ff     ..      ; Read top of operating system RAM address (OSHWM)
     sty zp_page                                                       ; 8031: 84 18       ..       ; X and Y contain the address of OSHWM (low, high)
     ldx #0                                                            ; 8033: a2 00       ..    
-    stx zp_listo                                                      ; 8035: 86 1f       ..    
-    stx l0402                                                         ; 8037: 8e 02 04    ...   
+    stx zp_listo                                                      ; 8035: 86 1f       ..       ; LISTO = 0: no LIST indentation
+    stx l0402                                                         ; 8037: 8e 02 04    ...      ; @% high two bytes = 0
     stx l0403                                                         ; 803a: 8e 03 04    ...   
     dex                                                               ; 803d: ca          .     
-    stx zp_width                                                      ; 803e: 86 23       .#    
+    stx zp_width                                                      ; 803e: 86 23       .#       ; WIDTH = &FF: no automatic line wrap
     ldx #&0a                                                          ; 8040: a2 0a       ..    
-    stx resint_at                                                     ; 8042: 8e 00 04    ...   
+    stx resint_at                                                     ; 8042: 8e 00 04    ...      ; @% = &0000090A: default PRINT format
     dex                                                               ; 8045: ca          .     
     stx l0401                                                         ; 8046: 8e 01 04    ...   
     lda #1                                                            ; 8049: a9 01       ..    
-    and l0011                                                         ; 804b: 25 11       %.    
+    and l0011                                                         ; 804b: 25 11       %.       ; OR the RND seed bytes (&0D-&11) together
     ora zp_rnd_seed                                                   ; 804d: 05 0d       ..    
     ora l000e                                                         ; 804f: 05 0e       ..    
     ora l000f                                                         ; 8051: 05 0f       ..    
     ora l0010                                                         ; 8053: 05 10       ..    
-    bne c8063                                                         ; 8055: d0 0c       ..    
-    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A    
+    bne c8063                                                         ; 8055: d0 0c       ..       ; Seed already non-zero: leave it
+    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed: set RND to "ARW" (&575241)
     sta zp_rnd_seed                                                   ; 8059: 85 0d       ..    
     lda #&52 ; 'R'                                                    ; 805b: a9 52       .R    
     sta l000e                                                         ; 805d: 85 0e       ..    
@@ -447,12 +457,12 @@ oscli            = &fff7
     sta l000f                                                         ; 8061: 85 0f       ..    
 ; &8063 referenced 1 time by &8055
 .c8063
-    lda #2                                                            ; 8063: a9 02       ..    
+    lda #2                                                            ; 8063: a9 02       ..       ; Install brk_handler (&B402) into BRKV
     sta brkv                                                          ; 8065: 8d 02 02    ...   
     lda #&b4                                                          ; 8068: a9 b4       ..    
     sta brkv+1                                                        ; 806a: 8d 03 02    ...   
-    cli                                                               ; 806d: 58          X     
-    jmp c8add                                                         ; 806e: 4c dd 8a    L..   
+    cli                                                               ; 806d: 58          X        ; Enable IRQs and enter the immediate loop
+    jmp immediate_loop                                                ; 806e: 4c dd 8a    L..   
 ; ***************************************************************************************
 ; Keyword / tokeniser table
 ;
@@ -1691,7 +1701,9 @@ l848a = sub_c847b+15
     cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..    
     bne c8936                                                         ; 893f: d0 f5       ..    
     rts                                                               ; 8941: 60          `     
-    equb &b1, &37                                                     ; 8942: b1 37       .7    
+; &8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6
+.sub_c8942
+    lda (zp_general),y                                                ; 8942: b1 37       .7    
 ; &8944 referenced 8 times by &8919, &891c, &891f, &894b, &8961, &89bc, &89d9, &8a79
 .sub_c8944
     inc zp_general                                                    ; 8944: e6 37       .7    
@@ -1988,7 +2000,7 @@ l848a = sub_c847b+15
 .stmt_new
     jsr c9857                                                         ; 8ada: 20 57 98     W.   
 ; &8add referenced 1 time by &806e
-.c8add
+.immediate_loop
     lda #&0d                                                          ; 8add: a9 0d       ..    
     ldy zp_page                                                       ; 8adf: a4 18       ..    
     sty l0013                                                         ; 8ae1: 84 13       ..    
@@ -2118,7 +2130,7 @@ l848a = sub_c847b+15
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..    
     cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:    
     bne c8b87                                                         ; 8ba1: d0 e4       ..    
-; &8ba3 referenced 9 times by &8501, &8b94, &8bab, &98de, &b20b, &b74e, &b84c, &b8e1, &bbf9
+; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
 .c8ba3
     ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..    
     inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..    
@@ -8616,16 +8628,70 @@ l848a = sub_c847b+15
 .cb3c0
     lda zp_iwa                                                        ; b3c0: a5 2a       .*    
     jmp cafc2                                                         ; b3c2: 4c c2 af    L..   
-    equb &a0, &00, &84, &08, &84, &09, &a6, &18, &86, &38, &84, &37   ; b3c5: a0 00 84... ......
-    equb &a6, &0c, &e0, &07, &f0, &2a, &a6, &0b, &20, &42, &89, &c9   ; b3d1: a6 0c e0... ......
-    equb &0d, &d0, &19, &e4, &37, &a5, &0c, &e5, &38, &90, &19, &20   ; b3dd: 0d d0 19... ......
-    equb &42, &89, &09, &00, &30, &12, &85, &09, &20, &42, &89, &85   ; b3e9: 42 89 09... B.....
-    equb &08, &20, &42, &89, &e4, &37, &a5, &0c, &e5, &38, &b0, &d8   ; b3f5: 08 20 42... . B...
-    equb &60, &20, &c5, &b3, &84, &20, &b1, &fd, &d0, &08, &a9, &33   ; b401: 60 20 c5... ` ....
-    equb &85, &16, &a9, &b4, &85, &17, &a5, &16, &85, &0b, &a5, &17   ; b40d: 85 16 a9... ......
-    equb &85, &0c, &20, &3a, &bd, &aa, &86, &0a, &a9, &da, &20, &f4   ; b419: 85 0c 20... .. ...
-    equb &ff, &a9, &7e, &20, &f4, &ff, &a2, &ff, &86, &28, &9a, &4c   ; b425: ff a9 7e... ..~...
-    equb &a3, &8b, &f6, &3a, &e7, &9e, &f1                            ; b431: a3 8b f6... ......
+; &b3c5 referenced 1 time by &b402
+.sub_cb3c5
+    ldy #0                                                            ; b3c5: a0 00       ..    
+    sty zp_erl                                                        ; b3c7: 84 08       ..    
+    sty l0009                                                         ; b3c9: 84 09       ..    
+    ldx zp_page                                                       ; b3cb: a6 18       ..    
+    stx l0038                                                         ; b3cd: 86 38       .8    
+    sty zp_general                                                    ; b3cf: 84 37       .7    
+    ldx l000c                                                         ; b3d1: a6 0c       ..    
+    cpx #7                                                            ; b3d3: e0 07       ..    
+    beq return_33                                                     ; b3d5: f0 2a       .*    
+    ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..    
+; &b3d9 referenced 1 time by &b3ff
+.loop_cb3d9
+    jsr sub_c8942                                                     ; b3d9: 20 42 89     B.   
+    cmp #&0d                                                          ; b3dc: c9 0d       ..    
+    bne cb3f9                                                         ; b3de: d0 19       ..    
+    cpx zp_general                                                    ; b3e0: e4 37       .7    
+    lda l000c                                                         ; b3e2: a5 0c       ..    
+    sbc l0038                                                         ; b3e4: e5 38       .8    
+    bcc return_33                                                     ; b3e6: 90 19       ..    
+    jsr sub_c8942                                                     ; b3e8: 20 42 89     B.   
+    ora #0                                                            ; b3eb: 09 00       ..    
+    bmi return_33                                                     ; b3ed: 30 12       0.    
+    sta l0009                                                         ; b3ef: 85 09       ..    
+    jsr sub_c8942                                                     ; b3f1: 20 42 89     B.   
+    sta zp_erl                                                        ; b3f4: 85 08       ..    
+    jsr sub_c8942                                                     ; b3f6: 20 42 89     B.   
+; &b3f9 referenced 1 time by &b3de
+.cb3f9
+    cpx zp_general                                                    ; b3f9: e4 37       .7    
+    lda l000c                                                         ; b3fb: a5 0c       ..    
+    sbc l0038                                                         ; b3fd: e5 38       .8    
+    bcs loop_cb3d9                                                    ; b3ff: b0 d8       ..    
+; &b401 referenced 3 times by &b3d5, &b3e6, &b3ed
+.return_33
+    rts                                                               ; b401: 60          `     
+.brk_handler
+    jsr sub_cb3c5                                                     ; b402: 20 c5 b3     ..   
+    sty zp_trace_flag                                                 ; b405: 84 20       .     
+    lda (l00fd),y                                                     ; b407: b1 fd       ..    
+    bne cb413                                                         ; b409: d0 08       ..    
+    lda #&33 ; '3'                                                    ; b40b: a9 33       .3    
+    sta zp_error_vec                                                  ; b40d: 85 16       ..    
+    lda #&b4                                                          ; b40f: a9 b4       ..    
+    sta l0017                                                         ; b411: 85 17       ..    
+; &b413 referenced 1 time by &b409
+.cb413
+    lda zp_error_vec                                                  ; b413: a5 16       ..    
+    sta zp_text_ptr                                                   ; b415: 85 0b       ..    
+    lda l0017                                                         ; b417: a5 17       ..    
+    sta l000c                                                         ; b419: 85 0c       ..    
+    jsr sub_cbd3a                                                     ; b41b: 20 3a bd     :.   
+    tax                                                               ; b41e: aa          .     
+    stx zp_text_ptr_off                                               ; b41f: 86 0a       ..    
+    lda #osbyte_vdu_queue_size                                        ; b421: a9 da       ..    
+    jsr osbyte                                                        ; b423: 20 f4 ff     ..      ; osbyte: vdu queue size
+    lda #osbyte_acknowledge_escape                                    ; b426: a9 7e       .~    
+    jsr osbyte                                                        ; b428: 20 f4 ff     ..      ; Clear escape condition and perform escape effects
+    ldx #&ff                                                          ; b42b: a2 ff       ..    
+    stx zp_opt_flag                                                   ; b42d: 86 28       .(    
+    txs                                                               ; b42f: 9a          .     
+    jmp c8ba3                                                         ; b430: 4c a3 8b    L..   
+    equb &f6, &3a, &e7, &9e, &f1                                      ; b433: f6 3a e7... .:....
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
     equb &9e, &3a, &e0, &8b, &f1, &3a, &e0, &0d                       ; b444: 9e 3a e0... .:....
 .stmt_sound
@@ -8713,7 +8779,7 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; b4c8: a5 2a       .*    
     sta (zp_general),y                                                ; b4ca: 91 37       .7    
     lda zp_fileblk                                                    ; b4cc: a5 39       .9    
-    beq return_33                                                     ; b4ce: f0 0f       ..    
+    beq return_34                                                     ; b4ce: f0 0f       ..    
     lda l002b                                                         ; b4d0: a5 2b       .+    
     iny                                                               ; b4d2: c8          .     
     sta (zp_general),y                                                ; b4d3: 91 37       .7    
@@ -8724,7 +8790,7 @@ l848a = sub_c847b+15
     iny                                                               ; b4dc: c8          .     
     sta (zp_general),y                                                ; b4dd: 91 37       .7    
 ; &b4df referenced 1 time by &b4ce
-.return_33
+.return_34
     rts                                                               ; b4df: 60          `     
 ; &b4e0 referenced 1 time by &b4bb
 .cb4e0
@@ -8842,9 +8908,9 @@ l848a = sub_c847b+15
 ; &b577 referenced 3 times by &b626, &b62d, &b634
 .sub_cb577
     and zp_listo                                                      ; b577: 25 1f       %.    
-    beq return_34                                                     ; b579: f0 0e       ..    
+    beq return_35                                                     ; b579: f0 0e       ..    
     txa                                                               ; b57b: 8a          .     
-    beq return_34                                                     ; b57c: f0 0b       ..    
+    beq return_35                                                     ; b57c: f0 0b       ..    
     bmi cb565                                                         ; b57e: 30 e5       0.    
 ; &b580 referenced 1 time by &b587
 .loop_cb580
@@ -8853,7 +8919,7 @@ l848a = sub_c847b+15
     dex                                                               ; b586: ca          .     
     bne loop_cb580                                                    ; b587: d0 f7       ..    
 ; &b589 referenced 2 times by &b579, &b57c
-.return_34
+.return_35
     rts                                                               ; b589: 60          `     
 ; &b58a referenced 1 time by &b5a1
 .loop_cb58a
@@ -9711,16 +9777,16 @@ l848a = sub_c847b+15
     sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..    
     jsr c8a8c                                                         ; bb60: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; bb63: c9 2c       .,    
-    beq return_35                                                     ; bb65: f0 49       .I    
+    beq return_36                                                     ; bb65: f0 49       .I    
     cmp #&dc                                                          ; bb67: c9 dc       ..    
-    beq return_35                                                     ; bb69: f0 45       .E    
+    beq return_36                                                     ; bb69: f0 45       .E    
     cmp #&0d                                                          ; bb6b: c9 0d       ..    
     beq cbb7a                                                         ; bb6d: f0 0b       ..    
 ; &bb6f referenced 1 time by &bb78
 .loop_cbb6f
     jsr c8a8c                                                         ; bb6f: 20 8c 8a     ..   
     cmp #&2c ; ','                                                    ; bb72: c9 2c       .,    
-    beq return_35                                                     ; bb74: f0 3a       .:    
+    beq return_36                                                     ; bb74: f0 3a       .:    
     cmp #&0d                                                          ; bb76: c9 0d       ..    
     bne loop_cbb6f                                                    ; bb78: d0 f5       ..    
 ; &bb7a referenced 3 times by &bb6d, &bb96, &bb9a
@@ -9762,7 +9828,7 @@ l848a = sub_c847b+15
     iny                                                               ; bbad: c8          .     
     sty zp_text_ptr2_off                                              ; bbae: 84 1b       ..    
 ; &bbb0 referenced 3 times by &bb65, &bb69, &bb74
-.return_35
+.return_36
     rts                                                               ; bbb0: 60          `     
 .stmt_until
     jsr sub_c9b1d                                                     ; bbb1: 20 1d 9b     ..   
@@ -9835,7 +9901,7 @@ l848a = sub_c847b+15
 ; &bc2d referenced 2 times by &8f53, &bc8f
 .sub_cbc2d
     jsr sub_c9970                                                     ; bc2d: 20 70 99     p.   
-    bcs return_36                                                     ; bc30: b0 4e       .N    
+    bcs return_37                                                     ; bc30: b0 4e       .N    
     lda l003d                                                         ; bc32: a5 3d       .=    
     sbc #2                                                            ; bc34: e9 02       ..    
     sta zp_general                                                    ; bc36: 85 37       .7    
@@ -9888,7 +9954,7 @@ l848a = sub_c847b+15
     jsr sub_cbe92                                                     ; bc7c: 20 92 be     ..   
     clc                                                               ; bc7f: 18          .     
 ; &bc80 referenced 1 time by &bc30
-.return_36
+.return_37
     rts                                                               ; bc80: 60          `     
 ; &bc81 referenced 2 times by &bc73, &bc76
 .sub_cbc81
@@ -9910,7 +9976,7 @@ l848a = sub_c847b+15
     ldy #0                                                            ; bc96: a0 00       ..    
     lda #&0d                                                          ; bc98: a9 0d       ..    
     cmp (zp_fwb),y                                                    ; bc9a: d1 3b       .;    
-    beq return_37                                                     ; bc9c: f0 72       .r    
+    beq return_38                                                     ; bc9c: f0 72       .r    
 ; &bc9e referenced 1 time by &bca1
 .loop_cbc9e
     iny                                                               ; bc9e: c8          .     
@@ -9983,7 +10049,7 @@ l848a = sub_c847b+15
     cmp #&0d                                                          ; bd0c: c9 0d       ..    
     bne loop_cbd07                                                    ; bd0e: d0 f7       ..    
 ; &bd10 referenced 1 time by &bc9c
-.return_37
+.return_38
     rts                                                               ; bd10: 60          `     
 .stmt_run
     jsr c9857                                                         ; bd11: 20 57 98     W.   
@@ -10013,7 +10079,7 @@ l848a = sub_c847b+15
     dex                                                               ; bd36: ca          .     
     bne loop_cbd33                                                    ; bd37: d0 fa       ..    
     rts                                                               ; bd39: 60          `     
-; &bd3a referenced 2 times by &8b1a, &bd2c
+; &bd3a referenced 3 times by &8b1a, &b41b, &bd2c
 .sub_cbd3a
     lda zp_page                                                       ; bd3a: a5 18       ..    
     sta l001d                                                         ; bd3c: 85 1d       ..    
@@ -10130,7 +10196,7 @@ l848a = sub_c847b+15
 .cbde1
     adc zp_stack_ptr                                                  ; bde1: 65 04       e.    
     sta zp_stack_ptr                                                  ; bde3: 85 04       ..    
-    bcc return_38                                                     ; bde5: 90 23       .#    
+    bcc return_39                                                     ; bde5: 90 23       .#    
     inc l0005                                                         ; bde7: e6 05       ..    
     rts                                                               ; bde9: 60          `     
 ; &bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9
@@ -10153,10 +10219,10 @@ l848a = sub_c847b+15
     lda zp_stack_ptr                                                  ; be00: a5 04       ..    
     adc #4                                                            ; be02: 69 04       i.    
     sta zp_stack_ptr                                                  ; be04: 85 04       ..    
-    bcc return_38                                                     ; be06: 90 02       ..    
+    bcc return_39                                                     ; be06: 90 02       ..    
     inc l0005                                                         ; be08: e6 05       ..    
 ; &be0a referenced 3 times by &bde5, &be06, &be29
-.return_38
+.return_39
     rts                                                               ; be0a: 60          `     
 ; &be0b referenced 3 times by &9412, &b21c, &b4b4
 .sub_cbe0b
@@ -10179,7 +10245,7 @@ l848a = sub_c847b+15
     lda zp_stack_ptr                                                  ; be23: a5 04       ..    
     adc #4                                                            ; be25: 69 04       i.    
     sta zp_stack_ptr                                                  ; be27: 85 04       ..    
-    bcc return_38                                                     ; be29: 90 df       ..    
+    bcc return_39                                                     ; be29: 90 df       ..    
     inc l0005                                                         ; be2b: e6 05       ..    
     rts                                                               ; be2d: 60          `     
 ; &be2e referenced 4 times by &b19e, &bd56, &bd99, &bdb7
@@ -10192,11 +10258,11 @@ l848a = sub_c847b+15
     ldy l0005                                                         ; be34: a4 05       ..    
     cpy l0003                                                         ; be36: c4 03       ..    
     bcc cbe41                                                         ; be38: 90 07       ..    
-    bne return_39                                                     ; be3a: d0 04       ..    
+    bne return_40                                                     ; be3a: d0 04       ..    
     cmp zp_vartop                                                     ; be3c: c5 02       ..    
     bcc cbe41                                                         ; be3e: 90 01       ..    
 ; &be40 referenced 1 time by &be3a
-.return_39
+.return_40
     rts                                                               ; be40: 60          `     
 ; &be41 referenced 2 times by &be38, &be3e
 .cbe41
@@ -10480,16 +10546,16 @@ save pydis_start, pydis_end
 
 ; Label references by decreasing frequency:
 ;     zp_iwa:            187
-;     zp_general:        138
+;     zp_general:        142
 ;     l002b:             111
-;     zp_text_ptr_off:    91
+;     zp_text_ptr_off:    92
 ;     zp_text_ptr2_off:   90
 ;     zp_stack_ptr:       85
+;     zp_text_ptr:        75
 ;     l0031:              73
-;     zp_text_ptr:        73
 ;     l002c:              70
+;     l0038:              66
 ;     l003d:              65
-;     l0038:              63
 ;     zp_fileblk:         62
 ;     l002d:              61
 ;     l0032:              61
@@ -10505,9 +10571,9 @@ save pydis_start, pydis_end
 ;     zp_text_ptr2:       48
 ;     l003a:              45
 ;     l0035:              42
+;     l000c:              41
 ;     zp_var_type:        41
 ;     l003c:              39
-;     l000c:              37
 ;     l0040:              37
 ;     l004b:              31
 ;     cbd94:              29
@@ -10534,9 +10600,9 @@ save pydis_start, pydis_end
 ;     l0042:              17
 ;     sub_c9b29:          16
 ;     sub_cbdea:          16
+;     zp_page:            16
 ;     l0013:              15
 ;     zp_for_level:       15
-;     zp_page:            15
 ;     l004c:              14
 ;     cadec:              13
 ;     cb558:              13
@@ -10547,19 +10613,19 @@ save pydis_start, pydis_end
 ;     ca066:              11
 ;     cae56:              11
 ;     caeea:              11
+;     osbyte:             11
 ;     sub_c92fa:          11
 ;     sub_c9b1d:          11
 ;     sub_cbd7e:          11
+;     zp_opt_flag:        11
+;     c8ba3:              10
 ;     ca500:              10
 ;     sub_c92e3:          10
 ;     sub_c97df:          10
 ;     sub_ca3b5:          10
-;     zp_opt_flag:        10
-;     c8ba3:               9
 ;     cb565:               9
 ;     cbdb2:               9
 ;     l0048:               9
-;     osbyte:              9
 ;     sub_c9582:           9
 ;     sub_ca385:           9
 ;     zp_print_flag:       9
@@ -10594,6 +10660,7 @@ save pydis_start, pydis_end
 ;     cb2b5:               6
 ;     cbddc:               6
 ;     l0001:               6
+;     l0017:               6
 ;     osbget:              6
 ;     osbput:              6
 ;     sub_c92ee:           6
@@ -10603,6 +10670,7 @@ save pydis_start, pydis_end
 ;     sub_cb4b4:           6
 ;     sub_cbdcb:           6
 ;     sub_cbe6f:           6
+;     zp_error_vec:        6
 ;     zp_fp_temp:          6
 ;     zp_lomem:            6
 ;     c8735:               5
@@ -10633,6 +10701,7 @@ save pydis_start, pydis_end
 ;     sub_cbfa9:           5
 ;     zp_gosub_level:      5
 ;     zp_repeat_level:     5
+;     zp_trace_flag:       5
 ;     c8604:               4
 ;     c88d5:               4
 ;     c8aa2:               4
@@ -10653,13 +10722,13 @@ save pydis_start, pydis_end
 ;     cbc28:               4
 ;     l000f:               4
 ;     l0011:               4
-;     l0017:               4
 ;     l001d:               4
 ;     l0045:               4
 ;     l0046:               4
 ;     l0441:               4
 ;     resint_p:            4
 ;     return_23:           4
+;     sub_c8942:           4
 ;     sub_c9222:           4
 ;     sub_c92da:           4
 ;     sub_c92eb:           4
@@ -10677,9 +10746,7 @@ save pydis_start, pydis_end
 ;     sub_cbe2e:           4
 ;     zp_asm_opcode:       4
 ;     zp_data_ptr:         4
-;     zp_error_vec:        4
 ;     zp_rnd_seed:         4
-;     zp_trace_flag:       4
 ;     c8620:               3
 ;     c8738:               3
 ;     c8858:               3
@@ -10721,13 +10788,16 @@ save pydis_start, pydis_end
 ;     cbb07:               3
 ;     cbb7a:               3
 ;     fn_true:             3
+;     l0009:               3
 ;     l000e:               3
+;     l00fd:               3
 ;     l0401:               3
 ;     return_12:           3
 ;     return_19:           3
 ;     return_25:           3
-;     return_35:           3
-;     return_38:           3
+;     return_33:           3
+;     return_36:           3
+;     return_39:           3
 ;     return_8:            3
 ;     sub_c8827:           3
 ;     sub_c882f:           3
@@ -10748,8 +10818,10 @@ save pydis_start, pydis_end
 ;     sub_cab12:           3
 ;     sub_cb50e:           3
 ;     sub_cb577:           3
+;     sub_cbd3a:           3
 ;     sub_cbe0b:           3
 ;     sub_cbfb5:           3
+;     zp_erl:              3
 ;     zp_listo:            3
 ;     zp_width:            3
 ;     c8556:               2
@@ -10899,7 +10971,6 @@ save pydis_start, pydis_end
 ;     fp_temp1:            2
 ;     l0010:               2
 ;     l0022:               2
-;     l00fd:               2
 ;     l0100:               2
 ;     l01ff:               2
 ;     l0402:               2
@@ -10927,7 +10998,7 @@ save pydis_start, pydis_end
 ;     return_28:           2
 ;     return_3:            2
 ;     return_31:           2
-;     return_34:           2
+;     return_35:           2
 ;     return_9:            2
 ;     stmt_data:           2
 ;     stmt_def:            2
@@ -10983,7 +11054,6 @@ save pydis_start, pydis_end
 ;     sub_cbc2d:           2
 ;     sub_cbc81:           2
 ;     sub_cbc8d:           2
-;     sub_cbd3a:           2
 ;     sub_cbd90:           2
 ;     sub_cbdff:           2
 ;     sub_cbe62:           2
@@ -11060,7 +11130,6 @@ save pydis_start, pydis_end
 ;     c8a7f:               1
 ;     c8a81:               1
 ;     c8a86:               1
-;     c8add:               1
 ;     c8b0b:               1
 ;     c8b38:               1
 ;     c8b73:               1
@@ -11336,6 +11405,8 @@ save pydis_start, pydis_end
 ;     cb3a7:               1
 ;     cb3ba:               1
 ;     cb3c0:               1
+;     cb3f9:               1
+;     cb413:               1
 ;     cb4c6:               1
 ;     cb4e0:               1
 ;     cb536:               1
@@ -11412,7 +11483,7 @@ save pydis_start, pydis_end
 ;     fn_asn:              1
 ;     fn_ln:               1
 ;     for_gosub_stack:     1
-;     l0009:               1
+;     immediate_loop:      1
 ;     l0047:               1
 ;     l0061:               1
 ;     l0064:               1
@@ -11607,6 +11678,7 @@ save pydis_start, pydis_end
 ;     loop_cb28e:          1
 ;     loop_cb39d:          1
 ;     loop_cb3ad:          1
+;     loop_cb3d9:          1
 ;     loop_cb451:          1
 ;     loop_cb477:          1
 ;     loop_cb520:          1
@@ -11665,11 +11737,11 @@ save pydis_start, pydis_end
 ;     return_29:           1
 ;     return_30:           1
 ;     return_32:           1
-;     return_33:           1
-;     return_36:           1
+;     return_34:           1
 ;     return_37:           1
-;     return_39:           1
+;     return_38:           1
 ;     return_4:            1
+;     return_40:           1
 ;     return_5:            1
 ;     return_6:            1
 ;     return_7:            1
@@ -11719,6 +11791,7 @@ save pydis_start, pydis_end
 ;     sub_cae3a:           1
 ;     sub_cb197:           1
 ;     sub_cb1c8:           1
+;     sub_cb3c5:           1
 ;     sub_cb4b7:           1
 ;     sub_cb550:           1
 ;     sub_cbbfc:           1
@@ -11728,7 +11801,6 @@ save pydis_start, pydis_end
 ;     sub_cbe93:           1
 ;     sub_cbeb2:           1
 ;     sub_cbee7:           1
-;     zp_erl:              1
 
 ; Automatically generated labels:
 ;     c8063
@@ -11833,7 +11905,6 @@ save pydis_start, pydis_end
 ;     c8a8c
 ;     c8a97
 ;     c8aa2
-;     c8add
 ;     c8af3
 ;     c8af6
 ;     c8b0b
@@ -12287,6 +12358,8 @@ save pydis_start, pydis_end
 ;     cb3a7
 ;     cb3ba
 ;     cb3c0
+;     cb3f9
+;     cb413
 ;     cb48f
 ;     cb4ae
 ;     cb4c6
@@ -12650,6 +12723,7 @@ save pydis_start, pydis_end
 ;     loop_cb28e
 ;     loop_cb39d
 ;     loop_cb3ad
+;     loop_cb3d9
 ;     loop_cb451
 ;     loop_cb477
 ;     loop_cb520
@@ -12724,6 +12798,7 @@ save pydis_start, pydis_end
 ;     return_38
 ;     return_39
 ;     return_4
+;     return_40
 ;     return_5
 ;     return_6
 ;     return_7
@@ -12742,6 +12817,7 @@ save pydis_start, pydis_end
 ;     sub_c88f5
 ;     sub_c8926
 ;     sub_c893d
+;     sub_c8942
 ;     sub_c8944
 ;     sub_c894b
 ;     sub_c8951
@@ -12871,6 +12947,7 @@ save pydis_start, pydis_end
 ;     sub_cb197
 ;     sub_cb1c8
 ;     sub_cb30d
+;     sub_cb3c5
 ;     sub_cb4b1
 ;     sub_cb4b4
 ;     sub_cb4b7
@@ -12916,11 +12993,11 @@ save pydis_start, pydis_end
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14308 bytes (87%)
-;     Data                     = 2076 bytes (13%)
+;     Code                     = 14420 bytes (88%)
+;     Data                     = 1964 bytes (12%)
 ;
-;     Number of instructions   = 7076
-;     Number of data bytes     = 1061 bytes
+;     Number of instructions   = 7129
+;     Number of data bytes     = 949 bytes
 ;     Number of data words     = 0 bytes
 ;     Number of string bytes   = 1015 bytes
 ;     Number of strings        = 189

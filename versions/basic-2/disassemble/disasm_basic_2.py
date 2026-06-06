@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 import dasmos
+from dasmos import Align
 
 _script_dirpath = Path(__file__).resolve().parent
 _version_dirpath = _script_dirpath.parent
@@ -51,6 +52,38 @@ d.use_environment('acorn_sideways_rom')
 # of the language-entry instructions, not a separate handler.
 d.entry(0x8000)
 d.entry(0x8023)  # Language startup (the BEQ target)
+d.entry(0xb402)  # BASIC error handler, installed into BRKV at startup
+
+# ----------------------------------------------------------------------
+# Language entry and startup.
+# ----------------------------------------------------------------------
+d.comment(
+    0x8000,
+    'Language entry: CMP #1 / BEQ language_startup / RTS',
+    align=Align.INLINE,
+)
+d.label(0x8add, 'immediate_loop')   # The ">" prompt / command loop
+d.label(0xb402, 'brk_handler')      # Reached via BRKV on any error
+
+d.subroutine(
+    0x8023, 'language_startup',
+    title='Language startup',
+    description="""Reached from the language entry when the MOS starts BASIC
+(A = 1). Reads HIMEM and PAGE from the MOS, clears the print and
+formatting state, seeds the random-number generator if it is cold,
+installs the BASIC error handler in BRKV, and jumps to the
+immediate ("> ") loop.
+""",
+)
+d.comment(0x8035, 'LISTO = 0: no LIST indentation', align=Align.INLINE)
+d.comment(0x8037, '@% high two bytes = 0', align=Align.INLINE)
+d.comment(0x803e, 'WIDTH = &FF: no automatic line wrap', align=Align.INLINE)
+d.comment(0x8042, '@% = &0000090A: default PRINT format', align=Align.INLINE)
+d.comment(0x804b, 'OR the RND seed bytes (&0D-&11) together', align=Align.INLINE)
+d.comment(0x8055, 'Seed already non-zero: leave it', align=Align.INLINE)
+d.comment(0x8057, 'Cold seed: set RND to "ARW" (&575241)', align=Align.INLINE)
+d.comment(0x8063, 'Install brk_handler (&B402) into BRKV', align=Align.INLINE)
+d.comment(0x806d, 'Enable IRQs and enter the immediate loop', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # Zero page (Pharo ch. 7.1 "Zero Page Dedicated Locations"). All
