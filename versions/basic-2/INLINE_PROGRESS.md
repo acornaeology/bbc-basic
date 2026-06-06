@@ -54,8 +54,15 @@ Cross-references: `tools/jgh_correlation.tsv` (regenerate with
 - [x] Tokeniser front-end (c8957).
 - [x] Variable / PROC / FN lookup (find_variable, find_proc_fn).
 - [x] Expression-evaluator ladder (levels 7-3 named + documented).
-- [ ] Control flow: FOR/NEXT, GOSUB/RETURN, REPEAT/UNTIL (stack frames).
-- [ ] FP multiply / divide; PRINT / number formatting; LET store.
+- [x] Control flow: FOR/NEXT (frames), GOSUB/RETURN/GOTO (find_line_*,
+      find_program_line, GOSUB stack), REPEAT/UNTIL.
+- [x] LET assignment: parse_lvalue, eval_after_eq, assign_string,
+      assign_number, err_type_mismatch.
+- [x] PRINT: items, separators, @% formatting, print_special_item.
+- [ ] FP multiply / divide internals.
+- [ ] Remaining statement-handler bodies (DIM, INPUT, READ/DATA, ON,
+      DEF/PROC/FN call mechanics, file ops) and leaf mop-up.
+- [ ] skip_spaces enrich (minor).
 
 ## Done
 
