@@ -60771,6 +60771,7 @@
         240,
         247
       ],
+      "comment_inline": "Adding zero leaves FWA unchanged",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_26",
@@ -60843,6 +60844,7 @@
         240,
         204
       ],
+      "comment_inline": "FWA is zero: the sum is simply FWB",
       "type": "code",
       "mnemonic": "beq",
       "operand": "fwa_copy_from_fwb",
@@ -60885,6 +60887,7 @@
         229,
         61
       ],
+      "comment_inline": "Exponent difference is the alignment shift",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_exp",
@@ -60897,6 +60900,7 @@
         240,
         119
       ],
+      "comment_inline": "Equal exponents: already aligned",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca590",
@@ -60909,6 +60913,7 @@
         144,
         55
       ],
+      "comment_inline": "FWA the smaller: align it to FWB instead",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca552",
@@ -60931,6 +60936,7 @@
         176,
         221
       ],
+      "comment_inline": "Differ by >= 37 bits: FWB too small to count",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_26",
@@ -60951,6 +60957,7 @@
         41,
         56
       ],
+      "comment_inline": "Whole-byte part of the shift (difference / 8)",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&38"
@@ -61008,6 +61015,7 @@
       "labels": [
         "loop_ca528"
       ],
+      "comment_inline": "Shift FWB down a byte at a time",
       "xref_summaries": [
         "&a528 referenced 1 time by &a53b"
       ],
@@ -61159,6 +61167,7 @@
         41,
         7
       ],
+      "comment_inline": "then the remaining bits, to finish aligning FWB",
       "type": "code",
       "mnemonic": "and",
       "operand": "#7"
@@ -61292,6 +61301,7 @@
       "labels": [
         "ca552"
       ],
+      "comment_inline": "FWB the smaller: shift FWA to align",
       "xref_summaries": [
         "&a552 referenced 1 time by &a519"
       ],
@@ -61691,6 +61701,7 @@
       "labels": [
         "ca58c"
       ],
+      "comment_inline": "Result takes the larger exponent",
       "xref_summaries": [
         "&a58c referenced 1 time by &a57c"
       ],
@@ -61744,6 +61755,7 @@
         69,
         59
       ],
+      "comment_inline": "Compare the operand signs",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_fwb_sign",
@@ -61756,11 +61768,12 @@
         16,
         73
       ],
+      "comment_inline": "Same sign: add; opposite: subtract smaller from larger",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca5df",
+      "operand": "fp_mantissas_add",
       "target": 42463,
-      "target_label": "ca5df"
+      "target_label": "fp_mantissas_add"
     },
     {
       "addr": 42390,
@@ -61794,9 +61807,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca5b7",
+      "operand": "fp_mantissas_sub",
       "target": 42423,
-      "target_label": "ca5b7"
+      "target_label": "fp_mantissas_sub"
     },
     {
       "addr": 42396,
@@ -61830,9 +61843,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca5b7",
+      "operand": "fp_mantissas_sub",
       "target": 42423,
-      "target_label": "ca5b7"
+      "target_label": "fp_mantissas_sub"
     },
     {
       "addr": 42402,
@@ -61866,9 +61879,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca5b7",
+      "operand": "fp_mantissas_sub",
       "target": 42423,
-      "target_label": "ca5b7"
+      "target_label": "fp_mantissas_sub"
     },
     {
       "addr": 42408,
@@ -61902,9 +61915,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca5b7",
+      "operand": "fp_mantissas_sub",
       "target": 42423,
-      "target_label": "ca5b7"
+      "target_label": "fp_mantissas_sub"
     },
     {
       "addr": 42414,
@@ -61938,9 +61951,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca5b7",
+      "operand": "fp_mantissas_sub",
       "target": 42423,
-      "target_label": "ca5b7"
+      "target_label": "fp_mantissas_sub"
     },
     {
       "addr": 42420,
@@ -61949,6 +61962,7 @@
         134,
         166
       ],
+      "comment_inline": "Equal magnitudes of opposite sign cancel to zero",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_clear",
@@ -61962,7 +61976,7 @@
         42
       ],
       "labels": [
-        "ca5b7"
+        "fp_mantissas_sub"
       ],
       "xref_summaries": [
         "&a5b7 referenced 5 times by &a59a, &a5a0, &a5a6, &a5ac, &a5b2"
@@ -62211,7 +62225,7 @@
         24
       ],
       "labels": [
-        "ca5df"
+        "fp_mantissas_add"
       ],
       "xref_summaries": [
         "&a5df referenced 1 time by &a594"

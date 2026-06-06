@@ -1090,6 +1090,34 @@ d.comment(0xa67c, 'Clear the now-spent rounding byte', align=Align.INLINE)
 d.comment(0xa680, 'A carry may have overflowed the mantissa', align=Align.INLINE)
 d.comment(0xa684, 'Overflowed the exponent range: Too big', align=Align.INLINE)
 
+# --- floating-point addition (FWA = FWA + FWB) -----------------------
+# Align the two operands by the difference of their exponents (shifting
+# the smaller mantissa right), then add the mantissas if the signs
+# match or subtract the smaller from the larger if they differ.
+d.label(0xa5df, 'fp_mantissas_add')   # same-sign path: add the mantissas
+d.label(0xa5b7, 'fp_mantissas_sub')   # opposite-sign path: subtract
+d.comment(0xa503, 'Adding zero leaves FWA unchanged', align=Align.INLINE)
+d.comment(0xa50e, 'FWA is zero: the sum is simply FWB', align=Align.INLINE)
+d.comment(0xa515, 'Exponent difference is the alignment shift',
+          align=Align.INLINE)
+d.comment(0xa517, 'Equal exponents: already aligned', align=Align.INLINE)
+d.comment(0xa519, 'FWA the smaller: align it to FWB instead',
+          align=Align.INLINE)
+d.comment(0xa51d, 'Differ by >= 37 bits: FWB too small to count',
+          align=Align.INLINE)
+d.comment(0xa520, 'Whole-byte part of the shift (difference / 8)',
+          align=Align.INLINE)
+d.comment(0xa528, 'Shift FWB down a byte at a time', align=Align.INLINE)
+d.comment(0xa53e, 'then the remaining bits, to finish aligning FWB',
+          align=Align.INLINE)
+d.comment(0xa552, 'FWB the smaller: shift FWA to align', align=Align.INLINE)
+d.comment(0xa58c, 'Result takes the larger exponent', align=Align.INLINE)
+d.comment(0xa592, 'Compare the operand signs', align=Align.INLINE)
+d.comment(0xa594, 'Same sign: add; opposite: subtract smaller from larger',
+          align=Align.INLINE)
+d.comment(0xa5b4, 'Equal magnitudes of opposite sign cancel to zero',
+          align=Align.INLINE)
+
 ir = d.disassemble()
 output = str(
     ir.render(
