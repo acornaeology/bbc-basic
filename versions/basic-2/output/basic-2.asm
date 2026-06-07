@@ -6023,8 +6023,12 @@ l848a = sub_c847b+15
     jsr fwa_sign                                                      ; a075: 20 da a1     ..   
     lda #&ff                                                          ; a078: a9 ff       ..    
     rts                                                               ; a07a: 60          `     
+; ***************************************************************************************
+; Parse an unsigned number at PtrB
+;
+; Parse a decimal/hex number (integer or real) into the accumulator.
 ; &a07b referenced 3 times by &ac60, &ac6b, &ae2a
-.sub_ca07b
+.parse_number
     ldx #0                                                            ; a07b: a2 00       ..    
     stx zp_fwa_m1                                                     ; a07d: 86 31       .1    
     stx zp_fwa_m2                                                     ; a07f: 86 32       .2    
@@ -8053,43 +8057,43 @@ l848a = sub_c847b+15
 ;     A, ZP_VAR_TYPE (&27): type: &40 = integer, &FF = real
 ; &ac34 referenced 1 time by &bad3
 .ascii_to_number
-    ldy zp_strbuf_len                                                 ; ac34: a4 36       .6    
-    lda #0                                                            ; ac36: a9 00       ..    
-    sta string_work,y                                                 ; ac38: 99 00 06    ...   
-    lda zp_text_ptr2                                                  ; ac3b: a5 19       ..    
-    pha                                                               ; ac3d: 48          H     
-    lda zp_text_ptr2_1                                                ; ac3e: a5 1a       ..    
-    pha                                                               ; ac40: 48          H     
-    lda zp_text_ptr2_off                                              ; ac41: a5 1b       ..    
-    pha                                                               ; ac43: 48          H     
-    lda #0                                                            ; ac44: a9 00       ..    
-    sta zp_text_ptr2_off                                              ; ac46: 85 1b       ..    
-    lda #0                                                            ; ac48: a9 00       ..    
-    sta zp_text_ptr2                                                  ; ac4a: 85 19       ..    
-    lda #6                                                            ; ac4c: a9 06       ..    
-    sta zp_text_ptr2_1                                                ; ac4e: 85 1a       ..    
-    jsr skip_spaces_ptr2                                              ; ac50: 20 8c 8a     ..   
-    cmp #&2d ; '-'                                                    ; ac53: c9 2d       .-    
-    beq cac66                                                         ; ac55: f0 0f       ..    
-    cmp #&2b ; '+'                                                    ; ac57: c9 2b       .+    
-    bne cac5e                                                         ; ac59: d0 03       ..    
-    jsr skip_spaces_ptr2                                              ; ac5b: 20 8c 8a     ..   
+    ldy zp_strbuf_len                                                 ; ac34: a4 36       .6       ; NUL-terminate the SWA string
+    lda #0                                                            ; ac36: a9 00       ..       ; ...
+    sta string_work,y                                                 ; ac38: 99 00 06    ...      ; ...
+    lda zp_text_ptr2                                                  ; ac3b: a5 19       ..       ; Save PtrB (we point it at the SWA):
+    pha                                                               ; ac3d: 48          H        ; ...
+    lda zp_text_ptr2_1                                                ; ac3e: a5 1a       ..       ; ...
+    pha                                                               ; ac40: 48          H        ; ...
+    lda zp_text_ptr2_off                                              ; ac41: a5 1b       ..       ; ...
+    pha                                                               ; ac43: 48          H        ; ...
+    lda #0                                                            ; ac44: a9 00       ..       ; Point PtrB at the SWA (&0600): offset 0
+    sta zp_text_ptr2_off                                              ; ac46: 85 1b       ..       ; ...
+    lda #0                                                            ; ac48: a9 00       ..       ; low 0
+    sta zp_text_ptr2                                                  ; ac4a: 85 19       ..       ; ...
+    lda #6                                                            ; ac4c: a9 06       ..       ; high &06
+    sta zp_text_ptr2_1                                                ; ac4e: 85 1a       ..       ; ...
+    jsr skip_spaces_ptr2                                              ; ac50: 20 8c 8a     ..      ; skip spaces
+    cmp #&2d ; '-'                                                    ; ac53: c9 2d       .-       ; minus sign?
+    beq cac66                                                         ; ac55: f0 0f       ..       ; negative number
+    cmp #&2b ; '+'                                                    ; ac57: c9 2b       .+       ; plus sign?
+    bne cac5e                                                         ; ac59: d0 03       ..       ; no sign
+    jsr skip_spaces_ptr2                                              ; ac5b: 20 8c 8a     ..      ; skip the plus
 ; &ac5e referenced 1 time by &ac59
 .cac5e
-    dec zp_text_ptr2_off                                              ; ac5e: c6 1b       ..    
-    jsr sub_ca07b                                                     ; ac60: 20 7b a0     {.   
-    jmp cac73                                                         ; ac63: 4c 73 ac    Ls.   
+    dec zp_text_ptr2_off                                              ; ac5e: c6 1b       ..       ; step back
+    jsr parse_number                                                  ; ac60: 20 7b a0     {.      ; parse the number
+    jmp cac73                                                         ; ac63: 4c 73 ac    Ls.      ; finish
 ; &ac66 referenced 1 time by &ac55
 .cac66
-    jsr skip_spaces_ptr2                                              ; ac66: 20 8c 8a     ..   
-    dec zp_text_ptr2_off                                              ; ac69: c6 1b       ..    
-    jsr sub_ca07b                                                     ; ac6b: 20 7b a0     {.   
-    bcc cac73                                                         ; ac6e: 90 03       ..    
-    jsr sub_cad8f                                                     ; ac70: 20 8f ad     ..   
+    jsr skip_spaces_ptr2                                              ; ac66: 20 8c 8a     ..      ; negative: skip the minus
+    dec zp_text_ptr2_off                                              ; ac69: c6 1b       ..       ; step back
+    jsr parse_number                                                  ; ac6b: 20 7b a0     {.      ; parse the number
+    bcc cac73                                                         ; ac6e: 90 03       ..       ; integer: done
+    jsr sub_cad8f                                                     ; ac70: 20 8f ad     ..      ; real: negate it
 ; &ac73 referenced 2 times by &ac63, &ac6e
 .cac73
-    sta zp_var_type                                                   ; ac73: 85 27       .'    
-    jmp cac23                                                         ; ac75: 4c 23 ac    L#.   
+    sta zp_var_type                                                   ; ac73: 85 27       .'       ; store the result type
+    jmp cac23                                                         ; ac75: 4c 23 ac    L#.      ; restore PtrB and return
 ; ***************************************************************************************
 ; INT
 ;
@@ -8461,7 +8465,7 @@ l848a = sub_c847b+15
     jmp cb32c                                                         ; ae27: 4c 2c b3    L,.   
 ; &ae2a referenced 1 time by &ae16
 .cae2a
-    jsr sub_ca07b                                                     ; ae2a: 20 7b a0     {.   
+    jsr parse_number                                                  ; ae2a: 20 7b a0     {.   
     bcc cae43                                                         ; ae2d: 90 14       ..    
     rts                                                               ; ae2f: 60          `     
 ; &ae30 referenced 1 time by &ae25
@@ -9552,74 +9556,78 @@ l848a = sub_c847b+15
 ;
 ; One-character string for an ASCII code. CHR$ numeric.
 .fn_chrs
-    jsr sub_c92e3                                                     ; b3bd: 20 e3 92     ..   
+    jsr sub_c92e3                                                     ; b3bd: 20 e3 92     ..      ; Evaluate the integer argument
 ; &b3c0 referenced 1 time by &b3a9
 .cb3c0
-    lda zp_iwa                                                        ; b3c0: a5 2a       .*    
-    jmp cafc2                                                         ; b3c2: 4c c2 af    L..   
+    lda zp_iwa                                                        ; b3c0: a5 2a       .*       ; A = the character code
+    jmp cafc2                                                         ; b3c2: 4c c2 af    L..      ; return a one-character string
+; ***************************************************************************************
+; Find the line an error occurred in
+;
+; Walk the program to locate the line containing the current text pointer and set ERL.
 ; &b3c5 referenced 1 time by &b402
-.sub_cb3c5
-    ldy #0                                                            ; b3c5: a0 00       ..    
-    sty zp_erl                                                        ; b3c7: 84 08       ..    
-    sty zp_erl_1                                                      ; b3c9: 84 09       ..    
-    ldx zp_page                                                       ; b3cb: a6 18       ..    
-    stx zp_general_1                                                  ; b3cd: 86 38       .8    
-    sty zp_general                                                    ; b3cf: 84 37       .7    
-    ldx zp_text_ptr_1                                                 ; b3d1: a6 0c       ..    
-    cpx #7                                                            ; b3d3: e0 07       ..    
-    beq return_33                                                     ; b3d5: f0 2a       .*    
-    ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..    
+.find_error_line
+    ldy #0                                                            ; b3c5: a0 00       ..       ; Clear ERL:
+    sty zp_erl                                                        ; b3c7: 84 08       ..       ; ...
+    sty zp_erl_1                                                      ; b3c9: 84 09       ..       ; ...
+    ldx zp_page                                                       ; b3cb: a6 18       ..       ; Scan the program from PAGE: high
+    stx zp_general_1                                                  ; b3cd: 86 38       .8       ; ...
+    sty zp_general                                                    ; b3cf: 84 37       .7       ; low 0
+    ldx zp_text_ptr_1                                                 ; b3d1: a6 0c       ..       ; past the error position?
+    cpx #7                                                            ; b3d3: e0 07       ..       ; ...
+    beq return_33                                                     ; b3d5: f0 2a       .*       ; reached it: done
+    ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..       ; ...
 ; &b3d9 referenced 1 time by &b3ff
 .loop_cb3d9
-    jsr read_via_ptr_general                                          ; b3d9: 20 42 89     B.   
-    cmp #&0d                                                          ; b3dc: c9 0d       ..    
-    bne cb3f9                                                         ; b3de: d0 19       ..    
-    cpx zp_general                                                    ; b3e0: e4 37       .7    
-    lda zp_text_ptr_1                                                 ; b3e2: a5 0c       ..    
-    sbc zp_general_1                                                  ; b3e4: e5 38       .8    
-    bcc return_33                                                     ; b3e6: 90 19       ..    
-    jsr read_via_ptr_general                                          ; b3e8: 20 42 89     B.   
-    ora #0                                                            ; b3eb: 09 00       ..    
-    bmi return_33                                                     ; b3ed: 30 12       0.    
-    sta zp_erl_1                                                      ; b3ef: 85 09       ..    
-    jsr read_via_ptr_general                                          ; b3f1: 20 42 89     B.   
-    sta zp_erl                                                        ; b3f4: 85 08       ..    
-    jsr read_via_ptr_general                                          ; b3f6: 20 42 89     B.   
+    jsr read_via_ptr_general                                          ; b3d9: 20 42 89     B.      ; read a program byte
+    cmp #&0d                                                          ; b3dc: c9 0d       ..       ; a line end (CR)?
+    bne cb3f9                                                         ; b3de: d0 19       ..       ; no: keep scanning
+    cpx zp_general                                                    ; b3e0: e4 37       .7       ; is this line past the error?
+    lda zp_text_ptr_1                                                 ; b3e2: a5 0c       ..       ; ...
+    sbc zp_general_1                                                  ; b3e4: e5 38       .8       ; ...
+    bcc return_33                                                     ; b3e6: 90 19       ..       ; yes: keep the previous line
+    jsr read_via_ptr_general                                          ; b3e8: 20 42 89     B.      ; read the line number high byte
+    ora #0                                                            ; b3eb: 09 00       ..       ; end of program?
+    bmi return_33                                                     ; b3ed: 30 12       0.       ; yes: done
+    sta zp_erl_1                                                      ; b3ef: 85 09       ..       ; record ERL high
+    jsr read_via_ptr_general                                          ; b3f1: 20 42 89     B.      ; line number low byte
+    sta zp_erl                                                        ; b3f4: 85 08       ..       ; record ERL low
+    jsr read_via_ptr_general                                          ; b3f6: 20 42 89     B.      ; skip the line length byte
 ; &b3f9 referenced 1 time by &b3de
 .cb3f9
-    cpx zp_general                                                    ; b3f9: e4 37       .7    
-    lda zp_text_ptr_1                                                 ; b3fb: a5 0c       ..    
-    sbc zp_general_1                                                  ; b3fd: e5 38       .8    
-    bcs loop_cb3d9                                                    ; b3ff: b0 d8       ..    
+    cpx zp_general                                                    ; b3f9: e4 37       .7       ; still before the error?
+    lda zp_text_ptr_1                                                 ; b3fb: a5 0c       ..       ; ...
+    sbc zp_general_1                                                  ; b3fd: e5 38       .8       ; ...
+    bcs loop_cb3d9                                                    ; b3ff: b0 d8       ..       ; yes: scan the next line
 ; &b401 referenced 3 times by &b3d5, &b3e6, &b3ed
 .return_33
-    rts                                                               ; b401: 60          `     
+    rts                                                               ; b401: 60          `        ; Return
 .brk_handler
-    jsr sub_cb3c5                                                     ; b402: 20 c5 b3     ..   
-    sty zp_trace_flag                                                 ; b405: 84 20       .     
-    lda (zp_error_ptr),y                                              ; b407: b1 fd       ..    
-    bne cb413                                                         ; b409: d0 08       ..    
-    lda #&33 ; '3'                                                    ; b40b: a9 33       .3    
-    sta zp_error_vec                                                  ; b40d: 85 16       ..    
-    lda #&b4                                                          ; b40f: a9 b4       ..    
-    sta zp_error_vec_1                                                ; b411: 85 17       ..    
+    jsr find_error_line                                               ; b402: 20 c5 b3     ..      ; Find the line number (set ERL)
+    sty zp_trace_flag                                                 ; b405: 84 20       .        ; TRACE off
+    lda (zp_error_ptr),y                                              ; b407: b1 fd       ..       ; error number
+    bne cb413                                                         ; b409: d0 08       ..       ; non-zero: an ON ERROR handler is active
+    lda #&33 ; '3'                                                    ; b40b: a9 33       .3       ; no handler: reset to the default (ON ERROR OFF)
+    sta zp_error_vec                                                  ; b40d: 85 16       ..       ; ...
+    lda #&b4                                                          ; b40f: a9 b4       ..       ; ...
+    sta zp_error_vec_1                                                ; b411: 85 17       ..       ; ...
 ; &b413 referenced 1 time by &b409
 .cb413
-    lda zp_error_vec                                                  ; b413: a5 16       ..    
-    sta zp_text_ptr                                                   ; b415: 85 0b       ..    
-    lda zp_error_vec_1                                                ; b417: a5 17       ..    
-    sta zp_text_ptr_1                                                 ; b419: 85 0c       ..    
-    jsr sub_cbd3a                                                     ; b41b: 20 3a bd     :.   
-    tax                                                               ; b41e: aa          .     
-    stx zp_text_ptr_off                                               ; b41f: 86 0a       ..    
-    lda #osbyte_vdu_queue_size                                        ; b421: a9 da       ..    
+    lda zp_error_vec                                                  ; b413: a5 16       ..       ; Point the program pointer at the handler code: low
+    sta zp_text_ptr                                                   ; b415: 85 0b       ..       ; ...
+    lda zp_error_vec_1                                                ; b417: a5 17       ..       ; high
+    sta zp_text_ptr_1                                                 ; b419: 85 0c       ..       ; ...
+    jsr sub_cbd3a                                                     ; b41b: 20 3a bd     :.      ; clear DATA and the stacks
+    tax                                                               ; b41e: aa          .        ; offset 0
+    stx zp_text_ptr_off                                               ; b41f: 86 0a       ..       ; ...
+    lda #osbyte_vdu_queue_size                                        ; b421: a9 da       ..       ; OSBYTE &DA: flush the VDU queue
     jsr osbyte                                                        ; b423: 20 f4 ff     ..      ; osbyte: vdu queue size
-    lda #osbyte_acknowledge_escape                                    ; b426: a9 7e       .~    
+    lda #osbyte_acknowledge_escape                                    ; b426: a9 7e       .~       ; OSBYTE &7E: acknowledge any Escape
     jsr osbyte                                                        ; b428: 20 f4 ff     ..      ; Clear escape condition and perform escape effects
-    ldx #&ff                                                          ; b42b: a2 ff       ..    
-    stx zp_opt_flag                                                   ; b42d: 86 28       .(    
-    txs                                                               ; b42f: 9a          .     
-    jmp c8ba3                                                         ; b430: 4c a3 8b    L..   
+    ldx #&ff                                                          ; b42b: a2 ff       ..       ; reset the 6502 stack...
+    stx zp_opt_flag                                                   ; b42d: 86 28       .(       ; OPT = &FF
+    txs                                                               ; b42f: 9a          .        ; ...
+    jmp c8ba3                                                         ; b430: 4c a3 8b    L..      ; enter the execution loop at the handler
     equb &f6, &3a, &e7, &9e, &f1                                      ; b433: f6 3a e7... .:....
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
     equb &9e, &3a, &e0, &8b, &f1, &3a, &e0, &0d                       ; b444: 9e 3a e0... .:....
@@ -11953,6 +11961,7 @@ save pydis_start, pydis_end
 ;     fwb_clear:                   3
 ;     iwa_negate:                  3
 ;     l0401:                       3
+;     parse_number:                3
 ;     return_12:                   3
 ;     return_19:                   3
 ;     return_25:                   3
@@ -11966,7 +11975,6 @@ save pydis_start, pydis_end
 ;     sub_c894b:                   3
 ;     sub_c97ba:                   3
 ;     sub_c991f:                   3
-;     sub_ca07b:                   3
 ;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
 ;     sub_cab12:                   3
@@ -12632,6 +12640,7 @@ save pydis_start, pydis_end
 ;     eval_and:                    1
 ;     exec_star_command:           1
 ;     execute_line:                1
+;     find_error_line:             1
 ;     find_proc_fn:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
@@ -12940,7 +12949,6 @@ save pydis_start, pydis_end
 ;     sub_cad8f:                   1
 ;     sub_cae02:                   1
 ;     sub_cae3a:                   1
-;     sub_cb3c5:                   1
 ;     sub_cb4b7:                   1
 ;     sub_cb550:                   1
 ;     sub_cbbfc:                   1
@@ -13926,7 +13934,6 @@ save pydis_start, pydis_end
 ;     sub_ca040
 ;     sub_ca052
 ;     sub_ca064
-;     sub_ca07b
 ;     sub_ca140
 ;     sub_ca14b
 ;     sub_ca3e7
@@ -13952,7 +13959,6 @@ save pydis_start, pydis_end
 ;     sub_cad8f
 ;     sub_cae02
 ;     sub_cae3a
-;     sub_cb3c5
 ;     sub_cb4b1
 ;     sub_cb4b7
 ;     sub_cb50e

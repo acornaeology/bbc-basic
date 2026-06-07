@@ -1712,6 +1712,18 @@
       "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
     },
     {
+      "addr": 41083,
+      "name": "parse_number",
+      "title": "Parse an unsigned number at PtrB",
+      "description": "Parse a decimal/hex number (integer or real) into the accumulator."
+    },
+    {
+      "addr": 46021,
+      "name": "find_error_line",
+      "title": "Find the line an error occurred in",
+      "description": "Walk the program to locate the line containing the current text pointer and set ERL."
+    },
+    {
       "addr": 45903,
       "name": "load_byte_var",
       "title": "Load a byte variable into IWA"
@@ -53951,7 +53963,7 @@
         0
       ],
       "labels": [
-        "sub_ca07b"
+        "parse_number"
       ],
       "xref_summaries": [
         "&a07b referenced 3 times by &ac60, &ac6b, &ae2a"
@@ -72582,6 +72594,7 @@
       "labels": [
         "ascii_to_number"
       ],
+      "comment_inline": "NUL-terminate the SWA string",
       "xref_summaries": [
         "&ac34 referenced 1 time by &bad3"
       ],
@@ -72600,6 +72613,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -72611,6 +72625,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -72623,6 +72638,7 @@
         165,
         25
       ],
+      "comment_inline": "Save PtrB (we point it at the SWA):",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2",
@@ -72634,6 +72650,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -72643,6 +72660,7 @@
         165,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -72654,6 +72672,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -72663,6 +72682,7 @@
         165,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -72674,6 +72694,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -72683,6 +72704,7 @@
         169,
         0
       ],
+      "comment_inline": "Point PtrB at the SWA (&0600): offset 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -72693,6 +72715,7 @@
         133,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -72705,6 +72728,7 @@
         169,
         0
       ],
+      "comment_inline": "low 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -72715,6 +72739,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -72727,6 +72752,7 @@
         169,
         6
       ],
+      "comment_inline": "high &06",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#6"
@@ -72737,6 +72763,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -72750,6 +72777,7 @@
         140,
         138
       ],
+      "comment_inline": "skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -72762,6 +72790,7 @@
         201,
         45
       ],
+      "comment_inline": "minus sign?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2d"
@@ -72772,6 +72801,7 @@
         240,
         15
       ],
+      "comment_inline": "negative number",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cac66",
@@ -72784,6 +72814,7 @@
         201,
         43
       ],
+      "comment_inline": "plus sign?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2b"
@@ -72794,6 +72825,7 @@
         208,
         3
       ],
+      "comment_inline": "no sign",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac5e",
@@ -72807,6 +72839,7 @@
         140,
         138
       ],
+      "comment_inline": "skip the plus",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -72822,6 +72855,7 @@
       "labels": [
         "cac5e"
       ],
+      "comment_inline": "step back",
       "xref_summaries": [
         "&ac5e referenced 1 time by &ac59"
       ],
@@ -72841,11 +72875,12 @@
         123,
         160
       ],
+      "comment_inline": "parse the number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca07b",
+      "operand": "parse_number",
       "target": 41083,
-      "target_label": "sub_ca07b"
+      "target_label": "parse_number"
     },
     {
       "addr": 44131,
@@ -72854,6 +72889,7 @@
         115,
         172
       ],
+      "comment_inline": "finish",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cac73",
@@ -72870,6 +72906,7 @@
       "labels": [
         "cac66"
       ],
+      "comment_inline": "negative: skip the minus",
       "xref_summaries": [
         "&ac66 referenced 1 time by &ac55"
       ],
@@ -72888,6 +72925,7 @@
         198,
         27
       ],
+      "comment_inline": "step back",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr2_off",
@@ -72901,11 +72939,12 @@
         123,
         160
       ],
+      "comment_inline": "parse the number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca07b",
+      "operand": "parse_number",
       "target": 41083,
-      "target_label": "sub_ca07b"
+      "target_label": "parse_number"
     },
     {
       "addr": 44142,
@@ -72913,6 +72952,7 @@
         144,
         3
       ],
+      "comment_inline": "integer: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cac73",
@@ -72926,6 +72966,7 @@
         143,
         173
       ],
+      "comment_inline": "real: negate it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cad8f",
@@ -72941,6 +72982,7 @@
       "labels": [
         "cac73"
       ],
+      "comment_inline": "store the result type",
       "xref_summaries": [
         "&ac73 referenced 2 times by &ac63, &ac6e"
       ],
@@ -72961,6 +73003,7 @@
         35,
         172
       ],
+      "comment_inline": "restore PtrB and return",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cac23",
@@ -75883,9 +75926,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca07b",
+      "operand": "parse_number",
       "target": 41083,
-      "target_label": "sub_ca07b"
+      "target_label": "parse_number"
     },
     {
       "addr": 44589,
@@ -84900,6 +84943,7 @@
       "labels": [
         "fn_chrs"
       ],
+      "comment_inline": "Evaluate the integer argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -84915,6 +84959,7 @@
       "labels": [
         "cb3c0"
       ],
+      "comment_inline": "A = the character code",
       "xref_summaries": [
         "&b3c0 referenced 1 time by &b3a9"
       ],
@@ -84934,6 +84979,7 @@
         194,
         175
       ],
+      "comment_inline": "return a one-character string",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cafc2",
@@ -84947,8 +84993,9 @@
         0
       ],
       "labels": [
-        "sub_cb3c5"
+        "find_error_line"
       ],
+      "comment_inline": "Clear ERL:",
       "xref_summaries": [
         "&b3c5 referenced 1 time by &b402"
       ],
@@ -84965,6 +85012,7 @@
         132,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_erl",
@@ -84977,6 +85025,7 @@
         132,
         9
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_erl_1",
@@ -84989,6 +85038,7 @@
         166,
         24
       ],
+      "comment_inline": "Scan the program from PAGE: high",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_page",
@@ -85001,6 +85051,7 @@
         134,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general_1",
@@ -85013,6 +85064,7 @@
         132,
         55
       ],
+      "comment_inline": "low 0",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_general",
@@ -85025,6 +85077,7 @@
         166,
         12
       ],
+      "comment_inline": "past the error position?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_1",
@@ -85037,6 +85090,7 @@
         224,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#7"
@@ -85047,6 +85101,7 @@
         240,
         42
       ],
+      "comment_inline": "reached it: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_33",
@@ -85059,6 +85114,7 @@
         166,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr",
@@ -85075,6 +85131,7 @@
       "labels": [
         "loop_cb3d9"
       ],
+      "comment_inline": "read a program byte",
       "xref_summaries": [
         "&b3d9 referenced 1 time by &b3ff"
       ],
@@ -85093,6 +85150,7 @@
         201,
         13
       ],
+      "comment_inline": "a line end (CR)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -85103,6 +85161,7 @@
         208,
         25
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb3f9",
@@ -85115,6 +85174,7 @@
         228,
         55
       ],
+      "comment_inline": "is this line past the error?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_general",
@@ -85127,6 +85187,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -85139,6 +85200,7 @@
         229,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_general_1",
@@ -85151,6 +85213,7 @@
         144,
         25
       ],
+      "comment_inline": "yes: keep the previous line",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_33",
@@ -85164,6 +85227,7 @@
         66,
         137
       ],
+      "comment_inline": "read the line number high byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_via_ptr_general",
@@ -85176,6 +85240,7 @@
         9,
         0
       ],
+      "comment_inline": "end of program?",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#0"
@@ -85186,6 +85251,7 @@
         48,
         18
       ],
+      "comment_inline": "yes: done",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "return_33",
@@ -85198,6 +85264,7 @@
         133,
         9
       ],
+      "comment_inline": "record ERL high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_erl_1",
@@ -85211,6 +85278,7 @@
         66,
         137
       ],
+      "comment_inline": "line number low byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_via_ptr_general",
@@ -85223,6 +85291,7 @@
         133,
         8
       ],
+      "comment_inline": "record ERL low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_erl",
@@ -85236,6 +85305,7 @@
         66,
         137
       ],
+      "comment_inline": "skip the line length byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_via_ptr_general",
@@ -85251,6 +85321,7 @@
       "labels": [
         "cb3f9"
       ],
+      "comment_inline": "still before the error?",
       "xref_summaries": [
         "&b3f9 referenced 1 time by &b3de"
       ],
@@ -85269,6 +85340,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -85281,6 +85353,7 @@
         229,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_general_1",
@@ -85293,6 +85366,7 @@
         176,
         216
       ],
+      "comment_inline": "yes: scan the next line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_cb3d9",
@@ -85307,6 +85381,7 @@
       "labels": [
         "return_33"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&b401 referenced 3 times by &b3d5, &b3e6, &b3ed"
       ],
@@ -85328,11 +85403,12 @@
       "labels": [
         "brk_handler"
       ],
+      "comment_inline": "Find the line number (set ERL)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb3c5",
+      "operand": "find_error_line",
       "target": 46021,
-      "target_label": "sub_cb3c5"
+      "target_label": "find_error_line"
     },
     {
       "addr": 46085,
@@ -85340,6 +85416,7 @@
         132,
         32
       ],
+      "comment_inline": "TRACE off",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_trace_flag",
@@ -85352,6 +85429,7 @@
         177,
         253
       ],
+      "comment_inline": "error number",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_error_ptr),y",
@@ -85364,6 +85442,7 @@
         208,
         8
       ],
+      "comment_inline": "non-zero: an ON ERROR handler is active",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb413",
@@ -85376,6 +85455,7 @@
         169,
         51
       ],
+      "comment_inline": "no handler: reset to the default (ON ERROR OFF)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&33"
@@ -85386,6 +85466,7 @@
         133,
         22
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -85398,6 +85479,7 @@
         169,
         180
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -85408,6 +85490,7 @@
         133,
         23
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -85423,6 +85506,7 @@
       "labels": [
         "cb413"
       ],
+      "comment_inline": "Point the program pointer at the handler code: low",
       "xref_summaries": [
         "&b413 referenced 1 time by &b409"
       ],
@@ -85441,6 +85525,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -85453,6 +85538,7 @@
         165,
         23
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_error_vec_1",
@@ -85465,6 +85551,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -85478,6 +85565,7 @@
         58,
         189
       ],
+      "comment_inline": "clear DATA and the stacks",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbd3a",
@@ -85489,6 +85577,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "offset 0",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -85498,6 +85587,7 @@
         134,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr_off",
@@ -85510,6 +85600,7 @@
         169,
         218
       ],
+      "comment_inline": "OSBYTE &DA: flush the VDU queue",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_vdu_queue_size"
@@ -85534,6 +85625,7 @@
         169,
         126
       ],
+      "comment_inline": "OSBYTE &7E: acknowledge any Escape",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_acknowledge_escape"
@@ -85558,6 +85650,7 @@
         162,
         255
       ],
+      "comment_inline": "reset the 6502 stack...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -85568,6 +85661,7 @@
         134,
         40
       ],
+      "comment_inline": "OPT = &FF",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_opt_flag",
@@ -85579,6 +85673,7 @@
       "bytes": [
         154
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txs"
     },
@@ -85589,6 +85684,7 @@
         163,
         139
       ],
+      "comment_inline": "enter the execution loop at the handler",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ba3",
