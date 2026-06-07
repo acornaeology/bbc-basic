@@ -777,7 +777,7 @@ d.subroutine(
     0x9d6d, 'iwa_mul',
     title='Integer multiply',
     description="""IWA = IWA * the stacked operand. A product wider than
-&FFFF is truncated to 16 significant bits.""",
+16 bits is truncated to 16 significant bits.""",
     on_entry={
         'zp_iwa (&2A)': 'one factor',
         '(zp_stack_ptr) (&04)': 'the other factor on the BASIC stack',

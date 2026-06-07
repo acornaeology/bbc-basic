@@ -1108,7 +1108,7 @@
       "addr": 40301,
       "name": "iwa_mul",
       "title": "Integer multiply",
-      "description": "IWA = IWA * the stacked operand. A product wider than\n&FFFF is truncated to 16 significant bits.",
+      "description": "IWA = IWA * the stacked operand. A product wider than\n16 bits is truncated to 16 significant bits.",
       "on_entry": {
         "zp_iwa (&2A)": "one factor",
         "(zp_stack_ptr) (&04)": "the other factor on the BASIC stack",

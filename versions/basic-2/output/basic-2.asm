@@ -5411,7 +5411,7 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Integer multiply
 ;
-; IWA = IWA * the stacked operand. A product wider than &FFFF is truncated to 16
+; IWA = IWA * the stacked operand. A product wider than 16 bits is truncated to 16
 ; significant bits.
 ;
 ; On Entry:
