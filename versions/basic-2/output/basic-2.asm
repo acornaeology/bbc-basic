@@ -2942,7 +2942,7 @@ l848a = sub_c847b+15
 .stmt_renumber
     jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.   
     ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9    
-    jsr sub_cbe0d                                                     ; 8fa8: 20 0d be     ..   
+    jsr unstack_int_to_zp                                             ; 8fa8: 20 0d be     ..   
     jsr sub_cbe6f                                                     ; 8fab: 20 6f be     o.   
     jsr sub_c8f92                                                     ; 8fae: 20 92 8f     ..   
 ; &8fb1 referenced 1 time by &8fd4
@@ -3341,7 +3341,7 @@ l848a = sub_c847b+15
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
     ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?    
-    jsr sub_cbe0d                                                     ; 9233: 20 0d be     ..   
+    jsr unstack_int_to_zp                                             ; 9233: 20 0d be     ..   
 ; &9236 referenced 2 times by &91c1, &9736
 .sub_c9236
     ldx #0                                                            ; 9236: a2 00       ..    
@@ -3705,7 +3705,7 @@ l848a = sub_c847b+15
     jsr oswrch                                                        ; 940b: 20 ee ff     ..   
     pla                                                               ; 940e: 68          h     
     jsr oswrch                                                        ; 940f: 20 ee ff     ..   
-    jsr sub_cbe0b                                                     ; 9412: 20 0b be     ..   
+    jsr unstack_int_to_general                                        ; 9412: 20 0b be     ..   
     lda zp_general                                                    ; 9415: a5 37       .7    
     jsr oswrch                                                        ; 9417: 20 ee ff     ..   
     lda l0038                                                         ; 941a: a5 38       .8    
@@ -4277,7 +4277,7 @@ l848a = sub_c847b+15
     cpx #&2c ; ','                                                    ; 9707: e0 2c       .,    
     bne c96d7                                                         ; 9709: d0 cc       ..    
     ldx #&39 ; '9'                                                    ; 970b: a2 39       .9    
-    jsr sub_cbe0d                                                     ; 970d: 20 0d be     ..   
+    jsr unstack_int_to_zp                                             ; 970d: 20 0d be     ..   
     ldy zp_fwb_ovf                                                    ; 9710: a4 3c       .<    
     pla                                                               ; 9712: 68          h     
     sta l0038                                                         ; 9713: 85 38       .8    
@@ -4314,7 +4314,7 @@ l848a = sub_c847b+15
     pla                                                               ; 9750: 68          h     
     sta zp_general                                                    ; 9751: 85 37       .7    
     ldx #&39 ; '9'                                                    ; 9753: a2 39       .9    
-    jsr sub_cbe0d                                                     ; 9755: 20 0d be     ..   
+    jsr unstack_int_to_zp                                             ; 9755: 20 0d be     ..   
     ldy zp_fwb_ovf                                                    ; 9758: a4 3c       .<    
     jsr sub_c97ba                                                     ; 975a: 20 ba 97     ..   
     clc                                                               ; 975d: 18          .     
@@ -4780,7 +4780,7 @@ l848a = sub_c847b+15
     sta zp_general                                                    ; 99d6: 85 37       .7    
     jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.   
     ldx #&39 ; '9'                                                    ; 99db: a2 39       .9    
-    jsr sub_cbe0d                                                     ; 99dd: 20 0d be     ..   
+    jsr unstack_int_to_zp                                             ; 99dd: 20 0d be     ..   
     sty zp_fwb_exp                                                    ; 99e0: 84 3d       .=    
     sty zp_fwb_m1                                                     ; 99e2: 84 3e       .>    
     sty zp_fwb_m2                                                     ; 99e4: 84 3f       .?    
@@ -5042,7 +5042,7 @@ l848a = sub_c847b+15
     bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..    
 ; &9b4e referenced 1 time by &9b69
 .loop_c9b4e
-    jsr sub_cbdff                                                     ; 9b4e: 20 ff bd     ..   
+    jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..   
     lda #&40 ; '@'                                                    ; 9b51: a9 40       .@    
     bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
 ; &9b55 referenced 1 time by &9b32
@@ -5092,7 +5092,7 @@ l848a = sub_c847b+15
     sta zp_iwa,y                                                      ; 9b8f: 99 2a 00    .*.   
     dey                                                               ; 9b92: 88          .     
     bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..    
-    jsr sub_cbdff                                                     ; 9b95: 20 ff bd     ..   
+    jsr drop_stack_integer                                            ; 9b95: 20 ff bd     ..   
     lda #&40 ; '@'                                                    ; 9b98: a9 40       .@    
     bne loop_c9b75                                                    ; 9b9a: d0 d9       ..    
 ; ***************************************************************************************
@@ -6243,7 +6243,7 @@ l848a = sub_c847b+15
     sta zp_fwa_ovf                                                    ; a1f1: 85 2f       ./       ; and overflow byte, then return A = 0
 ; &a1f3 referenced 1 time by &a1e8
 .return_20
-    rts                                                               ; a1f3: 60          `     
+    rts                                                               ; a1f3: 60          `        ; Return (shared)
 ; ***************************************************************************************
 ; FWA = FWA * 10
 ;
@@ -6259,8 +6259,8 @@ l848a = sub_c847b+15
 ; &a1ff referenced 1 time by &a1fb
 .ca1ff
     jsr fwb_copy_from_fwa                                             ; a1ff: 20 1e a2     ..   
-    jsr sub_ca242                                                     ; a202: 20 42 a2     B.   
-    jsr sub_ca242                                                     ; a205: 20 42 a2     B.   
+    jsr fwb_div2                                                      ; a202: 20 42 a2     B.   
+    jsr fwb_div2                                                      ; a205: 20 42 a2     B.   
 ; &a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0
 .ca208
     jsr sub_ca178                                                     ; a208: 20 78 a1     x.   
@@ -6302,16 +6302,20 @@ l848a = sub_c847b+15
     sta zp_fwb_rnd                                                    ; a23c: 85 42       .B       ; ...into FWB
     rts                                                               ; a23e: 60          `        ; FWB is now a copy of FWA
 ; &a23f referenced 2 times by &a258, &a25e
-.sub_ca23f
-    jsr fwb_copy_from_fwa                                             ; a23f: 20 1e a2     ..   
+.fwb_half_fwa
+    jsr fwb_copy_from_fwa                                             ; a23f: 20 1e a2     ..      ; FWB = FWA, then halve it
+; ***************************************************************************************
+; Divide FWB by two
+;
+; Shift the FWB mantissa right one bit (FWB = FWB / 2).
 ; &a242 referenced 5 times by &a202, &a205, &a261, &a264, &a267
-.sub_ca242
-    lsr zp_fwb_m1                                                     ; a242: 46 3e       F>    
-    ror zp_fwb_m2                                                     ; a244: 66 3f       f?    
-    ror zp_fwb_m3                                                     ; a246: 66 40       f@    
-    ror zp_fwb_m4                                                     ; a248: 66 41       fA    
-    ror zp_fwb_rnd                                                    ; a24a: 66 42       fB    
-    rts                                                               ; a24c: 60          `     
+.fwb_div2
+    lsr zp_fwb_m1                                                     ; a242: 46 3e       F>       ; Shift FWB right one bit (/2): mantissa MSB
+    ror zp_fwb_m2                                                     ; a244: 66 3f       f?       ; byte 2
+    ror zp_fwb_m3                                                     ; a246: 66 40       f@       ; byte 3
+    ror zp_fwb_m4                                                     ; a248: 66 41       fA       ; byte 4
+    ror zp_fwb_rnd                                                    ; a24a: 66 42       fB       ; rounding byte
+    rts                                                               ; a24c: 60          `        ; FWB halved
 ; ***************************************************************************************
 ; FWA = FWA / 10
 ;
@@ -6326,12 +6330,12 @@ l848a = sub_c847b+15
     dec zp_fwa_ovf                                                    ; a256: c6 2f       ./    
 ; &a258 referenced 1 time by &a254
 .ca258
-    jsr sub_ca23f                                                     ; a258: 20 3f a2     ?.   
+    jsr fwb_half_fwa                                                  ; a258: 20 3f a2     ?.   
     jsr ca208                                                         ; a25b: 20 08 a2     ..   
-    jsr sub_ca23f                                                     ; a25e: 20 3f a2     ?.   
-    jsr sub_ca242                                                     ; a261: 20 42 a2     B.   
-    jsr sub_ca242                                                     ; a264: 20 42 a2     B.   
-    jsr sub_ca242                                                     ; a267: 20 42 a2     B.   
+    jsr fwb_half_fwa                                                  ; a25e: 20 3f a2     ?.   
+    jsr fwb_div2                                                      ; a261: 20 42 a2     B.   
+    jsr fwb_div2                                                      ; a264: 20 42 a2     B.   
+    jsr fwb_div2                                                      ; a267: 20 42 a2     B.   
     jsr ca208                                                         ; a26a: 20 08 a2     ..   
     lda #0                                                            ; a26d: a9 00       ..    
     sta zp_fwb_m1                                                     ; a26f: 85 3e       .>    
@@ -6383,7 +6387,7 @@ l848a = sub_c847b+15
     jmp ca20b                                                         ; a2ba: 4c 0b a2    L..      ; Carry out of the mantissa: renormalise (exponent up)
 ; &a2bd referenced 5 times by &a2a8, &a2ac, &a2b0, &a2b4, &a2b8
 .return_22
-    rts                                                               ; a2bd: 60          `     
+    rts                                                               ; a2bd: 60          `        ; Return (shared)
 ; ***************************************************************************************
 ; Convert the integer accumulator to floating point
 ;
@@ -6525,16 +6529,16 @@ l848a = sub_c847b+15
 ; Pack FWA into the floating-point temporary at &0471.
 ; &a37d referenced 2 times by &9e6c, &aa11
 .fwa_pack_temp2
-    lda #&71 ; 'q'                                                    ; a37d: a9 71       .q    
-    bne ca387                                                         ; a37f: d0 06       ..    
+    lda #&71 ; 'q'                                                    ; a37d: a9 71       .q       ; Point at FP TEMP2 (&0471): low byte
+    bne ca387                                                         ; a37f: d0 06       ..       ; join the common pack code
 ; ***************************************************************************************
 ; Pack FWA into TEMP3
 ;
 ; Pack FWA into the floating-point temporary at &0476.
 ; &a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe
 .fwa_pack_temp3
-    lda #&76 ; 'v'                                                    ; a381: a9 76       .v    
-    bne ca387                                                         ; a383: d0 02       ..    
+    lda #&76 ; 'v'                                                    ; a381: a9 76       .v       ; Point at FP TEMP3 (&0476): low byte
+    bne ca387                                                         ; a383: d0 02       ..       ; join the common pack code
 ; ***************************************************************************************
 ; Pack FWA into TEMP1
 ;
@@ -7825,10 +7829,10 @@ l848a = sub_c847b+15
 ;
 ; Horizontal text-cursor position in the window. POS.
 .fn_pos
-    lda #osbyte_read_text_cursor_pos                                  ; ab6d: a9 86       ..    
+    lda #osbyte_read_text_cursor_pos                                  ; ab6d: a9 86       ..       ; OSBYTE &86: read the text cursor position
     jsr osbyte                                                        ; ab6f: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
     txa                                                               ; ab72: 8a          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
-    jmp caed8                                                         ; ab73: 4c d8 ae    L..   
+    jmp caed8                                                         ; ab73: 4c d8 ae    L..      ; Return the column as an integer
 ; ***************************************************************************************
 ; VPOS
 ;
@@ -8096,12 +8100,12 @@ l848a = sub_c847b+15
 ;
 ; TRUE when at the end of an open file. EOF#channel.
 .fn_eof
-    jsr sub_cbfb5                                                     ; acb8: 20 b5 bf     ..   
-    tax                                                               ; acbb: aa          .     
-    lda #osbyte_check_eof                                             ; acbc: a9 7f       ..    
+    jsr sub_cbfb5                                                     ; acb8: 20 b5 bf     ..      ; Evaluate the channel number
+    tax                                                               ; acbb: aa          .        ; Channel to X
+    lda #osbyte_check_eof                                             ; acbc: a9 7f       ..       ; OSBYTE &7F: test for end of file
     jsr osbyte                                                        ; acbe: 20 f4 ff     ..      ; Check for end-of-file on file handle Y
     txa                                                               ; acc1: 8a          .        ; X=0 means EOF reached, X=&FF means data remaining
-    beq loop_cacaa                                                    ; acc2: f0 e6       ..    
+    beq loop_cacaa                                                    ; acc2: f0 e6       ..       ; Return TRUE/FALSE per the EOF flag
 ; ***************************************************************************************
 ; TRUE
 ;
@@ -8522,7 +8526,7 @@ l848a = sub_c847b+15
     beq caed8                                                         ; aecc: f0 0a       ..       ; Return 0 as an integer
 ; &aece referenced 1 time by &aed4
 .loop_caece
-    jmp err_type_mismatch                                             ; aece: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; aece: 4c 0e 8c    L..      ; String operand here is a Type mismatch
 ; ***************************************************************************************
 ; LEN
 ;
@@ -8763,7 +8767,7 @@ l848a = sub_c847b+15
 ; Wait for a key and return its ASCII code. GET.
 .fn_get
     jsr osrdch                                                        ; afb9: 20 e0 ff     ..      ; X=ASCII code typed (positive timeout) or internal key number EOR 128 (negative scan) / Y=0 if a key was pressed, Y=&FF on time-out, Y=&1B on Escape
-    jmp caed8                                                         ; afbc: 4c d8 ae    L..   
+    jmp caed8                                                         ; afbc: 4c d8 ae    L..      ; Return the key code as an integer
 ; ***************************************************************************************
 ; GET$
 ;
@@ -9197,7 +9201,7 @@ l848a = sub_c847b+15
     sta zp_fwb_m2                                                     ; b21a: 85 3f       .?    
 ; &b21c referenced 1 time by &b224
 .loop_cb21c
-    jsr sub_cbe0b                                                     ; b21c: 20 0b be     ..   
+    jsr unstack_int_to_general                                        ; b21c: 20 0b be     ..   
     jsr sub_c8cc1                                                     ; b21f: 20 c1 8c     ..   
     dec zp_fwb_m2                                                     ; b222: c6 3f       .?    
     bne loop_cb21c                                                    ; b224: d0 f6       ..    
@@ -9274,7 +9278,7 @@ l848a = sub_c847b+15
 ; &b28e referenced 1 time by &b2a5
 .loop_cb28e
     jsr eval_or_eor                                                   ; b28e: 20 29 9b     ).   
-    jsr sub_cbd90                                                     ; b291: 20 90 bd     ..   
+    jsr stack_value                                                   ; b291: 20 90 bd     ..   
     lda zp_var_type                                                   ; b294: a5 27       .'    
     sta zp_iwa_3                                                      ; b296: 85 2d       .-    
     jsr stack_integer                                                 ; b298: 20 94 bd     ..   
@@ -9362,7 +9366,7 @@ l848a = sub_c847b+15
 .cb318
     jsr cb32c                                                         ; b318: 20 2c b3     ,.   
     php                                                               ; b31b: 08          .     
-    jsr sub_cbd90                                                     ; b31c: 20 90 bd     ..   
+    jsr stack_value                                                   ; b31c: 20 90 bd     ..   
     plp                                                               ; b31f: 28          (     
     beq cb329                                                         ; b320: f0 07       ..    
     bmi cb329                                                         ; b322: 30 05       0.    
@@ -9645,7 +9649,7 @@ l848a = sub_c847b+15
 ; the stack, in the variable's own type.
 ; &b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6
 .assign_number
-    jsr sub_cbe0b                                                     ; b4b4: 20 0b be     ..   
+    jsr unstack_int_to_general                                        ; b4b4: 20 0b be     ..   
 ; &b4b7 referenced 1 time by &b2f3
 .sub_cb4b7
     lda zp_fileblk                                                    ; b4b7: a5 39       .9    
@@ -11098,10 +11102,15 @@ l848a = sub_c847b+15
     adc #0                                                            ; bd8b: 69 00       i.       ; Carry into the high byte
     sta zp_stack_ptr_1                                                ; bd8d: 85 05       ..       ; (store it)
     rts                                                               ; bd8f: 60          `        ; zp_fp_ptr now addresses the popped real
+; ***************************************************************************************
+; Push the current value by type
+;
+; Push the current value onto the BASIC stack in the form matching its type: a string
+; (stack_string), a real (stack_real) or, falling through, an integer (stack_integer).
 ; &bd90 referenced 2 times by &b291, &b31c
-.sub_cbd90
-    beq stack_string                                                  ; bd90: f0 20       .     
-    bmi stack_real                                                    ; bd92: 30 bd       0.    
+.stack_value
+    beq stack_string                                                  ; bd90: f0 20       .        ; Type 0 (string): stack as a string
+    bmi stack_real                                                    ; bd92: 30 bd       0.       ; Negative (real): stack 5 bytes; else integer below
 ; ***************************************************************************************
 ; Push the integer accumulator onto the BASIC stack
 ;
@@ -11194,41 +11203,51 @@ l848a = sub_c847b+15
     dey                                                               ; bdfa: 88          .        ; last byte
     lda (zp_stack_ptr),y                                              ; bdfb: b1 04       ..       ; byte 0 (LSB)...
     sta zp_iwa                                                        ; bdfd: 85 2a       .*       ; ...into IWA (the caller drops the stack)
+; ***************************************************************************************
+; Drop an integer off the stack
+;
+; Advance the BASIC stack pointer by four bytes.
 ; &bdff referenced 2 times by &9b4e, &9b95
-.sub_cbdff
-    clc                                                               ; bdff: 18          .     
-    lda zp_stack_ptr                                                  ; be00: a5 04       ..    
-    adc #4                                                            ; be02: 69 04       i.    
-    sta zp_stack_ptr                                                  ; be04: 85 04       ..    
-    bcc return_39                                                     ; be06: 90 02       ..    
-    inc zp_stack_ptr_1                                                ; be08: e6 05       ..    
+.drop_stack_integer
+    clc                                                               ; bdff: 18          .        ; Prepare to add
+    lda zp_stack_ptr                                                  ; be00: a5 04       ..       ; Drop four bytes: stack pointer...
+    adc #4                                                            ; be02: 69 04       i.       ; ...+ 4
+    sta zp_stack_ptr                                                  ; be04: 85 04       ..       ; (store)
+    bcc return_39                                                     ; be06: 90 02       ..       ; No carry: done
+    inc zp_stack_ptr_1                                                ; be08: e6 05       ..       ; Carry into the high byte
 ; &be0a referenced 3 times by &bde5, &be06, &be29
 .return_39
-    rts                                                               ; be0a: 60          `     
+    rts                                                               ; be0a: 60          `        ; Return (shared)
 ; &be0b referenced 3 times by &9412, &b21c, &b4b4
-.sub_cbe0b
-    ldx #&37 ; '7'                                                    ; be0b: a2 37       .7    
+.unstack_int_to_general
+    ldx #&37 ; '7'                                                    ; be0b: a2 37       .7       ; Default destination: zp_general (&37)
+; ***************************************************************************************
+; Pop a stacked integer into a zero-page variable
+;
+; Copy the four-byte integer on top of the BASIC stack into the zero-page bytes at (X ..
+; X+3), then drop it from the stack. The &BE0B entry uses X = &37 (the general work
+; area).
 ; &be0d referenced 5 times by &8fa8, &9233, &970d, &9755, &99dd
-.sub_cbe0d
-    ldy #3                                                            ; be0d: a0 03       ..    
-    lda (zp_stack_ptr),y                                              ; be0f: b1 04       ..    
-    sta zp_vartop_1,x                                                 ; be11: 95 03       ..    
-    dey                                                               ; be13: 88          .     
-    lda (zp_stack_ptr),y                                              ; be14: b1 04       ..    
-    sta zp_vartop,x                                                   ; be16: 95 02       ..    
-    dey                                                               ; be18: 88          .     
-    lda (zp_stack_ptr),y                                              ; be19: b1 04       ..    
-    sta l0001,x                                                       ; be1b: 95 01       ..    
-    dey                                                               ; be1d: 88          .     
-    lda (zp_stack_ptr),y                                              ; be1e: b1 04       ..    
-    sta zp_lomem,x                                                    ; be20: 95 00       ..    
-    clc                                                               ; be22: 18          .     
-    lda zp_stack_ptr                                                  ; be23: a5 04       ..    
-    adc #4                                                            ; be25: 69 04       i.    
-    sta zp_stack_ptr                                                  ; be27: 85 04       ..    
-    bcc return_39                                                     ; be29: 90 df       ..    
-    inc zp_stack_ptr_1                                                ; be2b: e6 05       ..    
-    rts                                                               ; be2d: 60          `     
+.unstack_int_to_zp
+    ldy #3                                                            ; be0d: a0 03       ..       ; Copy the stacked integer to (X): top byte
+    lda (zp_stack_ptr),y                                              ; be0f: b1 04       ..       ; (read)
+    sta zp_vartop_1,x                                                 ; be11: 95 03       ..       ; ...byte 3
+    dey                                                               ; be13: 88          .        ; next
+    lda (zp_stack_ptr),y                                              ; be14: b1 04       ..       ; (read)
+    sta zp_vartop,x                                                   ; be16: 95 02       ..       ; byte 2
+    dey                                                               ; be18: 88          .        ; next
+    lda (zp_stack_ptr),y                                              ; be19: b1 04       ..       ; (read)
+    sta l0001,x                                                       ; be1b: 95 01       ..       ; byte 1
+    dey                                                               ; be1d: 88          .        ; next
+    lda (zp_stack_ptr),y                                              ; be1e: b1 04       ..       ; (read)
+    sta zp_lomem,x                                                    ; be20: 95 00       ..       ; byte 0
+    clc                                                               ; be22: 18          .        ; Now drop the integer from the stack
+    lda zp_stack_ptr                                                  ; be23: a5 04       ..       ; stack pointer...
+    adc #4                                                            ; be25: 69 04       i.       ; ...+ 4
+    sta zp_stack_ptr                                                  ; be27: 85 04       ..       ; (store)
+    bcc return_39                                                     ; be29: 90 df       ..       ; No carry: done
+    inc zp_stack_ptr_1                                                ; be2b: e6 05       ..       ; Carry into the high byte
+    rts                                                               ; be2d: 60          `        ; Return
 ; ***************************************************************************************
 ; Set the stack pointer and check for room
 ;
@@ -11738,6 +11757,7 @@ save pydis_start, pydis_end
 ;     fwa_negate:                  5
 ;     fwa_to_int:                  5
 ;     fwb_copy_from_fwa:           5
+;     fwb_div2:                    5
 ;     iwa_store_zp:                5
 ;     l0044:                       5
 ;     osword:                      5
@@ -11746,10 +11766,9 @@ save pydis_start, pydis_end
 ;     skip_spaces_expect_comma:    5
 ;     sub_c8926:                   5
 ;     sub_c9a9d:                   5
-;     sub_ca242:                   5
 ;     sub_cbd20:                   5
-;     sub_cbe0d:                   5
 ;     sub_cbfa9:                   5
+;     unstack_int_to_zp:           5
 ;     zp_gosub_level:              5
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
@@ -11869,8 +11888,8 @@ save pydis_start, pydis_end
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
 ;     sub_cbd3a:                   3
-;     sub_cbe0b:                   3
 ;     sub_cbfb5:                   3
+;     unstack_int_to_general:      3
 ;     zp_erl:                      3
 ;     zp_listo:                    3
 ;     zp_rnd_seed_1:               3
@@ -12013,6 +12032,7 @@ save pydis_start, pydis_end
 ;     cbe9e:                       2
 ;     cbf82:                       2
 ;     dispatch_token:              2
+;     drop_stack_integer:          2
 ;     err_too_big:                 2
 ;     eval_relational:             2
 ;     fp_temp1:                    2
@@ -12025,6 +12045,7 @@ save pydis_start, pydis_end
 ;     fwa_round:                   2
 ;     fwa_rsub_var:                2
 ;     fwa_unpack_temp1:            2
+;     fwb_half_fwa:                2
 ;     iwa_load_zp:                 2
 ;     l0022:                       2
 ;     l0100:                       2
@@ -12061,6 +12082,7 @@ save pydis_start, pydis_end
 ;     rnd_fraction:                2
 ;     rnd_step:                    2
 ;     stack_local:                 2
+;     stack_value:                 2
 ;     stmt_data:                   2
 ;     sub_c887c:                   2
 ;     sub_c8c21:                   2
@@ -12084,7 +12106,6 @@ save pydis_start, pydis_end
 ;     sub_c9e1d:                   2
 ;     sub_ca064:                   2
 ;     sub_ca178:                   2
-;     sub_ca23f:                   2
 ;     sub_ca486:                   2
 ;     sub_ca4d0:                   2
 ;     sub_ca7f1:                   2
@@ -12101,8 +12122,6 @@ save pydis_start, pydis_end
 ;     sub_cbc2d:                   2
 ;     sub_cbc81:                   2
 ;     sub_cbc8d:                   2
-;     sub_cbd90:                   2
-;     sub_cbdff:                   2
 ;     sub_cbe62:                   2
 ;     sub_cbe92:                   2
 ;     sub_cbeba:                   2
@@ -13852,8 +13871,6 @@ save pydis_start, pydis_end
 ;     sub_ca140
 ;     sub_ca14b
 ;     sub_ca178
-;     sub_ca23f
-;     sub_ca242
 ;     sub_ca2ed
 ;     sub_ca3e7
 ;     sub_ca486
@@ -13899,11 +13916,7 @@ save pydis_start, pydis_end
 ;     sub_cbd20
 ;     sub_cbd2f
 ;     sub_cbd3a
-;     sub_cbd90
 ;     sub_cbdcb
-;     sub_cbdff
-;     sub_cbe0b
-;     sub_cbe0d
 ;     sub_cbe55
 ;     sub_cbe56
 ;     sub_cbe62

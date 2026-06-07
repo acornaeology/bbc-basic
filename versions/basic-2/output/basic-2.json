@@ -1044,7 +1044,8 @@
       "addr": 48618,
       "name": "unstack_integer",
       "title": "Pop an integer from the BASIC stack",
-      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n"
+      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n",
+      "fall_through": true
     },
     {
       "addr": 44435,
@@ -1361,7 +1362,8 @@
       "addr": 41502,
       "name": "fwb_copy_from_fwa",
       "title": "FWB = FWA",
-      "description": "Copy FWA into FWB."
+      "description": "Copy FWA into FWB.",
+      "fall_through": true
     },
     {
       "addr": 41806,
@@ -1465,8 +1467,7 @@
       "addr": 48510,
       "name": "unstack_real",
       "title": "Pop a real off the BASIC stack",
-      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n",
-      "fall_through": true
+      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n"
     },
     {
       "addr": 41636,
@@ -1595,6 +1596,32 @@
       "title": "Save a variable for LOCAL",
       "description": "Push a variable's current value and identity onto the BASIC\nstack so ENDPROC can restore it, implementing LOCAL.\n",
       "fall_through": true
+    },
+    {
+      "addr": 41538,
+      "name": "fwb_div2",
+      "title": "Divide FWB by two",
+      "description": "Shift the FWB mantissa right one bit (FWB = FWB / 2)."
+    },
+    {
+      "addr": 48528,
+      "name": "stack_value",
+      "title": "Push the current value by type",
+      "description": "Push the current value onto the BASIC stack in the form\nmatching its type: a string (stack_string), a real (stack_real) or,\nfalling through, an integer (stack_integer).",
+      "fall_through": true
+    },
+    {
+      "addr": 48639,
+      "name": "drop_stack_integer",
+      "title": "Drop an integer off the stack",
+      "description": "Advance the BASIC stack pointer by four bytes.",
+      "fall_through": true
+    },
+    {
+      "addr": 48653,
+      "name": "unstack_int_to_zp",
+      "title": "Pop a stacked integer into a zero-page variable",
+      "description": "Copy the four-byte integer on top of the BASIC stack into\nthe zero-page bytes at (X .. X+3), then drop it from the stack. The\n&BE0B entry uses X = &37 (the general work area)."
     }
   ],
   "banners": [
@@ -26088,9 +26115,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0d",
+      "operand": "unstack_int_to_zp",
       "target": 48653,
-      "target_label": "sub_cbe0d"
+      "target_label": "unstack_int_to_zp"
     },
     {
       "addr": 36779,
@@ -30014,9 +30041,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0d",
+      "operand": "unstack_int_to_zp",
       "target": 48653,
-      "target_label": "sub_cbe0d"
+      "target_label": "unstack_int_to_zp"
     },
     {
       "addr": 37430,
@@ -32934,9 +32961,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0b",
+      "operand": "unstack_int_to_general",
       "target": 48651,
-      "target_label": "sub_cbe0b"
+      "target_label": "unstack_int_to_general"
     },
     {
       "addr": 37909,
@@ -38041,9 +38068,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0d",
+      "operand": "unstack_int_to_zp",
       "target": 48653,
-      "target_label": "sub_cbe0d"
+      "target_label": "unstack_int_to_zp"
     },
     {
       "addr": 38672,
@@ -38453,9 +38480,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0d",
+      "operand": "unstack_int_to_zp",
       "target": 48653,
-      "target_label": "sub_cbe0d"
+      "target_label": "unstack_int_to_zp"
     },
     {
       "addr": 38744,
@@ -42669,9 +42696,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0d",
+      "operand": "unstack_int_to_zp",
       "target": 48653,
-      "target_label": "sub_cbe0d"
+      "target_label": "unstack_int_to_zp"
     },
     {
       "addr": 39392,
@@ -45076,9 +45103,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdff",
+      "operand": "drop_stack_integer",
       "target": 48639,
-      "target_label": "sub_cbdff"
+      "target_label": "drop_stack_integer"
     },
     {
       "addr": 39761,
@@ -45504,9 +45531,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdff",
+      "operand": "drop_stack_integer",
       "target": 48639,
-      "target_label": "sub_cbdff"
+      "target_label": "drop_stack_integer"
     },
     {
       "addr": 39832,
@@ -55825,6 +55852,7 @@
       "labels": [
         "return_20"
       ],
+      "comment_inline": "Return (shared)",
       "xref_summaries": [
         "&a1f3 referenced 1 time by &a1e8"
       ],
@@ -55941,9 +55969,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca242",
+      "operand": "fwb_div2",
       "target": 41538,
-      "target_label": "sub_ca242"
+      "target_label": "fwb_div2"
     },
     {
       "addr": 41477,
@@ -55954,9 +55982,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca242",
+      "operand": "fwb_div2",
       "target": 41538,
-      "target_label": "sub_ca242"
+      "target_label": "fwb_div2"
     },
     {
       "addr": 41480,
@@ -56357,8 +56385,9 @@
         162
       ],
       "labels": [
-        "sub_ca23f"
+        "fwb_half_fwa"
       ],
+      "comment_inline": "FWB = FWA, then halve it",
       "xref_summaries": [
         "&a23f referenced 2 times by &a258, &a25e"
       ],
@@ -56379,8 +56408,9 @@
         62
       ],
       "labels": [
-        "sub_ca242"
+        "fwb_div2"
       ],
+      "comment_inline": "Shift FWB right one bit (/2): mantissa MSB",
       "xref_summaries": [
         "&a242 referenced 5 times by &a202, &a205, &a261, &a264, &a267"
       ],
@@ -56403,6 +56433,7 @@
         102,
         63
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m2",
@@ -56415,6 +56446,7 @@
         102,
         64
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m3",
@@ -56427,6 +56459,7 @@
         102,
         65
       ],
+      "comment_inline": "byte 4",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m4",
@@ -56439,6 +56472,7 @@
         102,
         66
       ],
+      "comment_inline": "rounding byte",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_rnd",
@@ -56450,6 +56484,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWB halved",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -56548,9 +56583,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca23f",
+      "operand": "fwb_half_fwa",
       "target": 41535,
-      "target_label": "sub_ca23f"
+      "target_label": "fwb_half_fwa"
     },
     {
       "addr": 41563,
@@ -56574,9 +56609,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca23f",
+      "operand": "fwb_half_fwa",
       "target": 41535,
-      "target_label": "sub_ca23f"
+      "target_label": "fwb_half_fwa"
     },
     {
       "addr": 41569,
@@ -56587,9 +56622,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca242",
+      "operand": "fwb_div2",
       "target": 41538,
-      "target_label": "sub_ca242"
+      "target_label": "fwb_div2"
     },
     {
       "addr": 41572,
@@ -56600,9 +56635,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca242",
+      "operand": "fwb_div2",
       "target": 41538,
-      "target_label": "sub_ca242"
+      "target_label": "fwb_div2"
     },
     {
       "addr": 41575,
@@ -56613,9 +56648,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca242",
+      "operand": "fwb_div2",
       "target": 41538,
-      "target_label": "sub_ca242"
+      "target_label": "fwb_div2"
     },
     {
       "addr": 41578,
@@ -57126,6 +57161,7 @@
       "labels": [
         "return_22"
       ],
+      "comment_inline": "Return (shared)",
       "xref_summaries": [
         "&a2bd referenced 5 times by &a2a8, &a2ac, &a2b0, &a2b4, &a2b8"
       ],
@@ -58456,6 +58492,7 @@
       "labels": [
         "fwa_pack_temp2"
       ],
+      "comment_inline": "Point at FP TEMP2 (&0471): low byte",
       "xref_summaries": [
         "&a37d referenced 2 times by &9e6c, &aa11"
       ],
@@ -58473,6 +58510,7 @@
         208,
         6
       ],
+      "comment_inline": "join the common pack code",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca387",
@@ -58488,6 +58526,7 @@
       "labels": [
         "fwa_pack_temp3"
       ],
+      "comment_inline": "Point at FP TEMP3 (&0476): low byte",
       "xref_summaries": [
         "&a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe"
       ],
@@ -58509,6 +58548,7 @@
         208,
         2
       ],
+      "comment_inline": "join the common pack code",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca387",
@@ -70389,6 +70429,7 @@
       "labels": [
         "fn_pos"
       ],
+      "comment_inline": "OSBYTE &86: read the text cursor position",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_text_cursor_pos"
@@ -70423,6 +70464,7 @@
         216,
         174
       ],
+      "comment_inline": "Return the column as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caed8",
@@ -72386,6 +72428,7 @@
       "labels": [
         "fn_eof"
       ],
+      "comment_inline": "Evaluate the channel number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbfb5",
@@ -72397,6 +72440,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "Channel to X",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -72406,6 +72450,7 @@
         169,
         127
       ],
+      "comment_inline": "OSBYTE &7F: test for end of file",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_check_eof"
@@ -72439,6 +72484,7 @@
         240,
         230
       ],
+      "comment_inline": "Return TRUE/FALSE per the EOF flag",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cacaa",
@@ -75788,6 +75834,7 @@
       "labels": [
         "loop_caece"
       ],
+      "comment_inline": "String operand here is a Type mismatch",
       "xref_summaries": [
         "&aece referenced 1 time by &aed4"
       ],
@@ -77343,6 +77390,7 @@
         216,
         174
       ],
+      "comment_inline": "Return the key code as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caed8",
@@ -81097,9 +81145,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0b",
+      "operand": "unstack_int_to_general",
       "target": 48651,
-      "target_label": "sub_cbe0b"
+      "target_label": "unstack_int_to_general"
     },
     {
       "addr": 45599,
@@ -81843,9 +81891,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd90",
+      "operand": "stack_value",
       "target": 48528,
-      "target_label": "sub_cbd90"
+      "target_label": "stack_value"
     },
     {
       "addr": 45716,
@@ -82666,9 +82714,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd90",
+      "operand": "stack_value",
       "target": 48528,
-      "target_label": "sub_cbd90"
+      "target_label": "stack_value"
     },
     {
       "addr": 45855,
@@ -85139,9 +85187,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe0b",
+      "operand": "unstack_int_to_general",
       "target": 48651,
-      "target_label": "sub_cbe0b"
+      "target_label": "unstack_int_to_general"
     },
     {
       "addr": 46263,
@@ -98782,8 +98830,9 @@
         32
       ],
       "labels": [
-        "sub_cbd90"
+        "stack_value"
       ],
+      "comment_inline": "Type 0 (string): stack as a string",
       "xref_summaries": [
         "&bd90 referenced 2 times by &b291, &b31c"
       ],
@@ -98803,6 +98852,7 @@
         48,
         189
       ],
+      "comment_inline": "Negative (real): stack 5 bytes; else integer below",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "stack_real",
@@ -99613,8 +99663,9 @@
         24
       ],
       "labels": [
-        "sub_cbdff"
+        "drop_stack_integer"
       ],
+      "comment_inline": "Prepare to add",
       "xref_summaries": [
         "&bdff referenced 2 times by &9b4e, &9b95"
       ],
@@ -99631,6 +99682,7 @@
         165,
         4
       ],
+      "comment_inline": "Drop four bytes: stack pointer...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -99643,6 +99695,7 @@
         105,
         4
       ],
+      "comment_inline": "...+ 4",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -99653,6 +99706,7 @@
         133,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -99665,6 +99719,7 @@
         144,
         2
       ],
+      "comment_inline": "No carry: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_39",
@@ -99677,6 +99732,7 @@
         230,
         5
       ],
+      "comment_inline": "Carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -99691,6 +99747,7 @@
       "labels": [
         "return_39"
       ],
+      "comment_inline": "Return (shared)",
       "xref_summaries": [
         "&be0a referenced 3 times by &bde5, &be06, &be29"
       ],
@@ -99709,8 +99766,9 @@
         55
       ],
       "labels": [
-        "sub_cbe0b"
+        "unstack_int_to_general"
       ],
+      "comment_inline": "Default destination: zp_general (&37)",
       "xref_summaries": [
         "&be0b referenced 3 times by &9412, &b21c, &b4b4"
       ],
@@ -99730,8 +99788,9 @@
         3
       ],
       "labels": [
-        "sub_cbe0d"
+        "unstack_int_to_zp"
       ],
+      "comment_inline": "Copy the stacked integer to (X): top byte",
       "xref_summaries": [
         "&be0d referenced 5 times by &8fa8, &9233, &970d, &9755, &99dd"
       ],
@@ -99752,6 +99811,7 @@
         177,
         4
       ],
+      "comment_inline": "(read)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99764,6 +99824,7 @@
         149,
         3
       ],
+      "comment_inline": "...byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop_1,x",
@@ -99775,6 +99836,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99784,6 +99846,7 @@
         177,
         4
       ],
+      "comment_inline": "(read)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99796,6 +99859,7 @@
         149,
         2
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop,x",
@@ -99807,6 +99871,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99816,6 +99881,7 @@
         177,
         4
       ],
+      "comment_inline": "(read)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99828,6 +99894,7 @@
         149,
         1
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0001,x",
@@ -99839,6 +99906,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99848,6 +99916,7 @@
         177,
         4
       ],
+      "comment_inline": "(read)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99860,6 +99929,7 @@
         149,
         0
       ],
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem,x",
@@ -99871,6 +99941,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Now drop the integer from the stack",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -99880,6 +99951,7 @@
         165,
         4
       ],
+      "comment_inline": "stack pointer...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -99892,6 +99964,7 @@
         105,
         4
       ],
+      "comment_inline": "...+ 4",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -99902,6 +99975,7 @@
         133,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -99914,6 +99988,7 @@
         144,
         223
       ],
+      "comment_inline": "No carry: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_39",
@@ -99926,6 +100001,7 @@
         230,
         5
       ],
+      "comment_inline": "Carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -99937,6 +100013,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },

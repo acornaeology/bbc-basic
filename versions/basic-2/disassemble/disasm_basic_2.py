@@ -1628,6 +1628,88 @@ d.comment(0x9362, 'Return to the caller, restoring locals', align=Align.INLINE)
 # DEPTH 0 LEAVES — full per-instruction coverage (see ANNOTATION_PROGRESS)
 # ======================================================================
 
+# shared return points and small helpers filling the leaf extents
+d.comment(0xa1f3, 'Return (shared)', align=Align.INLINE)
+d.comment(0xa2bd, 'Return (shared)', align=Align.INLINE)
+d.comment(0xaece, 'String operand here is a Type mismatch', align=Align.INLINE)
+
+# fwb_half_fwa (&A23F) / fwb_div2 (&A242): FWB = FWA / 2, and FWB >>= 1
+d.subroutine(0xa242, 'fwb_div2', title='Divide FWB by two',
+             description='Shift the FWB mantissa right one bit (FWB = FWB / 2).')
+d.label(0xa23f, 'fwb_half_fwa')   # FWB = FWA, then halve it
+d.comment(0xa23f, 'FWB = FWA, then halve it', align=Align.INLINE)
+d.comment(0xa242, 'Shift FWB right one bit (/2): mantissa MSB', align=Align.INLINE)
+d.comment(0xa244, 'byte 2', align=Align.INLINE)
+d.comment(0xa246, 'byte 3', align=Align.INLINE)
+d.comment(0xa248, 'byte 4', align=Align.INLINE)
+d.comment(0xa24a, 'rounding byte', align=Align.INLINE)
+d.comment(0xa24c, 'FWB halved', align=Align.INLINE)
+
+# fwa_pack_temp2/3 (&A37D/&A381): point at FP TEMP2/TEMP3, then pack
+d.comment(0xa37d, 'Point at FP TEMP2 (&0471): low byte', align=Align.INLINE)
+d.comment(0xa37f, 'join the common pack code', align=Align.INLINE)
+d.comment(0xa381, 'Point at FP TEMP3 (&0476): low byte', align=Align.INLINE)
+d.comment(0xa383, 'join the common pack code', align=Align.INLINE)
+
+# stack_value (&BD90): push the current value, choosing format by type
+d.subroutine(0xbd90, 'stack_value', title='Push the current value by type',
+             description="""Push the current value onto the BASIC stack in the form
+matching its type: a string (stack_string), a real (stack_real) or,
+falling through, an integer (stack_integer).""")
+d.comment(0xbd90, 'Type 0 (string): stack as a string', align=Align.INLINE)
+d.comment(0xbd92, 'Negative (real): stack 5 bytes; else integer below',
+          align=Align.INLINE)
+
+# drop_stack_integer (&BDFF): advance the stack pointer past a 4-byte int
+d.subroutine(0xbdff, 'drop_stack_integer', title='Drop an integer off the stack',
+             description='Advance the BASIC stack pointer by four bytes.')
+d.comment(0xbdff, 'Prepare to add', align=Align.INLINE)
+d.comment(0xbe00, 'Drop four bytes: stack pointer...', align=Align.INLINE)
+d.comment(0xbe02, '...+ 4', align=Align.INLINE)
+d.comment(0xbe04, '(store)', align=Align.INLINE)
+d.comment(0xbe06, 'No carry: done', align=Align.INLINE)
+d.comment(0xbe08, 'Carry into the high byte', align=Align.INLINE)
+d.comment(0xbe0a, 'Return (shared)', align=Align.INLINE)
+
+# unstack_int_to_zp (&BE0D): pop the stacked integer into 4 zp bytes at X
+d.subroutine(0xbe0d, 'unstack_int_to_zp',
+             title='Pop a stacked integer into a zero-page variable',
+             description="""Copy the four-byte integer on top of the BASIC stack into
+the zero-page bytes at (X .. X+3), then drop it from the stack. The
+&BE0B entry uses X = &37 (the general work area).""")
+d.label(0xbe0b, 'unstack_int_to_general')
+d.comment(0xbe0b, 'Default destination: zp_general (&37)', align=Align.INLINE)
+d.comment(0xbe0d, 'Copy the stacked integer to (X): top byte', align=Align.INLINE)
+d.comment(0xbe0f, '(read)', align=Align.INLINE)
+d.comment(0xbe11, '...byte 3', align=Align.INLINE)
+d.comment(0xbe13, 'next', align=Align.INLINE)
+d.comment(0xbe14, '(read)', align=Align.INLINE)
+d.comment(0xbe16, 'byte 2', align=Align.INLINE)
+d.comment(0xbe18, 'next', align=Align.INLINE)
+d.comment(0xbe19, '(read)', align=Align.INLINE)
+d.comment(0xbe1b, 'byte 1', align=Align.INLINE)
+d.comment(0xbe1d, 'next', align=Align.INLINE)
+d.comment(0xbe1e, '(read)', align=Align.INLINE)
+d.comment(0xbe20, 'byte 0', align=Align.INLINE)
+d.comment(0xbe22, 'Now drop the integer from the stack', align=Align.INLINE)
+d.comment(0xbe23, 'stack pointer...', align=Align.INLINE)
+d.comment(0xbe25, '...+ 4', align=Align.INLINE)
+d.comment(0xbe27, '(store)', align=Align.INLINE)
+d.comment(0xbe29, 'No carry: done', align=Align.INLINE)
+d.comment(0xbe2b, 'Carry into the high byte', align=Align.INLINE)
+d.comment(0xbe2d, 'Return', align=Align.INLINE)
+
+# fn_eof (&ACB8): EOF#channel
+d.comment(0xacb8, 'Evaluate the channel number', align=Align.INLINE)
+d.comment(0xacbb, 'Channel to X', align=Align.INLINE)
+d.comment(0xacbc, 'OSBYTE &7F: test for end of file', align=Align.INLINE)
+d.comment(0xacc2, 'Return TRUE/FALSE per the EOF flag', align=Align.INLINE)
+
+# fn_get (&AFB9): GET; fn_pos (&AB6D): POS
+d.comment(0xafbc, 'Return the key code as an integer', align=Align.INLINE)
+d.comment(0xab6d, 'OSBYTE &86: read the text cursor position', align=Align.INLINE)
+d.comment(0xab73, 'Return the column as an integer', align=Align.INLINE)
+
 # fwa_clear (&A686): FWA = 0.0
 d.comment(0xa686, 'Zero to write into every field', align=Align.INLINE)
 d.comment(0xa688, 'Clear the sign', align=Align.INLINE)
