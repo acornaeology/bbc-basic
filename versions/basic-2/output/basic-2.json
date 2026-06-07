@@ -2389,7 +2389,7 @@
         169,
         65
       ],
-      "comment_inline": "Cold seed \"ARW\": state becomes &00575241",
+      "comment_inline": "Cold seed &00575241 (\"ARW\": R. Wilson, the author)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&41"
@@ -2400,7 +2400,7 @@
         133,
         13
       ],
-      "comment_inline": "byte 0 = \"A\"",
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_rnd_seed",
@@ -2413,7 +2413,7 @@
         169,
         82
       ],
-      "comment_inline": "\"R\"",
+      "comment_inline": "load &52",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&52"
@@ -2424,7 +2424,7 @@
         133,
         14
       ],
-      "comment_inline": "byte 1 = \"R\"",
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_rnd_seed_1",
@@ -2437,7 +2437,7 @@
         169,
         87
       ],
-      "comment_inline": "\"W\"",
+      "comment_inline": "load &57",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&57"
@@ -2448,7 +2448,7 @@
         133,
         15
       ],
-      "comment_inline": "byte 2 = \"W\" (bytes 3 and 4 stay zero)",
+      "comment_inline": "byte 2 (bytes 3 and 4 stay zero)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_rnd_seed_2",

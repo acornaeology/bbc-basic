@@ -445,12 +445,12 @@ oscli            = &fff7
     ora zp_rnd_seed_2                                                 ; 8051: 05 0f       ..       ; bits 16-23
     ora zp_rnd_seed_3                                                 ; 8053: 05 10       ..       ; bits 24-31
     bne c8063                                                         ; 8055: d0 0c       ..       ; Non-zero: keep the existing state
-    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed "ARW": state becomes &00575241
-    sta zp_rnd_seed                                                   ; 8059: 85 0d       ..       ; byte 0 = "A"
-    lda #&52 ; 'R'                                                    ; 805b: a9 52       .R       ; "R"
-    sta zp_rnd_seed_1                                                 ; 805d: 85 0e       ..       ; byte 1 = "R"
-    lda #&57 ; 'W'                                                    ; 805f: a9 57       .W       ; "W"
-    sta zp_rnd_seed_2                                                 ; 8061: 85 0f       ..       ; byte 2 = "W" (bytes 3 and 4 stay zero)
+    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed &00575241 ("ARW": R. Wilson, the author)
+    sta zp_rnd_seed                                                   ; 8059: 85 0d       ..       ; byte 0
+    lda #&52 ; 'R'                                                    ; 805b: a9 52       .R       ; load &52
+    sta zp_rnd_seed_1                                                 ; 805d: 85 0e       ..       ; byte 1
+    lda #&57 ; 'W'                                                    ; 805f: a9 57       .W       ; load &57
+    sta zp_rnd_seed_2                                                 ; 8061: 85 0f       ..       ; byte 2 (bytes 3 and 4 stay zero)
 ; &8063 referenced 1 time by &8055
 .c8063
     lda #2                                                            ; 8063: a9 02       ..       ; Install brk_handler (&B402) into BRKV
