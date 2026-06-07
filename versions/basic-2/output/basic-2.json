@@ -1622,6 +1622,12 @@
       "name": "unstack_int_to_zp",
       "title": "Pop a stacked integer into a zero-page variable",
       "description": "Copy the four-byte integer on top of the BASIC stack into\nthe zero-page bytes at (X .. X+3), then drop it from the stack. The\n&BE0B entry uses X = &37 (the general work area)."
+    },
+    {
+      "addr": 36638,
+      "name": "usr_call",
+      "title": "Call user machine code (USR/CALL)",
+      "description": "Load A, X, Y and the flags from the resident integer\nvariables, then call the routine at the address in IWA. On return the\nregisters are captured back."
     }
   ],
   "banners": [
@@ -1704,7 +1710,7 @@
     "zp_fwa_rnd": 53,
     "zp_strbuf_len": 54,
     "zp_general": 55,
-    "l0038": 56,
+    "zp_general_1": 56,
     "zp_fileblk": 57,
     "l003a": 58,
     "zp_fwb_sign": 59,
@@ -9101,9 +9107,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 34086,
@@ -9206,9 +9212,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 34104,
@@ -9388,9 +9394,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 34132,
@@ -10856,9 +10862,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 34363,
@@ -14448,9 +14454,9 @@
       ],
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 34952,
@@ -15083,9 +15089,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 35048,
@@ -15683,6 +15689,7 @@
       "labels": [
         "read_via_ptr_general"
       ],
+      "comment_inline": "Read the byte at (zp_general)+Y, then advance",
       "xref_summaries": [
         "&8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6"
       ],
@@ -15707,6 +15714,7 @@
       "labels": [
         "inc_ptr_general"
       ],
+      "comment_inline": "Increment the general pointer: low byte",
       "xref_summaries": [
         "&8944 referenced 8 times by &8919, &891c, &891f, &894b, &8961, &89bc, &89d9, &8a79"
       ],
@@ -15732,6 +15740,7 @@
         208,
         2
       ],
+      "comment_inline": "No carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_3",
@@ -15744,11 +15753,12 @@
         230,
         56
       ],
+      "comment_inline": "Carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 35146,
@@ -15758,6 +15768,7 @@
       "labels": [
         "return_3"
       ],
+      "comment_inline": "Return (shared)",
       "xref_summaries": [
         "&894a referenced 2 times by &8946, &895b"
       ],
@@ -15778,6 +15789,7 @@
       "labels": [
         "sub_c894b"
       ],
+      "comment_inline": "Advance the pointer...",
       "xref_summaries": [
         "&894b referenced 3 times by &896a, &8980, &bfdc"
       ],
@@ -15798,6 +15810,7 @@
         177,
         55
       ],
+      "comment_inline": "...then read the next byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -15809,6 +15822,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the byte",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -18317,9 +18331,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 35517,
@@ -18948,9 +18962,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 35622,
@@ -19942,9 +19956,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 35772,
@@ -25285,9 +25299,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f1e",
+      "operand": "usr_call",
       "target": 36638,
-      "target_label": "sub_c8f1e"
+      "target_label": "usr_call"
     },
     {
       "addr": 36631,
@@ -25340,7 +25354,7 @@
         4
       ],
       "labels": [
-        "sub_c8f1e"
+        "usr_call"
       ],
       "xref_summaries": [
         "&8f1e referenced 2 times by &8f14, &abd5"
@@ -26046,9 +26060,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 36766,
@@ -27298,9 +27312,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 36970,
@@ -27629,9 +27643,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37034,
@@ -28549,9 +28563,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37189,
@@ -29407,9 +29421,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37334,
@@ -29641,9 +29655,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37372,
@@ -29696,9 +29710,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37379,
@@ -29741,9 +29755,9 @@
       ],
       "type": "code",
       "mnemonic": "cpx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37385,
@@ -32998,9 +33012,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 37916,
@@ -36440,9 +36454,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38423,
@@ -38100,9 +38114,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38677,
@@ -38140,9 +38154,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38683,
@@ -38437,9 +38451,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38736,
@@ -38652,9 +38666,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38773,
@@ -39073,9 +39087,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 38837,
@@ -42636,9 +42650,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 39380,
@@ -49338,6 +49352,7 @@
       "labels": [
         "iwa_mod"
       ],
+      "comment_inline": "Ensure the current value is an integer",
       "xref_summaries": [
         "&9e01 referenced 1 time by &9dde"
       ],
@@ -49356,17 +49371,19 @@
         165,
         56
       ],
+      "comment_inline": "Carry the operand sign into the core",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40454,
       "bytes": [
         8
       ],
+      "comment_inline": "Flag MOD (vs DIV) for the shared core",
       "type": "code",
       "mnemonic": "php"
     },
@@ -49377,6 +49394,7 @@
         187,
         157
       ],
+      "comment_inline": "Compute the remainder (shared DIV/MOD core)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9dbb",
@@ -50884,9 +50902,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40701,
@@ -51328,9 +51346,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40772,
@@ -51398,9 +51416,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40784,
@@ -51442,9 +51460,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40792,
@@ -51543,9 +51561,9 @@
       ],
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40809,
@@ -51851,9 +51869,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40858,
@@ -51962,9 +51980,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40875,
@@ -51974,9 +51992,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40877,
@@ -52053,9 +52071,9 @@
       ],
       "type": "code",
       "mnemonic": "cpy",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40889,
@@ -52447,9 +52465,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 40950,
@@ -68056,6 +68074,7 @@
       "labels": [
         "fn_cos"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -68069,6 +68088,7 @@
         211,
         169
       ],
+      "comment_inline": "Compute the SIN/COS kernel",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca9d3",
@@ -68081,6 +68101,7 @@
         230,
         74
       ],
+      "comment_inline": "Shift the quadrant: cos x = sin(x + pi/2)",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004a",
@@ -68094,6 +68115,7 @@
         158,
         169
       ],
+      "comment_inline": "Finish (shared with SIN)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca99e",
@@ -70953,6 +70975,7 @@
       "labels": [
         "fn_deg"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -70965,6 +70988,7 @@
         160,
         109
       ],
+      "comment_inline": "Point at the constant 180/pi: low byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&6d"
@@ -70975,6 +70999,7 @@
         169,
         170
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&aa"
@@ -70985,6 +71010,7 @@
         208,
         237
       ],
+      "comment_inline": "Multiply FWA by it (radians -> degrees)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cabb8",
@@ -71049,6 +71075,7 @@
       "labels": [
         "fn_usr"
       ],
+      "comment_inline": "Evaluate the address argument as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -71062,11 +71089,12 @@
         30,
         143
       ],
+      "comment_inline": "Set up registers and call the code",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f1e",
+      "operand": "usr_call",
       "target": 36638,
-      "target_label": "sub_c8f1e"
+      "target_label": "usr_call"
     },
     {
       "addr": 43992,
@@ -71074,6 +71102,7 @@
         133,
         42
       ],
+      "comment_inline": "Returned A...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -71086,6 +71115,7 @@
         134,
         43
       ],
+      "comment_inline": "...and X into the low result bytes",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_1",
@@ -71098,6 +71128,7 @@
         132,
         44
       ],
+      "comment_inline": "Returned Y",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_2",
@@ -71109,6 +71140,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "Returned flags...",
       "type": "code",
       "mnemonic": "php"
     },
@@ -71117,6 +71149,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -71126,6 +71159,7 @@
         133,
         45
       ],
+      "comment_inline": "...into the top result byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -71137,6 +71171,7 @@
       "bytes": [
         216
       ],
+      "comment_inline": "Clear decimal mode the code may have left set",
       "type": "code",
       "mnemonic": "cld"
     },
@@ -71146,6 +71181,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -71155,6 +71191,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the packed A,X,Y,P",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -71168,6 +71205,7 @@
       "labels": [
         "cabe6"
       ],
+      "comment_inline": "Non-numeric address: Type mismatch",
       "xref_summaries": [
         "&abe6 referenced 2 times by &ab8b, &abec"
       ],
@@ -71434,9 +71472,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 44051,
@@ -72595,6 +72633,7 @@
       "labels": [
         "fn_not"
       ],
+      "comment_inline": "Evaluate the argument as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -72607,6 +72646,7 @@
         162,
         3
       ],
+      "comment_inline": "Complement all four IWA bytes",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#3"
@@ -72620,6 +72660,7 @@
       "labels": [
         "loop_cacd6"
       ],
+      "comment_inline": "byte X...",
       "xref_summaries": [
         "&acd6 referenced 1 time by &acdd"
       ],
@@ -72638,6 +72679,7 @@
         73,
         255
       ],
+      "comment_inline": "...one's complement",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&ff"
@@ -72648,6 +72690,7 @@
         149,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa,x",
@@ -72659,6 +72702,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -72668,6 +72712,7 @@
         16,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_cacd6",
@@ -72680,6 +72725,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -72689,6 +72735,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return NOT value",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -73115,9 +73162,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 44330,
@@ -73514,9 +73561,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 44389,
@@ -75944,6 +75991,7 @@
       "labels": [
         "fn_to"
       ],
+      "comment_inline": "Look at the character after TO",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -75956,6 +76004,7 @@
         177,
         25
       ],
+      "comment_inline": "(get it)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -75968,6 +76017,7 @@
         201,
         80
       ],
+      "comment_inline": "Is it \"P\"? TO + P spells TOP",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&50"
@@ -75978,6 +76028,7 @@
         208,
         227
       ],
+      "comment_inline": "No: a bare TO here is a syntax error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_caec7",
@@ -75990,6 +76041,7 @@
         230,
         27
       ],
+      "comment_inline": "Consume the P",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -76002,6 +76054,7 @@
         165,
         18
       ],
+      "comment_inline": "TOP: end-of-program address, low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top",
@@ -76014,6 +76067,7 @@
         164,
         19
       ],
+      "comment_inline": "high byte (returned as an integer)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l0013",
@@ -80673,9 +80727,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 45523,
@@ -83480,9 +83534,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 45974,
@@ -83876,9 +83930,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46031,
@@ -84014,9 +84068,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46054,
@@ -84156,9 +84210,9 @@
       ],
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46079,
@@ -85820,9 +85874,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46360,
@@ -85903,9 +85957,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l0038),y",
+      "operand": "(zp_general_1),y",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46371,
@@ -85975,9 +86029,9 @@
       ],
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46382,
@@ -85987,9 +86041,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46384,
@@ -86063,9 +86117,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l0038),y",
+      "operand": "(zp_general_1),y",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46394,
@@ -88826,9 +88880,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46845,
@@ -88993,9 +89047,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46874,
@@ -89018,9 +89072,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46879,
@@ -89100,9 +89154,9 @@
       ],
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46894,
@@ -89577,9 +89631,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 46975,
@@ -90082,9 +90136,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 47073,
@@ -96296,9 +96350,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48141,
@@ -96624,9 +96678,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48194,
@@ -96726,9 +96780,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48211,
@@ -96842,9 +96896,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48226,
@@ -96907,9 +96961,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48235,
@@ -97104,9 +97158,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48264,
@@ -97432,9 +97486,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48315,
@@ -97647,9 +97701,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48353,
@@ -100955,9 +101009,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 48826,
@@ -102547,9 +102601,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0038",
+      "operand": "zp_general_1",
       "target": 56,
-      "target_label": "l0038"
+      "target_label": "zp_general_1"
     },
     {
       "addr": 49109,

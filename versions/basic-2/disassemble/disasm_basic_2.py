@@ -243,6 +243,7 @@ d.label(0x0034, 'zp_fwa_m4')          # Mantissa LSB
 d.label(0x0035, 'zp_fwa_rnd')         # Rounding byte (extra precision)
 d.label(0x0036, 'zp_strbuf_len')      # Length of the string buffer
 d.label(0x0037, 'zp_general')         # General work area (&37-&3A)
+d.label(0x0038, 'zp_general_1')       # general pointer high byte
 d.label(0x0039, 'zp_fileblk')         # LOAD/SAVE control block (&39-&44)
 # Floating point work area B (FWB), same layout as FWA.
 d.label(0x003b, 'zp_fwb_sign')
@@ -1709,6 +1710,73 @@ d.comment(0xacc2, 'Return TRUE/FALSE per the EOF flag', align=Align.INLINE)
 d.comment(0xafbc, 'Return the key code as an integer', align=Align.INLINE)
 d.comment(0xab6d, 'OSBYTE &86: read the text cursor position', align=Align.INLINE)
 d.comment(0xab73, 'Return the column as an integer', align=Align.INLINE)
+
+d.subroutine(0x8f1e, 'usr_call', title='Call user machine code (USR/CALL)',
+             description="""Load A, X, Y and the flags from the resident integer
+variables, then call the routine at the address in IWA. On return the
+registers are captured back.""")
+
+# read_via_ptr_general (&8942) / inc_ptr_general (&8944) / sub_c894b
+d.comment(0x8942, 'Read the byte at (zp_general)+Y, then advance', align=Align.INLINE)
+d.comment(0x8944, 'Increment the general pointer: low byte', align=Align.INLINE)
+d.comment(0x8946, 'No carry: done', align=Align.INLINE)
+d.comment(0x8948, 'Carry into the high byte', align=Align.INLINE)
+d.comment(0x894a, 'Return (shared)', align=Align.INLINE)
+d.comment(0x894b, 'Advance the pointer...', align=Align.INLINE)
+d.comment(0x894e, '...then read the next byte', align=Align.INLINE)
+d.comment(0x8950, 'Return the byte', align=Align.INLINE)
+
+# fn_cos (&A98D): COS = SIN with a quadrant shift
+d.comment(0xa98d, 'Evaluate the argument as a real', align=Align.INLINE)
+d.comment(0xa990, 'Compute the SIN/COS kernel', align=Align.INLINE)
+d.comment(0xa993, 'Shift the quadrant: cos x = sin(x + pi/2)', align=Align.INLINE)
+d.comment(0xa995, 'Finish (shared with SIN)', align=Align.INLINE)
+
+# fn_deg (&ABC2): radians -> degrees (multiply by 180/pi)
+d.comment(0xabc2, 'Evaluate the argument as a real', align=Align.INLINE)
+d.comment(0xabc5, 'Point at the constant 180/pi: low byte', align=Align.INLINE)
+d.comment(0xabc7, 'high byte', align=Align.INLINE)
+d.comment(0xabc9, 'Multiply FWA by it (radians -> degrees)', align=Align.INLINE)
+
+# fn_usr (&ABD2): USR(addr) calls machine code, returns A,X,Y,P packed
+d.comment(0xabd2, 'Evaluate the address argument as an integer', align=Align.INLINE)
+d.comment(0xabd5, 'Set up registers and call the code', align=Align.INLINE)
+d.comment(0xabd8, 'Returned A...', align=Align.INLINE)
+d.comment(0xabda, '...and X into the low result bytes', align=Align.INLINE)
+d.comment(0xabdc, 'Returned Y', align=Align.INLINE)
+d.comment(0xabde, 'Returned flags...', align=Align.INLINE)
+d.comment(0xabdf, '...', align=Align.INLINE)
+d.comment(0xabe0, '...into the top result byte', align=Align.INLINE)
+d.comment(0xabe2, 'Clear decimal mode the code may have left set', align=Align.INLINE)
+d.comment(0xabe3, 'Integer result', align=Align.INLINE)
+d.comment(0xabe5, 'Return the packed A,X,Y,P', align=Align.INLINE)
+d.comment(0xabe6, 'Non-numeric address: Type mismatch', align=Align.INLINE)
+
+# fn_not (&ACD1): NOT = one's complement of the integer
+d.comment(0xacd1, 'Evaluate the argument as an integer', align=Align.INLINE)
+d.comment(0xacd4, 'Complement all four IWA bytes', align=Align.INLINE)
+d.comment(0xacd6, 'byte X...', align=Align.INLINE)
+d.comment(0xacd8, "...one's complement", align=Align.INLINE)
+d.comment(0xacda, '(store)', align=Align.INLINE)
+d.comment(0xacdc, 'next byte', align=Align.INLINE)
+d.comment(0xacdd, 'loop', align=Align.INLINE)
+d.comment(0xacdf, 'Integer result', align=Align.INLINE)
+d.comment(0xace1, 'Return NOT value', align=Align.INLINE)
+
+# fn_to (&AEDC): TO followed by "P" returns TOP (end of program)
+d.comment(0xaedc, 'Look at the character after TO', align=Align.INLINE)
+d.comment(0xaede, '(get it)', align=Align.INLINE)
+d.comment(0xaee0, 'Is it "P"? TO + P spells TOP', align=Align.INLINE)
+d.comment(0xaee2, 'No: a bare TO here is a syntax error', align=Align.INLINE)
+d.comment(0xaee4, 'Consume the P', align=Align.INLINE)
+d.comment(0xaee6, 'TOP: end-of-program address, low byte', align=Align.INLINE)
+d.comment(0xaee8, 'high byte (returned as an integer)', align=Align.INLINE)
+
+# iwa_mod (&9E01): IWA = IWA MOD operand (shares the DIV/MOD core)
+d.comment(0x9e01, 'Ensure the current value is an integer', align=Align.INLINE)
+d.comment(0x9e04, 'Carry the operand sign into the core', align=Align.INLINE)
+d.comment(0x9e06, 'Flag MOD (vs DIV) for the shared core', align=Align.INLINE)
+d.comment(0x9e07, 'Compute the remainder (shared DIV/MOD core)', align=Align.INLINE)
 
 # fwa_clear (&A686): FWA = 0.0
 d.comment(0xa686, 'Zero to write into every field', align=Align.INLINE)
