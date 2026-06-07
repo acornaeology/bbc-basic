@@ -153,9 +153,24 @@ d.comment(0x8035, 'LISTO = 0: no LIST indentation', align=Align.INLINE)
 d.comment(0x8037, '@% high two bytes = 0', align=Align.INLINE)
 d.comment(0x803e, 'WIDTH = &FF: no automatic line wrap', align=Align.INLINE)
 d.comment(0x8042, '@% = &0000090A: default PRINT format', align=Align.INLINE)
-d.comment(0x804b, 'OR the RND seed bytes (&0D-&11) together', align=Align.INLINE)
-d.comment(0x8055, 'Seed already non-zero: leave it', align=Align.INLINE)
-d.comment(0x8057, 'Cold seed: set RND to "ARW" (&575241)', align=Align.INLINE)
+# Cold seed for the RND generator: if the whole 33-bit LFSR state is
+# zero (which it is at power-on) install a fixed non-zero seed. Nothing
+# else re-seeds unless the program calls RND(-n), so each program's
+# random sequence is deterministic from a cold start.
+d.comment(0x8049, 'Test the LFSR state for all-zero...', align=Align.INLINE)
+d.comment(0x804b, '...only bit 0 of &11 belongs to the register',
+          align=Align.INLINE)
+d.comment(0x804d, 'OR bits 0-7', align=Align.INLINE)
+d.comment(0x804f, 'bits 8-15', align=Align.INLINE)
+d.comment(0x8051, 'bits 16-23', align=Align.INLINE)
+d.comment(0x8053, 'bits 24-31', align=Align.INLINE)
+d.comment(0x8055, 'Non-zero: keep the existing state', align=Align.INLINE)
+d.comment(0x8057, 'Cold seed "ARW": state becomes &00575241', align=Align.INLINE)
+d.comment(0x8059, 'byte 0 = "A"', align=Align.INLINE)
+d.comment(0x805b, '"R"', align=Align.INLINE)
+d.comment(0x805d, 'byte 1 = "R"', align=Align.INLINE)
+d.comment(0x805f, '"W"', align=Align.INLINE)
+d.comment(0x8061, 'byte 2 = "W" (bytes 3 and 4 stay zero)', align=Align.INLINE)
 d.comment(0x8063, 'Install brk_handler (&B402) into BRKV', align=Align.INLINE)
 d.comment(0x806d, 'Enable IRQs and enter the immediate loop', align=Align.INLINE)
 
@@ -172,7 +187,13 @@ d.label(0x0006, 'zp_himem')           # Start of screen / top of BASIC
 d.label(0x0008, 'zp_erl')             # Line number that last errored
 d.label(0x000a, 'zp_text_ptr_off')    # Offset into current text line
 d.label(0x000b, 'zp_text_ptr')        # Start of current text line
-d.label(0x000d, 'zp_rnd_seed')        # RND work area (&0D-&11)
+# RND work area (&0D-&11): a 33-bit LFSR state. &0D-&10 are a 32-bit
+# little-endian value (bits 0-31); bit 0 of &11 is bit 32. See rnd_step.
+d.label(0x000d, 'zp_rnd_seed')        # LFSR bits 0-7
+d.label(0x000e, 'zp_rnd_seed_1')      # LFSR bits 8-15
+d.label(0x000f, 'zp_rnd_seed_2')      # LFSR bits 16-23
+d.label(0x0010, 'zp_rnd_seed_3')      # LFSR bits 24-31
+d.label(0x0011, 'zp_rnd_seed_4')      # LFSR bit 32 (in bit 0; overflow)
 d.label(0x0012, 'zp_top')             # End of program (excl. variables)
 d.label(0x0014, 'zp_print_bytes')     # Bytes in current print field
 d.label(0x0015, 'zp_print_flag')      # 0 = decimal, -ve = hexadecimal
@@ -962,35 +983,198 @@ d.subroutine(
 )
 
 # ----------------------------------------------------------------------
-# Random numbers (Pharo ch. 6). RND has several forms, each a separate
-# entry reached from fn_rnd. The five-byte random work area (RWA) is
-# zp_rnd_seed (&0D-&11).
+# Random numbers (RND). The generator is a 33-bit linear-feedback shift
+# register held in the work area zp_rnd_seed (&0D-&11): &0D-&10 are a
+# 32-bit little-endian value (bits 0-31) and bit 0 of &11 is bit 32.
+# rnd_step advances it; the RND forms below build their results from the
+# state. Verified against the running ROM (see rnd_step).
 # ----------------------------------------------------------------------
 d.subroutine(
+    0xaf87, 'rnd_step',
+    title='Advance the random-number LFSR by 32 steps',
+    description="""Advance the 33-bit linear-feedback shift register in
+zp_rnd_seed by exactly 32 single-bit steps (one RND call). The
+register uses the primitive trinomial x^33 + x^20 + 1, i.e. taps
+(33, 20, 0): each step feeds (bit 19 XOR bit 32) into bit 0 and
+shifts the whole register left by one.
+
+Per step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches
+bit 0, EOR with byte 4 to bring in bit 32, rotate to put the feedback
+bit into carry, then ROL the five state bytes so carry enters bit 0.
+""",
+)
+d.subroutine(
     0xaf51, 'rnd_integer',
-    title='RND: random 32-bit integer',
-    description='Step the generator; IWA = a full-range random integer.',
+    title='RND: a full-range random integer',
+    description="""Bare RND. Advance the generator (rnd_step) then read the
+32-bit state (&0D-&10) into IWA as a signed integer, returning the
+integer type (&40). The result spans the full signed 32-bit range.
+""",
 )
 d.subroutine(
     0xaf69, 'rnd_fraction',
-    title='RND(1): random fraction',
-    description='Step the generator; FWA = a real in 0 to 0.999999.',
+    title='RND(1): a random real in [0, 1)',
+    description="""Advance the generator (rnd_step) then fall into rnd_repeat to
+build the fraction. The value is the byte-reversed 32-bit state
+divided by 2^32: a real in [0, 1).
+""",
 )
 d.subroutine(
     0xaf6c, 'rnd_repeat',
-    title='RND(0): repeat the last RND(1)',
-    description='FWA = the value last returned by rnd_fraction.',
+    title='RND(0): repeat the last RND(1) without advancing',
+    description="""Build the floating-point fraction from the CURRENT generator
+state WITHOUT stepping it (so RND(0) repeats the last RND(1)). The
+mantissa bytes m1..m4 are loaded most-significant-first from the
+little-endian state &0D,&0E,&0F,&10, which byte-reverses the 32-bit
+value; with exponent &80 and after normalisation the result is
+state-reversed / 2^32, a real in [0, 1).
+""",
 )
 d.subroutine(
     0xaf24, 'rnd_range',
-    title='RND(X): random integer 1 to X',
-    description='Step the generator; IWA = a random integer from 1 to X.',
+    title='RND(X), X>=2: a random integer 1 to X',
+    description="""Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X
+(stack_real), take a fraction (rnd_fraction), pop X back into the
+operand (unstack_real), multiply (fwa_mul_var_raw), convert to an
+integer (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.
+""",
 )
 d.subroutine(
     0xaf3f, 'rnd_seed',
-    title='RND(-X): seed the generator',
-    description='Seed the random work area from X (RND(-X)).',
+    title='RND(-X): seed the generator and return X',
+    description="""Store the integer argument into the 32-bit state (&0D-&10) and
+set &11 to &40. Only bit 0 of &11 is part of the LFSR, so the
+overflow bit becomes 0. Returns the argument as an integer.
+""",
 )
+d.subroutine(
+    0x9222, 'iwa_inc',
+    title='Increment the integer accumulator',
+    description='IWA = IWA + 1, carrying through all four bytes.',
+)
+d.subroutine(
+    0xbd7e, 'unstack_real',
+    title='Pop a real off the BASIC stack',
+    description="""Point zp_fp_ptr at the 5-byte real on top of the BASIC stack
+and drop it (advance the stack pointer by 5), so an FP routine can
+use the popped value as its (zp_fp_ptr) operand.
+""",
+)
+d.label(0xaf0a, 'rnd_dispatch')   # RND(expr): select the form by argument
+
+# rnd_step (&AF87): one RND advance = 32 LFSR steps, trinomial (33,20,0)
+d.comment(0xaf87, '32 single-bit steps make one RND advance', align=Align.INLINE)
+d.comment(0xaf89, 'Byte 2 holds register bits 16-23', align=Align.INLINE)
+d.comment(0xaf8b, 'Shift right so bit 19 (tap 20)...', align=Align.INLINE)
+d.comment(0xaf8c, '...', align=Align.INLINE)
+d.comment(0xaf8d, '...reaches bit 0', align=Align.INLINE)
+d.comment(0xaf8e, 'EOR byte 4 to bring in bit 32: bit19 XOR bit32', align=Align.INLINE)
+d.comment(0xaf90, 'Rotate the feedback bit into carry', align=Align.INLINE)
+d.comment(0xaf91, 'Shift the register left, feedback into bit 0', align=Align.INLINE)
+d.comment(0xaf93, 'bits 8-15', align=Align.INLINE)
+d.comment(0xaf95, 'bits 16-23', align=Align.INLINE)
+d.comment(0xaf97, 'bits 24-31', align=Align.INLINE)
+d.comment(0xaf99, 'bit 32', align=Align.INLINE)
+d.comment(0xaf9b, 'Next step', align=Align.INLINE)
+d.comment(0xaf9c, 'Loop for all 32 steps', align=Align.INLINE)
+d.comment(0xaf9e, 'The register has advanced', align=Align.INLINE)
+
+# rnd_dispatch (&AF0A): RND(expr) chooses a form by the argument value
+d.comment(0xaf0a, 'Skip the "("', align=Align.INLINE)
+d.comment(0xaf0c, 'Evaluate the argument expression', align=Align.INLINE)
+d.comment(0xaf0f, 'Coerce it to an integer', align=Align.INLINE)
+d.comment(0xaf12, 'Examine the argument: high byte', align=Align.INLINE)
+d.comment(0xaf14, 'Negative: re-seed the generator', align=Align.INLINE)
+d.comment(0xaf16, 'Any of bits 16-31 set...', align=Align.INLINE)
+d.comment(0xaf18, '...(magnitude >= 256)', align=Align.INLINE)
+d.comment(0xaf1a, 'Large: RND(X) over a range', align=Align.INLINE)
+d.comment(0xaf1c, 'Low byte', align=Align.INLINE)
+d.comment(0xaf1e, 'RND(0): repeat the last fraction', align=Align.INLINE)
+d.comment(0xaf20, 'RND(1)?', align=Align.INLINE)
+d.comment(0xaf22, 'RND(1): a fresh fraction (else 2..255: RND(X))', align=Align.INLINE)
+
+# rnd_range (&AF24): 1 + INT(RND(1) * X)
+d.comment(0xaf24, 'FWA = X', align=Align.INLINE)
+d.comment(0xaf27, 'Push X onto the stack', align=Align.INLINE)
+d.comment(0xaf2a, 'FWA = a fraction in [0, 1)', align=Align.INLINE)
+d.comment(0xaf2d, 'Pop X back as the multiply operand', align=Align.INLINE)
+d.comment(0xaf30, 'FWA = fraction * X', align=Align.INLINE)
+d.comment(0xaf33, 'Normalise the product', align=Align.INLINE)
+d.comment(0xaf36, 'IWA = INT(fraction * X) = 0..X-1', align=Align.INLINE)
+d.comment(0xaf39, 'Add one: 1..X', align=Align.INLINE)
+d.comment(0xaf3c, 'Integer result', align=Align.INLINE)
+d.comment(0xaf3e, 'Return RND(X)', align=Align.INLINE)
+
+# rnd_seed (&AF3F): RND(-X)
+d.comment(0xaf3f, 'Point at the state bytes (&0D)', align=Align.INLINE)
+d.comment(0xaf41, 'Store the argument as the 32-bit state', align=Align.INLINE)
+d.comment(0xaf44, 'Bit-32 byte =', align=Align.INLINE)
+d.comment(0xaf46, '&40: bit 32 (its bit 0) becomes 0', align=Align.INLINE)
+d.comment(0xaf48, 'Return the argument (A = &40 = integer)', align=Align.INLINE)
+
+# fn_rnd (&AF49): RND with or without an argument
+d.comment(0xaf49, 'Look at the character after RND', align=Align.INLINE)
+d.comment(0xaf4b, '(get it)', align=Align.INLINE)
+d.comment(0xaf4d, 'Is it "("? then RND(expr)', align=Align.INLINE)
+d.comment(0xaf4f, 'Yes: select the RND form', align=Align.INLINE)
+
+# rnd_integer (&AF51): bare RND
+d.comment(0xaf51, 'Advance the generator', align=Align.INLINE)
+d.comment(0xaf54, 'Point at the state (&0D), then copy it to IWA',
+          align=Align.INLINE)
+
+# iwa_load_zp (&AF56): copy the 4-byte integer at (&00+X) into IWA
+d.comment(0xaf56, 'Copy 4-byte value at &00+X into IWA: byte 0', align=Align.INLINE)
+d.comment(0xaf58, '(store)', align=Align.INLINE)
+d.comment(0xaf5a, 'byte 1', align=Align.INLINE)
+d.comment(0xaf5c, '(store)', align=Align.INLINE)
+d.comment(0xaf5e, 'byte 2', align=Align.INLINE)
+d.comment(0xaf60, '(store)', align=Align.INLINE)
+d.comment(0xaf62, 'byte 3', align=Align.INLINE)
+d.comment(0xaf64, '(store)', align=Align.INLINE)
+d.comment(0xaf66, 'Integer type', align=Align.INLINE)
+d.comment(0xaf68, 'Return the integer', align=Align.INLINE)
+
+# rnd_fraction (&AF69) -> rnd_repeat (&AF6C): build the [0,1) fraction
+d.comment(0xaf69, 'Advance the generator, then build the fraction',
+          align=Align.INLINE)
+d.comment(0xaf6c, 'Zero for the FP fields', align=Align.INLINE)
+d.comment(0xaf6e, 'Sign positive', align=Align.INLINE)
+d.comment(0xaf70, 'Clear overflow', align=Align.INLINE)
+d.comment(0xaf72, 'Clear rounding', align=Align.INLINE)
+d.comment(0xaf74, 'Exponent &80 (= 2^0)', align=Align.INLINE)
+d.comment(0xaf76, '(store it)', align=Align.INLINE)
+d.comment(0xaf78, 'State byte X (little-endian)...', align=Align.INLINE)
+d.comment(0xaf7a, '...into mantissa byte X (MSB first): byte-reverses',
+          align=Align.INLINE)
+d.comment(0xaf7c, 'next byte', align=Align.INLINE)
+d.comment(0xaf7d, 'all four?', align=Align.INLINE)
+d.comment(0xaf7f, 'loop', align=Align.INLINE)
+d.comment(0xaf81, 'Normalise: value = reversed-state / 2^32', align=Align.INLINE)
+d.comment(0xaf84, 'Real result type', align=Align.INLINE)
+d.comment(0xaf86, 'Return RND(1) / RND(0)', align=Align.INLINE)
+
+# iwa_inc (&9222): 32-bit IWA = IWA + 1
+d.comment(0x9222, 'Increment IWA: byte 0', align=Align.INLINE)
+d.comment(0x9224, 'No carry: done', align=Align.INLINE)
+d.comment(0x9226, 'Carry into byte 1', align=Align.INLINE)
+d.comment(0x9228, 'done', align=Align.INLINE)
+d.comment(0x922a, 'byte 2', align=Align.INLINE)
+d.comment(0x922c, 'done', align=Align.INLINE)
+d.comment(0x922e, 'byte 3', align=Align.INLINE)
+d.comment(0x9230, 'IWA incremented', align=Align.INLINE)
+
+# unstack_real (&BD7E): pop a 5-byte real, leaving zp_fp_ptr at it
+d.comment(0xbd7e, 'Stack top is where the real sits...', align=Align.INLINE)
+d.comment(0xbd80, 'clear carry for the add', align=Align.INLINE)
+d.comment(0xbd81, '...point the fp operand there', align=Align.INLINE)
+d.comment(0xbd83, 'Drop 5 bytes (a packed real)', align=Align.INLINE)
+d.comment(0xbd85, '(store the new stack low byte)', align=Align.INLINE)
+d.comment(0xbd87, 'Stack-pointer high byte', align=Align.INLINE)
+d.comment(0xbd89, 'into the fp-operand pointer too', align=Align.INLINE)
+d.comment(0xbd8b, 'Carry into the high byte', align=Align.INLINE)
+d.comment(0xbd8d, '(store it)', align=Align.INLINE)
+d.comment(0xbd8f, 'zp_fp_ptr now addresses the popped real', align=Align.INLINE)
 
 # ======================================================================
 # Inline comments, added bottom-up from the call-graph leaves. The aim

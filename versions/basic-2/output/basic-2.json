@@ -1032,8 +1032,7 @@
       "addr": 48465,
       "name": "stack_real",
       "title": "Push the floating-point accumulator onto the BASIC stack",
-      "description": "Reserve five bytes on the BASIC stack and copy the packed\nfloating-point accumulator onto it.\n",
-      "fall_through": true
+      "description": "Reserve five bytes on the BASIC stack and copy the packed\nfloating-point accumulator onto it.\n"
     },
     {
       "addr": 48562,
@@ -1419,36 +1418,55 @@
       "fall_through": true
     },
     {
+      "addr": 44935,
+      "name": "rnd_step",
+      "title": "Advance the random-number LFSR by 32 steps",
+      "description": "Advance the 33-bit linear-feedback shift register in\nzp_rnd_seed by exactly 32 single-bit steps (one RND call). The\nregister uses the primitive trinomial x^33 + x^20 + 1, i.e. taps\n(33, 20, 0): each step feeds (bit 19 XOR bit 32) into bit 0 and\nshifts the whole register left by one.\n\nPer step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches\nbit 0, EOR with byte 4 to bring in bit 32, rotate to put the feedback\nbit into carry, then ROL the five state bytes so carry enters bit 0.\n"
+    },
+    {
       "addr": 44881,
       "name": "rnd_integer",
-      "title": "RND: random 32-bit integer",
-      "description": "Step the generator; IWA = a full-range random integer.",
+      "title": "RND: a full-range random integer",
+      "description": "Bare RND. Advance the generator (rnd_step) then read the\n32-bit state (&0D-&10) into IWA as a signed integer, returning the\ninteger type (&40). The result spans the full signed 32-bit range.\n",
       "fall_through": true
     },
     {
       "addr": 44905,
       "name": "rnd_fraction",
-      "title": "RND(1): random fraction",
-      "description": "Step the generator; FWA = a real in 0 to 0.999999.",
+      "title": "RND(1): a random real in [0, 1)",
+      "description": "Advance the generator (rnd_step) then fall into rnd_repeat to\nbuild the fraction. The value is the byte-reversed 32-bit state\ndivided by 2^32: a real in [0, 1).\n",
       "fall_through": true
     },
     {
       "addr": 44908,
       "name": "rnd_repeat",
-      "title": "RND(0): repeat the last RND(1)",
-      "description": "FWA = the value last returned by rnd_fraction."
+      "title": "RND(0): repeat the last RND(1) without advancing",
+      "description": "Build the floating-point fraction from the CURRENT generator\nstate WITHOUT stepping it (so RND(0) repeats the last RND(1)). The\nmantissa bytes m1..m4 are loaded most-significant-first from the\nlittle-endian state &0D,&0E,&0F,&10, which byte-reverses the 32-bit\nvalue; with exponent &80 and after normalisation the result is\nstate-reversed / 2^32, a real in [0, 1).\n"
     },
     {
       "addr": 44836,
       "name": "rnd_range",
-      "title": "RND(X): random integer 1 to X",
-      "description": "Step the generator; IWA = a random integer from 1 to X."
+      "title": "RND(X), X>=2: a random integer 1 to X",
+      "description": "Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X\n(stack_real), take a fraction (rnd_fraction), pop X back into the\noperand (unstack_real), multiply (fwa_mul_var_raw), convert to an\ninteger (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.\n"
     },
     {
       "addr": 44863,
       "name": "rnd_seed",
-      "title": "RND(-X): seed the generator",
-      "description": "Seed the random work area from X (RND(-X))."
+      "title": "RND(-X): seed the generator and return X",
+      "description": "Store the integer argument into the 32-bit state (&0D-&10) and\nset &11 to &40. Only bit 0 of &11 is part of the LFSR, so the\noverflow bit becomes 0. Returns the argument as an integer.\n"
+    },
+    {
+      "addr": 37410,
+      "name": "iwa_inc",
+      "title": "Increment the integer accumulator",
+      "description": "IWA = IWA + 1, carrying through all four bytes."
+    },
+    {
+      "addr": 48510,
+      "name": "unstack_real",
+      "title": "Pop a real off the BASIC stack",
+      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n",
+      "fall_through": true
     },
     {
       "addr": 41636,
@@ -1617,10 +1635,10 @@
     "zp_text_ptr": 11,
     "l000c": 12,
     "zp_rnd_seed": 13,
-    "l000e": 14,
-    "l000f": 15,
-    "l0010": 16,
-    "l0011": 17,
+    "zp_rnd_seed_1": 14,
+    "zp_rnd_seed_2": 15,
+    "zp_rnd_seed_3": 16,
+    "zp_rnd_seed_4": 17,
     "zp_top": 18,
     "l0013": 19,
     "zp_print_bytes": 20,
@@ -2282,6 +2300,7 @@
         169,
         1
       ],
+      "comment_inline": "Test the LFSR state for all-zero...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -2292,12 +2311,12 @@
         37,
         17
       ],
-      "comment_inline": "OR the RND seed bytes (&0D-&11) together",
+      "comment_inline": "...only bit 0 of &11 belongs to the register",
       "type": "code",
       "mnemonic": "and",
-      "operand": "l0011",
+      "operand": "zp_rnd_seed_4",
       "target": 17,
-      "target_label": "l0011"
+      "target_label": "zp_rnd_seed_4"
     },
     {
       "addr": 32845,
@@ -2305,6 +2324,7 @@
         5,
         13
       ],
+      "comment_inline": "OR bits 0-7",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_rnd_seed",
@@ -2317,11 +2337,12 @@
         5,
         14
       ],
+      "comment_inline": "bits 8-15",
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l000e",
+      "operand": "zp_rnd_seed_1",
       "target": 14,
-      "target_label": "l000e"
+      "target_label": "zp_rnd_seed_1"
     },
     {
       "addr": 32849,
@@ -2329,11 +2350,12 @@
         5,
         15
       ],
+      "comment_inline": "bits 16-23",
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l000f",
+      "operand": "zp_rnd_seed_2",
       "target": 15,
-      "target_label": "l000f"
+      "target_label": "zp_rnd_seed_2"
     },
     {
       "addr": 32851,
@@ -2341,11 +2363,12 @@
         5,
         16
       ],
+      "comment_inline": "bits 24-31",
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l0010",
+      "operand": "zp_rnd_seed_3",
       "target": 16,
-      "target_label": "l0010"
+      "target_label": "zp_rnd_seed_3"
     },
     {
       "addr": 32853,
@@ -2353,7 +2376,7 @@
         208,
         12
       ],
-      "comment_inline": "Seed already non-zero: leave it",
+      "comment_inline": "Non-zero: keep the existing state",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8063",
@@ -2366,7 +2389,7 @@
         169,
         65
       ],
-      "comment_inline": "Cold seed: set RND to \"ARW\" (&575241)",
+      "comment_inline": "Cold seed \"ARW\": state becomes &00575241",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&41"
@@ -2377,6 +2400,7 @@
         133,
         13
       ],
+      "comment_inline": "byte 0 = \"A\"",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_rnd_seed",
@@ -2389,6 +2413,7 @@
         169,
         82
       ],
+      "comment_inline": "\"R\"",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&52"
@@ -2399,11 +2424,12 @@
         133,
         14
       ],
+      "comment_inline": "byte 1 = \"R\"",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l000e",
+      "operand": "zp_rnd_seed_1",
       "target": 14,
-      "target_label": "l000e"
+      "target_label": "zp_rnd_seed_1"
     },
     {
       "addr": 32863,
@@ -2411,6 +2437,7 @@
         169,
         87
       ],
+      "comment_inline": "\"W\"",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&57"
@@ -2421,11 +2448,12 @@
         133,
         15
       ],
+      "comment_inline": "byte 2 = \"W\" (bytes 3 and 4 stay zero)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l000f",
+      "operand": "zp_rnd_seed_2",
       "target": 15,
-      "target_label": "l000f"
+      "target_label": "zp_rnd_seed_2"
     },
     {
       "addr": 32867,
@@ -25600,9 +25628,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9222",
+      "operand": "iwa_inc",
       "target": 37410,
-      "target_label": "sub_c9222"
+      "target_label": "iwa_inc"
     },
     {
       "addr": 36700,
@@ -27972,9 +28000,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9222",
+      "operand": "iwa_inc",
       "target": 37410,
-      "target_label": "sub_c9222"
+      "target_label": "iwa_inc"
     },
     {
       "addr": 37105,
@@ -28971,9 +28999,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9222",
+      "operand": "iwa_inc",
       "target": 37410,
-      "target_label": "sub_c9222"
+      "target_label": "iwa_inc"
     },
     {
       "addr": 37272,
@@ -29839,8 +29867,9 @@
         42
       ],
       "labels": [
-        "sub_c9222"
+        "iwa_inc"
       ],
+      "comment_inline": "Increment IWA: byte 0",
       "xref_summaries": [
         "&9222 referenced 4 times by &8f59, &90ee, &9195, &af39"
       ],
@@ -29862,6 +29891,7 @@
         208,
         10
       ],
+      "comment_inline": "No carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -29874,6 +29904,7 @@
         230,
         43
       ],
+      "comment_inline": "Carry into byte 1",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -29886,6 +29917,7 @@
         208,
         6
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -29898,6 +29930,7 @@
         230,
         44
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_2",
@@ -29910,6 +29943,7 @@
         208,
         2
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -29922,6 +29956,7 @@
         230,
         45
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_3",
@@ -29936,6 +29971,7 @@
       "labels": [
         "return_8"
       ],
+      "comment_inline": "IWA incremented",
       "xref_summaries": [
         "&9230 referenced 3 times by &9224, &9228, &922c"
       ],
@@ -43315,9 +43351,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 39498,
@@ -43422,9 +43458,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 39519,
@@ -47111,9 +47147,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40094,
@@ -47631,9 +47667,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40180,
@@ -47730,9 +47766,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40200,
@@ -47955,9 +47991,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40239,
@@ -49211,9 +49247,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40440,
@@ -49733,9 +49769,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40525,
@@ -49936,9 +49972,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 40562,
@@ -76153,8 +76189,9 @@
         27
       ],
       "labels": [
-        "loop_caf0a"
+        "rnd_dispatch"
       ],
+      "comment_inline": "Skip the \"(\"",
       "xref_summaries": [
         "&af0a referenced 1 time by &af4f"
       ],
@@ -76174,6 +76211,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the argument expression",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -76187,6 +76225,7 @@
         240,
         146
       ],
+      "comment_inline": "Coerce it to an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -76199,6 +76238,7 @@
         165,
         45
       ],
+      "comment_inline": "Examine the argument: high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -76211,6 +76251,7 @@
         48,
         41
       ],
+      "comment_inline": "Negative: re-seed the generator",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "rnd_seed",
@@ -76223,6 +76264,7 @@
         5,
         44
       ],
+      "comment_inline": "Any of bits 16-31 set...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -76235,6 +76277,7 @@
         5,
         43
       ],
+      "comment_inline": "...(magnitude >= 256)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -76247,6 +76290,7 @@
         208,
         8
       ],
+      "comment_inline": "Large: RND(X) over a range",
       "type": "code",
       "mnemonic": "bne",
       "operand": "rnd_range",
@@ -76259,6 +76303,7 @@
         165,
         42
       ],
+      "comment_inline": "Low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -76271,6 +76316,7 @@
         240,
         76
       ],
+      "comment_inline": "RND(0): repeat the last fraction",
       "type": "code",
       "mnemonic": "beq",
       "operand": "rnd_repeat",
@@ -76283,6 +76329,7 @@
         201,
         1
       ],
+      "comment_inline": "RND(1)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#1"
@@ -76293,6 +76340,7 @@
         240,
         69
       ],
+      "comment_inline": "RND(1): a fresh fraction (else 2..255: RND(X))",
       "type": "code",
       "mnemonic": "beq",
       "operand": "rnd_fraction",
@@ -76309,6 +76357,7 @@
       "labels": [
         "rnd_range"
       ],
+      "comment_inline": "FWA = X",
       "xref_summaries": [
         "&af24 referenced 1 time by &af1a"
       ],
@@ -76328,6 +76377,7 @@
         81,
         189
       ],
+      "comment_inline": "Push X onto the stack",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_real",
@@ -76341,6 +76391,7 @@
         105,
         175
       ],
+      "comment_inline": "FWA = a fraction in [0, 1)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "rnd_fraction",
@@ -76354,11 +76405,12 @@
         126,
         189
       ],
+      "comment_inline": "Pop X back as the multiply operand",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 44848,
@@ -76367,6 +76419,7 @@
         6,
         166
       ],
+      "comment_inline": "FWA = fraction * X",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var_raw",
@@ -76380,6 +76433,7 @@
         3,
         163
       ],
+      "comment_inline": "Normalise the product",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_normalise",
@@ -76393,6 +76447,7 @@
         228,
         163
       ],
+      "comment_inline": "IWA = INT(fraction * X) = 0..X-1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int",
@@ -76406,11 +76461,12 @@
         34,
         146
       ],
+      "comment_inline": "Add one: 1..X",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9222",
+      "operand": "iwa_inc",
       "target": 37410,
-      "target_label": "sub_c9222"
+      "target_label": "iwa_inc"
     },
     {
       "addr": 44860,
@@ -76418,6 +76474,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -76427,6 +76484,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return RND(X)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -76439,6 +76497,7 @@
       "labels": [
         "rnd_seed"
       ],
+      "comment_inline": "Point at the state bytes (&0D)",
       "xref_summaries": [
         "&af3f referenced 1 time by &af14"
       ],
@@ -76456,6 +76515,7 @@
         68,
         190
       ],
+      "comment_inline": "Store the argument as the 32-bit state",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -76468,6 +76528,7 @@
         169,
         64
       ],
+      "comment_inline": "Bit-32 byte =",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -76478,17 +76539,19 @@
         133,
         17
       ],
+      "comment_inline": "&40: bit 32 (its bit 0) becomes 0",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0011",
+      "operand": "zp_rnd_seed_4",
       "target": 17,
-      "target_label": "l0011"
+      "target_label": "zp_rnd_seed_4"
     },
     {
       "addr": 44872,
       "bytes": [
         96
       ],
+      "comment_inline": "Return the argument (A = &40 = integer)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -76501,6 +76564,7 @@
       "labels": [
         "fn_rnd"
       ],
+      "comment_inline": "Look at the character after RND",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -76513,6 +76577,7 @@
         177,
         25
       ],
+      "comment_inline": "(get it)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -76525,6 +76590,7 @@
         201,
         40
       ],
+      "comment_inline": "Is it \"(\"? then RND(expr)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -76535,11 +76601,12 @@
         240,
         185
       ],
+      "comment_inline": "Yes: select the RND form",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_caf0a",
+      "operand": "rnd_dispatch",
       "target": 44810,
-      "target_label": "loop_caf0a"
+      "target_label": "rnd_dispatch"
     },
     {
       "addr": 44881,
@@ -76551,11 +76618,12 @@
       "labels": [
         "rnd_integer"
       ],
+      "comment_inline": "Advance the generator",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caf87",
+      "operand": "rnd_step",
       "target": 44935,
-      "target_label": "sub_caf87"
+      "target_label": "rnd_step"
     },
     {
       "addr": 44884,
@@ -76563,6 +76631,7 @@
         162,
         13
       ],
+      "comment_inline": "Point at the state (&0D), then copy it to IWA",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&0d"
@@ -76576,6 +76645,7 @@
       "labels": [
         "iwa_load_zp"
       ],
+      "comment_inline": "Copy 4-byte value at &00+X into IWA: byte 0",
       "xref_summaries": [
         "&af56 referenced 2 times by &9dbd, &b326"
       ],
@@ -76595,6 +76665,7 @@
         133,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -76607,6 +76678,7 @@
         181,
         1
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l0001,x",
@@ -76619,6 +76691,7 @@
         133,
         43
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -76631,6 +76704,7 @@
         181,
         2
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop,x",
@@ -76643,6 +76717,7 @@
         133,
         44
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -76655,6 +76730,7 @@
         181,
         3
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1,x",
@@ -76667,6 +76743,7 @@
         133,
         45
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -76679,6 +76756,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -76688,6 +76766,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the integer",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -76701,6 +76780,7 @@
       "labels": [
         "rnd_fraction"
       ],
+      "comment_inline": "Advance the generator, then build the fraction",
       "xref_summaries": [
         "&af69 referenced 2 times by &af22, &af2a"
       ],
@@ -76710,9 +76790,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caf87",
+      "operand": "rnd_step",
       "target": 44935,
-      "target_label": "sub_caf87"
+      "target_label": "rnd_step"
     },
     {
       "addr": 44908,
@@ -76723,6 +76803,7 @@
       "labels": [
         "rnd_repeat"
       ],
+      "comment_inline": "Zero for the FP fields",
       "xref_summaries": [
         "&af6c referenced 1 time by &af1e"
       ],
@@ -76739,6 +76820,7 @@
         134,
         46
       ],
+      "comment_inline": "Sign positive",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_sign",
@@ -76751,6 +76833,7 @@
         134,
         47
       ],
+      "comment_inline": "Clear overflow",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_ovf",
@@ -76763,6 +76846,7 @@
         134,
         53
       ],
+      "comment_inline": "Clear rounding",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_rnd",
@@ -76775,6 +76859,7 @@
         169,
         128
       ],
+      "comment_inline": "Exponent &80 (= 2^0)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -76785,6 +76870,7 @@
         133,
         48
       ],
+      "comment_inline": "(store it)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -76800,6 +76886,7 @@
       "labels": [
         "loop_caf78"
       ],
+      "comment_inline": "State byte X (little-endian)...",
       "xref_summaries": [
         "&af78 referenced 1 time by &af7f"
       ],
@@ -76818,6 +76905,7 @@
         149,
         49
       ],
+      "comment_inline": "...into mantissa byte X (MSB first): byte-reverses",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1,x",
@@ -76829,6 +76917,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -76838,6 +76927,7 @@
         224,
         4
       ],
+      "comment_inline": "all four?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#4"
@@ -76848,6 +76938,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_caf78",
@@ -76861,6 +76952,7 @@
         89,
         166
       ],
+      "comment_inline": "Normalise: value = reversed-state / 2^32",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca659",
@@ -76873,6 +76965,7 @@
         169,
         255
       ],
+      "comment_inline": "Real result type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -76882,6 +76975,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return RND(1) / RND(0)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -76892,8 +76986,9 @@
         32
       ],
       "labels": [
-        "sub_caf87"
+        "rnd_step"
       ],
+      "comment_inline": "32 single-bit steps make one RND advance",
       "xref_summaries": [
         "&af87 referenced 2 times by &af51, &af69"
       ],
@@ -76914,6 +77009,7 @@
       "labels": [
         "loop_caf89"
       ],
+      "comment_inline": "Byte 2 holds register bits 16-23",
       "xref_summaries": [
         "&af89 referenced 1 time by &af9c"
       ],
@@ -76922,15 +77018,16 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l000f",
+      "operand": "zp_rnd_seed_2",
       "target": 15,
-      "target_label": "l000f"
+      "target_label": "zp_rnd_seed_2"
     },
     {
       "addr": 44939,
       "bytes": [
         74
       ],
+      "comment_inline": "Shift right so bit 19 (tap 20)...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -76939,6 +77036,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -76947,6 +77045,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...reaches bit 0",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -76956,17 +77055,19 @@
         69,
         17
       ],
+      "comment_inline": "EOR byte 4 to bring in bit 32: bit19 XOR bit32",
       "type": "code",
       "mnemonic": "eor",
-      "operand": "l0011",
+      "operand": "zp_rnd_seed_4",
       "target": 17,
-      "target_label": "l0011"
+      "target_label": "zp_rnd_seed_4"
     },
     {
       "addr": 44944,
       "bytes": [
         106
       ],
+      "comment_inline": "Rotate the feedback bit into carry",
       "type": "code",
       "mnemonic": "ror"
     },
@@ -76976,6 +77077,7 @@
         38,
         13
       ],
+      "comment_inline": "Shift the register left, feedback into bit 0",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_rnd_seed",
@@ -76988,11 +77090,12 @@
         38,
         14
       ],
+      "comment_inline": "bits 8-15",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l000e",
+      "operand": "zp_rnd_seed_1",
       "target": 14,
-      "target_label": "l000e"
+      "target_label": "zp_rnd_seed_1"
     },
     {
       "addr": 44949,
@@ -77000,11 +77103,12 @@
         38,
         15
       ],
+      "comment_inline": "bits 16-23",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l000f",
+      "operand": "zp_rnd_seed_2",
       "target": 15,
-      "target_label": "l000f"
+      "target_label": "zp_rnd_seed_2"
     },
     {
       "addr": 44951,
@@ -77012,11 +77116,12 @@
         38,
         16
       ],
+      "comment_inline": "bits 24-31",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0010",
+      "operand": "zp_rnd_seed_3",
       "target": 16,
-      "target_label": "l0010"
+      "target_label": "zp_rnd_seed_3"
     },
     {
       "addr": 44953,
@@ -77024,17 +77129,19 @@
         38,
         17
       ],
+      "comment_inline": "bit 32",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0011",
+      "operand": "zp_rnd_seed_4",
       "target": 17,
-      "target_label": "l0011"
+      "target_label": "zp_rnd_seed_4"
     },
     {
       "addr": 44955,
       "bytes": [
         136
       ],
+      "comment_inline": "Next step",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -77044,6 +77151,7 @@
         208,
         235
       ],
+      "comment_inline": "Loop for all 32 steps",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_caf89",
@@ -77055,6 +77163,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "The register has advanced",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -82236,9 +82345,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd7e",
+      "operand": "unstack_real",
       "target": 48510,
-      "target_label": "sub_cbd7e"
+      "target_label": "unstack_real"
     },
     {
       "addr": 45802,
@@ -98533,8 +98642,9 @@
         4
       ],
       "labels": [
-        "sub_cbd7e"
+        "unstack_real"
       ],
+      "comment_inline": "Stack top is where the real sits...",
       "xref_summaries": [
         "&bd7e referenced 11 times by &9a47, &9a5c, &9c9b, &9cf1, &9d05, &9d2c, &9df5, &9e4a, &9e6f, &af2d, &b2e7"
       ],
@@ -98562,6 +98672,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "clear carry for the add",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -98571,6 +98682,7 @@
         133,
         75
       ],
+      "comment_inline": "...point the fp operand there",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -98583,6 +98695,7 @@
         105,
         5
       ],
+      "comment_inline": "Drop 5 bytes (a packed real)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#5"
@@ -98593,6 +98706,7 @@
         133,
         4
       ],
+      "comment_inline": "(store the new stack low byte)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -98605,6 +98719,7 @@
         165,
         5
       ],
+      "comment_inline": "Stack-pointer high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr_1",
@@ -98617,6 +98732,7 @@
         133,
         76
       ],
+      "comment_inline": "into the fp-operand pointer too",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -98629,6 +98745,7 @@
         105,
         0
       ],
+      "comment_inline": "Carry into the high byte",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -98639,6 +98756,7 @@
         133,
         5
       ],
+      "comment_inline": "(store it)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr_1",
@@ -98650,6 +98768,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "zp_fp_ptr now addresses the popped real",
       "type": "code",
       "mnemonic": "rts"
     },

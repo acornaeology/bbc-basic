@@ -45,13 +45,13 @@ l000c            = &0c
 ; &0c referenced 41 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b3d1, &b3e2, &b3fb, &b419, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
 zp_rnd_seed      = &0d
 ; &0d referenced 4 times by &804d, &8059, &af78, &af91
-l000e            = &0e
+zp_rnd_seed_1    = &0e
 ; &0e referenced 3 times by &804f, &805d, &af93
-l000f            = &0f
+zp_rnd_seed_2    = &0f
 ; &0f referenced 4 times by &8051, &8061, &af89, &af95
-l0010            = &10
+zp_rnd_seed_3    = &10
 ; &10 referenced 2 times by &8053, &af97
-l0011            = &11
+zp_rnd_seed_4    = &11
 ; &11 referenced 4 times by &804b, &af46, &af8e, &af99
 zp_top           = &12
 ; &12 referenced 21 times by &8ae5, &8ae9, &8aee, &8af1, &8f92, &93c8, &aee6, &bc3a, &bc57, &bc6f, &bc8a, &bcaa, &bcbe, &bd20, &be75, &be79, &be80, &be86, &be93, &be95, &bef6
@@ -438,19 +438,19 @@ oscli            = &fff7
     stx resint_at                                                     ; 8042: 8e 00 04    ...      ; @% = &0000090A: default PRINT format
     dex                                                               ; 8045: ca          .     
     stx l0401                                                         ; 8046: 8e 01 04    ...   
-    lda #1                                                            ; 8049: a9 01       ..    
-    and l0011                                                         ; 804b: 25 11       %.       ; OR the RND seed bytes (&0D-&11) together
-    ora zp_rnd_seed                                                   ; 804d: 05 0d       ..    
-    ora l000e                                                         ; 804f: 05 0e       ..    
-    ora l000f                                                         ; 8051: 05 0f       ..    
-    ora l0010                                                         ; 8053: 05 10       ..    
-    bne c8063                                                         ; 8055: d0 0c       ..       ; Seed already non-zero: leave it
-    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed: set RND to "ARW" (&575241)
-    sta zp_rnd_seed                                                   ; 8059: 85 0d       ..    
-    lda #&52 ; 'R'                                                    ; 805b: a9 52       .R    
-    sta l000e                                                         ; 805d: 85 0e       ..    
-    lda #&57 ; 'W'                                                    ; 805f: a9 57       .W    
-    sta l000f                                                         ; 8061: 85 0f       ..    
+    lda #1                                                            ; 8049: a9 01       ..       ; Test the LFSR state for all-zero...
+    and zp_rnd_seed_4                                                 ; 804b: 25 11       %.       ; ...only bit 0 of &11 belongs to the register
+    ora zp_rnd_seed                                                   ; 804d: 05 0d       ..       ; OR bits 0-7
+    ora zp_rnd_seed_1                                                 ; 804f: 05 0e       ..       ; bits 8-15
+    ora zp_rnd_seed_2                                                 ; 8051: 05 0f       ..       ; bits 16-23
+    ora zp_rnd_seed_3                                                 ; 8053: 05 10       ..       ; bits 24-31
+    bne c8063                                                         ; 8055: d0 0c       ..       ; Non-zero: keep the existing state
+    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed "ARW": state becomes &00575241
+    sta zp_rnd_seed                                                   ; 8059: 85 0d       ..       ; byte 0 = "A"
+    lda #&52 ; 'R'                                                    ; 805b: a9 52       .R       ; "R"
+    sta zp_rnd_seed_1                                                 ; 805d: 85 0e       ..       ; byte 1 = "R"
+    lda #&57 ; 'W'                                                    ; 805f: a9 57       .W       ; "W"
+    sta zp_rnd_seed_2                                                 ; 8061: 85 0f       ..       ; byte 2 = "W" (bytes 3 and 4 stay zero)
 ; &8063 referenced 1 time by &8055
 .c8063
     lda #2                                                            ; 8063: a9 02       ..       ; Install brk_handler (&B402) into BRKV
@@ -2888,7 +2888,7 @@ l848a = sub_c847b+15
 .loop_c8f53
     jsr sub_cbc2d                                                     ; 8f53: 20 2d bc     -.   
     jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.   
-    jsr sub_c9222                                                     ; 8f59: 20 22 92     ".   
+    jsr iwa_inc                                                       ; 8f59: 20 22 92     ".   
     lda zp_fileblk                                                    ; 8f5c: a5 39       .9    
     cmp zp_iwa                                                        ; 8f5e: c5 2a       .*    
     lda l003a                                                         ; 8f60: a5 3a       .:    
@@ -3129,7 +3129,7 @@ l848a = sub_c847b+15
     bcs c9127                                                         ; 90e6: b0 3f       .?    
     jsr stack_integer                                                 ; 90e8: 20 94 bd     ..   
     jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..   
-    jsr sub_c9222                                                     ; 90ee: 20 22 92     ".   
+    jsr iwa_inc                                                       ; 90ee: 20 22 92     ".   
     lda zp_iwa_3                                                      ; 90f1: a5 2d       .-    
     ora zp_iwa_2                                                      ; 90f3: 05 2c       .,    
     bne c9127                                                         ; 90f5: d0 30       .0    
@@ -3230,7 +3230,7 @@ l848a = sub_c847b+15
     ora zp_iwa_2                                                      ; 918f: 05 2c       .,    
     ora zp_iwa_3                                                      ; 9191: 05 2d       .-    
     bne c9127                                                         ; 9193: d0 92       ..    
-    jsr sub_c9222                                                     ; 9195: 20 22 92     ".   
+    jsr iwa_inc                                                       ; 9195: 20 22 92     ".   
     pla                                                               ; 9198: 68          h     
     tay                                                               ; 9199: a8          .     
     lda zp_iwa                                                        ; 919a: a5 2a       .*    
@@ -3316,18 +3316,22 @@ l848a = sub_c847b+15
     equb &0b, &de                                                     ; 9219: 0b de       ..    
     equs " space"                                                     ; 921b: 20 73 70...  sp...
     equb &00                                                          ; 9221: 00          .     
+; ***************************************************************************************
+; Increment the integer accumulator
+;
+; IWA = IWA + 1, carrying through all four bytes.
 ; &9222 referenced 4 times by &8f59, &90ee, &9195, &af39
-.sub_c9222
-    inc zp_iwa                                                        ; 9222: e6 2a       .*    
-    bne return_8                                                      ; 9224: d0 0a       ..    
-    inc zp_iwa_1                                                      ; 9226: e6 2b       .+    
-    bne return_8                                                      ; 9228: d0 06       ..    
-    inc zp_iwa_2                                                      ; 922a: e6 2c       .,    
-    bne return_8                                                      ; 922c: d0 02       ..    
-    inc zp_iwa_3                                                      ; 922e: e6 2d       .-    
+.iwa_inc
+    inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0
+    bne return_8                                                      ; 9224: d0 0a       ..       ; No carry: done
+    inc zp_iwa_1                                                      ; 9226: e6 2b       .+       ; Carry into byte 1
+    bne return_8                                                      ; 9228: d0 06       ..       ; done
+    inc zp_iwa_2                                                      ; 922a: e6 2c       .,       ; byte 2
+    bne return_8                                                      ; 922c: d0 02       ..       ; done
+    inc zp_iwa_3                                                      ; 922e: e6 2d       .-       ; byte 3
 ; &9230 referenced 3 times by &9224, &9228, &922c
 .return_8
-    rts                                                               ; 9230: 60          `     
+    rts                                                               ; 9230: 60          `        ; IWA incremented
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
     ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?    
@@ -4838,7 +4842,7 @@ l848a = sub_c847b+15
     jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.   
     jsr int_to_fwa                                                    ; 9a41: 20 be a2     ..   
     jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..   
-    jsr sub_cbd7e                                                     ; 9a47: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9a47: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..   
     jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.   
 ; &9a50 referenced 1 time by &9aa0
@@ -4848,7 +4852,7 @@ l848a = sub_c847b+15
     stx zp_var_type                                                   ; 9a56: 86 27       .'    
     tay                                                               ; 9a58: a8          .     
     jsr sub_c92fd                                                     ; 9a59: 20 fd 92     ..   
-    jsr sub_cbd7e                                                     ; 9a5c: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9a5c: 20 7e bd     ~.   
 ; &9a5f referenced 1 time by &b78f
 .sub_c9a5f
     jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.   
@@ -5271,7 +5275,7 @@ l848a = sub_c847b+15
     jsr int_to_fwa                                                    ; 9c98: 20 be a2     ..   
 ; &9c9b referenced 2 times by &9c96, &9cb2
 .c9c9b
-    jsr sub_cbd7e                                                     ; 9c9b: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9c9b: 20 7e bd     ~.   
     jsr fwa_add_var                                                   ; 9c9e: 20 00 a5     ..   
 ; &9ca1 referenced 2 times by &9cf7, &9d0b
 .c9ca1
@@ -5335,7 +5339,7 @@ l848a = sub_c847b+15
     jsr int_to_fwa                                                    ; 9cee: 20 be a2     ..   
 ; &9cf1 referenced 1 time by &9cec
 .c9cf1
-    jsr sub_cbd7e                                                     ; 9cf1: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9cf1: 20 7e bd     ~.   
     jsr fwa_rsub_var                                                  ; 9cf4: 20 fd a4     ..   
     jmp c9ca1                                                         ; 9cf7: 4c a1 9c    L..   
 ; &9cfa referenced 1 time by &9cc0
@@ -5344,7 +5348,7 @@ l848a = sub_c847b+15
     jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..   
     jsr stack_real                                                    ; 9cff: 20 51 bd     Q.   
     jsr int_to_fwa                                                    ; 9d02: 20 be a2     ..   
-    jsr sub_cbd7e                                                     ; 9d05: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9d05: 20 7e bd     ~.   
     jsr sub_ca4d0                                                     ; 9d08: 20 d0 a4     ..   
     jmp c9ca1                                                         ; 9d0b: 4c a1 9c    L..   
 ; &9d0e referenced 3 times by &9d60, &9d67, &9d6b
@@ -5368,7 +5372,7 @@ l848a = sub_c847b+15
     jsr sub_c92fd                                                     ; 9d29: 20 fd 92     ..   
 ; &9d2c referenced 1 time by &9d1a
 .c9d2c
-    jsr sub_cbd7e                                                     ; 9d2c: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.   
     jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.   
     lda #&ff                                                          ; 9d32: a9 ff       ..    
     ldx zp_var_type                                                   ; 9d34: a6 27       .'    
@@ -5513,7 +5517,7 @@ l848a = sub_c847b+15
     stx zp_var_type                                                   ; 9def: 86 27       .'    
     tay                                                               ; 9df1: a8          .     
     jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..   
-    jsr sub_cbd7e                                                     ; 9df5: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9df5: 20 7e bd     ~.   
     jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..   
     ldx zp_var_type                                                   ; 9dfb: a6 27       .'    
     lda #&ff                                                          ; 9dfd: a9 ff       ..    
@@ -5587,7 +5591,7 @@ l848a = sub_c847b+15
     bcs c9e88                                                         ; 9e43: b0 43       .C    
     jsr sub_ca486                                                     ; 9e45: 20 86 a4     ..   
     bne c9e59                                                         ; 9e48: d0 0f       ..    
-    jsr sub_cbd7e                                                     ; 9e4a: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..   
     lda l004a                                                         ; 9e50: a5 4a       .J    
     jsr sub_cab12                                                     ; 9e52: 20 12 ab     ..   
@@ -5606,7 +5610,7 @@ l848a = sub_c847b+15
 ; &9e6c referenced 1 time by &9e8e
 .loop_c9e6c
     jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.   
-    jsr sub_cbd7e                                                     ; 9e6f: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; 9e6f: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..   
     jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..   
     jsr caad1                                                         ; 9e78: 20 d1 aa     ..   
@@ -8582,126 +8586,148 @@ l848a = sub_c847b+15
     ldy l0007                                                         ; af05: a4 07       ..    
     jmp iwa_from_ya                                                   ; af07: 4c ea ae    L..   
 ; &af0a referenced 1 time by &af4f
-.loop_caf0a
-    inc zp_text_ptr2_off                                              ; af0a: e6 1b       ..    
-    jsr cae56                                                         ; af0c: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; af0f: 20 f0 92     ..   
-    lda zp_iwa_3                                                      ; af12: a5 2d       .-    
-    bmi rnd_seed                                                      ; af14: 30 29       0)    
-    ora zp_iwa_2                                                      ; af16: 05 2c       .,    
-    ora zp_iwa_1                                                      ; af18: 05 2b       .+    
-    bne rnd_range                                                     ; af1a: d0 08       ..    
-    lda zp_iwa                                                        ; af1c: a5 2a       .*    
-    beq rnd_repeat                                                    ; af1e: f0 4c       .L    
-    cmp #1                                                            ; af20: c9 01       ..    
-    beq rnd_fraction                                                  ; af22: f0 45       .E    
+.rnd_dispatch
+    inc zp_text_ptr2_off                                              ; af0a: e6 1b       ..       ; Skip the "("
+    jsr cae56                                                         ; af0c: 20 56 ae     V.      ; Evaluate the argument expression
+    jsr coerce_to_integer                                             ; af0f: 20 f0 92     ..      ; Coerce it to an integer
+    lda zp_iwa_3                                                      ; af12: a5 2d       .-       ; Examine the argument: high byte
+    bmi rnd_seed                                                      ; af14: 30 29       0)       ; Negative: re-seed the generator
+    ora zp_iwa_2                                                      ; af16: 05 2c       .,       ; Any of bits 16-31 set...
+    ora zp_iwa_1                                                      ; af18: 05 2b       .+       ; ...(magnitude >= 256)
+    bne rnd_range                                                     ; af1a: d0 08       ..       ; Large: RND(X) over a range
+    lda zp_iwa                                                        ; af1c: a5 2a       .*       ; Low byte
+    beq rnd_repeat                                                    ; af1e: f0 4c       .L       ; RND(0): repeat the last fraction
+    cmp #1                                                            ; af20: c9 01       ..       ; RND(1)?
+    beq rnd_fraction                                                  ; af22: f0 45       .E       ; RND(1): a fresh fraction (else 2..255: RND(X))
 ; ***************************************************************************************
-; RND(X): random integer 1 to X
+; RND(X), X>=2: a random integer 1 to X
 ;
-; Step the generator; IWA = a random integer from 1 to X.
+; Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X (stack_real), take a fraction
+; (rnd_fraction), pop X back into the operand (unstack_real), multiply (fwa_mul_var_raw),
+; convert to an integer (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.
 ; &af24 referenced 1 time by &af1a
 .rnd_range
-    jsr int_to_fwa                                                    ; af24: 20 be a2     ..   
-    jsr stack_real                                                    ; af27: 20 51 bd     Q.   
-    jsr rnd_fraction                                                  ; af2a: 20 69 af     i.   
-    jsr sub_cbd7e                                                     ; af2d: 20 7e bd     ~.   
-    jsr fwa_mul_var_raw                                               ; af30: 20 06 a6     ..   
-    jsr fwa_normalise                                                 ; af33: 20 03 a3     ..   
-    jsr fwa_to_int                                                    ; af36: 20 e4 a3     ..   
-    jsr sub_c9222                                                     ; af39: 20 22 92     ".   
-    lda #&40 ; '@'                                                    ; af3c: a9 40       .@    
-    rts                                                               ; af3e: 60          `     
+    jsr int_to_fwa                                                    ; af24: 20 be a2     ..      ; FWA = X
+    jsr stack_real                                                    ; af27: 20 51 bd     Q.      ; Push X onto the stack
+    jsr rnd_fraction                                                  ; af2a: 20 69 af     i.      ; FWA = a fraction in [0, 1)
+    jsr unstack_real                                                  ; af2d: 20 7e bd     ~.      ; Pop X back as the multiply operand
+    jsr fwa_mul_var_raw                                               ; af30: 20 06 a6     ..      ; FWA = fraction * X
+    jsr fwa_normalise                                                 ; af33: 20 03 a3     ..      ; Normalise the product
+    jsr fwa_to_int                                                    ; af36: 20 e4 a3     ..      ; IWA = INT(fraction * X) = 0..X-1
+    jsr iwa_inc                                                       ; af39: 20 22 92     ".      ; Add one: 1..X
+    lda #&40 ; '@'                                                    ; af3c: a9 40       .@       ; Integer result
+    rts                                                               ; af3e: 60          `        ; Return RND(X)
 ; ***************************************************************************************
-; RND(-X): seed the generator
+; RND(-X): seed the generator and return X
 ;
-; Seed the random work area from X (RND(-X)).
+; Store the integer argument into the 32-bit state (&0D-&10) and set &11 to &40. Only bit
+; 0 of &11 is part of the LFSR, so the overflow bit becomes 0. Returns the argument as an
+; integer.
 ; &af3f referenced 1 time by &af14
 .rnd_seed
-    ldx #&0d                                                          ; af3f: a2 0d       ..    
-    jsr iwa_store_zp                                                  ; af41: 20 44 be     D.   
-    lda #&40 ; '@'                                                    ; af44: a9 40       .@    
-    sta l0011                                                         ; af46: 85 11       ..    
-    rts                                                               ; af48: 60          `     
+    ldx #&0d                                                          ; af3f: a2 0d       ..       ; Point at the state bytes (&0D)
+    jsr iwa_store_zp                                                  ; af41: 20 44 be     D.      ; Store the argument as the 32-bit state
+    lda #&40 ; '@'                                                    ; af44: a9 40       .@       ; Bit-32 byte =
+    sta zp_rnd_seed_4                                                 ; af46: 85 11       ..       ; &40: bit 32 (its bit 0) becomes 0
+    rts                                                               ; af48: 60          `        ; Return the argument (A = &40 = integer)
 ; ***************************************************************************************
 ; RND
 ;
 ; Random number; the form depends on the argument (see rnd_*). RND[(numeric)].
 .fn_rnd
-    ldy zp_text_ptr2_off                                              ; af49: a4 1b       ..    
-    lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..    
-    cmp #&28 ; '('                                                    ; af4d: c9 28       .(    
-    beq loop_caf0a                                                    ; af4f: f0 b9       ..    
+    ldy zp_text_ptr2_off                                              ; af49: a4 1b       ..       ; Look at the character after RND
+    lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..       ; (get it)
+    cmp #&28 ; '('                                                    ; af4d: c9 28       .(       ; Is it "("? then RND(expr)
+    beq rnd_dispatch                                                  ; af4f: f0 b9       ..       ; Yes: select the RND form
 ; ***************************************************************************************
-; RND: random 32-bit integer
+; RND: a full-range random integer
 ;
-; Step the generator; IWA = a full-range random integer.
+; Bare RND. Advance the generator (rnd_step) then read the 32-bit state (&0D-&10) into
+; IWA as a signed integer, returning the integer type (&40). The result spans the full
+; signed 32-bit range.
 .rnd_integer
-    jsr sub_caf87                                                     ; af51: 20 87 af     ..   
-    ldx #&0d                                                          ; af54: a2 0d       ..    
+    jsr rnd_step                                                      ; af51: 20 87 af     ..      ; Advance the generator
+    ldx #&0d                                                          ; af54: a2 0d       ..       ; Point at the state (&0D), then copy it to IWA
 ; ***************************************************************************************
 ; Load a zero-page integer variable into the accumulator
 ;
 ; Copy a 4-byte integer from a zero-page location into IWA.
 ; &af56 referenced 2 times by &9dbd, &b326
 .iwa_load_zp
-    lda zp_lomem,x                                                    ; af56: b5 00       ..    
-    sta zp_iwa                                                        ; af58: 85 2a       .*    
-    lda l0001,x                                                       ; af5a: b5 01       ..    
-    sta zp_iwa_1                                                      ; af5c: 85 2b       .+    
-    lda zp_vartop,x                                                   ; af5e: b5 02       ..    
-    sta zp_iwa_2                                                      ; af60: 85 2c       .,    
-    lda zp_vartop_1,x                                                 ; af62: b5 03       ..    
-    sta zp_iwa_3                                                      ; af64: 85 2d       .-    
-    lda #&40 ; '@'                                                    ; af66: a9 40       .@    
-    rts                                                               ; af68: 60          `     
+    lda zp_lomem,x                                                    ; af56: b5 00       ..       ; Copy 4-byte value at &00+X into IWA: byte 0
+    sta zp_iwa                                                        ; af58: 85 2a       .*       ; (store)
+    lda l0001,x                                                       ; af5a: b5 01       ..       ; byte 1
+    sta zp_iwa_1                                                      ; af5c: 85 2b       .+       ; (store)
+    lda zp_vartop,x                                                   ; af5e: b5 02       ..       ; byte 2
+    sta zp_iwa_2                                                      ; af60: 85 2c       .,       ; (store)
+    lda zp_vartop_1,x                                                 ; af62: b5 03       ..       ; byte 3
+    sta zp_iwa_3                                                      ; af64: 85 2d       .-       ; (store)
+    lda #&40 ; '@'                                                    ; af66: a9 40       .@       ; Integer type
+    rts                                                               ; af68: 60          `        ; Return the integer
 ; ***************************************************************************************
-; RND(1): random fraction
+; RND(1): a random real in [0, 1)
 ;
-; Step the generator; FWA = a real in 0 to 0.999999.
+; Advance the generator (rnd_step) then fall into rnd_repeat to build the fraction. The
+; value is the byte-reversed 32-bit state divided by 2^32: a real in [0, 1).
 ; &af69 referenced 2 times by &af22, &af2a
 .rnd_fraction
-    jsr sub_caf87                                                     ; af69: 20 87 af     ..   
+    jsr rnd_step                                                      ; af69: 20 87 af     ..      ; Advance the generator, then build the fraction
 ; ***************************************************************************************
-; RND(0): repeat the last RND(1)
+; RND(0): repeat the last RND(1) without advancing
 ;
-; FWA = the value last returned by rnd_fraction.
+; Build the floating-point fraction from the CURRENT generator state WITHOUT stepping it
+; (so RND(0) repeats the last RND(1)). The mantissa bytes m1..m4 are loaded
+; most-significant-first from the little-endian state &0D,&0E,&0F,&10, which
+; byte-reverses the 32-bit value; with exponent &80 and after normalisation the result is
+; state-reversed / 2^32, a real in [0, 1).
 ; &af6c referenced 1 time by &af1e
 .rnd_repeat
-    ldx #0                                                            ; af6c: a2 00       ..    
-    stx zp_fwa_sign                                                   ; af6e: 86 2e       ..    
-    stx zp_fwa_ovf                                                    ; af70: 86 2f       ./    
-    stx zp_fwa_rnd                                                    ; af72: 86 35       .5    
-    lda #&80                                                          ; af74: a9 80       ..    
-    sta zp_fwa_exp                                                    ; af76: 85 30       .0    
+    ldx #0                                                            ; af6c: a2 00       ..       ; Zero for the FP fields
+    stx zp_fwa_sign                                                   ; af6e: 86 2e       ..       ; Sign positive
+    stx zp_fwa_ovf                                                    ; af70: 86 2f       ./       ; Clear overflow
+    stx zp_fwa_rnd                                                    ; af72: 86 35       .5       ; Clear rounding
+    lda #&80                                                          ; af74: a9 80       ..       ; Exponent &80 (= 2^0)
+    sta zp_fwa_exp                                                    ; af76: 85 30       .0       ; (store it)
 ; &af78 referenced 1 time by &af7f
 .loop_caf78
-    lda zp_rnd_seed,x                                                 ; af78: b5 0d       ..    
-    sta zp_fwa_m1,x                                                   ; af7a: 95 31       .1    
-    inx                                                               ; af7c: e8          .     
-    cpx #4                                                            ; af7d: e0 04       ..    
-    bne loop_caf78                                                    ; af7f: d0 f7       ..    
-    jsr ca659                                                         ; af81: 20 59 a6     Y.   
-    lda #&ff                                                          ; af84: a9 ff       ..    
-    rts                                                               ; af86: 60          `     
+    lda zp_rnd_seed,x                                                 ; af78: b5 0d       ..       ; State byte X (little-endian)...
+    sta zp_fwa_m1,x                                                   ; af7a: 95 31       .1       ; ...into mantissa byte X (MSB first): byte-reverses
+    inx                                                               ; af7c: e8          .        ; next byte
+    cpx #4                                                            ; af7d: e0 04       ..       ; all four?
+    bne loop_caf78                                                    ; af7f: d0 f7       ..       ; loop
+    jsr ca659                                                         ; af81: 20 59 a6     Y.      ; Normalise: value = reversed-state / 2^32
+    lda #&ff                                                          ; af84: a9 ff       ..       ; Real result type
+    rts                                                               ; af86: 60          `        ; Return RND(1) / RND(0)
+; ***************************************************************************************
+; Advance the random-number LFSR by 32 steps
+;
+; Advance the 33-bit linear-feedback shift register in zp_rnd_seed by exactly 32
+; single-bit steps (one RND call). The register uses the primitive trinomial x^33 + x^20
+; + 1, i.e. taps (33, 20, 0): each step feeds (bit 19 XOR bit 32) into bit 0 and shifts
+; the whole register left by one.
+;
+; Per step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches bit 0, EOR with
+; byte 4 to bring in bit 32, rotate to put the feedback bit into carry, then ROL the five
+; state bytes so carry enters bit 0.
 ; &af87 referenced 2 times by &af51, &af69
-.sub_caf87
-    ldy #&20 ; ' '                                                    ; af87: a0 20       .     
+.rnd_step
+    ldy #&20 ; ' '                                                    ; af87: a0 20       .        ; 32 single-bit steps make one RND advance
 ; &af89 referenced 1 time by &af9c
 .loop_caf89
-    lda l000f                                                         ; af89: a5 0f       ..    
-    lsr a                                                             ; af8b: 4a          J     
-    lsr a                                                             ; af8c: 4a          J     
-    lsr a                                                             ; af8d: 4a          J     
-    eor l0011                                                         ; af8e: 45 11       E.    
-    ror a                                                             ; af90: 6a          j     
-    rol zp_rnd_seed                                                   ; af91: 26 0d       &.    
-    rol l000e                                                         ; af93: 26 0e       &.    
-    rol l000f                                                         ; af95: 26 0f       &.    
-    rol l0010                                                         ; af97: 26 10       &.    
-    rol l0011                                                         ; af99: 26 11       &.    
-    dey                                                               ; af9b: 88          .     
-    bne loop_caf89                                                    ; af9c: d0 eb       ..    
-    rts                                                               ; af9e: 60          `     
+    lda zp_rnd_seed_2                                                 ; af89: a5 0f       ..       ; Byte 2 holds register bits 16-23
+    lsr a                                                             ; af8b: 4a          J        ; Shift right so bit 19 (tap 20)...
+    lsr a                                                             ; af8c: 4a          J        ; ...
+    lsr a                                                             ; af8d: 4a          J        ; ...reaches bit 0
+    eor zp_rnd_seed_4                                                 ; af8e: 45 11       E.       ; EOR byte 4 to bring in bit 32: bit19 XOR bit32
+    ror a                                                             ; af90: 6a          j        ; Rotate the feedback bit into carry
+    rol zp_rnd_seed                                                   ; af91: 26 0d       &.       ; Shift the register left, feedback into bit 0
+    rol zp_rnd_seed_1                                                 ; af93: 26 0e       &.       ; bits 8-15
+    rol zp_rnd_seed_2                                                 ; af95: 26 0f       &.       ; bits 16-23
+    rol zp_rnd_seed_3                                                 ; af97: 26 10       &.       ; bits 24-31
+    rol zp_rnd_seed_4                                                 ; af99: 26 11       &.       ; bit 32
+    dey                                                               ; af9b: 88          .        ; Next step
+    bne loop_caf89                                                    ; af9c: d0 eb       ..       ; Loop for all 32 steps
+    rts                                                               ; af9e: 60          `        ; The register has advanced
 ; ***************************************************************************************
 ; ERL
 ;
@@ -9291,7 +9317,7 @@ l848a = sub_c847b+15
     jsr iwa_store_zp                                                  ; b2e0: 20 44 be     D.   
     lda zp_var_type                                                   ; b2e3: a5 27       .'    
     bpl cb2f0                                                         ; b2e5: 10 09       ..    
-    jsr sub_cbd7e                                                     ; b2e7: 20 7e bd     ~.   
+    jsr unstack_real                                                  ; b2e7: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; b2ea: 20 b5 a3     ..   
     jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..   
 ; &b2f0 referenced 1 time by &b2e5
@@ -11048,18 +11074,24 @@ l848a = sub_c847b+15
     lda zp_fwa_m4                                                     ; bd79: a5 34       .4    
     sta (zp_stack_ptr),y                                              ; bd7b: 91 04       ..    
     rts                                                               ; bd7d: 60          `     
+; ***************************************************************************************
+; Pop a real off the BASIC stack
+;
+; Point zp_fp_ptr at the 5-byte real on top of the BASIC stack and drop it (advance the
+; stack pointer by 5), so an FP routine can use the popped value as its (zp_fp_ptr)
+; operand.
 ; &bd7e referenced 11 times by &9a47, &9a5c, &9c9b, &9cf1, &9d05, &9d2c, &9df5, &9e4a, &9e6f, &af2d, &b2e7
-.sub_cbd7e
-    lda zp_stack_ptr                                                  ; bd7e: a5 04       ..    
-    clc                                                               ; bd80: 18          .     
-    sta zp_fp_ptr                                                     ; bd81: 85 4b       .K    
-    adc #5                                                            ; bd83: 69 05       i.    
-    sta zp_stack_ptr                                                  ; bd85: 85 04       ..    
-    lda zp_stack_ptr_1                                                ; bd87: a5 05       ..    
-    sta zp_fp_ptr_1                                                   ; bd89: 85 4c       .L    
-    adc #0                                                            ; bd8b: 69 00       i.    
-    sta zp_stack_ptr_1                                                ; bd8d: 85 05       ..    
-    rts                                                               ; bd8f: 60          `     
+.unstack_real
+    lda zp_stack_ptr                                                  ; bd7e: a5 04       ..       ; Stack top is where the real sits...
+    clc                                                               ; bd80: 18          .        ; clear carry for the add
+    sta zp_fp_ptr                                                     ; bd81: 85 4b       .K       ; ...point the fp operand there
+    adc #5                                                            ; bd83: 69 05       i.       ; Drop 5 bytes (a packed real)
+    sta zp_stack_ptr                                                  ; bd85: 85 04       ..       ; (store the new stack low byte)
+    lda zp_stack_ptr_1                                                ; bd87: a5 05       ..       ; Stack-pointer high byte
+    sta zp_fp_ptr_1                                                   ; bd89: 85 4c       .L       ; into the fp-operand pointer too
+    adc #0                                                            ; bd8b: 69 00       i.       ; Carry into the high byte
+    sta zp_stack_ptr_1                                                ; bd8d: 85 05       ..       ; (store it)
+    rts                                                               ; bd8f: 60          `        ; zp_fp_ptr now addresses the popped real
 ; &bd90 referenced 2 times by &b291, &b31c
 .sub_cbd90
     beq stack_string                                                  ; bd90: f0 20       .     
@@ -11629,7 +11661,7 @@ save pydis_start, pydis_end
 ;     iwa_from_ya:                11
 ;     osbyte:                     11
 ;     sub_c92fa:                  11
-;     sub_cbd7e:                  11
+;     unstack_real:               11
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
 ;     fwa_add_var:                10
@@ -11739,8 +11771,7 @@ save pydis_start, pydis_end
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
 ;     iwa_abs:                     4
-;     l000f:                       4
-;     l0011:                       4
+;     iwa_inc:                     4
 ;     l001d:                       4
 ;     l0045:                       4
 ;     l0046:                       4
@@ -11749,7 +11780,6 @@ save pydis_start, pydis_end
 ;     reserve_stack:               4
 ;     resint_p:                    4
 ;     return_23:                   4
-;     sub_c9222:                   4
 ;     sub_c92da:                   4
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
@@ -11760,6 +11790,8 @@ save pydis_start, pydis_end
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
 ;     zp_rnd_seed:                 4
+;     zp_rnd_seed_2:               4
+;     zp_rnd_seed_4:               4
 ;     assign_string:               3
 ;     c8620:                       3
 ;     c8738:                       3
@@ -11808,7 +11840,6 @@ save pydis_start, pydis_end
 ;     fwb_clear:                   3
 ;     iwa_negate:                  3
 ;     l0009:                       3
-;     l000e:                       3
 ;     l00fd:                       3
 ;     l0401:                       3
 ;     return_12:                   3
@@ -11836,6 +11867,7 @@ save pydis_start, pydis_end
 ;     sub_cbfb5:                   3
 ;     zp_erl:                      3
 ;     zp_listo:                    3
+;     zp_rnd_seed_1:               3
 ;     zp_width:                    3
 ;     c8556:                       2
 ;     c8650:                       2
@@ -11988,7 +12020,6 @@ save pydis_start, pydis_end
 ;     fwa_rsub_var:                2
 ;     fwa_unpack_temp1:            2
 ;     iwa_load_zp:                 2
-;     l0010:                       2
 ;     l0022:                       2
 ;     l0100:                       2
 ;     l01ff:                       2
@@ -12022,6 +12053,7 @@ save pydis_start, pydis_end
 ;     return_35:                   2
 ;     return_9:                    2
 ;     rnd_fraction:                2
+;     rnd_step:                    2
 ;     stack_local:                 2
 ;     stmt_data:                   2
 ;     sub_c887c:                   2
@@ -12054,7 +12086,6 @@ save pydis_start, pydis_end
 ;     sub_caa4c:                   2
 ;     sub_caa55:                   2
 ;     sub_cadad:                   2
-;     sub_caf87:                   2
 ;     sub_cafad:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
@@ -12074,6 +12105,7 @@ save pydis_start, pydis_end
 ;     sub_cbfcf:                   2
 ;     try_variable_assignment:     2
 ;     wrchv:                       2
+;     zp_rnd_seed_3:               2
 ;     zp_trace_max:                2
 ;     ascii_to_number:             1
 ;     assembler_exit:              1
@@ -12679,7 +12711,6 @@ save pydis_start, pydis_end
 ;     loop_cae93:                  1
 ;     loop_caec7:                  1
 ;     loop_caece:                  1
-;     loop_caf0a:                  1
 ;     loop_caf78:                  1
 ;     loop_caf89:                  1
 ;     loop_cb017:                  1
@@ -12760,6 +12791,7 @@ save pydis_start, pydis_end
 ;     return_5:                    1
 ;     return_6:                    1
 ;     return_7:                    1
+;     rnd_dispatch:                1
 ;     rnd_range:                   1
 ;     rnd_repeat:                  1
 ;     rnd_seed:                    1
@@ -13445,10 +13477,6 @@ save pydis_start, pydis_end
 ;     l0007
 ;     l0009
 ;     l000c
-;     l000e
-;     l000f
-;     l0010
-;     l0011
 ;     l0013
 ;     l0017
 ;     l001a
@@ -13656,7 +13684,6 @@ save pydis_start, pydis_end
 ;     loop_cae93
 ;     loop_caec7
 ;     loop_caece
-;     loop_caf0a
 ;     loop_caf78
 ;     loop_caf89
 ;     loop_cb017
@@ -13773,7 +13800,6 @@ save pydis_start, pydis_end
 ;     sub_c8f92
 ;     sub_c8f9a
 ;     sub_c909f
-;     sub_c9222
 ;     sub_c9231
 ;     sub_c9236
 ;     sub_c92da
@@ -13847,7 +13873,6 @@ save pydis_start, pydis_end
 ;     sub_cadad
 ;     sub_cae02
 ;     sub_cae3a
-;     sub_caf87
 ;     sub_cafad
 ;     sub_cb1c8
 ;     sub_cb3c5
@@ -13868,7 +13893,6 @@ save pydis_start, pydis_end
 ;     sub_cbd20
 ;     sub_cbd2f
 ;     sub_cbd3a
-;     sub_cbd7e
 ;     sub_cbd90
 ;     sub_cbdcb
 ;     sub_cbdff
