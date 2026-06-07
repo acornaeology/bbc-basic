@@ -7900,10 +7900,10 @@ l848a = sub_c847b+15
 ;
 ; FWA = pi (3.14159265). Takes no argument.
 .fn_pi
-    jsr ca8fe                                                         ; abcb: 20 fe a8     ..   
-    inc zp_fwa_exp                                                    ; abce: e6 30       .0    
-    tay                                                               ; abd0: a8          .     
-    rts                                                               ; abd1: 60          `     
+    jsr ca8fe                                                         ; abcb: 20 fe a8     ..      ; Load the constant pi/2 into FWA
+    inc zp_fwa_exp                                                    ; abce: e6 30       .0       ; Double it (exponent + 1) to get pi
+    tay                                                               ; abd0: a8          .        ; Flag a non-zero real result
+    rts                                                               ; abd1: 60          `        ; FWA = pi
 ; ***************************************************************************************
 ; USR
 ;
@@ -8098,13 +8098,13 @@ l848a = sub_c847b+15
 ; The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive.
 ; &acc4 referenced 3 times by &ab9d, &aca5, &acb2
 .fn_true
-    lda #&ff                                                          ; acc4: a9 ff       ..    
-    sta zp_iwa                                                        ; acc6: 85 2a       .*    
-    sta zp_iwa_1                                                      ; acc8: 85 2b       .+    
-    sta zp_iwa_2                                                      ; acca: 85 2c       .,    
-    sta zp_iwa_3                                                      ; accc: 85 2d       .-    
-    lda #&40 ; '@'                                                    ; acce: a9 40       .@    
-    rts                                                               ; acd0: 60          `     
+    lda #&ff                                                          ; acc4: a9 ff       ..       ; TRUE is -1: load &FF into every IWA byte
+    sta zp_iwa                                                        ; acc6: 85 2a       .*       ; byte 0
+    sta zp_iwa_1                                                      ; acc8: 85 2b       .+       ; byte 1
+    sta zp_iwa_2                                                      ; acca: 85 2c       .,       ; byte 2
+    sta zp_iwa_3                                                      ; accc: 85 2d       .-       ; byte 3: IWA = -1
+    lda #&40 ; '@'                                                    ; acce: a9 40       .@       ; Result type = integer
+    rts                                                               ; acd0: 60          `        ; Return TRUE
 ; ***************************************************************************************
 ; NOT
 ;
@@ -8508,8 +8508,8 @@ l848a = sub_c847b+15
 ;
 ; The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive.
 .fn_false
-    lda #0                                                            ; aeca: a9 00       ..    
-    beq caed8                                                         ; aecc: f0 0a       ..    
+    lda #0                                                            ; aeca: a9 00       ..       ; FALSE is 0
+    beq caed8                                                         ; aecc: f0 0a       ..       ; Return 0 as an integer
 ; &aece referenced 1 time by &aed4
 .loop_caece
     jmp err_type_mismatch                                             ; aece: 4c 0e 8c    L..   
@@ -8563,8 +8563,8 @@ l848a = sub_c847b+15
 ;
 ; Characters printed since the last newline. COUNT.
 .fn_count
-    lda zp_count                                                      ; aef7: a5 1e       ..    
-    jmp caed8                                                         ; aef9: 4c d8 ae    L..   
+    lda zp_count                                                      ; aef7: a5 1e       ..       ; COUNT: characters printed since the last newline
+    jmp caed8                                                         ; aef9: 4c d8 ae    L..      ; Return it as an integer
 ; ***************************************************************************************
 ; =LOMEM
 ;
@@ -11144,18 +11144,18 @@ l848a = sub_c847b+15
 ; (zp_iwa) and drop it.
 ; &bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9
 .unstack_integer
-    ldy #3                                                            ; bdea: a0 03       ..    
-    lda (zp_stack_ptr),y                                              ; bdec: b1 04       ..    
-    sta zp_iwa_3                                                      ; bdee: 85 2d       .-    
-    dey                                                               ; bdf0: 88          .     
-    lda (zp_stack_ptr),y                                              ; bdf1: b1 04       ..    
-    sta zp_iwa_2                                                      ; bdf3: 85 2c       .,    
-    dey                                                               ; bdf5: 88          .     
-    lda (zp_stack_ptr),y                                              ; bdf6: b1 04       ..    
-    sta zp_iwa_1                                                      ; bdf8: 85 2b       .+    
-    dey                                                               ; bdfa: 88          .     
-    lda (zp_stack_ptr),y                                              ; bdfb: b1 04       ..    
-    sta zp_iwa                                                        ; bdfd: 85 2a       .*    
+    ldy #3                                                            ; bdea: a0 03       ..       ; Index the stacked integer (4 bytes, MSB first)
+    lda (zp_stack_ptr),y                                              ; bdec: b1 04       ..       ; Top byte (MSB)...
+    sta zp_iwa_3                                                      ; bdee: 85 2d       .-       ; ...into IWA byte 3
+    dey                                                               ; bdf0: 88          .        ; next byte
+    lda (zp_stack_ptr),y                                              ; bdf1: b1 04       ..       ; byte 2...
+    sta zp_iwa_2                                                      ; bdf3: 85 2c       .,       ; ...into IWA
+    dey                                                               ; bdf5: 88          .        ; next byte
+    lda (zp_stack_ptr),y                                              ; bdf6: b1 04       ..       ; byte 1...
+    sta zp_iwa_1                                                      ; bdf8: 85 2b       .+       ; ...into IWA
+    dey                                                               ; bdfa: 88          .        ; last byte
+    lda (zp_stack_ptr),y                                              ; bdfb: b1 04       ..       ; byte 0 (LSB)...
+    sta zp_iwa                                                        ; bdfd: 85 2a       .*       ; ...into IWA (the caller drops the stack)
 ; &bdff referenced 2 times by &9b4e, &9b95
 .sub_cbdff
     clc                                                               ; bdff: 18          .     

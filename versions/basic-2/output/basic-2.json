@@ -70849,6 +70849,7 @@
       "labels": [
         "fn_pi"
       ],
+      "comment_inline": "Load the constant pi/2 into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca8fe",
@@ -70861,6 +70862,7 @@
         230,
         48
       ],
+      "comment_inline": "Double it (exponent + 1) to get pi",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_exp",
@@ -70872,6 +70874,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Flag a non-zero real result",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -70880,6 +70883,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWA = pi",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -72340,6 +72344,7 @@
       "labels": [
         "fn_true"
       ],
+      "comment_inline": "TRUE is -1: load &FF into every IWA byte",
       "xref_summaries": [
         "&acc4 referenced 3 times by &ab9d, &aca5, &acb2"
       ],
@@ -72358,6 +72363,7 @@
         133,
         42
       ],
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -72370,6 +72376,7 @@
         133,
         43
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -72382,6 +72389,7 @@
         133,
         44
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -72394,6 +72402,7 @@
         133,
         45
       ],
+      "comment_inline": "byte 3: IWA = -1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -72406,6 +72415,7 @@
         169,
         64
       ],
+      "comment_inline": "Result type = integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -72415,6 +72425,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return TRUE",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -75639,6 +75650,7 @@
       "labels": [
         "fn_false"
       ],
+      "comment_inline": "FALSE is 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -75649,6 +75661,7 @@
         240,
         10
       ],
+      "comment_inline": "Return 0 as an integer",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caed8",
@@ -75961,6 +75974,7 @@
       "labels": [
         "fn_count"
       ],
+      "comment_inline": "COUNT: characters printed since the last newline",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_count",
@@ -75974,6 +75988,7 @@
         216,
         174
       ],
+      "comment_inline": "Return it as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caed8",
@@ -99242,6 +99257,7 @@
       "labels": [
         "unstack_integer"
       ],
+      "comment_inline": "Index the stacked integer (4 bytes, MSB first)",
       "xref_summaries": [
         "&bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9"
       ],
@@ -99273,6 +99289,7 @@
         177,
         4
       ],
+      "comment_inline": "Top byte (MSB)...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99285,6 +99302,7 @@
         133,
         45
       ],
+      "comment_inline": "...into IWA byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -99296,6 +99314,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99305,6 +99324,7 @@
         177,
         4
       ],
+      "comment_inline": "byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99317,6 +99337,7 @@
         133,
         44
       ],
+      "comment_inline": "...into IWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -99328,6 +99349,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99337,6 +99359,7 @@
         177,
         4
       ],
+      "comment_inline": "byte 1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99349,6 +99372,7 @@
         133,
         43
       ],
+      "comment_inline": "...into IWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -99360,6 +99384,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "last byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99369,6 +99394,7 @@
         177,
         4
       ],
+      "comment_inline": "byte 0 (LSB)...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -99381,6 +99407,7 @@
         133,
         42
       ],
+      "comment_inline": "...into IWA (the caller drops the stack)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",

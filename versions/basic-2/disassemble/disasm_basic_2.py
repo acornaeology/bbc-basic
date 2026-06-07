@@ -1473,6 +1473,45 @@ d.comment(0xa4f8, 'Copy the rounding byte...', align=Align.INLINE)
 d.comment(0xa4fa, '...into FWA', align=Align.INLINE)
 d.comment(0xa4fc, 'FWA is now a copy of FWB', align=Align.INLINE)
 
+# fn_true (&ACC4): TRUE = -1 (also the ineg1 integer primitive)
+d.comment(0xacc4, 'TRUE is -1: load &FF into every IWA byte', align=Align.INLINE)
+d.comment(0xacc6, 'byte 0', align=Align.INLINE)
+d.comment(0xacc8, 'byte 1', align=Align.INLINE)
+d.comment(0xacca, 'byte 2', align=Align.INLINE)
+d.comment(0xaccc, 'byte 3: IWA = -1', align=Align.INLINE)
+d.comment(0xacce, 'Result type = integer', align=Align.INLINE)
+d.comment(0xacd0, 'Return TRUE', align=Align.INLINE)
+
+# fn_false (&AECA): FALSE = 0
+d.comment(0xaeca, 'FALSE is 0', align=Align.INLINE)
+d.comment(0xaecc, 'Return 0 as an integer', align=Align.INLINE)
+
+# fn_pi (&ABCB): FWA = pi
+d.comment(0xabcb, 'Load the constant pi/2 into FWA', align=Align.INLINE)
+d.comment(0xabce, 'Double it (exponent + 1) to get pi', align=Align.INLINE)
+d.comment(0xabd0, 'Flag a non-zero real result', align=Align.INLINE)
+d.comment(0xabd1, 'FWA = pi', align=Align.INLINE)
+
+# fn_count (&AEF7): COUNT
+d.comment(0xaef7, 'COUNT: characters printed since the last newline',
+          align=Align.INLINE)
+d.comment(0xaef9, 'Return it as an integer', align=Align.INLINE)
+
+# unstack_integer (&BDEA): pop a 4-byte integer into IWA (stack not dropped)
+d.comment(0xbdea, 'Index the stacked integer (4 bytes, MSB first)',
+          align=Align.INLINE)
+d.comment(0xbdec, 'Top byte (MSB)...', align=Align.INLINE)
+d.comment(0xbdee, '...into IWA byte 3', align=Align.INLINE)
+d.comment(0xbdf0, 'next byte', align=Align.INLINE)
+d.comment(0xbdf1, 'byte 2...', align=Align.INLINE)
+d.comment(0xbdf3, '...into IWA', align=Align.INLINE)
+d.comment(0xbdf5, 'next byte', align=Align.INLINE)
+d.comment(0xbdf6, 'byte 1...', align=Align.INLINE)
+d.comment(0xbdf8, '...into IWA', align=Align.INLINE)
+d.comment(0xbdfa, 'last byte', align=Align.INLINE)
+d.comment(0xbdfb, 'byte 0 (LSB)...', align=Align.INLINE)
+d.comment(0xbdfd, '...into IWA (the caller drops the stack)', align=Align.INLINE)
+
 # fwa_pack_temp1/2/3 (&A385/&A37D/&A381): point at an FP temp, then pack
 d.comment(0xa385, 'Point at FP TEMP1 (&046C): low byte', align=Align.INLINE)
 d.comment(0xa387, 'set the fp-variable pointer', align=Align.INLINE)
