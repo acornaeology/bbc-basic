@@ -15965,6 +15965,7 @@
         132,
         59
       ],
+      "comment_inline": "Start-of-statement flag (&3B)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -15980,6 +15981,7 @@
       "labels": [
         "sub_c8955"
       ],
+      "comment_inline": "Clear the quote flag (&3C)",
       "xref_summaries": [
         "&8955 referenced 1 time by &ac1a"
       ],
@@ -16024,6 +16026,7 @@
         201,
         13
       ],
+      "comment_inline": "CR: end of line",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -16047,6 +16050,7 @@
         201,
         32
       ],
+      "comment_inline": "space: skip it",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -16074,6 +16078,7 @@
       "labels": [
         "c8961"
       ],
+      "comment_inline": "advance and read the next character",
       "xref_summaries": [
         "&8961 referenced 5 times by &8985, &8994, &8998, &89e9, &8a89"
       ],
@@ -16096,6 +16101,7 @@
         208,
         241
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8957",
@@ -16128,6 +16134,7 @@
         208,
         18
       ],
+      "comment_inline": "not \"&\": check the other cases",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c897c",
@@ -16144,6 +16151,7 @@
       "labels": [
         "c896a"
       ],
+      "comment_inline": "Hex constant: advance and get a character",
       "xref_summaries": [
         "&896a referenced 2 times by &8970, &8978"
       ],
@@ -16164,6 +16172,7 @@
         54,
         137
       ],
+      "comment_inline": "a digit?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c8936",
@@ -16176,6 +16185,7 @@
         176,
         248
       ],
+      "comment_inline": "yes: keep copying",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c896a",
@@ -16188,6 +16198,7 @@
         201,
         65
       ],
+      "comment_inline": "below 'A'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&41"
@@ -16198,6 +16209,7 @@
         144,
         225
       ],
+      "comment_inline": "not hex: resume scanning",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8957",
@@ -16210,6 +16222,7 @@
         201,
         71
       ],
+      "comment_inline": "'A'..'F'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&47"
@@ -16220,6 +16233,7 @@
         144,
         240
       ],
+      "comment_inline": "hex letter: keep copying",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c896a",
@@ -16232,6 +16246,7 @@
         176,
         219
       ],
+      "comment_inline": "past F: resume",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8957",
@@ -16264,6 +16279,7 @@
         208,
         12
       ],
+      "comment_inline": "not a quote: check for a colon",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c898c",
@@ -16280,6 +16296,7 @@
       "labels": [
         "loop_c8980"
       ],
+      "comment_inline": "String literal: copy to the closing quote",
       "xref_summaries": [
         "&8980 referenced 1 time by &8989"
       ],
@@ -16298,6 +16315,7 @@
         201,
         34
       ],
+      "comment_inline": "a quote?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -16308,6 +16326,7 @@
         240,
         218
       ],
+      "comment_inline": "yes: end of string",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8961",
@@ -16320,6 +16339,7 @@
         201,
         13
       ],
+      "comment_inline": "CR (unterminated)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -16330,6 +16350,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep copying",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8980",
@@ -16341,6 +16362,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -16370,6 +16392,7 @@
         208,
         6
       ],
+      "comment_inline": "not a colon: check for a comma",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8996",
@@ -16382,6 +16405,7 @@
         132,
         59
       ],
+      "comment_inline": "Colon: back to start-of-statement",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -16394,6 +16418,7 @@
         132,
         60
       ],
+      "comment_inline": "clear the quote flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -16406,6 +16431,7 @@
         240,
         203
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8961",
@@ -16421,6 +16447,7 @@
       "labels": [
         "c8996"
       ],
+      "comment_inline": "a comma?",
       "xref_summaries": [
         "&8996 referenced 1 time by &898e"
       ],
@@ -16437,6 +16464,7 @@
         240,
         199
       ],
+      "comment_inline": "yes: skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8961",
@@ -16460,6 +16488,7 @@
         208,
         5
       ],
+      "comment_inline": "not \"*\": try a keyword or name",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c89a3",
@@ -16472,6 +16501,7 @@
         165,
         59
       ],
+      "comment_inline": "at the start of a statement?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -16484,6 +16514,7 @@
         208,
         65
       ],
+      "comment_inline": "yes: \"*command\", skip the rest of the line",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c89e3",
@@ -16495,6 +16526,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -16507,6 +16539,7 @@
       "labels": [
         "c89a3"
       ],
+      "comment_inline": "a \".\" (abbreviation dot)?",
       "xref_summaries": [
         "&89a3 referenced 1 time by &899c"
       ],
@@ -16523,6 +16556,7 @@
         240,
         14
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c89b5",
@@ -16536,6 +16570,7 @@
         54,
         137
       ],
+      "comment_inline": "a digit?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c8936",
@@ -16548,6 +16583,7 @@
         144,
         51
       ],
+      "comment_inline": "no: a letter or symbol",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89df",
@@ -16560,6 +16596,7 @@
         166,
         60
       ],
+      "comment_inline": "inside a quote?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_ovf",
@@ -16572,6 +16609,7 @@
         240,
         5
       ],
+      "comment_inline": "no: a line number",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c89b5",
@@ -16585,6 +16623,7 @@
         151,
         136
       ],
+      "comment_inline": "tokenise the line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8897",
@@ -16597,6 +16636,7 @@
         144,
         52
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89e9",
@@ -16612,6 +16652,7 @@
       "labels": [
         "c89b5"
       ],
+      "comment_inline": "Skip a number: read a character",
       "xref_summaries": [
         "&89b5 referenced 3 times by &89a5, &89ae, &89bf"
       ],
@@ -16633,6 +16674,7 @@
         61,
         137
       ],
+      "comment_inline": "a digit or \".\"?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c893d",
@@ -16645,6 +16687,7 @@
         144,
         6
       ],
+      "comment_inline": "no: end of the number",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89c2",
@@ -16658,6 +16701,7 @@
         68,
         137
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -16671,6 +16715,7 @@
         181,
         137
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c89b5",
@@ -16686,6 +16731,7 @@
       "labels": [
         "c89c2"
       ],
+      "comment_inline": "Now in the middle of a statement:",
       "xref_summaries": [
         "&89c2 referenced 2 times by &89ba, &89d7"
       ],
@@ -16703,6 +16749,7 @@
         134,
         59
       ],
+      "comment_inline": "set the flag",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -16715,6 +16762,7 @@
         132,
         60
       ],
+      "comment_inline": "clear the quote flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -16728,6 +16776,7 @@
         87,
         137
       ],
+      "comment_inline": "resume scanning",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8957",
@@ -16744,6 +16793,7 @@
       "labels": [
         "loop_c89cb"
       ],
+      "comment_inline": "Skip a variable name: alphanumeric?",
       "xref_summaries": [
         "&89cb referenced 1 time by &89ee"
       ],
@@ -16762,6 +16812,7 @@
         144,
         19
       ],
+      "comment_inline": "no: not a name",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89e3",
@@ -16777,6 +16828,7 @@
       "labels": [
         "c89d0"
       ],
+      "comment_inline": "Read the next name character:",
       "xref_summaries": [
         "&89d0 referenced 2 times by &8a16, &8a46"
       ],
@@ -16797,6 +16849,7 @@
       "labels": [
         "c89d2"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&89d2 referenced 2 times by &89dc, &89fa"
       ],
@@ -16817,6 +16870,7 @@
         38,
         137
       ],
+      "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8926",
@@ -16829,6 +16883,7 @@
         144,
         233
       ],
+      "comment_inline": "no: end of the name",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89c2",
@@ -16842,6 +16897,7 @@
         68,
         137
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -16855,6 +16911,7 @@
         210,
         137
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c89d2",
@@ -16870,6 +16927,7 @@
       "labels": [
         "c89df"
       ],
+      "comment_inline": "a letter ('A'+)?",
       "xref_summaries": [
         "&89df referenced 1 time by &89aa"
       ],
@@ -16886,6 +16944,7 @@
         176,
         9
       ],
+      "comment_inline": "yes: try to match a keyword",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c89ec",
@@ -16901,6 +16960,7 @@
       "labels": [
         "c89e3"
       ],
+      "comment_inline": "Not a keyword: middle of statement",
       "xref_summaries": [
         "&89e3 referenced 2 times by &89a0, &89ce"
       ],
@@ -16918,6 +16978,7 @@
         134,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -16930,6 +16991,7 @@
         132,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -16946,6 +17008,7 @@
       "labels": [
         "c89e9"
       ],
+      "comment_inline": "continue scanning",
       "xref_summaries": [
         "&89e9 referenced 1 time by &89b3"
       ],
@@ -16967,6 +17030,7 @@
       "labels": [
         "c89ec"
       ],
+      "comment_inline": "'X' or above?",
       "xref_summaries": [
         "&89ec referenced 1 time by &89e1"
       ],
@@ -16983,6 +17047,7 @@
         176,
         219
       ],
+      "comment_inline": "nothing starts with X/Y/Z: skip the name",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_c89cb",
@@ -16995,6 +17060,7 @@
         162,
         113
       ],
+      "comment_inline": "Point at the keyword table (&8071): low",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&71"
@@ -17005,6 +17071,7 @@
         134,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fileblk",
@@ -17017,6 +17084,7 @@
         162,
         128
       ],
+      "comment_inline": "high &80",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&80"
@@ -17027,6 +17095,7 @@
         134,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l003a",
@@ -17042,6 +17111,7 @@
       "labels": [
         "c89f8"
       ],
+      "comment_inline": "Compare the first letter with this entry",
       "xref_summaries": [
         "&89f8 referenced 1 time by &8a34"
       ],
@@ -17060,6 +17130,7 @@
         144,
         214
       ],
+      "comment_inline": "entry past our letter: not a keyword",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c89d2",
@@ -17072,6 +17143,7 @@
         208,
         15
       ],
+      "comment_inline": "first letter differs: next entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a0d",
@@ -17086,6 +17158,7 @@
       "labels": [
         "loop_c89fe"
       ],
+      "comment_inline": "matches: compare the rest of the keyword",
       "xref_summaries": [
         "&89fe referenced 1 time by &8a05"
       ],
@@ -17101,6 +17174,7 @@
         177,
         57
       ],
+      "comment_inline": "entry char (bit 7 = the token)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -17113,6 +17187,7 @@
         48,
         52
       ],
+      "comment_inline": "whole keyword matched: got a token",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c8a37",
@@ -17125,6 +17200,7 @@
         209,
         55
       ],
+      "comment_inline": "compare with the line",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_general),y",
@@ -17137,6 +17213,7 @@
         240,
         247
       ],
+      "comment_inline": "match: next character",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c89fe",
@@ -17149,6 +17226,7 @@
         177,
         55
       ],
+      "comment_inline": "mismatch: a \".\" abbreviation?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -17161,6 +17239,7 @@
         201,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2e"
@@ -17171,6 +17250,7 @@
         240,
         11
       ],
+      "comment_inline": "yes: accept the abbreviation",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8a18",
@@ -17185,6 +17265,7 @@
       "labels": [
         "c8a0d"
       ],
+      "comment_inline": "Skip to the next entry: past the name",
       "xref_summaries": [
         "&8a0d referenced 2 times by &89fc, &8a10"
       ],
@@ -17201,6 +17282,7 @@
         177,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -17213,6 +17295,7 @@
         16,
         251
       ],
+      "comment_inline": "until the token byte (bit 7 set)",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c8a0d",
@@ -17225,6 +17308,7 @@
         201,
         254
       ],
+      "comment_inline": "end of the table?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&fe"
@@ -17235,6 +17319,7 @@
         208,
         15
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a25",
@@ -17247,6 +17332,7 @@
         176,
         184
       ],
+      "comment_inline": "end: not a keyword (skip the name)",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c89d0",
@@ -17261,6 +17347,7 @@
       "labels": [
         "c8a18"
       ],
+      "comment_inline": "Abbreviation: skip to this entry's token",
       "xref_summaries": [
         "&8a18 referenced 1 time by &8a0b"
       ],
@@ -17279,6 +17366,7 @@
       "labels": [
         "c8a19"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&8a19 referenced 2 times by &8a1f, &8a23"
       ],
@@ -17298,6 +17386,7 @@
         48,
         26
       ],
+      "comment_inline": "token byte: got it",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c8a37",
@@ -17310,6 +17399,7 @@
         230,
         57
       ],
+      "comment_inline": "advance the table pointer",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fileblk",
@@ -17322,6 +17412,7 @@
         208,
         248
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a19",
@@ -17334,6 +17425,7 @@
         230,
         58
       ],
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l003a",
@@ -17346,6 +17438,7 @@
         208,
         244
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a19",
@@ -17360,6 +17453,7 @@
       "labels": [
         "c8a25"
       ],
+      "comment_inline": "Advance past this entry to the next:",
       "xref_summaries": [
         "&8a25 referenced 1 time by &8a14"
       ],
@@ -17374,6 +17468,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -17382,6 +17477,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -17391,6 +17487,7 @@
         101,
         57
       ],
+      "comment_inline": "low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -17403,6 +17500,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -17415,6 +17513,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a30",
@@ -17427,6 +17526,7 @@
         230,
         58
       ],
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l003a",
@@ -17442,6 +17542,7 @@
       "labels": [
         "c8a30"
       ],
+      "comment_inline": "reset Y",
       "xref_summaries": [
         "&8a30 referenced 1 time by &8a2c"
       ],
@@ -17458,6 +17559,7 @@
         177,
         55
       ],
+      "comment_inline": "re-read the first letter",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -17471,6 +17573,7 @@
         248,
         137
       ],
+      "comment_inline": "try the next entry",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c89f8",
@@ -17485,6 +17588,7 @@
       "labels": [
         "c8a37"
       ],
+      "comment_inline": "Token byte found: keep it in X",
       "xref_summaries": [
         "&8a37 referenced 2 times by &8a01, &8a1b"
       ],
@@ -17500,6 +17604,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "the flag byte follows",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -17509,6 +17614,7 @@
         177,
         57
       ],
+      "comment_inline": "get the token flag",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -17521,6 +17627,7 @@
         133,
         61
       ],
+      "comment_inline": "(save it in &3D)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -17532,6 +17639,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -17540,6 +17648,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "flag bit 0: conditional tokenisation?",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -17549,6 +17658,7 @@
         144,
         7
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a48",
@@ -17561,6 +17671,7 @@
         177,
         55
       ],
+      "comment_inline": "a letter follows?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -17574,6 +17685,7 @@
         38,
         137
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8926",
@@ -17586,6 +17698,7 @@
         176,
         136
       ],
+      "comment_inline": "yes: keep it as a name, not a token",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c89d0",
@@ -17600,6 +17713,7 @@
       "labels": [
         "c8a48"
       ],
+      "comment_inline": "Emit the token: A = token byte",
       "xref_summaries": [
         "&8a48 referenced 1 time by &8a3f"
       ],
@@ -17615,6 +17729,7 @@
         36,
         61
       ],
+      "comment_inline": "flag bit 6: pseudo-variable?",
       "type": "code",
       "mnemonic": "bit",
       "operand": "zp_fwb_exp",
@@ -17627,6 +17742,7 @@
         80,
         7
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bvc",
       "operand": "c8a54",
@@ -17639,6 +17755,7 @@
         166,
         59
       ],
+      "comment_inline": "at the start of a statement?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_sign",
@@ -17651,6 +17768,7 @@
         208,
         3
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a54",
@@ -17662,6 +17780,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -17671,6 +17790,7 @@
         105,
         64
       ],
+      "comment_inline": "assignment form: token + &40",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&40"
@@ -17683,6 +17803,7 @@
       "labels": [
         "c8a54"
       ],
+      "comment_inline": "Write the token over the keyword",
       "xref_summaries": [
         "&8a54 referenced 2 times by &8a4b, &8a4f"
       ],
@@ -17700,6 +17821,7 @@
         124,
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c887c",
@@ -17712,6 +17834,7 @@
         160,
         0
       ],
+      "comment_inline": "reset Y",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -17722,6 +17845,7 @@
         162,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -17732,6 +17856,7 @@
         165,
         61
       ],
+      "comment_inline": "Apply the state-change flags:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -17743,6 +17868,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "bit 0 (already used)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -17751,6 +17877,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "bit 1: enter middle-of-statement?",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -17760,6 +17887,7 @@
         144,
         4
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a66",
@@ -17772,6 +17900,7 @@
         134,
         59
       ],
+      "comment_inline": "set middle-of-statement",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -17784,6 +17913,7 @@
         132,
         60
       ],
+      "comment_inline": "clear quote",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -17798,6 +17928,7 @@
       "labels": [
         "c8a66"
       ],
+      "comment_inline": "bit 2: enter start-of-statement?",
       "xref_summaries": [
         "&8a66 referenced 1 time by &8a60"
       ],
@@ -17813,6 +17944,7 @@
         144,
         4
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a6d",
@@ -17825,6 +17957,7 @@
         132,
         59
       ],
+      "comment_inline": "set start-of-statement",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -17837,6 +17970,7 @@
         132,
         60
       ],
+      "comment_inline": "clear quote",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -17851,6 +17985,7 @@
       "labels": [
         "c8a6d"
       ],
+      "comment_inline": "bit 3: FN/PROC (do not tokenise the name)?",
       "xref_summaries": [
         "&8a6d referenced 1 time by &8a67"
       ],
@@ -17866,6 +18001,7 @@
         144,
         17
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a81",
@@ -17877,6 +18013,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save A",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -17885,6 +18022,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "skip the FN/PROC name untokenised:",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -17897,6 +18035,7 @@
       "labels": [
         "c8a72"
       ],
+      "comment_inline": "char",
       "xref_summaries": [
         "&8a72 referenced 1 time by &8a7c"
       ],
@@ -17916,6 +18055,7 @@
         38,
         137
       ],
+      "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8926",
@@ -17928,6 +18068,7 @@
         144,
         6
       ],
+      "comment_inline": "no: end of the name",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a7f",
@@ -17941,6 +18082,7 @@
         68,
         137
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -17954,6 +18096,7 @@
         114,
         138
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8a72",
@@ -17968,6 +18111,7 @@
       "labels": [
         "c8a7f"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&8a7f referenced 1 time by &8a77"
       ],
@@ -17982,6 +18126,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "restore A",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -17993,6 +18138,7 @@
       "labels": [
         "c8a81"
       ],
+      "comment_inline": "bit 4: start a line number?",
       "xref_summaries": [
         "&8a81 referenced 1 time by &8a6e"
       ],
@@ -18008,6 +18154,7 @@
         144,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a86",
@@ -18020,6 +18167,7 @@
         134,
         60
       ],
+      "comment_inline": "set the line-number flag",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_ovf",
@@ -18034,6 +18182,7 @@
       "labels": [
         "c8a86"
       ],
+      "comment_inline": "bit 5: skip the rest of the line (REM/DATA)?",
       "xref_summaries": [
         "&8a86 referenced 1 time by &8a82"
       ],
@@ -18049,6 +18198,7 @@
         176,
         13
       ],
+      "comment_inline": "yes: stop tokenising",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_4",
@@ -18062,6 +18212,7 @@
         97,
         137
       ],
+      "comment_inline": "continue scanning",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8961",
