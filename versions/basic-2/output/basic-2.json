@@ -56640,6 +56640,10 @@
       "labels": [
         "fwa_div10"
       ],
+      "comments_before_label": [
+        "Divide FWA by ten. In binary 1/10 = 0.000110011001100...,\nso x/10 is x/16 plus a series of progressively shifted terms.\nEach term is built in FWB as a byte/bit-shifted copy of the\nmantissa and accumulated into FWA. The result is unnormalised\nand unrounded (the caller normalises)."
+      ],
+      "comment_inline": "x/16: subtract 4 from the exponent",
       "xref_summaries": [
         "&a24d referenced 3 times by &9f31, &9f6b, &a111"
       ],
@@ -56657,6 +56661,7 @@
         165,
         48
       ],
+      "comment_inline": "(exponent)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -56669,6 +56674,7 @@
         233,
         4
       ],
+      "comment_inline": "(- 4)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#4"
@@ -56679,6 +56685,7 @@
         133,
         48
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -56691,6 +56698,7 @@
         176,
         2
       ],
+      "comment_inline": "no borrow: continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca258",
@@ -56703,6 +56711,7 @@
         198,
         47
       ],
+      "comment_inline": "borrow into the overflow byte",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwa_ovf",
@@ -56719,6 +56728,7 @@
       "labels": [
         "ca258"
       ],
+      "comment_inline": "FWB = x/2",
       "xref_summaries": [
         "&a258 referenced 1 time by &a254"
       ],
@@ -56738,6 +56748,7 @@
         8,
         162
       ],
+      "comment_inline": "accumulate a shifted term into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca208",
@@ -56751,6 +56762,7 @@
         63,
         162
       ],
+      "comment_inline": "FWB = x/2 again",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_half_fwa",
@@ -56764,6 +56776,7 @@
         66,
         162
       ],
+      "comment_inline": "FWB /= 2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_div2",
@@ -56777,6 +56790,7 @@
         66,
         162
       ],
+      "comment_inline": "FWB /= 2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_div2",
@@ -56790,6 +56804,7 @@
         66,
         162
       ],
+      "comment_inline": "FWB /= 2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_div2",
@@ -56803,6 +56818,7 @@
         8,
         162
       ],
+      "comment_inline": "accumulate the next term",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca208",
@@ -56815,6 +56831,7 @@
         169,
         0
       ],
+      "comment_inline": "Form a byte-shifted copy in FWB: clear MSB",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -56825,6 +56842,7 @@
         133,
         62
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -56837,6 +56855,7 @@
         165,
         49
       ],
+      "comment_inline": "mantissa m1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -56849,6 +56868,7 @@
         133,
         63
       ],
+      "comment_inline": "...to FWB m2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -56861,6 +56881,7 @@
         165,
         50
       ],
+      "comment_inline": "m2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -56873,6 +56894,7 @@
         133,
         64
       ],
+      "comment_inline": "...to m3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -56885,6 +56907,7 @@
         165,
         51
       ],
+      "comment_inline": "m3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -56897,6 +56920,7 @@
         133,
         65
       ],
+      "comment_inline": "...to m4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -56909,6 +56933,7 @@
         165,
         52
       ],
+      "comment_inline": "m4...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -56921,6 +56946,7 @@
         133,
         66
       ],
+      "comment_inline": "...to the rounding byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -56933,6 +56959,7 @@
         165,
         53
       ],
+      "comment_inline": "next mantissa bit...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -56944,6 +56971,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...into the carry",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -56954,6 +56982,7 @@
         8,
         162
       ],
+      "comment_inline": "accumulate this term",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca208",
@@ -56966,6 +56995,7 @@
         169,
         0
       ],
+      "comment_inline": "Form a copy shifted down two bytes: clear",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -56976,6 +57006,7 @@
         133,
         62
       ],
+      "comment_inline": "the top two mantissa bytes",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -56988,6 +57019,7 @@
         133,
         63
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -57000,6 +57032,7 @@
         165,
         49
       ],
+      "comment_inline": "m1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -57012,6 +57045,7 @@
         133,
         64
       ],
+      "comment_inline": "...to m3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -57024,6 +57058,7 @@
         165,
         50
       ],
+      "comment_inline": "m2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -57036,6 +57071,7 @@
         133,
         65
       ],
+      "comment_inline": "...to m4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -57048,6 +57084,7 @@
         165,
         51
       ],
+      "comment_inline": "m3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -57060,6 +57097,7 @@
         133,
         66
       ],
+      "comment_inline": "...to rounding",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -57072,6 +57110,7 @@
         165,
         52
       ],
+      "comment_inline": "next bit...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -57083,6 +57122,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...into the carry",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -57093,6 +57133,7 @@
         8,
         162
       ],
+      "comment_inline": "accumulate this term",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca208",
@@ -57105,6 +57146,7 @@
         165,
         50
       ],
+      "comment_inline": "continue propagating the shifted mantissa bits",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -57116,6 +57158,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -57125,6 +57168,7 @@
         165,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",

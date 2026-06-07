@@ -6329,51 +6329,56 @@ l848a = sub_c847b+15
 ; FWA = FWA / 10
 ;
 ; Divide FWA by ten, unnormalised and unrounded.
+; Divide FWA by ten. In binary 1/10 = 0.000110011001100...,
+; so x/10 is x/16 plus a series of progressively shifted terms.
+; Each term is built in FWB as a byte/bit-shifted copy of the
+; mantissa and accumulated into FWA. The result is unnormalised
+; and unrounded (the caller normalises).
 ; &a24d referenced 3 times by &9f31, &9f6b, &a111
 .fwa_div10
-    sec                                                               ; a24d: 38          8     
-    lda zp_fwa_exp                                                    ; a24e: a5 30       .0    
-    sbc #4                                                            ; a250: e9 04       ..    
-    sta zp_fwa_exp                                                    ; a252: 85 30       .0    
-    bcs ca258                                                         ; a254: b0 02       ..    
-    dec zp_fwa_ovf                                                    ; a256: c6 2f       ./    
+    sec                                                               ; a24d: 38          8        ; x/16: subtract 4 from the exponent
+    lda zp_fwa_exp                                                    ; a24e: a5 30       .0       ; (exponent)
+    sbc #4                                                            ; a250: e9 04       ..       ; (- 4)
+    sta zp_fwa_exp                                                    ; a252: 85 30       .0       ; (store)
+    bcs ca258                                                         ; a254: b0 02       ..       ; no borrow: continue
+    dec zp_fwa_ovf                                                    ; a256: c6 2f       ./       ; borrow into the overflow byte
 ; &a258 referenced 1 time by &a254
 .ca258
-    jsr fwb_half_fwa                                                  ; a258: 20 3f a2     ?.   
-    jsr ca208                                                         ; a25b: 20 08 a2     ..   
-    jsr fwb_half_fwa                                                  ; a25e: 20 3f a2     ?.   
-    jsr fwb_div2                                                      ; a261: 20 42 a2     B.   
-    jsr fwb_div2                                                      ; a264: 20 42 a2     B.   
-    jsr fwb_div2                                                      ; a267: 20 42 a2     B.   
-    jsr ca208                                                         ; a26a: 20 08 a2     ..   
-    lda #0                                                            ; a26d: a9 00       ..    
-    sta zp_fwb_m1                                                     ; a26f: 85 3e       .>    
-    lda zp_fwa_m1                                                     ; a271: a5 31       .1    
-    sta zp_fwb_m2                                                     ; a273: 85 3f       .?    
-    lda zp_fwa_m2                                                     ; a275: a5 32       .2    
-    sta zp_fwb_m3                                                     ; a277: 85 40       .@    
-    lda zp_fwa_m3                                                     ; a279: a5 33       .3    
-    sta zp_fwb_m4                                                     ; a27b: 85 41       .A    
-    lda zp_fwa_m4                                                     ; a27d: a5 34       .4    
-    sta zp_fwb_rnd                                                    ; a27f: 85 42       .B    
-    lda zp_fwa_rnd                                                    ; a281: a5 35       .5    
-    rol a                                                             ; a283: 2a          *     
-    jsr ca208                                                         ; a284: 20 08 a2     ..   
-    lda #0                                                            ; a287: a9 00       ..    
-    sta zp_fwb_m1                                                     ; a289: 85 3e       .>    
-    sta zp_fwb_m2                                                     ; a28b: 85 3f       .?    
-    lda zp_fwa_m1                                                     ; a28d: a5 31       .1    
-    sta zp_fwb_m3                                                     ; a28f: 85 40       .@    
-    lda zp_fwa_m2                                                     ; a291: a5 32       .2    
-    sta zp_fwb_m4                                                     ; a293: 85 41       .A    
-    lda zp_fwa_m3                                                     ; a295: a5 33       .3    
-    sta zp_fwb_rnd                                                    ; a297: 85 42       .B    
-    lda zp_fwa_m4                                                     ; a299: a5 34       .4    
-    rol a                                                             ; a29b: 2a          *     
-    jsr ca208                                                         ; a29c: 20 08 a2     ..   
-    lda zp_fwa_m2                                                     ; a29f: a5 32       .2    
-    rol a                                                             ; a2a1: 2a          *     
-    lda zp_fwa_m1                                                     ; a2a2: a5 31       .1    
+    jsr fwb_half_fwa                                                  ; a258: 20 3f a2     ?.      ; FWB = x/2
+    jsr ca208                                                         ; a25b: 20 08 a2     ..      ; accumulate a shifted term into FWA
+    jsr fwb_half_fwa                                                  ; a25e: 20 3f a2     ?.      ; FWB = x/2 again
+    jsr fwb_div2                                                      ; a261: 20 42 a2     B.      ; FWB /= 2
+    jsr fwb_div2                                                      ; a264: 20 42 a2     B.      ; FWB /= 2
+    jsr fwb_div2                                                      ; a267: 20 42 a2     B.      ; FWB /= 2
+    jsr ca208                                                         ; a26a: 20 08 a2     ..      ; accumulate the next term
+    lda #0                                                            ; a26d: a9 00       ..       ; Form a byte-shifted copy in FWB: clear MSB
+    sta zp_fwb_m1                                                     ; a26f: 85 3e       .>       ; (store)
+    lda zp_fwa_m1                                                     ; a271: a5 31       .1       ; mantissa m1...
+    sta zp_fwb_m2                                                     ; a273: 85 3f       .?       ; ...to FWB m2
+    lda zp_fwa_m2                                                     ; a275: a5 32       .2       ; m2...
+    sta zp_fwb_m3                                                     ; a277: 85 40       .@       ; ...to m3
+    lda zp_fwa_m3                                                     ; a279: a5 33       .3       ; m3...
+    sta zp_fwb_m4                                                     ; a27b: 85 41       .A       ; ...to m4
+    lda zp_fwa_m4                                                     ; a27d: a5 34       .4       ; m4...
+    sta zp_fwb_rnd                                                    ; a27f: 85 42       .B       ; ...to the rounding byte
+    lda zp_fwa_rnd                                                    ; a281: a5 35       .5       ; next mantissa bit...
+    rol a                                                             ; a283: 2a          *        ; ...into the carry
+    jsr ca208                                                         ; a284: 20 08 a2     ..      ; accumulate this term
+    lda #0                                                            ; a287: a9 00       ..       ; Form a copy shifted down two bytes: clear
+    sta zp_fwb_m1                                                     ; a289: 85 3e       .>       ; the top two mantissa bytes
+    sta zp_fwb_m2                                                     ; a28b: 85 3f       .?       ; (store)
+    lda zp_fwa_m1                                                     ; a28d: a5 31       .1       ; m1...
+    sta zp_fwb_m3                                                     ; a28f: 85 40       .@       ; ...to m3
+    lda zp_fwa_m2                                                     ; a291: a5 32       .2       ; m2...
+    sta zp_fwb_m4                                                     ; a293: 85 41       .A       ; ...to m4
+    lda zp_fwa_m3                                                     ; a295: a5 33       .3       ; m3...
+    sta zp_fwb_rnd                                                    ; a297: 85 42       .B       ; ...to rounding
+    lda zp_fwa_m4                                                     ; a299: a5 34       .4       ; next bit...
+    rol a                                                             ; a29b: 2a          *        ; ...into the carry
+    jsr ca208                                                         ; a29c: 20 08 a2     ..      ; accumulate this term
+    lda zp_fwa_m2                                                     ; a29f: a5 32       .2       ; continue propagating the shifted mantissa bits
+    rol a                                                             ; a2a1: 2a          *        ; ...
+    lda zp_fwa_m1                                                     ; a2a2: a5 31       .1       ; ...
 ; ***************************************************************************************
 ; Add to the rounding byte and ripple the carry up
 ;

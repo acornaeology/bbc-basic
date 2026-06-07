@@ -2143,6 +2143,58 @@ d.comment(0xa2b8, 'done if no carry', align=Align.INLINE)
 d.comment(0xa2ba, 'Carry out of the mantissa: renormalise (exponent up)',
           align=Align.INLINE)
 
+# fwa_div10 (&A24D): FWA = FWA / 10
+d.comment(
+    0xa24d,
+    'Divide FWA by ten. In binary 1/10 = 0.000110011001100...,\n'
+    'so x/10 is x/16 plus a series of progressively shifted terms.\n'
+    'Each term is built in FWB as a byte/bit-shifted copy of the\n'
+    "mantissa and accumulated into FWA. The result is unnormalised\n"
+    'and unrounded (the caller normalises).',
+    word_wrap=False,
+)
+d.comment(0xa24d, 'x/16: subtract 4 from the exponent', align=Align.INLINE)
+d.comment(0xa24e, '(exponent)', align=Align.INLINE)
+d.comment(0xa250, '(- 4)', align=Align.INLINE)
+d.comment(0xa252, '(store)', align=Align.INLINE)
+d.comment(0xa254, 'no borrow: continue', align=Align.INLINE)
+d.comment(0xa256, 'borrow into the overflow byte', align=Align.INLINE)
+d.comment(0xa258, 'FWB = x/2', align=Align.INLINE)
+d.comment(0xa25b, 'accumulate a shifted term into FWA', align=Align.INLINE)
+d.comment(0xa25e, 'FWB = x/2 again', align=Align.INLINE)
+d.comment(0xa261, 'FWB /= 2', align=Align.INLINE)
+d.comment(0xa264, 'FWB /= 2', align=Align.INLINE)
+d.comment(0xa267, 'FWB /= 2', align=Align.INLINE)
+d.comment(0xa26a, 'accumulate the next term', align=Align.INLINE)
+d.comment(0xa26d, 'Form a byte-shifted copy in FWB: clear MSB', align=Align.INLINE)
+d.comment(0xa26f, '(store)', align=Align.INLINE)
+d.comment(0xa271, 'mantissa m1...', align=Align.INLINE)
+d.comment(0xa273, '...to FWB m2', align=Align.INLINE)
+d.comment(0xa275, 'm2...', align=Align.INLINE)
+d.comment(0xa277, '...to m3', align=Align.INLINE)
+d.comment(0xa279, 'm3...', align=Align.INLINE)
+d.comment(0xa27b, '...to m4', align=Align.INLINE)
+d.comment(0xa27d, 'm4...', align=Align.INLINE)
+d.comment(0xa27f, '...to the rounding byte', align=Align.INLINE)
+d.comment(0xa281, 'next mantissa bit...', align=Align.INLINE)
+d.comment(0xa283, '...into the carry', align=Align.INLINE)
+d.comment(0xa284, 'accumulate this term', align=Align.INLINE)
+d.comment(0xa287, 'Form a copy shifted down two bytes: clear', align=Align.INLINE)
+d.comment(0xa289, 'the top two mantissa bytes', align=Align.INLINE)
+d.comment(0xa28b, '(store)', align=Align.INLINE)
+d.comment(0xa28d, 'm1...', align=Align.INLINE)
+d.comment(0xa28f, '...to m3', align=Align.INLINE)
+d.comment(0xa291, 'm2...', align=Align.INLINE)
+d.comment(0xa293, '...to m4', align=Align.INLINE)
+d.comment(0xa295, 'm3...', align=Align.INLINE)
+d.comment(0xa297, '...to rounding', align=Align.INLINE)
+d.comment(0xa299, 'next bit...', align=Align.INLINE)
+d.comment(0xa29b, '...into the carry', align=Align.INLINE)
+d.comment(0xa29c, 'accumulate this term', align=Align.INLINE)
+d.comment(0xa29f, 'continue propagating the shifted mantissa bits', align=Align.INLINE)
+d.comment(0xa2a1, '...', align=Align.INLINE)
+d.comment(0xa2a2, '...', align=Align.INLINE)
+
 # fwb_unpack_var (&A34E): unpack the 5-byte value at (zp_fp_ptr) into FWB
 d.comment(0xa34e, 'Copy the packed value, exponent last', align=Align.INLINE)
 d.comment(0xa350, 'Packed byte 4...', align=Align.INLINE)
