@@ -55590,6 +55590,7 @@
       "labels": [
         "fwa_sign"
       ],
+      "comment_inline": "OR the mantissa and rounding bytes to test for zero",
       "xref_summaries": [
         "&a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e"
       ],
@@ -55624,6 +55625,7 @@
         5,
         50
       ],
+      "comment_inline": "(mantissa byte 2)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -55636,6 +55638,7 @@
         5,
         51
       ],
+      "comment_inline": "(mantissa byte 3)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -55648,6 +55651,7 @@
         5,
         52
       ],
+      "comment_inline": "(mantissa byte 4)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m4",
@@ -55660,7 +55664,7 @@
         5,
         53
       ],
-      "comment_inline": "FWA is zero exactly when the whole mantissa is",
+      "comment_inline": "(rounding) - a non-zero value is never all zero",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_rnd",
@@ -55673,7 +55677,7 @@
         240,
         7
       ],
-      "comment_inline": "zero (a normalised non-zero value has bit 7 set)",
+      "comment_inline": "All zero: clean up and return zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca1ed",
@@ -55686,7 +55690,7 @@
         165,
         46
       ],
-      "comment_inline": "Non-zero: the sign lives in bit 7 of the sign byte",
+      "comment_inline": "Non-zero: the sign is in bit 7 of the sign byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -55699,6 +55703,7 @@
         208,
         9
       ],
+      "comment_inline": "Bit 7 set: negative, return with A < 0",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_20",
@@ -55711,7 +55716,7 @@
         169,
         1
       ],
-      "comment_inline": "Positive: return +1 (negative path returns -1)",
+      "comment_inline": "Otherwise positive: return A = +1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -55721,6 +55726,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "A and the flags now give the sign",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -55733,6 +55739,7 @@
       "labels": [
         "ca1ed"
       ],
+      "comment_inline": "Zero path: force a clean zero - sign,",
       "xref_summaries": [
         "&a1ed referenced 1 time by &a1e4"
       ],
@@ -55751,6 +55758,7 @@
         133,
         48
       ],
+      "comment_inline": "exponent,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -55763,6 +55771,7 @@
         133,
         47
       ],
+      "comment_inline": "and overflow byte, then return A = 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_ovf",
@@ -56080,6 +56089,7 @@
       "labels": [
         "fwb_copy_from_fwa"
       ],
+      "comment_inline": "Copy FWA's sign...",
       "xref_summaries": [
         "&a21e referenced 5 times by &9a44, &a1ff, &a23f, &a3f8, &a6b2"
       ],
@@ -56102,6 +56112,7 @@
         133,
         59
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -56114,6 +56125,7 @@
         165,
         47
       ],
+      "comment_inline": "Copy the overflow byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_ovf",
@@ -56126,6 +56138,7 @@
         133,
         60
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -56138,6 +56151,7 @@
         165,
         48
       ],
+      "comment_inline": "Copy the exponent...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -56150,6 +56164,7 @@
         133,
         61
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -56162,6 +56177,7 @@
         165,
         49
       ],
+      "comment_inline": "Copy mantissa byte 1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -56174,6 +56190,7 @@
         133,
         62
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -56186,6 +56203,7 @@
         165,
         50
       ],
+      "comment_inline": "Copy mantissa byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -56198,6 +56216,7 @@
         133,
         63
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -56210,6 +56229,7 @@
         165,
         51
       ],
+      "comment_inline": "Copy mantissa byte 3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -56222,6 +56242,7 @@
         133,
         64
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -56234,6 +56255,7 @@
         165,
         52
       ],
+      "comment_inline": "Copy mantissa byte 4...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -56246,6 +56268,7 @@
         133,
         65
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -56258,6 +56281,7 @@
         165,
         53
       ],
+      "comment_inline": "Copy the rounding byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -56270,6 +56294,7 @@
         133,
         66
       ],
+      "comment_inline": "...into FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -56281,6 +56306,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWB is now a copy of FWA",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -56896,6 +56922,7 @@
       "labels": [
         "fwa_round_carry"
       ],
+      "comment_inline": "Add the round increment to the rounding byte",
       "xref_summaries": [
         "&a2a4 referenced 1 time by &a666"
       ],
@@ -56914,6 +56941,7 @@
         133,
         53
       ],
+      "comment_inline": "Store it back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -56926,6 +56954,7 @@
         144,
         19
       ],
+      "comment_inline": "No carry out: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_22",
@@ -56938,6 +56967,7 @@
         230,
         52
       ],
+      "comment_inline": "Carry: bump mantissa byte 4",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m4",
@@ -56950,6 +56980,7 @@
         208,
         15
       ],
+      "comment_inline": "No further carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_22",
@@ -56962,6 +56993,7 @@
         230,
         51
       ],
+      "comment_inline": "Ripple into byte 3",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m3",
@@ -56974,6 +57006,7 @@
         208,
         11
       ],
+      "comment_inline": "done if no carry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_22",
@@ -56986,6 +57019,7 @@
         230,
         50
       ],
+      "comment_inline": "into byte 2",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m2",
@@ -56998,6 +57032,7 @@
         208,
         7
       ],
+      "comment_inline": "done if no carry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_22",
@@ -57010,6 +57045,7 @@
         230,
         49
       ],
+      "comment_inline": "into byte 1 (the MSB)",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m1",
@@ -57022,6 +57058,7 @@
         208,
         3
       ],
+      "comment_inline": "done if no carry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_22",
@@ -57035,6 +57072,7 @@
         11,
         162
       ],
+      "comment_inline": "Carry out of the mantissa: renormalise (exponent up)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca20b",
@@ -58414,6 +58452,7 @@
       "labels": [
         "fwa_pack_temp1"
       ],
+      "comment_inline": "Point at FP TEMP1 (&046C): low byte",
       "xref_summaries": [
         "&a385 referenced 9 times by &8d3c, &9f3d, &a6a5, &a7be, &a84b, &a89b, &a9b1, &a9d9, &ab1f"
       ],
@@ -58441,6 +58480,7 @@
       "labels": [
         "ca387"
       ],
+      "comment_inline": "set the fp-variable pointer",
       "xref_summaries": [
         "&a387 referenced 3 times by &a37f, &a383, &a835"
       ],
@@ -58461,6 +58501,7 @@
         169,
         4
       ],
+      "comment_inline": "high byte &04",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -58471,6 +58512,7 @@
         133,
         76
       ],
+      "comment_inline": "then fall into fwa_pack_var",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -58731,6 +58773,7 @@
       "labels": [
         "fwa_unpack_temp1"
       ],
+      "comment_inline": "Point at FP TEMP1, then unpack it into FWA",
       "xref_summaries": [
         "&a3b2 referenced 2 times by &aa35, &ba36"
       ],
@@ -60672,6 +60715,7 @@
       "labels": [
         "fwa_copy_from_fwb"
       ],
+      "comment_inline": "Copy FWB's sign...",
       "xref_summaries": [
         "&a4dc referenced 2 times by &a50e, &a559"
       ],
@@ -60691,6 +60735,7 @@
         133,
         46
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -60703,6 +60748,7 @@
         165,
         60
       ],
+      "comment_inline": "Copy the overflow byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_ovf",
@@ -60715,6 +60761,7 @@
         133,
         47
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_ovf",
@@ -60727,6 +60774,7 @@
         165,
         61
       ],
+      "comment_inline": "Copy the exponent...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -60739,6 +60787,7 @@
         133,
         48
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -60754,6 +60803,7 @@
       "labels": [
         "sub_ca4e8"
       ],
+      "comment_inline": "Copy mantissa byte 1...",
       "xref_summaries": [
         "&a4e8 referenced 1 time by &a498"
       ],
@@ -60772,6 +60822,7 @@
         133,
         49
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -60784,6 +60835,7 @@
         165,
         63
       ],
+      "comment_inline": "Copy mantissa byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -60796,6 +60848,7 @@
         133,
         50
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -60808,6 +60861,7 @@
         165,
         64
       ],
+      "comment_inline": "Copy mantissa byte 3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -60820,6 +60874,7 @@
         133,
         51
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -60832,6 +60887,7 @@
         165,
         65
       ],
+      "comment_inline": "Copy mantissa byte 4...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m4",
@@ -60844,6 +60900,7 @@
         133,
         52
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -60856,6 +60913,7 @@
         165,
         66
       ],
+      "comment_inline": "Copy the rounding byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_rnd",
@@ -60868,6 +60926,7 @@
         133,
         53
       ],
+      "comment_inline": "...into FWA",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -60882,6 +60941,7 @@
       "labels": [
         "return_26"
       ],
+      "comment_inline": "FWA is now a copy of FWB",
       "xref_summaries": [
         "&a4fc referenced 2 times by &a503, &a51d"
       ],
@@ -63514,6 +63574,7 @@
       "labels": [
         "fwa_clear"
       ],
+      "comment_inline": "Zero to write into every field",
       "xref_summaries": [
         "&a686 referenced 8 times by &9f5c, &9fa0, &a2ee, &a3fb, &a5b4, &a610, &a699, &aaa6"
       ],
@@ -63537,6 +63598,7 @@
         133,
         46
       ],
+      "comment_inline": "Clear the sign",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -63549,6 +63611,7 @@
         133,
         47
       ],
+      "comment_inline": "Clear the overflow byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_ovf",
@@ -63561,6 +63624,7 @@
         133,
         48
       ],
+      "comment_inline": "Exponent 0 is the special \"value is zero\"",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -63573,6 +63637,7 @@
         133,
         49
       ],
+      "comment_inline": "Clear mantissa byte 1 (most significant)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -63585,6 +63650,7 @@
         133,
         50
       ],
+      "comment_inline": "Clear mantissa byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -63597,6 +63663,7 @@
         133,
         51
       ],
+      "comment_inline": "Clear mantissa byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -63609,6 +63676,7 @@
         133,
         52
       ],
+      "comment_inline": "Clear mantissa byte 4 (least significant)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -63621,6 +63689,7 @@
         133,
         53
       ],
+      "comment_inline": "Clear the rounding byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -63635,6 +63704,7 @@
       "labels": [
         "return_28"
       ],
+      "comment_inline": "FWA now holds 0.0",
       "xref_summaries": [
         "&a698 referenced 2 times by &a682, &a6ea"
       ],
@@ -63655,6 +63725,7 @@
       "labels": [
         "fwa_set_one"
       ],
+      "comment_inline": "Start from 0.0",
       "xref_summaries": [
         "&a699 referenced 6 times by &9e8b, &9f20, &a6a8, &a9ba, &ab22, &b863"
       ],
@@ -63678,6 +63749,7 @@
         160,
         128
       ],
+      "comment_inline": "Mantissa MSB &80 is the implied leading 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&80"
@@ -63688,6 +63760,7 @@
         132,
         49
       ],
+      "comment_inline": "Set mantissa byte 1",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_m1",
@@ -63699,6 +63772,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Y = &81",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -63708,6 +63782,7 @@
         132,
         48
       ],
+      "comment_inline": "Exponent &81 makes the value exactly 1.0",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_exp",
@@ -63719,6 +63794,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Return non-zero (A = exponent) to flag a real",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -63727,6 +63803,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWA now holds 1.0",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -75782,6 +75859,7 @@
       "labels": [
         "iwa_from_ya"
       ],
+      "comment_inline": "Low byte (A) into IWA byte 0",
       "xref_summaries": [
         "&aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351"
       ],
@@ -75810,6 +75888,7 @@
         132,
         43
       ],
+      "comment_inline": "High byte (Y) into IWA byte 1",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_1",
@@ -75833,6 +75912,7 @@
         133,
         44
       ],
+      "comment_inline": "Clear IWA byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -75845,6 +75925,7 @@
         133,
         45
       ],
+      "comment_inline": "Clear byte 3: the value is unsigned 0-65535",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -75867,6 +75948,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the integer",
       "type": "code",
       "mnemonic": "rts"
     },

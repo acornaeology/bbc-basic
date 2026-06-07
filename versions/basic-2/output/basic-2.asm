@@ -6216,21 +6216,21 @@ l848a = sub_c847b+15
 ; when FWA is zero). Tests the mantissa bytes (&31-&35) and the sign.
 ; &a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e
 .fwa_sign
-    lda zp_fwa_m1                                                     ; a1da: a5 31       .1    
-    ora zp_fwa_m2                                                     ; a1dc: 05 32       .2    
-    ora zp_fwa_m3                                                     ; a1de: 05 33       .3    
-    ora zp_fwa_m4                                                     ; a1e0: 05 34       .4    
-    ora zp_fwa_rnd                                                    ; a1e2: 05 35       .5       ; FWA is zero exactly when the whole mantissa is
-    beq ca1ed                                                         ; a1e4: f0 07       ..       ; zero (a normalised non-zero value has bit 7 set)
-    lda zp_fwa_sign                                                   ; a1e6: a5 2e       ..       ; Non-zero: the sign lives in bit 7 of the sign byte
-    bne return_20                                                     ; a1e8: d0 09       ..    
-    lda #1                                                            ; a1ea: a9 01       ..       ; Positive: return +1 (negative path returns -1)
-    rts                                                               ; a1ec: 60          `     
+    lda zp_fwa_m1                                                     ; a1da: a5 31       .1       ; OR the mantissa and rounding bytes to test for zero
+    ora zp_fwa_m2                                                     ; a1dc: 05 32       .2       ; (mantissa byte 2)
+    ora zp_fwa_m3                                                     ; a1de: 05 33       .3       ; (mantissa byte 3)
+    ora zp_fwa_m4                                                     ; a1e0: 05 34       .4       ; (mantissa byte 4)
+    ora zp_fwa_rnd                                                    ; a1e2: 05 35       .5       ; (rounding) - a non-zero value is never all zero
+    beq ca1ed                                                         ; a1e4: f0 07       ..       ; All zero: clean up and return zero
+    lda zp_fwa_sign                                                   ; a1e6: a5 2e       ..       ; Non-zero: the sign is in bit 7 of the sign byte
+    bne return_20                                                     ; a1e8: d0 09       ..       ; Bit 7 set: negative, return with A < 0
+    lda #1                                                            ; a1ea: a9 01       ..       ; Otherwise positive: return A = +1
+    rts                                                               ; a1ec: 60          `        ; A and the flags now give the sign
 ; &a1ed referenced 1 time by &a1e4
 .ca1ed
-    sta zp_fwa_sign                                                   ; a1ed: 85 2e       ..    
-    sta zp_fwa_exp                                                    ; a1ef: 85 30       .0    
-    sta zp_fwa_ovf                                                    ; a1f1: 85 2f       ./    
+    sta zp_fwa_sign                                                   ; a1ed: 85 2e       ..       ; Zero path: force a clean zero - sign,
+    sta zp_fwa_exp                                                    ; a1ef: 85 30       .0       ; exponent,
+    sta zp_fwa_ovf                                                    ; a1f1: 85 2f       ./       ; and overflow byte, then return A = 0
 ; &a1f3 referenced 1 time by &a1e8
 .return_20
     rts                                                               ; a1f3: 60          `     
@@ -6274,23 +6274,23 @@ l848a = sub_c847b+15
 ; Copy FWA into FWB.
 ; &a21e referenced 5 times by &9a44, &a1ff, &a23f, &a3f8, &a6b2
 .fwb_copy_from_fwa
-    lda zp_fwa_sign                                                   ; a21e: a5 2e       ..    
-    sta zp_fwb_sign                                                   ; a220: 85 3b       .;    
-    lda zp_fwa_ovf                                                    ; a222: a5 2f       ./    
-    sta zp_fwb_ovf                                                    ; a224: 85 3c       .<    
-    lda zp_fwa_exp                                                    ; a226: a5 30       .0    
-    sta zp_fwb_exp                                                    ; a228: 85 3d       .=    
-    lda zp_fwa_m1                                                     ; a22a: a5 31       .1    
-    sta zp_fwb_m1                                                     ; a22c: 85 3e       .>    
-    lda zp_fwa_m2                                                     ; a22e: a5 32       .2    
-    sta zp_fwb_m2                                                     ; a230: 85 3f       .?    
-    lda zp_fwa_m3                                                     ; a232: a5 33       .3    
-    sta zp_fwb_m3                                                     ; a234: 85 40       .@    
-    lda zp_fwa_m4                                                     ; a236: a5 34       .4    
-    sta zp_fwb_m4                                                     ; a238: 85 41       .A    
-    lda zp_fwa_rnd                                                    ; a23a: a5 35       .5    
-    sta zp_fwb_rnd                                                    ; a23c: 85 42       .B    
-    rts                                                               ; a23e: 60          `     
+    lda zp_fwa_sign                                                   ; a21e: a5 2e       ..       ; Copy FWA's sign...
+    sta zp_fwb_sign                                                   ; a220: 85 3b       .;       ; ...into FWB
+    lda zp_fwa_ovf                                                    ; a222: a5 2f       ./       ; Copy the overflow byte...
+    sta zp_fwb_ovf                                                    ; a224: 85 3c       .<       ; ...into FWB
+    lda zp_fwa_exp                                                    ; a226: a5 30       .0       ; Copy the exponent...
+    sta zp_fwb_exp                                                    ; a228: 85 3d       .=       ; ...into FWB
+    lda zp_fwa_m1                                                     ; a22a: a5 31       .1       ; Copy mantissa byte 1...
+    sta zp_fwb_m1                                                     ; a22c: 85 3e       .>       ; ...into FWB
+    lda zp_fwa_m2                                                     ; a22e: a5 32       .2       ; Copy mantissa byte 2...
+    sta zp_fwb_m2                                                     ; a230: 85 3f       .?       ; ...into FWB
+    lda zp_fwa_m3                                                     ; a232: a5 33       .3       ; Copy mantissa byte 3...
+    sta zp_fwb_m3                                                     ; a234: 85 40       .@       ; ...into FWB
+    lda zp_fwa_m4                                                     ; a236: a5 34       .4       ; Copy mantissa byte 4...
+    sta zp_fwb_m4                                                     ; a238: 85 41       .A       ; ...into FWB
+    lda zp_fwa_rnd                                                    ; a23a: a5 35       .5       ; Copy the rounding byte...
+    sta zp_fwb_rnd                                                    ; a23c: 85 42       .B       ; ...into FWB
+    rts                                                               ; a23e: 60          `        ; FWB is now a copy of FWA
 ; &a23f referenced 2 times by &a258, &a25e
 .sub_ca23f
     jsr fwb_copy_from_fwa                                             ; a23f: 20 1e a2     ..   
@@ -6359,18 +6359,18 @@ l848a = sub_c847b+15
 ; the mantissa up.
 ; &a2a4 referenced 1 time by &a666
 .fwa_round_carry
-    adc zp_fwa_rnd                                                    ; a2a4: 65 35       e5    
-    sta zp_fwa_rnd                                                    ; a2a6: 85 35       .5    
-    bcc return_22                                                     ; a2a8: 90 13       ..    
-    inc zp_fwa_m4                                                     ; a2aa: e6 34       .4    
-    bne return_22                                                     ; a2ac: d0 0f       ..    
-    inc zp_fwa_m3                                                     ; a2ae: e6 33       .3    
-    bne return_22                                                     ; a2b0: d0 0b       ..    
-    inc zp_fwa_m2                                                     ; a2b2: e6 32       .2    
-    bne return_22                                                     ; a2b4: d0 07       ..    
-    inc zp_fwa_m1                                                     ; a2b6: e6 31       .1    
-    bne return_22                                                     ; a2b8: d0 03       ..    
-    jmp ca20b                                                         ; a2ba: 4c 0b a2    L..   
+    adc zp_fwa_rnd                                                    ; a2a4: 65 35       e5       ; Add the round increment to the rounding byte
+    sta zp_fwa_rnd                                                    ; a2a6: 85 35       .5       ; Store it back
+    bcc return_22                                                     ; a2a8: 90 13       ..       ; No carry out: done
+    inc zp_fwa_m4                                                     ; a2aa: e6 34       .4       ; Carry: bump mantissa byte 4
+    bne return_22                                                     ; a2ac: d0 0f       ..       ; No further carry: done
+    inc zp_fwa_m3                                                     ; a2ae: e6 33       .3       ; Ripple into byte 3
+    bne return_22                                                     ; a2b0: d0 0b       ..       ; done if no carry
+    inc zp_fwa_m2                                                     ; a2b2: e6 32       .2       ; into byte 2
+    bne return_22                                                     ; a2b4: d0 07       ..       ; done if no carry
+    inc zp_fwa_m1                                                     ; a2b6: e6 31       .1       ; into byte 1 (the MSB)
+    bne return_22                                                     ; a2b8: d0 03       ..       ; done if no carry
+    jmp ca20b                                                         ; a2ba: 4c 0b a2    L..      ; Carry out of the mantissa: renormalise (exponent up)
 ; &a2bd referenced 5 times by &a2a8, &a2ac, &a2b0, &a2b4, &a2b8
 .return_22
     rts                                                               ; a2bd: 60          `     
@@ -6531,12 +6531,12 @@ l848a = sub_c847b+15
 ; Pack FWA into the floating-point temporary at &046C.
 ; &a385 referenced 9 times by &8d3c, &9f3d, &a6a5, &a7be, &a84b, &a89b, &a9b1, &a9d9, &ab1f
 .fwa_pack_temp1
-    lda #&6c ; 'l'                                                    ; a385: a9 6c       .l    
+    lda #&6c ; 'l'                                                    ; a385: a9 6c       .l       ; Point at FP TEMP1 (&046C): low byte
 ; &a387 referenced 3 times by &a37f, &a383, &a835
 .ca387
-    sta zp_fp_ptr                                                     ; a387: 85 4b       .K    
-    lda #4                                                            ; a389: a9 04       ..    
-    sta zp_fp_ptr_1                                                   ; a38b: 85 4c       .L    
+    sta zp_fp_ptr                                                     ; a387: 85 4b       .K       ; set the fp-variable pointer
+    lda #4                                                            ; a389: a9 04       ..       ; high byte &04
+    sta zp_fp_ptr_1                                                   ; a38b: 85 4c       .L       ; then fall into fwa_pack_var
 ; ***************************************************************************************
 ; Pack FWA into a fp variable
 ;
@@ -6570,7 +6570,7 @@ l848a = sub_c847b+15
 ; Unpack the floating-point temporary at &046C into FWA.
 ; &a3b2 referenced 2 times by &aa35, &ba36
 .fwa_unpack_temp1
-    jsr sub_ca7f5                                                     ; a3b2: 20 f5 a7     ..   
+    jsr sub_ca7f5                                                     ; a3b2: 20 f5 a7     ..      ; Point at FP TEMP1, then unpack it into FWA
 ; ***************************************************************************************
 ; Unpack a floating-point variable into FWA
 ;
@@ -6789,27 +6789,27 @@ l848a = sub_c847b+15
 ; Copy FWB into FWA.
 ; &a4dc referenced 2 times by &a50e, &a559
 .fwa_copy_from_fwb
-    lda zp_fwb_sign                                                   ; a4dc: a5 3b       .;    
-    sta zp_fwa_sign                                                   ; a4de: 85 2e       ..    
-    lda zp_fwb_ovf                                                    ; a4e0: a5 3c       .<    
-    sta zp_fwa_ovf                                                    ; a4e2: 85 2f       ./    
-    lda zp_fwb_exp                                                    ; a4e4: a5 3d       .=    
-    sta zp_fwa_exp                                                    ; a4e6: 85 30       .0    
+    lda zp_fwb_sign                                                   ; a4dc: a5 3b       .;       ; Copy FWB's sign...
+    sta zp_fwa_sign                                                   ; a4de: 85 2e       ..       ; ...into FWA
+    lda zp_fwb_ovf                                                    ; a4e0: a5 3c       .<       ; Copy the overflow byte...
+    sta zp_fwa_ovf                                                    ; a4e2: 85 2f       ./       ; ...into FWA
+    lda zp_fwb_exp                                                    ; a4e4: a5 3d       .=       ; Copy the exponent...
+    sta zp_fwa_exp                                                    ; a4e6: 85 30       .0       ; ...into FWA
 ; &a4e8 referenced 1 time by &a498
 .sub_ca4e8
-    lda zp_fwb_m1                                                     ; a4e8: a5 3e       .>    
-    sta zp_fwa_m1                                                     ; a4ea: 85 31       .1    
-    lda zp_fwb_m2                                                     ; a4ec: a5 3f       .?    
-    sta zp_fwa_m2                                                     ; a4ee: 85 32       .2    
-    lda zp_fwb_m3                                                     ; a4f0: a5 40       .@    
-    sta zp_fwa_m3                                                     ; a4f2: 85 33       .3    
-    lda zp_fwb_m4                                                     ; a4f4: a5 41       .A    
-    sta zp_fwa_m4                                                     ; a4f6: 85 34       .4    
-    lda zp_fwb_rnd                                                    ; a4f8: a5 42       .B    
-    sta zp_fwa_rnd                                                    ; a4fa: 85 35       .5    
+    lda zp_fwb_m1                                                     ; a4e8: a5 3e       .>       ; Copy mantissa byte 1...
+    sta zp_fwa_m1                                                     ; a4ea: 85 31       .1       ; ...into FWA
+    lda zp_fwb_m2                                                     ; a4ec: a5 3f       .?       ; Copy mantissa byte 2...
+    sta zp_fwa_m2                                                     ; a4ee: 85 32       .2       ; ...into FWA
+    lda zp_fwb_m3                                                     ; a4f0: a5 40       .@       ; Copy mantissa byte 3...
+    sta zp_fwa_m3                                                     ; a4f2: 85 33       .3       ; ...into FWA
+    lda zp_fwb_m4                                                     ; a4f4: a5 41       .A       ; Copy mantissa byte 4...
+    sta zp_fwa_m4                                                     ; a4f6: 85 34       .4       ; ...into FWA
+    lda zp_fwb_rnd                                                    ; a4f8: a5 42       .B       ; Copy the rounding byte...
+    sta zp_fwa_rnd                                                    ; a4fa: 85 35       .5       ; ...into FWA
 ; &a4fc referenced 2 times by &a503, &a51d
 .return_26
-    rts                                                               ; a4fc: 60          `     
+    rts                                                               ; a4fc: 60          `        ; FWA is now a copy of FWB
 ; ***************************************************************************************
 ; FWA = fp var - FWA
 ;
@@ -7111,31 +7111,31 @@ l848a = sub_c847b+15
 ; Set the floating-point accumulator to zero.
 ; &a686 referenced 8 times by &9f5c, &9fa0, &a2ee, &a3fb, &a5b4, &a610, &a699, &aaa6
 .fwa_clear
-    lda #0                                                            ; a686: a9 00       ..    
-    sta zp_fwa_sign                                                   ; a688: 85 2e       ..    
-    sta zp_fwa_ovf                                                    ; a68a: 85 2f       ./    
-    sta zp_fwa_exp                                                    ; a68c: 85 30       .0    
-    sta zp_fwa_m1                                                     ; a68e: 85 31       .1    
-    sta zp_fwa_m2                                                     ; a690: 85 32       .2    
-    sta zp_fwa_m3                                                     ; a692: 85 33       .3    
-    sta zp_fwa_m4                                                     ; a694: 85 34       .4    
-    sta zp_fwa_rnd                                                    ; a696: 85 35       .5    
+    lda #0                                                            ; a686: a9 00       ..       ; Zero to write into every field
+    sta zp_fwa_sign                                                   ; a688: 85 2e       ..       ; Clear the sign
+    sta zp_fwa_ovf                                                    ; a68a: 85 2f       ./       ; Clear the overflow byte
+    sta zp_fwa_exp                                                    ; a68c: 85 30       .0       ; Exponent 0 is the special "value is zero"
+    sta zp_fwa_m1                                                     ; a68e: 85 31       .1       ; Clear mantissa byte 1 (most significant)
+    sta zp_fwa_m2                                                     ; a690: 85 32       .2       ; Clear mantissa byte 2
+    sta zp_fwa_m3                                                     ; a692: 85 33       .3       ; Clear mantissa byte 3
+    sta zp_fwa_m4                                                     ; a694: 85 34       .4       ; Clear mantissa byte 4 (least significant)
+    sta zp_fwa_rnd                                                    ; a696: 85 35       .5       ; Clear the rounding byte
 ; &a698 referenced 2 times by &a682, &a6ea
 .return_28
-    rts                                                               ; a698: 60          `     
+    rts                                                               ; a698: 60          `        ; FWA now holds 0.0
 ; ***************************************************************************************
 ; FWA = 1
 ;
 ; Set the floating-point accumulator to 1.
 ; &a699 referenced 6 times by &9e8b, &9f20, &a6a8, &a9ba, &ab22, &b863
 .fwa_set_one
-    jsr fwa_clear                                                     ; a699: 20 86 a6     ..   
-    ldy #&80                                                          ; a69c: a0 80       ..    
-    sty zp_fwa_m1                                                     ; a69e: 84 31       .1    
-    iny                                                               ; a6a0: c8          .     
-    sty zp_fwa_exp                                                    ; a6a1: 84 30       .0    
-    tya                                                               ; a6a3: 98          .     
-    rts                                                               ; a6a4: 60          `     
+    jsr fwa_clear                                                     ; a699: 20 86 a6     ..      ; Start from 0.0
+    ldy #&80                                                          ; a69c: a0 80       ..       ; Mantissa MSB &80 is the implied leading 1
+    sty zp_fwa_m1                                                     ; a69e: 84 31       .1       ; Set mantissa byte 1
+    iny                                                               ; a6a0: c8          .        ; Y = &81
+    sty zp_fwa_exp                                                    ; a6a1: 84 30       .0       ; Exponent &81 makes the value exactly 1.0
+    tya                                                               ; a6a3: 98          .        ; Return non-zero (A = exponent) to flag a real
+    rts                                                               ; a6a4: 60          `        ; FWA now holds 1.0
 ; ***************************************************************************************
 ; FWA = 1 / FWA
 ;
@@ -8551,13 +8551,13 @@ l848a = sub_c847b+15
 ;     ZP_IWA: 256*Y + A (sign-extended)
 ; &aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351
 .iwa_from_ya
-    sta zp_iwa                                                        ; aeea: 85 2a       .*    
-    sty zp_iwa_1                                                      ; aeec: 84 2b       .+    
+    sta zp_iwa                                                        ; aeea: 85 2a       .*       ; Low byte (A) into IWA byte 0
+    sty zp_iwa_1                                                      ; aeec: 84 2b       .+       ; High byte (Y) into IWA byte 1
     lda #0                                                            ; aeee: a9 00       ..       ; Clear the top 16 bits: the result is 0-65535
-    sta zp_iwa_2                                                      ; aef0: 85 2c       .,    
-    sta zp_iwa_3                                                      ; aef2: 85 2d       .-    
+    sta zp_iwa_2                                                      ; aef0: 85 2c       .,       ; Clear IWA byte 2
+    sta zp_iwa_3                                                      ; aef2: 85 2d       .-       ; Clear byte 3: the value is unsigned 0-65535
     lda #&40 ; '@'                                                    ; aef4: a9 40       .@       ; Report the value as an integer (type &40)
-    rts                                                               ; aef6: 60          `     
+    rts                                                               ; aef6: 60          `        ; Return the integer
 ; ***************************************************************************************
 ; COUNT
 ;

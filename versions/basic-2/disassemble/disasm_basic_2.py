@@ -998,15 +998,23 @@ d.subroutine(
 # opcodes (the field labels already carry much of that).
 # ======================================================================
 
-# --- fwa_sign: sign of FWA, returned in A as +1 / 0 / -1 -------------
-d.comment(0xa1e2, 'FWA is zero exactly when the whole mantissa is',
+# --- fwa_sign (&A1DA): sign of FWA in A (Z=zero, N=negative, +1=pos) --
+d.comment(0xa1da, 'OR the mantissa and rounding bytes to test for zero',
           align=Align.INLINE)
-d.comment(0xa1e4, 'zero (a normalised non-zero value has bit 7 set)',
+d.comment(0xa1dc, '(mantissa byte 2)', align=Align.INLINE)
+d.comment(0xa1de, '(mantissa byte 3)', align=Align.INLINE)
+d.comment(0xa1e0, '(mantissa byte 4)', align=Align.INLINE)
+d.comment(0xa1e2, '(rounding) - a non-zero value is never all zero',
           align=Align.INLINE)
-d.comment(0xa1e6, 'Non-zero: the sign lives in bit 7 of the sign byte',
+d.comment(0xa1e4, 'All zero: clean up and return zero', align=Align.INLINE)
+d.comment(0xa1e6, 'Non-zero: the sign is in bit 7 of the sign byte',
           align=Align.INLINE)
-d.comment(0xa1ea, 'Positive: return +1 (negative path returns -1)',
-          align=Align.INLINE)
+d.comment(0xa1e8, 'Bit 7 set: negative, return with A < 0', align=Align.INLINE)
+d.comment(0xa1ea, 'Otherwise positive: return A = +1', align=Align.INLINE)
+d.comment(0xa1ec, 'A and the flags now give the sign', align=Align.INLINE)
+d.comment(0xa1ed, 'Zero path: force a clean zero - sign,', align=Align.INLINE)
+d.comment(0xa1ef, 'exponent,', align=Align.INLINE)
+d.comment(0xa1f1, 'and overflow byte, then return A = 0', align=Align.INLINE)
 
 # --- iwa_from_ya: build a 16-bit (unsigned) integer in the IWA -------
 d.comment(0xaeee, 'Clear the top 16 bits: the result is 0-65535',
@@ -1420,6 +1428,100 @@ d.comment(0x934c, 'A comma introduces another LOCAL', align=Align.INLINE)
 d.comment(0x9356, 'ENDPROC needs a PROC frame on the stack', align=Align.INLINE)
 d.comment(0x935e, 'The framed call must be a PROC', align=Align.INLINE)
 d.comment(0x9362, 'Return to the caller, restoring locals', align=Align.INLINE)
+
+# ======================================================================
+# DEPTH 0 LEAVES — full per-instruction coverage (see ANNOTATION_PROGRESS)
+# ======================================================================
+
+# fwa_clear (&A686): FWA = 0.0
+d.comment(0xa686, 'Zero to write into every field', align=Align.INLINE)
+d.comment(0xa688, 'Clear the sign', align=Align.INLINE)
+d.comment(0xa68a, 'Clear the overflow byte', align=Align.INLINE)
+d.comment(0xa68c, 'Exponent 0 is the special "value is zero"', align=Align.INLINE)
+d.comment(0xa68e, 'Clear mantissa byte 1 (most significant)', align=Align.INLINE)
+d.comment(0xa690, 'Clear mantissa byte 2', align=Align.INLINE)
+d.comment(0xa692, 'Clear mantissa byte 3', align=Align.INLINE)
+d.comment(0xa694, 'Clear mantissa byte 4 (least significant)', align=Align.INLINE)
+d.comment(0xa696, 'Clear the rounding byte', align=Align.INLINE)
+d.comment(0xa698, 'FWA now holds 0.0', align=Align.INLINE)
+
+# fwa_set_one (&A699): FWA = 1.0
+d.comment(0xa699, 'Start from 0.0', align=Align.INLINE)
+d.comment(0xa69c, 'Mantissa MSB &80 is the implied leading 1', align=Align.INLINE)
+d.comment(0xa69e, 'Set mantissa byte 1', align=Align.INLINE)
+d.comment(0xa6a0, 'Y = &81', align=Align.INLINE)
+d.comment(0xa6a1, 'Exponent &81 makes the value exactly 1.0', align=Align.INLINE)
+d.comment(0xa6a3, 'Return non-zero (A = exponent) to flag a real', align=Align.INLINE)
+d.comment(0xa6a4, 'FWA now holds 1.0', align=Align.INLINE)
+
+# fwa_copy_from_fwb (&A4DC): FWA = FWB
+d.comment(0xa4dc, "Copy FWB's sign...", align=Align.INLINE)
+d.comment(0xa4de, '...into FWA', align=Align.INLINE)
+d.comment(0xa4e0, 'Copy the overflow byte...', align=Align.INLINE)
+d.comment(0xa4e2, '...into FWA', align=Align.INLINE)
+d.comment(0xa4e4, 'Copy the exponent...', align=Align.INLINE)
+d.comment(0xa4e6, '...into FWA', align=Align.INLINE)
+d.comment(0xa4e8, 'Copy mantissa byte 1...', align=Align.INLINE)
+d.comment(0xa4ea, '...into FWA', align=Align.INLINE)
+d.comment(0xa4ec, 'Copy mantissa byte 2...', align=Align.INLINE)
+d.comment(0xa4ee, '...into FWA', align=Align.INLINE)
+d.comment(0xa4f0, 'Copy mantissa byte 3...', align=Align.INLINE)
+d.comment(0xa4f2, '...into FWA', align=Align.INLINE)
+d.comment(0xa4f4, 'Copy mantissa byte 4...', align=Align.INLINE)
+d.comment(0xa4f6, '...into FWA', align=Align.INLINE)
+d.comment(0xa4f8, 'Copy the rounding byte...', align=Align.INLINE)
+d.comment(0xa4fa, '...into FWA', align=Align.INLINE)
+d.comment(0xa4fc, 'FWA is now a copy of FWB', align=Align.INLINE)
+
+# fwa_pack_temp1/2/3 (&A385/&A37D/&A381): point at an FP temp, then pack
+d.comment(0xa385, 'Point at FP TEMP1 (&046C): low byte', align=Align.INLINE)
+d.comment(0xa387, 'set the fp-variable pointer', align=Align.INLINE)
+d.comment(0xa389, 'high byte &04', align=Align.INLINE)
+d.comment(0xa38b, 'then fall into fwa_pack_var', align=Align.INLINE)
+d.comment(0xa3b2, 'Point at FP TEMP1, then unpack it into FWA',
+          align=Align.INLINE)
+
+# iwa_from_ya (&AEEA): IWA = unsigned 256*Y + A
+d.comment(0xaeea, 'Low byte (A) into IWA byte 0', align=Align.INLINE)
+d.comment(0xaeec, 'High byte (Y) into IWA byte 1', align=Align.INLINE)
+d.comment(0xaef0, 'Clear IWA byte 2', align=Align.INLINE)
+d.comment(0xaef2, 'Clear byte 3: the value is unsigned 0-65535', align=Align.INLINE)
+d.comment(0xaef6, 'Return the integer', align=Align.INLINE)
+
+# fwa_round_carry (&A2A4): add A to rounding, ripple carry up the mantissa
+d.comment(0xa2a4, 'Add the round increment to the rounding byte',
+          align=Align.INLINE)
+d.comment(0xa2a6, 'Store it back', align=Align.INLINE)
+d.comment(0xa2a8, 'No carry out: done', align=Align.INLINE)
+d.comment(0xa2aa, 'Carry: bump mantissa byte 4', align=Align.INLINE)
+d.comment(0xa2ac, 'No further carry: done', align=Align.INLINE)
+d.comment(0xa2ae, 'Ripple into byte 3', align=Align.INLINE)
+d.comment(0xa2b0, 'done if no carry', align=Align.INLINE)
+d.comment(0xa2b2, 'into byte 2', align=Align.INLINE)
+d.comment(0xa2b4, 'done if no carry', align=Align.INLINE)
+d.comment(0xa2b6, 'into byte 1 (the MSB)', align=Align.INLINE)
+d.comment(0xa2b8, 'done if no carry', align=Align.INLINE)
+d.comment(0xa2ba, 'Carry out of the mantissa: renormalise (exponent up)',
+          align=Align.INLINE)
+
+# fwb_copy_from_fwa (&A21E): FWB = FWA
+d.comment(0xa21e, "Copy FWA's sign...", align=Align.INLINE)
+d.comment(0xa220, '...into FWB', align=Align.INLINE)
+d.comment(0xa222, 'Copy the overflow byte...', align=Align.INLINE)
+d.comment(0xa224, '...into FWB', align=Align.INLINE)
+d.comment(0xa226, 'Copy the exponent...', align=Align.INLINE)
+d.comment(0xa228, '...into FWB', align=Align.INLINE)
+d.comment(0xa22a, 'Copy mantissa byte 1...', align=Align.INLINE)
+d.comment(0xa22c, '...into FWB', align=Align.INLINE)
+d.comment(0xa22e, 'Copy mantissa byte 2...', align=Align.INLINE)
+d.comment(0xa230, '...into FWB', align=Align.INLINE)
+d.comment(0xa232, 'Copy mantissa byte 3...', align=Align.INLINE)
+d.comment(0xa234, '...into FWB', align=Align.INLINE)
+d.comment(0xa236, 'Copy mantissa byte 4...', align=Align.INLINE)
+d.comment(0xa238, '...into FWB', align=Align.INLINE)
+d.comment(0xa23a, 'Copy the rounding byte...', align=Align.INLINE)
+d.comment(0xa23c, '...into FWB', align=Align.INLINE)
+d.comment(0xa23e, 'FWB is now a copy of FWA', align=Align.INLINE)
 
 ir = d.disassemble()
 output = str(
