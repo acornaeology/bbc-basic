@@ -2043,7 +2043,7 @@ l848a = sub_c847b+15
     lda #0                                                            ; 8abd: a9 00       ..    
     sta zp_general                                                    ; 8abf: 85 37       .7    
     sta (zp_general),y                                                ; 8ac1: 91 37       .7    
-    jsr sub_cbe6f                                                     ; 8ac3: 20 6f be     o.   
+    jsr check_program                                                 ; 8ac3: 20 6f be     o.   
     bne c8af3                                                         ; 8ac6: d0 2b       .+    
 ; ***************************************************************************************
 ; END
@@ -2051,7 +2051,7 @@ l848a = sub_c847b+15
 ; End the program and return to the immediate prompt. END.
 .stmt_end
     jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.   
-    jsr sub_cbe6f                                                     ; 8acb: 20 6f be     o.   
+    jsr check_program                                                 ; 8acb: 20 6f be     o.   
     bne immediate_loop                                                ; 8ace: d0 26       .&    
 ; ***************************************************************************************
 ; STOP
@@ -2946,7 +2946,7 @@ l848a = sub_c847b+15
     jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.      ; Parse the start and step arguments
     ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9       ; Pop the step into the file block (&39)
     jsr unstack_int_to_zp                                             ; 8fa8: 20 0d be     ..      ; (pop it)
-    jsr sub_cbe6f                                                     ; 8fab: 20 6f be     o.      ; Pop the start number
+    jsr check_program                                                 ; 8fab: 20 6f be     o.      ; Pop the start number
     jsr sub_c8f92                                                     ; 8fae: 20 92 8f     ..      ; Point at the program start and the table
 ; &8fb1 referenced 1 time by &8fd4
 .loop_c8fb1
@@ -9911,7 +9911,7 @@ l848a = sub_c847b+15
     lda zp_iwa_1                                                      ; b5df: a5 2b       .+    
     sta zp_fwa_m2                                                     ; b5e1: 85 32       .2    
     jsr check_end_of_statement                                        ; b5e3: 20 57 98     W.   
-    jsr sub_cbe6f                                                     ; b5e6: 20 6f be     o.   
+    jsr check_program                                                 ; b5e6: 20 6f be     o.   
     jsr unstack_integer                                               ; b5e9: 20 ea bd     ..   
     jsr find_program_line                                             ; b5ec: 20 70 99     p.   
     lda zp_fwb_exp                                                    ; b5ef: a5 3d       .=    
@@ -10999,7 +10999,7 @@ l848a = sub_c847b+15
     lda l0007                                                         ; bcc0: a5 07       ..    
     sbc zp_top_1                                                      ; bcc2: e5 13       ..    
     bcs cbcd6                                                         ; bcc4: b0 10       ..    
-    jsr sub_cbe6f                                                     ; bcc6: 20 6f be     o.   
+    jsr check_program                                                 ; bcc6: 20 6f be     o.   
     jsr clear_vars_heap_stack                                         ; bcc9: 20 20 bd      .   
     brk                                                               ; bccc: 00          .     
     equb &00, &86                                                     ; bccd: 00 86       ..    
@@ -11359,69 +11359,74 @@ l848a = sub_c847b+15
 ; Used by LOAD and CHAIN to read a BASIC program into memory.
 ; &be62 referenced 2 times by &bf24, &bf2a
 .load_program
-    jsr sub_cbedd                                                     ; be62: 20 dd be     ..   
-    tay                                                               ; be65: a8          .     
-    lda #osfile_load                                                  ; be66: a9 ff       ..    
-    sty zp_fwb_exp                                                    ; be68: 84 3d       .=    
-    ldx #&37 ; '7'                                                    ; be6a: a2 37       .7    
+    jsr sub_cbedd                                                     ; be62: 20 dd be     ..      ; Set the OSFILE load address to PAGE
+    tay                                                               ; be65: a8          .        ; ...
+    lda #osfile_load                                                  ; be66: a9 ff       ..       ; OSFILE &FF: load the named file
+    sty zp_fwb_exp                                                    ; be68: 84 3d       .=       ; exec address = 0 (load to the given address)
+    ldx #&37 ; '7'                                                    ; be6a: a2 37       .7       ; control block at &37
     jsr osfile                                                        ; be6c: 20 dd ff     ..      ; osfile: load file
+; ***************************************************************************************
+; Validate the program and set TOP
+;
+; Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length),
+; set TOP past the end; "Bad program" otherwise.
 ; &be6f referenced 6 times by &8ac3, &8acb, &8fab, &b5e6, &bcc6, &bef3
-.sub_cbe6f
-    lda zp_page                                                       ; be6f: a5 18       ..    
-    sta zp_top_1                                                      ; be71: 85 13       ..    
-    ldy #0                                                            ; be73: a0 00       ..    
-    sty zp_top                                                        ; be75: 84 12       ..    
-    iny                                                               ; be77: c8          .     
+.check_program
+    lda zp_page                                                       ; be6f: a5 18       ..       ; Set TOP = PAGE: high
+    sta zp_top_1                                                      ; be71: 85 13       ..       ; (TOP high)
+    ldy #0                                                            ; be73: a0 00       ..       ; low 0
+    sty zp_top                                                        ; be75: 84 12       ..       ; (store)
+    iny                                                               ; be77: c8          .        ; Y = 1
 ; &be78 referenced 1 time by &be8e
 .loop_cbe78
-    dey                                                               ; be78: 88          .     
-    lda (zp_top),y                                                    ; be79: b1 12       ..    
-    cmp #&0d                                                          ; be7b: c9 0d       ..    
-    bne cbe9e                                                         ; be7d: d0 1f       ..    
-    iny                                                               ; be7f: c8          .     
-    lda (zp_top),y                                                    ; be80: b1 12       ..    
-    bmi cbe90                                                         ; be82: 30 0c       0.    
-    ldy #3                                                            ; be84: a0 03       ..    
-    lda (zp_top),y                                                    ; be86: b1 12       ..    
-    beq cbe9e                                                         ; be88: f0 14       ..    
-    clc                                                               ; be8a: 18          .     
-    jsr sub_cbe93                                                     ; be8b: 20 93 be     ..   
-    bne loop_cbe78                                                    ; be8e: d0 e8       ..    
+    dey                                                               ; be78: 88          .        ; step back to the byte before the line
+    lda (zp_top),y                                                    ; be79: b1 12       ..       ; get it
+    cmp #&0d                                                          ; be7b: c9 0d       ..       ; each line must be CR-terminated
+    bne cbe9e                                                         ; be7d: d0 1f       ..       ; not a CR: Bad program
+    iny                                                               ; be7f: c8          .        ; step to the line number / end marker
+    lda (zp_top),y                                                    ; be80: b1 12       ..       ; get it
+    bmi cbe90                                                         ; be82: 30 0c       0.       ; high bit set: end of program
+    ldy #3                                                            ; be84: a0 03       ..       ; line length is at offset 3
+    lda (zp_top),y                                                    ; be86: b1 12       ..       ; get it
+    beq cbe9e                                                         ; be88: f0 14       ..       ; zero length: Bad program
+    clc                                                               ; be8a: 18          .        ; advance to the next line
+    jsr sub_cbe93                                                     ; be8b: 20 93 be     ..      ; TOP += line length
+    bne loop_cbe78                                                    ; be8e: d0 e8       ..       ; loop over all lines
 ; &be90 referenced 1 time by &be82
 .cbe90
-    iny                                                               ; be90: c8          .     
-    clc                                                               ; be91: 18          .     
+    iny                                                               ; be90: c8          .        ; End of program: skip the &FF marker
+    clc                                                               ; be91: 18          .        ; ...
 ; &be92 referenced 2 times by &bc7c, &bcb2
 .sub_cbe92
-    tya                                                               ; be92: 98          .     
+    tya                                                               ; be92: 98          .        ; TOP += Y
 ; &be93 referenced 1 time by &be8b
 .sub_cbe93
-    adc zp_top                                                        ; be93: 65 12       e.    
-    sta zp_top                                                        ; be95: 85 12       ..    
-    bcc cbe9b                                                         ; be97: 90 02       ..    
-    inc zp_top_1                                                      ; be99: e6 13       ..    
+    adc zp_top                                                        ; be93: 65 12       e.       ; add: low
+    sta zp_top                                                        ; be95: 85 12       ..       ; (store)
+    bcc cbe9b                                                         ; be97: 90 02       ..       ; no carry
+    inc zp_top_1                                                      ; be99: e6 13       ..       ; carry into high
 ; &be9b referenced 1 time by &be97
 .cbe9b
-    ldy #1                                                            ; be9b: a0 01       ..    
-    rts                                                               ; be9d: 60          `     
+    ldy #1                                                            ; be9b: a0 01       ..       ; return Y=1 (NE)
+    rts                                                               ; be9d: 60          `        ; Return
 ; &be9e referenced 2 times by &be7d, &be88
 .cbe9e
-    jsr print_inline_string                                           ; be9e: 20 cf bf     ..   
+    jsr print_inline_string                                           ; be9e: 20 cf bf     ..      ; Bad program: print the message
     equb &0d, "Bad program", &0d                                      ; bea1: 0d 42 61... .Ba...
-    nop                                                               ; beae: ea          .     
-    jmp immediate_loop                                                ; beaf: 4c f6 8a    L..   
+    nop                                                               ; beae: ea          .        ; (string terminator)
+    jmp immediate_loop                                                ; beaf: 4c f6 8a    L..      ; back to the immediate loop
 ; &beb2 referenced 1 time by &bed7
 .sub_cbeb2
-    lda #0                                                            ; beb2: a9 00       ..    
-    sta zp_general                                                    ; beb4: 85 37       .7    
-    lda #6                                                            ; beb6: a9 06       ..    
-    sta zp_general_1                                                  ; beb8: 85 38       .8    
+    lda #0                                                            ; beb2: a9 00       ..       ; Point the general pointer at the string buffer: low
+    sta zp_general                                                    ; beb4: 85 37       .7       ; (store)
+    lda #6                                                            ; beb6: a9 06       ..       ; high (&06)
+    sta zp_general_1                                                  ; beb8: 85 38       .8       ; (store)
 ; &beba referenced 2 times by &8ca2, &bf88
 .sub_cbeba
-    ldy zp_strbuf_len                                                 ; beba: a4 36       .6    
-    lda #&0d                                                          ; bebc: a9 0d       ..    
-    sta string_work,y                                                 ; bebe: 99 00 06    ...   
-    rts                                                               ; bec1: 60          `     
+    ldy zp_strbuf_len                                                 ; beba: a4 36       .6       ; Terminate the string buffer with a CR:
+    lda #&0d                                                          ; bebc: a9 0d       ..       ; CR
+    sta string_work,y                                                 ; bebe: 99 00 06    ...      ; at the end of the buffer
+    rts                                                               ; bec1: 60          `        ; Return
 ; ***************************************************************************************
 ; OSCLI
 ;
@@ -11461,7 +11466,7 @@ l848a = sub_c847b+15
 ;
 ; Save the current program to the filing system. SAVE string.
 .stmt_save
-    jsr sub_cbe6f                                                     ; bef3: 20 6f be     o.   
+    jsr check_program                                                 ; bef3: 20 6f be     o.   
     lda zp_top                                                        ; bef6: a5 12       ..    
     sta l0045                                                         ; bef8: 85 45       .E    
     lda zp_top_1                                                      ; befa: a5 13       ..    
@@ -11785,6 +11790,7 @@ save pydis_start, pydis_end
 ;     cae43:                       6
 ;     cb2b5:                       6
 ;     cbddc:                       6
+;     check_program:               6
 ;     fwa_pack_temp3:              6
 ;     fwa_set_one:                 6
 ;     osbget:                      6
@@ -11792,7 +11798,6 @@ save pydis_start, pydis_end
 ;     sub_c92ee:                   6
 ;     sub_ca7f5:                   6
 ;     sub_cbdcb:                   6
-;     sub_cbe6f:                   6
 ;     zp_error_vec:                6
 ;     zp_error_vec_1:              6
 ;     zp_fp_temp:                  6
@@ -13951,7 +13956,6 @@ save pydis_start, pydis_end
 ;     sub_cbdcb
 ;     sub_cbe55
 ;     sub_cbe56
-;     sub_cbe6f
 ;     sub_cbe92
 ;     sub_cbe93
 ;     sub_cbeb2

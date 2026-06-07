@@ -1629,7 +1629,14 @@
       "addr": 48738,
       "name": "load_program",
       "title": "Load a program from the filing system",
-      "description": "Used by LOAD and CHAIN to read a BASIC program into memory."
+      "description": "Used by LOAD and CHAIN to read a BASIC program into memory.",
+      "fall_through": true
+    },
+    {
+      "addr": 48751,
+      "name": "check_program",
+      "title": "Validate the program and set TOP",
+      "description": "Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length), set TOP past the end; \"Bad program\" otherwise."
     },
     {
       "addr": 48416,
@@ -18438,9 +18445,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 35526,
@@ -18479,9 +18486,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 35534,
@@ -26278,9 +26285,9 @@
       "comment_inline": "Pop the start number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 36782,
@@ -87770,9 +87777,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 46569,
@@ -98115,9 +98122,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 48329,
@@ -101077,6 +101084,7 @@
       "labels": [
         "load_program"
       ],
+      "comment_inline": "Set the OSFILE load address to PAGE",
       "xref_summaries": [
         "&be62 referenced 2 times by &bf24, &bf2a"
       ],
@@ -101095,6 +101103,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -101104,6 +101113,7 @@
         169,
         255
       ],
+      "comment_inline": "OSFILE &FF: load the named file",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osfile_load"
@@ -101114,6 +101124,7 @@
         132,
         61
       ],
+      "comment_inline": "exec address = 0 (load to the given address)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -101126,6 +101137,7 @@
         162,
         55
       ],
+      "comment_inline": "control block at &37",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&37"
@@ -101151,8 +101163,9 @@
         24
       ],
       "labels": [
-        "sub_cbe6f"
+        "check_program"
       ],
+      "comment_inline": "Set TOP = PAGE: high",
       "xref_summaries": [
         "&be6f referenced 6 times by &8ac3, &8acb, &8fab, &b5e6, &bcc6, &bef3"
       ],
@@ -101176,6 +101189,7 @@
         133,
         19
       ],
+      "comment_inline": "(TOP high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top_1",
@@ -101188,6 +101202,7 @@
         160,
         0
       ],
+      "comment_inline": "low 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -101198,6 +101213,7 @@
         132,
         18
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_top",
@@ -101209,6 +101225,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Y = 1",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -101220,6 +101237,7 @@
       "labels": [
         "loop_cbe78"
       ],
+      "comment_inline": "step back to the byte before the line",
       "xref_summaries": [
         "&be78 referenced 1 time by &be8e"
       ],
@@ -101235,6 +101253,7 @@
         177,
         18
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_top),y",
@@ -101247,6 +101266,7 @@
         201,
         13
       ],
+      "comment_inline": "each line must be CR-terminated",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -101257,6 +101277,7 @@
         208,
         31
       ],
+      "comment_inline": "not a CR: Bad program",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbe9e",
@@ -101268,6 +101289,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step to the line number / end marker",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -101277,6 +101299,7 @@
         177,
         18
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_top),y",
@@ -101289,6 +101312,7 @@
         48,
         12
       ],
+      "comment_inline": "high bit set: end of program",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cbe90",
@@ -101301,6 +101325,7 @@
         160,
         3
       ],
+      "comment_inline": "line length is at offset 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -101311,6 +101336,7 @@
         177,
         18
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_top),y",
@@ -101323,6 +101349,7 @@
         240,
         20
       ],
+      "comment_inline": "zero length: Bad program",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbe9e",
@@ -101334,6 +101361,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "advance to the next line",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -101344,6 +101372,7 @@
         147,
         190
       ],
+      "comment_inline": "TOP += line length",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe93",
@@ -101356,6 +101385,7 @@
         208,
         232
       ],
+      "comment_inline": "loop over all lines",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbe78",
@@ -101370,6 +101400,7 @@
       "labels": [
         "cbe90"
       ],
+      "comment_inline": "End of program: skip the &FF marker",
       "xref_summaries": [
         "&be90 referenced 1 time by &be82"
       ],
@@ -101384,6 +101415,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -101395,6 +101427,7 @@
       "labels": [
         "sub_cbe92"
       ],
+      "comment_inline": "TOP += Y",
       "xref_summaries": [
         "&be92 referenced 2 times by &bc7c, &bcb2"
       ],
@@ -101414,6 +101447,7 @@
       "labels": [
         "sub_cbe93"
       ],
+      "comment_inline": "add: low",
       "xref_summaries": [
         "&be93 referenced 1 time by &be8b"
       ],
@@ -101432,6 +101466,7 @@
         133,
         18
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top",
@@ -101444,6 +101479,7 @@
         144,
         2
       ],
+      "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbe9b",
@@ -101456,6 +101492,7 @@
         230,
         19
       ],
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -101471,6 +101508,7 @@
       "labels": [
         "cbe9b"
       ],
+      "comment_inline": "return Y=1 (NE)",
       "xref_summaries": [
         "&be9b referenced 1 time by &be97"
       ],
@@ -101486,6 +101524,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -101499,6 +101538,7 @@
       "labels": [
         "cbe9e"
       ],
+      "comment_inline": "Bad program: print the message",
       "xref_summaries": [
         "&be9e referenced 2 times by &be7d, &be88"
       ],
@@ -101537,6 +101577,7 @@
       "bytes": [
         234
       ],
+      "comment_inline": "(string terminator)",
       "type": "code",
       "mnemonic": "nop"
     },
@@ -101547,6 +101588,7 @@
         246,
         138
       ],
+      "comment_inline": "back to the immediate loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "immediate_loop",
@@ -101562,6 +101604,7 @@
       "labels": [
         "sub_cbeb2"
       ],
+      "comment_inline": "Point the general pointer at the string buffer: low",
       "xref_summaries": [
         "&beb2 referenced 1 time by &bed7"
       ],
@@ -101578,6 +101621,7 @@
         133,
         55
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -101590,6 +101634,7 @@
         169,
         6
       ],
+      "comment_inline": "high (&06)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#6"
@@ -101600,6 +101645,7 @@
         133,
         56
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -101615,6 +101661,7 @@
       "labels": [
         "sub_cbeba"
       ],
+      "comment_inline": "Terminate the string buffer with a CR:",
       "xref_summaries": [
         "&beba referenced 2 times by &8ca2, &bf88"
       ],
@@ -101634,6 +101681,7 @@
         169,
         13
       ],
+      "comment_inline": "CR",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&0d"
@@ -101645,6 +101693,7 @@
         0,
         6
       ],
+      "comment_inline": "at the end of the buffer",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -101656,6 +101705,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -101958,9 +102008,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe6f",
+      "operand": "check_program",
       "target": 48751,
-      "target_label": "sub_cbe6f"
+      "target_label": "check_program"
     },
     {
       "addr": 48886,
