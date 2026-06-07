@@ -7136,29 +7136,29 @@ l848a = sub_c847b+15
 ; &a65c referenced 2 times by &a118, &a508
 .fwa_round
     lda zp_fwa_rnd                                                    ; a65c: a5 35       .5       ; The rounding byte holds the bits below the LSB
-    cmp #&80                                                          ; a65e: c9 80       ..    
+    cmp #&80                                                          ; a65e: c9 80       ..       ; compare with half (&80)
     bcc ca67c                                                         ; a660: 90 1a       ..       ; Below half: round down (truncate)
     beq ca676                                                         ; a662: f0 12       ..       ; Exactly half: special-case the LSB
     lda #&ff                                                          ; a664: a9 ff       ..       ; Above half: round up by adding 1
-    jsr fwa_round_carry                                               ; a666: 20 a4 a2     ..   
-    jmp ca67c                                                         ; a669: 4c 7c a6    L|.   
+    jsr fwa_round_carry                                               ; a666: 20 a4 a2     ..      ; add 1 via the carry ripple
+    jmp ca67c                                                         ; a669: 4c 7c a6    L|.      ; then finish
 ; &a66c referenced 2 times by &a450, &a684
 .err_too_big
-    brk                                                               ; a66c: 00          .     
+    brk                                                               ; a66c: 00          .        ; BRK error block: "Too big"
     equb &14                                                          ; a66d: 14          .     
     equs "Too big"                                                    ; a66e: 54 6f 6f... Too...
     equb &00                                                          ; a675: 00          .     
 ; &a676 referenced 1 time by &a662
 .ca676
-    lda zp_fwa_m4                                                     ; a676: a5 34       .4    
-    ora #1                                                            ; a678: 09 01       ..    
-    sta zp_fwa_m4                                                     ; a67a: 85 34       .4    
+    lda zp_fwa_m4                                                     ; a676: a5 34       .4       ; Exactly half: force the mantissa LSB
+    ora #1                                                            ; a678: 09 01       ..       ; ...
+    sta zp_fwa_m4                                                     ; a67a: 85 34       .4       ; (store)
 ; &a67c referenced 2 times by &a660, &a669
 .ca67c
     lda #0                                                            ; a67c: a9 00       ..       ; Clear the now-spent rounding byte
-    sta zp_fwa_rnd                                                    ; a67e: 85 35       .5    
+    sta zp_fwa_rnd                                                    ; a67e: 85 35       .5       ; clear the rounding byte
     lda zp_fwa_ovf                                                    ; a680: a5 2f       ./       ; A carry may have overflowed the mantissa
-    beq return_28                                                     ; a682: f0 14       ..    
+    beq return_28                                                     ; a682: f0 14       ..       ; no overflow: done
     bpl err_too_big                                                   ; a684: 10 e6       ..       ; Overflowed the exponent range: Too big
 ; ***************************************************************************************
 ; FWA = 0
@@ -8336,73 +8336,78 @@ l848a = sub_c847b+15
 ;     X: preserved (A, Y, P destroyed)
 ; &ad93 referenced 3 times by &9dc3, &a2c8, &ad73
 .iwa_negate
-    sec                                                               ; ad93: 38          8     
-    lda #0                                                            ; ad94: a9 00       ..    
-    tay                                                               ; ad96: a8          .     
-    sbc zp_iwa                                                        ; ad97: e5 2a       .*    
-    sta zp_iwa                                                        ; ad99: 85 2a       .*    
-    tya                                                               ; ad9b: 98          .     
-    sbc zp_iwa_1                                                      ; ad9c: e5 2b       .+    
-    sta zp_iwa_1                                                      ; ad9e: 85 2b       .+    
-    tya                                                               ; ada0: 98          .     
-    sbc zp_iwa_2                                                      ; ada1: e5 2c       .,    
-    sta zp_iwa_2                                                      ; ada3: 85 2c       .,    
-    tya                                                               ; ada5: 98          .     
-    sbc zp_iwa_3                                                      ; ada6: e5 2d       .-    
-    sta zp_iwa_3                                                      ; ada8: 85 2d       .-    
+    sec                                                               ; ad93: 38          8        ; Negate IWA: compute 0 - IWA
+    lda #0                                                            ; ad94: a9 00       ..       ; ...
+    tay                                                               ; ad96: a8          .        ; Y = 0 for the subtractions
+    sbc zp_iwa                                                        ; ad97: e5 2a       .*       ; byte 0
+    sta zp_iwa                                                        ; ad99: 85 2a       .*       ; (store)
+    tya                                                               ; ad9b: 98          .        ; 0...
+    sbc zp_iwa_1                                                      ; ad9c: e5 2b       .+       ; byte 1
+    sta zp_iwa_1                                                      ; ad9e: 85 2b       .+       ; (store)
+    tya                                                               ; ada0: 98          .        ; 0...
+    sbc zp_iwa_2                                                      ; ada1: e5 2c       .,       ; byte 2
+    sta zp_iwa_2                                                      ; ada3: 85 2c       .,       ; (store)
+    tya                                                               ; ada5: 98          .        ; 0...
+    sbc zp_iwa_3                                                      ; ada6: e5 2d       .-       ; byte 3
+    sta zp_iwa_3                                                      ; ada8: 85 2d       .-       ; (store)
 ; &adaa referenced 1 time by &ad75
 .cadaa
-    lda #&40 ; '@'                                                    ; adaa: a9 40       .@    
-    rts                                                               ; adac: 60          `     
+    lda #&40 ; '@'                                                    ; adaa: a9 40       .@       ; integer result
+    rts                                                               ; adac: 60          `        ; Return -IWA
+; ***************************************************************************************
+; Read a string literal
+;
+; Read a quoted ("...", with "" for a literal quote) or unquoted string into the string
+; buffer.
 ; &adad referenced 2 times by &baba, &bb38
-.sub_cadad
-    jsr skip_spaces_ptr2                                              ; adad: 20 8c 8a     ..   
-    cmp #&22                                                          ; adb0: c9 22       ."    
-    beq cadc9                                                         ; adb2: f0 15       ..    
-    ldx #0                                                            ; adb4: a2 00       ..    
+.read_string_literal
+    jsr skip_spaces_ptr2                                              ; adad: 20 8c 8a     ..      ; Read a string literal: skip spaces
+    cmp #&22                                                          ; adb0: c9 22       ."       ; a quote?
+    beq cadc9                                                         ; adb2: f0 15       ..       ; quoted string
+    ldx #0                                                            ; adb4: a2 00       ..       ; Unquoted: read until CR or comma
 ; &adb6 referenced 1 time by &adc3
 .loop_cadb6
-    lda (zp_text_ptr2),y                                              ; adb6: b1 19       ..    
-    sta string_work,x                                                 ; adb8: 9d 00 06    ...   
-    iny                                                               ; adbb: c8          .     
-    inx                                                               ; adbc: e8          .     
-    cmp #&0d                                                          ; adbd: c9 0d       ..    
-    beq cadc5                                                         ; adbf: f0 04       ..    
-    cmp #&2c ; ','                                                    ; adc1: c9 2c       .,    
-    bne loop_cadb6                                                    ; adc3: d0 f1       ..    
+    lda (zp_text_ptr2),y                                              ; adb6: b1 19       ..       ; char
+    sta string_work,x                                                 ; adb8: 9d 00 06    ...      ; into the buffer
+    iny                                                               ; adbb: c8          .        ; next
+    inx                                                               ; adbc: e8          .        ; ...
+    cmp #&0d                                                          ; adbd: c9 0d       ..       ; CR?
+    beq cadc5                                                         ; adbf: f0 04       ..       ; end
+    cmp #&2c ; ','                                                    ; adc1: c9 2c       .,       ; comma?
+    bne loop_cadb6                                                    ; adc3: d0 f1       ..       ; loop
 ; &adc5 referenced 1 time by &adbf
 .cadc5
-    dey                                                               ; adc5: 88          .     
-    jmp cade1                                                         ; adc6: 4c e1 ad    L..   
+    dey                                                               ; adc5: 88          .        ; step back
+    jmp cade1                                                         ; adc6: 4c e1 ad    L..      ; finish
 ; &adc9 referenced 2 times by &adb2, &adfc
 .cadc9
-    ldx #0                                                            ; adc9: a2 00       ..    
+    ldx #0                                                            ; adc9: a2 00       ..       ; Quoted: read until the closing quote
 ; &adcb referenced 1 time by &addf
 .loop_cadcb
-    iny                                                               ; adcb: c8          .     
+    iny                                                               ; adcb: c8          .        ; advance
 ; &adcc referenced 1 time by &add9
 .loop_cadcc
-    lda (zp_text_ptr2),y                                              ; adcc: b1 19       ..    
-    cmp #&0d                                                          ; adce: c9 0d       ..    
-    beq cade9                                                         ; add0: f0 17       ..    
-    iny                                                               ; add2: c8          .     
-    sta string_work,x                                                 ; add3: 9d 00 06    ...   
-    inx                                                               ; add6: e8          .     
-    cmp #&22                                                          ; add7: c9 22       ."    
-    bne loop_cadcc                                                    ; add9: d0 f1       ..    
-    lda (zp_text_ptr2),y                                              ; addb: b1 19       ..    
-    cmp #&22                                                          ; addd: c9 22       ."    
-    beq loop_cadcb                                                    ; addf: f0 ea       ..    
+    lda (zp_text_ptr2),y                                              ; adcc: b1 19       ..       ; char
+    cmp #&0d                                                          ; adce: c9 0d       ..       ; CR (unterminated)?
+    beq cade9                                                         ; add0: f0 17       ..       ; Missing " error
+    iny                                                               ; add2: c8          .        ; next
+    sta string_work,x                                                 ; add3: 9d 00 06    ...      ; into the buffer
+    inx                                                               ; add6: e8          .        ; ...
+    cmp #&22                                                          ; add7: c9 22       ."       ; a quote?
+    bne loop_cadcc                                                    ; add9: d0 f1       ..       ; no: keep copying
+    lda (zp_text_ptr2),y                                              ; addb: b1 19       ..       ; doubled "" = a literal quote?
+    cmp #&22                                                          ; addd: c9 22       ."       ; ...
+    beq loop_cadcb                                                    ; addf: f0 ea       ..       ; yes: keep it
 ; &ade1 referenced 1 time by &adc6
 .cade1
-    dex                                                               ; ade1: ca          .     
-    stx zp_strbuf_len                                                 ; ade2: 86 36       .6    
-    sty zp_text_ptr2_off                                              ; ade4: 84 1b       ..    
-    lda #0                                                            ; ade6: a9 00       ..    
-    rts                                                               ; ade8: 60          `     
+    dex                                                               ; ade1: ca          .        ; drop the trailing character
+    stx zp_strbuf_len                                                 ; ade2: 86 36       .6       ; set the string length
+    sty zp_text_ptr2_off                                              ; ade4: 84 1b       ..       ; update the text offset
+    lda #0                                                            ; ade6: a9 00       ..       ; string type
+    rts                                                               ; ade8: 60          `        ; Return the string
 ; &ade9 referenced 1 time by &add0
 .cade9
-    jmp c8e98                                                         ; ade9: 4c 98 8e    L..   
+    jmp c8e98                                                         ; ade9: 4c 98 8e    L..      ; Missing " error
 ; ***************************************************************************************
 ; Evaluate a factor (evaluator level 1)
 ;
@@ -10664,7 +10669,7 @@ l848a = sub_c847b+15
     sta zp_text_ptr2                                                  ; bab4: 85 19       ..    
     lda #6                                                            ; bab6: a9 06       ..    
     sta zp_text_ptr2_1                                                ; bab8: 85 1a       ..    
-    jsr sub_cadad                                                     ; baba: 20 ad ad     ..   
+    jsr read_string_literal                                           ; baba: 20 ad ad     ..   
 ; &babd referenced 1 time by &bac6
 .loop_cbabd
     jsr skip_spaces_ptr2                                              ; babd: 20 8c 8a     ..   
@@ -10742,7 +10747,7 @@ l848a = sub_c847b+15
 .cbb32
     jsr sub_cbb50                                                     ; bb32: 20 50 bb     P.   
     jsr stack_integer                                                 ; bb35: 20 94 bd     ..   
-    jsr sub_cadad                                                     ; bb38: 20 ad ad     ..   
+    jsr read_string_literal                                           ; bb38: 20 ad ad     ..   
     sta zp_var_type                                                   ; bb3b: 85 27       .'    
     jsr assign_string                                                 ; bb3d: 20 1e 8c     ..   
 ; &bb40 referenced 1 time by &bb2f
@@ -10826,25 +10831,25 @@ l848a = sub_c847b+15
 ; End a REPEAT loop: loop back unless the condition is true. UNTIL expr.
 .stmt_until
     jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..      ; Evaluate the UNTIL condition
-    jsr c984c                                                         ; bbb4: 20 4c 98     L.   
-    jsr sub_c92ee                                                     ; bbb7: 20 ee 92     ..   
+    jsr c984c                                                         ; bbb4: 20 4c 98     L.      ; Check for end of statement
+    jsr sub_c92ee                                                     ; bbb7: 20 ee 92     ..      ; coerce the condition to an integer
     ldx zp_repeat_level                                               ; bbba: a6 24       .$       ; UNTIL with no REPEAT pending: error
-    beq err_no_repeat                                                 ; bbbc: f0 e8       ..    
-    lda zp_iwa                                                        ; bbbe: a5 2a       .*    
-    ora zp_iwa_1                                                      ; bbc0: 05 2b       .+    
-    ora zp_iwa_2                                                      ; bbc2: 05 2c       .,    
-    ora zp_iwa_3                                                      ; bbc4: 05 2d       .-    
+    beq err_no_repeat                                                 ; bbbc: f0 e8       ..       ; UNTIL with no REPEAT: error
+    lda zp_iwa                                                        ; bbbe: a5 2a       .*       ; Test the condition for true (non-zero):
+    ora zp_iwa_1                                                      ; bbc0: 05 2b       .+       ; ...
+    ora zp_iwa_2                                                      ; bbc2: 05 2c       .,       ; ...
+    ora zp_iwa_3                                                      ; bbc4: 05 2d       .-       ; ...
     beq cbbcd                                                         ; bbc6: f0 05       ..       ; Condition false: loop back to the REPEAT
     dec zp_repeat_level                                               ; bbc8: c6 24       .$       ; Condition true: pop the frame and continue
-    jmp statement_loop                                                ; bbca: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bbca: 4c 9b 8b    L..      ; true: exit the loop, continue
 ; &bbcd referenced 1 time by &bbc6
 .cbbcd
     ldy l05a3,x                                                       ; bbcd: bc a3 05    ...      ; Reload the saved loop-start position
-    lda l05b7,x                                                       ; bbd0: bd b7 05    ...   
-    jmp cb8dd                                                         ; bbd3: 4c dd b8    L..   
+    lda l05b7,x                                                       ; bbd0: bd b7 05    ...      ; Reload the loop position: high
+    jmp cb8dd                                                         ; bbd3: 4c dd b8    L..      ; jump back to the REPEAT
 ; &bbd6 referenced 1 time by &bbe8
 .err_too_many_repeats
-    brk                                                               ; bbd6: 00          .     
+    brk                                                               ; bbd6: 00          .        ; BRK error block: too many REPEATs
     equs ",Too many "                                                 ; bbd7: 2c 54 6f... ,To...
     equb &f5, &73, &00                                                ; bbe1: f5 73 00    .s.   
 ; ***************************************************************************************
@@ -11440,35 +11445,35 @@ l848a = sub_c847b+15
 ;
 ; Pass a string to the OS command-line interpreter. OSCLI string.
 .stmt_oscli
-    jsr sub_cbed2                                                     ; bec2: 20 d2 be     ..   
-    ldx #0                                                            ; bec5: a2 00       ..    
-    ldy #6                                                            ; bec7: a0 06       ..    
-    jsr oscli                                                         ; bec9: 20 f7 ff     ..   
-    jmp statement_loop                                                ; becc: 4c 9b 8b    L..   
+    jsr sub_cbed2                                                     ; bec2: 20 d2 be     ..      ; Evaluate the command string, CR-terminate it
+    ldx #0                                                            ; bec5: a2 00       ..       ; XY -> the string (&0600): low
+    ldy #6                                                            ; bec7: a0 06       ..       ; high byte &06
+    jsr oscli                                                         ; bec9: 20 f7 ff     ..      ; Pass it to OSCLI
+    jmp statement_loop                                                ; becc: 4c 9b 8b    L..      ; Back to execution
 ; &becf referenced 1 time by &bed5
 .loop_cbecf
-    jmp err_type_mismatch                                             ; becf: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; becf: 4c 0e 8c    L..      ; not a string: Type mismatch
 ; &bed2 referenced 2 times by &bec2, &bedd
 .sub_cbed2
-    jsr eval_expr                                                     ; bed2: 20 1d 9b     ..   
-    bne loop_cbecf                                                    ; bed5: d0 f8       ..    
-    jsr sub_cbeb2                                                     ; bed7: 20 b2 be     ..   
-    jmp c984c                                                         ; beda: 4c 4c 98    LL.   
+    jsr eval_expr                                                     ; bed2: 20 1d 9b     ..      ; Evaluate the expression
+    bne loop_cbecf                                                    ; bed5: d0 f8       ..       ; not a string: error
+    jsr sub_cbeb2                                                     ; bed7: 20 b2 be     ..      ; CR-terminate the string buffer
+    jmp c984c                                                         ; beda: 4c 4c 98    LL.      ; Check for end of statement
 ; &bedd referenced 2 times by &be62, &bf0a
 .sub_cbedd
-    jsr sub_cbed2                                                     ; bedd: 20 d2 be     ..   
-    dey                                                               ; bee0: 88          .     
-    sty zp_fileblk                                                    ; bee1: 84 39       .9    
-    lda zp_page                                                       ; bee3: a5 18       ..    
-    sta l003a                                                         ; bee5: 85 3a       .:    
+    jsr sub_cbed2                                                     ; bedd: 20 d2 be     ..      ; Evaluate the filename, CR-terminate
+    dey                                                               ; bee0: 88          .        ; ...
+    sty zp_fileblk                                                    ; bee1: 84 39       .9       ; LOAD address low = 0
+    lda zp_page                                                       ; bee3: a5 18       ..       ; LOAD address high = PAGE
+    sta l003a                                                         ; bee5: 85 3a       .:       ; (store)
 ; &bee7 referenced 1 time by &93a3
 .sub_cbee7
-    lda #osbyte_read_high_order_address                               ; bee7: a9 82       ..    
+    lda #osbyte_read_high_order_address                               ; bee7: a9 82       ..       ; OSBYTE &82: read the high-order address
     jsr osbyte                                                        ; bee9: 20 f4 ff     ..      ; Read high-order address (machine high word)
-    stx zp_fwb_sign                                                   ; beec: 86 3b       .;    
-    sty zp_fwb_ovf                                                    ; beee: 84 3c       .<    
-    lda #0                                                            ; bef0: a9 00       ..    
-    rts                                                               ; bef2: 60          `     
+    stx zp_fwb_sign                                                   ; beec: 86 3b       .;       ; set the LOAD high word
+    sty zp_fwb_ovf                                                    ; beee: 84 3c       .<       ; ...
+    lda #0                                                            ; bef0: a9 00       ..       ; ...
+    rts                                                               ; bef2: 60          `        ; Return
 ; ***************************************************************************************
 ; SAVE
 ;
@@ -11609,36 +11614,36 @@ l848a = sub_c847b+15
 ;
 ; Close an open file, or all files with #0. CLOSE#channel.
 .stmt_close
-    jsr sub_cbfa9                                                     ; bf99: 20 a9 bf     ..   
-    jsr sub_c9852                                                     ; bf9c: 20 52 98     R.   
-    ldy zp_iwa                                                        ; bf9f: a4 2a       .*    
-    lda #osfind_close                                                 ; bfa1: a9 00       ..    
+    jsr sub_cbfa9                                                     ; bf99: 20 a9 bf     ..      ; Evaluate the #handle
+    jsr sub_c9852                                                     ; bf9c: 20 52 98     R.      ; Check for end of statement
+    ldy zp_iwa                                                        ; bf9f: a4 2a       .*       ; Y = the handle
+    lda #osfind_close                                                 ; bfa1: a9 00       ..       ; OSFIND &00: close the file
     jsr osfind                                                        ; bfa3: 20 ce ff     ..      ; osfind: close one or all files
-    jmp statement_loop                                                ; bfa6: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bfa6: 4c 9b 8b    L..      ; Back to execution
 ; &bfa9 referenced 5 times by &8d2d, &b9d1, &bf30, &bf58, &bf99
 .sub_cbfa9
-    lda zp_text_ptr_off                                               ; bfa9: a5 0a       ..    
-    sta zp_text_ptr2_off                                              ; bfab: 85 1b       ..    
-    lda zp_text_ptr                                                   ; bfad: a5 0b       ..    
-    sta zp_text_ptr2                                                  ; bfaf: 85 19       ..    
-    lda zp_text_ptr_1                                                 ; bfb1: a5 0c       ..    
-    sta zp_text_ptr2_1                                                ; bfb3: 85 1a       ..    
+    lda zp_text_ptr_off                                               ; bfa9: a5 0a       ..       ; Set PtrB = PtrA: offset
+    sta zp_text_ptr2_off                                              ; bfab: 85 1b       ..       ; ...
+    lda zp_text_ptr                                                   ; bfad: a5 0b       ..       ; low
+    sta zp_text_ptr2                                                  ; bfaf: 85 19       ..       ; ...
+    lda zp_text_ptr_1                                                 ; bfb1: a5 0c       ..       ; high
+    sta zp_text_ptr2_1                                                ; bfb3: 85 1a       ..       ; ...
 ; ***************************************************************************************
 ; Evaluate a #channel argument
 ;
 ; Evaluate the #handle of a file operation, leaving it in IWA.
 ; &bfb5 referenced 3 times by &acb8, &bf4c, &bf6f
 .eval_channel
-    jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..   
-    cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#    
-    bne cbfc3                                                         ; bfba: d0 07       ..    
-    jsr sub_c92e3                                                     ; bfbc: 20 e3 92     ..   
-    ldy zp_iwa                                                        ; bfbf: a4 2a       .*    
-    tya                                                               ; bfc1: 98          .     
-    rts                                                               ; bfc2: 60          `     
+    jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..      ; Skip spaces
+    cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#       ; Require "#"
+    bne cbfc3                                                         ; bfba: d0 07       ..       ; missing: error
+    jsr sub_c92e3                                                     ; bfbc: 20 e3 92     ..      ; Evaluate the handle as an integer
+    ldy zp_iwa                                                        ; bfbf: a4 2a       .*       ; Y = the handle
+    tya                                                               ; bfc1: 98          .        ; A = the handle too
+    rts                                                               ; bfc2: 60          `        ; Return
 ; &bfc3 referenced 1 time by &bfba
 .cbfc3
-    brk                                                               ; bfc3: 00          .     
+    brk                                                               ; bfc3: 00          .        ; BRK error block ("Missing #")
     equs "-Missing #"                                                 ; bfc4: 2d 4d 69... -Mi...
     equb &00                                                          ; bfce: 00          .     
 ; &bfcf referenced 2 times by &9080, &be9e
@@ -12141,6 +12146,7 @@ save pydis_start, pydis_end
 ;     print_special_item:          2
 ;     read_input_line:             2
 ;     read_key_timed:              2
+;     read_string_literal:         2
 ;     resint_o:                    2
 ;     return_1:                    2
 ;     return_10:                   2
@@ -12183,7 +12189,6 @@ save pydis_start, pydis_end
 ;     sub_caa48:                   2
 ;     sub_caa4c:                   2
 ;     sub_caa55:                   2
-;     sub_cadad:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -13938,7 +13943,6 @@ save pydis_start, pydis_end
 ;     sub_caada
 ;     sub_cab12
 ;     sub_cad8f
-;     sub_cadad
 ;     sub_cae02
 ;     sub_cae3a
 ;     sub_cb3c5
