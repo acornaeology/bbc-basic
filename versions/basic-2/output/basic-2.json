@@ -621,7 +621,8 @@
       "addr": 36771,
       "name": "stmt_renumber",
       "title": "RENUMBER",
-      "description": "Renumber program lines and fix up line references. RENUMBER [start[,step]]."
+      "description": "Renumber program lines and fix up line references. RENUMBER [start[,step]].",
+      "fall_through": true
     },
     {
       "addr": 48883,
@@ -1667,6 +1668,12 @@
       "name": "usr_call",
       "title": "Call user machine code (USR/CALL)",
       "description": "Load A, X, Y and the flags from the resident integer\nvariables, then call the routine at the address in IWA. On return the\nregisters are captured back."
+    },
+    {
+      "addr": 37023,
+      "name": "advance_to_next_line",
+      "title": "Advance the general pointer to the next program line",
+      "description": "Add the line length (at offset 3) to zp_general; carry clear on return."
     }
   ],
   "banners": [
@@ -26208,6 +26215,10 @@
       "labels": [
         "stmt_renumber"
       ],
+      "comments_before_label": [
+        "RENUMBER in three passes. Pass 1 records every line's\noriginal number in a table built upwards from the heap (via\n&3B/&3C), erroring if it reaches HIMEM. Pass 2 writes the new\nnumbers (start, step) into the lines. Pass 3 scans the\nprogram for line-number references (the &8D token) and\nrewrites each via the old->new table."
+      ],
+      "comment_inline": "Parse the start and step arguments",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8f69",
@@ -26220,6 +26231,7 @@
         162,
         57
       ],
+      "comment_inline": "Pop the step into the file block (&39)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -26231,6 +26243,7 @@
         13,
         190
       ],
+      "comment_inline": "(pop it)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -26244,6 +26257,7 @@
         111,
         190
       ],
+      "comment_inline": "Pop the start number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe6f",
@@ -26257,6 +26271,7 @@
         146,
         143
       ],
+      "comment_inline": "Point at the program start and the table",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8f92",
@@ -26272,6 +26287,7 @@
       "labels": [
         "loop_c8fb1"
       ],
+      "comment_inline": "Pass 1: for each line, read its number",
       "xref_summaries": [
         "&8fb1 referenced 1 time by &8fd4"
       ],
@@ -26288,6 +26304,7 @@
         177,
         55
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -26300,6 +26317,7 @@
         48,
         48
       ],
+      "comment_inline": "high bit set marks the end of program",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c8fe7",
@@ -26312,6 +26330,7 @@
         145,
         59
       ],
+      "comment_inline": "Store the old number in the table",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_sign),y",
@@ -26323,6 +26342,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26332,6 +26352,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -26344,6 +26365,7 @@
         145,
         59
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_sign),y",
@@ -26355,6 +26377,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "Advance the table pointer by 2: low",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -26363,6 +26386,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -26372,6 +26396,7 @@
         101,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_sign",
@@ -26384,6 +26409,7 @@
         133,
         59
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -26395,6 +26421,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "keep the low byte",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -26404,6 +26431,7 @@
         165,
         60
       ],
+      "comment_inline": "table pointer high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_ovf",
@@ -26416,6 +26444,7 @@
         105,
         0
       ],
+      "comment_inline": "+ carry",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -26426,6 +26455,7 @@
         133,
         60
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -26438,6 +26468,7 @@
         228,
         6
       ],
+      "comment_inline": "Has the table reached HIMEM?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_himem",
@@ -26450,6 +26481,7 @@
         229,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l0007",
@@ -26462,6 +26494,7 @@
         176,
         5
       ],
+      "comment_inline": "yes: no room for the table",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8fd6",
@@ -26475,11 +26508,12 @@
         159,
         144
       ],
+      "comment_inline": "Advance to the next program line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c909f",
+      "operand": "advance_to_next_line",
       "target": 37023,
-      "target_label": "sub_c909f"
+      "target_label": "advance_to_next_line"
     },
     {
       "addr": 36820,
@@ -26487,6 +26521,7 @@
         144,
         219
       ],
+      "comment_inline": "loop over all lines",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c8fb1",
@@ -26501,6 +26536,7 @@
       "labels": [
         "c8fd6"
       ],
+      "comment_inline": "RENUMBER ran out of space: error",
       "xref_summaries": [
         "&8fd6 referenced 1 time by &8fcf"
       ],
@@ -26543,6 +26579,7 @@
       "labels": [
         "c8fdf"
       ],
+      "comment_inline": "error block",
       "xref_summaries": [
         "&8fdf referenced 2 times by &8f85, &8f89"
       ],
@@ -26595,6 +26632,7 @@
       "labels": [
         "c8fe7"
       ],
+      "comment_inline": "Pass 2: reset to the program start",
       "xref_summaries": [
         "&8fe7 referenced 1 time by &8fb5"
       ],
@@ -26616,6 +26654,7 @@
       "labels": [
         "loop_c8fea"
       ],
+      "comment_inline": "for each line:",
       "xref_summaries": [
         "&8fea referenced 1 time by &900b"
       ],
@@ -26632,6 +26671,7 @@
         177,
         55
       ],
+      "comment_inline": "line number high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -26644,6 +26684,7 @@
         48,
         29
       ],
+      "comment_inline": "end of program: go to pass 3",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c900d",
@@ -26656,6 +26697,7 @@
         165,
         58
       ],
+      "comment_inline": "Write the new number: high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l003a",
@@ -26668,6 +26710,7 @@
         145,
         55
       ],
+      "comment_inline": "(into the line)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -26680,6 +26723,7 @@
         165,
         57
       ],
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -26691,6 +26735,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26700,6 +26745,7 @@
         145,
         55
       ],
+      "comment_inline": "(into the line)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -26711,6 +26757,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Add the step to the running number: low",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -26720,6 +26767,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -26732,6 +26780,7 @@
         101,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -26744,6 +26793,7 @@
         133,
         57
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -26756,6 +26806,7 @@
         169,
         0
       ],
+      "comment_inline": "high byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -26766,6 +26817,7 @@
         101,
         58
       ],
+      "comment_inline": "+ carry",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l003a",
@@ -26778,6 +26830,7 @@
         41,
         127
       ],
+      "comment_inline": "keep it a valid line number (< &8000)",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -26788,6 +26841,7 @@
         133,
         58
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -26801,11 +26855,12 @@
         159,
         144
       ],
+      "comment_inline": "Advance to the next line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c909f",
+      "operand": "advance_to_next_line",
       "target": 37023,
-      "target_label": "sub_c909f"
+      "target_label": "advance_to_next_line"
     },
     {
       "addr": 36875,
@@ -26813,6 +26868,7 @@
         144,
         221
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c8fea",
@@ -26828,6 +26884,7 @@
       "labels": [
         "c900d"
       ],
+      "comment_inline": "Pass 3: scan from PAGE, high byte",
       "xref_summaries": [
         "&900d referenced 1 time by &8fee"
       ],
@@ -26846,6 +26903,7 @@
         133,
         12
       ],
+      "comment_inline": "(text pointer high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -26858,6 +26916,7 @@
         160,
         0
       ],
+      "comment_inline": "low byte 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -26868,6 +26927,7 @@
         132,
         11
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr",
@@ -26879,6 +26939,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26888,6 +26949,7 @@
         177,
         11
       ],
+      "comment_inline": "read the line number high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -26900,6 +26962,7 @@
         48,
         32
       ],
+      "comment_inline": "end of program: done",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c903a",
@@ -26915,6 +26978,7 @@
       "labels": [
         "c901a"
       ],
+      "comment_inline": "Scan the line from offset 4 (past the header)",
       "xref_summaries": [
         "&901a referenced 2 times by &9034, &9038"
       ],
@@ -26935,6 +26999,7 @@
       "labels": [
         "c901c"
       ],
+      "comment_inline": "next token",
       "xref_summaries": [
         "&901c referenced 2 times by &9025, &906f"
       ],
@@ -26954,6 +27019,7 @@
         201,
         141
       ],
+      "comment_inline": "Is it the line-number prefix &8D?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8d"
@@ -26964,6 +27030,7 @@
         240,
         27
       ],
+      "comment_inline": "yes: rewrite the reference",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c903d",
@@ -26975,6 +27042,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26984,6 +27052,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line (CR)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -26994,6 +27063,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c901c",
@@ -27006,6 +27076,7 @@
         177,
         11
       ],
+      "comment_inline": "read the next line's header",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -27018,6 +27089,7 @@
         48,
         15
       ],
+      "comment_inline": "end of program",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c903a",
@@ -27030,6 +27102,7 @@
         160,
         3
       ],
+      "comment_inline": "line length is at offset 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -27040,6 +27113,7 @@
         177,
         11
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -27051,6 +27125,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "advance to the next line: low",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -27060,6 +27135,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -27072,6 +27148,7 @@
         133,
         11
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -27084,6 +27161,7 @@
         144,
         228
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c901a",
@@ -27096,6 +27174,7 @@
         230,
         12
       ],
+      "comment_inline": "carry into high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -27108,6 +27187,7 @@
         176,
         224
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c901a",
@@ -27124,6 +27204,7 @@
       "labels": [
         "c903a"
       ],
+      "comment_inline": "Done: back to the immediate loop",
       "xref_summaries": [
         "&903a referenced 2 times by &9018, &9029"
       ],
@@ -27147,6 +27228,7 @@
       "labels": [
         "c903d"
       ],
+      "comment_inline": "Decode the &8D-encoded line number",
       "xref_summaries": [
         "&903d referenced 1 time by &9020"
       ],
@@ -27166,6 +27248,7 @@
         146,
         143
       ],
+      "comment_inline": "Point at the old->new table",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8f92",
@@ -27181,6 +27264,7 @@
       "labels": [
         "c9043"
       ],
+      "comment_inline": "Search the table for this old number:",
       "xref_summaries": [
         "&9043 referenced 2 times by &907a, &907e"
       ],
@@ -27198,6 +27282,7 @@
         177,
         55
       ],
+      "comment_inline": "table end marker?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -27210,6 +27295,7 @@
         48,
         55
       ],
+      "comment_inline": "not found: reference to a missing line",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c9080",
@@ -27222,6 +27308,7 @@
         177,
         59
       ],
+      "comment_inline": "old number high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_sign),y",
@@ -27233,6 +27320,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -27242,6 +27330,7 @@
         197,
         43
       ],
+      "comment_inline": "match the referenced number high?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa_1",
@@ -27254,6 +27343,7 @@
         208,
         33
       ],
+      "comment_inline": "no: next table entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9071",
@@ -27266,6 +27356,7 @@
         177,
         59
       ],
+      "comment_inline": "old number low...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_sign),y",
@@ -27278,6 +27369,7 @@
         197,
         42
       ],
+      "comment_inline": "match low?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa",
@@ -27290,6 +27382,7 @@
         208,
         27
       ],
+      "comment_inline": "no: next entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9071",
@@ -27302,6 +27395,7 @@
         177,
         55
       ],
+      "comment_inline": "Found: take the new number high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -27314,6 +27408,7 @@
         133,
         61
       ],
+      "comment_inline": "(save)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -27325,6 +27420,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "new number low",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -27334,6 +27430,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -27346,6 +27443,7 @@
         133,
         62
       ],
+      "comment_inline": "(save)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -27358,6 +27456,7 @@
         164,
         10
       ],
+      "comment_inline": "position within the line",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -27369,6 +27468,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -27378,6 +27478,7 @@
         165,
         11
       ],
+      "comment_inline": "Point at the reference in the line: low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -27390,6 +27491,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -27402,6 +27504,7 @@
         165,
         12
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -27414,6 +27517,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -27427,6 +27531,7 @@
         245,
         136
       ],
+      "comment_inline": "Re-encode the new line number in place",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c88f5",
@@ -27439,6 +27544,7 @@
         164,
         10
       ],
+      "comment_inline": "resume scanning",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -27451,6 +27557,7 @@
         208,
         171
       ],
+      "comment_inline": "continue the line scan",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c901c",
@@ -27467,6 +27574,7 @@
       "labels": [
         "c9071"
       ],
+      "comment_inline": "Next table entry: advance...",
       "xref_summaries": [
         "&9071 referenced 2 times by &904e, &9054"
       ],
@@ -27476,9 +27584,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c909f",
+      "operand": "advance_to_next_line",
       "target": 37023,
-      "target_label": "sub_c909f"
+      "target_label": "advance_to_next_line"
     },
     {
       "addr": 36980,
@@ -27486,6 +27594,7 @@
         165,
         59
       ],
+      "comment_inline": "...the table pointer by 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -27498,6 +27607,7 @@
         105,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#2"
@@ -27508,6 +27618,7 @@
         133,
         59
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -27520,6 +27631,7 @@
         144,
         199
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9043",
@@ -27532,6 +27644,7 @@
         230,
         60
       ],
+      "comment_inline": "carry",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_ovf",
@@ -27544,6 +27657,7 @@
         176,
         195
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9043",
@@ -27560,6 +27674,7 @@
       "labels": [
         "c9080"
       ],
+      "comment_inline": "Reference to a missing line: report it",
       "xref_summaries": [
         "&9080 referenced 1 time by &9047"
       ],
@@ -27578,6 +27693,7 @@
         70,
         97
       ],
+      "comment_inline": "build the \"Failed at <line>\" message...",
       "type": "code",
       "mnemonic": "lsr",
       "operand": "l0061",
@@ -27590,6 +27706,7 @@
         105,
         108
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&6c"
@@ -27600,6 +27717,7 @@
         101,
         100
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l0064",
@@ -27613,6 +27731,7 @@
         97,
         116
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "l7461",
@@ -27626,6 +27745,7 @@
         200,
         177
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb1c8",
@@ -27678,8 +27798,9 @@
         200
       ],
       "labels": [
-        "sub_c909f"
+        "advance_to_next_line"
       ],
+      "comment_inline": "Line length is at offset 3",
       "xref_summaries": [
         "&909f referenced 3 times by &8fd1, &9008, &9071"
       ],
@@ -27697,6 +27818,7 @@
         177,
         55
       ],
+      "comment_inline": "get the line length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -27709,6 +27831,7 @@
         101,
         55
       ],
+      "comment_inline": "add it to the pointer: low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general",
@@ -27721,6 +27844,7 @@
         133,
         55
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -27733,6 +27857,7 @@
         144,
         3
       ],
+      "comment_inline": "no carry: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_7",
@@ -27745,6 +27870,7 @@
         230,
         56
       ],
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -27756,6 +27882,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "clear carry for the caller",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -27767,6 +27894,7 @@
       "labels": [
         "return_7"
       ],
+      "comment_inline": "Return at the next line",
       "xref_summaries": [
         "&90ab referenced 1 time by &90a6"
       ],

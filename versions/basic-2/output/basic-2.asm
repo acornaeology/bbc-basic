@@ -2944,162 +2944,172 @@ l848a = sub_c847b+15
 ; RENUMBER
 ;
 ; Renumber program lines and fix up line references. RENUMBER [start[,step]].
+; RENUMBER in three passes. Pass 1 records every line's
+; original number in a table built upwards from the heap (via
+; &3B/&3C), erroring if it reaches HIMEM. Pass 2 writes the new
+; numbers (start, step) into the lines. Pass 3 scans the
+; program for line-number references (the &8D token) and
+; rewrites each via the old->new table.
 .stmt_renumber
-    jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.   
-    ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9    
-    jsr unstack_int_to_zp                                             ; 8fa8: 20 0d be     ..   
-    jsr sub_cbe6f                                                     ; 8fab: 20 6f be     o.   
-    jsr sub_c8f92                                                     ; 8fae: 20 92 8f     ..   
+    jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.      ; Parse the start and step arguments
+    ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9       ; Pop the step into the file block (&39)
+    jsr unstack_int_to_zp                                             ; 8fa8: 20 0d be     ..      ; (pop it)
+    jsr sub_cbe6f                                                     ; 8fab: 20 6f be     o.      ; Pop the start number
+    jsr sub_c8f92                                                     ; 8fae: 20 92 8f     ..      ; Point at the program start and the table
 ; &8fb1 referenced 1 time by &8fd4
 .loop_c8fb1
-    ldy #0                                                            ; 8fb1: a0 00       ..    
-    lda (zp_general),y                                                ; 8fb3: b1 37       .7    
-    bmi c8fe7                                                         ; 8fb5: 30 30       00    
-    sta (zp_fwb_sign),y                                               ; 8fb7: 91 3b       .;    
-    iny                                                               ; 8fb9: c8          .     
-    lda (zp_general),y                                                ; 8fba: b1 37       .7    
-    sta (zp_fwb_sign),y                                               ; 8fbc: 91 3b       .;    
-    sec                                                               ; 8fbe: 38          8     
-    tya                                                               ; 8fbf: 98          .     
-    adc zp_fwb_sign                                                   ; 8fc0: 65 3b       e;    
-    sta zp_fwb_sign                                                   ; 8fc2: 85 3b       .;    
-    tax                                                               ; 8fc4: aa          .     
-    lda zp_fwb_ovf                                                    ; 8fc5: a5 3c       .<    
-    adc #0                                                            ; 8fc7: 69 00       i.    
-    sta zp_fwb_ovf                                                    ; 8fc9: 85 3c       .<    
-    cpx zp_himem                                                      ; 8fcb: e4 06       ..    
-    sbc l0007                                                         ; 8fcd: e5 07       ..    
-    bcs c8fd6                                                         ; 8fcf: b0 05       ..    
-    jsr sub_c909f                                                     ; 8fd1: 20 9f 90     ..   
-    bcc loop_c8fb1                                                    ; 8fd4: 90 db       ..    
+    ldy #0                                                            ; 8fb1: a0 00       ..       ; Pass 1: for each line, read its number
+    lda (zp_general),y                                                ; 8fb3: b1 37       .7       ; high byte
+    bmi c8fe7                                                         ; 8fb5: 30 30       00       ; high bit set marks the end of program
+    sta (zp_fwb_sign),y                                               ; 8fb7: 91 3b       .;       ; Store the old number in the table
+    iny                                                               ; 8fb9: c8          .        ; low byte
+    lda (zp_general),y                                                ; 8fba: b1 37       .7       ; ...
+    sta (zp_fwb_sign),y                                               ; 8fbc: 91 3b       .;       ; (store)
+    sec                                                               ; 8fbe: 38          8        ; Advance the table pointer by 2: low
+    tya                                                               ; 8fbf: 98          .        ; ...
+    adc zp_fwb_sign                                                   ; 8fc0: 65 3b       e;       ; ...
+    sta zp_fwb_sign                                                   ; 8fc2: 85 3b       .;       ; (store)
+    tax                                                               ; 8fc4: aa          .        ; keep the low byte
+    lda zp_fwb_ovf                                                    ; 8fc5: a5 3c       .<       ; table pointer high...
+    adc #0                                                            ; 8fc7: 69 00       i.       ; - carry
+    sta zp_fwb_ovf                                                    ; 8fc9: 85 3c       .<       ; (store)
+    cpx zp_himem                                                      ; 8fcb: e4 06       ..       ; Has the table reached HIMEM?
+    sbc l0007                                                         ; 8fcd: e5 07       ..       ; ...
+    bcs c8fd6                                                         ; 8fcf: b0 05       ..       ; yes: no room for the table
+    jsr advance_to_next_line                                          ; 8fd1: 20 9f 90     ..      ; Advance to the next program line
+    bcc loop_c8fb1                                                    ; 8fd4: 90 db       ..       ; loop over all lines
 ; &8fd6 referenced 1 time by &8fcf
 .c8fd6
-    brk                                                               ; 8fd6: 00          .     
+    brk                                                               ; 8fd6: 00          .        ; RENUMBER ran out of space: error
     equb &00, &cc                                                     ; 8fd7: 00 cc       ..    
     equs " space"                                                     ; 8fd9: 20 73 70...  sp...
 ; &8fdf referenced 2 times by &8f85, &8f89
 .c8fdf
-    brk                                                               ; 8fdf: 00          .     
+    brk                                                               ; 8fdf: 00          .        ; error block
     equb &00                                                          ; 8fe0: 00          .     
     equs "Silly"                                                      ; 8fe1: 53 69 6c... Sil...
     equb &00                                                          ; 8fe6: 00          .     
 ; &8fe7 referenced 1 time by &8fb5
 .c8fe7
-    jsr sub_c8f9a                                                     ; 8fe7: 20 9a 8f     ..   
+    jsr sub_c8f9a                                                     ; 8fe7: 20 9a 8f     ..      ; Pass 2: reset to the program start
 ; &8fea referenced 1 time by &900b
 .loop_c8fea
-    ldy #0                                                            ; 8fea: a0 00       ..    
-    lda (zp_general),y                                                ; 8fec: b1 37       .7    
-    bmi c900d                                                         ; 8fee: 30 1d       0.    
-    lda l003a                                                         ; 8ff0: a5 3a       .:    
-    sta (zp_general),y                                                ; 8ff2: 91 37       .7    
-    lda zp_fileblk                                                    ; 8ff4: a5 39       .9    
-    iny                                                               ; 8ff6: c8          .     
-    sta (zp_general),y                                                ; 8ff7: 91 37       .7    
-    clc                                                               ; 8ff9: 18          .     
-    lda zp_iwa                                                        ; 8ffa: a5 2a       .*    
-    adc zp_fileblk                                                    ; 8ffc: 65 39       e9    
-    sta zp_fileblk                                                    ; 8ffe: 85 39       .9    
-    lda #0                                                            ; 9000: a9 00       ..    
-    adc l003a                                                         ; 9002: 65 3a       e:    
-    and #&7f                                                          ; 9004: 29 7f       ).    
-    sta l003a                                                         ; 9006: 85 3a       .:    
-    jsr sub_c909f                                                     ; 9008: 20 9f 90     ..   
-    bcc loop_c8fea                                                    ; 900b: 90 dd       ..    
+    ldy #0                                                            ; 8fea: a0 00       ..       ; for each line:
+    lda (zp_general),y                                                ; 8fec: b1 37       .7       ; line number high byte
+    bmi c900d                                                         ; 8fee: 30 1d       0.       ; end of program: go to pass 3
+    lda l003a                                                         ; 8ff0: a5 3a       .:       ; Write the new number: high byte
+    sta (zp_general),y                                                ; 8ff2: 91 37       .7       ; (into the line)
+    lda zp_fileblk                                                    ; 8ff4: a5 39       .9       ; low byte
+    iny                                                               ; 8ff6: c8          .        ; advance
+    sta (zp_general),y                                                ; 8ff7: 91 37       .7       ; (into the line)
+    clc                                                               ; 8ff9: 18          .        ; Add the step to the running number: low
+    lda zp_iwa                                                        ; 8ffa: a5 2a       .*       ; ...
+    adc zp_fileblk                                                    ; 8ffc: 65 39       e9       ; ...
+    sta zp_fileblk                                                    ; 8ffe: 85 39       .9       ; (store)
+    lda #0                                                            ; 9000: a9 00       ..       ; high byte...
+    adc l003a                                                         ; 9002: 65 3a       e:       ; - carry
+    and #&7f                                                          ; 9004: 29 7f       ).       ; keep it a valid line number (< &8000)
+    sta l003a                                                         ; 9006: 85 3a       .:       ; (store)
+    jsr advance_to_next_line                                          ; 9008: 20 9f 90     ..      ; Advance to the next line
+    bcc loop_c8fea                                                    ; 900b: 90 dd       ..       ; loop
 ; &900d referenced 1 time by &8fee
 .c900d
-    lda zp_page                                                       ; 900d: a5 18       ..    
-    sta zp_text_ptr_1                                                 ; 900f: 85 0c       ..    
-    ldy #0                                                            ; 9011: a0 00       ..    
-    sty zp_text_ptr                                                   ; 9013: 84 0b       ..    
-    iny                                                               ; 9015: c8          .     
-    lda (zp_text_ptr),y                                               ; 9016: b1 0b       ..    
-    bmi c903a                                                         ; 9018: 30 20       0     
+    lda zp_page                                                       ; 900d: a5 18       ..       ; Pass 3: scan from PAGE, high byte
+    sta zp_text_ptr_1                                                 ; 900f: 85 0c       ..       ; (text pointer high)
+    ldy #0                                                            ; 9011: a0 00       ..       ; low byte 0
+    sty zp_text_ptr                                                   ; 9013: 84 0b       ..       ; (store)
+    iny                                                               ; 9015: c8          .        ; advance
+    lda (zp_text_ptr),y                                               ; 9016: b1 0b       ..       ; read the line number high byte
+    bmi c903a                                                         ; 9018: 30 20       0        ; end of program: done
 ; &901a referenced 2 times by &9034, &9038
 .c901a
-    ldy #4                                                            ; 901a: a0 04       ..    
+    ldy #4                                                            ; 901a: a0 04       ..       ; Scan the line from offset 4 (past the header)
 ; &901c referenced 2 times by &9025, &906f
 .c901c
-    lda (zp_text_ptr),y                                               ; 901c: b1 0b       ..    
-    cmp #&8d                                                          ; 901e: c9 8d       ..    
-    beq c903d                                                         ; 9020: f0 1b       ..    
-    iny                                                               ; 9022: c8          .     
-    cmp #&0d                                                          ; 9023: c9 0d       ..    
-    bne c901c                                                         ; 9025: d0 f5       ..    
-    lda (zp_text_ptr),y                                               ; 9027: b1 0b       ..    
-    bmi c903a                                                         ; 9029: 30 0f       0.    
-    ldy #3                                                            ; 902b: a0 03       ..    
-    lda (zp_text_ptr),y                                               ; 902d: b1 0b       ..    
-    clc                                                               ; 902f: 18          .     
-    adc zp_text_ptr                                                   ; 9030: 65 0b       e.    
-    sta zp_text_ptr                                                   ; 9032: 85 0b       ..    
-    bcc c901a                                                         ; 9034: 90 e4       ..    
-    inc zp_text_ptr_1                                                 ; 9036: e6 0c       ..    
-    bcs c901a                                                         ; 9038: b0 e0       ..    
+    lda (zp_text_ptr),y                                               ; 901c: b1 0b       ..       ; next token
+    cmp #&8d                                                          ; 901e: c9 8d       ..       ; Is it the line-number prefix &8D?
+    beq c903d                                                         ; 9020: f0 1b       ..       ; yes: rewrite the reference
+    iny                                                               ; 9022: c8          .        ; advance
+    cmp #&0d                                                          ; 9023: c9 0d       ..       ; end of line (CR)?
+    bne c901c                                                         ; 9025: d0 f5       ..       ; no: keep scanning
+    lda (zp_text_ptr),y                                               ; 9027: b1 0b       ..       ; read the next line's header
+    bmi c903a                                                         ; 9029: 30 0f       0.       ; end of program
+    ldy #3                                                            ; 902b: a0 03       ..       ; line length is at offset 3
+    lda (zp_text_ptr),y                                               ; 902d: b1 0b       ..       ; get it
+    clc                                                               ; 902f: 18          .        ; advance to the next line: low
+    adc zp_text_ptr                                                   ; 9030: 65 0b       e.       ; ...
+    sta zp_text_ptr                                                   ; 9032: 85 0b       ..       ; (store)
+    bcc c901a                                                         ; 9034: 90 e4       ..       ; loop
+    inc zp_text_ptr_1                                                 ; 9036: e6 0c       ..       ; carry into high byte
+    bcs c901a                                                         ; 9038: b0 e0       ..       ; loop
 ; &903a referenced 2 times by &9018, &9029
 .c903a
-    jmp c8af3                                                         ; 903a: 4c f3 8a    L..   
+    jmp c8af3                                                         ; 903a: 4c f3 8a    L..      ; Done: back to the immediate loop
 ; &903d referenced 1 time by &9020
 .c903d
-    jsr sub_c97eb                                                     ; 903d: 20 eb 97     ..   
-    jsr sub_c8f92                                                     ; 9040: 20 92 8f     ..   
+    jsr sub_c97eb                                                     ; 903d: 20 eb 97     ..      ; Decode the &8D-encoded line number
+    jsr sub_c8f92                                                     ; 9040: 20 92 8f     ..      ; Point at the old->new table
 ; &9043 referenced 2 times by &907a, &907e
 .c9043
-    ldy #0                                                            ; 9043: a0 00       ..    
-    lda (zp_general),y                                                ; 9045: b1 37       .7    
-    bmi c9080                                                         ; 9047: 30 37       07    
-    lda (zp_fwb_sign),y                                               ; 9049: b1 3b       .;    
-    iny                                                               ; 904b: c8          .     
-    cmp zp_iwa_1                                                      ; 904c: c5 2b       .+    
-    bne c9071                                                         ; 904e: d0 21       .!    
-    lda (zp_fwb_sign),y                                               ; 9050: b1 3b       .;    
-    cmp zp_iwa                                                        ; 9052: c5 2a       .*    
-    bne c9071                                                         ; 9054: d0 1b       ..    
-    lda (zp_general),y                                                ; 9056: b1 37       .7    
-    sta zp_fwb_exp                                                    ; 9058: 85 3d       .=    
-    dey                                                               ; 905a: 88          .     
-    lda (zp_general),y                                                ; 905b: b1 37       .7    
-    sta zp_fwb_m1                                                     ; 905d: 85 3e       .>    
-    ldy zp_text_ptr_off                                               ; 905f: a4 0a       ..    
-    dey                                                               ; 9061: 88          .     
-    lda zp_text_ptr                                                   ; 9062: a5 0b       ..    
-    sta zp_general                                                    ; 9064: 85 37       .7    
-    lda zp_text_ptr_1                                                 ; 9066: a5 0c       ..    
-    sta zp_general_1                                                  ; 9068: 85 38       .8    
-    jsr sub_c88f5                                                     ; 906a: 20 f5 88     ..   
-    ldy zp_text_ptr_off                                               ; 906d: a4 0a       ..    
-    bne c901c                                                         ; 906f: d0 ab       ..    
+    ldy #0                                                            ; 9043: a0 00       ..       ; Search the table for this old number:
+    lda (zp_general),y                                                ; 9045: b1 37       .7       ; table end marker?
+    bmi c9080                                                         ; 9047: 30 37       07       ; not found: reference to a missing line
+    lda (zp_fwb_sign),y                                               ; 9049: b1 3b       .;       ; old number high...
+    iny                                                               ; 904b: c8          .        ; advance
+    cmp zp_iwa_1                                                      ; 904c: c5 2b       .+       ; match the referenced number high?
+    bne c9071                                                         ; 904e: d0 21       .!       ; no: next table entry
+    lda (zp_fwb_sign),y                                               ; 9050: b1 3b       .;       ; old number low...
+    cmp zp_iwa                                                        ; 9052: c5 2a       .*       ; match low?
+    bne c9071                                                         ; 9054: d0 1b       ..       ; no: next entry
+    lda (zp_general),y                                                ; 9056: b1 37       .7       ; Found: take the new number high
+    sta zp_fwb_exp                                                    ; 9058: 85 3d       .=       ; (save)
+    dey                                                               ; 905a: 88          .        ; new number low
+    lda (zp_general),y                                                ; 905b: b1 37       .7       ; ...
+    sta zp_fwb_m1                                                     ; 905d: 85 3e       .>       ; (save)
+    ldy zp_text_ptr_off                                               ; 905f: a4 0a       ..       ; position within the line
+    dey                                                               ; 9061: 88          .        ; ...
+    lda zp_text_ptr                                                   ; 9062: a5 0b       ..       ; Point at the reference in the line: low
+    sta zp_general                                                    ; 9064: 85 37       .7       ; ...
+    lda zp_text_ptr_1                                                 ; 9066: a5 0c       ..       ; high
+    sta zp_general_1                                                  ; 9068: 85 38       .8       ; ...
+    jsr sub_c88f5                                                     ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
+    ldy zp_text_ptr_off                                               ; 906d: a4 0a       ..       ; resume scanning
+    bne c901c                                                         ; 906f: d0 ab       ..       ; continue the line scan
 ; &9071 referenced 2 times by &904e, &9054
 .c9071
-    jsr sub_c909f                                                     ; 9071: 20 9f 90     ..   
-    lda zp_fwb_sign                                                   ; 9074: a5 3b       .;    
-    adc #2                                                            ; 9076: 69 02       i.    
-    sta zp_fwb_sign                                                   ; 9078: 85 3b       .;    
-    bcc c9043                                                         ; 907a: 90 c7       ..    
-    inc zp_fwb_ovf                                                    ; 907c: e6 3c       .<    
-    bcs c9043                                                         ; 907e: b0 c3       ..    
+    jsr advance_to_next_line                                          ; 9071: 20 9f 90     ..      ; Next table entry: advance...
+    lda zp_fwb_sign                                                   ; 9074: a5 3b       .;       ; ...the table pointer by 2
+    adc #2                                                            ; 9076: 69 02       i.       ; ...
+    sta zp_fwb_sign                                                   ; 9078: 85 3b       .;       ; (store)
+    bcc c9043                                                         ; 907a: 90 c7       ..       ; loop
+    inc zp_fwb_ovf                                                    ; 907c: e6 3c       .<       ; carry
+    bcs c9043                                                         ; 907e: b0 c3       ..       ; loop
 ; &9080 referenced 1 time by &9047
 .c9080
-    jsr sub_cbfcf                                                     ; 9080: 20 cf bf     ..   
-    lsr l0061                                                         ; 9083: 46 61       Fa    
-    adc #&6c ; 'l'                                                    ; 9085: 69 6c       il    
-    adc l0064                                                         ; 9087: 65 64       ed    
-    jsr l7461                                                         ; 9089: 20 61 74     at   
-    jsr sub_cb1c8                                                     ; 908c: 20 c8 b1     ..   
+    jsr sub_cbfcf                                                     ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
+    lsr l0061                                                         ; 9083: 46 61       Fa       ; build the "Failed at <line>" message...
+    adc #&6c ; 'l'                                                    ; 9085: 69 6c       il       ; ...
+    adc l0064                                                         ; 9087: 65 64       ed       ; ...
+    jsr l7461                                                         ; 9089: 20 61 74     at      ; ...
+    jsr sub_cb1c8                                                     ; 908c: 20 c8 b1     ..      ; print it
     equb &0b, &85, &2b, &c8, &b1, &0b, &85, &2a, &20, &1f, &99, &20   ; 908f: 0b 85 2b... ..+...
     equb &25, &bc, &f0, &ce                                           ; 909b: 25 bc f0... %.....
+; ***************************************************************************************
+; Advance the general pointer to the next program line
+;
+; Add the line length (at offset 3) to zp_general; carry clear on return.
 ; &909f referenced 3 times by &8fd1, &9008, &9071
-.sub_c909f
-    iny                                                               ; 909f: c8          .     
-    lda (zp_general),y                                                ; 90a0: b1 37       .7    
-    adc zp_general                                                    ; 90a2: 65 37       e7    
-    sta zp_general                                                    ; 90a4: 85 37       .7    
-    bcc return_7                                                      ; 90a6: 90 03       ..    
-    inc zp_general_1                                                  ; 90a8: e6 38       .8    
-    clc                                                               ; 90aa: 18          .     
+.advance_to_next_line
+    iny                                                               ; 909f: c8          .        ; Line length is at offset 3
+    lda (zp_general),y                                                ; 90a0: b1 37       .7       ; get the line length
+    adc zp_general                                                    ; 90a2: 65 37       e7       ; add it to the pointer: low
+    sta zp_general                                                    ; 90a4: 85 37       .7       ; (store)
+    bcc return_7                                                      ; 90a6: 90 03       ..       ; no carry: done
+    inc zp_general_1                                                  ; 90a8: e6 38       .8       ; carry into the high byte
+    clc                                                               ; 90aa: 18          .        ; clear carry for the caller
 ; &90ab referenced 1 time by &90a6
 .return_7
-    rts                                                               ; 90ab: 60          `     
+    rts                                                               ; 90ab: 60          `        ; Return at the next line
 ; ***************************************************************************************
 ; AUTO
 ;
@@ -11858,6 +11868,7 @@ save pydis_start, pydis_end
 ;     zp_rnd_seed:                 4
 ;     zp_rnd_seed_2:               4
 ;     zp_rnd_seed_4:               4
+;     advance_to_next_line:        3
 ;     assign_string:               3
 ;     c8620:                       3
 ;     c8738:                       3
@@ -11921,7 +11932,6 @@ save pydis_start, pydis_end
 ;     sub_c882f:                   3
 ;     sub_c8832:                   3
 ;     sub_c894b:                   3
-;     sub_c909f:                   3
 ;     sub_c97ba:                   3
 ;     sub_ca07b:                   3
 ;     sub_ca7ed:                   3
@@ -13858,7 +13868,6 @@ save pydis_start, pydis_end
 ;     sub_c8f69
 ;     sub_c8f92
 ;     sub_c8f9a
-;     sub_c909f
 ;     sub_c9231
 ;     sub_c9236
 ;     sub_c92da
