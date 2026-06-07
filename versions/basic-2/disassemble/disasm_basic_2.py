@@ -2242,6 +2242,26 @@ d.comment(0x9463, 'PROC: scan the PROC list', align=Align.INLINE)
 d.comment(0x9465, 'FN: point at the FN list head', align=Align.INLINE)
 d.comment(0x9467, 'scan the FN list', align=Align.INLINE)
 
+# iwa_store_zp (&BE44): copy IWA into the 4-byte variable at &00+X
+d.comment(0xbe44, 'Copy IWA to the zp variable at X: byte 0', align=Align.INLINE)
+d.comment(0xbe46, '(&00+X)', align=Align.INLINE)
+d.comment(0xbe48, 'byte 1', align=Align.INLINE)
+d.comment(0xbe4a, '(&01+X)', align=Align.INLINE)
+d.comment(0xbe4c, 'byte 2', align=Align.INLINE)
+d.comment(0xbe4e, '(&02+X)', align=Align.INLINE)
+d.comment(0xbe50, 'byte 3', align=Align.INLINE)
+d.comment(0xbe52, '(&03+X)', align=Align.INLINE)
+d.comment(0xbe54, 'Done', align=Align.INLINE)
+# sub_cbe55 (&BE55): scale FWB by adding Y to its exponent
+d.comment(0xbe55, 'Add without carry', align=Align.INLINE)
+d.comment(0xbe56, 'A = the amount (Y)', align=Align.INLINE)
+d.comment(0xbe57, 'add it to the FWB exponent', align=Align.INLINE)
+d.comment(0xbe59, '(store)', align=Align.INLINE)
+d.comment(0xbe5b, 'no carry: done', align=Align.INLINE)
+d.comment(0xbe5d, 'carry into the mantissa MSB', align=Align.INLINE)
+d.comment(0xbe5f, 'Y = 1', align=Align.INLINE)
+d.comment(0xbe61, 'Return', align=Align.INLINE)
+
 # fwb_copy_from_fwa (&A21E): FWB = FWA
 d.comment(0xa21e, "Copy FWA's sign...", align=Align.INLINE)
 d.comment(0xa220, '...into FWB', align=Align.INLINE)

@@ -11309,29 +11309,29 @@ l848a = sub_c847b+15
 ; Copy IWA into a 4-byte zero-page integer variable.
 ; &be44 referenced 5 times by &885f, &9d75, &af41, &b2e0, &b315
 .iwa_store_zp
-    lda zp_iwa                                                        ; be44: a5 2a       .*    
-    sta zp_lomem,x                                                    ; be46: 95 00       ..    
-    lda zp_iwa_1                                                      ; be48: a5 2b       .+    
-    sta zp_lomem_1,x                                                  ; be4a: 95 01       ..    
-    lda zp_iwa_2                                                      ; be4c: a5 2c       .,    
-    sta zp_vartop,x                                                   ; be4e: 95 02       ..    
-    lda zp_iwa_3                                                      ; be50: a5 2d       .-    
-    sta zp_vartop_1,x                                                 ; be52: 95 03       ..    
-    rts                                                               ; be54: 60          `     
+    lda zp_iwa                                                        ; be44: a5 2a       .*       ; Copy IWA to the zp variable at X: byte 0
+    sta zp_lomem,x                                                    ; be46: 95 00       ..       ; (&00+X)
+    lda zp_iwa_1                                                      ; be48: a5 2b       .+       ; byte 1
+    sta zp_lomem_1,x                                                  ; be4a: 95 01       ..       ; (&01+X)
+    lda zp_iwa_2                                                      ; be4c: a5 2c       .,       ; byte 2
+    sta zp_vartop,x                                                   ; be4e: 95 02       ..       ; (&02+X)
+    lda zp_iwa_3                                                      ; be50: a5 2d       .-       ; byte 3
+    sta zp_vartop_1,x                                                 ; be52: 95 03       ..       ; (&03+X)
+    rts                                                               ; be54: 60          `        ; Done
 ; &be55 referenced 1 time by &bb04
 .sub_cbe55
-    clc                                                               ; be55: 18          .     
+    clc                                                               ; be55: 18          .        ; Add without carry
 ; &be56 referenced 1 time by &bd02
 .sub_cbe56
-    tya                                                               ; be56: 98          .     
-    adc zp_fwb_exp                                                    ; be57: 65 3d       e=    
-    sta zp_fwb_exp                                                    ; be59: 85 3d       .=    
-    bcc cbe5f                                                         ; be5b: 90 02       ..    
-    inc zp_fwb_m1                                                     ; be5d: e6 3e       .>    
+    tya                                                               ; be56: 98          .        ; A = the amount (Y)
+    adc zp_fwb_exp                                                    ; be57: 65 3d       e=       ; add it to the FWB exponent
+    sta zp_fwb_exp                                                    ; be59: 85 3d       .=       ; (store)
+    bcc cbe5f                                                         ; be5b: 90 02       ..       ; no carry: done
+    inc zp_fwb_m1                                                     ; be5d: e6 3e       .>       ; carry into the mantissa MSB
 ; &be5f referenced 1 time by &be5b
 .cbe5f
-    ldy #1                                                            ; be5f: a0 01       ..    
-    rts                                                               ; be61: 60          `     
+    ldy #1                                                            ; be5f: a0 01       ..       ; Y = 1
+    rts                                                               ; be61: 60          `        ; Return
 ; ***************************************************************************************
 ; Load a program from the filing system
 ;

@@ -100477,6 +100477,7 @@
       "labels": [
         "iwa_store_zp"
       ],
+      "comment_inline": "Copy IWA to the zp variable at X: byte 0",
       "xref_summaries": [
         "&be44 referenced 5 times by &885f, &9d75, &af41, &b2e0, &b315"
       ],
@@ -100499,6 +100500,7 @@
         149,
         0
       ],
+      "comment_inline": "(&00+X)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem,x",
@@ -100511,6 +100513,7 @@
         165,
         43
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -100523,6 +100526,7 @@
         149,
         1
       ],
+      "comment_inline": "(&01+X)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem_1,x",
@@ -100535,6 +100539,7 @@
         165,
         44
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -100547,6 +100552,7 @@
         149,
         2
       ],
+      "comment_inline": "(&02+X)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop,x",
@@ -100559,6 +100565,7 @@
         165,
         45
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -100571,6 +100578,7 @@
         149,
         3
       ],
+      "comment_inline": "(&03+X)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop_1,x",
@@ -100582,6 +100590,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Done",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -100593,6 +100602,7 @@
       "labels": [
         "sub_cbe55"
       ],
+      "comment_inline": "Add without carry",
       "xref_summaries": [
         "&be55 referenced 1 time by &bb04"
       ],
@@ -100610,6 +100620,7 @@
       "labels": [
         "sub_cbe56"
       ],
+      "comment_inline": "A = the amount (Y)",
       "xref_summaries": [
         "&be56 referenced 1 time by &bd02"
       ],
@@ -100625,6 +100636,7 @@
         101,
         61
       ],
+      "comment_inline": "add it to the FWB exponent",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_exp",
@@ -100637,6 +100649,7 @@
         133,
         61
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -100649,6 +100662,7 @@
         144,
         2
       ],
+      "comment_inline": "no carry: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbe5f",
@@ -100661,6 +100675,7 @@
         230,
         62
       ],
+      "comment_inline": "carry into the mantissa MSB",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m1",
@@ -100676,6 +100691,7 @@
       "labels": [
         "cbe5f"
       ],
+      "comment_inline": "Y = 1",
       "xref_summaries": [
         "&be5f referenced 1 time by &be5b"
       ],
@@ -100691,6 +100707,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
