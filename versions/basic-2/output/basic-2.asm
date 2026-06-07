@@ -2741,54 +2741,54 @@ l848a = sub_c847b+15
 ; expression printing.
 ; &8e70 referenced 2 times by &8dde, &8e8d
 .print_special_item
-    ldx zp_text_ptr                                                   ; 8e70: a6 0b       ..    
-    stx zp_text_ptr2                                                  ; 8e72: 86 19       ..    
-    ldx zp_text_ptr_1                                                 ; 8e74: a6 0c       ..    
-    stx zp_text_ptr2_1                                                ; 8e76: 86 1a       ..    
-    ldx zp_text_ptr_off                                               ; 8e78: a6 0a       ..    
-    stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..    
-    cmp #&27                                                          ; 8e7c: c9 27       .'    
-    beq loop_c8e67                                                    ; 8e7e: f0 e7       ..    
-    cmp #&8a                                                          ; 8e80: c9 8a       ..    
-    beq loop_c8e40                                                    ; 8e82: f0 bc       ..    
-    cmp #&89                                                          ; 8e84: c9 89       ..    
-    beq loop_c8e58                                                    ; 8e86: f0 d0       ..    
-    sec                                                               ; 8e88: 38          8     
+    ldx zp_text_ptr                                                   ; 8e70: a6 0b       ..       ; Save PtrA into PtrB: low
+    stx zp_text_ptr2                                                  ; 8e72: 86 19       ..       ; ...
+    ldx zp_text_ptr_1                                                 ; 8e74: a6 0c       ..       ; high
+    stx zp_text_ptr2_1                                                ; 8e76: 86 1a       ..       ; ...
+    ldx zp_text_ptr_off                                               ; 8e78: a6 0a       ..       ; offset
+    stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..       ; ...
+    cmp #&27                                                          ; 8e7c: c9 27       .'       ; an apostrophe?
+    beq loop_c8e67                                                    ; 8e7e: f0 e7       ..       ; yes: force a newline
+    cmp #&8a                                                          ; 8e80: c9 8a       ..       ; TAB token?
+    beq loop_c8e40                                                    ; 8e82: f0 bc       ..       ; yes: handle TAB
+    cmp #&89                                                          ; 8e84: c9 89       ..       ; SPC token?
+    beq loop_c8e58                                                    ; 8e86: f0 d0       ..       ; yes: handle SPC
+    sec                                                               ; 8e88: 38          8        ; none: not consumed (carry set)
 ; &8e89 referenced 1 time by &8e90
 .return_6
-    rts                                                               ; 8e89: 60          `     
+    rts                                                               ; 8e89: 60          `        ; Return
 ; &8e8a referenced 2 times by &ba5a, &ba5f
 .sub_c8e8a
-    jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..   
-    jsr print_special_item                                            ; 8e8d: 20 70 8e     p.   
-    bcc return_6                                                      ; 8e90: 90 f7       ..    
-    cmp #&22                                                          ; 8e92: c9 22       ."    
-    beq c8ea7                                                         ; 8e94: f0 11       ..    
-    sec                                                               ; 8e96: 38          8     
-    rts                                                               ; 8e97: 60          `     
+    jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..      ; Skip spaces, then handle a special item
+    jsr print_special_item                                            ; 8e8d: 20 70 8e     p.      ; ...
+    bcc return_6                                                      ; 8e90: 90 f7       ..       ; consumed: done
+    cmp #&22                                                          ; 8e92: c9 22       ."       ; a string literal (quote)?
+    beq c8ea7                                                         ; 8e94: f0 11       ..       ; yes: print it inline
+    sec                                                               ; 8e96: 38          8        ; not consumed
+    rts                                                               ; 8e97: 60          `        ; Return
 ; &8e98 referenced 2 times by &8eac, &ade9
 .c8e98
-    brk                                                               ; 8e98: 00          .     
+    brk                                                               ; 8e98: 00          .        ; Missing " error block
     equb &09                                                          ; 8e99: 09          .     
     equs "Missing ", &22                                              ; 8e9a: 4d 69 73... Mis...
     equb &00                                                          ; 8ea3: 00          .     
 ; &8ea4 referenced 2 times by &8eb0, &8ebb
 .c8ea4
-    jsr cb558                                                         ; 8ea4: 20 58 b5     X.   
+    jsr cb558                                                         ; 8ea4: 20 58 b5     X.      ; print a character
 ; &8ea7 referenced 1 time by &8e94
 .c8ea7
-    iny                                                               ; 8ea7: c8          .     
-    lda (zp_text_ptr2),y                                              ; 8ea8: b1 19       ..    
-    cmp #&0d                                                          ; 8eaa: c9 0d       ..    
-    beq c8e98                                                         ; 8eac: f0 ea       ..    
-    cmp #&22                                                          ; 8eae: c9 22       ."    
-    bne c8ea4                                                         ; 8eb0: d0 f2       ..    
-    iny                                                               ; 8eb2: c8          .     
-    sty zp_text_ptr2_off                                              ; 8eb3: 84 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 8eb5: b1 19       ..    
-    cmp #&22                                                          ; 8eb7: c9 22       ."    
-    bne c8e6a                                                         ; 8eb9: d0 af       ..    
-    beq c8ea4                                                         ; 8ebb: f0 e7       ..    
+    iny                                                               ; 8ea7: c8          .        ; Print the inline string: advance
+    lda (zp_text_ptr2),y                                              ; 8ea8: b1 19       ..       ; char
+    cmp #&0d                                                          ; 8eaa: c9 0d       ..       ; CR (unterminated)?
+    beq c8e98                                                         ; 8eac: f0 ea       ..       ; Missing " error
+    cmp #&22                                                          ; 8eae: c9 22       ."       ; a quote?
+    bne c8ea4                                                         ; 8eb0: d0 f2       ..       ; no: print it
+    iny                                                               ; 8eb2: c8          .        ; advance
+    sty zp_text_ptr2_off                                              ; 8eb3: 84 1b       ..       ; update the offset
+    lda (zp_text_ptr2),y                                              ; 8eb5: b1 19       ..       ; doubled ""?
+    cmp #&22                                                          ; 8eb7: c9 22       ."       ; ...
+    bne c8e6a                                                         ; 8eb9: d0 af       ..       ; no: end of the string
+    beq c8ea4                                                         ; 8ebb: f0 e7       ..       ; yes: print one quote
 ; ***************************************************************************************
 ; CLG
 ;
@@ -6439,51 +6439,53 @@ l848a = sub_c847b+15
 ; Convert the integer in IWA to a real in FWA.
 ; &a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6
 .int_to_fwa
-    ldx #0                                                            ; a2be: a2 00       ..    
-    stx zp_fwa_rnd                                                    ; a2c0: 86 35       .5    
-    stx zp_fwa_ovf                                                    ; a2c2: 86 2f       ./    
-    lda zp_iwa_3                                                      ; a2c4: a5 2d       .-    
-    bpl ca2cd                                                         ; a2c6: 10 05       ..    
-    jsr iwa_negate                                                    ; a2c8: 20 93 ad     ..   
-    ldx #&ff                                                          ; a2cb: a2 ff       ..    
+    ldx #0                                                            ; a2be: a2 00       ..       ; Clear the rounding...
+    stx zp_fwa_rnd                                                    ; a2c0: 86 35       .5       ; ...
+    stx zp_fwa_ovf                                                    ; a2c2: 86 2f       ./       ; ...and overflow bytes
+    lda zp_iwa_3                                                      ; a2c4: a5 2d       .-       ; Sign of IWA (top byte)
+    bpl ca2cd                                                         ; a2c6: 10 05       ..       ; positive: sign byte = 0
+    jsr iwa_negate                                                    ; a2c8: 20 93 ad     ..      ; negative: make it positive...
+    ldx #&ff                                                          ; a2cb: a2 ff       ..       ; ...and set the sign byte
 ; &a2cd referenced 1 time by &a2c6
 .ca2cd
-    stx zp_fwa_sign                                                   ; a2cd: 86 2e       ..    
-    lda zp_iwa                                                        ; a2cf: a5 2a       .*    
-    sta zp_fwa_m4                                                     ; a2d1: 85 34       .4    
-    lda zp_iwa_1                                                      ; a2d3: a5 2b       .+    
-    sta zp_fwa_m3                                                     ; a2d5: 85 33       .3    
-    lda zp_iwa_2                                                      ; a2d7: a5 2c       .,    
-    sta zp_fwa_m2                                                     ; a2d9: 85 32       .2    
-    lda zp_iwa_3                                                      ; a2db: a5 2d       .-    
-    sta zp_fwa_m1                                                     ; a2dd: 85 31       .1    
-    lda #&a0                                                          ; a2df: a9 a0       ..    
-    sta zp_fwa_exp                                                    ; a2e1: 85 30       .0    
-    jmp fwa_normalise                                                 ; a2e3: 4c 03 a3    L..   
+    stx zp_fwa_sign                                                   ; a2cd: 86 2e       ..       ; (store the sign)
+    lda zp_iwa                                                        ; a2cf: a5 2a       .*       ; Copy IWA into the mantissa (MSB first):
+    sta zp_fwa_m4                                                     ; a2d1: 85 34       .4       ; byte 0 -> m4
+    lda zp_iwa_1                                                      ; a2d3: a5 2b       .+       ; ...
+    sta zp_fwa_m3                                                     ; a2d5: 85 33       .3       ; byte 1 -> m3
+    lda zp_iwa_2                                                      ; a2d7: a5 2c       .,       ; ...
+    sta zp_fwa_m2                                                     ; a2d9: 85 32       .2       ; byte 2 -> m2
+    lda zp_iwa_3                                                      ; a2db: a5 2d       .-       ; ...
+    sta zp_fwa_m1                                                     ; a2dd: 85 31       .1       ; byte 3 -> m1 (MSB)
+    lda #&a0                                                          ; a2df: a9 a0       ..       ; Exponent &A0 (= 32): a 32-bit integer
+    sta zp_fwa_exp                                                    ; a2e1: 85 30       .0       ; (store)
+    jmp fwa_normalise                                                 ; a2e3: 4c 03 a3    L..      ; normalise the result
 ; &a2e6 referenced 1 time by &a30f
 .loop_ca2e6
-    sta zp_fwa_sign                                                   ; a2e6: 85 2e       ..    
-    sta zp_fwa_exp                                                    ; a2e8: 85 30       .0    
-    sta zp_fwa_ovf                                                    ; a2ea: 85 2f       ./    
+    sta zp_fwa_sign                                                   ; a2e6: 85 2e       ..       ; Zero: clear sign,
+    sta zp_fwa_exp                                                    ; a2e8: 85 30       .0       ; exponent,
+    sta zp_fwa_ovf                                                    ; a2ea: 85 2f       ./       ; overflow
 ; &a2ec referenced 4 times by &a2f2, &a305, &a315, &a338
 .return_23
-    rts                                                               ; a2ec: 60          `     
+    rts                                                               ; a2ec: 60          `        ; Return
+; ***************************************************************************************
+; Convert a small (8-bit) integer in A to FWA
 ; &a2ed referenced 1 time by &a852
-.sub_ca2ed
-    pha                                                               ; a2ed: 48          H     
-    jsr fwa_clear                                                     ; a2ee: 20 86 a6     ..   
-    pla                                                               ; a2f1: 68          h     
-    beq return_23                                                     ; a2f2: f0 f8       ..    
-    bpl ca2fd                                                         ; a2f4: 10 07       ..    
-    sta zp_fwa_sign                                                   ; a2f6: 85 2e       ..    
-    lda #0                                                            ; a2f8: a9 00       ..    
-    sec                                                               ; a2fa: 38          8     
-    sbc zp_fwa_sign                                                   ; a2fb: e5 2e       ..    
+.small_int_to_fwa
+    pha                                                               ; a2ed: 48          H        ; Small int to FWA: save it
+    jsr fwa_clear                                                     ; a2ee: 20 86 a6     ..      ; clear FWA
+    pla                                                               ; a2f1: 68          h        ; recover it
+    beq return_23                                                     ; a2f2: f0 f8       ..       ; zero: done
+    bpl ca2fd                                                         ; a2f4: 10 07       ..       ; positive
+    sta zp_fwa_sign                                                   ; a2f6: 85 2e       ..       ; negative: set the sign...
+    lda #0                                                            ; a2f8: a9 00       ..       ; ...
+    sec                                                               ; a2fa: 38          8        ; ...
+    sbc zp_fwa_sign                                                   ; a2fb: e5 2e       ..       ; ...and negate the value
 ; &a2fd referenced 1 time by &a2f4
 .ca2fd
-    sta zp_fwa_m1                                                     ; a2fd: 85 31       .1    
-    lda #&88                                                          ; a2ff: a9 88       ..    
-    sta zp_fwa_exp                                                    ; a301: 85 30       .0    
+    sta zp_fwa_m1                                                     ; a2fd: 85 31       .1       ; value into the mantissa MSB
+    lda #&88                                                          ; a2ff: a9 88       ..       ; Exponent &88 (= 8): an 8-bit value
+    sta zp_fwa_exp                                                    ; a301: 85 30       .0       ; (store; falls into normalise)
 ; ***************************************************************************************
 ; Normalise FWA
 ;
@@ -6898,7 +6900,7 @@ l848a = sub_c847b+15
 ; Add FWB to FWA, normalised but not rounded.
 ; &a50b referenced 2 times by &9f7b, &a505
 .fwa_add_fwb_raw
-    jsr fwa_sign                                                      ; a50b: 20 da a1     ..   
+    jsr fwa_sign                                                      ; a50b: 20 da a1     ..      ; Is FWA zero?
     beq fwa_copy_from_fwb                                             ; a50e: f0 cc       ..       ; FWA is zero: the sum is simply FWB
     ldy #0                                                            ; a510: a0 00       ..       ; Y = 0 (the byte shifted in)
     sec                                                               ; a512: 38          8        ; prepare the exponent compare
@@ -7480,7 +7482,7 @@ l848a = sub_c847b+15
     pla                                                               ; a84e: 68          h     
     sec                                                               ; a84f: 38          8     
     sbc #&81                                                          ; a850: e9 81       ..    
-    jsr sub_ca2ed                                                     ; a852: 20 ed a2     ..   
+    jsr small_int_to_fwa                                              ; a852: 20 ed a2     ..   
     lda #&6e ; 'n'                                                    ; a855: a9 6e       .n    
     sta zp_fp_ptr                                                     ; a857: 85 4b       .K    
     lda #&a8                                                          ; a859: a9 a8       ..    
@@ -9430,10 +9432,10 @@ l848a = sub_c847b+15
 ; &b32c referenced 3 times by &9685, &ae27, &b318
 .cb32c
     ldy zp_iwa_2                                                      ; b32c: a4 2c       .,    
-    bmi cb384                                                         ; b32e: 30 54       0T    
-    beq cb34f                                                         ; b330: f0 1d       ..    
+    bmi load_string_var                                               ; b32e: 30 54       0T    
+    beq load_byte_var                                                 ; b330: f0 1d       ..    
     cpy #5                                                            ; b332: c0 05       ..    
-    beq cb354                                                         ; b334: f0 1e       ..    
+    beq load_real_var                                                 ; b334: f0 1e       ..    
 ; ***************************************************************************************
 ; Load an integer variable into the accumulator
 ;
@@ -9446,99 +9448,105 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the loaded integer
 ;     X: preserved
 .iwa_load_var
-    ldy #3                                                            ; b336: a0 03       ..    
-    lda (zp_iwa),y                                                    ; b338: b1 2a       .*    
-    sta zp_iwa_3                                                      ; b33a: 85 2d       .-    
-    dey                                                               ; b33c: 88          .     
-    lda (zp_iwa),y                                                    ; b33d: b1 2a       .*    
-    sta zp_iwa_2                                                      ; b33f: 85 2c       .,    
-    dey                                                               ; b341: 88          .     
-    lda (zp_iwa),y                                                    ; b342: b1 2a       .*    
-    tax                                                               ; b344: aa          .     
-    dey                                                               ; b345: 88          .     
-    lda (zp_iwa),y                                                    ; b346: b1 2a       .*    
-    sta zp_iwa                                                        ; b348: 85 2a       .*    
-    stx zp_iwa_1                                                      ; b34a: 86 2b       .+    
-    lda #&40 ; '@'                                                    ; b34c: a9 40       .@    
-    rts                                                               ; b34e: 60          `     
+    ldy #3                                                            ; b336: a0 03       ..       ; Load a 4-byte integer (MSB first): byte 3
+    lda (zp_iwa),y                                                    ; b338: b1 2a       .*       ; ...
+    sta zp_iwa_3                                                      ; b33a: 85 2d       .-       ; (into IWA)
+    dey                                                               ; b33c: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b33d: b1 2a       .*       ; byte 2
+    sta zp_iwa_2                                                      ; b33f: 85 2c       .,       ; ...
+    dey                                                               ; b341: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b342: b1 2a       .*       ; byte 1
+    tax                                                               ; b344: aa          .        ; (keep in X)
+    dey                                                               ; b345: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b346: b1 2a       .*       ; byte 0
+    sta zp_iwa                                                        ; b348: 85 2a       .*       ; (store last)
+    stx zp_iwa_1                                                      ; b34a: 86 2b       .+       ; byte 1 from X
+    lda #&40 ; '@'                                                    ; b34c: a9 40       .@       ; integer type
+    rts                                                               ; b34e: 60          `        ; Return the integer
+; ***************************************************************************************
+; Load a byte variable into IWA
 ; &b34f referenced 1 time by &b330
-.cb34f
-    lda (zp_iwa),y                                                    ; b34f: b1 2a       .*    
-    jmp iwa_from_ya                                                   ; b351: 4c ea ae    L..   
+.load_byte_var
+    lda (zp_iwa),y                                                    ; b34f: b1 2a       .*       ; Read the byte
+    jmp iwa_from_ya                                                   ; b351: 4c ea ae    L..      ; return as an integer
+; ***************************************************************************************
+; Load a real variable into FWA
 ; &b354 referenced 2 times by &b334, &b766
-.cb354
-    dey                                                               ; b354: 88          .     
-    lda (zp_iwa),y                                                    ; b355: b1 2a       .*    
-    sta zp_fwa_m4                                                     ; b357: 85 34       .4    
-    dey                                                               ; b359: 88          .     
-    lda (zp_iwa),y                                                    ; b35a: b1 2a       .*    
-    sta zp_fwa_m3                                                     ; b35c: 85 33       .3    
-    dey                                                               ; b35e: 88          .     
-    lda (zp_iwa),y                                                    ; b35f: b1 2a       .*    
-    sta zp_fwa_m2                                                     ; b361: 85 32       .2    
-    dey                                                               ; b363: 88          .     
-    lda (zp_iwa),y                                                    ; b364: b1 2a       .*    
-    sta zp_fwa_sign                                                   ; b366: 85 2e       ..    
-    dey                                                               ; b368: 88          .     
-    lda (zp_iwa),y                                                    ; b369: b1 2a       .*    
-    sta zp_fwa_exp                                                    ; b36b: 85 30       .0    
-    sty zp_fwa_rnd                                                    ; b36d: 84 35       .5    
-    sty zp_fwa_ovf                                                    ; b36f: 84 2f       ./    
-    ora zp_fwa_sign                                                   ; b371: 05 2e       ..    
-    ora zp_fwa_m2                                                     ; b373: 05 32       .2    
-    ora zp_fwa_m3                                                     ; b375: 05 33       .3    
-    ora zp_fwa_m4                                                     ; b377: 05 34       .4    
-    beq cb37f                                                         ; b379: f0 04       ..    
-    lda zp_fwa_sign                                                   ; b37b: a5 2e       ..    
-    ora #&80                                                          ; b37d: 09 80       ..    
+.load_real_var
+    dey                                                               ; b354: 88          .        ; Unpack a 5-byte real into FWA: byte 4...
+    lda (zp_iwa),y                                                    ; b355: b1 2a       .*       ; ...
+    sta zp_fwa_m4                                                     ; b357: 85 34       .4       ; -> m4
+    dey                                                               ; b359: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b35a: b1 2a       .*       ; byte 3...
+    sta zp_fwa_m3                                                     ; b35c: 85 33       .3       ; -> m3
+    dey                                                               ; b35e: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b35f: b1 2a       .*       ; byte 2...
+    sta zp_fwa_m2                                                     ; b361: 85 32       .2       ; -> m2
+    dey                                                               ; b363: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b364: b1 2a       .*       ; byte 1 (sign + MSB)...
+    sta zp_fwa_sign                                                   ; b366: 85 2e       ..       ; -> sign byte
+    dey                                                               ; b368: 88          .        ; next
+    lda (zp_iwa),y                                                    ; b369: b1 2a       .*       ; byte 0...
+    sta zp_fwa_exp                                                    ; b36b: 85 30       .0       ; -> exponent
+    sty zp_fwa_rnd                                                    ; b36d: 84 35       .5       ; clear rounding
+    sty zp_fwa_ovf                                                    ; b36f: 84 2f       ./       ; clear overflow
+    ora zp_fwa_sign                                                   ; b371: 05 2e       ..       ; test for zero...
+    ora zp_fwa_m2                                                     ; b373: 05 32       .2       ; ...
+    ora zp_fwa_m3                                                     ; b375: 05 33       .3       ; ...
+    ora zp_fwa_m4                                                     ; b377: 05 34       .4       ; ...
+    beq cb37f                                                         ; b379: f0 04       ..       ; zero: leave the MSB clear
+    lda zp_fwa_sign                                                   ; b37b: a5 2e       ..       ; restore the implied 1...
+    ora #&80                                                          ; b37d: 09 80       ..       ; ...
 ; &b37f referenced 1 time by &b379
 .cb37f
-    sta zp_fwa_m1                                                     ; b37f: 85 31       .1    
-    lda #&ff                                                          ; b381: a9 ff       ..    
-    rts                                                               ; b383: 60          `     
+    sta zp_fwa_m1                                                     ; b37f: 85 31       .1       ; store the mantissa MSB
+    lda #&ff                                                          ; b381: a9 ff       ..       ; real type
+    rts                                                               ; b383: 60          `        ; Return the real
+; ***************************************************************************************
+; Load a string variable into the buffer
 ; &b384 referenced 1 time by &b32e
-.cb384
-    cpy #&80                                                          ; b384: c0 80       ..    
-    beq cb3a7                                                         ; b386: f0 1f       ..    
-    ldy #3                                                            ; b388: a0 03       ..    
-    lda (zp_iwa),y                                                    ; b38a: b1 2a       .*    
-    sta zp_strbuf_len                                                 ; b38c: 85 36       .6    
-    beq return_32                                                     ; b38e: f0 16       ..    
-    ldy #1                                                            ; b390: a0 01       ..    
-    lda (zp_iwa),y                                                    ; b392: b1 2a       .*    
-    sta zp_general_1                                                  ; b394: 85 38       .8    
-    dey                                                               ; b396: 88          .     
-    lda (zp_iwa),y                                                    ; b397: b1 2a       .*    
-    sta zp_general                                                    ; b399: 85 37       .7    
-    ldy zp_strbuf_len                                                 ; b39b: a4 36       .6    
+.load_string_var
+    cpy #&80                                                          ; b384: c0 80       ..       ; $-string (absolute address)?
+    beq cb3a7                                                         ; b386: f0 1f       ..       ; yes
+    ldy #3                                                            ; b388: a0 03       ..       ; normal string: length at offset 3
+    lda (zp_iwa),y                                                    ; b38a: b1 2a       .*       ; ...
+    sta zp_strbuf_len                                                 ; b38c: 85 36       .6       ; string length
+    beq return_32                                                     ; b38e: f0 16       ..       ; empty: done
+    ldy #1                                                            ; b390: a0 01       ..       ; string pointer high
+    lda (zp_iwa),y                                                    ; b392: b1 2a       .*       ; ...
+    sta zp_general_1                                                  ; b394: 85 38       .8       ; ...
+    dey                                                               ; b396: 88          .        ; low
+    lda (zp_iwa),y                                                    ; b397: b1 2a       .*       ; ...
+    sta zp_general                                                    ; b399: 85 37       .7       ; ...
+    ldy zp_strbuf_len                                                 ; b39b: a4 36       .6       ; copy into the buffer:
 ; &b39d referenced 1 time by &b3a4
 .loop_cb39d
-    dey                                                               ; b39d: 88          .     
-    lda (zp_general),y                                                ; b39e: b1 37       .7    
-    sta string_work,y                                                 ; b3a0: 99 00 06    ...   
-    tya                                                               ; b3a3: 98          .     
-    bne loop_cb39d                                                    ; b3a4: d0 f7       ..    
+    dey                                                               ; b39d: 88          .        ; char...
+    lda (zp_general),y                                                ; b39e: b1 37       .7       ; ...
+    sta string_work,y                                                 ; b3a0: 99 00 06    ...      ; -> buffer
+    tya                                                               ; b3a3: 98          .        ; count
+    bne loop_cb39d                                                    ; b3a4: d0 f7       ..       ; loop
 ; &b3a6 referenced 1 time by &b38e
 .return_32
-    rts                                                               ; b3a6: 60          `     
+    rts                                                               ; b3a6: 60          `        ; Return the string
 ; &b3a7 referenced 1 time by &b386
 .cb3a7
-    lda zp_iwa_1                                                      ; b3a7: a5 2b       .+    
-    beq cb3c0                                                         ; b3a9: f0 15       ..    
-    ldy #0                                                            ; b3ab: a0 00       ..    
+    lda zp_iwa_1                                                      ; b3a7: a5 2b       .+       ; $-string: copy until CR
+    beq cb3c0                                                         ; b3a9: f0 15       ..       ; null pointer: empty
+    ldy #0                                                            ; b3ab: a0 00       ..       ; ...
 ; &b3ad referenced 1 time by &b3b7
 .loop_cb3ad
-    lda (zp_iwa),y                                                    ; b3ad: b1 2a       .*    
-    sta string_work,y                                                 ; b3af: 99 00 06    ...   
-    eor #&0d                                                          ; b3b2: 49 0d       I.    
-    beq cb3ba                                                         ; b3b4: f0 04       ..    
-    iny                                                               ; b3b6: c8          .     
-    bne loop_cb3ad                                                    ; b3b7: d0 f4       ..    
-    tya                                                               ; b3b9: 98          .     
+    lda (zp_iwa),y                                                    ; b3ad: b1 2a       .*       ; char...
+    sta string_work,y                                                 ; b3af: 99 00 06    ...      ; -> buffer
+    eor #&0d                                                          ; b3b2: 49 0d       I.       ; CR?
+    beq cb3ba                                                         ; b3b4: f0 04       ..       ; yes: end
+    iny                                                               ; b3b6: c8          .        ; next
+    bne loop_cb3ad                                                    ; b3b7: d0 f4       ..       ; loop
+    tya                                                               ; b3b9: 98          .        ; ...
 ; &b3ba referenced 1 time by &b3b4
 .cb3ba
-    sty zp_strbuf_len                                                 ; b3ba: 84 36       .6    
-    rts                                                               ; b3bc: 60          `     
+    sty zp_strbuf_len                                                 ; b3ba: 84 36       .6       ; set the length
+    rts                                                               ; b3bc: 60          `        ; Return
 ; ***************************************************************************************
 ; CHR$
 ;
@@ -10153,7 +10161,7 @@ l848a = sub_c847b+15
     jmp stmt_next                                                     ; b763: 4c 95 b6    L..   
 ; &b766 referenced 1 time by &b6e6
 .cb766
-    jsr cb354                                                         ; b766: 20 54 b3     T.   
+    jsr load_real_var                                                 ; b766: 20 54 b3     T.   
     lda zp_for_level                                                  ; b769: a5 26       .&    
     clc                                                               ; b76b: 18          .     
     adc #&f4                                                          ; b76c: 69 f4       i.    
@@ -12086,7 +12094,6 @@ save pydis_start, pydis_end
 ;     cb24d:                       2
 ;     cb2ca:                       2
 ;     cb329:                       2
-;     cb354:                       2
 ;     cb48f:                       2
 ;     cb4ae:                       2
 ;     cb4e9:                       2
@@ -12141,6 +12148,7 @@ save pydis_start, pydis_end
 ;     l04fc:                       2
 ;     l06ff:                       2
 ;     load_program:                2
+;     load_real_var:               2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -12539,9 +12547,7 @@ save pydis_start, pydis_end
 ;     cb2f9:                       1
 ;     cb303:                       1
 ;     cb318:                       1
-;     cb34f:                       1
 ;     cb37f:                       1
-;     cb384:                       1
 ;     cb3a7:                       1
 ;     cb3ba:                       1
 ;     cb3c0:                       1
@@ -12677,6 +12683,8 @@ save pydis_start, pydis_end
 ;     l996b:                       1
 ;     l99b9:                       1
 ;     language_startup:            1
+;     load_byte_var:               1
+;     load_string_var:             1
 ;     loop_c853c:                  1
 ;     loop_c8544:                  1
 ;     loop_c8567:                  1
@@ -12894,6 +12902,7 @@ save pydis_start, pydis_end
 ;     rnd_range:                   1
 ;     rnd_repeat:                  1
 ;     rnd_seed:                    1
+;     small_int_to_fwa:            1
 ;     start_new_program:           1
 ;     stmt_dim:                    1
 ;     stmt_local:                  1
@@ -12920,7 +12929,6 @@ save pydis_start, pydis_end
 ;     sub_ca052:                   1
 ;     sub_ca140:                   1
 ;     sub_ca14b:                   1
-;     sub_ca2ed:                   1
 ;     sub_ca3e7:                   1
 ;     sub_ca4b6:                   1
 ;     sub_ca4c7:                   1
@@ -13459,10 +13467,7 @@ save pydis_start, pydis_end
 ;     cb318
 ;     cb329
 ;     cb32c
-;     cb34f
-;     cb354
 ;     cb37f
-;     cb384
 ;     cb3a7
 ;     cb3ba
 ;     cb3c0
@@ -13924,7 +13929,6 @@ save pydis_start, pydis_end
 ;     sub_ca07b
 ;     sub_ca140
 ;     sub_ca14b
-;     sub_ca2ed
 ;     sub_ca3e7
 ;     sub_ca486
 ;     sub_ca4b6

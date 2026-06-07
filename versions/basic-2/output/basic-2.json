@@ -1418,8 +1418,7 @@
       "addr": 41662,
       "name": "int_to_fwa",
       "title": "Convert the integer accumulator to floating point",
-      "description": "Convert the integer in IWA to a real in FWA.",
-      "fall_through": true
+      "description": "Convert the integer in IWA to a real in FWA."
     },
     {
       "addr": 44935,
@@ -1711,6 +1710,27 @@
       "name": "read_string_literal",
       "title": "Read a string literal",
       "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
+    },
+    {
+      "addr": 45903,
+      "name": "load_byte_var",
+      "title": "Load a byte variable into IWA"
+    },
+    {
+      "addr": 45908,
+      "name": "load_real_var",
+      "title": "Load a real variable into FWA"
+    },
+    {
+      "addr": 45956,
+      "name": "load_string_var",
+      "title": "Load a string variable into the buffer"
+    },
+    {
+      "addr": 41709,
+      "name": "small_int_to_fwa",
+      "title": "Convert a small (8-bit) integer in A to FWA",
+      "fall_through": true
     },
     {
       "addr": 41336,
@@ -24526,6 +24546,7 @@
       "labels": [
         "print_special_item"
       ],
+      "comment_inline": "Save PtrA into PtrB: low",
       "xref_summaries": [
         "&8e70 referenced 2 times by &8dde, &8e8d"
       ],
@@ -24545,6 +24566,7 @@
         134,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2",
@@ -24557,6 +24579,7 @@
         166,
         12
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_1",
@@ -24569,6 +24592,7 @@
         134,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_1",
@@ -24581,6 +24605,7 @@
         166,
         10
       ],
+      "comment_inline": "offset",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_off",
@@ -24593,6 +24618,7 @@
         134,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -24605,6 +24631,7 @@
         201,
         39
       ],
+      "comment_inline": "an apostrophe?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&27"
@@ -24615,6 +24642,7 @@
         240,
         231
       ],
+      "comment_inline": "yes: force a newline",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8e67",
@@ -24627,6 +24655,7 @@
         201,
         138
       ],
+      "comment_inline": "TAB token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8a"
@@ -24637,6 +24666,7 @@
         240,
         188
       ],
+      "comment_inline": "yes: handle TAB",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8e40",
@@ -24649,6 +24679,7 @@
         201,
         137
       ],
+      "comment_inline": "SPC token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&89"
@@ -24659,6 +24690,7 @@
         240,
         208
       ],
+      "comment_inline": "yes: handle SPC",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8e58",
@@ -24670,6 +24702,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "none: not consumed (carry set)",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -24681,6 +24714,7 @@
       "labels": [
         "return_6"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&8e89 referenced 1 time by &8e90"
       ],
@@ -24700,6 +24734,7 @@
       "labels": [
         "sub_c8e8a"
       ],
+      "comment_inline": "Skip spaces, then handle a special item",
       "xref_summaries": [
         "&8e8a referenced 2 times by &ba5a, &ba5f"
       ],
@@ -24720,6 +24755,7 @@
         112,
         142
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_special_item",
@@ -24732,6 +24768,7 @@
         144,
         247
       ],
+      "comment_inline": "consumed: done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_6",
@@ -24744,6 +24781,7 @@
         201,
         34
       ],
+      "comment_inline": "a string literal (quote)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -24754,6 +24792,7 @@
         240,
         17
       ],
+      "comment_inline": "yes: print it inline",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8ea7",
@@ -24765,6 +24804,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "not consumed",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -24773,6 +24813,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -24784,6 +24825,7 @@
       "labels": [
         "c8e98"
       ],
+      "comment_inline": "Missing \" error block",
       "xref_summaries": [
         "&8e98 referenced 2 times by &8eac, &ade9"
       ],
@@ -24840,6 +24882,7 @@
       "labels": [
         "c8ea4"
       ],
+      "comment_inline": "print a character",
       "xref_summaries": [
         "&8ea4 referenced 2 times by &8eb0, &8ebb"
       ],
@@ -24861,6 +24904,7 @@
       "labels": [
         "c8ea7"
       ],
+      "comment_inline": "Print the inline string: advance",
       "xref_summaries": [
         "&8ea7 referenced 1 time by &8e94"
       ],
@@ -24876,6 +24920,7 @@
         177,
         25
       ],
+      "comment_inline": "char",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -24888,6 +24933,7 @@
         201,
         13
       ],
+      "comment_inline": "CR (unterminated)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -24898,6 +24944,7 @@
         240,
         234
       ],
+      "comment_inline": "Missing \" error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e98",
@@ -24910,6 +24957,7 @@
         201,
         34
       ],
+      "comment_inline": "a quote?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -24920,6 +24968,7 @@
         208,
         242
       ],
+      "comment_inline": "no: print it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8ea4",
@@ -24931,6 +24980,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -24940,6 +24990,7 @@
         132,
         27
       ],
+      "comment_inline": "update the offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -24952,6 +25003,7 @@
         177,
         25
       ],
+      "comment_inline": "doubled \"\"?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -24964,6 +25016,7 @@
         201,
         34
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -24974,6 +25027,7 @@
         208,
         175
       ],
+      "comment_inline": "no: end of the string",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8e6a",
@@ -24986,6 +25040,7 @@
         240,
         231
       ],
+      "comment_inline": "yes: print one quote",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8ea4",
@@ -57793,6 +57848,7 @@
       "labels": [
         "int_to_fwa"
       ],
+      "comment_inline": "Clear the rounding...",
       "xref_summaries": [
         "&a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6"
       ],
@@ -57820,6 +57876,7 @@
         134,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_rnd",
@@ -57832,6 +57889,7 @@
         134,
         47
       ],
+      "comment_inline": "...and overflow bytes",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_ovf",
@@ -57844,6 +57902,7 @@
         165,
         45
       ],
+      "comment_inline": "Sign of IWA (top byte)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -57856,6 +57915,7 @@
         16,
         5
       ],
+      "comment_inline": "positive: sign byte = 0",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca2cd",
@@ -57869,6 +57929,7 @@
         147,
         173
       ],
+      "comment_inline": "negative: make it positive...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_negate",
@@ -57881,6 +57942,7 @@
         162,
         255
       ],
+      "comment_inline": "...and set the sign byte",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -57894,6 +57956,7 @@
       "labels": [
         "ca2cd"
       ],
+      "comment_inline": "(store the sign)",
       "xref_summaries": [
         "&a2cd referenced 1 time by &a2c6"
       ],
@@ -57912,6 +57975,7 @@
         165,
         42
       ],
+      "comment_inline": "Copy IWA into the mantissa (MSB first):",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -57924,6 +57988,7 @@
         133,
         52
       ],
+      "comment_inline": "byte 0 -> m4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -57936,6 +58001,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -57948,6 +58014,7 @@
         133,
         51
       ],
+      "comment_inline": "byte 1 -> m3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -57960,6 +58027,7 @@
         165,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -57972,6 +58040,7 @@
         133,
         50
       ],
+      "comment_inline": "byte 2 -> m2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -57984,6 +58053,7 @@
         165,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -57996,6 +58066,7 @@
         133,
         49
       ],
+      "comment_inline": "byte 3 -> m1 (MSB)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -58008,6 +58079,7 @@
         169,
         160
       ],
+      "comment_inline": "Exponent &A0 (= 32): a 32-bit integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a0"
@@ -58018,6 +58090,7 @@
         133,
         48
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -58031,6 +58104,7 @@
         3,
         163
       ],
+      "comment_inline": "normalise the result",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_normalise",
@@ -58046,6 +58120,7 @@
       "labels": [
         "loop_ca2e6"
       ],
+      "comment_inline": "Zero: clear sign,",
       "xref_summaries": [
         "&a2e6 referenced 1 time by &a30f"
       ],
@@ -58064,6 +58139,7 @@
         133,
         48
       ],
+      "comment_inline": "exponent,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -58076,6 +58152,7 @@
         133,
         47
       ],
+      "comment_inline": "overflow",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_ovf",
@@ -58090,6 +58167,7 @@
       "labels": [
         "return_23"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&a2ec referenced 4 times by &a2f2, &a305, &a315, &a338"
       ],
@@ -58108,8 +58186,9 @@
         72
       ],
       "labels": [
-        "sub_ca2ed"
+        "small_int_to_fwa"
       ],
+      "comment_inline": "Small int to FWA: save it",
       "xref_summaries": [
         "&a2ed referenced 1 time by &a852"
       ],
@@ -58126,6 +58205,7 @@
         134,
         166
       ],
+      "comment_inline": "clear FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_clear",
@@ -58137,6 +58217,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover it",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -58146,6 +58227,7 @@
         240,
         248
       ],
+      "comment_inline": "zero: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_23",
@@ -58158,6 +58240,7 @@
         16,
         7
       ],
+      "comment_inline": "positive",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca2fd",
@@ -58170,6 +58253,7 @@
         133,
         46
       ],
+      "comment_inline": "negative: set the sign...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -58182,6 +58266,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -58191,6 +58276,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -58200,6 +58286,7 @@
         229,
         46
       ],
+      "comment_inline": "...and negate the value",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_sign",
@@ -58215,6 +58302,7 @@
       "labels": [
         "ca2fd"
       ],
+      "comment_inline": "value into the mantissa MSB",
       "xref_summaries": [
         "&a2fd referenced 1 time by &a2f4"
       ],
@@ -58233,6 +58321,7 @@
         169,
         136
       ],
+      "comment_inline": "Exponent &88 (= 8): an 8-bit value",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&88"
@@ -58243,6 +58332,7 @@
         133,
         48
       ],
+      "comment_inline": "(store; falls into normalise)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -61854,6 +61944,7 @@
       "labels": [
         "fwa_add_fwb_raw"
       ],
+      "comment_inline": "Is FWA zero?",
       "xref_summaries": [
         "&a50b referenced 2 times by &9f7b, &a505"
       ],
@@ -67421,9 +67512,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca2ed",
+      "operand": "small_int_to_fwa",
       "target": 41709,
-      "target_label": "sub_ca2ed"
+      "target_label": "small_int_to_fwa"
     },
     {
       "addr": 43093,
@@ -83788,9 +83879,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb384",
+      "operand": "load_string_var",
       "target": 45956,
-      "target_label": "cb384"
+      "target_label": "load_string_var"
     },
     {
       "addr": 45872,
@@ -83800,9 +83891,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb34f",
+      "operand": "load_byte_var",
       "target": 45903,
-      "target_label": "cb34f"
+      "target_label": "load_byte_var"
     },
     {
       "addr": 45874,
@@ -83822,9 +83913,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb354",
+      "operand": "load_real_var",
       "target": 45908,
-      "target_label": "cb354"
+      "target_label": "load_real_var"
     },
     {
       "addr": 45878,
@@ -83835,6 +83926,7 @@
       "labels": [
         "iwa_load_var"
       ],
+      "comment_inline": "Load a 4-byte integer (MSB first): byte 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -83845,6 +83937,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -83857,6 +83950,7 @@
         133,
         45
       ],
+      "comment_inline": "(into IWA)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -83868,6 +83962,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -83877,6 +83972,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -83889,6 +83985,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -83900,6 +83997,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -83909,6 +84007,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -83920,6 +84019,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "(keep in X)",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -83928,6 +84028,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -83937,6 +84038,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -83949,6 +84051,7 @@
         133,
         42
       ],
+      "comment_inline": "(store last)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -83961,6 +84064,7 @@
         134,
         43
       ],
+      "comment_inline": "byte 1 from X",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_1",
@@ -83973,6 +84077,7 @@
         169,
         64
       ],
+      "comment_inline": "integer type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -83982,6 +84087,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the integer",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -83992,8 +84098,9 @@
         42
       ],
       "labels": [
-        "cb34f"
+        "load_byte_var"
       ],
+      "comment_inline": "Read the byte",
       "xref_summaries": [
         "&b34f referenced 1 time by &b330"
       ],
@@ -84013,6 +84120,7 @@
         234,
         174
       ],
+      "comment_inline": "return as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -84025,8 +84133,9 @@
         136
       ],
       "labels": [
-        "cb354"
+        "load_real_var"
       ],
+      "comment_inline": "Unpack a 5-byte real into FWA: byte 4...",
       "xref_summaries": [
         "&b354 referenced 2 times by &b334, &b766"
       ],
@@ -84043,6 +84152,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84055,6 +84165,7 @@
         133,
         52
       ],
+      "comment_inline": "-> m4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -84066,6 +84177,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -84075,6 +84187,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84087,6 +84200,7 @@
         133,
         51
       ],
+      "comment_inline": "-> m3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -84098,6 +84212,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -84107,6 +84222,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84119,6 +84235,7 @@
         133,
         50
       ],
+      "comment_inline": "-> m2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -84130,6 +84247,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -84139,6 +84257,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 1 (sign + MSB)...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84151,6 +84270,7 @@
         133,
         46
       ],
+      "comment_inline": "-> sign byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -84162,6 +84282,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -84171,6 +84292,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84183,6 +84305,7 @@
         133,
         48
       ],
+      "comment_inline": "-> exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -84195,6 +84318,7 @@
         132,
         53
       ],
+      "comment_inline": "clear rounding",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_rnd",
@@ -84207,6 +84331,7 @@
         132,
         47
       ],
+      "comment_inline": "clear overflow",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_ovf",
@@ -84219,6 +84344,7 @@
         5,
         46
       ],
+      "comment_inline": "test for zero...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_sign",
@@ -84231,6 +84357,7 @@
         5,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -84243,6 +84370,7 @@
         5,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -84255,6 +84383,7 @@
         5,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m4",
@@ -84267,6 +84396,7 @@
         240,
         4
       ],
+      "comment_inline": "zero: leave the MSB clear",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb37f",
@@ -84279,6 +84409,7 @@
         165,
         46
       ],
+      "comment_inline": "restore the implied 1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -84291,6 +84422,7 @@
         9,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&80"
@@ -84304,6 +84436,7 @@
       "labels": [
         "cb37f"
       ],
+      "comment_inline": "store the mantissa MSB",
       "xref_summaries": [
         "&b37f referenced 1 time by &b379"
       ],
@@ -84322,6 +84455,7 @@
         169,
         255
       ],
+      "comment_inline": "real type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -84331,6 +84465,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the real",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -84341,8 +84476,9 @@
         128
       ],
       "labels": [
-        "cb384"
+        "load_string_var"
       ],
+      "comment_inline": "$-string (absolute address)?",
       "xref_summaries": [
         "&b384 referenced 1 time by &b32e"
       ],
@@ -84359,6 +84495,7 @@
         240,
         31
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb3a7",
@@ -84371,6 +84508,7 @@
         160,
         3
       ],
+      "comment_inline": "normal string: length at offset 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -84381,6 +84519,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84393,6 +84532,7 @@
         133,
         54
       ],
+      "comment_inline": "string length",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -84405,6 +84545,7 @@
         240,
         22
       ],
+      "comment_inline": "empty: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_32",
@@ -84417,6 +84558,7 @@
         160,
         1
       ],
+      "comment_inline": "string pointer high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -84427,6 +84569,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84439,6 +84582,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -84450,6 +84594,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "low",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -84459,6 +84604,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -84471,6 +84617,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -84483,6 +84630,7 @@
         164,
         54
       ],
+      "comment_inline": "copy into the buffer:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -84497,6 +84645,7 @@
       "labels": [
         "loop_cb39d"
       ],
+      "comment_inline": "char...",
       "xref_summaries": [
         "&b39d referenced 1 time by &b3a4"
       ],
@@ -84512,6 +84661,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -84525,6 +84675,7 @@
         0,
         6
       ],
+      "comment_inline": "-> buffer",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -84536,6 +84687,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -84545,6 +84697,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb39d",
@@ -84559,6 +84712,7 @@
       "labels": [
         "return_32"
       ],
+      "comment_inline": "Return the string",
       "xref_summaries": [
         "&b3a6 referenced 1 time by &b38e"
       ],
@@ -84577,6 +84731,7 @@
       "labels": [
         "cb3a7"
       ],
+      "comment_inline": "$-string: copy until CR",
       "xref_summaries": [
         "&b3a7 referenced 1 time by &b386"
       ],
@@ -84595,6 +84750,7 @@
         240,
         21
       ],
+      "comment_inline": "null pointer: empty",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb3c0",
@@ -84607,6 +84763,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -84620,6 +84777,7 @@
       "labels": [
         "loop_cb3ad"
       ],
+      "comment_inline": "char...",
       "xref_summaries": [
         "&b3ad referenced 1 time by &b3b7"
       ],
@@ -84639,6 +84797,7 @@
         0,
         6
       ],
+      "comment_inline": "-> buffer",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -84651,6 +84810,7 @@
         73,
         13
       ],
+      "comment_inline": "CR?",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&0d"
@@ -84661,6 +84821,7 @@
         240,
         4
       ],
+      "comment_inline": "yes: end",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb3ba",
@@ -84672,6 +84833,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -84681,6 +84843,7 @@
         208,
         244
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb3ad",
@@ -84692,6 +84855,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -84704,6 +84868,7 @@
       "labels": [
         "cb3ba"
       ],
+      "comment_inline": "set the length",
       "xref_summaries": [
         "&b3ba referenced 1 time by &b3b4"
       ],
@@ -84721,6 +84886,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -90413,9 +90579,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb354",
+      "operand": "load_real_var",
       "target": 45908,
-      "target_label": "cb354"
+      "target_label": "load_real_var"
     },
     {
       "addr": 46953,
