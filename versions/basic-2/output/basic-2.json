@@ -1790,8 +1790,6 @@
     "zp_fp_ptr_1": 76,
     "l004d": 77,
     "l004e": 78,
-    "l0061": 97,
-    "l0064": 100,
     "l00c9": 201,
     "os_text_ptr": 242,
     "romsel_copy": 244,
@@ -1905,8 +1903,6 @@
     "l06ff": 1791,
     "line_input_buf": 1792,
     "l3185": 12677,
-    "l6142": 24898,
-    "l7461": 29793,
     "fred_hard_drive_0": 64576,
     "fred_hard_drive_1": 64577,
     "fred_hard_drive_2": 64578,
@@ -18760,7 +18756,7 @@
       ],
       "comment_inline": "PtrA = &0700, the input buffer: high byte",
       "xref_summaries": [
-        "&8af6 referenced 6 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a"
+        "&8af6 referenced 7 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a, &beaf"
       ],
       "references": [
         34204,
@@ -18768,7 +18764,8 @@
         35649,
         39100,
         46489,
-        46618
+        46618,
+        48815
       ],
       "type": "code",
       "mnemonic": "ldy",
@@ -27565,7 +27562,16 @@
         164,
         10
       ],
+      "labels": [
+        "loop_c906d"
+      ],
       "comment_inline": "resume scanning",
+      "xref_summaries": [
+        "&906d referenced 1 time by &909d"
+      ],
+      "references": [
+        37021
+      ],
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -27704,114 +27710,129 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfcf",
+      "operand": "print_inline_string",
       "target": 49103,
-      "target_label": "sub_cbfcf"
+      "target_label": "print_inline_string"
     },
     {
       "addr": 36995,
       "bytes": [
         70,
-        97
-      ],
-      "comment_inline": "build the \"Failed at <line>\" message...",
-      "type": "code",
-      "mnemonic": "lsr",
-      "operand": "l0061",
-      "target": 97,
-      "target_label": "l0061"
-    },
-    {
-      "addr": 36997,
-      "bytes": [
+        97,
         105,
-        108
-      ],
-      "comment_inline": "...",
-      "type": "code",
-      "mnemonic": "adc",
-      "operand": "#&6c"
-    },
-    {
-      "addr": 36999,
-      "bytes": [
+        108,
         101,
-        100
-      ],
-      "comment_inline": "...",
-      "type": "code",
-      "mnemonic": "adc",
-      "operand": "l0064",
-      "target": 100,
-      "target_label": "l0064"
-    },
-    {
-      "addr": 37001,
-      "bytes": [
+        100,
         32,
         97,
-        116
+        116,
+        32
       ],
-      "comment_inline": "...",
-      "type": "code",
-      "mnemonic": "jsr",
-      "operand": "l7461",
-      "target": 29793,
-      "target_label": "l7461"
+      "comment_inline": "build the \"Failed at <line>\" message... ... ... ... print it",
+      "type": "string",
+      "string": "Failed at "
     },
     {
-      "addr": 37004,
+      "addr": 37005,
       "bytes": [
-        32,
-        200,
-        177
+        200
       ],
-      "comment_inline": "print it",
       "type": "code",
-      "mnemonic": "jsr",
-      "operand": "sub_cb1c8",
-      "target": 45512,
-      "target_label": "sub_cb1c8"
+      "mnemonic": "iny"
     },
     {
-      "addr": 37007,
+      "addr": 37006,
       "bytes": [
-        11,
-        133,
-        43,
-        200,
         177,
-        11,
+        11
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "(zp_text_ptr),y",
+      "target": 11,
+      "target_label": "zp_text_ptr"
+    },
+    {
+      "addr": 37008,
+      "bytes": [
         133,
-        42,
+        43
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "zp_iwa_1",
+      "target": 43,
+      "target_label": "zp_iwa_1"
+    },
+    {
+      "addr": 37010,
+      "bytes": [
+        200
+      ],
+      "type": "code",
+      "mnemonic": "iny"
+    },
+    {
+      "addr": 37011,
+      "bytes": [
+        177,
+        11
+      ],
+      "type": "code",
+      "mnemonic": "lda",
+      "operand": "(zp_text_ptr),y",
+      "target": 11,
+      "target_label": "zp_text_ptr"
+    },
+    {
+      "addr": 37013,
+      "bytes": [
+        133,
+        42
+      ],
+      "type": "code",
+      "mnemonic": "sta",
+      "operand": "zp_iwa",
+      "target": 42,
+      "target_label": "zp_iwa"
+    },
+    {
+      "addr": 37015,
+      "bytes": [
         32,
         31,
-        153,
+        153
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_c991f",
+      "target": 39199,
+      "target_label": "sub_c991f"
+    },
+    {
+      "addr": 37018,
+      "bytes": [
         32,
         37,
-        188,
+        188
+      ],
+      "type": "code",
+      "mnemonic": "jsr",
+      "operand": "sub_cbc25",
+      "target": 48165,
+      "target_label": "sub_cbc25"
+    },
+    {
+      "addr": 37021,
+      "bytes": [
         240,
         206
       ],
-      "type": "byte",
-      "values": [
-        11,
-        133,
-        43,
-        200,
-        177,
-        11,
-        133,
-        42,
-        32,
-        31,
-        153,
-        32,
-        37,
-        188,
-        240,
-        206
-      ]
+      "type": "code",
+      "mnemonic": "beq",
+      "operand": "loop_c906d",
+      "target": 36973,
+      "target_label": "loop_c906d"
     },
     {
       "addr": 37023,
@@ -41943,9 +41964,10 @@
         "sub_c991f"
       ],
       "xref_summaries": [
-        "&991f referenced 2 times by &9914, &b662"
+        "&991f referenced 3 times by &9097, &9914, &b662"
       ],
       "references": [
+        37015,
         39188,
         46690
       ],
@@ -81174,15 +81196,6 @@
       "bytes": [
         200
       ],
-      "labels": [
-        "sub_cb1c8"
-      ],
-      "xref_summaries": [
-        "&b1c8 referenced 1 time by &908c"
-      ],
-      "references": [
-        37004
-      ],
       "type": "code",
       "mnemonic": "iny"
     },
@@ -97029,7 +97042,7 @@
         "sub_cbc25"
       ],
       "xref_summaries": [
-        "&bc25 referenced 8 times by &853f, &857b, &8d7d, &8e53, &8e67, &b56e, &b5fc, &bfe7"
+        "&bc25 referenced 9 times by &853f, &857b, &8d7d, &8e53, &8e67, &909a, &b56e, &b5fc, &bfe7"
       ],
       "references": [
         34111,
@@ -97037,6 +97050,7 @@
         36221,
         36435,
         36455,
+        37018,
         46446,
         46588,
         49127
@@ -101494,26 +101508,16 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfcf",
+      "operand": "print_inline_string",
       "target": 49103,
-      "target_label": "sub_cbfcf"
+      "target_label": "print_inline_string"
     },
     {
       "addr": 48801,
       "bytes": [
         13,
         66,
-        97
-      ],
-      "type": "code",
-      "mnemonic": "ora",
-      "operand": "l6142",
-      "target": 24898,
-      "target_label": "l6142"
-    },
-    {
-      "addr": 48804,
-      "bytes": [
+        97,
         100,
         32,
         112,
@@ -101522,28 +101526,32 @@
         103,
         114,
         97,
-        109
+        109,
+        13
       ],
       "type": "string",
-      "string": "d program"
+      "string": ".Bad program."
     },
     {
-      "addr": 48813,
+      "addr": 48814,
       "bytes": [
-        13,
-        234,
+        234
+      ],
+      "type": "code",
+      "mnemonic": "nop"
+    },
+    {
+      "addr": 48815,
+      "bytes": [
         76,
         246,
         138
       ],
-      "type": "byte",
-      "values": [
-        13,
-        234,
-        76,
-        246,
-        138
-      ]
+      "type": "code",
+      "mnemonic": "jmp",
+      "operand": "immediate_loop",
+      "target": 35574,
+      "target_label": "immediate_loop"
     },
     {
       "addr": 48818,
@@ -103168,8 +103176,9 @@
         104
       ],
       "labels": [
-        "sub_cbfcf"
+        "print_inline_string"
       ],
+      "comment_inline": "Pull the return address: it points at the string",
       "xref_summaries": [
         "&bfcf referenced 2 times by &9080, &be9e"
       ],
@@ -103186,6 +103195,7 @@
         133,
         55
       ],
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -103197,6 +103207,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "(pull high)",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -103206,6 +103217,7 @@
         133,
         56
       ],
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -103218,6 +103230,7 @@
         160,
         0
       ],
+      "comment_inline": "Start before the first character",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -103228,6 +103241,7 @@
         240,
         3
       ],
+      "comment_inline": "jump in to fetch it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbfdc",
@@ -103244,6 +103258,7 @@
       "labels": [
         "loop_cbfd9"
       ],
+      "comment_inline": "Print the character",
       "xref_summaries": [
         "&bfd9 referenced 1 time by &bfdf"
       ],
@@ -103266,6 +103281,7 @@
       "labels": [
         "cbfdc"
       ],
+      "comment_inline": "Advance and fetch the next character",
       "xref_summaries": [
         "&bfdc referenced 1 time by &bfd7"
       ],
@@ -103284,6 +103300,7 @@
         16,
         248
       ],
+      "comment_inline": "Loop while bit 7 is clear",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_cbfd9",
@@ -103297,6 +103314,7 @@
         55,
         0
       ],
+      "comment_inline": "Resume at the terminator (the next instruction)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(zp_general)",

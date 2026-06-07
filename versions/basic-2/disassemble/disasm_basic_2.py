@@ -20,6 +20,7 @@ from pathlib import Path
 
 import dasmos
 from dasmos import Align
+from dasmos.hooks import stringhi_hook
 
 _script_dirpath = Path(__file__).resolve().parent
 _version_dirpath = _script_dirpath.parent
@@ -2652,6 +2653,22 @@ d.comment(0xa238, '...into FWB', align=Align.INLINE)
 d.comment(0xa23a, 'Copy the rounding byte...', align=Align.INLINE)
 d.comment(0xa23c, '...into FWB', align=Align.INLINE)
 d.comment(0xa23e, 'FWB is now a copy of FWA', align=Align.INLINE)
+
+# print_inline_string (&BFCF): print the bit-7-terminated string that
+# follows the JSR, then resume at the terminator byte (an opcode).
+d.hook_subroutine(0xbfcf, 'print_inline_string', stringhi_hook)
+d.comment(0xbfcf, 'Pull the return address: it points at the string',
+          align=Align.INLINE)
+d.comment(0xbfd0, '(low)', align=Align.INLINE)
+d.comment(0xbfd2, '(pull high)', align=Align.INLINE)
+d.comment(0xbfd3, '(high)', align=Align.INLINE)
+d.comment(0xbfd5, 'Start before the first character', align=Align.INLINE)
+d.comment(0xbfd7, 'jump in to fetch it', align=Align.INLINE)
+d.comment(0xbfd9, 'Print the character', align=Align.INLINE)
+d.comment(0xbfdc, 'Advance and fetch the next character', align=Align.INLINE)
+d.comment(0xbfdf, 'Loop while bit 7 is clear', align=Align.INLINE)
+d.comment(0xbfe1, 'Resume at the terminator (the next instruction)',
+          align=Align.INLINE)
 
 ir = d.disassemble()
 output = str(

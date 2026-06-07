@@ -40,7 +40,7 @@ l0009            = &09
 zp_text_ptr_off  = &0a
 ; &0a referenced 92 times by &8512, &8517, &8577, &857e, &85d3, &85d5, &85d7, &8617, &8715, &874e, &8780, &8795, &87cc, &8829, &883c, &883e, &8a97, &8a99, &8b28, &8b60, &8b7f, &8b96, &8ba3, &8ba5, &8be2, &8d2b, &8d78, &8da1, &8df6, &8e6d, &8e78, &8f8b, &8f8d, &905f, &906d, &90df, &9149, &916d, &92b7, &92c0, &930c, &9347, &943e, &95d1, &97dd, &97df, &9801, &980f, &9857, &9879, &98b9, &98ce, &98e1, &98f1, &98fe, &9b25, &b13d, &b1b5, &b1f7, &b200, &b22d, &b25d, &b41f, &b58a, &b5cb, &b5d6, &b60d, &b637, &b65c, &b75a, &b81f, &b875, &b8f9, &b91c, &b927, &b942, &b95a, &b96a, &b978, &b97d, &b995, &b9a7, &b9ca, &b9cf, &b9d6, &b9eb, &ba4f, &ba77, &ba8c, &baf1, &bb52, &bfa9
 zp_text_ptr      = &0b
-; &0b referenced 75 times by &8567, &8582, &8590, &85d9, &861a, &8840, &8a9b, &8afc, &8b1e, &8b63, &8b76, &8b83, &8b9d, &8ba7, &8bbf, &8e70, &9013, &9016, &901c, &9027, &902d, &9030, &9032, &9062, &9134, &9304, &95c9, &97e1, &97ec, &97f4, &97fc, &9807, &985b, &986f, &9871, &9884, &9891, &989c, &98a0, &98af, &98b1, &98f3, &9b1d, &b102, &b118, &b11c, &b123, &b12f, &b132, &b134, &b145, &b17b, &b1b8, &b1ed, &b22a, &b2bc, &b3d7, &b415, &b59d, &b5f1, &b602, &b607, &b639, &b747, &b83c, &b894, &b8c5, &b8dd, &b8ff, &b944, &b96c, &b980, &bbed, &bd1b, &bfad
+; &0b referenced 77 times by &8567, &8582, &8590, &85d9, &861a, &8840, &8a9b, &8afc, &8b1e, &8b63, &8b76, &8b83, &8b9d, &8ba7, &8bbf, &8e70, &9013, &9016, &901c, &9027, &902d, &9030, &9032, &9062, &908e, &9093, &9134, &9304, &95c9, &97e1, &97ec, &97f4, &97fc, &9807, &985b, &986f, &9871, &9884, &9891, &989c, &98a0, &98af, &98b1, &98f3, &9b1d, &b102, &b118, &b11c, &b123, &b12f, &b132, &b134, &b145, &b17b, &b1b8, &b1ed, &b22a, &b2bc, &b3d7, &b415, &b59d, &b5f1, &b602, &b607, &b639, &b747, &b83c, &b894, &b8c5, &b8dd, &b8ff, &b944, &b96c, &b980, &bbed, &bd1b, &bfad
 zp_text_ptr_1    = &0c
 ; &0c referenced 41 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b3d1, &b3e2, &b3fb, &b419, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
 zp_rnd_seed      = &0d
@@ -102,9 +102,9 @@ zp_opt_flag      = &28
 zp_asm_opcode    = &29
 ; &29 referenced 4 times by &8623, &8651, &8832, &8837
 zp_iwa           = &2a
-; &2a referenced 187 times by &867b, &86a6, &8818, &8c29, &8c46, &8c4a, &8c51, &8c5c, &8c76, &8c7d, &8c82, &8c88, &8c8e, &8c93, &8cac, &8cb4, &8d4d, &8e28, &8e4a, &8e5b, &8ef5, &8f2b, &8f48, &8f5e, &8f87, &8ffa, &9052, &90af, &90cf, &90d1, &90f8, &910a, &919a, &91ca, &91cc, &91db, &9222, &9242, &924b, &9255, &9260, &9272, &92a8, &931f, &937d, &93ba, &93f4, &9456, &94aa, &94e4, &95e7, &968e, &9696, &9698, &96e9, &96f1, &972a, &972e, &9760, &9762, &9786, &9788, &978c, &9790, &9792, &979b, &979f, &97a4, &97a6, &97af, &97b1, &97c4, &97f6, &98d0, &9905, &992e, &993d, &9994, &99ea, &9a14, &9ab8, &9aba, &9ad3, &9b45, &9b48, &9b60, &9b63, &9b8c, &9b8f, &9bb5, &9c60, &9c62, &9cc7, &9cc9, &9d93, &9da6, &9e9a, &a12b, &a2cf, &a3f5, &ab36, &ab50, &ab95, &abd8, &acc6, &acd6, &acda, &acf7, &ad14, &ad1a, &ad4d, &ad59, &ad97, &ad99, &ae6f, &ae94, &aeea, &af1c, &af58, &afb2, &afe3, &b008, &b00f, &b01f, &b04a, &b04f, &b079, &b07d, &b07f, &b08b, &b0d7, &b0db, &b0ef, &b1eb, &b1f0, &b270, &b2ce, &b338, &b33d, &b342, &b346, &b348, &b34f, &b355, &b35a, &b35f, &b364, &b369, &b38a, &b392, &b397, &b3ad, &b3c0, &b451, &b464, &b477, &b487, &b4a6, &b4c8, &b595, &b5b5, &b5db, &b609, &b60f, &b6a9, &b6da, &b6ea, &b6ef, &b6f4, &b6f9, &b6fe, &b703, &b708, &b70d, &b777, &b7fa, &b823, &b93b, &ba24, &bbbe, &bcf9, &bdad, &bdfd, &be44, &bf67, &bf9f, &bfbf
+; &2a referenced 188 times by &867b, &86a6, &8818, &8c29, &8c46, &8c4a, &8c51, &8c5c, &8c76, &8c7d, &8c82, &8c88, &8c8e, &8c93, &8cac, &8cb4, &8d4d, &8e28, &8e4a, &8e5b, &8ef5, &8f2b, &8f48, &8f5e, &8f87, &8ffa, &9052, &9095, &90af, &90cf, &90d1, &90f8, &910a, &919a, &91ca, &91cc, &91db, &9222, &9242, &924b, &9255, &9260, &9272, &92a8, &931f, &937d, &93ba, &93f4, &9456, &94aa, &94e4, &95e7, &968e, &9696, &9698, &96e9, &96f1, &972a, &972e, &9760, &9762, &9786, &9788, &978c, &9790, &9792, &979b, &979f, &97a4, &97a6, &97af, &97b1, &97c4, &97f6, &98d0, &9905, &992e, &993d, &9994, &99ea, &9a14, &9ab8, &9aba, &9ad3, &9b45, &9b48, &9b60, &9b63, &9b8c, &9b8f, &9bb5, &9c60, &9c62, &9cc7, &9cc9, &9d93, &9da6, &9e9a, &a12b, &a2cf, &a3f5, &ab36, &ab50, &ab95, &abd8, &acc6, &acd6, &acda, &acf7, &ad14, &ad1a, &ad4d, &ad59, &ad97, &ad99, &ae6f, &ae94, &aeea, &af1c, &af58, &afb2, &afe3, &b008, &b00f, &b01f, &b04a, &b04f, &b079, &b07d, &b07f, &b08b, &b0d7, &b0db, &b0ef, &b1eb, &b1f0, &b270, &b2ce, &b338, &b33d, &b342, &b346, &b348, &b34f, &b355, &b35a, &b35f, &b364, &b369, &b38a, &b392, &b397, &b3ad, &b3c0, &b451, &b464, &b477, &b487, &b4a6, &b4c8, &b595, &b5b5, &b5db, &b609, &b60f, &b6a9, &b6da, &b6ea, &b6ef, &b6f4, &b6f9, &b6fe, &b703, &b708, &b70d, &b777, &b7fa, &b823, &b93b, &ba24, &bbbe, &bcf9, &bdad, &bdfd, &be44, &bf67, &bf9f, &bfbf
 zp_iwa_1         = &2b
-; &2b referenced 111 times by &8681, &86c8, &8738, &8809, &8efb, &8f4c, &8f62, &8f83, &904c, &90d5, &90fd, &910e, &918b, &919f, &91d0, &91de, &9226, &9246, &924d, &9257, &9266, &9278, &9286, &92ac, &9422, &942a, &94b0, &94ea, &95b5, &95eb, &968b, &969b, &969d, &96ec, &9730, &9734, &9766, &9768, &9784, &978a, &978e, &9795, &9797, &979d, &97a1, &97aa, &97b5, &97b7, &97ba, &97c9, &97fe, &98d2, &9909, &9934, &993b, &997c, &99ec, &9a19, &9abf, &9ac1, &9ad5, &9bb7, &9c67, &9c69, &9cce, &9cd0, &9d4e, &9d69, &9d97, &9da8, &a12f, &a2d3, &a3f1, &ab53, &ab93, &abda, &acc8, &ad37, &ad5b, &ad9c, &ad9e, &ae71, &ae96, &aeec, &af18, &af5c, &afb4, &b26d, &b2d1, &b34a, &b3a7, &b454, &b468, &b4d0, &b5b9, &b5df, &b604, &b614, &b6b0, &b6df, &b77b, &b7ff, &b828, &b933, &b9a9, &b9ad, &bbc0, &bcf4, &bda8, &bdf8, &be48
+; &2b referenced 112 times by &8681, &86c8, &8738, &8809, &8efb, &8f4c, &8f62, &8f83, &904c, &9090, &90d5, &90fd, &910e, &918b, &919f, &91d0, &91de, &9226, &9246, &924d, &9257, &9266, &9278, &9286, &92ac, &9422, &942a, &94b0, &94ea, &95b5, &95eb, &968b, &969b, &969d, &96ec, &9730, &9734, &9766, &9768, &9784, &978a, &978e, &9795, &9797, &979d, &97a1, &97aa, &97b5, &97b7, &97ba, &97c9, &97fe, &98d2, &9909, &9934, &993b, &997c, &99ec, &9a19, &9abf, &9ac1, &9ad5, &9bb7, &9c67, &9c69, &9cce, &9cd0, &9d4e, &9d69, &9d97, &9da8, &a12f, &a2d3, &a3f1, &ab53, &ab93, &abda, &acc8, &ad37, &ad5b, &ad9c, &ad9e, &ae71, &ae96, &aeec, &af18, &af5c, &afb4, &b26d, &b2d1, &b34a, &b3a7, &b454, &b468, &b4d0, &b5b9, &b5df, &b604, &b614, &b6b0, &b6df, &b77b, &b7ff, &b828, &b933, &b9a9, &b9ad, &bbc0, &bcf4, &bda8, &bdf8, &be48
 zp_iwa_2         = &2c
 ; &2c referenced 70 times by &8bda, &8c21, &8c31, &8c80, &8c95, &8c9a, &8f01, &90f3, &9116, &918f, &922a, &9330, &958e, &95bb, &95f7, &9601, &964c, &96a0, &96b4, &96c5, &96cc, &96d3, &96e6, &977e, &97be, &98d4, &99ee, &9a1e, &9ac6, &9ac8, &9ad7, &9bb9, &9c6e, &9c70, &9cd5, &9cd7, &9d43, &9d5e, &9d9c, &9daa, &a133, &a2d7, &a3ed, &ab5d, &ab91, &abdc, &acca, &ada1, &ada3, &ae73, &ae98, &aef0, &af16, &af60, &b06f, &b077, &b26a, &b2d4, &b30d, &b32c, &b33f, &b4d5, &b6b7, &b804, &b82d, &b935, &bbc2, &bda3, &bdf3, &be4c
 zp_iwa_3         = &2d
@@ -175,10 +175,6 @@ l004d            = &4d
 ; &4d referenced 28 times by &a897, &a8a0, &a8a4, &a8aa, &a8bc, &a8c0, &b2ad, &b2b1, &b303, &b622, &b645, &b647, &b651, &b9d8, &b9e1, &b9ee, &b9f4, &ba52, &ba54, &ba6a, &ba6d, &ba79, &ba88, &ba8f, &ba99, &baa7, &baaa, &baac
 l004e            = &4e
 ; &4e referenced 18 times by &9efd, &9f40, &9fa7, &9fe6, &9feb, &a899, &a8a8, &a8ae, &a8c4, &a8c8, &b2af, &b307, &ba58, &ba66, &ba7c, &ba85, &ba93, &bacb
-l0061            = &61
-; &61 referenced 1 time by &9083
-l0064            = &64
-; &64 referenced 1 time by &9087
 l00c9            = &c9
 ; &c9 referenced 1 time by &aa59
 l00fd            = &fd
@@ -324,10 +320,6 @@ l06ff            = &06ff
 line_input_buf   = &0700
 l3185            = &3185
 ; &3185 referenced 1 time by &a5ff
-l6142            = &6142
-; &6142 referenced 1 time by &bea1
-l7461            = &7461
-; &7461 referenced 1 time by &9089
 osfind           = &ffce
 ; &ffce referenced 2 times by &bf90, &bfa3
 osbput           = &ffd4
@@ -2105,7 +2097,7 @@ l848a = sub_c847b+15
 ; Print the prompt, read a line into the input buffer, and tokenise it. A line that
 ; begins with a line number is inserted into the program; otherwise it is executed
 ; immediately.
-; &8af6 referenced 6 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a
+; &8af6 referenced 7 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a, &beaf
 .immediate_loop
     ldy #7                                                            ; 8af6: a0 07       ..       ; PtrA = &0700, the input buffer: high byte
     sty zp_text_ptr_1                                                 ; 8af8: 84 0c       ..       ; (store)
@@ -3073,6 +3065,8 @@ l848a = sub_c847b+15
     lda zp_text_ptr_1                                                 ; 9066: a5 0c       ..       ; high
     sta zp_general_1                                                  ; 9068: 85 38       .8       ; ...
     jsr sub_c88f5                                                     ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
+; &906d referenced 1 time by &909d
+.loop_c906d
     ldy zp_text_ptr_off                                               ; 906d: a4 0a       ..       ; resume scanning
     bne c901c                                                         ; 906f: d0 ab       ..       ; continue the line scan
 ; &9071 referenced 2 times by &904e, &9054
@@ -3086,14 +3080,17 @@ l848a = sub_c847b+15
     bcs c9043                                                         ; 907e: b0 c3       ..       ; loop
 ; &9080 referenced 1 time by &9047
 .c9080
-    jsr sub_cbfcf                                                     ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
-    lsr l0061                                                         ; 9083: 46 61       Fa       ; build the "Failed at <line>" message...
-    adc #&6c ; 'l'                                                    ; 9085: 69 6c       il       ; ...
-    adc l0064                                                         ; 9087: 65 64       ed       ; ...
-    jsr l7461                                                         ; 9089: 20 61 74     at      ; ...
-    jsr sub_cb1c8                                                     ; 908c: 20 c8 b1     ..      ; print it
-    equb &0b, &85, &2b, &c8, &b1, &0b, &85, &2a, &20, &1f, &99, &20   ; 908f: 0b 85 2b... ..+...
-    equb &25, &bc, &f0, &ce                                           ; 909b: 25 bc f0... %.....
+    jsr print_inline_string                                           ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
+    equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  ...  ...  ...  print it
+    iny                                                               ; 908d: c8          .     
+    lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..    
+    sta zp_iwa_1                                                      ; 9090: 85 2b       .+    
+    iny                                                               ; 9092: c8          .     
+    lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..    
+    sta zp_iwa                                                        ; 9095: 85 2a       .*    
+    jsr sub_c991f                                                     ; 9097: 20 1f 99     ..   
+    jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.   
+    beq loop_c906d                                                    ; 909d: f0 ce       ..    
 ; ***************************************************************************************
 ; Advance the general pointer to the next program line
 ;
@@ -4683,7 +4680,7 @@ l848a = sub_c847b+15
     lda #&5d ; ']'                                                    ; 9917: a9 5d       .]    
     jsr cb558                                                         ; 9919: 20 58 b5     X.   
     jmp cb565                                                         ; 991c: 4c 65 b5    Le.   
-; &991f referenced 2 times by &9914, &b662
+; &991f referenced 3 times by &9097, &9914, &b662
 .sub_c991f
     lda #0                                                            ; 991f: a9 00       ..    
     beq c9925                                                         ; 9921: f0 02       ..    
@@ -9187,8 +9184,6 @@ l848a = sub_c847b+15
     adc zp_text_ptr2                                                  ; b1c2: 65 19       e.    
     ldy zp_text_ptr2_1                                                ; b1c4: a4 1a       ..    
     bcc cb1ca                                                         ; b1c6: 90 02       ..    
-; &b1c8 referenced 1 time by &908c
-.sub_cb1c8
     iny                                                               ; b1c8: c8          .     
     clc                                                               ; b1c9: 18          .     
 ; &b1ca referenced 1 time by &b1c6
@@ -10893,7 +10888,7 @@ l848a = sub_c847b+15
     jsr osword                                                        ; bc1d: 20 f1 ff     ..   
     bcc cbc28                                                         ; bc20: 90 06       ..    
     jmp c9838                                                         ; bc22: 4c 38 98    L8.   
-; &bc25 referenced 8 times by &853f, &857b, &8d7d, &8e53, &8e67, &b56e, &b5fc, &bfe7
+; &bc25 referenced 9 times by &853f, &857b, &8d7d, &8e53, &8e67, &909a, &b56e, &b5fc, &bfe7
 .sub_cbc25
     jsr osnewl                                                        ; bc25: 20 e7 ff     ..   
 ; &bc28 referenced 4 times by &8ec7, &93d7, &b55f, &bc20
@@ -11411,10 +11406,10 @@ l848a = sub_c847b+15
     rts                                                               ; be9d: 60          `     
 ; &be9e referenced 2 times by &be7d, &be88
 .cbe9e
-    jsr sub_cbfcf                                                     ; be9e: 20 cf bf     ..   
-    ora l6142                                                         ; bea1: 0d 42 61    .Ba   
-    equs "d program"                                                  ; bea4: 64 20 70... d p...
-    equb &0d, &ea, &4c, &f6, &8a                                      ; bead: 0d ea 4c... ..L...
+    jsr print_inline_string                                           ; be9e: 20 cf bf     ..   
+    equb &0d, "Bad program", &0d                                      ; bea1: 0d 42 61... .Ba...
+    nop                                                               ; beae: ea          .     
+    jmp immediate_loop                                                ; beaf: 4c f6 8a    L..   
 ; &beb2 referenced 1 time by &bed7
 .sub_cbeb2
     lda #0                                                            ; beb2: a9 00       ..    
@@ -11634,21 +11629,21 @@ l848a = sub_c847b+15
     equs "-Missing #"                                                 ; bfc4: 2d 4d 69... -Mi...
     equb &00                                                          ; bfce: 00          .     
 ; &bfcf referenced 2 times by &9080, &be9e
-.sub_cbfcf
-    pla                                                               ; bfcf: 68          h     
-    sta zp_general                                                    ; bfd0: 85 37       .7    
-    pla                                                               ; bfd2: 68          h     
-    sta zp_general_1                                                  ; bfd3: 85 38       .8    
-    ldy #0                                                            ; bfd5: a0 00       ..    
-    beq cbfdc                                                         ; bfd7: f0 03       ..    
+.print_inline_string
+    pla                                                               ; bfcf: 68          h        ; Pull the return address: it points at the string
+    sta zp_general                                                    ; bfd0: 85 37       .7       ; (low)
+    pla                                                               ; bfd2: 68          h        ; (pull high)
+    sta zp_general_1                                                  ; bfd3: 85 38       .8       ; (high)
+    ldy #0                                                            ; bfd5: a0 00       ..       ; Start before the first character
+    beq cbfdc                                                         ; bfd7: f0 03       ..       ; jump in to fetch it
 ; &bfd9 referenced 1 time by &bfdf
 .loop_cbfd9
-    jsr osasci                                                        ; bfd9: 20 e3 ff     ..   
+    jsr osasci                                                        ; bfd9: 20 e3 ff     ..      ; Print the character
 ; &bfdc referenced 1 time by &bfd7
 .cbfdc
-    jsr sub_c894b                                                     ; bfdc: 20 4b 89     K.   
-    bpl loop_cbfd9                                                    ; bfdf: 10 f8       ..    
-    jmp (zp_general)                                                  ; bfe1: 6c 37 00    l7.   
+    jsr sub_c894b                                                     ; bfdc: 20 4b 89     K.      ; Advance and fetch the next character
+    bpl loop_cbfd9                                                    ; bfdf: 10 f8       ..       ; Loop while bit 7 is clear
+    jmp (zp_general)                                                  ; bfe1: 6c 37 00    l7.      ; Resume at the terminator (the next instruction)
 ; ***************************************************************************************
 ; REPORT
 ;
@@ -11675,13 +11670,13 @@ l848a = sub_c847b+15
 save pydis_start, pydis_end
 
 ; Label references by decreasing frequency:
-;     zp_iwa:                    187
+;     zp_iwa:                    188
 ;     zp_general:                142
-;     zp_iwa_1:                  111
+;     zp_iwa_1:                  112
 ;     zp_text_ptr_off:            92
 ;     zp_text_ptr2_off:           90
 ;     zp_stack_ptr:               85
-;     zp_text_ptr:                75
+;     zp_text_ptr:                77
 ;     zp_fwa_m1:                  72
 ;     zp_iwa_2:                   70
 ;     zp_general_1:               66
@@ -11758,6 +11753,7 @@ save pydis_start, pydis_end
 ;     l0048:                       9
 ;     parse_lvalue:                9
 ;     stack_string:                9
+;     sub_cbc25:                   9
 ;     zp_print_flag:               9
 ;     c870d:                       8
 ;     c9127:                       8
@@ -11770,7 +11766,6 @@ save pydis_start, pydis_end
 ;     l05ff:                       8
 ;     sub_c92dd:                   8
 ;     sub_c9852:                   8
-;     sub_cbc25:                   8
 ;     zp_himem:                    8
 ;     zp_print_bytes:              8
 ;     c862b:                       7
@@ -11779,6 +11774,7 @@ save pydis_start, pydis_end
 ;     c9bb5:                       7
 ;     fwa_pack_var:                7
 ;     fwb_unpack_var:              7
+;     immediate_loop:              7
 ;     sub_c882c:                   7
 ;     sub_c92fd:                   7
 ;     zp_count:                    7
@@ -11791,7 +11787,6 @@ save pydis_start, pydis_end
 ;     cbddc:                       6
 ;     fwa_pack_temp3:              6
 ;     fwa_set_one:                 6
-;     immediate_loop:              6
 ;     osbget:                      6
 ;     osbput:                      6
 ;     sub_c92ee:                   6
@@ -11942,6 +11937,7 @@ save pydis_start, pydis_end
 ;     sub_c8832:                   3
 ;     sub_c894b:                   3
 ;     sub_c97ba:                   3
+;     sub_c991f:                   3
 ;     sub_ca07b:                   3
 ;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
@@ -12127,6 +12123,7 @@ save pydis_start, pydis_end
 ;     osfile:                      2
 ;     osfind:                      2
 ;     osrdch:                      2
+;     print_inline_string:         2
 ;     print_special_item:          2
 ;     read_input_line:             2
 ;     read_key_timed:              2
@@ -12160,7 +12157,6 @@ save pydis_start, pydis_end
 ;     sub_c9841:                   2
 ;     sub_c9890:                   2
 ;     sub_c9905:                   2
-;     sub_c991f:                   2
 ;     sub_c9923:                   2
 ;     sub_c99be:                   2
 ;     sub_c9b6b:                   2
@@ -12186,7 +12182,6 @@ save pydis_start, pydis_end
 ;     sub_cbeba:                   2
 ;     sub_cbed2:                   2
 ;     sub_cbedd:                   2
-;     sub_cbfcf:                   2
 ;     try_variable_assignment:     2
 ;     usr_call:                    2
 ;     wrchv:                       2
@@ -12620,8 +12615,6 @@ save pydis_start, pydis_end
 ;     iwa_mod:                     1
 ;     iwa_store_var:               1
 ;     l0047:                       1
-;     l0061:                       1
-;     l0064:                       1
 ;     l00c9:                       1
 ;     l00ff:                       1
 ;     l0106:                       1
@@ -12654,8 +12647,6 @@ save pydis_start, pydis_end
 ;     l05e5:                       1
 ;     l05e6:                       1
 ;     l3185:                       1
-;     l6142:                       1
-;     l7461:                       1
 ;     l82df:                       1
 ;     l8351:                       1
 ;     l8450:                       1
@@ -12709,6 +12700,7 @@ save pydis_start, pydis_end
 ;     loop_c8f53:                  1
 ;     loop_c8fb1:                  1
 ;     loop_c8fea:                  1
+;     loop_c906d:                  1
 ;     loop_c90dc:                  1
 ;     loop_c9185:                  1
 ;     loop_c923a:                  1
@@ -12918,7 +12910,6 @@ save pydis_start, pydis_end
 ;     sub_cad8f:                   1
 ;     sub_cae02:                   1
 ;     sub_cae3a:                   1
-;     sub_cb1c8:                   1
 ;     sub_cb3c5:                   1
 ;     sub_cb4b7:                   1
 ;     sub_cb550:                   1
@@ -13571,8 +13562,6 @@ save pydis_start, pydis_end
 ;     l004a
 ;     l004d
 ;     l004e
-;     l0061
-;     l0064
 ;     l00c9
 ;     l00fd
 ;     l00ff
@@ -13621,8 +13610,6 @@ save pydis_start, pydis_end
 ;     l05ff
 ;     l06ff
 ;     l3185
-;     l6142
-;     l7461
 ;     l82df
 ;     l8351
 ;     l8450
@@ -13675,6 +13662,7 @@ save pydis_start, pydis_end
 ;     loop_c8f53
 ;     loop_c8fb1
 ;     loop_c8fea
+;     loop_c906d
 ;     loop_c90dc
 ;     loop_c9185
 ;     loop_c923a
@@ -13944,7 +13932,6 @@ save pydis_start, pydis_end
 ;     sub_cadad
 ;     sub_cae02
 ;     sub_cae3a
-;     sub_cb1c8
 ;     sub_cb3c5
 ;     sub_cb4b1
 ;     sub_cb4b7
@@ -13973,15 +13960,14 @@ save pydis_start, pydis_end
 ;     sub_cbedd
 ;     sub_cbee7
 ;     sub_cbfa9
-;     sub_cbfcf
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14422 bytes (88%)
-;     Data                     = 1962 bytes (12%)
+;     Code                     = 14429 bytes (88%)
+;     Data                     = 1955 bytes (12%)
 ;
-;     Number of instructions   = 7130
-;     Number of data bytes     = 944 bytes
+;     Number of instructions   = 7135
+;     Number of data bytes     = 923 bytes
 ;     Number of data words     = 0 bytes
-;     Number of string bytes   = 1018 bytes
-;     Number of strings        = 190
+;     Number of string bytes   = 1032 bytes
+;     Number of strings        = 191
