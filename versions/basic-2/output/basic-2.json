@@ -33503,6 +33503,7 @@
       "labels": [
         "find_proc_fn"
       ],
+      "comment_inline": "Look at the PROC/FN token",
       "xref_summaries": [
         "&945b referenced 1 time by &b1e1"
       ],
@@ -33519,6 +33520,7 @@
         177,
         55
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -33542,6 +33544,7 @@
         201,
         242
       ],
+      "comment_inline": "Is it PROC (&F2)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&f2"
@@ -33552,6 +33555,7 @@
         240,
         10
       ],
+      "comment_inline": "PROC: scan the PROC list",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c946f",
@@ -33564,6 +33568,7 @@
         160,
         248
       ],
+      "comment_inline": "FN: point at the FN list head",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&f8"
@@ -33574,6 +33579,7 @@
         208,
         6
       ],
+      "comment_inline": "scan the FN list",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c946f",
@@ -58318,6 +58324,7 @@
       "labels": [
         "fwb_unpack_var"
       ],
+      "comment_inline": "Copy the packed value, exponent last",
       "xref_summaries": [
         "&a34e referenced 7 times by &9a5f, &9f74, &a4d6, &a500, &a60b, &a6ec, &a9df"
       ],
@@ -58340,6 +58347,7 @@
         177,
         75
       ],
+      "comment_inline": "Packed byte 4...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58352,6 +58360,7 @@
         133,
         65
       ],
+      "comment_inline": "...mantissa byte 4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -58363,6 +58372,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58372,6 +58382,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58384,6 +58395,7 @@
         133,
         64
       ],
+      "comment_inline": "...mantissa byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -58395,6 +58407,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58404,6 +58417,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58416,6 +58430,7 @@
         133,
         63
       ],
+      "comment_inline": "...mantissa byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -58427,6 +58442,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58436,6 +58452,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 1 (sign + mantissa MSB)...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58448,6 +58465,7 @@
         133,
         59
       ],
+      "comment_inline": "...into the sign byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -58459,6 +58477,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58468,6 +58487,7 @@
         132,
         66
       ],
+      "comment_inline": "Clear the rounding byte (Y=0)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_rnd",
@@ -58480,6 +58500,7 @@
         132,
         60
       ],
+      "comment_inline": "and the overflow byte",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -58492,6 +58513,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58504,6 +58526,7 @@
         133,
         61
       ],
+      "comment_inline": "...is the exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -58516,6 +58539,7 @@
         5,
         59
       ],
+      "comment_inline": "Test for zero: OR exponent with the mantissa...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_sign",
@@ -58528,6 +58552,7 @@
         5,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m2",
@@ -58540,6 +58565,7 @@
         5,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m3",
@@ -58552,6 +58578,7 @@
         5,
         65
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m4",
@@ -58564,6 +58591,7 @@
         240,
         4
       ],
+      "comment_inline": "All zero: leave the mantissa MSB clear",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca37a",
@@ -58576,6 +58604,7 @@
         165,
         59
       ],
+      "comment_inline": "Non-zero: restore the implied leading 1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -58588,6 +58617,7 @@
         9,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&80"
@@ -58601,6 +58631,7 @@
       "labels": [
         "ca37a"
       ],
+      "comment_inline": "Store the true mantissa MSB",
       "xref_summaries": [
         "&a37a referenced 1 time by &a374"
       ],
@@ -58618,6 +58649,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWB now holds the unpacked value",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -100221,6 +100253,7 @@
       "labels": [
         "reserve_stack"
       ],
+      "comment_inline": "Set the new stack-pointer low byte",
       "xref_summaries": [
         "&be2e referenced 4 times by &b19e, &bd56, &bd99, &bdb7"
       ],
@@ -100242,6 +100275,7 @@
         176,
         2
       ],
+      "comment_inline": "No borrow: high byte unchanged",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbe34",
@@ -100254,6 +100288,7 @@
         198,
         5
       ],
+      "comment_inline": "Borrow: decrement the high byte",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_stack_ptr_1",
@@ -100269,6 +100304,7 @@
       "labels": [
         "cbe34"
       ],
+      "comment_inline": "New stack-pointer high byte",
       "xref_summaries": [
         "&be34 referenced 1 time by &be30"
       ],
@@ -100300,6 +100336,7 @@
         144,
         7
       ],
+      "comment_inline": "New top below the heap page: No room",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbe41",
@@ -100312,6 +100349,7 @@
         208,
         4
       ],
+      "comment_inline": "Clearly above the heap: room available",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_40",
@@ -100324,6 +100362,7 @@
         197,
         2
       ],
+      "comment_inline": "Same page: compare the low bytes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_vartop",
@@ -100336,6 +100375,7 @@
         144,
         1
       ],
+      "comment_inline": "Below the heap top: No room",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbe41",
@@ -100350,6 +100390,7 @@
       "labels": [
         "return_40"
       ],
+      "comment_inline": "Room available: return",
       "xref_summaries": [
         "&be40 referenced 1 time by &be3a"
       ],

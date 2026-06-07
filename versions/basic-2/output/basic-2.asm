@@ -3762,13 +3762,13 @@ l848a = sub_c847b+15
 ; body, or "not found".
 ; &945b referenced 1 time by &b1e1
 .find_proc_fn
-    ldy #1                                                            ; 945b: a0 01       ..    
-    lda (zp_general),y                                                ; 945d: b1 37       .7    
+    ldy #1                                                            ; 945b: a0 01       ..       ; Look at the PROC/FN token
+    lda (zp_general),y                                                ; 945d: b1 37       .7       ; get it
     ldy #&f6                                                          ; 945f: a0 f6       ..       ; Index the PROC / FN entries of the variable table
-    cmp #&f2                                                          ; 9461: c9 f2       ..    
-    beq c946f                                                         ; 9463: f0 0a       ..    
-    ldy #&f8                                                          ; 9465: a0 f8       ..    
-    bne c946f                                                         ; 9467: d0 06       ..    
+    cmp #&f2                                                          ; 9461: c9 f2       ..       ; Is it PROC (&F2)?
+    beq c946f                                                         ; 9463: f0 0a       ..       ; PROC: scan the PROC list
+    ldy #&f8                                                          ; 9465: a0 f8       ..       ; FN: point at the FN list head
+    bne c946f                                                         ; 9467: d0 06       ..       ; scan the FN list
 ; ***************************************************************************************
 ; Find a variable by name
 ;
@@ -6504,34 +6504,34 @@ l848a = sub_c847b+15
 ; Unpack the fp variable at (&4B/&4C) into FWB.
 ; &a34e referenced 7 times by &9a5f, &9f74, &a4d6, &a500, &a60b, &a6ec, &a9df
 .fwb_unpack_var
-    ldy #4                                                            ; a34e: a0 04       ..    
-    lda (zp_fp_ptr),y                                                 ; a350: b1 4b       .K    
-    sta zp_fwb_m4                                                     ; a352: 85 41       .A    
-    dey                                                               ; a354: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a355: b1 4b       .K    
-    sta zp_fwb_m3                                                     ; a357: 85 40       .@    
-    dey                                                               ; a359: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a35a: b1 4b       .K    
-    sta zp_fwb_m2                                                     ; a35c: 85 3f       .?    
-    dey                                                               ; a35e: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a35f: b1 4b       .K    
-    sta zp_fwb_sign                                                   ; a361: 85 3b       .;    
-    dey                                                               ; a363: 88          .     
-    sty zp_fwb_rnd                                                    ; a364: 84 42       .B    
-    sty zp_fwb_ovf                                                    ; a366: 84 3c       .<    
-    lda (zp_fp_ptr),y                                                 ; a368: b1 4b       .K    
-    sta zp_fwb_exp                                                    ; a36a: 85 3d       .=    
-    ora zp_fwb_sign                                                   ; a36c: 05 3b       .;    
-    ora zp_fwb_m2                                                     ; a36e: 05 3f       .?    
-    ora zp_fwb_m3                                                     ; a370: 05 40       .@    
-    ora zp_fwb_m4                                                     ; a372: 05 41       .A    
-    beq ca37a                                                         ; a374: f0 04       ..    
-    lda zp_fwb_sign                                                   ; a376: a5 3b       .;    
-    ora #&80                                                          ; a378: 09 80       ..    
+    ldy #4                                                            ; a34e: a0 04       ..       ; Copy the packed value, exponent last
+    lda (zp_fp_ptr),y                                                 ; a350: b1 4b       .K       ; Packed byte 4...
+    sta zp_fwb_m4                                                     ; a352: 85 41       .A       ; ...mantissa byte 4
+    dey                                                               ; a354: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a355: b1 4b       .K       ; byte 3...
+    sta zp_fwb_m3                                                     ; a357: 85 40       .@       ; ...mantissa byte 3
+    dey                                                               ; a359: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a35a: b1 4b       .K       ; byte 2...
+    sta zp_fwb_m2                                                     ; a35c: 85 3f       .?       ; ...mantissa byte 2
+    dey                                                               ; a35e: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a35f: b1 4b       .K       ; byte 1 (sign + mantissa MSB)...
+    sta zp_fwb_sign                                                   ; a361: 85 3b       .;       ; ...into the sign byte
+    dey                                                               ; a363: 88          .        ; next byte
+    sty zp_fwb_rnd                                                    ; a364: 84 42       .B       ; Clear the rounding byte (Y=0)
+    sty zp_fwb_ovf                                                    ; a366: 84 3c       .<       ; and the overflow byte
+    lda (zp_fp_ptr),y                                                 ; a368: b1 4b       .K       ; byte 0...
+    sta zp_fwb_exp                                                    ; a36a: 85 3d       .=       ; ...is the exponent
+    ora zp_fwb_sign                                                   ; a36c: 05 3b       .;       ; Test for zero: OR exponent with the mantissa...
+    ora zp_fwb_m2                                                     ; a36e: 05 3f       .?       ; ...
+    ora zp_fwb_m3                                                     ; a370: 05 40       .@       ; ...
+    ora zp_fwb_m4                                                     ; a372: 05 41       .A       ; ...
+    beq ca37a                                                         ; a374: f0 04       ..       ; All zero: leave the mantissa MSB clear
+    lda zp_fwb_sign                                                   ; a376: a5 3b       .;       ; Non-zero: restore the implied leading 1...
+    ora #&80                                                          ; a378: 09 80       ..       ; ...
 ; &a37a referenced 1 time by &a374
 .ca37a
-    sta zp_fwb_m1                                                     ; a37a: 85 3e       .>    
-    rts                                                               ; a37c: 60          `     
+    sta zp_fwb_m1                                                     ; a37a: 85 3e       .>       ; Store the true mantissa MSB
+    rts                                                               ; a37c: 60          `        ; FWB now holds the unpacked value
 ; ***************************************************************************************
 ; Pack FWA into TEMP2
 ;
@@ -11281,20 +11281,20 @@ l848a = sub_c847b+15
 ;     CARRY: clear if the subtraction borrowed
 ; &be2e referenced 4 times by &b19e, &bd56, &bd99, &bdb7
 .reserve_stack
-    sta zp_stack_ptr                                                  ; be2e: 85 04       ..    
-    bcs cbe34                                                         ; be30: b0 02       ..    
-    dec zp_stack_ptr_1                                                ; be32: c6 05       ..    
+    sta zp_stack_ptr                                                  ; be2e: 85 04       ..       ; Set the new stack-pointer low byte
+    bcs cbe34                                                         ; be30: b0 02       ..       ; No borrow: high byte unchanged
+    dec zp_stack_ptr_1                                                ; be32: c6 05       ..       ; Borrow: decrement the high byte
 ; &be34 referenced 1 time by &be30
 .cbe34
-    ldy zp_stack_ptr_1                                                ; be34: a4 05       ..    
+    ldy zp_stack_ptr_1                                                ; be34: a4 05       ..       ; New stack-pointer high byte
     cpy zp_vartop_1                                                   ; be36: c4 03       ..       ; Compare the new top against the heap top
-    bcc cbe41                                                         ; be38: 90 07       ..    
-    bne return_40                                                     ; be3a: d0 04       ..    
-    cmp zp_vartop                                                     ; be3c: c5 02       ..    
-    bcc cbe41                                                         ; be3e: 90 01       ..    
+    bcc cbe41                                                         ; be38: 90 07       ..       ; New top below the heap page: No room
+    bne return_40                                                     ; be3a: d0 04       ..       ; Clearly above the heap: room available
+    cmp zp_vartop                                                     ; be3c: c5 02       ..       ; Same page: compare the low bytes
+    bcc cbe41                                                         ; be3e: 90 01       ..       ; Below the heap top: No room
 ; &be40 referenced 1 time by &be3a
 .return_40
-    rts                                                               ; be40: 60          `     
+    rts                                                               ; be40: 60          `        ; Room available: return
 ; &be41 referenced 2 times by &be38, &be3e
 .cbe41
     jmp err_no_room                                                   ; be41: 4c b7 8c    L..      ; Stack meets heap: No room
