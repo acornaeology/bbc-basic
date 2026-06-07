@@ -6896,159 +6896,159 @@ l848a = sub_c847b+15
 .fwa_add_fwb_raw
     jsr fwa_sign                                                      ; a50b: 20 da a1     ..   
     beq fwa_copy_from_fwb                                             ; a50e: f0 cc       ..       ; FWA is zero: the sum is simply FWB
-    ldy #0                                                            ; a510: a0 00       ..    
-    sec                                                               ; a512: 38          8     
-    lda zp_fwa_exp                                                    ; a513: a5 30       .0    
+    ldy #0                                                            ; a510: a0 00       ..       ; Y = 0 (the byte shifted in)
+    sec                                                               ; a512: 38          8        ; prepare the exponent compare
+    lda zp_fwa_exp                                                    ; a513: a5 30       .0       ; FWA exponent...
     sbc zp_fwb_exp                                                    ; a515: e5 3d       .=       ; Exponent difference is the alignment shift
     beq ca590                                                         ; a517: f0 77       .w       ; Equal exponents: already aligned
     bcc ca552                                                         ; a519: 90 37       .7       ; FWA the smaller: align it to FWB instead
-    cmp #&25 ; '%'                                                    ; a51b: c9 25       .%    
+    cmp #&25 ; '%'                                                    ; a51b: c9 25       .%       ; differ by >= 37 bits?
     bcs return_26                                                     ; a51d: b0 dd       ..       ; Differ by >= 37 bits: FWB too small to count
-    pha                                                               ; a51f: 48          H     
+    pha                                                               ; a51f: 48          H        ; save the shift count
     and #&38 ; '8'                                                    ; a520: 29 38       )8       ; Whole-byte part of the shift (difference / 8)
-    beq ca53d                                                         ; a522: f0 19       ..    
-    lsr a                                                             ; a524: 4a          J     
-    lsr a                                                             ; a525: 4a          J     
-    lsr a                                                             ; a526: 4a          J     
-    tax                                                               ; a527: aa          .     
+    beq ca53d                                                         ; a522: f0 19       ..       ; no whole-byte shift: go to the bit shift
+    lsr a                                                             ; a524: 4a          J        ; shift count / 8...
+    lsr a                                                             ; a525: 4a          J        ; ...
+    lsr a                                                             ; a526: 4a          J        ; = whole-byte shifts
+    tax                                                               ; a527: aa          .        ; X = byte-shift count
 ; &a528 referenced 1 time by &a53b
 .loop_ca528
     lda zp_fwb_m4                                                     ; a528: a5 41       .A       ; Shift FWB down a byte at a time
-    sta zp_fwb_rnd                                                    ; a52a: 85 42       .B    
-    lda zp_fwb_m3                                                     ; a52c: a5 40       .@    
-    sta zp_fwb_m4                                                     ; a52e: 85 41       .A    
-    lda zp_fwb_m2                                                     ; a530: a5 3f       .?    
-    sta zp_fwb_m3                                                     ; a532: 85 40       .@    
-    lda zp_fwb_m1                                                     ; a534: a5 3e       .>    
-    sta zp_fwb_m2                                                     ; a536: 85 3f       .?    
-    sty zp_fwb_m1                                                     ; a538: 84 3e       .>    
-    dex                                                               ; a53a: ca          .     
-    bne loop_ca528                                                    ; a53b: d0 eb       ..    
+    sta zp_fwb_rnd                                                    ; a52a: 85 42       .B       ; shift FWB down a byte: m4 -> rnd
+    lda zp_fwb_m3                                                     ; a52c: a5 40       .@       ; m3...
+    sta zp_fwb_m4                                                     ; a52e: 85 41       .A       ; -> m4
+    lda zp_fwb_m2                                                     ; a530: a5 3f       .?       ; m2...
+    sta zp_fwb_m3                                                     ; a532: 85 40       .@       ; -> m3
+    lda zp_fwb_m1                                                     ; a534: a5 3e       .>       ; m1...
+    sta zp_fwb_m2                                                     ; a536: 85 3f       .?       ; -> m2
+    sty zp_fwb_m1                                                     ; a538: 84 3e       .>       ; m1 = 0
+    dex                                                               ; a53a: ca          .        ; count
+    bne loop_ca528                                                    ; a53b: d0 eb       ..       ; loop
 ; &a53d referenced 1 time by &a522
 .ca53d
-    pla                                                               ; a53d: 68          h     
+    pla                                                               ; a53d: 68          h        ; recover the shift count
     and #7                                                            ; a53e: 29 07       ).       ; then the remaining bits, to finish aligning FWB
-    beq ca590                                                         ; a540: f0 4e       .N    
-    tax                                                               ; a542: aa          .     
+    beq ca590                                                         ; a540: f0 4e       .N       ; no bit shift: add the mantissas
+    tax                                                               ; a542: aa          .        ; X = bit-shift count
 ; &a543 referenced 1 time by &a54e
 .loop_ca543
-    lsr zp_fwb_m1                                                     ; a543: 46 3e       F>    
-    ror zp_fwb_m2                                                     ; a545: 66 3f       f?    
-    ror zp_fwb_m3                                                     ; a547: 66 40       f@    
-    ror zp_fwb_m4                                                     ; a549: 66 41       fA    
-    ror zp_fwb_rnd                                                    ; a54b: 66 42       fB    
-    dex                                                               ; a54d: ca          .     
-    bne loop_ca543                                                    ; a54e: d0 f3       ..    
-    beq ca590                                                         ; a550: f0 3e       .>    
+    lsr zp_fwb_m1                                                     ; a543: 46 3e       F>       ; shift FWB right one bit: m1
+    ror zp_fwb_m2                                                     ; a545: 66 3f       f?       ; m2
+    ror zp_fwb_m3                                                     ; a547: 66 40       f@       ; m3
+    ror zp_fwb_m4                                                     ; a549: 66 41       fA       ; m4
+    ror zp_fwb_rnd                                                    ; a54b: 66 42       fB       ; rnd
+    dex                                                               ; a54d: ca          .        ; count
+    bne loop_ca543                                                    ; a54e: d0 f3       ..       ; loop
+    beq ca590                                                         ; a550: f0 3e       .>       ; aligned: add the mantissas
 ; &a552 referenced 1 time by &a519
 .ca552
     sec                                                               ; a552: 38          8        ; FWB the smaller: shift FWA to align
-    lda zp_fwb_exp                                                    ; a553: a5 3d       .=    
-    sbc zp_fwa_exp                                                    ; a555: e5 30       .0    
-    cmp #&25 ; '%'                                                    ; a557: c9 25       .%    
-    bcs fwa_copy_from_fwb                                             ; a559: b0 81       ..    
-    pha                                                               ; a55b: 48          H     
-    and #&38 ; '8'                                                    ; a55c: 29 38       )8    
-    beq ca579                                                         ; a55e: f0 19       ..    
-    lsr a                                                             ; a560: 4a          J     
-    lsr a                                                             ; a561: 4a          J     
-    lsr a                                                             ; a562: 4a          J     
-    tax                                                               ; a563: aa          .     
+    lda zp_fwb_exp                                                    ; a553: a5 3d       .=       ; FWB exponent - FWA exponent
+    sbc zp_fwa_exp                                                    ; a555: e5 30       .0       ; ...
+    cmp #&25 ; '%'                                                    ; a557: c9 25       .%       ; differ by >= 37 bits?
+    bcs fwa_copy_from_fwb                                             ; a559: b0 81       ..       ; FWA negligible: result is FWB
+    pha                                                               ; a55b: 48          H        ; save the shift count
+    and #&38 ; '8'                                                    ; a55c: 29 38       )8       ; whole-byte part
+    beq ca579                                                         ; a55e: f0 19       ..       ; none: go to the bit shift
+    lsr a                                                             ; a560: 4a          J        ; / 8...
+    lsr a                                                             ; a561: 4a          J        ; ...
+    lsr a                                                             ; a562: 4a          J        ; = whole-byte shifts
+    tax                                                               ; a563: aa          .        ; X = byte-shift count
 ; &a564 referenced 1 time by &a577
 .loop_ca564
-    lda zp_fwa_m4                                                     ; a564: a5 34       .4    
-    sta zp_fwa_rnd                                                    ; a566: 85 35       .5    
-    lda zp_fwa_m3                                                     ; a568: a5 33       .3    
-    sta zp_fwa_m4                                                     ; a56a: 85 34       .4    
-    lda zp_fwa_m2                                                     ; a56c: a5 32       .2    
-    sta zp_fwa_m3                                                     ; a56e: 85 33       .3    
-    lda zp_fwa_m1                                                     ; a570: a5 31       .1    
-    sta zp_fwa_m2                                                     ; a572: 85 32       .2    
-    sty zp_fwa_m1                                                     ; a574: 84 31       .1    
-    dex                                                               ; a576: ca          .     
-    bne loop_ca564                                                    ; a577: d0 eb       ..    
+    lda zp_fwa_m4                                                     ; a564: a5 34       .4       ; shift FWA down a byte: m4 -> rnd
+    sta zp_fwa_rnd                                                    ; a566: 85 35       .5       ; ...
+    lda zp_fwa_m3                                                     ; a568: a5 33       .3       ; m3 -> m4
+    sta zp_fwa_m4                                                     ; a56a: 85 34       .4       ; ...
+    lda zp_fwa_m2                                                     ; a56c: a5 32       .2       ; m2 -> m3
+    sta zp_fwa_m3                                                     ; a56e: 85 33       .3       ; ...
+    lda zp_fwa_m1                                                     ; a570: a5 31       .1       ; m1 -> m2
+    sta zp_fwa_m2                                                     ; a572: 85 32       .2       ; ...
+    sty zp_fwa_m1                                                     ; a574: 84 31       .1       ; m1 = 0
+    dex                                                               ; a576: ca          .        ; count
+    bne loop_ca564                                                    ; a577: d0 eb       ..       ; loop
 ; &a579 referenced 1 time by &a55e
 .ca579
-    pla                                                               ; a579: 68          h     
-    and #7                                                            ; a57a: 29 07       ).    
-    beq ca58c                                                         ; a57c: f0 0e       ..    
-    tax                                                               ; a57e: aa          .     
+    pla                                                               ; a579: 68          h        ; recover the shift count
+    and #7                                                            ; a57a: 29 07       ).       ; bit part
+    beq ca58c                                                         ; a57c: f0 0e       ..       ; none: take the larger exponent
+    tax                                                               ; a57e: aa          .        ; X = bit-shift count
 ; &a57f referenced 1 time by &a58a
 .loop_ca57f
-    lsr zp_fwa_m1                                                     ; a57f: 46 31       F1    
-    ror zp_fwa_m2                                                     ; a581: 66 32       f2    
-    ror zp_fwa_m3                                                     ; a583: 66 33       f3    
-    ror zp_fwa_m4                                                     ; a585: 66 34       f4    
-    ror zp_fwa_rnd                                                    ; a587: 66 35       f5    
-    dex                                                               ; a589: ca          .     
-    bne loop_ca57f                                                    ; a58a: d0 f3       ..    
+    lsr zp_fwa_m1                                                     ; a57f: 46 31       F1       ; shift FWA right one bit: m1
+    ror zp_fwa_m2                                                     ; a581: 66 32       f2       ; m2
+    ror zp_fwa_m3                                                     ; a583: 66 33       f3       ; m3
+    ror zp_fwa_m4                                                     ; a585: 66 34       f4       ; m4
+    ror zp_fwa_rnd                                                    ; a587: 66 35       f5       ; rnd
+    dex                                                               ; a589: ca          .        ; count
+    bne loop_ca57f                                                    ; a58a: d0 f3       ..       ; loop
 ; &a58c referenced 1 time by &a57c
 .ca58c
     lda zp_fwb_exp                                                    ; a58c: a5 3d       .=       ; Result takes the larger exponent
-    sta zp_fwa_exp                                                    ; a58e: 85 30       .0    
+    sta zp_fwa_exp                                                    ; a58e: 85 30       .0       ; store the larger exponent
 ; &a590 referenced 3 times by &a517, &a540, &a550
 .ca590
-    lda zp_fwa_sign                                                   ; a590: a5 2e       ..    
+    lda zp_fwa_sign                                                   ; a590: a5 2e       ..       ; Compare the signs: load FWA sign
     eor zp_fwb_sign                                                   ; a592: 45 3b       E;       ; Compare the operand signs
     bpl fp_mantissas_add                                              ; a594: 10 49       .I       ; Same sign: add; opposite: subtract smaller from larger
-    lda zp_fwa_m1                                                     ; a596: a5 31       .1    
-    cmp zp_fwb_m1                                                     ; a598: c5 3e       .>    
-    bne fp_mantissas_sub                                              ; a59a: d0 1b       ..    
-    lda zp_fwa_m2                                                     ; a59c: a5 32       .2    
-    cmp zp_fwb_m2                                                     ; a59e: c5 3f       .?    
-    bne fp_mantissas_sub                                              ; a5a0: d0 15       ..    
-    lda zp_fwa_m3                                                     ; a5a2: a5 33       .3    
-    cmp zp_fwb_m3                                                     ; a5a4: c5 40       .@    
-    bne fp_mantissas_sub                                              ; a5a6: d0 0f       ..    
-    lda zp_fwa_m4                                                     ; a5a8: a5 34       .4    
-    cmp zp_fwb_m4                                                     ; a5aa: c5 41       .A    
-    bne fp_mantissas_sub                                              ; a5ac: d0 09       ..    
-    lda zp_fwa_rnd                                                    ; a5ae: a5 35       .5    
-    cmp zp_fwb_rnd                                                    ; a5b0: c5 42       .B    
-    bne fp_mantissas_sub                                              ; a5b2: d0 03       ..    
+    lda zp_fwa_m1                                                     ; a596: a5 31       .1       ; Opposite signs: compare magnitudes (m1)
+    cmp zp_fwb_m1                                                     ; a598: c5 3e       .>       ; ...
+    bne fp_mantissas_sub                                              ; a59a: d0 1b       ..       ; differ: subtract
+    lda zp_fwa_m2                                                     ; a59c: a5 32       .2       ; m2
+    cmp zp_fwb_m2                                                     ; a59e: c5 3f       .?       ; ...
+    bne fp_mantissas_sub                                              ; a5a0: d0 15       ..       ; differ: subtract
+    lda zp_fwa_m3                                                     ; a5a2: a5 33       .3       ; m3
+    cmp zp_fwb_m3                                                     ; a5a4: c5 40       .@       ; ...
+    bne fp_mantissas_sub                                              ; a5a6: d0 0f       ..       ; differ: subtract
+    lda zp_fwa_m4                                                     ; a5a8: a5 34       .4       ; m4
+    cmp zp_fwb_m4                                                     ; a5aa: c5 41       .A       ; ...
+    bne fp_mantissas_sub                                              ; a5ac: d0 09       ..       ; differ: subtract
+    lda zp_fwa_rnd                                                    ; a5ae: a5 35       .5       ; rnd
+    cmp zp_fwb_rnd                                                    ; a5b0: c5 42       .B       ; ...
+    bne fp_mantissas_sub                                              ; a5b2: d0 03       ..       ; differ: subtract
     jmp fwa_clear                                                     ; a5b4: 4c 86 a6    L..      ; Equal magnitudes of opposite sign cancel to zero
 ; &a5b7 referenced 5 times by &a59a, &a5a0, &a5a6, &a5ac, &a5b2
 .fp_mantissas_sub
-    bcs ca5e3                                                         ; a5b7: b0 2a       .*    
-    sec                                                               ; a5b9: 38          8     
-    lda zp_fwb_rnd                                                    ; a5ba: a5 42       .B    
-    sbc zp_fwa_rnd                                                    ; a5bc: e5 35       .5    
-    sta zp_fwa_rnd                                                    ; a5be: 85 35       .5    
-    lda zp_fwb_m4                                                     ; a5c0: a5 41       .A    
-    sbc zp_fwa_m4                                                     ; a5c2: e5 34       .4    
-    sta zp_fwa_m4                                                     ; a5c4: 85 34       .4    
-    lda zp_fwb_m3                                                     ; a5c6: a5 40       .@    
-    sbc zp_fwa_m3                                                     ; a5c8: e5 33       .3    
-    sta zp_fwa_m3                                                     ; a5ca: 85 33       .3    
-    lda zp_fwb_m2                                                     ; a5cc: a5 3f       .?    
-    sbc zp_fwa_m2                                                     ; a5ce: e5 32       .2    
-    sta zp_fwa_m2                                                     ; a5d0: 85 32       .2    
-    lda zp_fwb_m1                                                     ; a5d2: a5 3e       .>    
-    sbc zp_fwa_m1                                                     ; a5d4: e5 31       .1    
-    sta zp_fwa_m1                                                     ; a5d6: 85 31       .1    
-    lda zp_fwb_sign                                                   ; a5d8: a5 3b       .;    
-    sta zp_fwa_sign                                                   ; a5da: 85 2e       ..    
-    jmp fwa_normalise                                                 ; a5dc: 4c 03 a3    L..   
+    bcs ca5e3                                                         ; a5b7: b0 2a       .*       ; FWA >= FWB? choose the subtraction order
+    sec                                                               ; a5b9: 38          8        ; FWB - FWA: rnd
+    lda zp_fwb_rnd                                                    ; a5ba: a5 42       .B       ; ...
+    sbc zp_fwa_rnd                                                    ; a5bc: e5 35       .5       ; ...
+    sta zp_fwa_rnd                                                    ; a5be: 85 35       .5       ; (store)
+    lda zp_fwb_m4                                                     ; a5c0: a5 41       .A       ; m4
+    sbc zp_fwa_m4                                                     ; a5c2: e5 34       .4       ; ...
+    sta zp_fwa_m4                                                     ; a5c4: 85 34       .4       ; (store)
+    lda zp_fwb_m3                                                     ; a5c6: a5 40       .@       ; m3
+    sbc zp_fwa_m3                                                     ; a5c8: e5 33       .3       ; ...
+    sta zp_fwa_m3                                                     ; a5ca: 85 33       .3       ; (store)
+    lda zp_fwb_m2                                                     ; a5cc: a5 3f       .?       ; m2
+    sbc zp_fwa_m2                                                     ; a5ce: e5 32       .2       ; ...
+    sta zp_fwa_m2                                                     ; a5d0: 85 32       .2       ; (store)
+    lda zp_fwb_m1                                                     ; a5d2: a5 3e       .>       ; m1
+    sbc zp_fwa_m1                                                     ; a5d4: e5 31       .1       ; ...
+    sta zp_fwa_m1                                                     ; a5d6: 85 31       .1       ; (store)
+    lda zp_fwb_sign                                                   ; a5d8: a5 3b       .;       ; result takes FWB's sign
+    sta zp_fwa_sign                                                   ; a5da: 85 2e       ..       ; (store)
+    jmp fwa_normalise                                                 ; a5dc: 4c 03 a3    L..      ; normalise the difference
 ; &a5df referenced 1 time by &a594
 .fp_mantissas_add
-    clc                                                               ; a5df: 18          .     
-    jmp ca208                                                         ; a5e0: 4c 08 a2    L..   
+    clc                                                               ; a5df: 18          .        ; Same sign: add the mantissas
+    jmp ca208                                                         ; a5e0: 4c 08 a2    L..      ; FWA += FWB
 ; &a5e3 referenced 1 time by &a5b7
 .ca5e3
-    sec                                                               ; a5e3: 38          8     
-    lda zp_fwa_rnd                                                    ; a5e4: a5 35       .5    
-    sbc zp_fwb_rnd                                                    ; a5e6: e5 42       .B    
-    sta zp_fwa_rnd                                                    ; a5e8: 85 35       .5    
-    lda zp_fwa_m4                                                     ; a5ea: a5 34       .4    
-    sbc zp_fwb_m4                                                     ; a5ec: e5 41       .A    
-    sta zp_fwa_m4                                                     ; a5ee: 85 34       .4    
-    lda zp_fwa_m3                                                     ; a5f0: a5 33       .3    
-    sbc zp_fwb_m3                                                     ; a5f2: e5 40       .@    
-    sta zp_fwa_m3                                                     ; a5f4: 85 33       .3    
-    lda zp_fwa_m2                                                     ; a5f6: a5 32       .2    
-    sbc zp_fwb_m2                                                     ; a5f8: e5 3f       .?    
-    sta zp_fwa_m2                                                     ; a5fa: 85 32       .2    
-    lda zp_fwa_m1                                                     ; a5fc: a5 31       .1    
+    sec                                                               ; a5e3: 38          8        ; FWA - FWB: rnd
+    lda zp_fwa_rnd                                                    ; a5e4: a5 35       .5       ; ...
+    sbc zp_fwb_rnd                                                    ; a5e6: e5 42       .B       ; ...
+    sta zp_fwa_rnd                                                    ; a5e8: 85 35       .5       ; (store)
+    lda zp_fwa_m4                                                     ; a5ea: a5 34       .4       ; m4
+    sbc zp_fwb_m4                                                     ; a5ec: e5 41       .A       ; ...
+    sta zp_fwa_m4                                                     ; a5ee: 85 34       .4       ; (store)
+    lda zp_fwa_m3                                                     ; a5f0: a5 33       .3       ; m3
+    sbc zp_fwb_m3                                                     ; a5f2: e5 40       .@       ; ...
+    sta zp_fwa_m3                                                     ; a5f4: 85 33       .3       ; (store)
+    lda zp_fwa_m2                                                     ; a5f6: a5 32       .2       ; m2
+    sbc zp_fwb_m2                                                     ; a5f8: e5 3f       .?       ; ...
+    sta zp_fwa_m2                                                     ; a5fa: 85 32       .2       ; (store)
+    lda zp_fwa_m1                                                     ; a5fc: a5 31       .1       ; m1
     equb &e5                                                          ; a5fe: e5          .     
 ; ***************************************************************************************
 ; Compare FWA with a fp variable

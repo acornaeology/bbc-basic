@@ -61880,6 +61880,7 @@
         160,
         0
       ],
+      "comment_inline": "Y = 0 (the byte shifted in)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -61889,6 +61890,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "prepare the exponent compare",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -61898,6 +61900,7 @@
         165,
         48
       ],
+      "comment_inline": "FWA exponent...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -61949,6 +61952,7 @@
         201,
         37
       ],
+      "comment_inline": "differ by >= 37 bits?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&25"
@@ -61971,6 +61975,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save the shift count",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -61991,6 +61996,7 @@
         240,
         25
       ],
+      "comment_inline": "no whole-byte shift: go to the bit shift",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca53d",
@@ -62002,6 +62008,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "shift count / 8...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62010,6 +62017,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62018,6 +62026,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "= whole-byte shifts",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62026,6 +62035,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "X = byte-shift count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -62057,6 +62067,7 @@
         133,
         66
       ],
+      "comment_inline": "shift FWB down a byte: m4 -> rnd",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -62069,6 +62080,7 @@
         165,
         64
       ],
+      "comment_inline": "m3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -62081,6 +62093,7 @@
         133,
         65
       ],
+      "comment_inline": "-> m4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -62093,6 +62106,7 @@
         165,
         63
       ],
+      "comment_inline": "m2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -62105,6 +62119,7 @@
         133,
         64
       ],
+      "comment_inline": "-> m3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -62117,6 +62132,7 @@
         165,
         62
       ],
+      "comment_inline": "m1...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -62129,6 +62145,7 @@
         133,
         63
       ],
+      "comment_inline": "-> m2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -62141,6 +62158,7 @@
         132,
         62
       ],
+      "comment_inline": "m1 = 0",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -62152,6 +62170,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -62161,6 +62180,7 @@
         208,
         235
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca528",
@@ -62175,6 +62195,7 @@
       "labels": [
         "ca53d"
       ],
+      "comment_inline": "recover the shift count",
       "xref_summaries": [
         "&a53d referenced 1 time by &a522"
       ],
@@ -62201,6 +62222,7 @@
         240,
         78
       ],
+      "comment_inline": "no bit shift: add the mantissas",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca590",
@@ -62212,6 +62234,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "X = bit-shift count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -62224,6 +62247,7 @@
       "labels": [
         "loop_ca543"
       ],
+      "comment_inline": "shift FWB right one bit: m1",
       "xref_summaries": [
         "&a543 referenced 1 time by &a54e"
       ],
@@ -62242,6 +62266,7 @@
         102,
         63
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m2",
@@ -62254,6 +62279,7 @@
         102,
         64
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m3",
@@ -62266,6 +62292,7 @@
         102,
         65
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m4",
@@ -62278,6 +62305,7 @@
         102,
         66
       ],
+      "comment_inline": "rnd",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_rnd",
@@ -62289,6 +62317,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -62298,6 +62327,7 @@
         208,
         243
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca543",
@@ -62310,6 +62340,7 @@
         240,
         62
       ],
+      "comment_inline": "aligned: add the mantissas",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca590",
@@ -62340,6 +62371,7 @@
         165,
         61
       ],
+      "comment_inline": "FWB exponent - FWA exponent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -62352,6 +62384,7 @@
         229,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_exp",
@@ -62364,6 +62397,7 @@
         201,
         37
       ],
+      "comment_inline": "differ by >= 37 bits?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&25"
@@ -62374,6 +62408,7 @@
         176,
         129
       ],
+      "comment_inline": "FWA negligible: result is FWB",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "fwa_copy_from_fwb",
@@ -62385,6 +62420,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save the shift count",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -62394,6 +62430,7 @@
         41,
         56
       ],
+      "comment_inline": "whole-byte part",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&38"
@@ -62404,6 +62441,7 @@
         240,
         25
       ],
+      "comment_inline": "none: go to the bit shift",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca579",
@@ -62415,6 +62453,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "/ 8...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62423,6 +62462,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62431,6 +62471,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "= whole-byte shifts",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -62439,6 +62480,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "X = byte-shift count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -62451,6 +62493,7 @@
       "labels": [
         "loop_ca564"
       ],
+      "comment_inline": "shift FWA down a byte: m4 -> rnd",
       "xref_summaries": [
         "&a564 referenced 1 time by &a577"
       ],
@@ -62469,6 +62512,7 @@
         133,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -62481,6 +62525,7 @@
         165,
         51
       ],
+      "comment_inline": "m3 -> m4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -62493,6 +62538,7 @@
         133,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -62505,6 +62551,7 @@
         165,
         50
       ],
+      "comment_inline": "m2 -> m3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -62517,6 +62564,7 @@
         133,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -62529,6 +62577,7 @@
         165,
         49
       ],
+      "comment_inline": "m1 -> m2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -62541,6 +62590,7 @@
         133,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -62553,6 +62603,7 @@
         132,
         49
       ],
+      "comment_inline": "m1 = 0",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_m1",
@@ -62564,6 +62615,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -62573,6 +62625,7 @@
         208,
         235
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca564",
@@ -62587,6 +62640,7 @@
       "labels": [
         "ca579"
       ],
+      "comment_inline": "recover the shift count",
       "xref_summaries": [
         "&a579 referenced 1 time by &a55e"
       ],
@@ -62602,6 +62656,7 @@
         41,
         7
       ],
+      "comment_inline": "bit part",
       "type": "code",
       "mnemonic": "and",
       "operand": "#7"
@@ -62612,6 +62667,7 @@
         240,
         14
       ],
+      "comment_inline": "none: take the larger exponent",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca58c",
@@ -62623,6 +62679,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "X = bit-shift count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -62635,6 +62692,7 @@
       "labels": [
         "loop_ca57f"
       ],
+      "comment_inline": "shift FWA right one bit: m1",
       "xref_summaries": [
         "&a57f referenced 1 time by &a58a"
       ],
@@ -62653,6 +62711,7 @@
         102,
         50
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m2",
@@ -62665,6 +62724,7 @@
         102,
         51
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m3",
@@ -62677,6 +62737,7 @@
         102,
         52
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m4",
@@ -62689,6 +62750,7 @@
         102,
         53
       ],
+      "comment_inline": "rnd",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_rnd",
@@ -62700,6 +62762,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -62709,6 +62772,7 @@
         208,
         243
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca57f",
@@ -62743,6 +62807,7 @@
         133,
         48
       ],
+      "comment_inline": "store the larger exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -62758,6 +62823,7 @@
       "labels": [
         "ca590"
       ],
+      "comment_inline": "Compare the signs: load FWA sign",
       "xref_summaries": [
         "&a590 referenced 3 times by &a517, &a540, &a550"
       ],
@@ -62804,6 +62870,7 @@
         165,
         49
       ],
+      "comment_inline": "Opposite signs: compare magnitudes (m1)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -62816,6 +62883,7 @@
         197,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m1",
@@ -62828,6 +62896,7 @@
         208,
         27
       ],
+      "comment_inline": "differ: subtract",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fp_mantissas_sub",
@@ -62840,6 +62909,7 @@
         165,
         50
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -62852,6 +62922,7 @@
         197,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m2",
@@ -62864,6 +62935,7 @@
         208,
         21
       ],
+      "comment_inline": "differ: subtract",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fp_mantissas_sub",
@@ -62876,6 +62948,7 @@
         165,
         51
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -62888,6 +62961,7 @@
         197,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m3",
@@ -62900,6 +62974,7 @@
         208,
         15
       ],
+      "comment_inline": "differ: subtract",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fp_mantissas_sub",
@@ -62912,6 +62987,7 @@
         165,
         52
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -62924,6 +63000,7 @@
         197,
         65
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m4",
@@ -62936,6 +63013,7 @@
         208,
         9
       ],
+      "comment_inline": "differ: subtract",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fp_mantissas_sub",
@@ -62948,6 +63026,7 @@
         165,
         53
       ],
+      "comment_inline": "rnd",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -62960,6 +63039,7 @@
         197,
         66
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_rnd",
@@ -62972,6 +63052,7 @@
         208,
         3
       ],
+      "comment_inline": "differ: subtract",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fp_mantissas_sub",
@@ -63001,6 +63082,7 @@
       "labels": [
         "fp_mantissas_sub"
       ],
+      "comment_inline": "FWA >= FWB? choose the subtraction order",
       "xref_summaries": [
         "&a5b7 referenced 5 times by &a59a, &a5a0, &a5a6, &a5ac, &a5b2"
       ],
@@ -63022,6 +63104,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "FWB - FWA: rnd",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -63031,6 +63114,7 @@
         165,
         66
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_rnd",
@@ -63043,6 +63127,7 @@
         229,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_rnd",
@@ -63055,6 +63140,7 @@
         133,
         53
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -63067,6 +63153,7 @@
         165,
         65
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m4",
@@ -63079,6 +63166,7 @@
         229,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m4",
@@ -63091,6 +63179,7 @@
         133,
         52
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -63103,6 +63192,7 @@
         165,
         64
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -63115,6 +63205,7 @@
         229,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m3",
@@ -63127,6 +63218,7 @@
         133,
         51
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -63139,6 +63231,7 @@
         165,
         63
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -63151,6 +63244,7 @@
         229,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m2",
@@ -63163,6 +63257,7 @@
         133,
         50
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -63175,6 +63270,7 @@
         165,
         62
       ],
+      "comment_inline": "m1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -63187,6 +63283,7 @@
         229,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m1",
@@ -63199,6 +63296,7 @@
         133,
         49
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -63211,6 +63309,7 @@
         165,
         59
       ],
+      "comment_inline": "result takes FWB's sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -63223,6 +63322,7 @@
         133,
         46
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -63236,6 +63336,7 @@
         3,
         163
       ],
+      "comment_inline": "normalise the difference",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_normalise",
@@ -63250,6 +63351,7 @@
       "labels": [
         "fp_mantissas_add"
       ],
+      "comment_inline": "Same sign: add the mantissas",
       "xref_summaries": [
         "&a5df referenced 1 time by &a594"
       ],
@@ -63266,6 +63368,7 @@
         8,
         162
       ],
+      "comment_inline": "FWA += FWB",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca208",
@@ -63280,6 +63383,7 @@
       "labels": [
         "ca5e3"
       ],
+      "comment_inline": "FWA - FWB: rnd",
       "xref_summaries": [
         "&a5e3 referenced 1 time by &a5b7"
       ],
@@ -63295,6 +63399,7 @@
         165,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -63307,6 +63412,7 @@
         229,
         66
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_rnd",
@@ -63319,6 +63425,7 @@
         133,
         53
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -63331,6 +63438,7 @@
         165,
         52
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -63343,6 +63451,7 @@
         229,
         65
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m4",
@@ -63355,6 +63464,7 @@
         133,
         52
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -63367,6 +63477,7 @@
         165,
         51
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -63379,6 +63490,7 @@
         229,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m3",
@@ -63391,6 +63503,7 @@
         133,
         51
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -63403,6 +63516,7 @@
         165,
         50
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -63415,6 +63529,7 @@
         229,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m2",
@@ -63427,6 +63542,7 @@
         133,
         50
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -63439,6 +63555,7 @@
         165,
         49
       ],
+      "comment_inline": "m1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
