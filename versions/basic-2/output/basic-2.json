@@ -1725,9 +1725,9 @@
     "zp_stack_ptr": 4,
     "zp_stack_ptr_1": 5,
     "zp_himem": 6,
-    "l0007": 7,
+    "zp_himem_1": 7,
     "zp_erl": 8,
-    "l0009": 9,
+    "zp_erl_1": 9,
     "zp_text_ptr_off": 10,
     "zp_text_ptr": 11,
     "zp_text_ptr_1": 12,
@@ -1801,7 +1801,7 @@
     "os_text_ptr": 242,
     "romsel_copy": 244,
     "osrdsc_ptr": 246,
-    "l00fd": 253,
+    "zp_error_ptr": 253,
     "l00ff": 255,
     "l0100": 256,
     "l0106": 262,
@@ -2230,9 +2230,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 32812,
@@ -18316,6 +18316,7 @@
       "labels": [
         "skip_spaces_expect_comma"
       ],
+      "comment_inline": "Skip spaces at PtrB",
       "xref_summaries": [
         "&8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c"
       ],
@@ -18338,6 +18339,7 @@
         201,
         44
       ],
+      "comment_inline": "Require a comma",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -18348,6 +18350,7 @@
         208,
         237
       ],
+      "comment_inline": "Missing: \"Missing ,\" error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8aa2",
@@ -18359,6 +18362,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -26509,9 +26513,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 36815,
@@ -30624,6 +30628,7 @@
       "labels": [
         "stmt_himem"
       ],
+      "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92eb",
@@ -30636,6 +30641,7 @@
         165,
         42
       ],
+      "comment_inline": "Set HIMEM and the stack: low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -30648,6 +30654,7 @@
         133,
         6
       ],
+      "comment_inline": "HIMEM low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_himem",
@@ -30660,6 +30667,7 @@
         133,
         4
       ],
+      "comment_inline": "stack pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -30672,6 +30680,7 @@
         165,
         43
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30684,11 +30693,12 @@
         133,
         7
       ],
+      "comment_inline": "HIMEM high",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 37482,
@@ -30696,6 +30706,7 @@
         133,
         5
       ],
+      "comment_inline": "stack pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr_1",
@@ -30709,6 +30720,7 @@
         155,
         139
       ],
+      "comment_inline": "Back to execution",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -30847,6 +30859,7 @@
       "labels": [
         "stmt_page"
       ],
+      "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92eb",
@@ -30859,6 +30872,7 @@
         165,
         43
       ],
+      "comment_inline": "PAGE is a page number (the high byte)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30871,6 +30885,7 @@
         133,
         24
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_page",
@@ -30887,6 +30902,7 @@
       "labels": [
         "c928a"
       ],
+      "comment_inline": "Back to execution",
       "xref_summaries": [
         "&928a referenced 2 times by &9281, &9293"
       ],
@@ -32740,9 +32756,9 @@
       ],
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 37816,
@@ -32912,9 +32928,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 37845,
@@ -33044,6 +33060,7 @@
       "labels": [
         "stmt_draw"
       ],
+      "comment_inline": "DRAW is PLOT 5 (draw a line)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -33056,6 +33073,7 @@
       "labels": [
         "c93ea"
       ],
+      "comment_inline": "Save the plot mode",
       "xref_summaries": [
         "&93ea referenced 1 time by &93e6"
       ],
@@ -33072,6 +33090,7 @@
         29,
         155
       ],
+      "comment_inline": "Evaluate the X coordinate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -33085,6 +33104,7 @@
         253,
         147
       ],
+      "comment_inline": "evaluate Y and plot",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c93fd",
@@ -61377,6 +61397,7 @@
       "labels": [
         "fwa_swap_var"
       ],
+      "comment_inline": "FWB = the fp variable",
       "xref_summaries": [
         "&a4d6 referenced 1 time by &a6d5"
       ],
@@ -61396,6 +61417,7 @@
         141,
         163
       ],
+      "comment_inline": "Store FWA into the variable; FWA = old variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -61681,6 +61703,7 @@
       "labels": [
         "fwa_add_var"
       ],
+      "comment_inline": "FWB = the fp variable",
       "xref_summaries": [
         "&a500 referenced 10 times by &9c9e, &a7dd, &a848, &a863, &a8cc, &a92a, &a930, &aa1d, &aa32, &b774"
       ],
@@ -63379,6 +63402,7 @@
       "labels": [
         "fwa_compare_var"
       ],
+      "comment_inline": "Shift the comparison result, then normalise",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l3185,x",
@@ -63392,6 +63416,7 @@
         3,
         163
       ],
+      "comment_inline": "normalise the difference",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_normalise",
@@ -63406,6 +63431,7 @@
       "labels": [
         "return_27"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&a605 referenced 1 time by &a609"
       ],
@@ -64561,6 +64587,7 @@
       "labels": [
         "fwa_rdiv_var"
       ],
+      "comment_inline": "Is FWA (the divisor) zero?",
       "xref_summaries": [
         "&a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8"
       ],
@@ -64582,6 +64609,7 @@
         240,
         9
       ],
+      "comment_inline": "yes: Division by zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca6bb",
@@ -64595,6 +64623,7 @@
         30,
         162
       ],
+      "comment_inline": "FWB = FWA (the divisor)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_copy_from_fwa",
@@ -64608,6 +64637,7 @@
         181,
         163
       ],
+      "comment_inline": "FWA = the fp variable (the dividend)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -64620,6 +64650,7 @@
         208,
         55
       ],
+      "comment_inline": "non-zero: do the division",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca6f1",
@@ -64631,6 +64662,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "dividend zero: result is zero",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -64644,6 +64676,7 @@
       "labels": [
         "ca6bb"
       ],
+      "comment_inline": "Division by zero error",
       "xref_summaries": [
         "&a6bb referenced 2 times by &a6b0, &a6ef"
       ],
@@ -70675,6 +70708,7 @@
       "labels": [
         "fn_adval"
       ],
+      "comment_inline": "Evaluate the integer argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -70687,6 +70721,7 @@
         166,
         42
       ],
+      "comment_inline": "X = the channel / buffer number",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa",
@@ -70699,6 +70734,7 @@
         169,
         128
       ],
+      "comment_inline": "OSBYTE &80: read ADC / buffer status",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_adc_or_get_buffer_status"
@@ -70722,6 +70758,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "result low byte (X)",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -70732,6 +70769,7 @@
         234,
         174
       ],
+      "comment_inline": "Return as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -71030,6 +71068,7 @@
       "labels": [
         "fn_vpos"
       ],
+      "comment_inline": "OSBYTE &86: read the cursor position",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_text_cursor_pos"
@@ -71064,6 +71103,7 @@
         216,
         174
       ],
+      "comment_inline": "Return the row (Y) as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caed8",
@@ -71080,6 +71120,7 @@
       "labels": [
         "loop_cab7f"
       ],
+      "comment_inline": "Test the sign of FWA",
       "xref_summaries": [
         "&ab7f referenced 1 time by &ab8d"
       ],
@@ -71098,6 +71139,7 @@
         240,
         30
       ],
+      "comment_inline": "zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caba2",
@@ -71110,6 +71152,7 @@
         16,
         26
       ],
+      "comment_inline": "positive",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caba0",
@@ -71122,6 +71165,7 @@
         48,
         21
       ],
+      "comment_inline": "negative",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cab9d",
@@ -72935,6 +72979,7 @@
       "labels": [
         "fn_inkey"
       ],
+      "comment_inline": "Read a key within the time limit",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_key_timed",
@@ -72947,6 +72992,7 @@
         192,
         0
       ],
+      "comment_inline": "timed out?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#0"
@@ -72957,6 +73003,7 @@
         208,
         16
       ],
+      "comment_inline": "no key: return -1 (TRUE)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "fn_true",
@@ -72968,6 +73015,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "X = the key code",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -72978,6 +73026,7 @@
         234,
         174
       ],
+      "comment_inline": "Return the key code as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -74177,6 +74226,7 @@
       "labels": [
         "iwa_abs"
       ],
+      "comment_inline": "Test the sign of IWA (top byte)",
       "xref_summaries": [
         "&ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80"
       ],
@@ -74198,6 +74248,7 @@
         48,
         30
       ],
+      "comment_inline": "Negative: negate it",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "iwa_negate",
@@ -74210,6 +74261,7 @@
         16,
         51
       ],
+      "comment_inline": "Positive: leave it",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cadaa",
@@ -74226,6 +74278,7 @@
       "labels": [
         "cad77"
       ],
+      "comment_inline": "ABS of a real: get the sign",
       "xref_summaries": [
         "&ad77 referenced 1 time by &ad6f"
       ],
@@ -74244,6 +74297,7 @@
         16,
         13
       ],
+      "comment_inline": "positive/zero: done",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cad89",
@@ -74256,6 +74310,7 @@
         48,
         5
       ],
+      "comment_inline": "negative: clear the sign",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cad83",
@@ -74272,6 +74327,7 @@
       "labels": [
         "fwa_negate"
       ],
+      "comment_inline": "Is FWA zero?",
       "xref_summaries": [
         "&ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91"
       ],
@@ -74294,6 +74350,7 @@
         240,
         6
       ],
+      "comment_inline": "zero: nothing to negate",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cad89",
@@ -74309,6 +74366,7 @@
       "labels": [
         "cad83"
       ],
+      "comment_inline": "Toggle the sign bit...",
       "xref_summaries": [
         "&ad83 referenced 1 time by &ad7c"
       ],
@@ -74327,6 +74385,7 @@
         73,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&80"
@@ -74337,6 +74396,7 @@
         133,
         46
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -74352,6 +74412,7 @@
       "labels": [
         "cad89"
       ],
+      "comment_inline": "real result type",
       "xref_summaries": [
         "&ad89 referenced 2 times by &ad7a, &ad81"
       ],
@@ -74368,6 +74429,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -74381,6 +74443,7 @@
       "labels": [
         "loop_cad8c"
       ],
+      "comment_inline": "Unary minus: evaluate the operand",
       "xref_summaries": [
         "&ad8c referenced 1 time by &adf8"
       ],
@@ -74402,6 +74465,7 @@
       "labels": [
         "sub_cad8f"
       ],
+      "comment_inline": "zero: leave it",
       "xref_summaries": [
         "&ad8f referenced 1 time by &ac70"
       ],
@@ -74420,6 +74484,7 @@
         48,
         235
       ],
+      "comment_inline": "real: negate FWA",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "fwa_negate",
@@ -76326,6 +76391,7 @@
       "labels": [
         "fn_page"
       ],
+      "comment_inline": "PAGE low byte is always 0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -76336,6 +76402,7 @@
         164,
         24
       ],
+      "comment_inline": "...high byte is the page number",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_page",
@@ -76349,6 +76416,7 @@
         234,
         174
       ],
+      "comment_inline": "Return PAGE as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -76365,6 +76433,7 @@
       "labels": [
         "loop_caec7"
       ],
+      "comment_inline": "syntax error (shared)",
       "xref_summaries": [
         "&aec7 referenced 1 time by &aee2"
       ],
@@ -76748,6 +76817,7 @@
       "labels": [
         "fn_lomem"
       ],
+      "comment_inline": "LOMEM low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_lomem",
@@ -76760,6 +76830,7 @@
         164,
         1
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_lomem_1",
@@ -76773,6 +76844,7 @@
         234,
         174
       ],
+      "comment_inline": "Return LOMEM as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -76802,9 +76874,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 44807,
@@ -77813,11 +77885,12 @@
       "labels": [
         "fn_erl"
       ],
+      "comment_inline": "ERL high byte",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0009",
+      "operand": "zp_erl_1",
       "target": 9,
-      "target_label": "l0009"
+      "target_label": "zp_erl_1"
     },
     {
       "addr": 44961,
@@ -77825,6 +77898,7 @@
         165,
         8
       ],
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_erl",
@@ -77838,6 +77912,7 @@
         234,
         174
       ],
+      "comment_inline": "Return ERL as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -77853,6 +77928,7 @@
       "labels": [
         "fn_err"
       ],
+      "comment_inline": "Read the error number...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -77863,11 +77939,12 @@
         177,
         253
       ],
+      "comment_inline": "...from the error block (&FD)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l00fd),y",
+      "operand": "(zp_error_ptr),y",
       "target": 253,
-      "target_label": "l00fd"
+      "target_label": "zp_error_ptr"
     },
     {
       "addr": 44970,
@@ -77876,6 +77953,7 @@
         234,
         174
       ],
+      "comment_inline": "Return ERR as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -84450,9 +84528,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0009",
+      "operand": "zp_erl_1",
       "target": 9,
-      "target_label": "l0009"
+      "target_label": "zp_erl_1"
     },
     {
       "addr": 46027,
@@ -84671,9 +84749,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0009",
+      "operand": "zp_erl_1",
       "target": 9,
-      "target_label": "l0009"
+      "target_label": "zp_erl_1"
     },
     {
       "addr": 46065,
@@ -84825,9 +84903,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l00fd),y",
+      "operand": "(zp_error_ptr),y",
       "target": 253,
-      "target_label": "l00fd"
+      "target_label": "zp_error_ptr"
     },
     {
       "addr": 46089,
@@ -98085,9 +98163,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 48322,
@@ -98940,9 +99018,9 @@
       "comment_inline": "HIMEM high",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0007",
+      "operand": "zp_himem_1",
       "target": 7,
-      "target_label": "l0007"
+      "target_label": "zp_himem_1"
     },
     {
       "addr": 48452,
@@ -103427,9 +103505,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l00fd),y",
+      "operand": "(zp_error_ptr),y",
       "target": 253,
-      "target_label": "l00fd"
+      "target_label": "zp_error_ptr"
     },
     {
       "addr": 49134,

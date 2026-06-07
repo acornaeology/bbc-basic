@@ -197,7 +197,9 @@ d.label(0x0003, 'zp_vartop_1')
 d.label(0x0004, 'zp_stack_ptr')       # Top of the BASIC value stack
 d.label(0x0005, 'zp_stack_ptr_1')
 d.label(0x0006, 'zp_himem')           # Start of screen / top of BASIC
+d.label(0x0007, 'zp_himem_1')
 d.label(0x0008, 'zp_erl')             # Line number that last errored
+d.label(0x0009, 'zp_erl_1')
 d.label(0x000a, 'zp_text_ptr_off')    # Offset into current text line
 d.label(0x000b, 'zp_text_ptr')        # Start of current text line
 d.label(0x000c, 'zp_text_ptr_1')
@@ -264,6 +266,7 @@ d.label(0x0042, 'zp_fwb_rnd')
 d.label(0x0043, 'zp_fp_temp')         # Floating point temporary area
 d.label(0x004b, 'zp_fp_ptr')          # Pointer to a packed fp variable
 d.label(0x004c, 'zp_fp_ptr_1')        # (high byte; used by the FP routines)
+d.label(0x00fd, 'zp_error_ptr')       # Pointer to the current error block
 
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
@@ -2717,6 +2720,106 @@ d.comment(0xbfdc, 'Advance and fetch the next character', align=Align.INLINE)
 d.comment(0xbfdf, 'Loop while bit 7 is clear', align=Align.INLINE)
 d.comment(0xbfe1, 'Resume at the terminator (the next instruction)',
           align=Align.INLINE)
+
+# ======================================================================
+# DEPTH 1 routines
+# ======================================================================
+
+# fwa_swap_var (&A4D6): exchange FWA with the fp variable
+d.comment(0xa4d6, 'FWB = the fp variable', align=Align.INLINE)
+d.comment(0xa4d9, 'Store FWA into the variable; FWA = old variable', align=Align.INLINE)
+# fwa_add_var (&A500): FWA = FWA + fp variable
+d.comment(0xa500, 'FWB = the fp variable', align=Align.INLINE)
+# fwa_compare_var (&A5FF): compare FWA with the fp variable
+d.comment(0xa5ff, 'Shift the comparison result, then normalise', align=Align.INLINE)
+d.comment(0xa602, 'normalise the difference', align=Align.INLINE)
+d.comment(0xa605, 'Return', align=Align.INLINE)
+# fn_lomem (&AEFC): =LOMEM
+d.comment(0xaefc, 'LOMEM low byte', align=Align.INLINE)
+d.comment(0xaefe, 'high byte', align=Align.INLINE)
+d.comment(0xaf00, 'Return LOMEM as an integer', align=Align.INLINE)
+# fn_erl (&AF9F): ERL
+d.comment(0xaf9f, 'ERL high byte', align=Align.INLINE)
+d.comment(0xafa1, 'low byte', align=Align.INLINE)
+d.comment(0xafa3, 'Return ERL as an integer', align=Align.INLINE)
+# fn_err (&AFA6): ERR
+d.comment(0xafa6, 'Read the error number...', align=Align.INLINE)
+d.comment(0xafa8, '...from the error block (&FD)', align=Align.INLINE)
+d.comment(0xafaa, 'Return ERR as an integer', align=Align.INLINE)
+# skip_spaces_expect_comma (&8AAE)
+d.comment(0x8aae, 'Skip spaces at PtrB', align=Align.INLINE)
+d.comment(0x8ab1, 'Require a comma', align=Align.INLINE)
+d.comment(0x8ab3, 'Missing: "Missing ," error', align=Align.INLINE)
+d.comment(0x8ab5, 'Return', align=Align.INLINE)
+# stmt_page (&9283): PAGE = value
+d.comment(0x9283, 'Step past "=", evaluate an integer', align=Align.INLINE)
+d.comment(0x9286, 'PAGE is a page number (the high byte)', align=Align.INLINE)
+d.comment(0x9288, '(store)', align=Align.INLINE)
+d.comment(0x928a, 'Back to execution', align=Align.INLINE)
+# stmt_draw (&93E8): DRAW = PLOT 5
+d.comment(0x93e8, 'DRAW is PLOT 5 (draw a line)', align=Align.INLINE)
+d.comment(0x93ea, 'Save the plot mode', align=Align.INLINE)
+d.comment(0x93eb, 'Evaluate the X coordinate', align=Align.INLINE)
+d.comment(0x93ee, 'evaluate Y and plot', align=Align.INLINE)
+# fn_page (&AEC0): =PAGE
+d.comment(0xaec0, 'PAGE low byte is always 0...', align=Align.INLINE)
+d.comment(0xaec2, '...high byte is the page number', align=Align.INLINE)
+d.comment(0xaec4, 'Return PAGE as an integer', align=Align.INLINE)
+d.comment(0xaec7, 'syntax error (shared)', align=Align.INLINE)
+# fn_inkey (&ACAD): INKEY
+d.comment(0xacad, 'Read a key within the time limit', align=Align.INLINE)
+d.comment(0xacb0, 'timed out?', align=Align.INLINE)
+d.comment(0xacb2, 'no key: return -1 (TRUE)', align=Align.INLINE)
+d.comment(0xacb4, 'X = the key code', align=Align.INLINE)
+d.comment(0xacb5, 'Return the key code as an integer', align=Align.INLINE)
+# iwa_abs (&AD71): make IWA positive
+d.comment(0xad71, 'Test the sign of IWA (top byte)', align=Align.INLINE)
+d.comment(0xad73, 'Negative: negate it', align=Align.INLINE)
+d.comment(0xad75, 'Positive: leave it', align=Align.INLINE)
+d.comment(0xad77, 'ABS of a real: get the sign', align=Align.INLINE)
+d.comment(0xad7a, 'positive/zero: done', align=Align.INLINE)
+d.comment(0xad7c, 'negative: clear the sign', align=Align.INLINE)
+# fwa_rdiv_var (&A6AD): FWA = fp var / FWA
+d.comment(0xa6ad, 'Is FWA (the divisor) zero?', align=Align.INLINE)
+d.comment(0xa6b0, 'yes: Division by zero', align=Align.INLINE)
+d.comment(0xa6b2, 'FWB = FWA (the divisor)', align=Align.INLINE)
+d.comment(0xa6b5, 'FWA = the fp variable (the dividend)', align=Align.INLINE)
+d.comment(0xa6b8, 'non-zero: do the division', align=Align.INLINE)
+d.comment(0xa6ba, 'dividend zero: result is zero', align=Align.INLINE)
+d.comment(0xa6bb, 'Division by zero error', align=Align.INLINE)
+# stmt_himem (&925D): HIMEM = value
+d.comment(0x925d, 'Step past "=", evaluate an integer', align=Align.INLINE)
+d.comment(0x9260, 'Set HIMEM and the stack: low', align=Align.INLINE)
+d.comment(0x9262, 'HIMEM low', align=Align.INLINE)
+d.comment(0x9264, 'stack pointer low', align=Align.INLINE)
+d.comment(0x9266, 'high', align=Align.INLINE)
+d.comment(0x9268, 'HIMEM high', align=Align.INLINE)
+d.comment(0x926a, 'stack pointer high', align=Align.INLINE)
+d.comment(0x926c, 'Back to execution', align=Align.INLINE)
+# fwa_negate (&AD7E): FWA = -FWA
+d.comment(0xad7e, 'Is FWA zero?', align=Align.INLINE)
+d.comment(0xad81, 'zero: nothing to negate', align=Align.INLINE)
+d.comment(0xad83, 'Toggle the sign bit...', align=Align.INLINE)
+d.comment(0xad85, '...', align=Align.INLINE)
+d.comment(0xad87, '(store)', align=Align.INLINE)
+d.comment(0xad89, 'real result type', align=Align.INLINE)
+d.comment(0xad8b, 'Return', align=Align.INLINE)
+d.comment(0xad8c, 'Unary minus: evaluate the operand', align=Align.INLINE)
+d.comment(0xad8f, 'zero: leave it', align=Align.INLINE)
+d.comment(0xad91, 'real: negate FWA', align=Align.INLINE)
+# fn_adval (&AB33): ADVAL
+d.comment(0xab33, 'Evaluate the integer argument', align=Align.INLINE)
+d.comment(0xab36, 'X = the channel / buffer number', align=Align.INLINE)
+d.comment(0xab38, 'OSBYTE &80: read ADC / buffer status', align=Align.INLINE)
+d.comment(0xab3d, 'result low byte (X)', align=Align.INLINE)
+d.comment(0xab3e, 'Return as an integer', align=Align.INLINE)
+# fn_vpos (&AB76): VPOS
+d.comment(0xab76, 'OSBYTE &86: read the cursor position', align=Align.INLINE)
+d.comment(0xab7c, 'Return the row (Y) as an integer', align=Align.INLINE)
+d.comment(0xab7f, 'Test the sign of FWA', align=Align.INLINE)
+d.comment(0xab82, 'zero', align=Align.INLINE)
+d.comment(0xab84, 'positive', align=Align.INLINE)
+d.comment(0xab86, 'negative', align=Align.INLINE)
 
 ir = d.disassemble()
 output = str(

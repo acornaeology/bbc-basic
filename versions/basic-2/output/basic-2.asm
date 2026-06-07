@@ -31,11 +31,11 @@ zp_stack_ptr_1   = &05
 ; &05 referenced 21 times by &8c6b, &9104, &91e7, &926a, &93b4, &93d5, &9543, &9ae3, &9c84, &9e60, &ac05, &ad26, &b248, &bd44, &bd87, &bd8d, &bde7, &be08, &be2b, &be32, &be34
 zp_himem         = &06
 ; &06 referenced 8 times by &8028, &8fcb, &9262, &93b0, &93cf, &af03, &bcbc, &bd3e
-l0007            = &07
+zp_himem_1       = &07
 ; &07 referenced 8 times by &802a, &8fcd, &9268, &93b6, &93d3, &af05, &bcc0, &bd42
 zp_erl           = &08
 ; &08 referenced 3 times by &afa1, &b3c7, &b3f4
-l0009            = &09
+zp_erl_1         = &09
 ; &09 referenced 3 times by &af9f, &b3c9, &b3ef
 zp_text_ptr_off  = &0a
 ; &0a referenced 92 times by &8512, &8517, &8577, &857e, &85d3, &85d5, &85d7, &8617, &8715, &874e, &8780, &8795, &87cc, &8829, &883c, &883e, &8a97, &8a99, &8b28, &8b60, &8b7f, &8b96, &8ba3, &8ba5, &8be2, &8d2b, &8d78, &8da1, &8df6, &8e6d, &8e78, &8f8b, &8f8d, &905f, &906d, &90df, &9149, &916d, &92b7, &92c0, &930c, &9347, &943e, &95d1, &97dd, &97df, &9801, &980f, &9857, &9879, &98b9, &98ce, &98e1, &98f1, &98fe, &9b25, &b13d, &b1b5, &b1f7, &b200, &b22d, &b25d, &b41f, &b58a, &b5cb, &b5d6, &b60d, &b637, &b65c, &b75a, &b81f, &b875, &b8f9, &b91c, &b927, &b942, &b95a, &b96a, &b978, &b97d, &b995, &b9a7, &b9ca, &b9cf, &b9d6, &b9eb, &ba4f, &ba77, &ba8c, &baf1, &bb52, &bfa9
@@ -177,7 +177,7 @@ l004e            = &4e
 ; &4e referenced 18 times by &9efd, &9f40, &9fa7, &9fe6, &9feb, &a899, &a8a8, &a8ae, &a8c4, &a8c8, &b2af, &b307, &ba58, &ba66, &ba7c, &ba85, &ba93, &bacb
 l00c9            = &c9
 ; &c9 referenced 1 time by &aa59
-l00fd            = &fd
+zp_error_ptr     = &fd
 ; &fd referenced 3 times by &afa8, &b407, &bfec
 l00ff            = &ff
 ; &ff referenced 1 time by &987b
@@ -416,7 +416,7 @@ oscli            = &fff7
     lda #osbyte_read_himem                                            ; 8023: a9 84       ..    
     jsr osbyte                                                        ; 8025: 20 f4 ff     ..      ; Read top of available user RAM (HIMEM)
     stx zp_himem                                                      ; 8028: 86 06       ..       ; X and Y contain the address of HIMEM (low, high)
-    sty l0007                                                         ; 802a: 84 07       ..    
+    sty zp_himem_1                                                    ; 802a: 84 07       ..    
     lda #osbyte_read_oshwm                                            ; 802c: a9 83       ..    
     jsr osbyte                                                        ; 802e: 20 f4 ff     ..      ; Read top of operating system RAM address (OSHWM)
     sty zp_page                                                       ; 8031: 84 18       ..       ; X and Y contain the address of OSHWM (low, high)
@@ -2028,10 +2028,10 @@ l848a = sub_c847b+15
 ; Used by statements that take a comma-separated argument list.
 ; &8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c
 .skip_spaces_expect_comma
-    jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,    
-    bne c8aa2                                                         ; 8ab3: d0 ed       ..    
-    rts                                                               ; 8ab5: 60          `     
+    jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..      ; Skip spaces at PtrB
+    cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,       ; Require a comma
+    bne c8aa2                                                         ; 8ab3: d0 ed       ..       ; Missing: "Missing ," error
+    rts                                                               ; 8ab5: 60          `        ; Return
 ; ***************************************************************************************
 ; OLD
 ;
@@ -2966,7 +2966,7 @@ l848a = sub_c847b+15
     adc #0                                                            ; 8fc7: 69 00       i.       ; - carry
     sta zp_fwb_ovf                                                    ; 8fc9: 85 3c       .<       ; (store)
     cpx zp_himem                                                      ; 8fcb: e4 06       ..       ; Has the table reached HIMEM?
-    sbc l0007                                                         ; 8fcd: e5 07       ..       ; ...
+    sbc zp_himem_1                                                    ; 8fcd: e5 07       ..       ; ...
     bcs c8fd6                                                         ; 8fcf: b0 05       ..       ; yes: no room for the table
     jsr advance_to_next_line                                          ; 8fd1: 20 9f 90     ..      ; Advance to the next program line
     bcc loop_c8fb1                                                    ; 8fd4: 90 db       ..       ; loop over all lines
@@ -3389,14 +3389,14 @@ l848a = sub_c847b+15
 ;
 ; Set HIMEM, the top of memory available to BASIC. HIMEM = address.
 .stmt_himem
-    jsr sub_c92eb                                                     ; 925d: 20 eb 92     ..   
-    lda zp_iwa                                                        ; 9260: a5 2a       .*    
-    sta zp_himem                                                      ; 9262: 85 06       ..    
-    sta zp_stack_ptr                                                  ; 9264: 85 04       ..    
-    lda zp_iwa_1                                                      ; 9266: a5 2b       .+    
-    sta l0007                                                         ; 9268: 85 07       ..    
-    sta zp_stack_ptr_1                                                ; 926a: 85 05       ..    
-    jmp statement_loop                                                ; 926c: 4c 9b 8b    L..   
+    jsr sub_c92eb                                                     ; 925d: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    lda zp_iwa                                                        ; 9260: a5 2a       .*       ; Set HIMEM and the stack: low
+    sta zp_himem                                                      ; 9262: 85 06       ..       ; HIMEM low
+    sta zp_stack_ptr                                                  ; 9264: 85 04       ..       ; stack pointer low
+    lda zp_iwa_1                                                      ; 9266: a5 2b       .+       ; high
+    sta zp_himem_1                                                    ; 9268: 85 07       ..       ; HIMEM high
+    sta zp_stack_ptr_1                                                ; 926a: 85 05       ..       ; stack pointer high
+    jmp statement_loop                                                ; 926c: 4c 9b 8b    L..      ; Back to execution
 ; ***************************************************************************************
 ; LOMEM=
 ;
@@ -3416,12 +3416,12 @@ l848a = sub_c847b+15
 ;
 ; Set PAGE, the start of the BASIC program. PAGE = address.
 .stmt_page
-    jsr sub_c92eb                                                     ; 9283: 20 eb 92     ..   
-    lda zp_iwa_1                                                      ; 9286: a5 2b       .+    
-    sta zp_page                                                       ; 9288: 85 18       ..    
+    jsr sub_c92eb                                                     ; 9283: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    lda zp_iwa_1                                                      ; 9286: a5 2b       .+       ; PAGE is a page number (the high byte)
+    sta zp_page                                                       ; 9288: 85 18       ..       ; (store)
 ; &928a referenced 2 times by &9281, &9293
 .c928a
-    jmp statement_loop                                                ; 928a: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 928a: 4c 9b 8b    L..      ; Back to execution
 ; ***************************************************************************************
 ; CLEAR
 ;
@@ -3653,7 +3653,7 @@ l848a = sub_c847b+15
     cmp zp_himem                                                      ; 93b0: c5 06       ..    
     bne c9372                                                         ; 93b2: d0 be       ..    
     lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..    
-    cmp l0007                                                         ; 93b6: c5 07       ..    
+    cmp zp_himem_1                                                    ; 93b6: c5 07       ..    
     bne c9372                                                         ; 93b8: d0 b8       ..    
     ldx zp_iwa                                                        ; 93ba: a6 2a       .*    
     lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..    
@@ -3668,7 +3668,7 @@ l848a = sub_c847b+15
     bcc c9372                                                         ; 93cd: 90 a3       ..    
     stx zp_himem                                                      ; 93cf: 86 06       ..    
     stx zp_stack_ptr                                                  ; 93d1: 86 04       ..    
-    sty l0007                                                         ; 93d3: 84 07       ..    
+    sty zp_himem_1                                                    ; 93d3: 84 07       ..    
     sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..    
 ; &93d7 referenced 2 times by &93a8, &93ac
 .c93d7
@@ -3691,12 +3691,12 @@ l848a = sub_c847b+15
 ;
 ; Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y.
 .stmt_draw
-    lda #5                                                            ; 93e8: a9 05       ..    
+    lda #5                                                            ; 93e8: a9 05       ..       ; DRAW is PLOT 5 (draw a line)
 ; &93ea referenced 1 time by &93e6
 .c93ea
-    pha                                                               ; 93ea: 48          H     
-    jsr eval_expr                                                     ; 93eb: 20 1d 9b     ..   
-    jmp c93fd                                                         ; 93ee: 4c fd 93    L..   
+    pha                                                               ; 93ea: 48          H        ; Save the plot mode
+    jsr eval_expr                                                     ; 93eb: 20 1d 9b     ..      ; Evaluate the X coordinate
+    jmp c93fd                                                         ; 93ee: 4c fd 93    L..      ; evaluate Y and plot
 ; ***************************************************************************************
 ; PLOT
 ;
@@ -6832,8 +6832,8 @@ l848a = sub_c847b+15
 ; Exchange the FP accumulator with the fp variable operand.
 ; &a4d6 referenced 1 time by &a6d5
 .fwa_swap_var
-    jsr fwb_unpack_var                                                ; a4d6: 20 4e a3     N.   
-    jsr fwa_pack_var                                                  ; a4d9: 20 8d a3     ..   
+    jsr fwb_unpack_var                                                ; a4d6: 20 4e a3     N.      ; FWB = the fp variable
+    jsr fwa_pack_var                                                  ; a4d9: 20 8d a3     ..      ; Store FWA into the variable; FWA = old variable
 ; ***************************************************************************************
 ; FWA = FWB
 ;
@@ -6874,7 +6874,7 @@ l848a = sub_c847b+15
 ; Add the fp variable operand to FWA (normalised, rounded).
 ; &a500 referenced 10 times by &9c9e, &a7dd, &a848, &a863, &a8cc, &a92a, &a930, &aa1d, &aa32, &b774
 .fwa_add_var
-    jsr fwb_unpack_var                                                ; a500: 20 4e a3     N.   
+    jsr fwb_unpack_var                                                ; a500: 20 4e a3     N.      ; FWB = the fp variable
     beq return_26                                                     ; a503: f0 f7       ..       ; Adding zero leaves FWA unchanged
 ; ***************************************************************************************
 ; FWA = FWA + FWB
@@ -7051,11 +7051,11 @@ l848a = sub_c847b+15
 ;
 ; Test the fp variable operand against FWA.
 .fwa_compare_var
-    rol l3185,x                                                       ; a5ff: 3e 85 31    >.1   
-    jmp fwa_normalise                                                 ; a602: 4c 03 a3    L..   
+    rol l3185,x                                                       ; a5ff: 3e 85 31    >.1      ; Shift the comparison result, then normalise
+    jmp fwa_normalise                                                 ; a602: 4c 03 a3    L..      ; normalise the difference
 ; &a605 referenced 1 time by &a609
 .return_27
-    rts                                                               ; a605: 60          `     
+    rts                                                               ; a605: 60          `        ; Return
 ; ***************************************************************************************
 ; FWA = FWA * fp var (raw)
 ;
@@ -7202,15 +7202,15 @@ l848a = sub_c847b+15
 ; Reverse divide: operand divided by FWA (normalised, rounded).
 ; &a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8
 .fwa_rdiv_var
-    jsr fwa_sign                                                      ; a6ad: 20 da a1     ..   
-    beq ca6bb                                                         ; a6b0: f0 09       ..    
-    jsr fwb_copy_from_fwa                                             ; a6b2: 20 1e a2     ..   
-    jsr fwa_unpack_var                                                ; a6b5: 20 b5 a3     ..   
-    bne ca6f1                                                         ; a6b8: d0 37       .7    
-    rts                                                               ; a6ba: 60          `     
+    jsr fwa_sign                                                      ; a6ad: 20 da a1     ..      ; Is FWA (the divisor) zero?
+    beq ca6bb                                                         ; a6b0: f0 09       ..       ; yes: Division by zero
+    jsr fwb_copy_from_fwa                                             ; a6b2: 20 1e a2     ..      ; FWB = FWA (the divisor)
+    jsr fwa_unpack_var                                                ; a6b5: 20 b5 a3     ..      ; FWA = the fp variable (the dividend)
+    bne ca6f1                                                         ; a6b8: d0 37       .7       ; non-zero: do the division
+    rts                                                               ; a6ba: 60          `        ; dividend zero: result is zero
 ; &a6bb referenced 2 times by &a6b0, &a6ef
 .ca6bb
-    jmp c99a7                                                         ; a6bb: 4c a7 99    L..   
+    jmp c99a7                                                         ; a6bb: 4c a7 99    L..      ; Division by zero error
 ; ***************************************************************************************
 ; TAN
 ;
@@ -7830,12 +7830,12 @@ l848a = sub_c847b+15
 ;
 ; Read an analogue (A/D) channel or a buffer status. ADVAL numeric.
 .fn_adval
-    jsr sub_c92e3                                                     ; ab33: 20 e3 92     ..   
-    ldx zp_iwa                                                        ; ab36: a6 2a       .*    
-    lda #osbyte_read_adc_or_get_buffer_status                         ; ab38: a9 80       ..    
+    jsr sub_c92e3                                                     ; ab33: 20 e3 92     ..      ; Evaluate the integer argument
+    ldx zp_iwa                                                        ; ab36: a6 2a       .*       ; X = the channel / buffer number
+    lda #osbyte_read_adc_or_get_buffer_status                         ; ab38: a9 80       ..       ; OSBYTE &80: read ADC / buffer status
     jsr osbyte                                                        ; ab3a: 20 f4 ff     ..      ; Read ADC channel X or buffer status
-    txa                                                               ; ab3d: 8a          .     
-    jmp iwa_from_ya                                                   ; ab3e: 4c ea ae    L..   
+    txa                                                               ; ab3d: 8a          .        ; result low byte (X)
+    jmp iwa_from_ya                                                   ; ab3e: 4c ea ae    L..      ; Return as an integer
 ; ***************************************************************************************
 ; POINT
 ;
@@ -7875,16 +7875,16 @@ l848a = sub_c847b+15
 ;
 ; Vertical text-cursor position in the window. VPOS.
 .fn_vpos
-    lda #osbyte_read_text_cursor_pos                                  ; ab76: a9 86       ..    
+    lda #osbyte_read_text_cursor_pos                                  ; ab76: a9 86       ..       ; OSBYTE &86: read the cursor position
     jsr osbyte                                                        ; ab78: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
     tya                                                               ; ab7b: 98          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
-    jmp caed8                                                         ; ab7c: 4c d8 ae    L..   
+    jmp caed8                                                         ; ab7c: 4c d8 ae    L..      ; Return the row (Y) as an integer
 ; &ab7f referenced 1 time by &ab8d
 .loop_cab7f
-    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..   
-    beq caba2                                                         ; ab82: f0 1e       ..    
-    bpl caba0                                                         ; ab84: 10 1a       ..    
-    bmi cab9d                                                         ; ab86: 30 15       0.    
+    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Test the sign of FWA
+    beq caba2                                                         ; ab82: f0 1e       ..       ; zero
+    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive
+    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative
 ; ***************************************************************************************
 ; SGN
 ;
@@ -8127,11 +8127,11 @@ l848a = sub_c847b+15
 ;
 ; Read a key within a time limit, test a key, or read the machine ID. INKEY numeric.
 .fn_inkey
-    jsr read_key_timed                                                ; acad: 20 ad af     ..   
-    cpy #0                                                            ; acb0: c0 00       ..    
-    bne fn_true                                                       ; acb2: d0 10       ..    
-    txa                                                               ; acb4: 8a          .     
-    jmp iwa_from_ya                                                   ; acb5: 4c ea ae    L..   
+    jsr read_key_timed                                                ; acad: 20 ad af     ..      ; Read a key within the time limit
+    cpy #0                                                            ; acb0: c0 00       ..       ; timed out?
+    bne fn_true                                                       ; acb2: d0 10       ..       ; no key: return -1 (TRUE)
+    txa                                                               ; acb4: 8a          .        ; X = the key code
+    jmp iwa_from_ya                                                   ; acb5: 4c ea ae    L..      ; Return the key code as an integer
 ; ***************************************************************************************
 ; EOF
 ;
@@ -8287,38 +8287,38 @@ l848a = sub_c847b+15
 ;     X: preserved
 ; &ad71 referenced 4 times by &99c5, &99d8, &9d70, &9d80
 .iwa_abs
-    bit zp_iwa_3                                                      ; ad71: 24 2d       $-    
-    bmi iwa_negate                                                    ; ad73: 30 1e       0.    
-    bpl cadaa                                                         ; ad75: 10 33       .3    
+    bit zp_iwa_3                                                      ; ad71: 24 2d       $-       ; Test the sign of IWA (top byte)
+    bmi iwa_negate                                                    ; ad73: 30 1e       0.       ; Negative: negate it
+    bpl cadaa                                                         ; ad75: 10 33       .3       ; Positive: leave it
 ; &ad77 referenced 1 time by &ad6f
 .cad77
-    jsr fwa_sign                                                      ; ad77: 20 da a1     ..   
-    bpl cad89                                                         ; ad7a: 10 0d       ..    
-    bmi cad83                                                         ; ad7c: 30 05       0.    
+    jsr fwa_sign                                                      ; ad77: 20 da a1     ..      ; ABS of a real: get the sign
+    bpl cad89                                                         ; ad7a: 10 0d       ..       ; positive/zero: done
+    bmi cad83                                                         ; ad7c: 30 05       0.       ; negative: clear the sign
 ; ***************************************************************************************
 ; FWA = -FWA
 ;
 ; Negate the floating-point accumulator.
 ; &ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91
 .fwa_negate
-    jsr fwa_sign                                                      ; ad7e: 20 da a1     ..   
-    beq cad89                                                         ; ad81: f0 06       ..    
+    jsr fwa_sign                                                      ; ad7e: 20 da a1     ..      ; Is FWA zero?
+    beq cad89                                                         ; ad81: f0 06       ..       ; zero: nothing to negate
 ; &ad83 referenced 1 time by &ad7c
 .cad83
-    lda zp_fwa_sign                                                   ; ad83: a5 2e       ..    
-    eor #&80                                                          ; ad85: 49 80       I.    
-    sta zp_fwa_sign                                                   ; ad87: 85 2e       ..    
+    lda zp_fwa_sign                                                   ; ad83: a5 2e       ..       ; Toggle the sign bit...
+    eor #&80                                                          ; ad85: 49 80       I.       ; ...
+    sta zp_fwa_sign                                                   ; ad87: 85 2e       ..       ; (store)
 ; &ad89 referenced 2 times by &ad7a, &ad81
 .cad89
-    lda #&ff                                                          ; ad89: a9 ff       ..    
-    rts                                                               ; ad8b: 60          `     
+    lda #&ff                                                          ; ad89: a9 ff       ..       ; real result type
+    rts                                                               ; ad8b: 60          `        ; Return
 ; &ad8c referenced 1 time by &adf8
 .loop_cad8c
-    jsr sub_cae02                                                     ; ad8c: 20 02 ae     ..   
+    jsr sub_cae02                                                     ; ad8c: 20 02 ae     ..      ; Unary minus: evaluate the operand
 ; &ad8f referenced 1 time by &ac70
 .sub_cad8f
-    beq cad67                                                         ; ad8f: f0 d6       ..    
-    bmi fwa_negate                                                    ; ad91: 30 eb       0.    
+    beq cad67                                                         ; ad8f: f0 d6       ..       ; zero: leave it
+    bmi fwa_negate                                                    ; ad91: 30 eb       0.       ; real: negate FWA
 ; ***************************************************************************************
 ; Negate the integer accumulator
 ;
@@ -8548,12 +8548,12 @@ l848a = sub_c847b+15
 ;
 ; Read PAGE, the start of the BASIC program. PAGE.
 .fn_page
-    lda #0                                                            ; aec0: a9 00       ..    
-    ldy zp_page                                                       ; aec2: a4 18       ..    
-    jmp iwa_from_ya                                                   ; aec4: 4c ea ae    L..   
+    lda #0                                                            ; aec0: a9 00       ..       ; PAGE low byte is always 0...
+    ldy zp_page                                                       ; aec2: a4 18       ..       ; ...high byte is the page number
+    jmp iwa_from_ya                                                   ; aec4: 4c ea ae    L..      ; Return PAGE as an integer
 ; &aec7 referenced 1 time by &aee2
 .loop_caec7
-    jmp cae43                                                         ; aec7: 4c 43 ae    LC.   
+    jmp cae43                                                         ; aec7: 4c 43 ae    LC.      ; syntax error (shared)
 ; ***************************************************************************************
 ; FALSE
 ;
@@ -8621,16 +8621,16 @@ l848a = sub_c847b+15
 ;
 ; Read LOMEM, the start of variable storage. LOMEM.
 .fn_lomem
-    lda zp_lomem                                                      ; aefc: a5 00       ..    
-    ldy zp_lomem_1                                                    ; aefe: a4 01       ..    
-    jmp iwa_from_ya                                                   ; af00: 4c ea ae    L..   
+    lda zp_lomem                                                      ; aefc: a5 00       ..       ; LOMEM low byte
+    ldy zp_lomem_1                                                    ; aefe: a4 01       ..       ; high byte
+    jmp iwa_from_ya                                                   ; af00: 4c ea ae    L..      ; Return LOMEM as an integer
 ; ***************************************************************************************
 ; =HIMEM
 ;
 ; Read HIMEM, the top of memory for BASIC. HIMEM.
 .fn_himem
     lda zp_himem                                                      ; af03: a5 06       ..    
-    ldy l0007                                                         ; af05: a4 07       ..    
+    ldy zp_himem_1                                                    ; af05: a4 07       ..    
     jmp iwa_from_ya                                                   ; af07: 4c ea ae    L..   
 ; &af0a referenced 1 time by &af4f
 .rnd_dispatch
@@ -8780,17 +8780,17 @@ l848a = sub_c847b+15
 ;
 ; Line number where the last error occurred. ERL.
 .fn_erl
-    ldy l0009                                                         ; af9f: a4 09       ..    
-    lda zp_erl                                                        ; afa1: a5 08       ..    
-    jmp iwa_from_ya                                                   ; afa3: 4c ea ae    L..   
+    ldy zp_erl_1                                                      ; af9f: a4 09       ..       ; ERL high byte
+    lda zp_erl                                                        ; afa1: a5 08       ..       ; low byte
+    jmp iwa_from_ya                                                   ; afa3: 4c ea ae    L..      ; Return ERL as an integer
 ; ***************************************************************************************
 ; ERR
 ;
 ; Error number of the last error. ERR.
 .fn_err
-    ldy #0                                                            ; afa6: a0 00       ..    
-    lda (l00fd),y                                                     ; afa8: b1 fd       ..    
-    jmp iwa_from_ya                                                   ; afaa: 4c ea ae    L..   
+    ldy #0                                                            ; afa6: a0 00       ..       ; Read the error number...
+    lda (zp_error_ptr),y                                              ; afa8: b1 fd       ..       ; ...from the error block (&FD)
+    jmp iwa_from_ya                                                   ; afaa: 4c ea ae    L..      ; Return ERR as an integer
 ; ***************************************************************************************
 ; Read a key within a time limit (INKEY)
 ;
@@ -9540,7 +9540,7 @@ l848a = sub_c847b+15
 .sub_cb3c5
     ldy #0                                                            ; b3c5: a0 00       ..    
     sty zp_erl                                                        ; b3c7: 84 08       ..    
-    sty l0009                                                         ; b3c9: 84 09       ..    
+    sty zp_erl_1                                                      ; b3c9: 84 09       ..    
     ldx zp_page                                                       ; b3cb: a6 18       ..    
     stx zp_general_1                                                  ; b3cd: 86 38       .8    
     sty zp_general                                                    ; b3cf: 84 37       .7    
@@ -9560,7 +9560,7 @@ l848a = sub_c847b+15
     jsr read_via_ptr_general                                          ; b3e8: 20 42 89     B.   
     ora #0                                                            ; b3eb: 09 00       ..    
     bmi return_33                                                     ; b3ed: 30 12       0.    
-    sta l0009                                                         ; b3ef: 85 09       ..    
+    sta zp_erl_1                                                      ; b3ef: 85 09       ..    
     jsr read_via_ptr_general                                          ; b3f1: 20 42 89     B.   
     sta zp_erl                                                        ; b3f4: 85 08       ..    
     jsr read_via_ptr_general                                          ; b3f6: 20 42 89     B.   
@@ -9576,7 +9576,7 @@ l848a = sub_c847b+15
 .brk_handler
     jsr sub_cb3c5                                                     ; b402: 20 c5 b3     ..   
     sty zp_trace_flag                                                 ; b405: 84 20       .     
-    lda (l00fd),y                                                     ; b407: b1 fd       ..    
+    lda (zp_error_ptr),y                                              ; b407: b1 fd       ..    
     bne cb413                                                         ; b409: d0 08       ..    
     lda #&33 ; '3'                                                    ; b40b: a9 33       .3    
     sta zp_error_vec                                                  ; b40d: 85 16       ..    
@@ -10996,7 +10996,7 @@ l848a = sub_c847b+15
     dey                                                               ; bcbb: 88          .     
     lda zp_himem                                                      ; bcbc: a5 06       ..    
     cmp zp_top                                                        ; bcbe: c5 12       ..    
-    lda l0007                                                         ; bcc0: a5 07       ..    
+    lda zp_himem_1                                                    ; bcc0: a5 07       ..    
     sbc zp_top_1                                                      ; bcc2: e5 13       ..    
     bcs cbcd6                                                         ; bcc4: b0 10       ..    
     jsr check_program                                                 ; bcc6: 20 6f be     o.   
@@ -11091,7 +11091,7 @@ l848a = sub_c847b+15
     sta zp_data_ptr_1                                                 ; bd3c: 85 1d       ..       ; (data pointer high)
     lda zp_himem                                                      ; bd3e: a5 06       ..       ; STACK = HIMEM: low
     sta zp_stack_ptr                                                  ; bd40: 85 04       ..       ; (store)
-    lda l0007                                                         ; bd42: a5 07       ..       ; HIMEM high
+    lda zp_himem_1                                                    ; bd42: a5 07       ..       ; HIMEM high
     sta zp_stack_ptr_1                                                ; bd44: 85 05       ..       ; (store)
     lda #0                                                            ; bd46: a9 00       ..       ; Clear the loop/subroutine levels:
     sta zp_repeat_level                                               ; bd48: 85 24       .$       ; REPEAT
@@ -11659,7 +11659,7 @@ l848a = sub_c847b+15
     ldy #1                                                            ; bfea: a0 01       ..    
 ; &bfec referenced 1 time by &bff4
 .loop_cbfec
-    lda (l00fd),y                                                     ; bfec: b1 fd       ..    
+    lda (zp_error_ptr),y                                              ; bfec: b1 fd       ..    
     beq cbff6                                                         ; bfee: f0 06       ..    
     jsr sub_cb50e                                                     ; bff0: 20 0e b5     ..   
     iny                                                               ; bff3: c8          .     
@@ -11767,11 +11767,11 @@ save pydis_start, pydis_end
 ;     fwa_clear:                   8
 ;     fwa_normalise:               8
 ;     inc_ptr_general:             8
-;     l0007:                       8
 ;     l05ff:                       8
 ;     sub_c92dd:                   8
 ;     sub_c9852:                   8
 ;     zp_himem:                    8
+;     zp_himem_1:                  8
 ;     zp_print_bytes:              8
 ;     c862b:                       7
 ;     c8b96:                       7
@@ -11927,8 +11927,6 @@ save pydis_start, pydis_end
 ;     fwa_div10:                   3
 ;     fwb_clear:                   3
 ;     iwa_negate:                  3
-;     l0009:                       3
-;     l00fd:                       3
 ;     l0401:                       3
 ;     return_12:                   3
 ;     return_19:                   3
@@ -11952,6 +11950,8 @@ save pydis_start, pydis_end
 ;     sub_cbd3a:                   3
 ;     unstack_int_to_general:      3
 ;     zp_erl:                      3
+;     zp_erl_1:                    3
+;     zp_error_ptr:                3
 ;     zp_listo:                    3
 ;     zp_rnd_seed_1:               3
 ;     zp_width:                    3
@@ -13554,8 +13554,6 @@ save pydis_start, pydis_end
 ;     cbfc3
 ;     cbfdc
 ;     cbff6
-;     l0007
-;     l0009
 ;     l0022
 ;     l003a
 ;     l0044
@@ -13568,7 +13566,6 @@ save pydis_start, pydis_end
 ;     l004d
 ;     l004e
 ;     l00c9
-;     l00fd
 ;     l00ff
 ;     l0100
 ;     l0106
