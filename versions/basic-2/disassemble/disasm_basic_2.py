@@ -282,6 +282,7 @@ d.label(0x0700, 'line_input_buf')     # Line input buffer
 # ----------------------------------------------------------------------
 d.subroutine(
     0x8071, 'keyword_table',
+    is_entry_point=False,   # data table: banner only, do not trace as code
     title='Keyword / tokeniser table',
     description="""Each entry is the keyword in ASCII, then a token byte (bit 7
 set), then a flag byte that drives tokenising:

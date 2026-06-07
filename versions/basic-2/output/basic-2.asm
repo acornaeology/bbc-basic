@@ -174,7 +174,7 @@ zp_fp_ptr_1      = &4c
 l004d            = &4d
 ; &4d referenced 28 times by &a897, &a8a0, &a8a4, &a8aa, &a8bc, &a8c0, &b2ad, &b2b1, &b303, &b622, &b645, &b647, &b651, &b9d8, &b9e1, &b9ee, &b9f4, &ba52, &ba54, &ba6a, &ba6d, &ba79, &ba88, &ba8f, &ba99, &baa7, &baaa, &baac
 l004e            = &4e
-; &4e referenced 19 times by &8071, &9efd, &9f40, &9fa7, &9fe6, &9feb, &a899, &a8a8, &a8ae, &a8c4, &a8c8, &b2af, &b307, &ba58, &ba66, &ba7c, &ba85, &ba93, &bacb
+; &4e referenced 18 times by &9efd, &9f40, &9fa7, &9fe6, &9feb, &a899, &a8a8, &a8ae, &a8c4, &a8c8, &b2af, &b307, &ba58, &ba66, &ba7c, &ba85, &ba93, &bacb
 l0061            = &61
 ; &61 referenced 1 time by &9083
 l0064            = &64
@@ -481,8 +481,8 @@ oscli            = &fff7
 ; Entries are ordered so that the first acceptable abbreviation of each keyword is
 ; unambiguous. The table runs to the action-address tables at action_table_lo.
 .keyword_table
-    eor (l004e,x)                                                     ; 8071: 41 4e       AN    
-    equb &44, &80, &00                                                ; 8073: 44 80 00    D..   
+    equs "AND"                                                        ; 8071: 41 4e 44    AND   
+    equb &80, &00                                                     ; 8074: 80 00       ..    
     equs "ABS"                                                        ; 8076: 41 42 53    ABS   
     equb &94, &00                                                     ; 8079: 94 00       ..    
     equs "ACS"                                                        ; 807b: 41 43 53    ACS   
@@ -11714,9 +11714,9 @@ save pydis_start, pydis_end
 ;     l004a:                      20
 ;     zp_fwa_ovf:                 20
 ;     zp_vartop_1:                20
-;     l004e:                      19
 ;     caed8:                      18
 ;     err_type_mismatch:          18
+;     l004e:                      18
 ;     fwa_sign:                   17
 ;     zp_fwb_rnd:                 17
 ;     eval_or_eor:                16
@@ -13971,11 +13971,11 @@ save pydis_start, pydis_end
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14424 bytes (88%)
-;     Data                     = 1960 bytes (12%)
+;     Code                     = 14422 bytes (88%)
+;     Data                     = 1962 bytes (12%)
 ;
-;     Number of instructions   = 7131
-;     Number of data bytes     = 945 bytes
+;     Number of instructions   = 7130
+;     Number of data bytes     = 944 bytes
 ;     Number of data words     = 0 bytes
-;     Number of string bytes   = 1015 bytes
-;     Number of strings        = 189
+;     Number of string bytes   = 1018 bytes
+;     Number of strings        = 190
