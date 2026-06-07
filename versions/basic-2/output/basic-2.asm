@@ -3274,7 +3274,7 @@ l848a = sub_c847b+15
     sta zp_fwb_m2                                                     ; 91bb: 85 3f       .?    
     lda #0                                                            ; 91bd: a9 00       ..    
     sta zp_fwb_m3                                                     ; 91bf: 85 40       .@    
-    jsr sub_c9236                                                     ; 91c1: 20 36 92     6.   
+    jsr imul16                                                        ; 91c1: 20 36 92     6.   
     ldy #0                                                            ; 91c4: a0 00       ..    
     lda zp_print_flag                                                 ; 91c6: a5 15       ..    
     sta (zp_vartop),y                                                 ; 91c8: 91 02       ..    
@@ -3352,38 +3352,42 @@ l848a = sub_c847b+15
     rts                                                               ; 9230: 60          `        ; IWA incremented
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
-    ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?    
-    jsr unstack_int_to_zp                                             ; 9233: 20 0d be     ..   
+    ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?       ; Unstack the multiplier (into &3F area)
+    jsr unstack_int_to_zp                                             ; 9233: 20 0d be     ..      ; ...
+; ***************************************************************************************
+; 16-bit integer multiply (IWA * FWB)
+;
+; Multiply IWA by the value in the FWB mantissa by shift-and-add; "Too big" on overflow.
 ; &9236 referenced 2 times by &91c1, &9736
-.sub_c9236
-    ldx #0                                                            ; 9236: a2 00       ..    
-    ldy #0                                                            ; 9238: a0 00       ..    
+.imul16
+    ldx #0                                                            ; 9236: a2 00       ..       ; Clear the running product (X:Y)
+    ldy #0                                                            ; 9238: a0 00       ..       ; ...
 ; &923a referenced 1 time by &9253
 .loop_c923a
-    lsr zp_fwb_m3                                                     ; 923a: 46 40       F@    
-    ror zp_fwb_m2                                                     ; 923c: 66 3f       f?    
-    bcc c924b                                                         ; 923e: 90 0b       ..    
-    clc                                                               ; 9240: 18          .     
-    tya                                                               ; 9241: 98          .     
-    adc zp_iwa                                                        ; 9242: 65 2a       e*    
-    tay                                                               ; 9244: a8          .     
-    txa                                                               ; 9245: 8a          .     
-    adc zp_iwa_1                                                      ; 9246: 65 2b       e+    
-    tax                                                               ; 9248: aa          .     
-    bcs c925a                                                         ; 9249: b0 0f       ..    
+    lsr zp_fwb_m3                                                     ; 923a: 46 40       F@       ; Shift the multiplier right: next bit into carry
+    ror zp_fwb_m2                                                     ; 923c: 66 3f       f?       ; ...
+    bcc c924b                                                         ; 923e: 90 0b       ..       ; bit clear: skip the add
+    clc                                                               ; 9240: 18          .        ; bit set: add the multiplicand (IWA)
+    tya                                                               ; 9241: 98          .        ; ...
+    adc zp_iwa                                                        ; 9242: 65 2a       e*       ; low
+    tay                                                               ; 9244: a8          .        ; (into Y)
+    txa                                                               ; 9245: 8a          .        ; ...
+    adc zp_iwa_1                                                      ; 9246: 65 2b       e+       ; high
+    tax                                                               ; 9248: aa          .        ; (into X)
+    bcs c925a                                                         ; 9249: b0 0f       ..       ; overflow: Too big
 ; &924b referenced 1 time by &923e
 .c924b
-    asl zp_iwa                                                        ; 924b: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 924d: 26 2b       &+    
-    lda zp_fwb_m2                                                     ; 924f: a5 3f       .?    
-    ora zp_fwb_m3                                                     ; 9251: 05 40       .@    
-    bne loop_c923a                                                    ; 9253: d0 e5       ..    
-    sty zp_iwa                                                        ; 9255: 84 2a       .*    
-    stx zp_iwa_1                                                      ; 9257: 86 2b       .+    
-    rts                                                               ; 9259: 60          `     
+    asl zp_iwa                                                        ; 924b: 06 2a       .*       ; Double the multiplicand: low
+    rol zp_iwa_1                                                      ; 924d: 26 2b       &+       ; high
+    lda zp_fwb_m2                                                     ; 924f: a5 3f       .?       ; more multiplier bits?
+    ora zp_fwb_m3                                                     ; 9251: 05 40       .@       ; ...
+    bne loop_c923a                                                    ; 9253: d0 e5       ..       ; loop
+    sty zp_iwa                                                        ; 9255: 84 2a       .*       ; Store the product: low
+    stx zp_iwa_1                                                      ; 9257: 86 2b       .+       ; high
+    rts                                                               ; 9259: 60          `        ; Return
 ; &925a referenced 1 time by &9249
 .c925a
-    jmp c9127                                                         ; 925a: 4c 27 91    L'.   
+    jmp c9127                                                         ; 925a: 4c 27 91    L'.      ; overflow error
 ; ***************************************************************************************
 ; HIMEM=
 ;
@@ -4331,7 +4335,7 @@ l848a = sub_c847b+15
     lda zp_iwa_1                                                      ; 9730: a5 2b       .+    
     adc l003a                                                         ; 9732: 65 3a       e:    
     sta zp_iwa_1                                                      ; 9734: 85 2b       .+    
-    jsr sub_c9236                                                     ; 9736: 20 36 92     6.   
+    jsr imul16                                                        ; 9736: 20 36 92     6.   
     ldy #0                                                            ; 9739: a0 00       ..    
     sec                                                               ; 973b: 38          8     
     lda (zp_general),y                                                ; 973c: b1 37       .7    
@@ -5230,7 +5234,7 @@ l848a = sub_c847b+15
     dex                                                               ; 9c33: ca          .     
     dey                                                               ; 9c34: 88          .     
     bne loop_c9c2d                                                    ; 9c35: d0 f6       ..    
-    jsr sub_cbdcb                                                     ; 9c37: 20 cb bd     ..   
+    jsr unstack_string                                                ; 9c37: 20 cb bd     ..   
     pla                                                               ; 9c3a: 68          h     
     sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6    
     ldx zp_general                                                    ; 9c3d: a6 37       .7    
@@ -6282,34 +6286,34 @@ l848a = sub_c847b+15
 ; Multiply FWA by ten, unnormalised and unrounded.
 ; &a1f4 referenced 2 times by &9ed7, &a108
 .fwa_mul10
-    clc                                                               ; a1f4: 18          .     
-    lda zp_fwa_exp                                                    ; a1f5: a5 30       .0    
-    adc #3                                                            ; a1f7: 69 03       i.    
-    sta zp_fwa_exp                                                    ; a1f9: 85 30       .0    
-    bcc ca1ff                                                         ; a1fb: 90 02       ..    
-    inc zp_fwa_ovf                                                    ; a1fd: e6 2f       ./    
+    clc                                                               ; a1f4: 18          .        ; x*8: add 3 to the exponent
+    lda zp_fwa_exp                                                    ; a1f5: a5 30       .0       ; ...
+    adc #3                                                            ; a1f7: 69 03       i.       ; ...
+    sta zp_fwa_exp                                                    ; a1f9: 85 30       .0       ; (store)
+    bcc ca1ff                                                         ; a1fb: 90 02       ..       ; no carry
+    inc zp_fwa_ovf                                                    ; a1fd: e6 2f       ./       ; carry into overflow
 ; &a1ff referenced 1 time by &a1fb
 .ca1ff
-    jsr fwb_copy_from_fwa                                             ; a1ff: 20 1e a2     ..   
-    jsr fwb_div2                                                      ; a202: 20 42 a2     B.   
-    jsr fwb_div2                                                      ; a205: 20 42 a2     B.   
+    jsr fwb_copy_from_fwa                                             ; a1ff: 20 1e a2     ..      ; FWB = x*8
+    jsr fwb_div2                                                      ; a202: 20 42 a2     B.      ; FWB = x*4
+    jsr fwb_div2                                                      ; a205: 20 42 a2     B.      ; FWB = x*2
 ; &a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0
 .ca208
-    jsr sub_ca178                                                     ; a208: 20 78 a1     x.   
+    jsr sub_ca178                                                     ; a208: 20 78 a1     x.      ; FWA = x8 + x2 = x*10
 ; &a20b referenced 1 time by &a2ba
 .ca20b
-    bcc return_21                                                     ; a20b: 90 10       ..    
-    ror zp_fwa_m1                                                     ; a20d: 66 31       f1    
-    ror zp_fwa_m2                                                     ; a20f: 66 32       f2    
-    ror zp_fwa_m3                                                     ; a211: 66 33       f3    
-    ror zp_fwa_m4                                                     ; a213: 66 34       f4    
-    ror zp_fwa_rnd                                                    ; a215: 66 35       f5    
-    inc zp_fwa_exp                                                    ; a217: e6 30       .0    
-    bne return_21                                                     ; a219: d0 02       ..    
-    inc zp_fwa_ovf                                                    ; a21b: e6 2f       ./    
+    bcc return_21                                                     ; a20b: 90 10       ..       ; no overflow: done
+    ror zp_fwa_m1                                                     ; a20d: 66 31       f1       ; Overflow: shift right, bump exponent: m1
+    ror zp_fwa_m2                                                     ; a20f: 66 32       f2       ; m2
+    ror zp_fwa_m3                                                     ; a211: 66 33       f3       ; m3
+    ror zp_fwa_m4                                                     ; a213: 66 34       f4       ; m4
+    ror zp_fwa_rnd                                                    ; a215: 66 35       f5       ; rounding
+    inc zp_fwa_exp                                                    ; a217: e6 30       .0       ; exponent + 1
+    bne return_21                                                     ; a219: d0 02       ..       ; done
+    inc zp_fwa_ovf                                                    ; a21b: e6 2f       ./       ; exponent overflow
 ; &a21d referenced 2 times by &a20b, &a219
 .return_21
-    rts                                                               ; a21d: 60          `     
+    rts                                                               ; a21d: 60          `        ; Return
 ; ***************************************************************************************
 ; FWB = FWA
 ;
@@ -8200,7 +8204,7 @@ l848a = sub_c847b+15
     jsr stack_string                                                  ; ad06: 20 b2 bd     ..   
     jsr cae56                                                         ; ad09: 20 56 ae     V.   
     jsr coerce_to_integer                                             ; ad0c: 20 f0 92     ..   
-    jsr sub_cbdcb                                                     ; ad0f: 20 cb bd     ..   
+    jsr unstack_string                                                ; ad0f: 20 cb bd     ..   
 ; &ad12 referenced 1 time by &acfd
 .cad12
     ldy #0                                                            ; ad12: a0 00       ..    
@@ -8835,7 +8839,7 @@ l848a = sub_c847b+15
     jsr stack_string                                                  ; afd7: 20 b2 bd     ..   
     jsr cae56                                                         ; afda: 20 56 ae     V.   
     jsr coerce_to_integer                                             ; afdd: 20 f0 92     ..   
-    jsr sub_cbdcb                                                     ; afe0: 20 cb bd     ..   
+    jsr unstack_string                                                ; afe0: 20 cb bd     ..   
     lda zp_iwa                                                        ; afe3: a5 2a       .*    
     cmp zp_strbuf_len                                                 ; afe5: c5 36       .6    
     bcs cafeb                                                         ; afe7: b0 02       ..    
@@ -8857,7 +8861,7 @@ l848a = sub_c847b+15
     jsr stack_string                                                  ; aff9: 20 b2 bd     ..   
     jsr cae56                                                         ; affc: 20 56 ae     V.   
     jsr coerce_to_integer                                             ; afff: 20 f0 92     ..   
-    jsr sub_cbdcb                                                     ; b002: 20 cb bd     ..   
+    jsr unstack_string                                                ; b002: 20 cb bd     ..   
     lda zp_strbuf_len                                                 ; b005: a5 36       .6    
     sec                                                               ; b007: 38          8     
     sbc zp_iwa                                                        ; b008: e5 2a       .*    
@@ -8927,7 +8931,7 @@ l848a = sub_c847b+15
     jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..   
 ; &b061 referenced 1 time by &b055
 .cb061
-    jsr sub_cbdcb                                                     ; b061: 20 cb bd     ..   
+    jsr unstack_string                                                ; b061: 20 cb bd     ..   
     pla                                                               ; b064: 68          h     
     tay                                                               ; b065: a8          .     
     clc                                                               ; b066: 18          .     
@@ -9380,7 +9384,7 @@ l848a = sub_c847b+15
 .cb2f9
     lda zp_iwa_3                                                      ; b2f9: a5 2d       .-    
     bne cb2b5                                                         ; b2fb: d0 b8       ..    
-    jsr sub_cbdcb                                                     ; b2fd: 20 cb bd     ..   
+    jsr unstack_string                                                ; b2fd: 20 cb bd     ..   
     jsr sub_c8c21                                                     ; b300: 20 21 8c     !.   
 ; &b303 referenced 1 time by &b2f6
 .cb303
@@ -11106,31 +11110,31 @@ l848a = sub_c847b+15
 ; onto it.
 ; &bd51 referenced 12 times by &9a3e, &9a50, &9c8b, &9cac, &9ce1, &9cff, &9d14, &9d20, &9de9, &9e39, &af27, &bd92
 .stack_real
-    lda zp_stack_ptr                                                  ; bd51: a5 04       ..    
-    sec                                                               ; bd53: 38          8     
+    lda zp_stack_ptr                                                  ; bd51: a5 04       ..       ; From the stack top...
+    sec                                                               ; bd53: 38          8        ; prepare subtraction
     sbc #5                                                            ; bd54: e9 05       ..       ; Lower the stack by 5 bytes (a packed real)
-    jsr reserve_stack                                                 ; bd56: 20 2e be     ..   
-    ldy #0                                                            ; bd59: a0 00       ..    
-    lda zp_fwa_exp                                                    ; bd5b: a5 30       .0    
-    sta (zp_stack_ptr),y                                              ; bd5d: 91 04       ..    
-    iny                                                               ; bd5f: c8          .     
-    lda zp_fwa_sign                                                   ; bd60: a5 2e       ..    
+    jsr reserve_stack                                                 ; bd56: 20 2e be     ..      ; reserve the space
+    ldy #0                                                            ; bd59: a0 00       ..       ; Packed byte 0 = exponent
+    lda zp_fwa_exp                                                    ; bd5b: a5 30       .0       ; ...
+    sta (zp_stack_ptr),y                                              ; bd5d: 91 04       ..       ; (store)
+    iny                                                               ; bd5f: c8          .        ; advance
+    lda zp_fwa_sign                                                   ; bd60: a5 2e       ..       ; Take the sign...
     and #&80                                                          ; bd62: 29 80       ).       ; Pack: fold the sign into the mantissa MSB
-    sta zp_fwa_sign                                                   ; bd64: 85 2e       ..    
-    lda zp_fwa_m1                                                     ; bd66: a5 31       .1    
-    and #&7f                                                          ; bd68: 29 7f       ).    
-    ora zp_fwa_sign                                                   ; bd6a: 05 2e       ..    
-    sta (zp_stack_ptr),y                                              ; bd6c: 91 04       ..    
-    iny                                                               ; bd6e: c8          .     
-    lda zp_fwa_m2                                                     ; bd6f: a5 32       .2    
-    sta (zp_stack_ptr),y                                              ; bd71: 91 04       ..    
-    iny                                                               ; bd73: c8          .     
-    lda zp_fwa_m3                                                     ; bd74: a5 33       .3    
-    sta (zp_stack_ptr),y                                              ; bd76: 91 04       ..    
-    iny                                                               ; bd78: c8          .     
-    lda zp_fwa_m4                                                     ; bd79: a5 34       .4    
-    sta (zp_stack_ptr),y                                              ; bd7b: 91 04       ..    
-    rts                                                               ; bd7d: 60          `     
+    sta zp_fwa_sign                                                   ; bd64: 85 2e       ..       ; keep just the sign bit
+    lda zp_fwa_m1                                                     ; bd66: a5 31       .1       ; mantissa MSB
+    and #&7f                                                          ; bd68: 29 7f       ).       ; drop the implied 1
+    ora zp_fwa_sign                                                   ; bd6a: 05 2e       ..       ; fold in the sign
+    sta (zp_stack_ptr),y                                              ; bd6c: 91 04       ..       ; byte 1
+    iny                                                               ; bd6e: c8          .        ; advance
+    lda zp_fwa_m2                                                     ; bd6f: a5 32       .2       ; byte 2
+    sta (zp_stack_ptr),y                                              ; bd71: 91 04       ..       ; (store)
+    iny                                                               ; bd73: c8          .        ; advance
+    lda zp_fwa_m3                                                     ; bd74: a5 33       .3       ; byte 3
+    sta (zp_stack_ptr),y                                              ; bd76: 91 04       ..       ; (store)
+    iny                                                               ; bd78: c8          .        ; advance
+    lda zp_fwa_m4                                                     ; bd79: a5 34       .4       ; byte 4
+    sta (zp_stack_ptr),y                                              ; bd7b: 91 04       ..       ; (store)
+    rts                                                               ; bd7d: 60          `        ; Real pushed
 ; ***************************************************************************************
 ; Pop a real off the BASIC stack
 ;
@@ -11165,23 +11169,23 @@ l848a = sub_c847b+15
 ; accumulator (zp_iwa) onto it. Errors if the stack would collide with the heap.
 ; &bd94 referenced 29 times by &85ac, &8beb, &8bfb, &8ed8, &8f36, &8f71, &90b5, &90e8, &9185, &9334, &9400, &96ff, &9744, &9aa2, &9b6f, &9b7e, &9dce, &9e1d, &ab44, &b0c5, &b298, &b329, &b5b0, &b5c8, &b7cb, &b9f1, &bad0, &bb29, &bb35
 .stack_integer
-    lda zp_stack_ptr                                                  ; bd94: a5 04       ..    
-    sec                                                               ; bd96: 38          8     
+    lda zp_stack_ptr                                                  ; bd94: a5 04       ..       ; From the stack top...
+    sec                                                               ; bd96: 38          8        ; prepare subtraction
     sbc #4                                                            ; bd97: e9 04       ..       ; Lower the stack by 4 bytes (an integer)
-    jsr reserve_stack                                                 ; bd99: 20 2e be     ..   
-    ldy #3                                                            ; bd9c: a0 03       ..    
-    lda zp_iwa_3                                                      ; bd9e: a5 2d       .-    
-    sta (zp_stack_ptr),y                                              ; bda0: 91 04       ..    
-    dey                                                               ; bda2: 88          .     
-    lda zp_iwa_2                                                      ; bda3: a5 2c       .,    
-    sta (zp_stack_ptr),y                                              ; bda5: 91 04       ..    
-    dey                                                               ; bda7: 88          .     
-    lda zp_iwa_1                                                      ; bda8: a5 2b       .+    
-    sta (zp_stack_ptr),y                                              ; bdaa: 91 04       ..    
-    dey                                                               ; bdac: 88          .     
-    lda zp_iwa                                                        ; bdad: a5 2a       .*    
-    sta (zp_stack_ptr),y                                              ; bdaf: 91 04       ..    
-    rts                                                               ; bdb1: 60          `     
+    jsr reserve_stack                                                 ; bd99: 20 2e be     ..      ; reserve the space (check for room)
+    ldy #3                                                            ; bd9c: a0 03       ..       ; Copy IWA, MSB first: byte 3
+    lda zp_iwa_3                                                      ; bd9e: a5 2d       .-       ; ...
+    sta (zp_stack_ptr),y                                              ; bda0: 91 04       ..       ; (store)
+    dey                                                               ; bda2: 88          .        ; next
+    lda zp_iwa_2                                                      ; bda3: a5 2c       .,       ; byte 2
+    sta (zp_stack_ptr),y                                              ; bda5: 91 04       ..       ; (store)
+    dey                                                               ; bda7: 88          .        ; next
+    lda zp_iwa_1                                                      ; bda8: a5 2b       .+       ; byte 1
+    sta (zp_stack_ptr),y                                              ; bdaa: 91 04       ..       ; (store)
+    dey                                                               ; bdac: 88          .        ; next
+    lda zp_iwa                                                        ; bdad: a5 2a       .*       ; byte 0 (LSB)
+    sta (zp_stack_ptr),y                                              ; bdaf: 91 04       ..       ; (store)
+    rts                                                               ; bdb1: 60          `        ; Integer pushed
 ; ***************************************************************************************
 ; Push the current string onto the BASIC stack
 ;
@@ -11189,48 +11193,52 @@ l848a = sub_c847b+15
 ; the BASIC stack, length last.
 ; &bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90
 .stack_string
-    clc                                                               ; bdb2: 18          .     
-    lda zp_stack_ptr                                                  ; bdb3: a5 04       ..    
+    clc                                                               ; bdb2: 18          .        ; From the stack top...
+    lda zp_stack_ptr                                                  ; bdb3: a5 04       ..       ; ...
     sbc zp_strbuf_len                                                 ; bdb5: e5 36       .6       ; Lower the stack by length+1 bytes (carry clear)
-    jsr reserve_stack                                                 ; bdb7: 20 2e be     ..   
-    ldy zp_strbuf_len                                                 ; bdba: a4 36       .6    
-    beq cbdc6                                                         ; bdbc: f0 08       ..    
+    jsr reserve_stack                                                 ; bdb7: 20 2e be     ..      ; reserve the space
+    ldy zp_strbuf_len                                                 ; bdba: a4 36       .6       ; string length
+    beq cbdc6                                                         ; bdbc: f0 08       ..       ; zero length: just push the length
 ; &bdbe referenced 1 time by &bdc4
 .loop_cbdbe
-    lda l05ff,y                                                       ; bdbe: b9 ff 05    ...   
-    sta (zp_stack_ptr),y                                              ; bdc1: 91 04       ..    
-    dey                                                               ; bdc3: 88          .     
-    bne loop_cbdbe                                                    ; bdc4: d0 f8       ..    
+    lda l05ff,y                                                       ; bdbe: b9 ff 05    ...      ; Copy the string from the buffer (&0600): char Y
+    sta (zp_stack_ptr),y                                              ; bdc1: 91 04       ..       ; (onto the stack)
+    dey                                                               ; bdc3: 88          .        ; next
+    bne loop_cbdbe                                                    ; bdc4: d0 f8       ..       ; loop
 ; &bdc6 referenced 1 time by &bdbc
 .cbdc6
-    lda zp_strbuf_len                                                 ; bdc6: a5 36       .6    
-    sta (zp_stack_ptr),y                                              ; bdc8: 91 04       ..    
-    rts                                                               ; bdca: 60          `     
+    lda zp_strbuf_len                                                 ; bdc6: a5 36       .6       ; Push the length last
+    sta (zp_stack_ptr),y                                              ; bdc8: 91 04       ..       ; (store)
+    rts                                                               ; bdca: 60          `        ; String pushed
+; ***************************************************************************************
+; Pop a string off the BASIC stack
+;
+; Copy the string on top of the stack into the string buffer and drop it.
 ; &bdcb referenced 6 times by &9c37, &ad0f, &afe0, &b002, &b061, &b2fd
-.sub_cbdcb
-    ldy #0                                                            ; bdcb: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; bdcd: b1 04       ..    
-    sta zp_strbuf_len                                                 ; bdcf: 85 36       .6    
-    beq cbddc                                                         ; bdd1: f0 09       ..    
-    tay                                                               ; bdd3: a8          .     
+.unstack_string
+    ldy #0                                                            ; bdcb: a0 00       ..       ; Pop a string: read its length
+    lda (zp_stack_ptr),y                                              ; bdcd: b1 04       ..       ; ...
+    sta zp_strbuf_len                                                 ; bdcf: 85 36       .6       ; (store)
+    beq cbddc                                                         ; bdd1: f0 09       ..       ; zero length: just drop the length
+    tay                                                               ; bdd3: a8          .        ; Y = length
 ; &bdd4 referenced 1 time by &bdda
 .loop_cbdd4
-    lda (zp_stack_ptr),y                                              ; bdd4: b1 04       ..    
-    sta l05ff,y                                                       ; bdd6: 99 ff 05    ...   
-    dey                                                               ; bdd9: 88          .     
-    bne loop_cbdd4                                                    ; bdda: d0 f8       ..    
+    lda (zp_stack_ptr),y                                              ; bdd4: b1 04       ..       ; Copy the string to the buffer: char Y
+    sta l05ff,y                                                       ; bdd6: 99 ff 05    ...      ; (into the buffer)
+    dey                                                               ; bdd9: 88          .        ; next
+    bne loop_cbdd4                                                    ; bdda: d0 f8       ..       ; loop
 ; &bddc referenced 6 times by &8ceb, &9b16, &ac20, &ad39, &ad52, &bdd1
 .cbddc
-    ldy #0                                                            ; bddc: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; bdde: b1 04       ..    
-    sec                                                               ; bde0: 38          8     
+    ldy #0                                                            ; bddc: a0 00       ..       ; Drop the string: get its length
+    lda (zp_stack_ptr),y                                              ; bdde: b1 04       ..       ; ...
+    sec                                                               ; bde0: 38          8        ; ...
 ; &bde1 referenced 1 time by &8d28
 .cbde1
-    adc zp_stack_ptr                                                  ; bde1: 65 04       e.    
-    sta zp_stack_ptr                                                  ; bde3: 85 04       ..    
-    bcc return_39                                                     ; bde5: 90 23       .#    
-    inc zp_stack_ptr_1                                                ; bde7: e6 05       ..    
-    rts                                                               ; bde9: 60          `     
+    adc zp_stack_ptr                                                  ; bde1: 65 04       e.       ; advance the stack pointer past it: low
+    sta zp_stack_ptr                                                  ; bde3: 85 04       ..       ; (store)
+    bcc return_39                                                     ; bde5: 90 23       .#       ; done
+    inc zp_stack_ptr_1                                                ; bde7: e6 05       ..       ; carry into high
+    rts                                                               ; bde9: 60          `        ; Return
 ; ***************************************************************************************
 ; Pop an integer from the BASIC stack
 ;
@@ -11797,7 +11805,7 @@ save pydis_start, pydis_end
 ;     osbput:                      6
 ;     sub_c92ee:                   6
 ;     sub_ca7f5:                   6
-;     sub_cbdcb:                   6
+;     unstack_string:              6
 ;     zp_error_vec:                6
 ;     zp_error_vec_1:              6
 ;     zp_fp_temp:                  6
@@ -12107,6 +12115,7 @@ save pydis_start, pydis_end
 ;     fwa_rsub_var:                2
 ;     fwa_unpack_temp1:            2
 ;     fwb_half_fwa:                2
+;     imul16:                      2
 ;     iwa_load_zp:                 2
 ;     l0022:                       2
 ;     l0100:                       2
@@ -12154,7 +12163,6 @@ save pydis_start, pydis_end
 ;     sub_c8e8a:                   2
 ;     sub_c8f69:                   2
 ;     sub_c8f92:                   2
-;     sub_c9236:                   2
 ;     sub_c95c9:                   2
 ;     sub_c95dd:                   2
 ;     sub_c96df:                   2
@@ -13867,7 +13875,6 @@ save pydis_start, pydis_end
 ;     sub_c8f92
 ;     sub_c8f9a
 ;     sub_c9231
-;     sub_c9236
 ;     sub_c92da
 ;     sub_c92dd
 ;     sub_c92e3
@@ -13950,7 +13957,6 @@ save pydis_start, pydis_end
 ;     sub_cbc8d
 ;     sub_cbd2f
 ;     sub_cbd3a
-;     sub_cbdcb
 ;     sub_cbe55
 ;     sub_cbe56
 ;     sub_cbe92

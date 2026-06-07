@@ -1463,7 +1463,8 @@
       "addr": 37410,
       "name": "iwa_inc",
       "title": "Increment the integer accumulator",
-      "description": "IWA = IWA + 1, carrying through all four bytes."
+      "description": "IWA = IWA + 1, carrying through all four bytes.",
+      "fall_through": true
     },
     {
       "addr": 48510,
@@ -1692,6 +1693,18 @@
       "title": "Validate / measure a variable name",
       "description": "Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.",
       "fall_through": true
+    },
+    {
+      "addr": 48587,
+      "name": "unstack_string",
+      "title": "Pop a string off the BASIC stack",
+      "description": "Copy the string on top of the stack into the string buffer and drop it."
+    },
+    {
+      "addr": 37430,
+      "name": "imul16",
+      "title": "16-bit integer multiply (IWA * FWB)",
+      "description": "Multiply IWA by the value in the FWB mantissa by shift-and-add; \"Too big\" on overflow."
     }
   ],
   "banners": [
@@ -29591,9 +29604,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9236",
+      "operand": "imul16",
       "target": 37430,
-      "target_label": "sub_c9236"
+      "target_label": "imul16"
     },
     {
       "addr": 37316,
@@ -30321,6 +30334,7 @@
       "labels": [
         "sub_c9231"
       ],
+      "comment_inline": "Unstack the multiplier (into &3F area)",
       "xref_summaries": [
         "&9231 referenced 1 time by &91a6"
       ],
@@ -30338,6 +30352,7 @@
         13,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -30351,8 +30366,9 @@
         0
       ],
       "labels": [
-        "sub_c9236"
+        "imul16"
       ],
+      "comment_inline": "Clear the running product (X:Y)",
       "xref_summaries": [
         "&9236 referenced 2 times by &91c1, &9736"
       ],
@@ -30370,6 +30386,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -30383,6 +30400,7 @@
       "labels": [
         "loop_c923a"
       ],
+      "comment_inline": "Shift the multiplier right: next bit into carry",
       "xref_summaries": [
         "&923a referenced 1 time by &9253"
       ],
@@ -30401,6 +30419,7 @@
         102,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m2",
@@ -30413,6 +30432,7 @@
         144,
         11
       ],
+      "comment_inline": "bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c924b",
@@ -30424,6 +30444,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "bit set: add the multiplicand (IWA)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -30432,6 +30453,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -30441,6 +30463,7 @@
         101,
         42
       ],
+      "comment_inline": "low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -30452,6 +30475,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "(into Y)",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -30460,6 +30484,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -30469,6 +30494,7 @@
         101,
         43
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -30480,6 +30506,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "(into X)",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -30489,6 +30516,7 @@
         176,
         15
       ],
+      "comment_inline": "overflow: Too big",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c925a",
@@ -30504,6 +30532,7 @@
       "labels": [
         "c924b"
       ],
+      "comment_inline": "Double the multiplicand: low",
       "xref_summaries": [
         "&924b referenced 1 time by &923e"
       ],
@@ -30522,6 +30551,7 @@
         38,
         43
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -30534,6 +30564,7 @@
         165,
         63
       ],
+      "comment_inline": "more multiplier bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -30546,6 +30577,7 @@
         5,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m3",
@@ -30558,6 +30590,7 @@
         208,
         229
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c923a",
@@ -30570,6 +30603,7 @@
         132,
         42
       ],
+      "comment_inline": "Store the product: low",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa",
@@ -30582,6 +30616,7 @@
         134,
         43
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_1",
@@ -30593,6 +30628,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -30606,6 +30642,7 @@
       "labels": [
         "c925a"
       ],
+      "comment_inline": "overflow error",
       "xref_summaries": [
         "&925a referenced 1 time by &9249"
       ],
@@ -38800,9 +38837,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9236",
+      "operand": "imul16",
       "target": 37430,
-      "target_label": "sub_c9236"
+      "target_label": "imul16"
     },
     {
       "addr": 38713,
@@ -47013,9 +47050,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 39994,
@@ -56366,6 +56403,7 @@
       "labels": [
         "fwa_mul10"
       ],
+      "comment_inline": "x*8: add 3 to the exponent",
       "xref_summaries": [
         "&a1f4 referenced 2 times by &9ed7, &a108"
       ],
@@ -56382,6 +56420,7 @@
         165,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -56394,6 +56433,7 @@
         105,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#3"
@@ -56404,6 +56444,7 @@
         133,
         48
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -56416,6 +56457,7 @@
         144,
         2
       ],
+      "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca1ff",
@@ -56428,6 +56470,7 @@
         230,
         47
       ],
+      "comment_inline": "carry into overflow",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_ovf",
@@ -56444,6 +56487,7 @@
       "labels": [
         "ca1ff"
       ],
+      "comment_inline": "FWB = x*8",
       "xref_summaries": [
         "&a1ff referenced 1 time by &a1fb"
       ],
@@ -56463,6 +56507,7 @@
         66,
         162
       ],
+      "comment_inline": "FWB = x*4",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_div2",
@@ -56476,6 +56521,7 @@
         66,
         162
       ],
+      "comment_inline": "FWB = x*2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_div2",
@@ -56492,6 +56538,7 @@
       "labels": [
         "ca208"
       ],
+      "comment_inline": "FWA = x*8 + x*2 = x*10",
       "xref_summaries": [
         "&a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0"
       ],
@@ -56517,6 +56564,7 @@
       "labels": [
         "ca20b"
       ],
+      "comment_inline": "no overflow: done",
       "xref_summaries": [
         "&a20b referenced 1 time by &a2ba"
       ],
@@ -56535,6 +56583,7 @@
         102,
         49
       ],
+      "comment_inline": "Overflow: shift right, bump exponent: m1",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m1",
@@ -56547,6 +56596,7 @@
         102,
         50
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m2",
@@ -56559,6 +56609,7 @@
         102,
         51
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m3",
@@ -56571,6 +56622,7 @@
         102,
         52
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m4",
@@ -56583,6 +56635,7 @@
         102,
         53
       ],
+      "comment_inline": "rounding",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_rnd",
@@ -56595,6 +56648,7 @@
         230,
         48
       ],
+      "comment_inline": "exponent + 1",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_exp",
@@ -56607,6 +56661,7 @@
         208,
         2
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_21",
@@ -56619,6 +56674,7 @@
         230,
         47
       ],
+      "comment_inline": "exponent overflow",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_ovf",
@@ -56633,6 +56689,7 @@
       "labels": [
         "return_21"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&a21d referenced 2 times by &a20b, &a219"
       ],
@@ -73573,9 +73630,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 44306,
@@ -78261,9 +78318,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 45027,
@@ -78450,9 +78507,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 45061,
@@ -79050,9 +79107,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 45156,
@@ -83201,9 +83258,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbdcb",
+      "operand": "unstack_string",
       "target": 48587,
-      "target_label": "sub_cbdcb"
+      "target_label": "unstack_string"
     },
     {
       "addr": 45824,
@@ -99116,6 +99173,7 @@
       "labels": [
         "stack_real"
       ],
+      "comment_inline": "From the stack top...",
       "xref_summaries": [
         "&bd51 referenced 12 times by &9a3e, &9a50, &9c8b, &9cac, &9ce1, &9cff, &9d14, &9d20, &9de9, &9e39, &af27, &bd92"
       ],
@@ -99144,6 +99202,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "prepare subtraction",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -99165,6 +99224,7 @@
         46,
         190
       ],
+      "comment_inline": "reserve the space",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "reserve_stack",
@@ -99177,6 +99237,7 @@
         160,
         0
       ],
+      "comment_inline": "Packed byte 0 = exponent",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -99187,6 +99248,7 @@
         165,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -99199,6 +99261,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99210,6 +99273,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99219,6 +99283,7 @@
         165,
         46
       ],
+      "comment_inline": "Take the sign...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -99242,6 +99307,7 @@
         133,
         46
       ],
+      "comment_inline": "keep just the sign bit",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -99254,6 +99320,7 @@
         165,
         49
       ],
+      "comment_inline": "mantissa MSB",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -99266,6 +99333,7 @@
         41,
         127
       ],
+      "comment_inline": "drop the implied 1",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -99276,6 +99344,7 @@
         5,
         46
       ],
+      "comment_inline": "fold in the sign",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_sign",
@@ -99288,6 +99357,7 @@
         145,
         4
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99299,6 +99369,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99308,6 +99379,7 @@
         165,
         50
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -99320,6 +99392,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99331,6 +99404,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99340,6 +99414,7 @@
         165,
         51
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -99352,6 +99427,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99363,6 +99439,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99372,6 +99449,7 @@
         165,
         52
       ],
+      "comment_inline": "byte 4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -99384,6 +99462,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99395,6 +99474,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Real pushed",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -99580,6 +99660,7 @@
       "labels": [
         "stack_integer"
       ],
+      "comment_inline": "From the stack top...",
       "xref_summaries": [
         "&bd94 referenced 29 times by &85ac, &8beb, &8bfb, &8ed8, &8f36, &8f71, &90b5, &90e8, &9185, &9334, &9400, &96ff, &9744, &9aa2, &9b6f, &9b7e, &9dce, &9e1d, &ab44, &b0c5, &b298, &b329, &b5b0, &b5c8, &b7cb, &b9f1, &bad0, &bb29, &bb35"
       ],
@@ -99625,6 +99706,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "prepare subtraction",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -99646,6 +99728,7 @@
         46,
         190
       ],
+      "comment_inline": "reserve the space (check for room)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "reserve_stack",
@@ -99658,6 +99741,7 @@
         160,
         3
       ],
+      "comment_inline": "Copy IWA, MSB first: byte 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -99668,6 +99752,7 @@
         165,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -99680,6 +99765,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99691,6 +99777,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99700,6 +99787,7 @@
         165,
         44
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -99712,6 +99800,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99723,6 +99812,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99732,6 +99822,7 @@
         165,
         43
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -99744,6 +99835,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99755,6 +99847,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99764,6 +99857,7 @@
         165,
         42
       ],
+      "comment_inline": "byte 0 (LSB)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -99776,6 +99870,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99787,6 +99882,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Integer pushed",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -99798,6 +99894,7 @@
       "labels": [
         "stack_string"
       ],
+      "comment_inline": "From the stack top...",
       "xref_summaries": [
         "&bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90"
       ],
@@ -99821,6 +99918,7 @@
         165,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -99847,6 +99945,7 @@
         46,
         190
       ],
+      "comment_inline": "reserve the space",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "reserve_stack",
@@ -99859,6 +99958,7 @@
         164,
         54
       ],
+      "comment_inline": "string length",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -99871,6 +99971,7 @@
         240,
         8
       ],
+      "comment_inline": "zero length: just push the length",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbdc6",
@@ -99887,6 +99988,7 @@
       "labels": [
         "loop_cbdbe"
       ],
+      "comment_inline": "Copy the string from the buffer (&0600): char Y",
       "xref_summaries": [
         "&bdbe referenced 1 time by &bdc4"
       ],
@@ -99905,6 +100007,7 @@
         145,
         4
       ],
+      "comment_inline": "(onto the stack)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99916,6 +100019,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -99925,6 +100029,7 @@
         208,
         248
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbdbe",
@@ -99940,6 +100045,7 @@
       "labels": [
         "cbdc6"
       ],
+      "comment_inline": "Push the length last",
       "xref_summaries": [
         "&bdc6 referenced 1 time by &bdbc"
       ],
@@ -99958,6 +100064,7 @@
         145,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -99969,6 +100076,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "String pushed",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -99979,8 +100087,9 @@
         0
       ],
       "labels": [
-        "sub_cbdcb"
+        "unstack_string"
       ],
+      "comment_inline": "Pop a string: read its length",
       "xref_summaries": [
         "&bdcb referenced 6 times by &9c37, &ad0f, &afe0, &b002, &b061, &b2fd"
       ],
@@ -100002,6 +100111,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -100014,6 +100124,7 @@
         133,
         54
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -100026,6 +100137,7 @@
         240,
         9
       ],
+      "comment_inline": "zero length: just drop the length",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbddc",
@@ -100037,6 +100149,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Y = length",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -100049,6 +100162,7 @@
       "labels": [
         "loop_cbdd4"
       ],
+      "comment_inline": "Copy the string to the buffer: char Y",
       "xref_summaries": [
         "&bdd4 referenced 1 time by &bdda"
       ],
@@ -100068,6 +100182,7 @@
         255,
         5
       ],
+      "comment_inline": "(into the buffer)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05ff,y",
@@ -100079,6 +100194,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -100088,6 +100204,7 @@
         208,
         248
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbdd4",
@@ -100103,6 +100220,7 @@
       "labels": [
         "cbddc"
       ],
+      "comment_inline": "Drop the string: get its length",
       "xref_summaries": [
         "&bddc referenced 6 times by &8ceb, &9b16, &ac20, &ad39, &ad52, &bdd1"
       ],
@@ -100124,6 +100242,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -100135,6 +100254,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -100147,6 +100267,7 @@
       "labels": [
         "cbde1"
       ],
+      "comment_inline": "advance the stack pointer past it: low",
       "xref_summaries": [
         "&bde1 referenced 1 time by &8d28"
       ],
@@ -100165,6 +100286,7 @@
         133,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -100177,6 +100299,7 @@
         144,
         35
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_39",
@@ -100189,6 +100312,7 @@
         230,
         5
       ],
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -100200,6 +100324,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
