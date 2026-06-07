@@ -199,6 +199,7 @@ d.label(0x0006, 'zp_himem')           # Start of screen / top of BASIC
 d.label(0x0008, 'zp_erl')             # Line number that last errored
 d.label(0x000a, 'zp_text_ptr_off')    # Offset into current text line
 d.label(0x000b, 'zp_text_ptr')        # Start of current text line
+d.label(0x000c, 'zp_text_ptr_1')
 # RND work area (&0D-&11): a 33-bit LFSR state. &0D-&10 are a 32-bit
 # little-endian value (bits 0-31); bit 0 of &11 is bit 32. See rnd_step.
 d.label(0x000d, 'zp_rnd_seed')        # LFSR bits 0-7
@@ -207,11 +208,14 @@ d.label(0x000f, 'zp_rnd_seed_2')      # LFSR bits 16-23
 d.label(0x0010, 'zp_rnd_seed_3')      # LFSR bits 24-31
 d.label(0x0011, 'zp_rnd_seed_4')      # LFSR bit 32 (in bit 0; overflow)
 d.label(0x0012, 'zp_top')             # End of program (excl. variables)
+d.label(0x0013, 'zp_top_1')
 d.label(0x0014, 'zp_print_bytes')     # Bytes in current print field
 d.label(0x0015, 'zp_print_flag')      # 0 = decimal, -ve = hexadecimal
 d.label(0x0016, 'zp_error_vec')       # Address of BASIC error routine
+d.label(0x0017, 'zp_error_vec_1')
 d.label(0x0018, 'zp_page')            # PAGE DIV 256 (program start page)
 d.label(0x0019, 'zp_text_ptr2')       # Secondary text pointer
+d.label(0x001a, 'zp_text_ptr2_1')
 d.label(0x001b, 'zp_text_ptr2_off')   # Secondary text-pointer offset
 d.label(0x001c, 'zp_data_ptr')        # Pointer to next DATA item
 d.label(0x001e, 'zp_count')           # Bytes printed since last newline
@@ -1714,6 +1718,97 @@ d.comment(0xab73, 'Return the column as an integer', align=Align.INLINE)
 
 d.subroutine(0xbe62, 'load_program', title='Load a program from the filing system',
              description='Used by LOAD and CHAIN to read a BASIC program into memory.')
+d.subroutine(0xbd20, 'clear_vars_heap_stack',
+             title='Clear all variables, the heap and the stack',
+             description='Reset variable storage, the heap and the BASIC stack (NEW/CLEAR).')
+d.subroutine(0xbc02, 'read_input_line', title='Print the prompt and read a line',
+             description='Print the character in A as a prompt, then read a line into the input buffer.')
+d.subroutine(0x94fc, 'create_variable', title='Create a new variable',
+             description='Allocate a new entry for a variable that does not yet exist.')
+
+# skip_spaces (&8A97) / skip_spaces_ptr2 (&8A8C)
+d.comment(0x8a97, 'Get the text offset', align=Align.INLINE)
+d.comment(0x8a99, 'advance it for next time', align=Align.INLINE)
+d.comment(0x8a9b, 'Read the character', align=Align.INLINE)
+d.comment(0x8a9f, 'Space: keep skipping', align=Align.INLINE)
+d.comment(0x8aa1, 'Return the first non-space character', align=Align.INLINE)
+d.comment(0x8aa2, 'BRK error block ("Missing ,") follows', align=Align.INLINE)
+d.comment(0x8a8c, 'Get the secondary text offset', align=Align.INLINE)
+d.comment(0x8a8e, 'advance it', align=Align.INLINE)
+d.comment(0x8a90, 'Read the character', align=Align.INLINE)
+d.comment(0x8a94, 'Space: keep skipping', align=Align.INLINE)
+d.comment(0x8a96, 'Return the first non-space character', align=Align.INLINE)
+
+# start_new_program (&8ADD): set up an empty program
+d.comment(0x8add, 'Empty program is a single CR...', align=Align.INLINE)
+d.comment(0x8adf, 'TOP starts at PAGE: high byte', align=Align.INLINE)
+d.comment(0x8ae1, '(TOP high)', align=Align.INLINE)
+d.comment(0x8ae3, 'low byte 0', align=Align.INLINE)
+d.comment(0x8ae5, 'TOP low = PAGE', align=Align.INLINE)
+d.comment(0x8ae7, 'TRACE off', align=Align.INLINE)
+d.comment(0x8ae9, '...stored as the end marker at PAGE', align=Align.INLINE)
+d.comment(0x8aeb, '&FF...', align=Align.INLINE)
+d.comment(0x8aed, 'next byte', align=Align.INLINE)
+d.comment(0x8aee, '...marks the program end at PAGE+1', align=Align.INLINE)
+d.comment(0x8af0, 'TOP = PAGE + 2', align=Align.INLINE)
+d.comment(0x8af1, '(store)', align=Align.INLINE)
+d.comment(0x8af3, 'Clear variables, heap and stack', align=Align.INLINE)
+
+# immediate_loop (&8AF6)
+d.comment(0x8af6, 'PtrA = &0700, the input buffer: high byte', align=Align.INLINE)
+d.comment(0x8af8, '(store)', align=Align.INLINE)
+d.comment(0x8afa, 'low byte 0', align=Align.INLINE)
+d.comment(0x8afc, '(store)', align=Align.INLINE)
+d.comment(0x8afe, 'ON ERROR OFF: default handler at &B433', align=Align.INLINE)
+d.comment(0x8b00, '(low)', align=Align.INLINE)
+d.comment(0x8b02, '(high)', align=Align.INLINE)
+d.comment(0x8b04, '(store)', align=Align.INLINE)
+d.comment(0x8b06, 'The ">" prompt', align=Align.INLINE)
+d.comment(0x8b08, 'Print it and read a line into the buffer', align=Align.INLINE)
+
+# check_eq_star_bracket (&8B60)
+d.comment(0x8b60, 'Step back to the introducing character', align=Align.INLINE)
+d.comment(0x8b62, '...', align=Align.INLINE)
+d.comment(0x8b63, 'fetch it', align=Align.INLINE)
+d.comment(0x8b67, '"=": return a value from a function', align=Align.INLINE)
+d.comment(0x8b6b, '"*": an embedded OSCLI command', align=Align.INLINE)
+d.comment(0x8b6f, '"[": enter the assembler', align=Align.INLINE)
+d.comment(0x8b71, 'otherwise check for end of statement', align=Align.INLINE)
+d.comment(0x8b73, 'Point PtrA at the command text', align=Align.INLINE)
+d.comment(0x8b76, 'XY -> the command string', align=Align.INLINE)
+d.comment(0x8b78, '(high byte)', align=Align.INLINE)
+d.comment(0x8b7a, 'Pass it to OSCLI', align=Align.INLINE)
+
+# try_variable_assignment (&8BBF)
+d.comment(0x8bbf, 'Copy PtrA to PtrB: low', align=Align.INLINE)
+d.comment(0x8bc1, '(store)', align=Align.INLINE)
+d.comment(0x8bc3, 'high', align=Align.INLINE)
+d.comment(0x8bc5, '(store)', align=Align.INLINE)
+d.comment(0x8bc7, 'offset', align=Align.INLINE)
+d.comment(0x8bc9, 'Parse a variable / indirection reference', align=Align.INLINE)
+d.comment(0x8bcc, 'Existing variable: do the assignment', align=Align.INLINE)
+d.comment(0x8bce, 'Not a variable: try =, * or [', align=Align.INLINE)
+d.comment(0x8bd0, 'New variable: position for "="', align=Align.INLINE)
+d.comment(0x8bd2, 'Require "="', align=Align.INLINE)
+d.comment(0x8bd5, 'Create the new variable', align=Align.INLINE)
+d.comment(0x8bd8, 'Type 5 = floating point', align=Align.INLINE)
+d.comment(0x8bda, 'Is the destination a float?', align=Align.INLINE)
+d.comment(0x8bdc, 'no', align=Align.INLINE)
+d.comment(0x8bde, 'X = 6', align=Align.INLINE)
+d.comment(0x8bdf, 'Evaluate and store the value', align=Align.INLINE)
+d.comment(0x8be2, 'Step back, continue', align=Align.INLINE)
+
+# dispatch_token (&8BB1) remaining
+d.comment(0x8bb1, 'Token to X for indexing', align=Align.INLINE)
+d.comment(0x8bb5, 'Store the handler low byte', align=Align.INLINE)
+d.comment(0x8bba, 'Store the handler high byte', align=Align.INLINE)
+
+# eval_expr (&9B1D) remaining: copy PtrA to PtrB
+d.comment(0x9b1f, 'PtrB low = PtrA', align=Align.INLINE)
+d.comment(0x9b21, 'PtrA high...', align=Align.INLINE)
+d.comment(0x9b23, '...to PtrB high', align=Align.INLINE)
+d.comment(0x9b25, 'PtrA offset...', align=Align.INLINE)
+d.comment(0x9b27, '...to PtrB offset', align=Align.INLINE)
 d.subroutine(0xbfb5, 'eval_channel', title='Evaluate a #channel argument',
              description='Evaluate the #handle of a file operation, leaving it in IWA.')
 d.subroutine(0xafad, 'read_key_timed', title='Read a key within a time limit (INKEY)',
