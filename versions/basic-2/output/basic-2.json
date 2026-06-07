@@ -1647,8 +1647,7 @@
       "addr": 38140,
       "name": "create_variable",
       "title": "Create a new variable",
-      "description": "Allocate a new entry for a variable that does not yet exist.",
-      "fall_through": true
+      "description": "Allocate a new entry for a variable that does not yet exist."
     },
     {
       "addr": 49077,
@@ -1673,6 +1672,19 @@
       "name": "advance_to_next_line",
       "title": "Advance the general pointer to the next program line",
       "description": "Add the line length (at offset 3) to zp_general; carry clear on return."
+    },
+    {
+      "addr": 38193,
+      "name": "clear_value_bytes",
+      "title": "Zero a run of value bytes",
+      "description": "Write X zero bytes after the variable name (initialise its value)."
+    },
+    {
+      "addr": 38233,
+      "name": "validate_var_name",
+      "title": "Validate / measure a variable name",
+      "description": "Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.",
+      "fall_through": true
     }
   ],
   "banners": [
@@ -1728,7 +1740,7 @@
     "zp_text_ptr2_1": 26,
     "zp_text_ptr2_off": 27,
     "zp_data_ptr": 28,
-    "l001d": 29,
+    "zp_data_ptr_1": 29,
     "zp_count": 30,
     "zp_listo": 31,
     "zp_trace_flag": 32,
@@ -19847,6 +19859,7 @@
         177,
         11
       ],
+      "comment_inline": "Get the current character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -19870,6 +19883,7 @@
         208,
         228
       ],
+      "comment_inline": "Not a colon: check for ELSE / end of line",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8b87",
@@ -19913,6 +19927,7 @@
         230,
         10
       ],
+      "comment_inline": "advance past the colon",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -19925,6 +19940,7 @@
         177,
         11
       ],
+      "comment_inline": "Get the next character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -19937,6 +19953,7 @@
         201,
         32
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -19947,6 +19964,7 @@
         240,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8ba3",
@@ -19970,6 +19988,7 @@
         144,
         14
       ],
+      "comment_inline": "Below &CF: a variable assignment",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "try_variable_assignment",
@@ -20284,9 +20303,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9531",
+      "operand": "clear_value_bytes",
       "target": 38193,
-      "target_label": "sub_c9531"
+      "target_label": "clear_value_bytes"
     },
     {
       "addr": 35810,
@@ -25462,6 +25481,7 @@
       "labels": [
         "usr_call"
       ],
+      "comment_inline": "C% supplies the carry...",
       "xref_summaries": [
         "&8f1e referenced 2 times by &8f14, &abd5"
       ],
@@ -25480,6 +25500,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...shifted into the carry flag",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -25490,6 +25511,7 @@
         4,
         4
       ],
+      "comment_inline": "A from A%",
       "type": "code",
       "mnemonic": "lda",
       "operand": "resint_a",
@@ -25503,6 +25525,7 @@
         96,
         4
       ],
+      "comment_inline": "X from X%",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "resint_x",
@@ -25516,6 +25539,7 @@
         100,
         4
       ],
+      "comment_inline": "Y from Y%",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "resint_y",
@@ -25529,6 +25553,7 @@
         42,
         0
       ],
+      "comment_inline": "Call the routine at the address in IWA",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(zp_iwa)",
@@ -25545,6 +25570,7 @@
       "labels": [
         "c8f2e"
       ],
+      "comment_inline": "error (shared)",
       "xref_summaries": [
         "&8f2e referenced 3 times by &8f34, &8f3e, &8f43"
       ],
@@ -28837,9 +28863,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9559",
+      "operand": "validate_var_name",
       "target": 38233,
-      "target_label": "sub_c9559"
+      "target_label": "validate_var_name"
     },
     {
       "addr": 37198,
@@ -29113,9 +29139,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9531",
+      "operand": "clear_value_bytes",
       "target": 38193,
-      "target_label": "sub_c9531"
+      "target_label": "clear_value_bytes"
     },
     {
       "addr": 37244,
@@ -34814,6 +34840,7 @@
       "labels": [
         "create_variable"
       ],
+      "comment_inline": "First character of the name",
       "xref_summaries": [
         "&94fc referenced 3 times by &8bd5, &9174, &9589"
       ],
@@ -34832,6 +34859,7 @@
         177,
         55
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -34843,6 +34871,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "double it to index the variable table",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -34855,6 +34884,7 @@
       "labels": [
         "c9501"
       ],
+      "comment_inline": "chain pointer low (&3A)",
       "xref_summaries": [
         "&9501 referenced 2 times by &94f6, &94fa"
       ],
@@ -34874,6 +34904,7 @@
         169,
         4
       ],
+      "comment_inline": "table base high page (&04)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -34884,6 +34915,7 @@
         133,
         59
       ],
+      "comment_inline": "chain pointer high (&3B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -34899,6 +34931,7 @@
       "labels": [
         "loop_c9507"
       ],
+      "comment_inline": "Walk to the end of the chain: link high",
       "xref_summaries": [
         "&9507 referenced 1 time by &9514"
       ],
@@ -34917,6 +34950,7 @@
         240,
         11
       ],
+      "comment_inline": "zero: found the end, append here",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9516",
@@ -34928,6 +34962,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -34936,6 +34971,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "link low",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -34945,6 +34981,7 @@
         177,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -34957,6 +34994,7 @@
         133,
         58
       ],
+      "comment_inline": "follow the link: low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -34969,6 +35007,7 @@
         134,
         59
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -34980,6 +35019,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -34989,6 +35029,7 @@
         16,
         241
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9507",
@@ -35004,6 +35045,7 @@
       "labels": [
         "c9516"
       ],
+      "comment_inline": "Link the new entry (at VARTOP): high...",
       "xref_summaries": [
         "&9516 referenced 1 time by &9509"
       ],
@@ -35022,6 +35064,7 @@
         145,
         58
       ],
+      "comment_inline": "...into the previous link",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(l003a),y",
@@ -35034,6 +35077,7 @@
         165,
         2
       ],
+      "comment_inline": "low...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -35045,6 +35089,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -35054,6 +35099,7 @@
         145,
         58
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(l003a),y",
@@ -35065,6 +35111,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "the new entry header",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -35073,6 +35120,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -35082,6 +35130,7 @@
         145,
         2
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -35094,6 +35143,7 @@
         196,
         57
       ],
+      "comment_inline": "name length reached?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -35106,6 +35156,7 @@
         240,
         49
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_11",
@@ -35120,6 +35171,7 @@
       "labels": [
         "loop_c9527"
       ],
+      "comment_inline": "Copy the name into the entry:",
       "xref_summaries": [
         "&9527 referenced 1 time by &952e"
       ],
@@ -35135,6 +35187,7 @@
         177,
         55
       ],
+      "comment_inline": "name char...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -35147,6 +35200,7 @@
         145,
         2
       ],
+      "comment_inline": "...into the entry",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -35159,6 +35213,7 @@
         196,
         57
       ],
+      "comment_inline": "all of the name?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -35171,6 +35226,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9527",
@@ -35182,6 +35238,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -35192,8 +35249,9 @@
         0
       ],
       "labels": [
-        "sub_c9531"
+        "clear_value_bytes"
       ],
+      "comment_inline": "Zero X value bytes after the name:",
       "xref_summaries": [
         "&9531 referenced 4 times by &8bdf, &9179, &957f, &b176"
       ],
@@ -35215,6 +35273,7 @@
       "labels": [
         "loop_c9533"
       ],
+      "comment_inline": "advance",
       "xref_summaries": [
         "&9533 referenced 1 time by &9537"
       ],
@@ -35230,6 +35289,7 @@
         145,
         2
       ],
+      "comment_inline": "clear a byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -35241,6 +35301,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count down",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -35250,6 +35311,7 @@
         208,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9533",
@@ -35264,6 +35326,7 @@
       "labels": [
         "sub_c9539"
       ],
+      "comment_inline": "Advance VARTOP past the new entry:",
       "xref_summaries": [
         "&9539 referenced 1 time by &b184"
       ],
@@ -35278,6 +35341,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -35287,6 +35351,7 @@
         101,
         2
       ],
+      "comment_inline": "low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop",
@@ -35299,6 +35364,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9541",
@@ -35311,6 +35377,7 @@
         230,
         3
       ],
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_vartop_1",
@@ -35326,6 +35393,7 @@
       "labels": [
         "c9541"
       ],
+      "comment_inline": "Check VARTOP hasn't reached the stack:",
       "xref_summaries": [
         "&9541 referenced 1 time by &953d"
       ],
@@ -35344,6 +35412,7 @@
         196,
         5
       ],
+      "comment_inline": "compare high",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_stack_ptr_1",
@@ -35356,6 +35425,7 @@
         144,
         15
       ],
+      "comment_inline": "below: room",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9556",
@@ -35368,6 +35438,7 @@
         208,
         4
       ],
+      "comment_inline": "above: no room",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c954d",
@@ -35380,6 +35451,7 @@
         197,
         4
       ],
+      "comment_inline": "equal: compare low",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_stack_ptr",
@@ -35392,6 +35464,7 @@
         144,
         9
       ],
+      "comment_inline": "below: room",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9556",
@@ -35407,6 +35480,7 @@
       "labels": [
         "c954d"
       ],
+      "comment_inline": "No room: unlink the new entry...",
       "xref_summaries": [
         "&954d referenced 1 time by &9547"
       ],
@@ -35423,6 +35497,7 @@
         160,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -35433,6 +35508,7 @@
         145,
         58
       ],
+      "comment_inline": "(clear the link)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(l003a),y",
@@ -35446,6 +35522,7 @@
         183,
         140
       ],
+      "comment_inline": "No room error",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "err_no_room",
@@ -35461,6 +35538,7 @@
       "labels": [
         "c9556"
       ],
+      "comment_inline": "Commit the new VARTOP",
       "xref_summaries": [
         "&9556 referenced 2 times by &9545, &954b"
       ],
@@ -35482,6 +35560,7 @@
       "labels": [
         "return_11"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&9558 referenced 1 time by &9525"
       ],
@@ -35498,8 +35577,9 @@
         1
       ],
       "labels": [
-        "sub_c9559"
+        "validate_var_name"
       ],
+      "comment_inline": "Validate the name from offset 1:",
       "xref_summaries": [
         "&9559 referenced 1 time by &914b"
       ],
@@ -35519,6 +35599,7 @@
       "labels": [
         "c955b"
       ],
+      "comment_inline": "character...",
       "xref_summaries": [
         "&955b referenced 2 times by &956f, &b1d5"
       ],
@@ -35538,6 +35619,7 @@
         201,
         48
       ],
+      "comment_inline": "below \"0\": end of name",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&30"
@@ -35548,6 +35630,7 @@
         144,
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_12",
@@ -35560,6 +35643,7 @@
         201,
         64
       ],
+      "comment_inline": "in the digit/symbol range?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&40"
@@ -35570,6 +35654,7 @@
         176,
         12
       ],
+      "comment_inline": "letter range: continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9571",
@@ -35582,6 +35667,7 @@
         201,
         58
       ],
+      "comment_inline": "\":\" or above (not a digit)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -35592,6 +35678,7 @@
         176,
         16
       ],
+      "comment_inline": "not a name character: stop",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_12",
@@ -35604,6 +35691,7 @@
         192,
         1
       ],
+      "comment_inline": "is this the first character?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#1"
@@ -35614,6 +35702,7 @@
         240,
         12
       ],
+      "comment_inline": "names can't start with a digit",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_12",
@@ -35628,6 +35717,7 @@
       "labels": [
         "c956d"
       ],
+      "comment_inline": "count the character",
       "xref_summaries": [
         "&956d referenced 2 times by &9577, &957c"
       ],
@@ -35643,6 +35733,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -35652,6 +35743,7 @@
         208,
         234
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c955b",
@@ -35667,6 +35759,7 @@
       "labels": [
         "c9571"
       ],
+      "comment_inline": "below \"_\"?",
       "xref_summaries": [
         "&9571 referenced 1 time by &9563"
       ],
@@ -35683,6 +35776,7 @@
         176,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c957a",
@@ -35695,6 +35789,7 @@
         201,
         91
       ],
+      "comment_inline": "A-Z?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&5b"
@@ -35705,6 +35800,7 @@
         144,
         244
       ],
+      "comment_inline": "letter: accept",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c956d",
@@ -35719,6 +35815,7 @@
       "labels": [
         "return_12"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&9579 referenced 3 times by &955f, &9567, &956b"
       ],
@@ -35739,6 +35836,7 @@
       "labels": [
         "c957a"
       ],
+      "comment_inline": "a-z?",
       "xref_summaries": [
         "&957a referenced 1 time by &9573"
       ],
@@ -35755,6 +35853,7 @@
         144,
         239
       ],
+      "comment_inline": "accept",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c956d",
@@ -35766,6 +35865,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -35779,6 +35879,7 @@
       "labels": [
         "c957f"
       ],
+      "comment_inline": "Zero the value bytes of the new variable",
       "xref_summaries": [
         "&957f referenced 2 times by &9590, &9593"
       ],
@@ -35788,9 +35889,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9531",
+      "operand": "clear_value_bytes",
       "target": 38193,
-      "target_label": "sub_c9531"
+      "target_label": "clear_value_bytes"
     },
     {
       "addr": 38274,
@@ -77762,6 +77863,7 @@
       "labels": [
         "read_key_timed"
       ],
+      "comment_inline": "Evaluate the time-limit argument",
       "xref_summaries": [
         "&afad referenced 2 times by &acad, &b026"
       ],
@@ -77781,6 +77883,7 @@
         169,
         129
       ],
+      "comment_inline": "OSBYTE &81: INKEY (read a key with a timeout)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_inkey"
@@ -77791,6 +77894,7 @@
         166,
         42
       ],
+      "comment_inline": "time limit low",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa",
@@ -77803,6 +77907,7 @@
         164,
         43
       ],
+      "comment_inline": "time limit high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_iwa_1",
@@ -80575,9 +80680,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9531",
+      "operand": "clear_value_bytes",
       "target": 38193,
-      "target_label": "sub_c9531"
+      "target_label": "clear_value_bytes"
     },
     {
       "addr": 45433,
@@ -95319,9 +95424,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l001d",
+      "operand": "zp_data_ptr_1",
       "target": 29,
-      "target_label": "l001d"
+      "target_label": "zp_data_ptr_1"
     },
     {
       "addr": 47890,
@@ -95648,9 +95753,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l001d",
+      "operand": "zp_data_ptr_1",
       "target": 29,
-      "target_label": "l001d"
+      "target_label": "zp_data_ptr_1"
     },
     {
       "addr": 47949,
@@ -95731,9 +95836,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l001d",
+      "operand": "zp_data_ptr_1",
       "target": 29,
-      "target_label": "l001d"
+      "target_label": "zp_data_ptr_1"
     },
     {
       "addr": 47962,
@@ -96561,6 +96666,7 @@
         176,
         236
       ],
+      "comment_inline": "Too many nested REPEATs",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "err_too_many_repeats",
@@ -96574,6 +96680,7 @@
         109,
         152
       ],
+      "comment_inline": "Point PtrA at the loop start",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c986d",
@@ -96600,6 +96707,7 @@
         164,
         5
       ],
+      "comment_inline": "Store the loop position: low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05a4,x",
@@ -96612,6 +96720,7 @@
         165,
         12
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -96625,6 +96734,7 @@
         184,
         5
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05b8,x",
@@ -96637,6 +96747,7 @@
         230,
         36
       ],
+      "comment_inline": "One more REPEAT outstanding",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_repeat_level",
@@ -96650,6 +96761,7 @@
         163,
         139
       ],
+      "comment_inline": "Continue execution",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ba3",
@@ -96665,6 +96777,7 @@
       "labels": [
         "sub_cbbfc"
       ],
+      "comment_inline": "Point at the string buffer (&0600): low",
       "xref_summaries": [
         "&bbfc referenced 1 time by &baa2"
       ],
@@ -96681,6 +96794,7 @@
         169,
         6
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#6"
@@ -96691,6 +96805,7 @@
         208,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc09",
@@ -98551,6 +98666,7 @@
       "labels": [
         "clear_vars_heap_stack"
       ],
+      "comment_inline": "LOMEM and VARTOP = TOP: low",
       "xref_summaries": [
         "&bd20 referenced 5 times by &8af3, &90c9, &9290, &bcc9, &bd14"
       ],
@@ -98573,6 +98689,7 @@
         133,
         0
       ],
+      "comment_inline": "LOMEM low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem",
@@ -98585,6 +98702,7 @@
         133,
         2
       ],
+      "comment_inline": "VARTOP low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop",
@@ -98597,6 +98715,7 @@
         165,
         19
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -98609,6 +98728,7 @@
         133,
         1
       ],
+      "comment_inline": "LOMEM high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem_1",
@@ -98621,6 +98741,7 @@
         133,
         3
       ],
+      "comment_inline": "VARTOP high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop_1",
@@ -98634,6 +98755,7 @@
         58,
         189
       ],
+      "comment_inline": "Clear the DATA pointer and the stacks",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbd3a",
@@ -98649,6 +98771,7 @@
       "labels": [
         "sub_cbd2f"
       ],
+      "comment_inline": "Clear the variable table (&0480-&04FF):",
       "xref_summaries": [
         "&bd2f referenced 1 time by &927e"
       ],
@@ -98665,6 +98788,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -98679,6 +98803,7 @@
       "labels": [
         "loop_cbd33"
       ],
+      "comment_inline": "clear a byte",
       "xref_summaries": [
         "&bd33 referenced 1 time by &bd37"
       ],
@@ -98696,6 +98821,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count down",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -98705,6 +98831,7 @@
         208,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbd33",
@@ -98716,6 +98843,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -98728,6 +98856,7 @@
       "labels": [
         "sub_cbd3a"
       ],
+      "comment_inline": "DATA pointer = PAGE: high",
       "xref_summaries": [
         "&bd3a referenced 3 times by &8b1a, &b41b, &bd2c"
       ],
@@ -98748,11 +98877,12 @@
         133,
         29
       ],
+      "comment_inline": "(data pointer high)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l001d",
+      "operand": "zp_data_ptr_1",
       "target": 29,
-      "target_label": "l001d"
+      "target_label": "zp_data_ptr_1"
     },
     {
       "addr": 48446,
@@ -98760,6 +98890,7 @@
         165,
         6
       ],
+      "comment_inline": "STACK = HIMEM: low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_himem",
@@ -98772,6 +98903,7 @@
         133,
         4
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -98784,6 +98916,7 @@
         165,
         7
       ],
+      "comment_inline": "HIMEM high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l0007",
@@ -98796,6 +98929,7 @@
         133,
         5
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr_1",
@@ -98808,6 +98942,7 @@
         169,
         0
       ],
+      "comment_inline": "Clear the loop/subroutine levels:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -98818,6 +98953,7 @@
         133,
         36
       ],
+      "comment_inline": "REPEAT",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_repeat_level",
@@ -98830,6 +98966,7 @@
         133,
         38
       ],
+      "comment_inline": "FOR",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_for_level",
@@ -98842,6 +98979,7 @@
         133,
         37
       ],
+      "comment_inline": "GOSUB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_gosub_level",
@@ -98854,6 +98992,7 @@
         133,
         28
       ],
+      "comment_inline": "DATA pointer low = 0 (= PAGE)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr",
@@ -98865,6 +99004,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },

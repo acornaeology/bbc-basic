@@ -75,7 +75,7 @@ zp_text_ptr2_off = &1b
 ; &1b referenced 90 times by &8827, &8a8c, &8a8e, &8bc7, &8bd0, &8de9, &8df4, &8e6b, &8e7a, &8eb3, &8eea, &8f0c, &930e, &9345, &95a8, &95b0, &95d5, &9603, &9617, &965f, &9661, &966e, &9683, &96c1, &96e4, &9705, &9811, &9813, &9815, &984d, &9852, &98cc, &9b27, &9b34, &9bc1, &9bd4, &9bdf, &9be9, &9bfa, &9e24, &9e26, &a0e8, &ac00, &ac18, &ac24, &ac41, &ac46, &ac5e, &ac69, &aceb, &acf9, &ade4, &adec, &adee, &ae20, &ae38, &ae59, &ae77, &aea5, &aedc, &aee4, &af0a, &af49, &afd5, &aff7, &b045, &b051, &b09f, &b1be, &b1dc, &b202, &b215, &b24d, &b25b, &b266, &b758, &b81d, &b873, &b924, &b9a5, &b9d4, &b9e9, &ba8a, &bab0, &bb41, &bb50, &bb5e, &bb7a, &bbae, &bfab
 zp_data_ptr      = &1c
 ; &1c referenced 4 times by &bb0c, &bb45, &bb54, &bd4e
-l001d            = &1d
+zp_data_ptr_1    = &1d
 ; &1d referenced 4 times by &bb10, &bb4b, &bb58, &bd3c
 zp_count         = &1e
 ; &1e referenced 7 times by &851e, &8dab, &8e4c, &aef7, &b56a, &b572, &bc2a
@@ -2237,18 +2237,18 @@ l848a = sub_c847b+15
 ; &8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6
 .statement_loop
     ldy #0                                                            ; 8b9b: a0 00       ..       ; Fetch the next character of the statement
-    lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..    
+    lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..       ; Get the current character
     cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
-    bne c8b87                                                         ; 8ba1: d0 e4       ..    
+    bne c8b87                                                         ; 8ba1: d0 e4       ..       ; Not a colon: check for ELSE / end of line
 ; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
 .c8ba3
     ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..       ; Skip spaces to the next statement
-    inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..    
-    lda (zp_text_ptr),y                                               ; 8ba7: b1 0b       ..    
-    cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .     
-    beq c8ba3                                                         ; 8bab: f0 f6       ..    
+    inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..       ; advance past the colon
+    lda (zp_text_ptr),y                                               ; 8ba7: b1 0b       ..       ; Get the next character
+    cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .        ; Skip spaces
+    beq c8ba3                                                         ; 8bab: f0 f6       ..       ; loop
     cmp #&cf                                                          ; 8bad: c9 cf       ..       ; Below &CF: a variable assignment, not a command
-    bcc try_variable_assignment                                       ; 8baf: 90 0e       ..    
+    bcc try_variable_assignment                                       ; 8baf: 90 0e       ..       ; Below &CF: a variable assignment
 ; ***************************************************************************************
 ; Dispatch a tokenised function or command
 ;
@@ -2291,7 +2291,7 @@ l848a = sub_c847b+15
     inx                                                               ; 8bde: e8          .        ; X = 6
 ; &8bdf referenced 1 time by &8bdc
 .c8bdf
-    jsr sub_c9531                                                     ; 8bdf: 20 31 95     1.      ; Evaluate and store the value
+    jsr clear_value_bytes                                             ; 8bdf: 20 31 95     1.      ; Evaluate and store the value
     dec zp_text_ptr_off                                               ; 8be2: c6 0a       ..       ; Step back, continue
 ; ***************************************************************************************
 ; LET
@@ -2867,15 +2867,15 @@ l848a = sub_c847b+15
 ; at the address in IWA. On return the registers are captured back.
 ; &8f1e referenced 2 times by &8f14, &abd5
 .usr_call
-    lda resint_c                                                      ; 8f1e: ad 0c 04    ...   
-    lsr a                                                             ; 8f21: 4a          J     
-    lda resint_a                                                      ; 8f22: ad 04 04    ...   
-    ldx resint_x                                                      ; 8f25: ae 60 04    .`.   
-    ldy resint_y                                                      ; 8f28: ac 64 04    .d.   
-    jmp (zp_iwa)                                                      ; 8f2b: 6c 2a 00    l*.   
+    lda resint_c                                                      ; 8f1e: ad 0c 04    ...      ; C% supplies the carry...
+    lsr a                                                             ; 8f21: 4a          J        ; ...shifted into the carry flag
+    lda resint_a                                                      ; 8f22: ad 04 04    ...      ; A from A%
+    ldx resint_x                                                      ; 8f25: ae 60 04    .`.      ; X from X%
+    ldy resint_y                                                      ; 8f28: ac 64 04    .d.      ; Y from Y%
+    jmp (zp_iwa)                                                      ; 8f2b: 6c 2a 00    l*.      ; Call the routine at the address in IWA
 ; &8f2e referenced 3 times by &8f34, &8f3e, &8f43
 .c8f2e
-    jmp c982a                                                         ; 8f2e: 4c 2a 98    L*.   
+    jmp c982a                                                         ; 8f2e: 4c 2a 98    L*.      ; error (shared)
 ; ***************************************************************************************
 ; DELETE
 ;
@@ -3208,7 +3208,7 @@ l848a = sub_c847b+15
     ldx #5                                                            ; 9145: a2 05       ..    
     stx zp_fwb_m2                                                     ; 9147: 86 3f       .?    
     ldx zp_text_ptr_off                                               ; 9149: a6 0a       ..    
-    jsr sub_c9559                                                     ; 914b: 20 59 95     Y.   
+    jsr validate_var_name                                             ; 914b: 20 59 95     Y.   
     cpy #1                                                            ; 914e: c0 01       ..    
     beq c9127                                                         ; 9150: f0 d5       ..    
     cmp #&28 ; '('                                                    ; 9152: c9 28       .(    
@@ -3236,7 +3236,7 @@ l848a = sub_c847b+15
     bne c9127                                                         ; 9172: d0 b3       ..    
     jsr create_variable                                               ; 9174: 20 fc 94     ..   
     ldx #1                                                            ; 9177: a2 01       ..    
-    jsr sub_c9531                                                     ; 9179: 20 31 95     1.   
+    jsr clear_value_bytes                                             ; 9179: 20 31 95     1.   
     lda zp_fwb_m2                                                     ; 917c: a5 3f       .?    
     pha                                                               ; 917e: 48          H     
     lda #1                                                            ; 917f: a9 01       ..    
@@ -3905,117 +3905,126 @@ l848a = sub_c847b+15
 ; Allocate a new entry for a variable that does not yet exist.
 ; &94fc referenced 3 times by &8bd5, &9174, &9589
 .create_variable
-    ldy #1                                                            ; 94fc: a0 01       ..    
-    lda (zp_general),y                                                ; 94fe: b1 37       .7    
-    asl a                                                             ; 9500: 0a          .     
+    ldy #1                                                            ; 94fc: a0 01       ..       ; First character of the name
+    lda (zp_general),y                                                ; 94fe: b1 37       .7       ; get it
+    asl a                                                             ; 9500: 0a          .        ; double it to index the variable table
 ; &9501 referenced 2 times by &94f6, &94fa
 .c9501
-    sta l003a                                                         ; 9501: 85 3a       .:    
-    lda #4                                                            ; 9503: a9 04       ..    
-    sta zp_fwb_sign                                                   ; 9505: 85 3b       .;    
+    sta l003a                                                         ; 9501: 85 3a       .:       ; chain pointer low (&3A)
+    lda #4                                                            ; 9503: a9 04       ..       ; table base high page (&04)
+    sta zp_fwb_sign                                                   ; 9505: 85 3b       .;       ; chain pointer high (&3B)
 ; &9507 referenced 1 time by &9514
 .loop_c9507
-    lda (l003a),y                                                     ; 9507: b1 3a       .:    
-    beq c9516                                                         ; 9509: f0 0b       ..    
-    tax                                                               ; 950b: aa          .     
-    dey                                                               ; 950c: 88          .     
-    lda (l003a),y                                                     ; 950d: b1 3a       .:    
-    sta l003a                                                         ; 950f: 85 3a       .:    
-    stx zp_fwb_sign                                                   ; 9511: 86 3b       .;    
-    iny                                                               ; 9513: c8          .     
-    bpl loop_c9507                                                    ; 9514: 10 f1       ..    
+    lda (l003a),y                                                     ; 9507: b1 3a       .:       ; Walk to the end of the chain: link high
+    beq c9516                                                         ; 9509: f0 0b       ..       ; zero: found the end, append here
+    tax                                                               ; 950b: aa          .        ; save it
+    dey                                                               ; 950c: 88          .        ; link low
+    lda (l003a),y                                                     ; 950d: b1 3a       .:       ; ...
+    sta l003a                                                         ; 950f: 85 3a       .:       ; follow the link: low
+    stx zp_fwb_sign                                                   ; 9511: 86 3b       .;       ; high
+    iny                                                               ; 9513: c8          .        ; advance
+    bpl loop_c9507                                                    ; 9514: 10 f1       ..       ; loop
 ; &9516 referenced 1 time by &9509
 .c9516
-    lda zp_vartop_1                                                   ; 9516: a5 03       ..    
-    sta (l003a),y                                                     ; 9518: 91 3a       .:    
-    lda zp_vartop                                                     ; 951a: a5 02       ..    
-    dey                                                               ; 951c: 88          .     
-    sta (l003a),y                                                     ; 951d: 91 3a       .:    
-    tya                                                               ; 951f: 98          .     
-    iny                                                               ; 9520: c8          .     
-    sta (zp_vartop),y                                                 ; 9521: 91 02       ..    
-    cpy zp_fileblk                                                    ; 9523: c4 39       .9    
-    beq return_11                                                     ; 9525: f0 31       .1    
+    lda zp_vartop_1                                                   ; 9516: a5 03       ..       ; Link the new entry (at VARTOP): high...
+    sta (l003a),y                                                     ; 9518: 91 3a       .:       ; ...into the previous link
+    lda zp_vartop                                                     ; 951a: a5 02       ..       ; low...
+    dey                                                               ; 951c: 88          .        ; ...
+    sta (l003a),y                                                     ; 951d: 91 3a       .:       ; (store)
+    tya                                                               ; 951f: 98          .        ; the new entry header
+    iny                                                               ; 9520: c8          .        ; ...
+    sta (zp_vartop),y                                                 ; 9521: 91 02       ..       ; (store)
+    cpy zp_fileblk                                                    ; 9523: c4 39       .9       ; name length reached?
+    beq return_11                                                     ; 9525: f0 31       .1       ; done
 ; &9527 referenced 1 time by &952e
 .loop_c9527
-    iny                                                               ; 9527: c8          .     
-    lda (zp_general),y                                                ; 9528: b1 37       .7    
-    sta (zp_vartop),y                                                 ; 952a: 91 02       ..    
-    cpy zp_fileblk                                                    ; 952c: c4 39       .9    
-    bne loop_c9527                                                    ; 952e: d0 f7       ..    
-    rts                                                               ; 9530: 60          `     
+    iny                                                               ; 9527: c8          .        ; Copy the name into the entry:
+    lda (zp_general),y                                                ; 9528: b1 37       .7       ; name char...
+    sta (zp_vartop),y                                                 ; 952a: 91 02       ..       ; ...into the entry
+    cpy zp_fileblk                                                    ; 952c: c4 39       .9       ; all of the name?
+    bne loop_c9527                                                    ; 952e: d0 f7       ..       ; loop
+    rts                                                               ; 9530: 60          `        ; Return
+; ***************************************************************************************
+; Zero a run of value bytes
+;
+; Write X zero bytes after the variable name (initialise its value).
 ; &9531 referenced 4 times by &8bdf, &9179, &957f, &b176
-.sub_c9531
-    lda #0                                                            ; 9531: a9 00       ..    
+.clear_value_bytes
+    lda #0                                                            ; 9531: a9 00       ..       ; Zero X value bytes after the name:
 ; &9533 referenced 1 time by &9537
 .loop_c9533
-    iny                                                               ; 9533: c8          .     
-    sta (zp_vartop),y                                                 ; 9534: 91 02       ..    
-    dex                                                               ; 9536: ca          .     
-    bne loop_c9533                                                    ; 9537: d0 fa       ..    
+    iny                                                               ; 9533: c8          .        ; advance
+    sta (zp_vartop),y                                                 ; 9534: 91 02       ..       ; clear a byte
+    dex                                                               ; 9536: ca          .        ; count down
+    bne loop_c9533                                                    ; 9537: d0 fa       ..       ; loop
 ; &9539 referenced 1 time by &b184
 .sub_c9539
-    sec                                                               ; 9539: 38          8     
-    tya                                                               ; 953a: 98          .     
-    adc zp_vartop                                                     ; 953b: 65 02       e.    
-    bcc c9541                                                         ; 953d: 90 02       ..    
-    inc zp_vartop_1                                                   ; 953f: e6 03       ..    
+    sec                                                               ; 9539: 38          8        ; Advance VARTOP past the new entry:
+    tya                                                               ; 953a: 98          .        ; ...
+    adc zp_vartop                                                     ; 953b: 65 02       e.       ; low
+    bcc c9541                                                         ; 953d: 90 02       ..       ; ...
+    inc zp_vartop_1                                                   ; 953f: e6 03       ..       ; carry into high
 ; &9541 referenced 1 time by &953d
 .c9541
-    ldy zp_vartop_1                                                   ; 9541: a4 03       ..    
-    cpy zp_stack_ptr_1                                                ; 9543: c4 05       ..    
-    bcc c9556                                                         ; 9545: 90 0f       ..    
-    bne c954d                                                         ; 9547: d0 04       ..    
-    cmp zp_stack_ptr                                                  ; 9549: c5 04       ..    
-    bcc c9556                                                         ; 954b: 90 09       ..    
+    ldy zp_vartop_1                                                   ; 9541: a4 03       ..       ; Check VARTOP hasn't reached the stack:
+    cpy zp_stack_ptr_1                                                ; 9543: c4 05       ..       ; compare high
+    bcc c9556                                                         ; 9545: 90 0f       ..       ; below: room
+    bne c954d                                                         ; 9547: d0 04       ..       ; above: no room
+    cmp zp_stack_ptr                                                  ; 9549: c5 04       ..       ; equal: compare low
+    bcc c9556                                                         ; 954b: 90 09       ..       ; below: room
 ; &954d referenced 1 time by &9547
 .c954d
-    lda #0                                                            ; 954d: a9 00       ..    
-    ldy #1                                                            ; 954f: a0 01       ..    
-    sta (l003a),y                                                     ; 9551: 91 3a       .:    
-    jmp err_no_room                                                   ; 9553: 4c b7 8c    L..   
+    lda #0                                                            ; 954d: a9 00       ..       ; No room: unlink the new entry...
+    ldy #1                                                            ; 954f: a0 01       ..       ; ...
+    sta (l003a),y                                                     ; 9551: 91 3a       .:       ; (clear the link)
+    jmp err_no_room                                                   ; 9553: 4c b7 8c    L..      ; No room error
 ; &9556 referenced 2 times by &9545, &954b
 .c9556
-    sta zp_vartop                                                     ; 9556: 85 02       ..    
+    sta zp_vartop                                                     ; 9556: 85 02       ..       ; Commit the new VARTOP
 ; &9558 referenced 1 time by &9525
 .return_11
-    rts                                                               ; 9558: 60          `     
+    rts                                                               ; 9558: 60          `        ; Return
+; ***************************************************************************************
+; Validate / measure a variable name
+;
+; Scan a variable name, counting its characters (letters, digits, _); a leading digit is
+; rejected.
 ; &9559 referenced 1 time by &914b
-.sub_c9559
-    ldy #1                                                            ; 9559: a0 01       ..    
+.validate_var_name
+    ldy #1                                                            ; 9559: a0 01       ..       ; Validate the name from offset 1:
 ; &955b referenced 2 times by &956f, &b1d5
 .c955b
-    lda (zp_general),y                                                ; 955b: b1 37       .7    
-    cmp #&30 ; '0'                                                    ; 955d: c9 30       .0    
-    bcc return_12                                                     ; 955f: 90 18       ..    
-    cmp #&40 ; '@'                                                    ; 9561: c9 40       .@    
-    bcs c9571                                                         ; 9563: b0 0c       ..    
-    cmp #&3a ; ':'                                                    ; 9565: c9 3a       .:    
-    bcs return_12                                                     ; 9567: b0 10       ..    
-    cpy #1                                                            ; 9569: c0 01       ..    
-    beq return_12                                                     ; 956b: f0 0c       ..    
+    lda (zp_general),y                                                ; 955b: b1 37       .7       ; character...
+    cmp #&30 ; '0'                                                    ; 955d: c9 30       .0       ; below "0": end of name
+    bcc return_12                                                     ; 955f: 90 18       ..       ; ...
+    cmp #&40 ; '@'                                                    ; 9561: c9 40       .@       ; in the digit/symbol range?
+    bcs c9571                                                         ; 9563: b0 0c       ..       ; letter range: continue
+    cmp #&3a ; ':'                                                    ; 9565: c9 3a       .:       ; ":" or above (not a digit)?
+    bcs return_12                                                     ; 9567: b0 10       ..       ; not a name character: stop
+    cpy #1                                                            ; 9569: c0 01       ..       ; is this the first character?
+    beq return_12                                                     ; 956b: f0 0c       ..       ; names can't start with a digit
 ; &956d referenced 2 times by &9577, &957c
 .c956d
-    inx                                                               ; 956d: e8          .     
-    iny                                                               ; 956e: c8          .     
-    bne c955b                                                         ; 956f: d0 ea       ..    
+    inx                                                               ; 956d: e8          .        ; count the character
+    iny                                                               ; 956e: c8          .        ; next
+    bne c955b                                                         ; 956f: d0 ea       ..       ; loop
 ; &9571 referenced 1 time by &9563
 .c9571
-    cmp #&5f ; '_'                                                    ; 9571: c9 5f       ._    
-    bcs c957a                                                         ; 9573: b0 05       ..    
-    cmp #&5b ; '['                                                    ; 9575: c9 5b       .[    
-    bcc c956d                                                         ; 9577: 90 f4       ..    
+    cmp #&5f ; '_'                                                    ; 9571: c9 5f       ._       ; below "_"?
+    bcs c957a                                                         ; 9573: b0 05       ..       ; ...
+    cmp #&5b ; '['                                                    ; 9575: c9 5b       .[       ; A-Z?
+    bcc c956d                                                         ; 9577: 90 f4       ..       ; letter: accept
 ; &9579 referenced 3 times by &955f, &9567, &956b
 .return_12
-    rts                                                               ; 9579: 60          `     
+    rts                                                               ; 9579: 60          `        ; Return
 ; &957a referenced 1 time by &9573
 .c957a
-    cmp #&7b ; '{'                                                    ; 957a: c9 7b       .{    
-    bcc c956d                                                         ; 957c: 90 ef       ..    
-    rts                                                               ; 957e: 60          `     
+    cmp #&7b ; '{'                                                    ; 957a: c9 7b       .{       ; a-z?
+    bcc c956d                                                         ; 957c: 90 ef       ..       ; accept
+    rts                                                               ; 957e: 60          `        ; Return
 ; &957f referenced 2 times by &9590, &9593
 .c957f
-    jsr sub_c9531                                                     ; 957f: 20 31 95     1.   
+    jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable
 ; ***************************************************************************************
 ; Parse an assignment target variable
 ;
@@ -8791,10 +8800,10 @@ l848a = sub_c847b+15
 ; Wait up to the given time for a key; the INKEY/INKEY$ primitive.
 ; &afad referenced 2 times by &acad, &b026
 .read_key_timed
-    jsr sub_c92e3                                                     ; afad: 20 e3 92     ..   
-    lda #osbyte_inkey                                                 ; afb0: a9 81       ..    
-    ldx zp_iwa                                                        ; afb2: a6 2a       .*    
-    ldy zp_iwa_1                                                      ; afb4: a4 2b       .+    
+    jsr sub_c92e3                                                     ; afad: 20 e3 92     ..      ; Evaluate the time-limit argument
+    lda #osbyte_inkey                                                 ; afb0: a9 81       ..       ; OSBYTE &81: INKEY (read a key with a timeout)
+    ldx zp_iwa                                                        ; afb2: a6 2a       .*       ; time limit low
+    ldy zp_iwa_1                                                      ; afb4: a4 2b       .+       ; time limit high
     jmp osbyte                                                        ; afb6: 4c f4 ff    L..      ; INKEY: Scan for a key with positive X, or read internal key number EOR 128 for negative X
 ; ***************************************************************************************
 ; GET
@@ -9112,7 +9121,7 @@ l848a = sub_c847b+15
     jsr c986d                                                         ; b16e: 20 6d 98     m.   
     jsr sub_c94ed                                                     ; b171: 20 ed 94     ..   
     ldx #1                                                            ; b174: a2 01       ..    
-    jsr sub_c9531                                                     ; b176: 20 31 95     1.   
+    jsr clear_value_bytes                                             ; b176: 20 31 95     1.   
     ldy #0                                                            ; b179: a0 00       ..    
     lda zp_text_ptr                                                   ; b17b: a5 0b       ..    
     sta (zp_vartop),y                                                 ; b17d: 91 02       ..    
@@ -10709,7 +10718,7 @@ l848a = sub_c847b+15
     lda zp_fwb_exp                                                    ; bb0a: a5 3d       .=    
     sta zp_data_ptr                                                   ; bb0c: 85 1c       ..    
     lda zp_fwb_m1                                                     ; bb0e: a5 3e       .>    
-    sta l001d                                                         ; bb10: 85 1d       ..    
+    sta zp_data_ptr_1                                                 ; bb10: 85 1d       ..    
     jmp statement_loop                                                ; bb12: 4c 9b 8b    L..   
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .cbb15
@@ -10745,7 +10754,7 @@ l848a = sub_c847b+15
     sta zp_data_ptr                                                   ; bb45: 85 1c       ..    
     lda zp_text_ptr2_1                                                ; bb47: a5 1a       ..    
     adc #0                                                            ; bb49: 69 00       i.    
-    sta l001d                                                         ; bb4b: 85 1d       ..    
+    sta zp_data_ptr_1                                                 ; bb4b: 85 1d       ..    
     jmp cbb15                                                         ; bb4d: 4c 15 bb    L..   
 ; &bb50 referenced 2 times by &bb26, &bb32
 .sub_cbb50
@@ -10753,7 +10762,7 @@ l848a = sub_c847b+15
     sta zp_text_ptr_off                                               ; bb52: 85 0a       ..    
     lda zp_data_ptr                                                   ; bb54: a5 1c       ..    
     sta zp_text_ptr2                                                  ; bb56: 85 19       ..    
-    lda l001d                                                         ; bb58: a5 1d       ..    
+    lda zp_data_ptr_1                                                 ; bb58: a5 1d       ..    
     sta zp_text_ptr2_1                                                ; bb5a: 85 1a       ..    
     ldy #0                                                            ; bb5c: a0 00       ..    
     sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..    
@@ -10846,19 +10855,19 @@ l848a = sub_c847b+15
 .stmt_repeat
     ldx zp_repeat_level                                               ; bbe4: a6 24       .$       ; Index the REPEAT stack
     cpx #&14                                                          ; bbe6: e0 14       ..       ; At most 20 nested REPEATs
-    bcs err_too_many_repeats                                          ; bbe8: b0 ec       ..    
-    jsr c986d                                                         ; bbea: 20 6d 98     m.   
+    bcs err_too_many_repeats                                          ; bbe8: b0 ec       ..       ; Too many nested REPEATs
+    jsr c986d                                                         ; bbea: 20 6d 98     m.      ; Point PtrA at the loop start
     lda zp_text_ptr                                                   ; bbed: a5 0b       ..       ; Push the loop-start position
-    sta l05a4,x                                                       ; bbef: 9d a4 05    ...   
-    lda zp_text_ptr_1                                                 ; bbf2: a5 0c       ..    
-    sta l05b8,x                                                       ; bbf4: 9d b8 05    ...   
-    inc zp_repeat_level                                               ; bbf7: e6 24       .$    
-    jmp c8ba3                                                         ; bbf9: 4c a3 8b    L..   
+    sta l05a4,x                                                       ; bbef: 9d a4 05    ...      ; Store the loop position: low
+    lda zp_text_ptr_1                                                 ; bbf2: a5 0c       ..       ; high
+    sta l05b8,x                                                       ; bbf4: 9d b8 05    ...      ; (store)
+    inc zp_repeat_level                                               ; bbf7: e6 24       .$       ; One more REPEAT outstanding
+    jmp c8ba3                                                         ; bbf9: 4c a3 8b    L..      ; Continue execution
 ; &bbfc referenced 1 time by &baa2
 .sub_cbbfc
-    ldy #0                                                            ; bbfc: a0 00       ..    
-    lda #6                                                            ; bbfe: a9 06       ..    
-    bne cbc09                                                         ; bc00: d0 07       ..    
+    ldy #0                                                            ; bbfc: a0 00       ..       ; Point at the string buffer (&0600): low
+    lda #6                                                            ; bbfe: a9 06       ..       ; high
+    bne cbc09                                                         ; bc00: d0 07       ..       ; ...
 ; ***************************************************************************************
 ; Print the prompt and read a line
 ;
@@ -11064,37 +11073,37 @@ l848a = sub_c847b+15
 ; Reset variable storage, the heap and the BASIC stack (NEW/CLEAR).
 ; &bd20 referenced 5 times by &8af3, &90c9, &9290, &bcc9, &bd14
 .clear_vars_heap_stack
-    lda zp_top                                                        ; bd20: a5 12       ..    
-    sta zp_lomem                                                      ; bd22: 85 00       ..    
-    sta zp_vartop                                                     ; bd24: 85 02       ..    
-    lda zp_top_1                                                      ; bd26: a5 13       ..    
-    sta zp_lomem_1                                                    ; bd28: 85 01       ..    
-    sta zp_vartop_1                                                   ; bd2a: 85 03       ..    
-    jsr sub_cbd3a                                                     ; bd2c: 20 3a bd     :.   
+    lda zp_top                                                        ; bd20: a5 12       ..       ; LOMEM and VARTOP = TOP: low
+    sta zp_lomem                                                      ; bd22: 85 00       ..       ; LOMEM low
+    sta zp_vartop                                                     ; bd24: 85 02       ..       ; VARTOP low
+    lda zp_top_1                                                      ; bd26: a5 13       ..       ; high
+    sta zp_lomem_1                                                    ; bd28: 85 01       ..       ; LOMEM high
+    sta zp_vartop_1                                                   ; bd2a: 85 03       ..       ; VARTOP high
+    jsr sub_cbd3a                                                     ; bd2c: 20 3a bd     :.      ; Clear the DATA pointer and the stacks
 ; &bd2f referenced 1 time by &927e
 .sub_cbd2f
-    ldx #&80                                                          ; bd2f: a2 80       ..    
-    lda #0                                                            ; bd31: a9 00       ..    
+    ldx #&80                                                          ; bd2f: a2 80       ..       ; Clear the variable table (&0480-&04FF):
+    lda #0                                                            ; bd31: a9 00       ..       ; ...
 ; &bd33 referenced 1 time by &bd37
 .loop_cbd33
-    sta l047f,x                                                       ; bd33: 9d 7f 04    ...   
-    dex                                                               ; bd36: ca          .     
-    bne loop_cbd33                                                    ; bd37: d0 fa       ..    
-    rts                                                               ; bd39: 60          `     
+    sta l047f,x                                                       ; bd33: 9d 7f 04    ...      ; clear a byte
+    dex                                                               ; bd36: ca          .        ; count down
+    bne loop_cbd33                                                    ; bd37: d0 fa       ..       ; loop
+    rts                                                               ; bd39: 60          `        ; Return
 ; &bd3a referenced 3 times by &8b1a, &b41b, &bd2c
 .sub_cbd3a
-    lda zp_page                                                       ; bd3a: a5 18       ..    
-    sta l001d                                                         ; bd3c: 85 1d       ..    
-    lda zp_himem                                                      ; bd3e: a5 06       ..    
-    sta zp_stack_ptr                                                  ; bd40: 85 04       ..    
-    lda l0007                                                         ; bd42: a5 07       ..    
-    sta zp_stack_ptr_1                                                ; bd44: 85 05       ..    
-    lda #0                                                            ; bd46: a9 00       ..    
-    sta zp_repeat_level                                               ; bd48: 85 24       .$    
-    sta zp_for_level                                                  ; bd4a: 85 26       .&    
-    sta zp_gosub_level                                                ; bd4c: 85 25       .%    
-    sta zp_data_ptr                                                   ; bd4e: 85 1c       ..    
-    rts                                                               ; bd50: 60          `     
+    lda zp_page                                                       ; bd3a: a5 18       ..       ; DATA pointer = PAGE: high
+    sta zp_data_ptr_1                                                 ; bd3c: 85 1d       ..       ; (data pointer high)
+    lda zp_himem                                                      ; bd3e: a5 06       ..       ; STACK = HIMEM: low
+    sta zp_stack_ptr                                                  ; bd40: 85 04       ..       ; (store)
+    lda l0007                                                         ; bd42: a5 07       ..       ; HIMEM high
+    sta zp_stack_ptr_1                                                ; bd44: 85 05       ..       ; (store)
+    lda #0                                                            ; bd46: a9 00       ..       ; Clear the loop/subroutine levels:
+    sta zp_repeat_level                                               ; bd48: 85 24       .$       ; REPEAT
+    sta zp_for_level                                                  ; bd4a: 85 26       .&       ; FOR
+    sta zp_gosub_level                                                ; bd4c: 85 25       .%       ; GOSUB
+    sta zp_data_ptr                                                   ; bd4e: 85 1c       ..       ; DATA pointer low = 0 (= PAGE)
+    rts                                                               ; bd50: 60          `        ; Return
 ; ***************************************************************************************
 ; Push the floating-point accumulator onto the BASIC stack
 ;
@@ -11840,6 +11849,7 @@ save pydis_start, pydis_end
 ;     cb751:                       4
 ;     cba5a:                       4
 ;     cbc28:                       4
+;     clear_value_bytes:           4
 ;     eval_add_sub:                4
 ;     eval_after_eq:               4
 ;     find_line_target:            4
@@ -11848,7 +11858,6 @@ save pydis_start, pydis_end
 ;     fwa_to_int2:                 4
 ;     iwa_abs:                     4
 ;     iwa_inc:                     4
-;     l001d:                       4
 ;     l0045:                       4
 ;     l0046:                       4
 ;     l0441:                       4
@@ -11859,12 +11868,12 @@ save pydis_start, pydis_end
 ;     sub_c92da:                   4
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
-;     sub_c9531:                   4
 ;     sub_c9e20:                   4
 ;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
+;     zp_data_ptr_1:               4
 ;     zp_rnd_seed:                 4
 ;     zp_rnd_seed_2:               4
 ;     zp_rnd_seed_4:               4
@@ -12887,7 +12896,6 @@ save pydis_start, pydis_end
 ;     sub_c9231:                   1
 ;     sub_c94ed:                   1
 ;     sub_c9539:                   1
-;     sub_c9559:                   1
 ;     sub_c95d5:                   1
 ;     sub_c9807:                   1
 ;     sub_c987b:                   1
@@ -12922,6 +12930,7 @@ save pydis_start, pydis_end
 ;     sub_cbeb2:                   1
 ;     sub_cbee7:                   1
 ;     tokenise_line:               1
+;     validate_var_name:           1
 
 ; Automatically generated labels:
 ;     c8063
@@ -13551,7 +13560,6 @@ save pydis_start, pydis_end
 ;     cbff6
 ;     l0007
 ;     l0009
-;     l001d
 ;     l0022
 ;     l003a
 ;     l0044
@@ -13879,9 +13887,7 @@ save pydis_start, pydis_end
 ;     sub_c92fd
 ;     sub_c9456
 ;     sub_c94ed
-;     sub_c9531
 ;     sub_c9539
-;     sub_c9559
 ;     sub_c95c9
 ;     sub_c95d5
 ;     sub_c95dd
