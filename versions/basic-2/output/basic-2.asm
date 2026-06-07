@@ -3776,112 +3776,119 @@ l848a = sub_c847b+15
 ; character selects one of the per-letter linked lists via the variable table; the chain
 ; is walked comparing the rest of the name. On a match, returns a pointer to the value in
 ; zp_iwa/zp_iwa_1; otherwise reports it is not present.
+; Each variable chain (one per initial letter) is a list of
+; entries: a 2-byte link to the next, the rest of the name, a
+; NUL, then the value. The walk alternates two node pointers
+; (&3A/&3B and &3C/&3D), reading one node's link while it
+; compares the other - so it never copies a whole pointer.
+; On a match IWA points at the value; zp_fileblk holds the
+; length of the name being sought.
 ; &9469 referenced 4 times by &916f, &965a, &96bc, &96df
 .find_variable
-    ldy #1                                                            ; 9469: a0 01       ..    
-    lda (zp_general),y                                                ; 946b: b1 37       .7    
+    ldy #1                                                            ; 9469: a0 01       ..       ; Point at the first character of the name
+    lda (zp_general),y                                                ; 946b: b1 37       .7       ; get it
     asl a                                                             ; 946d: 0a          .        ; Two bytes per entry: double the initial letter
-    tay                                                               ; 946e: a8          .     
+    tay                                                               ; 946e: a8          .        ; Y = 2 * char: index into the variable table
 ; &946f referenced 2 times by &9463, &9467
 .c946f
     lda resint_at,y                                                   ; 946f: b9 00 04    ...      ; Head of the chain from the variable table (&0400+2*ch)
-    sta l003a                                                         ; 9472: 85 3a       .:    
-    lda l0401,y                                                       ; 9474: b9 01 04    ...   
-    sta zp_fwb_sign                                                   ; 9477: 85 3b       .;    
+    sta l003a                                                         ; 9472: 85 3a       .:       ; Chain head low byte -> node pointer (&3A)
+    lda l0401,y                                                       ; 9474: b9 01 04    ...      ; Chain head high byte (&0400 + 1 + 2*char)
+    sta zp_fwb_sign                                                   ; 9477: 85 3b       .;       ; node pointer high (&3B)
 ; &9479 referenced 4 times by &94ca, &94d2, &94d6, &94df
 .c9479
     lda zp_fwb_sign                                                   ; 9479: a5 3b       .;       ; End of the chain: variable not found
-    beq return_10                                                     ; 947b: f0 35       .5    
-    ldy #0                                                            ; 947d: a0 00       ..    
-    lda (l003a),y                                                     ; 947f: b1 3a       .:    
-    sta zp_fwb_ovf                                                    ; 9481: 85 3c       .<    
-    iny                                                               ; 9483: c8          .     
-    lda (l003a),y                                                     ; 9484: b1 3a       .:    
-    sta zp_fwb_exp                                                    ; 9486: 85 3d       .=    
-    iny                                                               ; 9488: c8          .     
-    lda (l003a),y                                                     ; 9489: b1 3a       .:    
-    bne c949a                                                         ; 948b: d0 0d       ..    
-    dey                                                               ; 948d: 88          .     
-    cpy zp_fileblk                                                    ; 948e: c4 39       .9    
-    bne c94b3                                                         ; 9490: d0 21       .!    
-    iny                                                               ; 9492: c8          .     
-    bcs c94a7                                                         ; 9493: b0 12       ..    
+    beq return_10                                                     ; 947b: f0 35       .5       ; Zero high byte: end of chain, not found
+    ldy #0                                                            ; 947d: a0 00       ..       ; Read the node: offset 0
+    lda (l003a),y                                                     ; 947f: b1 3a       .:       ; link low byte...
+    sta zp_fwb_ovf                                                    ; 9481: 85 3c       .<       ; ...saved (&3C)
+    iny                                                               ; 9483: c8          .        ; offset 1
+    lda (l003a),y                                                     ; 9484: b1 3a       .:       ; link high byte...
+    sta zp_fwb_exp                                                    ; 9486: 85 3d       .=       ; ...saved (&3D)
+    iny                                                               ; 9488: c8          .        ; offset 2: first stored name character
+    lda (l003a),y                                                     ; 9489: b1 3a       .:       ; get it
+    bne c949a                                                         ; 948b: d0 0d       ..       ; Non-null: compare the name
+    dey                                                               ; 948d: 88          .        ; Null name (the base entry): ...
+    cpy zp_fileblk                                                    ; 948e: c4 39       .9       ; did the search name end too?
+    bne c94b3                                                         ; 9490: d0 21       .!       ; no: follow the link
+    iny                                                               ; 9492: c8          .        ; advance
+    bcs c94a7                                                         ; 9493: b0 12       ..       ; match: compute the value pointer
 ; &9495 referenced 1 time by &94a0
 .loop_c9495
     iny                                                               ; 9495: c8          .        ; Compare the rest of the name against this entry
-    lda (l003a),y                                                     ; 9496: b1 3a       .:    
-    beq c94b3                                                         ; 9498: f0 19       ..    
+    lda (l003a),y                                                     ; 9496: b1 3a       .:       ; next stored name character
+    beq c94b3                                                         ; 9498: f0 19       ..       ; entry name ended early: no match
 ; &949a referenced 1 time by &948b
 .c949a
-    cmp (zp_general),y                                                ; 949a: d1 37       .7    
-    bne c94b3                                                         ; 949c: d0 15       ..    
-    cpy zp_fileblk                                                    ; 949e: c4 39       .9    
-    bne loop_c9495                                                    ; 94a0: d0 f3       ..    
-    iny                                                               ; 94a2: c8          .     
-    lda (l003a),y                                                     ; 94a3: b1 3a       .:    
-    bne c94b3                                                         ; 94a5: d0 0c       ..    
+    cmp (zp_general),y                                                ; 949a: d1 37       .7       ; compare with the search name
+    bne c94b3                                                         ; 949c: d0 15       ..       ; differ: follow the link
+    cpy zp_fileblk                                                    ; 949e: c4 39       .9       ; reached the end of the search name?
+    bne loop_c9495                                                    ; 94a0: d0 f3       ..       ; no: keep comparing
+    iny                                                               ; 94a2: c8          .        ; does the entry name end here too?
+    lda (l003a),y                                                     ; 94a3: b1 3a       .:       ; ...
+    bne c94b3                                                         ; 94a5: d0 0c       ..       ; entry name is longer: no match
 ; &94a7 referenced 1 time by &9493
 .c94a7
     tya                                                               ; 94a7: 98          .        ; Match: return a pointer to the value
-    adc l003a                                                         ; 94a8: 65 3a       e:    
-    sta zp_iwa                                                        ; 94aa: 85 2a       .*    
-    lda zp_fwb_sign                                                   ; 94ac: a5 3b       .;    
-    adc #0                                                            ; 94ae: 69 00       i.    
-    sta zp_iwa_1                                                      ; 94b0: 85 2b       .+    
+    adc l003a                                                         ; 94a8: 65 3a       e:       ; value pointer = node + name length: low
+    sta zp_iwa                                                        ; 94aa: 85 2a       .*       ; (IWA low)
+    lda zp_fwb_sign                                                   ; 94ac: a5 3b       .;       ; node high...
+    adc #0                                                            ; 94ae: 69 00       i.       ; - carry
+    sta zp_iwa_1                                                      ; 94b0: 85 2b       .+       ; IWA high = pointer to the value
 ; &94b2 referenced 2 times by &947b, &94b5
 .return_10
-    rts                                                               ; 94b2: 60          `     
+    rts                                                               ; 94b2: 60          `        ; Return (IWA = value pointer, or not found)
 ; &94b3 referenced 4 times by &9490, &9498, &949c, &94a5
 .c94b3
     lda zp_fwb_exp                                                    ; 94b3: a5 3d       .=       ; No match: follow the link to the next entry
-    beq return_10                                                     ; 94b5: f0 fb       ..    
-    ldy #0                                                            ; 94b7: a0 00       ..    
-    lda (zp_fwb_ovf),y                                                ; 94b9: b1 3c       .<    
-    sta l003a                                                         ; 94bb: 85 3a       .:    
-    iny                                                               ; 94bd: c8          .     
-    lda (zp_fwb_ovf),y                                                ; 94be: b1 3c       .<    
-    sta zp_fwb_sign                                                   ; 94c0: 85 3b       .;    
-    iny                                                               ; 94c2: c8          .     
-    lda (zp_fwb_ovf),y                                                ; 94c3: b1 3c       .<    
-    bne c94d4                                                         ; 94c5: d0 0d       ..    
-    dey                                                               ; 94c7: 88          .     
-    cpy zp_fileblk                                                    ; 94c8: c4 39       .9    
-    bne c9479                                                         ; 94ca: d0 ad       ..    
-    iny                                                               ; 94cc: c8          .     
-    bcs c94e1                                                         ; 94cd: b0 12       ..    
+    beq return_10                                                     ; 94b5: f0 fb       ..       ; Zero high byte: end of chain, not found
+    ldy #0                                                            ; 94b7: a0 00       ..       ; Read the next node via its saved link (&3C)
+    lda (zp_fwb_ovf),y                                                ; 94b9: b1 3c       .<       ; link low byte...
+    sta l003a                                                         ; 94bb: 85 3a       .:       ; ...into the node pointer (&3A)
+    iny                                                               ; 94bd: c8          .        ; offset 1
+    lda (zp_fwb_ovf),y                                                ; 94be: b1 3c       .<       ; link high byte...
+    sta zp_fwb_sign                                                   ; 94c0: 85 3b       .;       ; ...(&3B)
+    iny                                                               ; 94c2: c8          .        ; offset 2: name character
+    lda (zp_fwb_ovf),y                                                ; 94c3: b1 3c       .<       ; get it
+    bne c94d4                                                         ; 94c5: d0 0d       ..       ; Non-null: compare the name
+    dey                                                               ; 94c7: 88          .        ; Null name: ...
+    cpy zp_fileblk                                                    ; 94c8: c4 39       .9       ; did the search name end too?
+    bne c9479                                                         ; 94ca: d0 ad       ..       ; no: back to the other-pointer loop
+    iny                                                               ; 94cc: c8          .        ; advance
+    bcs c94e1                                                         ; 94cd: b0 12       ..       ; match: compute the value pointer
 ; &94cf referenced 1 time by &94da
 .loop_c94cf
-    iny                                                               ; 94cf: c8          .     
-    lda (zp_fwb_ovf),y                                                ; 94d0: b1 3c       .<    
-    beq c9479                                                         ; 94d2: f0 a5       ..    
+    iny                                                               ; 94cf: c8          .        ; compare loop
+    lda (zp_fwb_ovf),y                                                ; 94d0: b1 3c       .<       ; next stored character
+    beq c9479                                                         ; 94d2: f0 a5       ..       ; entry name ended: no match
 ; &94d4 referenced 1 time by &94c5
 .c94d4
-    cmp (zp_general),y                                                ; 94d4: d1 37       .7    
-    bne c9479                                                         ; 94d6: d0 a1       ..    
-    cpy zp_fileblk                                                    ; 94d8: c4 39       .9    
-    bne loop_c94cf                                                    ; 94da: d0 f3       ..    
-    iny                                                               ; 94dc: c8          .     
-    lda (zp_fwb_ovf),y                                                ; 94dd: b1 3c       .<    
-    bne c9479                                                         ; 94df: d0 98       ..    
+    cmp (zp_general),y                                                ; 94d4: d1 37       .7       ; compare with the search name
+    bne c9479                                                         ; 94d6: d0 a1       ..       ; differ: next entry
+    cpy zp_fileblk                                                    ; 94d8: c4 39       .9       ; end of the search name?
+    bne loop_c94cf                                                    ; 94da: d0 f3       ..       ; no: keep comparing
+    iny                                                               ; 94dc: c8          .        ; does the entry name end here too?
+    lda (zp_fwb_ovf),y                                                ; 94dd: b1 3c       .<       ; ...
+    bne c9479                                                         ; 94df: d0 98       ..       ; entry name is longer: no match
 ; &94e1 referenced 1 time by &94cd
 .c94e1
-    tya                                                               ; 94e1: 98          .     
-    adc zp_fwb_ovf                                                    ; 94e2: 65 3c       e<    
-    sta zp_iwa                                                        ; 94e4: 85 2a       .*    
-    lda zp_fwb_exp                                                    ; 94e6: a5 3d       .=    
-    adc #0                                                            ; 94e8: 69 00       i.    
-    sta zp_iwa_1                                                      ; 94ea: 85 2b       .+    
-    rts                                                               ; 94ec: 60          `     
+    tya                                                               ; 94e1: 98          .        ; value pointer = node + name length: low
+    adc zp_fwb_ovf                                                    ; 94e2: 65 3c       e<       ; ...
+    sta zp_iwa                                                        ; 94e4: 85 2a       .*       ; (IWA low)
+    lda zp_fwb_exp                                                    ; 94e6: a5 3d       .=       ; node high...
+    adc #0                                                            ; 94e8: 69 00       i.       ; - carry
+    sta zp_iwa_1                                                      ; 94ea: 85 2b       .+       ; IWA high = pointer to the value
+    rts                                                               ; 94ec: 60          `        ; Return the value pointer
 ; &94ed referenced 1 time by &b171
 .sub_c94ed
-    ldy #1                                                            ; 94ed: a0 01       ..    
-    lda (zp_general),y                                                ; 94ef: b1 37       .7    
-    tax                                                               ; 94f1: aa          .     
-    lda #&f6                                                          ; 94f2: a9 f6       ..    
-    cpx #&f2                                                          ; 94f4: e0 f2       ..    
-    beq c9501                                                         ; 94f6: f0 09       ..    
-    lda #&f8                                                          ; 94f8: a9 f8       ..    
-    bne c9501                                                         ; 94fa: d0 05       ..    
+    ldy #1                                                            ; 94ed: a0 01       ..       ; Look at the PROC/FN token
+    lda (zp_general),y                                                ; 94ef: b1 37       .7       ; get it
+    tax                                                               ; 94f1: aa          .        ; to X
+    lda #&f6                                                          ; 94f2: a9 f6       ..       ; PROC list index (&F6)
+    cpx #&f2                                                          ; 94f4: e0 f2       ..       ; Is it PROC?
+    beq c9501                                                         ; 94f6: f0 09       ..       ; PROC: use that chain
+    lda #&f8                                                          ; 94f8: a9 f8       ..       ; FN list index (&F8)
+    bne c9501                                                         ; 94fa: d0 05       ..       ; use the FN chain
 ; ***************************************************************************************
 ; Create a new variable
 ;

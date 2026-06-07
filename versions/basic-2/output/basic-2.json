@@ -33595,6 +33595,10 @@
       "labels": [
         "find_variable"
       ],
+      "comments_before_label": [
+        "Each variable chain (one per initial letter) is a list of\nentries: a 2-byte link to the next, the rest of the name, a\nNUL, then the value. The walk alternates two node pointers\n(&3A/&3B and &3C/&3D), reading one node's link while it\ncompares the other - so it never copies a whole pointer.\nOn a match IWA points at the value; zp_fileblk holds the\nlength of the name being sought."
+      ],
+      "comment_inline": "Point at the first character of the name",
       "xref_summaries": [
         "&9469 referenced 4 times by &916f, &965a, &96bc, &96df"
       ],
@@ -33614,6 +33618,7 @@
         177,
         55
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -33634,6 +33639,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Y = 2 * char: index into the variable table",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -33667,6 +33673,7 @@
         133,
         58
       ],
+      "comment_inline": "Chain head low byte -> node pointer (&3A)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -33680,6 +33687,7 @@
         1,
         4
       ],
+      "comment_inline": "Chain head high byte (&0400 + 1 + 2*char)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l0401,y",
@@ -33692,6 +33700,7 @@
         133,
         59
       ],
+      "comment_inline": "node pointer high (&3B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -33729,6 +33738,7 @@
         240,
         53
       ],
+      "comment_inline": "Zero high byte: end of chain, not found",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_10",
@@ -33741,6 +33751,7 @@
         160,
         0
       ],
+      "comment_inline": "Read the node: offset 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -33751,6 +33762,7 @@
         177,
         58
       ],
+      "comment_inline": "link low byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -33763,6 +33775,7 @@
         133,
         60
       ],
+      "comment_inline": "...saved (&3C)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -33774,6 +33787,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "offset 1",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -33783,6 +33797,7 @@
         177,
         58
       ],
+      "comment_inline": "link high byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -33795,6 +33810,7 @@
         133,
         61
       ],
+      "comment_inline": "...saved (&3D)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -33806,6 +33822,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "offset 2: first stored name character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -33815,6 +33832,7 @@
         177,
         58
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -33827,6 +33845,7 @@
         208,
         13
       ],
+      "comment_inline": "Non-null: compare the name",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c949a",
@@ -33838,6 +33857,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Null name (the base entry): ...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -33847,6 +33867,7 @@
         196,
         57
       ],
+      "comment_inline": "did the search name end too?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -33859,6 +33880,7 @@
         208,
         33
       ],
+      "comment_inline": "no: follow the link",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c94b3",
@@ -33870,6 +33892,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -33879,6 +33902,7 @@
         176,
         18
       ],
+      "comment_inline": "match: compute the value pointer",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c94a7",
@@ -33909,6 +33933,7 @@
         177,
         58
       ],
+      "comment_inline": "next stored name character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -33921,6 +33946,7 @@
         240,
         25
       ],
+      "comment_inline": "entry name ended early: no match",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c94b3",
@@ -33936,6 +33962,7 @@
       "labels": [
         "c949a"
       ],
+      "comment_inline": "compare with the search name",
       "xref_summaries": [
         "&949a referenced 1 time by &948b"
       ],
@@ -33954,6 +33981,7 @@
         208,
         21
       ],
+      "comment_inline": "differ: follow the link",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c94b3",
@@ -33966,6 +33994,7 @@
         196,
         57
       ],
+      "comment_inline": "reached the end of the search name?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -33978,6 +34007,7 @@
         208,
         243
       ],
+      "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9495",
@@ -33989,6 +34019,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "does the entry name end here too?",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -33998,6 +34029,7 @@
         177,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l003a),y",
@@ -34010,6 +34042,7 @@
         208,
         12
       ],
+      "comment_inline": "entry name is longer: no match",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c94b3",
@@ -34040,6 +34073,7 @@
         101,
         58
       ],
+      "comment_inline": "value pointer = node + name length: low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l003a",
@@ -34052,6 +34086,7 @@
         133,
         42
       ],
+      "comment_inline": "(IWA low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -34064,6 +34099,7 @@
         165,
         59
       ],
+      "comment_inline": "node high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -34076,6 +34112,7 @@
         105,
         0
       ],
+      "comment_inline": "+ carry",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -34086,6 +34123,7 @@
         133,
         43
       ],
+      "comment_inline": "IWA high = pointer to the value",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -34100,6 +34138,7 @@
       "labels": [
         "return_10"
       ],
+      "comment_inline": "Return (IWA = value pointer, or not found)",
       "xref_summaries": [
         "&94b2 referenced 2 times by &947b, &94b5"
       ],
@@ -34141,6 +34180,7 @@
         240,
         251
       ],
+      "comment_inline": "Zero high byte: end of chain, not found",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_10",
@@ -34153,6 +34193,7 @@
         160,
         0
       ],
+      "comment_inline": "Read the next node via its saved link (&3C)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -34163,6 +34204,7 @@
         177,
         60
       ],
+      "comment_inline": "link low byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -34175,6 +34217,7 @@
         133,
         58
       ],
+      "comment_inline": "...into the node pointer (&3A)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -34186,6 +34229,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "offset 1",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -34195,6 +34239,7 @@
         177,
         60
       ],
+      "comment_inline": "link high byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -34207,6 +34252,7 @@
         133,
         59
       ],
+      "comment_inline": "...(&3B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -34218,6 +34264,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "offset 2: name character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -34227,6 +34274,7 @@
         177,
         60
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -34239,6 +34287,7 @@
         208,
         13
       ],
+      "comment_inline": "Non-null: compare the name",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c94d4",
@@ -34250,6 +34299,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Null name: ...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -34259,6 +34309,7 @@
         196,
         57
       ],
+      "comment_inline": "did the search name end too?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -34271,6 +34322,7 @@
         208,
         173
       ],
+      "comment_inline": "no: back to the other-pointer loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9479",
@@ -34282,6 +34334,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -34291,6 +34344,7 @@
         176,
         18
       ],
+      "comment_inline": "match: compute the value pointer",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c94e1",
@@ -34305,6 +34359,7 @@
       "labels": [
         "loop_c94cf"
       ],
+      "comment_inline": "compare loop",
       "xref_summaries": [
         "&94cf referenced 1 time by &94da"
       ],
@@ -34320,6 +34375,7 @@
         177,
         60
       ],
+      "comment_inline": "next stored character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -34332,6 +34388,7 @@
         240,
         165
       ],
+      "comment_inline": "entry name ended: no match",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9479",
@@ -34347,6 +34404,7 @@
       "labels": [
         "c94d4"
       ],
+      "comment_inline": "compare with the search name",
       "xref_summaries": [
         "&94d4 referenced 1 time by &94c5"
       ],
@@ -34365,6 +34423,7 @@
         208,
         161
       ],
+      "comment_inline": "differ: next entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9479",
@@ -34377,6 +34436,7 @@
         196,
         57
       ],
+      "comment_inline": "end of the search name?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -34389,6 +34449,7 @@
         208,
         243
       ],
+      "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c94cf",
@@ -34400,6 +34461,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "does the entry name end here too?",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -34409,6 +34471,7 @@
         177,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -34421,6 +34484,7 @@
         208,
         152
       ],
+      "comment_inline": "entry name is longer: no match",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9479",
@@ -34435,6 +34499,7 @@
       "labels": [
         "c94e1"
       ],
+      "comment_inline": "value pointer = node + name length: low",
       "xref_summaries": [
         "&94e1 referenced 1 time by &94cd"
       ],
@@ -34450,6 +34515,7 @@
         101,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_ovf",
@@ -34462,6 +34528,7 @@
         133,
         42
       ],
+      "comment_inline": "(IWA low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -34474,6 +34541,7 @@
         165,
         61
       ],
+      "comment_inline": "node high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -34486,6 +34554,7 @@
         105,
         0
       ],
+      "comment_inline": "+ carry",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -34496,6 +34565,7 @@
         133,
         43
       ],
+      "comment_inline": "IWA high = pointer to the value",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -34507,6 +34577,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the value pointer",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -34519,6 +34590,7 @@
       "labels": [
         "sub_c94ed"
       ],
+      "comment_inline": "Look at the PROC/FN token",
       "xref_summaries": [
         "&94ed referenced 1 time by &b171"
       ],
@@ -34535,6 +34607,7 @@
         177,
         55
       ],
+      "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -34546,6 +34619,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "to X",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -34555,6 +34629,7 @@
         169,
         246
       ],
+      "comment_inline": "PROC list index (&F6)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&f6"
@@ -34565,6 +34640,7 @@
         224,
         242
       ],
+      "comment_inline": "Is it PROC?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&f2"
@@ -34575,6 +34651,7 @@
         240,
         9
       ],
+      "comment_inline": "PROC: use that chain",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9501",
@@ -34587,6 +34664,7 @@
         169,
         248
       ],
+      "comment_inline": "FN list index (&F8)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&f8"
@@ -34597,6 +34675,7 @@
         208,
         5
       ],
+      "comment_inline": "use the FN chain",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9501",
