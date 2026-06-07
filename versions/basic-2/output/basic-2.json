@@ -57574,6 +57574,7 @@
       "labels": [
         "fwa_normalise"
       ],
+      "comment_inline": "Mantissa MSB...",
       "xref_summaries": [
         "&a303 referenced 8 times by &a0ff, &a2e3, &a4b3, &a5dc, &a602, &a659, &aa0e, &af33"
       ],
@@ -57612,6 +57613,7 @@
         5,
         50
       ],
+      "comment_inline": "OR in the lower mantissa bytes (byte 2)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -57624,6 +57626,7 @@
         5,
         51
       ],
+      "comment_inline": "(byte 3)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -57636,6 +57639,7 @@
         5,
         52
       ],
+      "comment_inline": "(byte 4) to test the whole mantissa",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m4",
@@ -57661,6 +57665,7 @@
         240,
         213
       ],
+      "comment_inline": "so jump away to handle the zero value",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_ca2e6",
@@ -57673,6 +57678,7 @@
         165,
         48
       ],
+      "comment_inline": "Load the exponent to adjust as we shift",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -57708,6 +57714,7 @@
         48,
         213
       ],
+      "comment_inline": "Bit 7 set: already normalised, return",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "return_23",
@@ -57720,6 +57727,7 @@
         208,
         33
       ],
+      "comment_inline": "MSB byte non-zero but bit 7 clear: bit-shift",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca33a",
@@ -57732,6 +57740,7 @@
         166,
         50
       ],
+      "comment_inline": "Shift the mantissa up a byte: load m2",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m2",
@@ -57744,6 +57753,7 @@
         134,
         49
       ],
+      "comment_inline": "store as m1",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m1",
@@ -57756,6 +57766,7 @@
         166,
         51
       ],
+      "comment_inline": "load m3",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m3",
@@ -57768,6 +57779,7 @@
         134,
         50
       ],
+      "comment_inline": "store as m2",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m2",
@@ -57780,6 +57792,7 @@
         166,
         52
       ],
+      "comment_inline": "load m4",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m4",
@@ -57792,6 +57805,7 @@
         134,
         51
       ],
+      "comment_inline": "store as m3",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m3",
@@ -57804,6 +57818,7 @@
         166,
         53
       ],
+      "comment_inline": "load the rounding byte",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_rnd",
@@ -57816,6 +57831,7 @@
         134,
         52
       ],
+      "comment_inline": "store as m4",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m4",
@@ -57828,6 +57844,7 @@
         132,
         53
       ],
+      "comment_inline": "rounding <- 0",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_rnd",
@@ -57839,6 +57856,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "Prepare to reduce the exponent",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -57859,6 +57877,7 @@
         133,
         48
       ],
+      "comment_inline": "Store the reduced exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -57871,6 +57890,7 @@
         176,
         225
       ],
+      "comment_inline": "Loop to shift another byte if MSB still zero",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca313",
@@ -57883,6 +57903,7 @@
         198,
         47
       ],
+      "comment_inline": "Borrow into the overflow byte",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwa_ovf",
@@ -57895,6 +57916,7 @@
         144,
         221
       ],
+      "comment_inline": "Continue the byte-shift loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca313",
@@ -57910,6 +57932,7 @@
       "labels": [
         "ca336"
       ],
+      "comment_inline": "Bit-shift loop: re-check the MSB",
       "xref_summaries": [
         "&a336 referenced 2 times by &a348, &a34c"
       ],
@@ -57929,6 +57952,7 @@
         48,
         178
       ],
+      "comment_inline": "Bit 7 set: normalised, return",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "return_23",
@@ -57963,6 +57987,7 @@
         38,
         52
       ],
+      "comment_inline": "Shift the mantissa left one bit: byte 4",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -57975,6 +58000,7 @@
         38,
         51
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -57987,6 +58013,7 @@
         38,
         50
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -57999,6 +58026,7 @@
         38,
         49
       ],
+      "comment_inline": "byte 1 (MSB)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m1",
@@ -58011,6 +58039,7 @@
         233,
         0
       ],
+      "comment_inline": "Reduce the exponent by one",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -58021,6 +58050,7 @@
         133,
         48
       ],
+      "comment_inline": "Store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -58033,6 +58063,7 @@
         176,
         236
       ],
+      "comment_inline": "Loop until the MSB bit is set",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca336",
@@ -58045,6 +58076,7 @@
         198,
         47
       ],
+      "comment_inline": "Borrow into the overflow byte",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwa_ovf",
@@ -58057,6 +58089,7 @@
         144,
         232
       ],
+      "comment_inline": "Continue the bit-shift loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca336",
@@ -58528,6 +58561,7 @@
       "labels": [
         "fwa_pack_var"
       ],
+      "comment_inline": "Write packed bytes from offset 0",
       "xref_summaries": [
         "&a38d referenced 7 times by &a4d9, &a6ca, &a7cf, &a9b7, &aa20, &b860, &b882"
       ],
@@ -58550,6 +58584,7 @@
         165,
         48
       ],
+      "comment_inline": "Packed byte 0 is the exponent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -58562,6 +58597,7 @@
         145,
         75
       ],
+      "comment_inline": "(store it)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fp_ptr),y",
@@ -58573,6 +58609,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -58582,6 +58619,7 @@
         165,
         46
       ],
+      "comment_inline": "Take the sign byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -58605,6 +58643,7 @@
         133,
         46
       ],
+      "comment_inline": "keep only the sign bit",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -58617,6 +58656,7 @@
         165,
         49
       ],
+      "comment_inline": "Mantissa MSB",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -58653,6 +58693,7 @@
         145,
         75
       ],
+      "comment_inline": "Packed byte 1 = sign + mantissa MSB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fp_ptr),y",
@@ -58665,6 +58706,7 @@
         165,
         50
       ],
+      "comment_inline": "Mantissa byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -58676,6 +58718,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -58685,6 +58728,7 @@
         145,
         75
       ],
+      "comment_inline": "Packed byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fp_ptr),y",
@@ -58697,6 +58741,7 @@
         165,
         51
       ],
+      "comment_inline": "Mantissa byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -58708,6 +58753,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -58717,6 +58763,7 @@
         145,
         75
       ],
+      "comment_inline": "Packed byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fp_ptr),y",
@@ -58729,6 +58776,7 @@
         165,
         52
       ],
+      "comment_inline": "Mantissa byte 4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -58740,6 +58788,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -58749,6 +58798,7 @@
         145,
         75
       ],
+      "comment_inline": "Packed byte 4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fp_ptr),y",
@@ -58760,6 +58810,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "The 5-byte packed value is stored",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -58822,6 +58873,7 @@
         177,
         75
       ],
+      "comment_inline": "Packed byte 4...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58834,6 +58886,7 @@
         133,
         52
       ],
+      "comment_inline": "...is mantissa byte 4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -58845,6 +58898,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58854,6 +58908,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 3...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58866,6 +58921,7 @@
         133,
         51
       ],
+      "comment_inline": "...mantissa byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -58877,6 +58933,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58886,6 +58943,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 2...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58898,6 +58956,7 @@
         133,
         50
       ],
+      "comment_inline": "...mantissa byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -58909,6 +58968,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58918,6 +58978,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 1 (sign + mantissa MSB)...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58942,6 +59003,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -58951,6 +59013,7 @@
         177,
         75
       ],
+      "comment_inline": "byte 0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fp_ptr),y",
@@ -58963,6 +59026,7 @@
         133,
         48
       ],
+      "comment_inline": "...is the exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -58988,6 +59052,7 @@
         132,
         47
       ],
+      "comment_inline": "clear the overflow byte too",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_ovf",
@@ -59013,6 +59078,7 @@
         5,
         50
       ],
+      "comment_inline": "(mantissa byte 2)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -59025,6 +59091,7 @@
         5,
         51
       ],
+      "comment_inline": "(mantissa byte 3)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -59037,6 +59104,7 @@
         5,
         52
       ],
+      "comment_inline": "(mantissa byte 4)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m4",
@@ -59062,6 +59130,7 @@
         165,
         46
       ],
+      "comment_inline": "Non-zero: take the packed MSB (carrying the sign)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -59088,6 +59157,7 @@
       "labels": [
         "ca3e1"
       ],
+      "comment_inline": "Store the true mantissa MSB",
       "xref_summaries": [
         "&a3e1 referenced 1 time by &a3db"
       ],
@@ -59105,6 +59175,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "FWA now holds the unpacked value",
       "type": "code",
       "mnemonic": "rts"
     },

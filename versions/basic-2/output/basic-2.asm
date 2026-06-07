@@ -6431,50 +6431,50 @@ l848a = sub_c847b+15
 ; Normalise the floating-point accumulator.
 ; &a303 referenced 8 times by &a0ff, &a2e3, &a4b3, &a5dc, &a602, &a659, &aa0e, &af33
 .fwa_normalise
-    lda zp_fwa_m1                                                     ; a303: a5 31       .1    
+    lda zp_fwa_m1                                                     ; a303: a5 31       .1       ; Mantissa MSB...
     bmi return_23                                                     ; a305: 30 e5       0.       ; Top bit already set: nothing to do
-    ora zp_fwa_m2                                                     ; a307: 05 32       .2    
-    ora zp_fwa_m3                                                     ; a309: 05 33       .3    
-    ora zp_fwa_m4                                                     ; a30b: 05 34       .4    
+    ora zp_fwa_m2                                                     ; a307: 05 32       .2       ; OR in the lower mantissa bytes (byte 2)
+    ora zp_fwa_m3                                                     ; a309: 05 33       .3       ; (byte 3)
+    ora zp_fwa_m4                                                     ; a30b: 05 34       .4       ; (byte 4) to test the whole mantissa
     ora zp_fwa_rnd                                                    ; a30d: 05 35       .5       ; Mantissa entirely zero: the value is zero
-    beq loop_ca2e6                                                    ; a30f: f0 d5       ..    
-    lda zp_fwa_exp                                                    ; a311: a5 30       .0    
+    beq loop_ca2e6                                                    ; a30f: f0 d5       ..       ; so jump away to handle the zero value
+    lda zp_fwa_exp                                                    ; a311: a5 30       .0       ; Load the exponent to adjust as we shift
 ; &a313 referenced 2 times by &a330, &a334
 .ca313
     ldy zp_fwa_m1                                                     ; a313: a4 31       .1       ; Shift up a whole byte while the MSB byte is zero
-    bmi return_23                                                     ; a315: 30 d5       0.    
-    bne ca33a                                                         ; a317: d0 21       .!    
-    ldx zp_fwa_m2                                                     ; a319: a6 32       .2    
-    stx zp_fwa_m1                                                     ; a31b: 86 31       .1    
-    ldx zp_fwa_m3                                                     ; a31d: a6 33       .3    
-    stx zp_fwa_m2                                                     ; a31f: 86 32       .2    
-    ldx zp_fwa_m4                                                     ; a321: a6 34       .4    
-    stx zp_fwa_m3                                                     ; a323: 86 33       .3    
-    ldx zp_fwa_rnd                                                    ; a325: a6 35       .5    
-    stx zp_fwa_m4                                                     ; a327: 86 34       .4    
-    sty zp_fwa_rnd                                                    ; a329: 84 35       .5    
-    sec                                                               ; a32b: 38          8     
+    bmi return_23                                                     ; a315: 30 d5       0.       ; Bit 7 set: already normalised, return
+    bne ca33a                                                         ; a317: d0 21       .!       ; MSB byte non-zero but bit 7 clear: bit-shift
+    ldx zp_fwa_m2                                                     ; a319: a6 32       .2       ; Shift the mantissa up a byte: load m2
+    stx zp_fwa_m1                                                     ; a31b: 86 31       .1       ; store as m1
+    ldx zp_fwa_m3                                                     ; a31d: a6 33       .3       ; load m3
+    stx zp_fwa_m2                                                     ; a31f: 86 32       .2       ; store as m2
+    ldx zp_fwa_m4                                                     ; a321: a6 34       .4       ; load m4
+    stx zp_fwa_m3                                                     ; a323: 86 33       .3       ; store as m3
+    ldx zp_fwa_rnd                                                    ; a325: a6 35       .5       ; load the rounding byte
+    stx zp_fwa_m4                                                     ; a327: 86 34       .4       ; store as m4
+    sty zp_fwa_rnd                                                    ; a329: 84 35       .5       ; rounding <- 0
+    sec                                                               ; a32b: 38          8        ; Prepare to reduce the exponent
     sbc #8                                                            ; a32c: e9 08       ..       ; each byte shift advances the exponent by 8
-    sta zp_fwa_exp                                                    ; a32e: 85 30       .0    
-    bcs ca313                                                         ; a330: b0 e1       ..    
-    dec zp_fwa_ovf                                                    ; a332: c6 2f       ./    
-    bcc ca313                                                         ; a334: 90 dd       ..    
+    sta zp_fwa_exp                                                    ; a32e: 85 30       .0       ; Store the reduced exponent
+    bcs ca313                                                         ; a330: b0 e1       ..       ; Loop to shift another byte if MSB still zero
+    dec zp_fwa_ovf                                                    ; a332: c6 2f       ./       ; Borrow into the overflow byte
+    bcc ca313                                                         ; a334: 90 dd       ..       ; Continue the byte-shift loop
 ; &a336 referenced 2 times by &a348, &a34c
 .ca336
-    ldy zp_fwa_m1                                                     ; a336: a4 31       .1    
-    bmi return_23                                                     ; a338: 30 b2       0.    
+    ldy zp_fwa_m1                                                     ; a336: a4 31       .1       ; Bit-shift loop: re-check the MSB
+    bmi return_23                                                     ; a338: 30 b2       0.       ; Bit 7 set: normalised, return
 ; &a33a referenced 1 time by &a317
 .ca33a
     asl zp_fwa_rnd                                                    ; a33a: 06 35       .5       ; Then shift left one bit at a time to normalise
-    rol zp_fwa_m4                                                     ; a33c: 26 34       &4    
-    rol zp_fwa_m3                                                     ; a33e: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a340: 26 32       &2    
-    rol zp_fwa_m1                                                     ; a342: 26 31       &1    
-    sbc #0                                                            ; a344: e9 00       ..    
-    sta zp_fwa_exp                                                    ; a346: 85 30       .0    
-    bcs ca336                                                         ; a348: b0 ec       ..    
-    dec zp_fwa_ovf                                                    ; a34a: c6 2f       ./    
-    bcc ca336                                                         ; a34c: 90 e8       ..    
+    rol zp_fwa_m4                                                     ; a33c: 26 34       &4       ; Shift the mantissa left one bit: byte 4
+    rol zp_fwa_m3                                                     ; a33e: 26 33       &3       ; byte 3
+    rol zp_fwa_m2                                                     ; a340: 26 32       &2       ; byte 2
+    rol zp_fwa_m1                                                     ; a342: 26 31       &1       ; byte 1 (MSB)
+    sbc #0                                                            ; a344: e9 00       ..       ; Reduce the exponent by one
+    sta zp_fwa_exp                                                    ; a346: 85 30       .0       ; Store it
+    bcs ca336                                                         ; a348: b0 ec       ..       ; Loop until the MSB bit is set
+    dec zp_fwa_ovf                                                    ; a34a: c6 2f       ./       ; Borrow into the overflow byte
+    bcc ca336                                                         ; a34c: 90 e8       ..       ; Continue the bit-shift loop
 ; ***************************************************************************************
 ; Unpack a fp variable into FWB
 ;
@@ -6543,27 +6543,27 @@ l848a = sub_c847b+15
 ; Pack FWA into the five-byte fp variable at (&4B/&4C).
 ; &a38d referenced 7 times by &a4d9, &a6ca, &a7cf, &a9b7, &aa20, &b860, &b882
 .fwa_pack_var
-    ldy #0                                                            ; a38d: a0 00       ..    
-    lda zp_fwa_exp                                                    ; a38f: a5 30       .0    
-    sta (zp_fp_ptr),y                                                 ; a391: 91 4b       .K    
-    iny                                                               ; a393: c8          .     
-    lda zp_fwa_sign                                                   ; a394: a5 2e       ..    
+    ldy #0                                                            ; a38d: a0 00       ..       ; Write packed bytes from offset 0
+    lda zp_fwa_exp                                                    ; a38f: a5 30       .0       ; Packed byte 0 is the exponent
+    sta (zp_fp_ptr),y                                                 ; a391: 91 4b       .K       ; (store it)
+    iny                                                               ; a393: c8          .        ; next byte
+    lda zp_fwa_sign                                                   ; a394: a5 2e       ..       ; Take the sign byte
     and #&80                                                          ; a396: 29 80       ).       ; Isolate the sign bit
-    sta zp_fwa_sign                                                   ; a398: 85 2e       ..    
-    lda zp_fwa_m1                                                     ; a39a: a5 31       .1    
+    sta zp_fwa_sign                                                   ; a398: 85 2e       ..       ; keep only the sign bit
+    lda zp_fwa_m1                                                     ; a39a: a5 31       .1       ; Mantissa MSB
     and #&7f                                                          ; a39c: 29 7f       ).       ; Drop the implied leading 1 from the mantissa MSB
     ora zp_fwa_sign                                                   ; a39e: 05 2e       ..       ; and fold the sign back into its bit 7
-    sta (zp_fp_ptr),y                                                 ; a3a0: 91 4b       .K    
-    lda zp_fwa_m2                                                     ; a3a2: a5 32       .2    
-    iny                                                               ; a3a4: c8          .     
-    sta (zp_fp_ptr),y                                                 ; a3a5: 91 4b       .K    
-    lda zp_fwa_m3                                                     ; a3a7: a5 33       .3    
-    iny                                                               ; a3a9: c8          .     
-    sta (zp_fp_ptr),y                                                 ; a3aa: 91 4b       .K    
-    lda zp_fwa_m4                                                     ; a3ac: a5 34       .4    
-    iny                                                               ; a3ae: c8          .     
-    sta (zp_fp_ptr),y                                                 ; a3af: 91 4b       .K    
-    rts                                                               ; a3b1: 60          `     
+    sta (zp_fp_ptr),y                                                 ; a3a0: 91 4b       .K       ; Packed byte 1 = sign + mantissa MSB
+    lda zp_fwa_m2                                                     ; a3a2: a5 32       .2       ; Mantissa byte 2
+    iny                                                               ; a3a4: c8          .        ; next byte
+    sta (zp_fp_ptr),y                                                 ; a3a5: 91 4b       .K       ; Packed byte 2
+    lda zp_fwa_m3                                                     ; a3a7: a5 33       .3       ; Mantissa byte 3
+    iny                                                               ; a3a9: c8          .        ; next byte
+    sta (zp_fp_ptr),y                                                 ; a3aa: 91 4b       .K       ; Packed byte 3
+    lda zp_fwa_m4                                                     ; a3ac: a5 34       .4       ; Mantissa byte 4
+    iny                                                               ; a3ae: c8          .        ; next byte
+    sta (zp_fp_ptr),y                                                 ; a3af: 91 4b       .K       ; Packed byte 4
+    rts                                                               ; a3b1: 60          `        ; The 5-byte packed value is stored
 ; ***************************************************************************************
 ; Unpack TEMP1 into FWA
 ;
@@ -6579,33 +6579,33 @@ l848a = sub_c847b+15
 ; &a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea
 .fwa_unpack_var
     ldy #4                                                            ; a3b5: a0 04       ..       ; Copy the packed value, exponent last
-    lda (zp_fp_ptr),y                                                 ; a3b7: b1 4b       .K    
-    sta zp_fwa_m4                                                     ; a3b9: 85 34       .4    
-    dey                                                               ; a3bb: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a3bc: b1 4b       .K    
-    sta zp_fwa_m3                                                     ; a3be: 85 33       .3    
-    dey                                                               ; a3c0: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a3c1: b1 4b       .K    
-    sta zp_fwa_m2                                                     ; a3c3: 85 32       .2    
-    dey                                                               ; a3c5: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a3c6: b1 4b       .K    
+    lda (zp_fp_ptr),y                                                 ; a3b7: b1 4b       .K       ; Packed byte 4...
+    sta zp_fwa_m4                                                     ; a3b9: 85 34       .4       ; ...is mantissa byte 4
+    dey                                                               ; a3bb: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a3bc: b1 4b       .K       ; byte 3...
+    sta zp_fwa_m3                                                     ; a3be: 85 33       .3       ; ...mantissa byte 3
+    dey                                                               ; a3c0: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a3c1: b1 4b       .K       ; byte 2...
+    sta zp_fwa_m2                                                     ; a3c3: 85 32       .2       ; ...mantissa byte 2
+    dey                                                               ; a3c5: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a3c6: b1 4b       .K       ; byte 1 (sign + mantissa MSB)...
     sta zp_fwa_sign                                                   ; a3c8: 85 2e       ..       ; Packed mantissa MSB holds the sign in bit 7
-    dey                                                               ; a3ca: 88          .     
-    lda (zp_fp_ptr),y                                                 ; a3cb: b1 4b       .K    
-    sta zp_fwa_exp                                                    ; a3cd: 85 30       .0    
+    dey                                                               ; a3ca: 88          .        ; next byte
+    lda (zp_fp_ptr),y                                                 ; a3cb: b1 4b       .K       ; byte 0...
+    sta zp_fwa_exp                                                    ; a3cd: 85 30       .0       ; ...is the exponent
     sty zp_fwa_rnd                                                    ; a3cf: 84 35       .5       ; Clear the rounding and overflow bytes (Y=0)
-    sty zp_fwa_ovf                                                    ; a3d1: 84 2f       ./    
+    sty zp_fwa_ovf                                                    ; a3d1: 84 2f       ./       ; clear the overflow byte too
     ora zp_fwa_sign                                                   ; a3d3: 05 2e       ..       ; A=exponent; OR the mantissa to test for zero
-    ora zp_fwa_m2                                                     ; a3d5: 05 32       .2    
-    ora zp_fwa_m3                                                     ; a3d7: 05 33       .3    
-    ora zp_fwa_m4                                                     ; a3d9: 05 34       .4    
+    ora zp_fwa_m2                                                     ; a3d5: 05 32       .2       ; (mantissa byte 2)
+    ora zp_fwa_m3                                                     ; a3d7: 05 33       .3       ; (mantissa byte 3)
+    ora zp_fwa_m4                                                     ; a3d9: 05 34       .4       ; (mantissa byte 4)
     beq ca3e1                                                         ; a3db: f0 04       ..       ; All zero: leave the mantissa MSB clear
-    lda zp_fwa_sign                                                   ; a3dd: a5 2e       ..    
+    lda zp_fwa_sign                                                   ; a3dd: a5 2e       ..       ; Non-zero: take the packed MSB (carrying the sign)
     ora #&80                                                          ; a3df: 09 80       ..       ; Non-zero: restore the implied leading 1
 ; &a3e1 referenced 1 time by &a3db
 .ca3e1
-    sta zp_fwa_m1                                                     ; a3e1: 85 31       .1    
-    rts                                                               ; a3e3: 60          `     
+    sta zp_fwa_m1                                                     ; a3e1: 85 31       .1       ; Store the true mantissa MSB
+    rts                                                               ; a3e3: 60          `        ; FWA now holds the unpacked value
 ; ***************************************************************************************
 ; Convert the FP accumulator to an integer
 ;
