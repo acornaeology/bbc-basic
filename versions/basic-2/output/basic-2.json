@@ -1711,6 +1711,12 @@
       "name": "read_string_literal",
       "title": "Read a string literal",
       "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
+    },
+    {
+      "addr": 41336,
+      "name": "fwa_acc_fwb",
+      "title": "Add FWB into FWA",
+      "description": "FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10)."
     }
   ],
   "banners": [
@@ -55557,7 +55563,7 @@
         53
       ],
       "labels": [
-        "sub_ca178"
+        "fwa_acc_fwb"
       ],
       "xref_summaries": [
         "&a178 referenced 2 times by &a208, &a64f"
@@ -56557,9 +56563,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca178",
+      "operand": "fwa_acc_fwb",
       "target": 41336,
-      "target_label": "sub_ca178"
+      "target_label": "fwa_acc_fwb"
     },
     {
       "addr": 41483,
@@ -63631,6 +63637,7 @@
       "labels": [
         "fwa_mul_var_raw"
       ],
+      "comment_inline": "Is FWA zero?",
       "xref_summaries": [
         "&a606 referenced 2 times by &a656, &af30"
       ],
@@ -63650,6 +63657,7 @@
         240,
         250
       ],
+      "comment_inline": "zero: the product is zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_27",
@@ -63663,6 +63671,7 @@
         78,
         163
       ],
+      "comment_inline": "FWB = the fp variable (the multiplier)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_unpack_var",
@@ -63675,6 +63684,7 @@
         208,
         3
       ],
+      "comment_inline": "non-zero: multiply",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca613",
@@ -63688,6 +63698,7 @@
         134,
         166
       ],
+      "comment_inline": "multiplier zero: the product is zero",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_clear",
@@ -63702,6 +63713,7 @@
       "labels": [
         "ca613"
       ],
+      "comment_inline": "Add the exponents:",
       "xref_summaries": [
         "&a613 referenced 1 time by &a60e"
       ],
@@ -63717,6 +63729,7 @@
         165,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -63729,6 +63742,7 @@
         101,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_exp",
@@ -63741,6 +63755,7 @@
         144,
         3
       ],
+      "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca61d",
@@ -63753,6 +63768,7 @@
         230,
         47
       ],
+      "comment_inline": "carry into overflow",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_ovf",
@@ -63764,6 +63780,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -63776,6 +63793,7 @@
       "labels": [
         "ca61d"
       ],
+      "comment_inline": "remove the excess-128 bias (added twice)",
       "xref_summaries": [
         "&a61d referenced 1 time by &a618"
       ],
@@ -63792,6 +63810,7 @@
         133,
         48
       ],
+      "comment_inline": "store the product exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -63804,6 +63823,7 @@
         176,
         2
       ],
+      "comment_inline": "no borrow",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca625",
@@ -63816,6 +63836,7 @@
         198,
         47
       ],
+      "comment_inline": "borrow into overflow",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwa_ovf",
@@ -63831,6 +63852,7 @@
       "labels": [
         "ca625"
       ],
+      "comment_inline": "Move FWA aside as the multiplicand and clear FWA:",
       "xref_summaries": [
         "&a625 referenced 1 time by &a621"
       ],
@@ -63847,6 +63869,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -63860,6 +63883,7 @@
       "labels": [
         "loop_ca629"
       ],
+      "comment_inline": "copy a FWA byte...",
       "xref_summaries": [
         "&a629 referenced 1 time by &a630"
       ],
@@ -63878,6 +63902,7 @@
         149,
         66
       ],
+      "comment_inline": "...to the multiplicand",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd,x",
@@ -63890,6 +63915,7 @@
         148,
         48
       ],
+      "comment_inline": "clear the FWA byte",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_exp,x",
@@ -63901,6 +63927,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -63910,6 +63937,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca629",
@@ -63922,6 +63950,7 @@
         165,
         46
       ],
+      "comment_inline": "Product sign = FWA sign XOR FWB sign:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -63934,6 +63963,7 @@
         69,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_fwb_sign",
@@ -63946,6 +63976,7 @@
         133,
         46
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -63958,6 +63989,7 @@
         160,
         32
       ],
+      "comment_inline": "32 iterations, one per multiplier bit",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&20"
@@ -63971,6 +64003,7 @@
       "labels": [
         "loop_ca63a"
       ],
+      "comment_inline": "Shift the multiplier right: next bit into carry",
       "xref_summaries": [
         "&a63a referenced 1 time by &a653"
       ],
@@ -63989,6 +64022,7 @@
         102,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m2",
@@ -64001,6 +64035,7 @@
         102,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m3",
@@ -64013,6 +64048,7 @@
         102,
         65
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_m4",
@@ -64025,6 +64061,7 @@
         102,
         66
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwb_rnd",
@@ -64037,6 +64074,7 @@
         6,
         70
       ],
+      "comment_inline": "Shift the running product left (&43-&46):",
       "type": "code",
       "mnemonic": "asl",
       "operand": "l0046",
@@ -64049,6 +64087,7 @@
         38,
         69
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l0045",
@@ -64061,6 +64100,7 @@
         38,
         68
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l0044",
@@ -64073,6 +64113,7 @@
         38,
         67
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fp_temp",
@@ -64085,6 +64126,7 @@
         144,
         4
       ],
+      "comment_inline": "multiplier bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca652",
@@ -64096,6 +64138,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "bit set: add the multiplicand",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -64106,11 +64149,12 @@
         120,
         161
       ],
+      "comment_inline": "FWA += FWB",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca178",
+      "operand": "fwa_acc_fwb",
       "target": 41336,
-      "target_label": "sub_ca178"
+      "target_label": "fwa_acc_fwb"
     },
     {
       "addr": 42578,
@@ -64120,6 +64164,7 @@
       "labels": [
         "ca652"
       ],
+      "comment_inline": "count",
       "xref_summaries": [
         "&a652 referenced 1 time by &a64c"
       ],
@@ -64135,6 +64180,7 @@
         208,
         229
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca63a",
@@ -64146,6 +64192,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the product",
       "type": "code",
       "mnemonic": "rts"
     },

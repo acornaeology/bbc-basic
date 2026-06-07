@@ -6195,8 +6195,12 @@ l848a = sub_c847b+15
     lda #0                                                            ; a174: a9 00       ..    
     clc                                                               ; a176: 18          .     
     rts                                                               ; a177: 60          `     
+; ***************************************************************************************
+; Add FWB into FWA
+;
+; FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10).
 ; &a178 referenced 2 times by &a208, &a64f
-.sub_ca178
+.fwa_acc_fwb
     lda zp_fwa_rnd                                                    ; a178: a5 35       .5    
     adc zp_fwb_rnd                                                    ; a17a: 65 42       eB    
     sta zp_fwa_rnd                                                    ; a17c: 85 35       .5    
@@ -6299,7 +6303,7 @@ l848a = sub_c847b+15
     jsr fwb_div2                                                      ; a205: 20 42 a2     B.      ; FWB = x*2
 ; &a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0
 .ca208
-    jsr sub_ca178                                                     ; a208: 20 78 a1     x.      ; FWA = x8 + x2 = x*10
+    jsr fwa_acc_fwb                                                   ; a208: 20 78 a1     x.      ; FWA = x8 + x2 = x*10
 ; &a20b referenced 1 time by &a2ba
 .ca20b
     bcc return_21                                                     ; a20b: 90 10       ..       ; no overflow: done
@@ -7066,59 +7070,59 @@ l848a = sub_c847b+15
 ; Multiply FWA by the operand, unnormalised and unrounded.
 ; &a606 referenced 2 times by &a656, &af30
 .fwa_mul_var_raw
-    jsr fwa_sign                                                      ; a606: 20 da a1     ..   
-    beq return_27                                                     ; a609: f0 fa       ..    
-    jsr fwb_unpack_var                                                ; a60b: 20 4e a3     N.   
-    bne ca613                                                         ; a60e: d0 03       ..    
-    jmp fwa_clear                                                     ; a610: 4c 86 a6    L..   
+    jsr fwa_sign                                                      ; a606: 20 da a1     ..      ; Is FWA zero?
+    beq return_27                                                     ; a609: f0 fa       ..       ; zero: the product is zero
+    jsr fwb_unpack_var                                                ; a60b: 20 4e a3     N.      ; FWB = the fp variable (the multiplier)
+    bne ca613                                                         ; a60e: d0 03       ..       ; non-zero: multiply
+    jmp fwa_clear                                                     ; a610: 4c 86 a6    L..      ; multiplier zero: the product is zero
 ; &a613 referenced 1 time by &a60e
 .ca613
-    clc                                                               ; a613: 18          .     
-    lda zp_fwa_exp                                                    ; a614: a5 30       .0    
-    adc zp_fwb_exp                                                    ; a616: 65 3d       e=    
-    bcc ca61d                                                         ; a618: 90 03       ..    
-    inc zp_fwa_ovf                                                    ; a61a: e6 2f       ./    
-    clc                                                               ; a61c: 18          .     
+    clc                                                               ; a613: 18          .        ; Add the exponents:
+    lda zp_fwa_exp                                                    ; a614: a5 30       .0       ; ...
+    adc zp_fwb_exp                                                    ; a616: 65 3d       e=       ; ...
+    bcc ca61d                                                         ; a618: 90 03       ..       ; no carry
+    inc zp_fwa_ovf                                                    ; a61a: e6 2f       ./       ; carry into overflow
+    clc                                                               ; a61c: 18          .        ; ...
 ; &a61d referenced 1 time by &a618
 .ca61d
-    sbc #&7f                                                          ; a61d: e9 7f       ..    
-    sta zp_fwa_exp                                                    ; a61f: 85 30       .0    
-    bcs ca625                                                         ; a621: b0 02       ..    
-    dec zp_fwa_ovf                                                    ; a623: c6 2f       ./    
+    sbc #&7f                                                          ; a61d: e9 7f       ..       ; remove the excess-128 bias (added twice)
+    sta zp_fwa_exp                                                    ; a61f: 85 30       .0       ; store the product exponent
+    bcs ca625                                                         ; a621: b0 02       ..       ; no borrow
+    dec zp_fwa_ovf                                                    ; a623: c6 2f       ./       ; borrow into overflow
 ; &a625 referenced 1 time by &a621
 .ca625
-    ldx #5                                                            ; a625: a2 05       ..    
-    ldy #0                                                            ; a627: a0 00       ..    
+    ldx #5                                                            ; a625: a2 05       ..       ; Move FWA aside as the multiplicand and clear FWA:
+    ldy #0                                                            ; a627: a0 00       ..       ; ...
 ; &a629 referenced 1 time by &a630
 .loop_ca629
-    lda zp_fwa_exp,x                                                  ; a629: b5 30       .0    
-    sta zp_fwb_rnd,x                                                  ; a62b: 95 42       .B    
-    sty zp_fwa_exp,x                                                  ; a62d: 94 30       .0    
-    dex                                                               ; a62f: ca          .     
-    bne loop_ca629                                                    ; a630: d0 f7       ..    
-    lda zp_fwa_sign                                                   ; a632: a5 2e       ..    
-    eor zp_fwb_sign                                                   ; a634: 45 3b       E;    
-    sta zp_fwa_sign                                                   ; a636: 85 2e       ..    
-    ldy #&20 ; ' '                                                    ; a638: a0 20       .     
+    lda zp_fwa_exp,x                                                  ; a629: b5 30       .0       ; copy a FWA byte...
+    sta zp_fwb_rnd,x                                                  ; a62b: 95 42       .B       ; ...to the multiplicand
+    sty zp_fwa_exp,x                                                  ; a62d: 94 30       .0       ; clear the FWA byte
+    dex                                                               ; a62f: ca          .        ; count
+    bne loop_ca629                                                    ; a630: d0 f7       ..       ; loop
+    lda zp_fwa_sign                                                   ; a632: a5 2e       ..       ; Product sign = FWA sign XOR FWB sign:
+    eor zp_fwb_sign                                                   ; a634: 45 3b       E;       ; ...
+    sta zp_fwa_sign                                                   ; a636: 85 2e       ..       ; (store)
+    ldy #&20 ; ' '                                                    ; a638: a0 20       .        ; 32 iterations, one per multiplier bit
 ; &a63a referenced 1 time by &a653
 .loop_ca63a
-    lsr zp_fwb_m1                                                     ; a63a: 46 3e       F>    
-    ror zp_fwb_m2                                                     ; a63c: 66 3f       f?    
-    ror zp_fwb_m3                                                     ; a63e: 66 40       f@    
-    ror zp_fwb_m4                                                     ; a640: 66 41       fA    
-    ror zp_fwb_rnd                                                    ; a642: 66 42       fB    
-    asl l0046                                                         ; a644: 06 46       .F    
-    rol l0045                                                         ; a646: 26 45       &E    
-    rol l0044                                                         ; a648: 26 44       &D    
-    rol zp_fp_temp                                                    ; a64a: 26 43       &C    
-    bcc ca652                                                         ; a64c: 90 04       ..    
-    clc                                                               ; a64e: 18          .     
-    jsr sub_ca178                                                     ; a64f: 20 78 a1     x.   
+    lsr zp_fwb_m1                                                     ; a63a: 46 3e       F>       ; Shift the multiplier right: next bit into carry
+    ror zp_fwb_m2                                                     ; a63c: 66 3f       f?       ; ...
+    ror zp_fwb_m3                                                     ; a63e: 66 40       f@       ; ...
+    ror zp_fwb_m4                                                     ; a640: 66 41       fA       ; ...
+    ror zp_fwb_rnd                                                    ; a642: 66 42       fB       ; ...
+    asl l0046                                                         ; a644: 06 46       .F       ; Shift the running product left (&43-&46):
+    rol l0045                                                         ; a646: 26 45       &E       ; ...
+    rol l0044                                                         ; a648: 26 44       &D       ; ...
+    rol zp_fp_temp                                                    ; a64a: 26 43       &C       ; ...
+    bcc ca652                                                         ; a64c: 90 04       ..       ; multiplier bit clear: skip the add
+    clc                                                               ; a64e: 18          .        ; bit set: add the multiplicand
+    jsr fwa_acc_fwb                                                   ; a64f: 20 78 a1     x.      ; FWA += FWB
 ; &a652 referenced 1 time by &a64c
 .ca652
-    dey                                                               ; a652: 88          .     
-    bne loop_ca63a                                                    ; a653: d0 e5       ..    
-    rts                                                               ; a655: 60          `     
+    dey                                                               ; a652: 88          .        ; count
+    bne loop_ca63a                                                    ; a653: d0 e5       ..       ; loop
+    rts                                                               ; a655: 60          `        ; Return the product
 ; ***************************************************************************************
 ; FWA = FWA * fp var
 ;
@@ -12110,6 +12114,7 @@ save pydis_start, pydis_end
 ;     err_too_big:                 2
 ;     eval_relational:             2
 ;     fp_temp1:                    2
+;     fwa_acc_fwb:                 2
 ;     fwa_add_fwb_raw:             2
 ;     fwa_copy_from_fwb:           2
 ;     fwa_mul10:                   2
@@ -12182,7 +12187,6 @@ save pydis_start, pydis_end
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
 ;     sub_ca064:                   2
-;     sub_ca178:                   2
 ;     sub_ca486:                   2
 ;     sub_ca4d0:                   2
 ;     sub_ca7f1:                   2
@@ -13920,7 +13924,6 @@ save pydis_start, pydis_end
 ;     sub_ca07b
 ;     sub_ca140
 ;     sub_ca14b
-;     sub_ca178
 ;     sub_ca2ed
 ;     sub_ca3e7
 ;     sub_ca486
