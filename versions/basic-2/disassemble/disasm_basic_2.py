@@ -190,6 +190,7 @@ d.comment(0x806d, 'Enable IRQs and enter the immediate loop', align=Align.INLINE
 # two-byte pointers are stored low byte first.
 # ----------------------------------------------------------------------
 d.label(0x0000, 'zp_lomem')           # Start of BASIC variables
+d.label(0x0001, 'zp_lomem_1')
 d.label(0x0002, 'zp_vartop')          # End of BASIC variables (heap top)
 d.label(0x0003, 'zp_vartop_1')
 d.label(0x0004, 'zp_stack_ptr')       # Top of the BASIC value stack
@@ -1710,6 +1711,87 @@ d.comment(0xacc2, 'Return TRUE/FALSE per the EOF flag', align=Align.INLINE)
 d.comment(0xafbc, 'Return the key code as an integer', align=Align.INLINE)
 d.comment(0xab6d, 'OSBYTE &86: read the text cursor position', align=Align.INLINE)
 d.comment(0xab73, 'Return the column as an integer', align=Align.INLINE)
+
+d.subroutine(0xbe62, 'load_program', title='Load a program from the filing system',
+             description='Used by LOAD and CHAIN to read a BASIC program into memory.')
+d.subroutine(0xbfb5, 'eval_channel', title='Evaluate a #channel argument',
+             description='Evaluate the #handle of a file operation, leaving it in IWA.')
+d.subroutine(0xafad, 'read_key_timed', title='Read a key within a time limit (INKEY)',
+             description='Wait up to the given time for a key; the INKEY/INKEY$ primitive.')
+
+# fn_gets (&AFBF): GET$ - a key as a one-character string
+d.comment(0xafbf, 'Wait for a key', align=Align.INLINE)
+d.comment(0xafc2, 'Store it as the one-character string body', align=Align.INLINE)
+d.comment(0xafc5, 'Length 1', align=Align.INLINE)
+d.comment(0xafc7, '(store)', align=Align.INLINE)
+d.comment(0xafc9, 'String type', align=Align.INLINE)
+d.comment(0xafcb, 'Return the one-character string', align=Align.INLINE)
+
+# fn_inkeys (&B026): INKEY$ - a timed key as a string
+d.comment(0xb026, 'Read a key within the time limit', align=Align.INLINE)
+d.comment(0xb029, 'X holds the key', align=Align.INLINE)
+d.comment(0xb02a, 'Y=0 means a key was read', align=Align.INLINE)
+d.comment(0xb02c, 'Got one: return it as a 1-char string', align=Align.INLINE)
+d.comment(0xb02e, 'Timeout: empty string', align=Align.INLINE)
+d.comment(0xb030, 'length 0', align=Align.INLINE)
+d.comment(0xb032, 'Return the (possibly empty) string', align=Align.INLINE)
+d.comment(0xb033, 'Type mismatch (shared)', align=Align.INLINE)
+d.comment(0xb036, 'Missing , error (shared)', align=Align.INLINE)
+
+# fn_fn (&B195): FN calls a user function via call_proc_fn
+d.comment(0xb195, 'FN token: enter via the PROC/FN call mechanism', align=Align.INLINE)
+
+# fn_time (&AEB4): =TIME reads the centisecond clock
+d.comment(0xaeb4, 'Point OSWORD at IWA: low byte', align=Align.INLINE)
+d.comment(0xaeb6, 'high byte', align=Align.INLINE)
+d.comment(0xaeb8, 'OSWORD &01: read the centisecond clock into IWA', align=Align.INLINE)
+d.comment(0xaebd, 'Integer result', align=Align.INLINE)
+d.comment(0xaebf, 'Return TIME', align=Align.INLINE)
+
+# fn_ext (&BF46) / fn_ptr (&BF47): =EXT / =PTR via OSARGS
+d.comment(0xbf46, 'Carry set selects EXT (otherwise PTR)', align=Align.INLINE)
+d.comment(0xbf47, 'Build the OSARGS sub-function from the carry...', align=Align.INLINE)
+d.comment(0xbf49, '...0 = PTR, non-zero = EXT', align=Align.INLINE)
+d.comment(0xbf4a, '(BBC: A becomes 0 or 2)', align=Align.INLINE)
+d.comment(0xbf4b, 'Save the function code', align=Align.INLINE)
+d.comment(0xbf4c, 'Evaluate the #handle, point at IWA', align=Align.INLINE)
+d.comment(0xbf4f, 'X -> IWA for the result', align=Align.INLINE)
+d.comment(0xbf51, 'Restore the function code', align=Align.INLINE)
+d.comment(0xbf52, 'OSARGS: read PTR or EXT into IWA', align=Align.INLINE)
+d.comment(0xbf55, 'Integer result', align=Align.INLINE)
+d.comment(0xbf57, 'Return PTR/EXT', align=Align.INLINE)
+
+# fn_bget (&BF6F): BGET#channel
+d.comment(0xbf6f, 'Evaluate the #handle', align=Align.INLINE)
+d.comment(0xbf72, 'OSBGET: read a byte from the channel', align=Align.INLINE)
+d.comment(0xbf75, 'Return the byte as an integer', align=Align.INLINE)
+
+# fn_openin (&BF78) / fn_openout (&BF7C): OSFIND open
+d.comment(0xbf78, 'OSFIND &40: open an existing file for input', align=Align.INLINE)
+d.comment(0xbf7a, 'do the open', align=Align.INLINE)
+d.comment(0xbf7c, 'OSFIND &80: create a file for output', align=Align.INLINE)
+d.comment(0xbf7e, 'do the open', align=Align.INLINE)
+
+# stmt_lomem (&926F): LOMEM = value
+d.comment(0x926f, 'Step past "=", evaluate an integer', align=Align.INLINE)
+d.comment(0x9272, 'Set LOMEM (and empty the variables): low byte', align=Align.INLINE)
+d.comment(0x9274, 'LOMEM low', align=Align.INLINE)
+d.comment(0x9276, 'VARTOP low (no variables yet)', align=Align.INLINE)
+d.comment(0x9278, 'high byte', align=Align.INLINE)
+d.comment(0x927a, 'LOMEM high', align=Align.INLINE)
+d.comment(0x927c, 'VARTOP high', align=Align.INLINE)
+d.comment(0x927e, 'Clear all dynamic variables', align=Align.INLINE)
+d.comment(0x9281, 'Back to the execution loop', align=Align.INLINE)
+
+# stmt_move (&93E4): MOVE = PLOT 4
+d.comment(0x93e4, 'MOVE is PLOT 4 (move the cursor, no draw)', align=Align.INLINE)
+d.comment(0x93e6, 'do the PLOT', align=Align.INLINE)
+
+# stmt_load (&BF24) / stmt_chain (&BF2A)
+d.comment(0xbf24, 'Load the named program', align=Align.INLINE)
+d.comment(0xbf27, 'Back to the immediate loop', align=Align.INLINE)
+d.comment(0xbf2a, 'Load the named program', align=Align.INLINE)
+d.comment(0xbf2d, 'then RUN it', align=Align.INLINE)
 
 d.subroutine(0x8f1e, 'usr_call', title='Call user machine code (USR/CALL)',
              description="""Load A, X, Y and the flags from the resident integer

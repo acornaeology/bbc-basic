@@ -697,7 +697,8 @@
       "addr": 49049,
       "name": "stmt_close",
       "title": "CLOSE",
-      "description": "Close an open file, or all files with #0. CLOSE#channel."
+      "description": "Close an open file, or all files with #0. CLOSE#channel.",
+      "fall_through": true
     },
     {
       "addr": 36541,
@@ -1624,6 +1625,24 @@
       "description": "Copy the four-byte integer on top of the BASIC stack into\nthe zero-page bytes at (X .. X+3), then drop it from the stack. The\n&BE0B entry uses X = &37 (the general work area)."
     },
     {
+      "addr": 48738,
+      "name": "load_program",
+      "title": "Load a program from the filing system",
+      "description": "Used by LOAD and CHAIN to read a BASIC program into memory."
+    },
+    {
+      "addr": 49077,
+      "name": "eval_channel",
+      "title": "Evaluate a #channel argument",
+      "description": "Evaluate the #handle of a file operation, leaving it in IWA."
+    },
+    {
+      "addr": 44973,
+      "name": "read_key_timed",
+      "title": "Read a key within a time limit (INKEY)",
+      "description": "Wait up to the given time for a key; the INKEY/INKEY$ primitive."
+    },
+    {
       "addr": 36638,
       "name": "usr_call",
       "title": "Call user machine code (USR/CALL)",
@@ -1655,7 +1674,7 @@
   ],
   "external_labels": {
     "zp_lomem": 0,
-    "l0001": 1,
+    "zp_lomem_1": 1,
     "zp_vartop": 2,
     "zp_vartop_1": 3,
     "zp_stack_ptr": 4,
@@ -30444,6 +30463,7 @@
       "labels": [
         "stmt_lomem"
       ],
+      "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92eb",
@@ -30456,6 +30476,7 @@
         165,
         42
       ],
+      "comment_inline": "Set LOMEM (and empty the variables): low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -30468,6 +30489,7 @@
         133,
         0
       ],
+      "comment_inline": "LOMEM low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_lomem",
@@ -30480,6 +30502,7 @@
         133,
         2
       ],
+      "comment_inline": "VARTOP low (no variables yet)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop",
@@ -30492,6 +30515,7 @@
         165,
         43
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30504,11 +30528,12 @@
         133,
         1
       ],
+      "comment_inline": "LOMEM high",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0001",
+      "operand": "zp_lomem_1",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 37500,
@@ -30516,6 +30541,7 @@
         133,
         3
       ],
+      "comment_inline": "VARTOP high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_vartop_1",
@@ -30529,6 +30555,7 @@
         47,
         189
       ],
+      "comment_inline": "Clear all dynamic variables",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbd2f",
@@ -30541,6 +30568,7 @@
         240,
         7
       ],
+      "comment_inline": "Back to the execution loop",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c928a",
@@ -32727,6 +32755,7 @@
       "labels": [
         "stmt_move"
       ],
+      "comment_inline": "MOVE is PLOT 4 (move the cursor, no draw)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -32737,6 +32766,7 @@
         208,
         2
       ],
+      "comment_inline": "do the PLOT",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c93ea",
@@ -72409,9 +72439,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cafad",
+      "operand": "read_key_timed",
       "target": 44973,
-      "target_label": "sub_cafad"
+      "target_label": "read_key_timed"
     },
     {
       "addr": 44208,
@@ -72469,9 +72499,9 @@
       "comment_inline": "Evaluate the channel number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfb5",
+      "operand": "eval_channel",
       "target": 49077,
-      "target_label": "sub_cbfb5"
+      "target_label": "eval_channel"
     },
     {
       "addr": 44219,
@@ -75728,6 +75758,7 @@
       "labels": [
         "fn_time"
       ],
+      "comment_inline": "Point OSWORD at IWA: low byte",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#<(zp_iwa)"
@@ -75738,6 +75769,7 @@
         160,
         0
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#>(zp_iwa)"
@@ -75748,6 +75780,7 @@
         169,
         1
       ],
+      "comment_inline": "OSWORD &01: read the centisecond clock into IWA",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osword_read_clock"
@@ -75772,6 +75805,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -75781,6 +75815,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return TIME",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -76229,9 +76264,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0001",
+      "operand": "zp_lomem_1",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 44800,
@@ -76785,9 +76820,9 @@
       "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0001,x",
+      "operand": "zp_lomem_1,x",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 44892,
@@ -77357,7 +77392,7 @@
         146
       ],
       "labels": [
-        "sub_cafad"
+        "read_key_timed"
       ],
       "xref_summaries": [
         "&afad referenced 2 times by &acad, &b026"
@@ -77461,6 +77496,7 @@
       "labels": [
         "fn_gets"
       ],
+      "comment_inline": "Wait for a key",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osrdch",
@@ -77477,6 +77513,7 @@
       "labels": [
         "cafc2"
       ],
+      "comment_inline": "Store it as the one-character string body",
       "xref_summaries": [
         "&afc2 referenced 2 times by &b02c, &b3c2"
       ],
@@ -77496,6 +77533,7 @@
         169,
         1
       ],
+      "comment_inline": "Length 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -77506,6 +77544,7 @@
         133,
         54
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -77518,6 +77557,7 @@
         169,
         0
       ],
+      "comment_inline": "String type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -77527,6 +77567,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the one-character string",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -78065,17 +78106,19 @@
       "labels": [
         "fn_inkeys"
       ],
+      "comment_inline": "Read a key within the time limit",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cafad",
+      "operand": "read_key_timed",
       "target": 44973,
-      "target_label": "sub_cafad"
+      "target_label": "read_key_timed"
     },
     {
       "addr": 45097,
       "bytes": [
         138
       ],
+      "comment_inline": "X holds the key",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -78085,6 +78128,7 @@
         192,
         0
       ],
+      "comment_inline": "Y=0 means a key was read",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#0"
@@ -78095,6 +78139,7 @@
         240,
         148
       ],
+      "comment_inline": "Got one: return it as a 1-char string",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cafc2",
@@ -78110,6 +78155,7 @@
       "labels": [
         "cb02e"
       ],
+      "comment_inline": "Timeout: empty string",
       "xref_summaries": [
         "&b02e referenced 2 times by &b06b, &b081"
       ],
@@ -78127,6 +78173,7 @@
         133,
         54
       ],
+      "comment_inline": "length 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -78138,6 +78185,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the (possibly empty) string",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -78151,6 +78199,7 @@
       "labels": [
         "cb033"
       ],
+      "comment_inline": "Type mismatch (shared)",
       "xref_summaries": [
         "&b033 referenced 3 times by &afcf, &aff1, &b03c"
       ],
@@ -78175,6 +78224,7 @@
       "labels": [
         "cb036"
       ],
+      "comment_inline": "Missing , error (shared)",
       "xref_summaries": [
         "&b036 referenced 4 times by &afd3, &aff5, &b040, &b059"
       ],
@@ -80314,6 +80364,7 @@
       "labels": [
         "fn_fn"
       ],
+      "comment_inline": "FN token: enter via the PROC/FN call mechanism",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a4"
@@ -98192,9 +98243,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0001",
+      "operand": "zp_lomem_1",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 48426,
@@ -99951,9 +100002,9 @@
       "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0001,x",
+      "operand": "zp_lomem_1,x",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 48669,
@@ -100299,9 +100350,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0001,x",
+      "operand": "zp_lomem_1,x",
       "target": 1,
-      "target_label": "l0001"
+      "target_label": "zp_lomem_1"
     },
     {
       "addr": 48716,
@@ -100476,7 +100527,7 @@
         190
       ],
       "labels": [
-        "sub_cbe62"
+        "load_program"
       ],
       "xref_summaries": [
         "&be62 referenced 2 times by &bf24, &bf2a"
@@ -101636,11 +101687,12 @@
       "labels": [
         "stmt_load"
       ],
+      "comment_inline": "Load the named program",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe62",
+      "operand": "load_program",
       "target": 48738,
-      "target_label": "sub_cbe62"
+      "target_label": "load_program"
     },
     {
       "addr": 48935,
@@ -101649,6 +101701,7 @@
         243,
         138
       ],
+      "comment_inline": "Back to the immediate loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8af3",
@@ -101665,11 +101718,12 @@
       "labels": [
         "stmt_chain"
       ],
+      "comment_inline": "Load the named program",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe62",
+      "operand": "load_program",
       "target": 48738,
-      "target_label": "sub_cbe62"
+      "target_label": "load_program"
     },
     {
       "addr": 48941,
@@ -101678,6 +101732,7 @@
         20,
         189
       ],
+      "comment_inline": "then RUN it",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbd14",
@@ -101805,6 +101860,7 @@
       "labels": [
         "fn_ext"
       ],
+      "comment_inline": "Carry set selects EXT (otherwise PTR)",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -101817,6 +101873,7 @@
       "labels": [
         "fn_ptr"
       ],
+      "comment_inline": "Build the OSARGS sub-function from the carry...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -101826,6 +101883,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...0 = PTR, non-zero = EXT",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -101834,6 +101892,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "(BBC: A becomes 0 or 2)",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -101842,6 +101901,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "Save the function code",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -101852,11 +101912,12 @@
         181,
         191
       ],
+      "comment_inline": "Evaluate the #handle, point at IWA",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfb5",
+      "operand": "eval_channel",
       "target": 49077,
-      "target_label": "sub_cbfb5"
+      "target_label": "eval_channel"
     },
     {
       "addr": 48975,
@@ -101864,6 +101925,7 @@
         162,
         42
       ],
+      "comment_inline": "X -> IWA for the result",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&2a"
@@ -101873,6 +101935,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the function code",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -101883,6 +101946,7 @@
         218,
         255
       ],
+      "comment_inline": "OSARGS: read PTR or EXT into IWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osargs",
@@ -101895,6 +101959,7 @@
         169,
         64
       ],
+      "comment_inline": "Integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -101904,6 +101969,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return PTR/EXT",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -102034,11 +102100,12 @@
       "labels": [
         "fn_bget"
       ],
+      "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfb5",
+      "operand": "eval_channel",
       "target": 49077,
-      "target_label": "sub_cbfb5"
+      "target_label": "eval_channel"
     },
     {
       "addr": 49010,
@@ -102047,6 +102114,7 @@
         215,
         255
       ],
+      "comment_inline": "OSBGET: read a byte from the channel",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbget",
@@ -102060,6 +102128,7 @@
         216,
         174
       ],
+      "comment_inline": "Return the byte as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caed8",
@@ -102075,6 +102144,7 @@
       "labels": [
         "fn_openin"
       ],
+      "comment_inline": "OSFIND &40: open an existing file for input",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -102085,6 +102155,7 @@
         208,
         6
       ],
+      "comment_inline": "do the open",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbf82",
@@ -102100,6 +102171,7 @@
       "labels": [
         "fn_openout"
       ],
+      "comment_inline": "OSFIND &80: create a file for output",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -102110,6 +102182,7 @@
         208,
         2
       ],
+      "comment_inline": "do the open",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbf82",
@@ -102432,7 +102505,7 @@
         138
       ],
       "labels": [
-        "sub_cbfb5"
+        "eval_channel"
       ],
       "xref_summaries": [
         "&bfb5 referenced 3 times by &acb8, &bf4c, &bf6f"

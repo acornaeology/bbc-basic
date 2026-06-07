@@ -19,7 +19,7 @@ osfind_close                         = &00
 ; Memory locations
 zp_lomem         = &00
 ; &00 referenced 6 times by &9274, &aefc, &af56, &bd22, &be20, &be46
-l0001            = &01
+zp_lomem_1       = &01
 ; &01 referenced 6 times by &927a, &aefe, &af5a, &bd28, &be1b, &be4a
 zp_vartop        = &02
 ; &02 referenced 28 times by &8c2f, &8c4c, &8c61, &8c6f, &90fa, &9108, &9110, &919c, &91a1, &91c8, &91d6, &91eb, &9203, &9276, &93c1, &951a, &9521, &952a, &9534, &953b, &9556, &af5e, &b17d, &b182, &bd24, &be16, &be3c, &be4e
@@ -3395,15 +3395,15 @@ l848a = sub_c847b+15
 ;
 ; Set LOMEM, the start of variable storage. LOMEM = address.
 .stmt_lomem
-    jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..   
-    lda zp_iwa                                                        ; 9272: a5 2a       .*    
-    sta zp_lomem                                                      ; 9274: 85 00       ..    
-    sta zp_vartop                                                     ; 9276: 85 02       ..    
-    lda zp_iwa_1                                                      ; 9278: a5 2b       .+    
-    sta l0001                                                         ; 927a: 85 01       ..    
-    sta zp_vartop_1                                                   ; 927c: 85 03       ..    
-    jsr sub_cbd2f                                                     ; 927e: 20 2f bd     /.   
-    beq c928a                                                         ; 9281: f0 07       ..    
+    jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    lda zp_iwa                                                        ; 9272: a5 2a       .*       ; Set LOMEM (and empty the variables): low byte
+    sta zp_lomem                                                      ; 9274: 85 00       ..       ; LOMEM low
+    sta zp_vartop                                                     ; 9276: 85 02       ..       ; VARTOP low (no variables yet)
+    lda zp_iwa_1                                                      ; 9278: a5 2b       .+       ; high byte
+    sta zp_lomem_1                                                    ; 927a: 85 01       ..       ; LOMEM high
+    sta zp_vartop_1                                                   ; 927c: 85 03       ..       ; VARTOP high
+    jsr sub_cbd2f                                                     ; 927e: 20 2f bd     /.      ; Clear all dynamic variables
+    beq c928a                                                         ; 9281: f0 07       ..       ; Back to the execution loop
 ; ***************************************************************************************
 ; PAGE=
 ;
@@ -3677,8 +3677,8 @@ l848a = sub_c847b+15
 ;
 ; Move the graphics cursor without drawing (PLOT 4). MOVE x, y.
 .stmt_move
-    lda #4                                                            ; 93e4: a9 04       ..    
-    bne c93ea                                                         ; 93e6: d0 02       ..    
+    lda #4                                                            ; 93e4: a9 04       ..       ; MOVE is PLOT 4 (move the cursor, no draw)
+    bne c93ea                                                         ; 93e6: d0 02       ..       ; do the PLOT
 ; ***************************************************************************************
 ; DRAW
 ;
@@ -8095,7 +8095,7 @@ l848a = sub_c847b+15
 ;
 ; Read a key within a time limit, test a key, or read the machine ID. INKEY numeric.
 .fn_inkey
-    jsr sub_cafad                                                     ; acad: 20 ad af     ..   
+    jsr read_key_timed                                                ; acad: 20 ad af     ..   
     cpy #0                                                            ; acb0: c0 00       ..    
     bne fn_true                                                       ; acb2: d0 10       ..    
     txa                                                               ; acb4: 8a          .     
@@ -8105,7 +8105,7 @@ l848a = sub_c847b+15
 ;
 ; TRUE when at the end of an open file. EOF#channel.
 .fn_eof
-    jsr sub_cbfb5                                                     ; acb8: 20 b5 bf     ..      ; Evaluate the channel number
+    jsr eval_channel                                                  ; acb8: 20 b5 bf     ..      ; Evaluate the channel number
     tax                                                               ; acbb: aa          .        ; Channel to X
     lda #osbyte_check_eof                                             ; acbc: a9 7f       ..       ; OSBYTE &7F: test for end of file
     jsr osbyte                                                        ; acbe: 20 f4 ff     ..      ; Check for end-of-file on file handle Y
@@ -8505,12 +8505,12 @@ l848a = sub_c847b+15
 ;
 ; Read the centisecond elapsed-time clock. TIME.
 .fn_time
-    ldx #<(zp_iwa)                                                    ; aeb4: a2 2a       .*    
-    ldy #>(zp_iwa)                                                    ; aeb6: a0 00       ..    
-    lda #osword_read_clock                                            ; aeb8: a9 01       ..    
+    ldx #<(zp_iwa)                                                    ; aeb4: a2 2a       .*       ; Point OSWORD at IWA: low byte
+    ldy #>(zp_iwa)                                                    ; aeb6: a0 00       ..       ; high byte
+    lda #osword_read_clock                                            ; aeb8: a9 01       ..       ; OSWORD &01: read the centisecond clock into IWA
     jsr osword                                                        ; aeba: 20 f1 ff     ..      ; Read system clock
-    lda #&40 ; '@'                                                    ; aebd: a9 40       .@    
-    rts                                                               ; aebf: 60          `     
+    lda #&40 ; '@'                                                    ; aebd: a9 40       .@       ; Integer result
+    rts                                                               ; aebf: 60          `        ; Return TIME
 ; ***************************************************************************************
 ; =PAGE
 ;
@@ -8590,7 +8590,7 @@ l848a = sub_c847b+15
 ; Read LOMEM, the start of variable storage. LOMEM.
 .fn_lomem
     lda zp_lomem                                                      ; aefc: a5 00       ..    
-    ldy l0001                                                         ; aefe: a4 01       ..    
+    ldy zp_lomem_1                                                    ; aefe: a4 01       ..    
     jmp iwa_from_ya                                                   ; af00: 4c ea ae    L..   
 ; ***************************************************************************************
 ; =HIMEM
@@ -8671,7 +8671,7 @@ l848a = sub_c847b+15
 .iwa_load_zp
     lda zp_lomem,x                                                    ; af56: b5 00       ..       ; Copy 4-byte value at &00+X into IWA: byte 0
     sta zp_iwa                                                        ; af58: 85 2a       .*       ; (store)
-    lda l0001,x                                                       ; af5a: b5 01       ..       ; byte 1
+    lda zp_lomem_1,x                                                  ; af5a: b5 01       ..       ; byte 1
     sta zp_iwa_1                                                      ; af5c: 85 2b       .+       ; (store)
     lda zp_vartop,x                                                   ; af5e: b5 02       ..       ; byte 2
     sta zp_iwa_2                                                      ; af60: 85 2c       .,       ; (store)
@@ -8759,8 +8759,12 @@ l848a = sub_c847b+15
     ldy #0                                                            ; afa6: a0 00       ..    
     lda (l00fd),y                                                     ; afa8: b1 fd       ..    
     jmp iwa_from_ya                                                   ; afaa: 4c ea ae    L..   
+; ***************************************************************************************
+; Read a key within a time limit (INKEY)
+;
+; Wait up to the given time for a key; the INKEY/INKEY$ primitive.
 ; &afad referenced 2 times by &acad, &b026
-.sub_cafad
+.read_key_timed
     jsr sub_c92e3                                                     ; afad: 20 e3 92     ..   
     lda #osbyte_inkey                                                 ; afb0: a9 81       ..    
     ldx zp_iwa                                                        ; afb2: a6 2a       .*    
@@ -8778,14 +8782,14 @@ l848a = sub_c847b+15
 ;
 ; Read a key as a one-character string, or a byte / line from a file. GET$[#channel].
 .fn_gets
-    jsr osrdch                                                        ; afbf: 20 e0 ff     ..   
+    jsr osrdch                                                        ; afbf: 20 e0 ff     ..      ; Wait for a key
 ; &afc2 referenced 2 times by &b02c, &b3c2
 .cafc2
-    sta string_work                                                   ; afc2: 8d 00 06    ...   
-    lda #1                                                            ; afc5: a9 01       ..    
-    sta zp_strbuf_len                                                 ; afc7: 85 36       .6    
-    lda #0                                                            ; afc9: a9 00       ..    
-    rts                                                               ; afcb: 60          `     
+    sta string_work                                                   ; afc2: 8d 00 06    ...      ; Store it as the one-character string body
+    lda #1                                                            ; afc5: a9 01       ..       ; Length 1
+    sta zp_strbuf_len                                                 ; afc7: 85 36       .6       ; (store)
+    lda #0                                                            ; afc9: a9 00       ..       ; String type
+    rts                                                               ; afcb: 60          `        ; Return the one-character string
 ; ***************************************************************************************
 ; LEFT$
 ;
@@ -8851,21 +8855,21 @@ l848a = sub_c847b+15
 ;
 ; Read a key within a time limit as a string. INKEY$ numeric.
 .fn_inkeys
-    jsr sub_cafad                                                     ; b026: 20 ad af     ..   
-    txa                                                               ; b029: 8a          .     
-    cpy #0                                                            ; b02a: c0 00       ..    
-    beq cafc2                                                         ; b02c: f0 94       ..    
+    jsr read_key_timed                                                ; b026: 20 ad af     ..      ; Read a key within the time limit
+    txa                                                               ; b029: 8a          .        ; X holds the key
+    cpy #0                                                            ; b02a: c0 00       ..       ; Y=0 means a key was read
+    beq cafc2                                                         ; b02c: f0 94       ..       ; Got one: return it as a 1-char string
 ; &b02e referenced 2 times by &b06b, &b081
 .cb02e
-    lda #0                                                            ; b02e: a9 00       ..    
-    sta zp_strbuf_len                                                 ; b030: 85 36       .6    
-    rts                                                               ; b032: 60          `     
+    lda #0                                                            ; b02e: a9 00       ..       ; Timeout: empty string
+    sta zp_strbuf_len                                                 ; b030: 85 36       .6       ; length 0
+    rts                                                               ; b032: 60          `        ; Return the (possibly empty) string
 ; &b033 referenced 3 times by &afcf, &aff1, &b03c
 .cb033
-    jmp err_type_mismatch                                             ; b033: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; b033: 4c 0e 8c    L..      ; Type mismatch (shared)
 ; &b036 referenced 4 times by &afd3, &aff5, &b040, &b059
 .cb036
-    jmp c8aa2                                                         ; b036: 4c a2 8a    L..   
+    jmp c8aa2                                                         ; b036: 4c a2 8a    L..      ; Missing , error (shared)
 ; ***************************************************************************************
 ; MID$
 ;
@@ -9102,7 +9106,7 @@ l848a = sub_c847b+15
 ;
 ; Call a user-defined function and return its value. FNname[(params)].
 .fn_fn
-    lda #&a4                                                          ; b195: a9 a4       ..    
+    lda #&a4                                                          ; b195: a9 a4       ..       ; FN token: enter via the PROC/FN call mechanism
 ; ***************************************************************************************
 ; Enter a PROC or FN
 ;
@@ -11030,7 +11034,7 @@ l848a = sub_c847b+15
     sta zp_lomem                                                      ; bd22: 85 00       ..    
     sta zp_vartop                                                     ; bd24: 85 02       ..    
     lda l0013                                                         ; bd26: a5 13       ..    
-    sta l0001                                                         ; bd28: 85 01       ..    
+    sta zp_lomem_1                                                    ; bd28: 85 01       ..    
     sta zp_vartop_1                                                   ; bd2a: 85 03       ..    
     jsr sub_cbd3a                                                     ; bd2c: 20 3a bd     :.   
 ; &bd2f referenced 1 time by &927e
@@ -11242,7 +11246,7 @@ l848a = sub_c847b+15
     sta zp_vartop,x                                                   ; be16: 95 02       ..       ; byte 2
     dey                                                               ; be18: 88          .        ; next
     lda (zp_stack_ptr),y                                              ; be19: b1 04       ..       ; (read)
-    sta l0001,x                                                       ; be1b: 95 01       ..       ; byte 1
+    sta zp_lomem_1,x                                                  ; be1b: 95 01       ..       ; byte 1
     dey                                                               ; be1d: 88          .        ; next
     lda (zp_stack_ptr),y                                              ; be1e: b1 04       ..       ; (read)
     sta zp_lomem,x                                                    ; be20: 95 00       ..       ; byte 0
@@ -11291,7 +11295,7 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; be44: a5 2a       .*    
     sta zp_lomem,x                                                    ; be46: 95 00       ..    
     lda zp_iwa_1                                                      ; be48: a5 2b       .+    
-    sta l0001,x                                                       ; be4a: 95 01       ..    
+    sta zp_lomem_1,x                                                  ; be4a: 95 01       ..    
     lda zp_iwa_2                                                      ; be4c: a5 2c       .,    
     sta zp_vartop,x                                                   ; be4e: 95 02       ..    
     lda zp_iwa_3                                                      ; be50: a5 2d       .-    
@@ -11311,8 +11315,12 @@ l848a = sub_c847b+15
 .cbe5f
     ldy #1                                                            ; be5f: a0 01       ..    
     rts                                                               ; be61: 60          `     
+; ***************************************************************************************
+; Load a program from the filing system
+;
+; Used by LOAD and CHAIN to read a BASIC program into memory.
 ; &be62 referenced 2 times by &bf24, &bf2a
-.sub_cbe62
+.load_program
     jsr sub_cbedd                                                     ; be62: 20 dd be     ..   
     tay                                                               ; be65: a8          .     
     lda #osfile_load                                                  ; be66: a9 ff       ..    
@@ -11443,15 +11451,15 @@ l848a = sub_c847b+15
 ;
 ; Load a BASIC program without running it. LOAD string.
 .stmt_load
-    jsr sub_cbe62                                                     ; bf24: 20 62 be     b.   
-    jmp c8af3                                                         ; bf27: 4c f3 8a    L..   
+    jsr load_program                                                  ; bf24: 20 62 be     b.      ; Load the named program
+    jmp c8af3                                                         ; bf27: 4c f3 8a    L..      ; Back to the immediate loop
 ; ***************************************************************************************
 ; CHAIN
 ;
 ; Load a BASIC program and run it. CHAIN string.
 .stmt_chain
-    jsr sub_cbe62                                                     ; bf2a: 20 62 be     b.   
-    jmp cbd14                                                         ; bf2d: 4c 14 bd    L..   
+    jsr load_program                                                  ; bf2a: 20 62 be     b.      ; Load the named program
+    jmp cbd14                                                         ; bf2d: 4c 14 bd    L..      ; then RUN it
 ; ***************************************************************************************
 ; PTR#=
 ;
@@ -11472,22 +11480,22 @@ l848a = sub_c847b+15
 ;
 ; Length (extent) of an open file. EXT#channel.
 .fn_ext
-    sec                                                               ; bf46: 38          8     
+    sec                                                               ; bf46: 38          8        ; Carry set selects EXT (otherwise PTR)
 ; ***************************************************************************************
 ; =PTR
 ;
 ; Read the sequential pointer of an open file. PTR#channel.
 .fn_ptr
-    lda #0                                                            ; bf47: a9 00       ..    
-    rol a                                                             ; bf49: 2a          *     
-    rol a                                                             ; bf4a: 2a          *     
-    pha                                                               ; bf4b: 48          H     
-    jsr sub_cbfb5                                                     ; bf4c: 20 b5 bf     ..   
-    ldx #&2a ; '*'                                                    ; bf4f: a2 2a       .*    
-    pla                                                               ; bf51: 68          h     
-    jsr osargs                                                        ; bf52: 20 da ff     ..   
-    lda #&40 ; '@'                                                    ; bf55: a9 40       .@    
-    rts                                                               ; bf57: 60          `     
+    lda #0                                                            ; bf47: a9 00       ..       ; Build the OSARGS sub-function from the carry...
+    rol a                                                             ; bf49: 2a          *        ; ...0 = PTR, non-zero = EXT
+    rol a                                                             ; bf4a: 2a          *        ; (BBC: A becomes 0 or 2)
+    pha                                                               ; bf4b: 48          H        ; Save the function code
+    jsr eval_channel                                                  ; bf4c: 20 b5 bf     ..      ; Evaluate the #handle, point at IWA
+    ldx #&2a ; '*'                                                    ; bf4f: a2 2a       .*       ; X -> IWA for the result
+    pla                                                               ; bf51: 68          h        ; Restore the function code
+    jsr osargs                                                        ; bf52: 20 da ff     ..      ; OSARGS: read PTR or EXT into IWA
+    lda #&40 ; '@'                                                    ; bf55: a9 40       .@       ; Integer result
+    rts                                                               ; bf57: 60          `        ; Return PTR/EXT
 ; ***************************************************************************************
 ; BPUT
 ;
@@ -11508,23 +11516,23 @@ l848a = sub_c847b+15
 ;
 ; Read a byte from an open file. BGET#channel.
 .fn_bget
-    jsr sub_cbfb5                                                     ; bf6f: 20 b5 bf     ..   
-    jsr osbget                                                        ; bf72: 20 d7 ff     ..   
-    jmp caed8                                                         ; bf75: 4c d8 ae    L..   
+    jsr eval_channel                                                  ; bf6f: 20 b5 bf     ..      ; Evaluate the #handle
+    jsr osbget                                                        ; bf72: 20 d7 ff     ..      ; OSBGET: read a byte from the channel
+    jmp caed8                                                         ; bf75: 4c d8 ae    L..      ; Return the byte as an integer
 ; ***************************************************************************************
 ; OPENIN
 ;
 ; Open a file for input, returning its channel (0 if not found). OPENIN string.
 .fn_openin
-    lda #&40 ; '@'                                                    ; bf78: a9 40       .@    
-    bne cbf82                                                         ; bf7a: d0 06       ..    
+    lda #&40 ; '@'                                                    ; bf78: a9 40       .@       ; OSFIND &40: open an existing file for input
+    bne cbf82                                                         ; bf7a: d0 06       ..       ; do the open
 ; ***************************************************************************************
 ; OPENOUT
 ;
 ; Create a file for output, returning its channel. OPENOUT string.
 .fn_openout
-    lda #&80                                                          ; bf7c: a9 80       ..    
-    bne cbf82                                                         ; bf7e: d0 02       ..    
+    lda #&80                                                          ; bf7c: a9 80       ..       ; OSFIND &80: create a file for output
+    bne cbf82                                                         ; bf7e: d0 02       ..       ; do the open
 ; ***************************************************************************************
 ; OPENUP
 ;
@@ -11564,8 +11572,12 @@ l848a = sub_c847b+15
     sta zp_text_ptr2                                                  ; bfaf: 85 19       ..    
     lda l000c                                                         ; bfb1: a5 0c       ..    
     sta l001a                                                         ; bfb3: 85 1a       ..    
+; ***************************************************************************************
+; Evaluate a #channel argument
+;
+; Evaluate the #handle of a file operation, leaving it in IWA.
 ; &bfb5 referenced 3 times by &acb8, &bf4c, &bf6f
-.sub_cbfb5
+.eval_channel
     jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..   
     cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#    
     bne cbfc3                                                         ; bfba: d0 07       ..    
@@ -11737,7 +11749,6 @@ save pydis_start, pydis_end
 ;     fwa_pack_temp3:              6
 ;     fwa_set_one:                 6
 ;     immediate_loop:              6
-;     l0001:                       6
 ;     l0017:                       6
 ;     osbget:                      6
 ;     osbput:                      6
@@ -11748,6 +11759,7 @@ save pydis_start, pydis_end
 ;     zp_error_vec:                6
 ;     zp_fp_temp:                  6
 ;     zp_lomem:                    6
+;     zp_lomem_1:                  6
 ;     c8735:                       5
 ;     c8957:                       5
 ;     c8961:                       5
@@ -11862,6 +11874,7 @@ save pydis_start, pydis_end
 ;     cbb07:                       3
 ;     cbb7a:                       3
 ;     err_no_room:                 3
+;     eval_channel:                3
 ;     eval_mul_div:                3
 ;     find_program_line:           3
 ;     fn_true:                     3
@@ -11893,7 +11906,6 @@ save pydis_start, pydis_end
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
 ;     sub_cbd3a:                   3
-;     sub_cbfb5:                   3
 ;     unstack_int_to_general:      3
 ;     zp_erl:                      3
 ;     zp_listo:                    3
@@ -12065,6 +12077,7 @@ save pydis_start, pydis_end
 ;     l04f7:                       2
 ;     l04fc:                       2
 ;     l06ff:                       2
+;     load_program:                2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -12072,6 +12085,7 @@ save pydis_start, pydis_end
 ;     osfind:                      2
 ;     osrdch:                      2
 ;     print_special_item:          2
+;     read_key_timed:              2
 ;     resint_o:                    2
 ;     return_1:                    2
 ;     return_10:                   2
@@ -12117,7 +12131,6 @@ save pydis_start, pydis_end
 ;     sub_caa4c:                   2
 ;     sub_caa55:                   2
 ;     sub_cadad:                   2
-;     sub_cafad:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -12126,7 +12139,6 @@ save pydis_start, pydis_end
 ;     sub_cbc2d:                   2
 ;     sub_cbc81:                   2
 ;     sub_cbc8d:                   2
-;     sub_cbe62:                   2
 ;     sub_cbe92:                   2
 ;     sub_cbeba:                   2
 ;     sub_cbed2:                   2
@@ -13503,7 +13515,6 @@ save pydis_start, pydis_end
 ;     cbfc3
 ;     cbfdc
 ;     cbff6
-;     l0001
 ;     l0007
 ;     l0009
 ;     l000c
@@ -13899,7 +13910,6 @@ save pydis_start, pydis_end
 ;     sub_cadad
 ;     sub_cae02
 ;     sub_cae3a
-;     sub_cafad
 ;     sub_cb1c8
 ;     sub_cb3c5
 ;     sub_cb4b1
@@ -13922,7 +13932,6 @@ save pydis_start, pydis_end
 ;     sub_cbdcb
 ;     sub_cbe55
 ;     sub_cbe56
-;     sub_cbe62
 ;     sub_cbe6f
 ;     sub_cbe92
 ;     sub_cbe93
@@ -13932,7 +13941,6 @@ save pydis_start, pydis_end
 ;     sub_cbedd
 ;     sub_cbee7
 ;     sub_cbfa9
-;     sub_cbfb5
 ;     sub_cbfcf
 
 ; Stats:
