@@ -2389,7 +2389,10 @@
         169,
         65
       ],
-      "comment_inline": "Cold seed &00575241 (\"ARW\": R. Wilson, the author)",
+      "comments_before_label": [
+        "The generator needs a non-zero state. At power-on the work\narea is zero, so a fixed seed is installed here. The bytes\n&41, &52, &57 spell \"ARW\": the initials of Roger (now Sophie)\nWilson, who wrote BBC BASIC. Nothing else re-seeds unless the\nprogram calls RND(-n), so a sequence is deterministic from a\ncold start."
+      ],
+      "comment_inline": "Cold seed: state becomes &00575241; load &41",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&41"

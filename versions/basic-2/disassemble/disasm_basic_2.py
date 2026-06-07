@@ -165,7 +165,17 @@ d.comment(0x804f, 'bits 8-15', align=Align.INLINE)
 d.comment(0x8051, 'bits 16-23', align=Align.INLINE)
 d.comment(0x8053, 'bits 24-31', align=Align.INLINE)
 d.comment(0x8055, 'Non-zero: keep the existing state', align=Align.INLINE)
-d.comment(0x8057, 'Cold seed &00575241 ("ARW": R. Wilson, the author)',
+d.comment(
+    0x8057,
+    'The generator needs a non-zero state. At power-on the work\n'
+    'area is zero, so a fixed seed is installed here. The bytes\n'
+    '&41, &52, &57 spell "ARW": the initials of Roger (now Sophie)\n'
+    'Wilson, who wrote BBC BASIC. Nothing else re-seeds unless the\n'
+    'program calls RND(-n), so a sequence is deterministic from a\n'
+    'cold start.',
+    word_wrap=False,
+)
+d.comment(0x8057, 'Cold seed: state becomes &00575241; load &41',
           align=Align.INLINE)
 d.comment(0x8059, 'byte 0', align=Align.INLINE)
 d.comment(0x805b, 'load &52', align=Align.INLINE)
