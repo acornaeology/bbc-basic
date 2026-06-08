@@ -98326,6 +98326,7 @@
       "labels": [
         "stmt_input"
       ],
+      "comment_inline": "Next non-space character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -98338,6 +98339,7 @@
         201,
         35
       ],
+      "comment_inline": "'#': INPUT# from a file",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&23"
@@ -98348,6 +98350,7 @@
         240,
         132
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb9cf",
@@ -98360,6 +98363,7 @@
         201,
         134
       ],
+      "comment_inline": "LINE token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&86"
@@ -98370,6 +98374,7 @@
         240,
         3
       ],
+      "comment_inline": "yes: LINE mode (carry set)",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cba52",
@@ -98382,6 +98387,7 @@
         198,
         10
       ],
+      "comment_inline": "no: step back, carry clear",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -98393,6 +98399,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -98405,6 +98412,7 @@
       "labels": [
         "cba52"
       ],
+      "comment_inline": "Record the LINE flag in bit 6",
       "xref_summaries": [
         "&ba52 referenced 1 time by &ba4d"
       ],
@@ -98423,6 +98431,7 @@
         70,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr",
       "operand": "l004d",
@@ -98435,6 +98444,7 @@
         169,
         255
       ],
+      "comment_inline": "Prompt flag = -1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -98445,6 +98455,7 @@
         133,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -98461,6 +98472,7 @@
       "labels": [
         "cba5a"
       ],
+      "comment_inline": "Process a prompt item",
       "xref_summaries": [
         "&ba5a referenced 4 times by &ba71, &ba75, &bad9, &bae3"
       ],
@@ -98482,6 +98494,7 @@
         176,
         10
       ],
+      "comment_inline": "none found: parse a variable",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cba69",
@@ -98498,6 +98511,7 @@
       "labels": [
         "loop_cba5f"
       ],
+      "comment_inline": "Process further prompt items",
       "xref_summaries": [
         "&ba5f referenced 1 time by &ba62"
       ],
@@ -98516,6 +98530,7 @@
         144,
         251
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_cba5f",
@@ -98528,6 +98543,7 @@
         162,
         255
       ],
+      "comment_inline": "A printed item suppresses the ? prompt",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -98538,6 +98554,7 @@
         134,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l004e",
@@ -98549,6 +98566,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -98560,6 +98578,7 @@
       "labels": [
         "cba69"
       ],
+      "comment_inline": "Preserve the item-seen flag",
       "xref_summaries": [
         "&ba69 referenced 1 time by &ba5d"
       ],
@@ -98575,6 +98594,7 @@
         6,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl",
       "operand": "l004d",
@@ -98586,6 +98606,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -98595,6 +98616,7 @@
         102,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "l004d",
@@ -98607,6 +98629,7 @@
         201,
         44
       ],
+      "comment_inline": "','  next item?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -98617,6 +98640,7 @@
         240,
         231
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cba5a",
@@ -98629,6 +98653,7 @@
         201,
         59
       ],
+      "comment_inline": "';'  next item?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3b"
@@ -98639,6 +98664,7 @@
         240,
         227
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cba5a",
@@ -98651,6 +98677,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up to the variable",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -98663,6 +98690,7 @@
         165,
         77
       ],
+      "comment_inline": "Save the flags...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004d",
@@ -98674,6 +98702,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -98683,6 +98712,7 @@
         165,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -98694,6 +98724,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -98704,6 +98735,7 @@
         130,
         149
       ],
+      "comment_inline": "Parse the target variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -98716,6 +98748,7 @@
         240,
         187
       ],
+      "comment_inline": "end of statement: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cba3f",
@@ -98727,6 +98760,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the flags",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -98736,6 +98770,7 @@
         133,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -98747,6 +98782,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -98756,6 +98792,7 @@
         133,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -98768,6 +98805,7 @@
         165,
         27
       ],
+      "comment_inline": "Update the program pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -98780,6 +98818,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -98791,6 +98830,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "Save the LINE flag",
       "type": "code",
       "mnemonic": "php"
     },
@@ -98800,6 +98840,7 @@
         36,
         77
       ],
+      "comment_inline": "Still reading the current input line?",
       "type": "code",
       "mnemonic": "bit",
       "operand": "l004d",
@@ -98812,6 +98853,7 @@
         112,
         6
       ],
+      "comment_inline": "yes: no new prompt",
       "type": "code",
       "mnemonic": "bvs",
       "operand": "cba99",
@@ -98824,6 +98866,7 @@
         165,
         78
       ],
+      "comment_inline": "Prompt flag",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -98836,6 +98879,7 @@
         201,
         255
       ],
+      "comment_inline": "item already printed?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&ff"
@@ -98846,6 +98890,7 @@
         208,
         23
       ],
+      "comment_inline": "yes: read without a ? prompt",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbab0",
@@ -98861,6 +98906,7 @@
       "labels": [
         "cba99"
       ],
+      "comment_inline": "LINE mode?",
       "xref_summaries": [
         "&ba99 referenced 1 time by &ba91"
       ],
@@ -98879,6 +98925,7 @@
         16,
         5
       ],
+      "comment_inline": "yes: no ? prompt",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cbaa2",
@@ -98891,6 +98938,7 @@
         169,
         63
       ],
+      "comment_inline": "Print '?'",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&3f"
@@ -98902,6 +98950,7 @@
         88,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -98918,6 +98967,7 @@
       "labels": [
         "cbaa2"
       ],
+      "comment_inline": "Read an input line",
       "xref_summaries": [
         "&baa2 referenced 1 time by &ba9b"
       ],
@@ -98936,6 +98986,7 @@
         132,
         54
       ],
+      "comment_inline": "Store its length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_strbuf_len",
@@ -98948,6 +98999,7 @@
         6,
         77
       ],
+      "comment_inline": "Mark the input line as fresh",
       "type": "code",
       "mnemonic": "asl",
       "operand": "l004d",
@@ -98959,6 +99011,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -98968,6 +99021,7 @@
         102,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "l004d",
@@ -98980,6 +99034,7 @@
         36,
         77
       ],
+      "comment_inline": "LINE mode?",
       "type": "code",
       "mnemonic": "bit",
       "operand": "l004d",
@@ -98992,6 +99047,7 @@
         112,
         29
       ],
+      "comment_inline": "yes: take the whole line",
       "type": "code",
       "mnemonic": "bvs",
       "operand": "cbacd",
@@ -99007,6 +99063,7 @@
       "labels": [
         "cbab0"
       ],
+      "comment_inline": "Set the read offset",
       "xref_summaries": [
         "&bab0 referenced 1 time by &ba97"
       ],
@@ -99025,6 +99082,7 @@
         169,
         0
       ],
+      "comment_inline": "Point at the input buffer (&0600)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -99035,6 +99093,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -99047,6 +99106,7 @@
         169,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#6"
@@ -99057,6 +99117,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -99070,6 +99131,7 @@
         173,
         173
       ],
+      "comment_inline": "Read the field literal",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_string_literal",
@@ -99086,6 +99148,7 @@
       "labels": [
         "loop_cbabd"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&babd referenced 1 time by &bac6"
       ],
@@ -99104,6 +99167,7 @@
         201,
         44
       ],
+      "comment_inline": "','  field delimiter?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -99114,6 +99178,7 @@
         240,
         6
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbaca",
@@ -99126,6 +99191,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -99136,6 +99202,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbabd",
@@ -99148,6 +99215,7 @@
         160,
         254
       ],
+      "comment_inline": "mark end of input",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&fe"
@@ -99160,6 +99228,7 @@
       "labels": [
         "cbaca"
       ],
+      "comment_inline": "Note the next field offset",
       "xref_summaries": [
         "&baca referenced 1 time by &bac2"
       ],
@@ -99175,6 +99244,7 @@
         132,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l004e",
@@ -99189,6 +99259,7 @@
       "labels": [
         "cbacd"
       ],
+      "comment_inline": "Recover the LINE flag",
       "xref_summaries": [
         "&bacd referenced 1 time by &baae"
       ],
@@ -99204,6 +99275,7 @@
         176,
         12
       ],
+      "comment_inline": "LINE mode: assign the whole line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbadc",
@@ -99217,6 +99289,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the variable address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -99230,6 +99303,7 @@
         52,
         172
       ],
+      "comment_inline": "Parse the field as a number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ascii_to_number",
@@ -99243,6 +99317,7 @@
         180,
         180
       ],
+      "comment_inline": "assign it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "assign_number",
@@ -99256,6 +99331,7 @@
         90,
         186
       ],
+      "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cba5a",
@@ -99271,6 +99347,7 @@
       "labels": [
         "cbadc"
       ],
+      "comment_inline": "LINE: string type",
       "xref_summaries": [
         "&badc referenced 1 time by &bace"
       ],
@@ -99287,6 +99364,7 @@
         133,
         39
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -99300,6 +99378,7 @@
         33,
         140
       ],
+      "comment_inline": "assign the line as a string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8c21",
@@ -99313,6 +99392,7 @@
         90,
         186
       ],
+      "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cba5a",

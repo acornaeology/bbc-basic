@@ -10749,108 +10749,108 @@ l848a = sub_c847b+15
 ; Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt]
 ; var,...
 .stmt_input
-    jsr skip_spaces                                                   ; ba44: 20 97 8a     ..   
-    cmp #&23 ; '#'                                                    ; ba47: c9 23       .#    
-    beq loop_cb9cf                                                    ; ba49: f0 84       ..    
-    cmp #&86                                                          ; ba4b: c9 86       ..    
-    beq cba52                                                         ; ba4d: f0 03       ..    
-    dec zp_text_ptr_off                                               ; ba4f: c6 0a       ..    
-    clc                                                               ; ba51: 18          .     
+    jsr skip_spaces                                                   ; ba44: 20 97 8a     ..      ; Next non-space character
+    cmp #&23 ; '#'                                                    ; ba47: c9 23       .#       ; '#': INPUT# from a file
+    beq loop_cb9cf                                                    ; ba49: f0 84       ..       ; ...
+    cmp #&86                                                          ; ba4b: c9 86       ..       ; LINE token?
+    beq cba52                                                         ; ba4d: f0 03       ..       ; yes: LINE mode (carry set)
+    dec zp_text_ptr_off                                               ; ba4f: c6 0a       ..       ; no: step back, carry clear
+    clc                                                               ; ba51: 18          .        ; ...
 ; &ba52 referenced 1 time by &ba4d
 .cba52
-    ror l004d                                                         ; ba52: 66 4d       fM    
-    lsr l004d                                                         ; ba54: 46 4d       FM    
-    lda #&ff                                                          ; ba56: a9 ff       ..    
-    sta l004e                                                         ; ba58: 85 4e       .N    
+    ror l004d                                                         ; ba52: 66 4d       fM       ; Record the LINE flag in bit 6
+    lsr l004d                                                         ; ba54: 46 4d       FM       ; ...
+    lda #&ff                                                          ; ba56: a9 ff       ..       ; Prompt flag = -1
+    sta l004e                                                         ; ba58: 85 4e       .N       ; ...
 ; &ba5a referenced 4 times by &ba71, &ba75, &bad9, &bae3
 .cba5a
-    jsr sub_c8e8a                                                     ; ba5a: 20 8a 8e     ..   
-    bcs cba69                                                         ; ba5d: b0 0a       ..    
+    jsr sub_c8e8a                                                     ; ba5a: 20 8a 8e     ..      ; Process a prompt item
+    bcs cba69                                                         ; ba5d: b0 0a       ..       ; none found: parse a variable
 ; &ba5f referenced 1 time by &ba62
 .loop_cba5f
-    jsr sub_c8e8a                                                     ; ba5f: 20 8a 8e     ..   
-    bcc loop_cba5f                                                    ; ba62: 90 fb       ..    
-    ldx #&ff                                                          ; ba64: a2 ff       ..    
-    stx l004e                                                         ; ba66: 86 4e       .N    
-    clc                                                               ; ba68: 18          .     
+    jsr sub_c8e8a                                                     ; ba5f: 20 8a 8e     ..      ; Process further prompt items
+    bcc loop_cba5f                                                    ; ba62: 90 fb       ..       ; ...
+    ldx #&ff                                                          ; ba64: a2 ff       ..       ; A printed item suppresses the ? prompt
+    stx l004e                                                         ; ba66: 86 4e       .N       ; ...
+    clc                                                               ; ba68: 18          .        ; ...
 ; &ba69 referenced 1 time by &ba5d
 .cba69
-    php                                                               ; ba69: 08          .     
-    asl l004d                                                         ; ba6a: 06 4d       .M    
-    plp                                                               ; ba6c: 28          (     
-    ror l004d                                                         ; ba6d: 66 4d       fM    
-    cmp #&2c ; ','                                                    ; ba6f: c9 2c       .,    
-    beq cba5a                                                         ; ba71: f0 e7       ..    
-    cmp #&3b ; ';'                                                    ; ba73: c9 3b       .;    
-    beq cba5a                                                         ; ba75: f0 e3       ..    
-    dec zp_text_ptr_off                                               ; ba77: c6 0a       ..    
-    lda l004d                                                         ; ba79: a5 4d       .M    
-    pha                                                               ; ba7b: 48          H     
-    lda l004e                                                         ; ba7c: a5 4e       .N    
-    pha                                                               ; ba7e: 48          H     
-    jsr parse_lvalue                                                  ; ba7f: 20 82 95     ..   
-    beq loop_cba3f                                                    ; ba82: f0 bb       ..    
-    pla                                                               ; ba84: 68          h     
-    sta l004e                                                         ; ba85: 85 4e       .N    
-    pla                                                               ; ba87: 68          h     
-    sta l004d                                                         ; ba88: 85 4d       .M    
-    lda zp_text_ptr2_off                                              ; ba8a: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; ba8c: 85 0a       ..    
-    php                                                               ; ba8e: 08          .     
-    bit l004d                                                         ; ba8f: 24 4d       $M    
-    bvs cba99                                                         ; ba91: 70 06       p.    
-    lda l004e                                                         ; ba93: a5 4e       .N    
-    cmp #&ff                                                          ; ba95: c9 ff       ..    
-    bne cbab0                                                         ; ba97: d0 17       ..    
+    php                                                               ; ba69: 08          .        ; Preserve the item-seen flag
+    asl l004d                                                         ; ba6a: 06 4d       .M       ; ...
+    plp                                                               ; ba6c: 28          (        ; ...
+    ror l004d                                                         ; ba6d: 66 4d       fM       ; ...
+    cmp #&2c ; ','                                                    ; ba6f: c9 2c       .,       ; ',' next item?
+    beq cba5a                                                         ; ba71: f0 e7       ..       ; yes
+    cmp #&3b ; ';'                                                    ; ba73: c9 3b       .;       ; ';' next item?
+    beq cba5a                                                         ; ba75: f0 e3       ..       ; yes
+    dec zp_text_ptr_off                                               ; ba77: c6 0a       ..       ; Back up to the variable
+    lda l004d                                                         ; ba79: a5 4d       .M       ; Save the flags...
+    pha                                                               ; ba7b: 48          H        ; ...
+    lda l004e                                                         ; ba7c: a5 4e       .N       ; ...
+    pha                                                               ; ba7e: 48          H        ; ...
+    jsr parse_lvalue                                                  ; ba7f: 20 82 95     ..      ; Parse the target variable
+    beq loop_cba3f                                                    ; ba82: f0 bb       ..       ; end of statement: done
+    pla                                                               ; ba84: 68          h        ; Restore the flags
+    sta l004e                                                         ; ba85: 85 4e       .N       ; ...
+    pla                                                               ; ba87: 68          h        ; ...
+    sta l004d                                                         ; ba88: 85 4d       .M       ; ...
+    lda zp_text_ptr2_off                                              ; ba8a: a5 1b       ..       ; Update the program pointer
+    sta zp_text_ptr_off                                               ; ba8c: 85 0a       ..       ; ...
+    php                                                               ; ba8e: 08          .        ; Save the LINE flag
+    bit l004d                                                         ; ba8f: 24 4d       $M       ; Still reading the current input line?
+    bvs cba99                                                         ; ba91: 70 06       p.       ; yes: no new prompt
+    lda l004e                                                         ; ba93: a5 4e       .N       ; Prompt flag
+    cmp #&ff                                                          ; ba95: c9 ff       ..       ; item already printed?
+    bne cbab0                                                         ; ba97: d0 17       ..       ; yes: read without a ? prompt
 ; &ba99 referenced 1 time by &ba91
 .cba99
-    bit l004d                                                         ; ba99: 24 4d       $M    
-    bpl cbaa2                                                         ; ba9b: 10 05       ..    
-    lda #&3f ; '?'                                                    ; ba9d: a9 3f       .?    
-    jsr print_char                                                    ; ba9f: 20 58 b5     X.   
+    bit l004d                                                         ; ba99: 24 4d       $M       ; LINE mode?
+    bpl cbaa2                                                         ; ba9b: 10 05       ..       ; yes: no ? prompt
+    lda #&3f ; '?'                                                    ; ba9d: a9 3f       .?       ; Print '?'
+    jsr print_char                                                    ; ba9f: 20 58 b5     X.      ; ...
 ; &baa2 referenced 1 time by &ba9b
 .cbaa2
-    jsr sub_cbbfc                                                     ; baa2: 20 fc bb     ..   
-    sty zp_strbuf_len                                                 ; baa5: 84 36       .6    
-    asl l004d                                                         ; baa7: 06 4d       .M    
-    clc                                                               ; baa9: 18          .     
-    ror l004d                                                         ; baaa: 66 4d       fM    
-    bit l004d                                                         ; baac: 24 4d       $M    
-    bvs cbacd                                                         ; baae: 70 1d       p.    
+    jsr sub_cbbfc                                                     ; baa2: 20 fc bb     ..      ; Read an input line
+    sty zp_strbuf_len                                                 ; baa5: 84 36       .6       ; Store its length
+    asl l004d                                                         ; baa7: 06 4d       .M       ; Mark the input line as fresh
+    clc                                                               ; baa9: 18          .        ; ...
+    ror l004d                                                         ; baaa: 66 4d       fM       ; ...
+    bit l004d                                                         ; baac: 24 4d       $M       ; LINE mode?
+    bvs cbacd                                                         ; baae: 70 1d       p.       ; yes: take the whole line
 ; &bab0 referenced 1 time by &ba97
 .cbab0
-    sta zp_text_ptr2_off                                              ; bab0: 85 1b       ..    
-    lda #0                                                            ; bab2: a9 00       ..    
-    sta zp_text_ptr2                                                  ; bab4: 85 19       ..    
-    lda #6                                                            ; bab6: a9 06       ..    
-    sta zp_text_ptr2_1                                                ; bab8: 85 1a       ..    
-    jsr read_string_literal                                           ; baba: 20 ad ad     ..   
+    sta zp_text_ptr2_off                                              ; bab0: 85 1b       ..       ; Set the read offset
+    lda #0                                                            ; bab2: a9 00       ..       ; Point at the input buffer (&0600)
+    sta zp_text_ptr2                                                  ; bab4: 85 19       ..       ; ...
+    lda #6                                                            ; bab6: a9 06       ..       ; ...
+    sta zp_text_ptr2_1                                                ; bab8: 85 1a       ..       ; ...
+    jsr read_string_literal                                           ; baba: 20 ad ad     ..      ; Read the field literal
 ; &babd referenced 1 time by &bac6
 .loop_cbabd
-    jsr skip_spaces_ptr2                                              ; babd: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; bac0: c9 2c       .,    
-    beq cbaca                                                         ; bac2: f0 06       ..    
-    cmp #&0d                                                          ; bac4: c9 0d       ..    
-    bne loop_cbabd                                                    ; bac6: d0 f5       ..    
-    ldy #&fe                                                          ; bac8: a0 fe       ..    
+    jsr skip_spaces_ptr2                                              ; babd: 20 8c 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; bac0: c9 2c       .,       ; ',' field delimiter?
+    beq cbaca                                                         ; bac2: f0 06       ..       ; yes
+    cmp #&0d                                                          ; bac4: c9 0d       ..       ; end of line?
+    bne loop_cbabd                                                    ; bac6: d0 f5       ..       ; no: keep scanning
+    ldy #&fe                                                          ; bac8: a0 fe       ..       ; mark end of input
 ; &baca referenced 1 time by &bac2
 .cbaca
-    iny                                                               ; baca: c8          .     
-    sty l004e                                                         ; bacb: 84 4e       .N    
+    iny                                                               ; baca: c8          .        ; Note the next field offset
+    sty l004e                                                         ; bacb: 84 4e       .N       ; ...
 ; &bacd referenced 1 time by &baae
 .cbacd
-    plp                                                               ; bacd: 28          (     
-    bcs cbadc                                                         ; bace: b0 0c       ..    
-    jsr stack_integer                                                 ; bad0: 20 94 bd     ..   
-    jsr ascii_to_number                                               ; bad3: 20 34 ac     4.   
-    jsr assign_number                                                 ; bad6: 20 b4 b4     ..   
-    jmp cba5a                                                         ; bad9: 4c 5a ba    LZ.   
+    plp                                                               ; bacd: 28          (        ; Recover the LINE flag
+    bcs cbadc                                                         ; bace: b0 0c       ..       ; LINE mode: assign the whole line
+    jsr stack_integer                                                 ; bad0: 20 94 bd     ..      ; Stack the variable address
+    jsr ascii_to_number                                               ; bad3: 20 34 ac     4.      ; Parse the field as a number
+    jsr assign_number                                                 ; bad6: 20 b4 b4     ..      ; assign it
+    jmp cba5a                                                         ; bad9: 4c 5a ba    LZ.      ; next variable
 ; &badc referenced 1 time by &bace
 .cbadc
-    lda #0                                                            ; badc: a9 00       ..    
-    sta zp_var_type                                                   ; bade: 85 27       .'    
-    jsr sub_c8c21                                                     ; bae0: 20 21 8c     !.   
-    jmp cba5a                                                         ; bae3: 4c 5a ba    LZ.   
+    lda #0                                                            ; badc: a9 00       ..       ; LINE: string type
+    sta zp_var_type                                                   ; bade: 85 27       .'       ; ...
+    jsr sub_c8c21                                                     ; bae0: 20 21 8c     !.      ; assign the line as a string
+    jmp cba5a                                                         ; bae3: 4c 5a ba    LZ.      ; next variable
 ; ***************************************************************************************
 ; RESTORE
 ;
