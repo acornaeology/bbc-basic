@@ -8307,92 +8307,92 @@ l848a = sub_c847b+15
 ;
 ; Position of one string within another, optionally from a start. INSTR(a$, b$ [,n]).
 .fn_instr
-    jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).   
-    bne cac9b                                                         ; ace5: d0 b4       ..    
-    cpx #&2c ; ','                                                    ; ace7: e0 2c       .,    
-    bne cad03                                                         ; ace9: d0 18       ..    
-    inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..    
-    jsr stack_string                                                  ; aced: 20 b2 bd     ..   
-    jsr eval_or_eor                                                   ; acf0: 20 29 9b     ).   
-    bne cac9b                                                         ; acf3: d0 a6       ..    
-    lda #1                                                            ; acf5: a9 01       ..    
-    sta zp_iwa                                                        ; acf7: 85 2a       .*    
-    inc zp_text_ptr2_off                                              ; acf9: e6 1b       ..    
-    cpx #&29 ; ')'                                                    ; acfb: e0 29       .)    
-    beq cad12                                                         ; acfd: f0 13       ..    
-    cpx #&2c ; ','                                                    ; acff: e0 2c       .,    
-    beq cad06                                                         ; ad01: f0 03       ..    
+    jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).      ; Evaluate the searched string
+    bne cac9b                                                         ; ace5: d0 b4       ..       ; not a string: Type mismatch
+    cpx #&2c ; ','                                                    ; ace7: e0 2c       .,       ; ','?
+    bne cad03                                                         ; ace9: d0 18       ..       ; no: Missing ,
+    inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..       ; step past
+    jsr stack_string                                                  ; aced: 20 b2 bd     ..      ; Stack the searched string
+    jsr eval_or_eor                                                   ; acf0: 20 29 9b     ).      ; Evaluate the search string
+    bne cac9b                                                         ; acf3: d0 a6       ..       ; not a string: Type mismatch
+    lda #1                                                            ; acf5: a9 01       ..       ; Default start position = 1
+    sta zp_iwa                                                        ; acf7: 85 2a       .*       ; ...
+    inc zp_text_ptr2_off                                              ; acf9: e6 1b       ..       ; step past
+    cpx #&29 ; ')'                                                    ; acfb: e0 29       .)       ; ')' (no start given)?
+    beq cad12                                                         ; acfd: f0 13       ..       ; yes: search from 1
+    cpx #&2c ; ','                                                    ; acff: e0 2c       .,       ; ','?
+    beq cad06                                                         ; ad01: f0 03       ..       ; yes: a start position follows
 ; &ad03 referenced 1 time by &ace9
 .cad03
-    jmp c8aa2                                                         ; ad03: 4c a2 8a    L..   
+    jmp c8aa2                                                         ; ad03: 4c a2 8a    L..      ; Missing , error
 ; &ad06 referenced 1 time by &ad01
 .cad06
-    jsr stack_string                                                  ; ad06: 20 b2 bd     ..   
-    jsr cae56                                                         ; ad09: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; ad0c: 20 f0 92     ..   
-    jsr unstack_string                                                ; ad0f: 20 cb bd     ..   
+    jsr stack_string                                                  ; ad06: 20 b2 bd     ..      ; Stack the search string
+    jsr cae56                                                         ; ad09: 20 56 ae     V.      ; Evaluate the start, expect )
+    jsr coerce_to_integer                                             ; ad0c: 20 f0 92     ..      ; coerce to integer
+    jsr unstack_string                                                ; ad0f: 20 cb bd     ..      ; Restore the search string
 ; &ad12 referenced 1 time by &acfd
 .cad12
-    ldy #0                                                            ; ad12: a0 00       ..    
-    ldx zp_iwa                                                        ; ad14: a6 2a       .*    
-    bne cad1a                                                         ; ad16: d0 02       ..    
-    ldx #1                                                            ; ad18: a2 01       ..    
+    ldy #0                                                            ; ad12: a0 00       ..       ; Destination index
+    ldx zp_iwa                                                        ; ad14: a6 2a       .*       ; Start position
+    bne cad1a                                                         ; ad16: d0 02       ..       ; non-zero?
+    ldx #1                                                            ; ad18: a2 01       ..       ; force at least 1
 ; &ad1a referenced 1 time by &ad16
 .cad1a
-    stx zp_iwa                                                        ; ad1a: 86 2a       .*    
-    txa                                                               ; ad1c: 8a          .     
-    dex                                                               ; ad1d: ca          .     
-    stx zp_iwa_3                                                      ; ad1e: 86 2d       .-    
-    clc                                                               ; ad20: 18          .     
-    adc zp_stack_ptr                                                  ; ad21: 65 04       e.    
-    sta zp_general                                                    ; ad23: 85 37       .7    
-    tya                                                               ; ad25: 98          .     
-    adc zp_stack_ptr_1                                                ; ad26: 65 05       e.    
-    sta zp_general_1                                                  ; ad28: 85 38       .8    
-    lda (zp_stack_ptr),y                                              ; ad2a: b1 04       ..    
-    sec                                                               ; ad2c: 38          8     
-    sbc zp_iwa_3                                                      ; ad2d: e5 2d       .-    
-    bcc cad52                                                         ; ad2f: 90 21       .!    
-    sbc zp_strbuf_len                                                 ; ad31: e5 36       .6    
-    bcc cad52                                                         ; ad33: 90 1d       ..    
-    adc #0                                                            ; ad35: 69 00       i.    
-    sta zp_iwa_1                                                      ; ad37: 85 2b       .+    
-    jsr cbddc                                                         ; ad39: 20 dc bd     ..   
+    stx zp_iwa                                                        ; ad1a: 86 2a       .*       ; Current match position
+    txa                                                               ; ad1c: 8a          .        ; Zero-based start = start - 1
+    dex                                                               ; ad1d: ca          .        ; ...
+    stx zp_iwa_3                                                      ; ad1e: 86 2d       .-       ; ...
+    clc                                                               ; ad20: 18          .        ; Point at s$ + (start-1)
+    adc zp_stack_ptr                                                  ; ad21: 65 04       e.       ; ...
+    sta zp_general                                                    ; ad23: 85 37       .7       ; ...
+    tya                                                               ; ad25: 98          .        ; ...
+    adc zp_stack_ptr_1                                                ; ad26: 65 05       e.       ; ...
+    sta zp_general_1                                                  ; ad28: 85 38       .8       ; ...
+    lda (zp_stack_ptr),y                                              ; ad2a: b1 04       ..       ; Length of s$
+    sec                                                               ; ad2c: 38          8        ; minus the start offset...
+    sbc zp_iwa_3                                                      ; ad2d: e5 2d       .-       ; ...
+    bcc cad52                                                         ; ad2f: 90 21       .!       ; start beyond the end: not found
+    sbc zp_strbuf_len                                                 ; ad31: e5 36       .6       ; minus the search length
+    bcc cad52                                                         ; ad33: 90 1d       ..       ; won't fit: not found
+    adc #0                                                            ; ad35: 69 00       i.       ; Number of start positions to try
+    sta zp_iwa_1                                                      ; ad37: 85 2b       .+       ; ...
+    jsr cbddc                                                         ; ad39: 20 dc bd     ..      ; Re-point at the stacked string
 ; &ad3c referenced 2 times by &ad61, &ad65
 .cad3c
-    ldy #0                                                            ; ad3c: a0 00       ..    
-    ldx zp_strbuf_len                                                 ; ad3e: a6 36       .6    
-    beq cad4d                                                         ; ad40: f0 0b       ..    
+    ldy #0                                                            ; ad3c: a0 00       ..       ; Compare from index 0
+    ldx zp_strbuf_len                                                 ; ad3e: a6 36       .6       ; Search length
+    beq cad4d                                                         ; ad40: f0 0b       ..       ; empty search: matches here
 ; &ad42 referenced 1 time by &ad4b
 .loop_cad42
-    lda (zp_general),y                                                ; ad42: b1 37       .7    
-    cmp string_work,y                                                 ; ad44: d9 00 06    ...   
-    bne cad59                                                         ; ad47: d0 10       ..    
-    iny                                                               ; ad49: c8          .     
-    dex                                                               ; ad4a: ca          .     
-    bne loop_cad42                                                    ; ad4b: d0 f5       ..    
+    lda (zp_general),y                                                ; ad42: b1 37       .7       ; s$ character
+    cmp string_work,y                                                 ; ad44: d9 00 06    ...      ; vs search character
+    bne cad59                                                         ; ad47: d0 10       ..       ; mismatch: advance
+    iny                                                               ; ad49: c8          .        ; next
+    dex                                                               ; ad4a: ca          .        ; ...
+    bne loop_cad42                                                    ; ad4b: d0 f5       ..       ; all matched?
 ; &ad4d referenced 1 time by &ad40
 .cad4d
-    lda zp_iwa                                                        ; ad4d: a5 2a       .*    
+    lda zp_iwa                                                        ; ad4d: a5 2a       .*       ; Match: result is the position
 ; &ad4f referenced 1 time by &ad57
 .loop_cad4f
-    jmp caed8                                                         ; ad4f: 4c d8 ae    L..   
+    jmp caed8                                                         ; ad4f: 4c d8 ae    L..      ; return it as an integer
 ; &ad52 referenced 2 times by &ad2f, &ad33
 .cad52
-    jsr cbddc                                                         ; ad52: 20 dc bd     ..   
+    jsr cbddc                                                         ; ad52: 20 dc bd     ..      ; Not found: drop the stacked string
 ; &ad55 referenced 1 time by &ad5d
 .loop_cad55
-    lda #0                                                            ; ad55: a9 00       ..    
-    beq loop_cad4f                                                    ; ad57: f0 f6       ..    
+    lda #0                                                            ; ad55: a9 00       ..       ; result = 0
+    beq loop_cad4f                                                    ; ad57: f0 f6       ..       ; return it
 ; &ad59 referenced 1 time by &ad47
 .cad59
-    inc zp_iwa                                                        ; ad59: e6 2a       .*    
-    dec zp_iwa_1                                                      ; ad5b: c6 2b       .+    
-    beq loop_cad55                                                    ; ad5d: f0 f6       ..    
-    inc zp_general                                                    ; ad5f: e6 37       .7    
-    bne cad3c                                                         ; ad61: d0 d9       ..    
-    inc zp_general_1                                                  ; ad63: e6 38       .8    
-    bne cad3c                                                         ; ad65: d0 d5       ..    
+    inc zp_iwa                                                        ; ad59: e6 2a       .*       ; Advance the match position
+    dec zp_iwa_1                                                      ; ad5b: c6 2b       .+       ; one fewer position to try
+    beq loop_cad55                                                    ; ad5d: f0 f6       ..       ; exhausted: not found
+    inc zp_general                                                    ; ad5f: e6 37       .7       ; advance the s$ pointer
+    bne cad3c                                                         ; ad61: d0 d9       ..       ; retry
+    inc zp_general_1                                                  ; ad63: e6 38       .8       ; ...
+    bne cad3c                                                         ; ad65: d0 d5       ..       ; retry
 ; &ad67 referenced 2 times by &ad6d, &ad8f
 .cad67
     jmp err_type_mismatch                                             ; ad67: 4c 0e 8c    L..   

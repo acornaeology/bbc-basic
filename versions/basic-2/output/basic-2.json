@@ -76143,6 +76143,7 @@
       "labels": [
         "fn_instr"
       ],
+      "comment_inline": "Evaluate the searched string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -76155,6 +76156,7 @@
         208,
         180
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac9b",
@@ -76167,6 +76169,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -76177,6 +76180,7 @@
         208,
         24
       ],
+      "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cad03",
@@ -76189,6 +76193,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -76202,6 +76207,7 @@
         178,
         189
       ],
+      "comment_inline": "Stack the searched string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_string",
@@ -76215,6 +76221,7 @@
         41,
         155
       ],
+      "comment_inline": "Evaluate the search string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -76227,6 +76234,7 @@
         208,
         166
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac9b",
@@ -76239,6 +76247,7 @@
         169,
         1
       ],
+      "comment_inline": "Default start position = 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -76249,6 +76258,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -76261,6 +76271,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -76273,6 +76284,7 @@
         224,
         41
       ],
+      "comment_inline": "')' (no start given)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&29"
@@ -76283,6 +76295,7 @@
         240,
         19
       ],
+      "comment_inline": "yes: search from 1",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cad12",
@@ -76295,6 +76308,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -76305,6 +76319,7 @@
         240,
         3
       ],
+      "comment_inline": "yes: a start position follows",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cad06",
@@ -76321,6 +76336,7 @@
       "labels": [
         "cad03"
       ],
+      "comment_inline": "Missing , error",
       "xref_summaries": [
         "&ad03 referenced 1 time by &ace9"
       ],
@@ -76343,6 +76359,7 @@
       "labels": [
         "cad06"
       ],
+      "comment_inline": "Stack the search string",
       "xref_summaries": [
         "&ad06 referenced 1 time by &ad01"
       ],
@@ -76362,6 +76379,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the start, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -76375,6 +76393,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -76388,6 +76407,7 @@
         203,
         189
       ],
+      "comment_inline": "Restore the search string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_string",
@@ -76403,6 +76423,7 @@
       "labels": [
         "cad12"
       ],
+      "comment_inline": "Destination index",
       "xref_summaries": [
         "&ad12 referenced 1 time by &acfd"
       ],
@@ -76419,6 +76440,7 @@
         166,
         42
       ],
+      "comment_inline": "Start position",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa",
@@ -76431,6 +76453,7 @@
         208,
         2
       ],
+      "comment_inline": "non-zero?",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cad1a",
@@ -76443,6 +76466,7 @@
         162,
         1
       ],
+      "comment_inline": "force at least 1",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#1"
@@ -76456,6 +76480,7 @@
       "labels": [
         "cad1a"
       ],
+      "comment_inline": "Current match position",
       "xref_summaries": [
         "&ad1a referenced 1 time by &ad16"
       ],
@@ -76473,6 +76498,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "Zero-based start = start - 1",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -76481,6 +76507,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -76490,6 +76517,7 @@
         134,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_3",
@@ -76501,6 +76529,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Point at s$ + (start-1)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -76510,6 +76539,7 @@
         101,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr",
@@ -76522,6 +76552,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -76533,6 +76564,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -76542,6 +76574,7 @@
         101,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr_1",
@@ -76554,6 +76587,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -76566,6 +76600,7 @@
         177,
         4
       ],
+      "comment_inline": "Length of s$",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -76577,6 +76612,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "minus the start offset...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -76586,6 +76622,7 @@
         229,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -76598,6 +76635,7 @@
         144,
         33
       ],
+      "comment_inline": "start beyond the end: not found",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cad52",
@@ -76610,6 +76648,7 @@
         229,
         54
       ],
+      "comment_inline": "minus the search length",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_strbuf_len",
@@ -76622,6 +76661,7 @@
         144,
         29
       ],
+      "comment_inline": "won't fit: not found",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cad52",
@@ -76634,6 +76674,7 @@
         105,
         0
       ],
+      "comment_inline": "Number of start positions to try",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -76644,6 +76685,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -76657,6 +76699,7 @@
         220,
         189
       ],
+      "comment_inline": "Re-point at the stacked string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cbddc",
@@ -76672,6 +76715,7 @@
       "labels": [
         "cad3c"
       ],
+      "comment_inline": "Compare from index 0",
       "xref_summaries": [
         "&ad3c referenced 2 times by &ad61, &ad65"
       ],
@@ -76689,6 +76733,7 @@
         166,
         54
       ],
+      "comment_inline": "Search length",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_strbuf_len",
@@ -76701,6 +76746,7 @@
         240,
         11
       ],
+      "comment_inline": "empty search: matches here",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cad4d",
@@ -76716,6 +76762,7 @@
       "labels": [
         "loop_cad42"
       ],
+      "comment_inline": "s$ character",
       "xref_summaries": [
         "&ad42 referenced 1 time by &ad4b"
       ],
@@ -76735,6 +76782,7 @@
         0,
         6
       ],
+      "comment_inline": "vs search character",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "string_work,y",
@@ -76747,6 +76795,7 @@
         208,
         16
       ],
+      "comment_inline": "mismatch: advance",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cad59",
@@ -76758,6 +76807,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -76766,6 +76816,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -76775,6 +76826,7 @@
         208,
         245
       ],
+      "comment_inline": "all matched?",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cad42",
@@ -76790,6 +76842,7 @@
       "labels": [
         "cad4d"
       ],
+      "comment_inline": "Match: result is the position",
       "xref_summaries": [
         "&ad4d referenced 1 time by &ad40"
       ],
@@ -76812,6 +76865,7 @@
       "labels": [
         "loop_cad4f"
       ],
+      "comment_inline": "return it as an integer",
       "xref_summaries": [
         "&ad4f referenced 1 time by &ad57"
       ],
@@ -76834,6 +76888,7 @@
       "labels": [
         "cad52"
       ],
+      "comment_inline": "Not found: drop the stacked string",
       "xref_summaries": [
         "&ad52 referenced 2 times by &ad2f, &ad33"
       ],
@@ -76856,6 +76911,7 @@
       "labels": [
         "loop_cad55"
       ],
+      "comment_inline": "result = 0",
       "xref_summaries": [
         "&ad55 referenced 1 time by &ad5d"
       ],
@@ -76872,6 +76928,7 @@
         240,
         246
       ],
+      "comment_inline": "return it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cad4f",
@@ -76887,6 +76944,7 @@
       "labels": [
         "cad59"
       ],
+      "comment_inline": "Advance the match position",
       "xref_summaries": [
         "&ad59 referenced 1 time by &ad47"
       ],
@@ -76905,6 +76963,7 @@
         198,
         43
       ],
+      "comment_inline": "one fewer position to try",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa_1",
@@ -76917,6 +76976,7 @@
         240,
         246
       ],
+      "comment_inline": "exhausted: not found",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cad55",
@@ -76929,6 +76989,7 @@
         230,
         55
       ],
+      "comment_inline": "advance the s$ pointer",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general",
@@ -76941,6 +77002,7 @@
         208,
         217
       ],
+      "comment_inline": "retry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cad3c",
@@ -76953,6 +77015,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -76965,6 +77028,7 @@
         208,
         213
       ],
+      "comment_inline": "retry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cad3c",
