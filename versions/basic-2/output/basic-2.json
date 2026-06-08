@@ -25351,6 +25351,7 @@
       "labels": [
         "stmt_call"
       ],
+      "comment_inline": "Evaluate the call address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -25364,6 +25365,7 @@
         238,
         146
       ],
+      "comment_inline": "coerce to an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92ee",
@@ -25377,6 +25379,7 @@
         148,
         189
       ],
+      "comment_inline": "stack the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -25389,6 +25392,7 @@
         160,
         0
       ],
+      "comment_inline": "Build the parameter block at &0600:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -25400,6 +25404,7 @@
         0,
         6
       ],
+      "comment_inline": "zero the parameter count",
       "type": "code",
       "mnemonic": "sty",
       "operand": "string_work",
@@ -25416,6 +25421,7 @@
       "labels": [
         "c8ee0"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&8ee0 referenced 1 time by &8f09"
       ],
@@ -25435,6 +25441,7 @@
         140,
         138
       ],
+      "comment_inline": "next parameter?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -25447,6 +25454,7 @@
         201,
         44
       ],
+      "comment_inline": "a comma?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -25457,6 +25465,7 @@
         208,
         34
       ],
+      "comment_inline": "no: end of the parameters",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8f0c",
@@ -25469,6 +25478,7 @@
         164,
         27
       ],
+      "comment_inline": "parse the parameter (a variable)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -25482,6 +25492,7 @@
         213,
         149
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c95d5",
@@ -25494,6 +25505,7 @@
         240,
         42
       ],
+      "comment_inline": "bad parameter: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8f1b",
@@ -25507,6 +25519,7 @@
         255,
         6
       ],
+      "comment_inline": "append its address to the block:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l06ff",
@@ -25518,6 +25531,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -25527,6 +25541,7 @@
         165,
         42
       ],
+      "comment_inline": "address low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -25540,6 +25555,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -25551,6 +25567,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -25560,6 +25577,7 @@
         165,
         43
       ],
+      "comment_inline": "address high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -25573,6 +25591,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -25584,6 +25603,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -25593,6 +25613,7 @@
         165,
         44
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -25606,6 +25627,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -25619,6 +25641,7 @@
         0,
         6
       ],
+      "comment_inline": "one more parameter",
       "type": "code",
       "mnemonic": "inc",
       "operand": "string_work",
@@ -25632,6 +25655,7 @@
         224,
         142
       ],
+      "comment_inline": "next parameter",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ee0",
@@ -25647,6 +25671,7 @@
       "labels": [
         "c8f0c"
       ],
+      "comment_inline": "Check for end of statement",
       "xref_summaries": [
         "&8f0c referenced 1 time by &8ee8"
       ],
@@ -25666,6 +25691,7 @@
         82,
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -25679,6 +25705,7 @@
         234,
         189
       ],
+      "comment_inline": "pop the address into IWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -25692,6 +25719,7 @@
         30,
         143
       ],
+      "comment_inline": "set up registers and call the code",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "usr_call",
@@ -25703,6 +25731,7 @@
       "bytes": [
         216
       ],
+      "comment_inline": "clear decimal mode on return",
       "type": "code",
       "mnemonic": "cld"
     },
@@ -25713,6 +25742,7 @@
         155,
         139
       ],
+      "comment_inline": "Back to execution",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -25729,6 +25759,7 @@
       "labels": [
         "c8f1b"
       ],
+      "comment_inline": "parameter error (shared)",
       "xref_summaries": [
         "&8f1b referenced 1 time by &8eef"
       ],
@@ -49836,6 +49867,7 @@
       "labels": [
         "eval_mul_div"
       ],
+      "comment_inline": "Evaluate the higher level (^, level 2) operand",
       "xref_summaries": [
         "&9dd1 referenced 3 times by &9c42, &9c8e, &9ce4"
       ],
@@ -49859,6 +49891,7 @@
       "labels": [
         "c9dd4"
       ],
+      "comment_inline": "next operator \"*\"?",
       "xref_summaries": [
         "&9dd4 referenced 3 times by &9d36, &9dc8, &9dff"
       ],
@@ -49877,6 +49910,7 @@
         240,
         243
       ],
+      "comment_inline": "yes: multiply",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9dcb",
@@ -49889,6 +49923,7 @@
         224,
         47
       ],
+      "comment_inline": "\"/\"?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2f"
@@ -49899,6 +49934,7 @@
         240,
         9
       ],
+      "comment_inline": "yes: divide",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9de5",
@@ -49911,6 +49947,7 @@
         224,
         131
       ],
+      "comment_inline": "MOD token?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&83"
@@ -49921,6 +49958,7 @@
         240,
         33
       ],
+      "comment_inline": "yes: integer remainder",
       "type": "code",
       "mnemonic": "beq",
       "operand": "iwa_mod",
@@ -49933,6 +49971,7 @@
         224,
         129
       ],
+      "comment_inline": "DIV token?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&81"
@@ -49943,6 +49982,7 @@
         240,
         38
       ],
+      "comment_inline": "yes: integer divide",
       "type": "code",
       "mnemonic": "beq",
       "operand": "iwa_div",
@@ -49954,6 +49994,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "no operator: return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -49965,6 +50006,7 @@
       "labels": [
         "c9de5"
       ],
+      "comment_inline": "Divide: ensure the left operand is real",
       "xref_summaries": [
         "&9de5 referenced 1 time by &9dda"
       ],
@@ -49981,6 +50023,7 @@
         253,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fd",
@@ -49994,6 +50037,7 @@
         81,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_real",
@@ -50007,6 +50051,7 @@
         32,
         158
       ],
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9e20",
@@ -50019,6 +50064,7 @@
         134,
         39
       ],
+      "comment_inline": "remember the operator",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_var_type",
@@ -50030,6 +50076,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "ensure the right operand is real",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -50040,6 +50087,7 @@
         253,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fd",
@@ -50053,6 +50101,7 @@
         126,
         189
       ],
+      "comment_inline": "pop the left operand as the fp operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_real",
@@ -50066,6 +50115,7 @@
         173,
         166
       ],
+      "comment_inline": "FWA = left / right",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_rdiv_var",
@@ -50078,6 +50128,7 @@
         166,
         39
       ],
+      "comment_inline": "restore the operator",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_var_type",
@@ -50090,6 +50141,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -50100,6 +50152,7 @@
         208,
         211
       ],
+      "comment_inline": "loop for further * / DIV MOD",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9dd4",
@@ -83946,6 +83999,7 @@
       "labels": [
         "stack_local"
       ],
+      "comment_inline": "Variable type",
       "xref_summaries": [
         "&b30d referenced 2 times by &932d, &b276"
       ],
@@ -83965,6 +84019,7 @@
         192,
         4
       ],
+      "comment_inline": "an integer?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#4"
@@ -83975,6 +84030,7 @@
         208,
         5
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb318",
@@ -83987,6 +84043,7 @@
         162,
         55
       ],
+      "comment_inline": "integer: address its 4 bytes via &37",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&37"
@@ -83998,6 +84055,7 @@
         68,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -84014,6 +84072,7 @@
       "labels": [
         "cb318"
       ],
+      "comment_inline": "Load the variable's current value by type",
       "xref_summaries": [
         "&b318 referenced 1 time by &b311"
       ],
@@ -84031,6 +84090,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "save the type flags",
       "type": "code",
       "mnemonic": "php"
     },
@@ -84041,6 +84101,7 @@
         144,
         189
       ],
+      "comment_inline": "push the value onto the stack",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_value",
@@ -84052,6 +84113,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "restore the type",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -84061,6 +84123,7 @@
         240,
         7
       ],
+      "comment_inline": "byte/string",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb329",
@@ -84073,6 +84136,7 @@
         48,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb329",
@@ -84085,6 +84149,7 @@
         162,
         55
       ],
+      "comment_inline": "integer: reload",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&37"
@@ -84096,6 +84161,7 @@
         86,
         175
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_load_zp",
@@ -84112,6 +84178,7 @@
       "labels": [
         "cb329"
       ],
+      "comment_inline": "push the variable identity (as an integer)",
       "xref_summaries": [
         "&b329 referenced 2 times by &b320, &b322"
       ],
@@ -84134,6 +84201,7 @@
       "labels": [
         "cb32c"
       ],
+      "comment_inline": "Load the variable by type:",
       "xref_summaries": [
         "&b32c referenced 3 times by &9685, &ae27, &b318"
       ],
@@ -84154,6 +84222,7 @@
         48,
         84
       ],
+      "comment_inline": "string",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "load_string_var",
@@ -84166,6 +84235,7 @@
         240,
         29
       ],
+      "comment_inline": "byte",
       "type": "code",
       "mnemonic": "beq",
       "operand": "load_byte_var",
@@ -84178,6 +84248,7 @@
         192,
         5
       ],
+      "comment_inline": "real?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#5"
@@ -84188,6 +84259,7 @@
         240,
         30
       ],
+      "comment_inline": "real (else integer)",
       "type": "code",
       "mnemonic": "beq",
       "operand": "load_real_var",

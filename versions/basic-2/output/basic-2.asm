@@ -2815,43 +2815,43 @@ l848a = sub_c847b+15
 ; Call machine code, passing the resident integer variables and an optional parameter
 ; block. CALL address [,params...].
 .stmt_call
-    jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..   
-    jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..   
-    jsr stack_integer                                                 ; 8ed8: 20 94 bd     ..   
-    ldy #0                                                            ; 8edb: a0 00       ..    
-    sty string_work                                                   ; 8edd: 8c 00 06    ...   
+    jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..      ; Evaluate the call address
+    jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..      ; coerce to an integer
+    jsr stack_integer                                                 ; 8ed8: 20 94 bd     ..      ; stack the address
+    ldy #0                                                            ; 8edb: a0 00       ..       ; Build the parameter block at &0600:
+    sty string_work                                                   ; 8edd: 8c 00 06    ...      ; zero the parameter count
 ; &8ee0 referenced 1 time by &8f09
 .c8ee0
-    sty l06ff                                                         ; 8ee0: 8c ff 06    ...   
-    jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,    
-    bne c8f0c                                                         ; 8ee8: d0 22       ."    
-    ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..    
-    jsr sub_c95d5                                                     ; 8eec: 20 d5 95     ..   
-    beq c8f1b                                                         ; 8eef: f0 2a       .*    
-    ldy l06ff                                                         ; 8ef1: ac ff 06    ...   
-    iny                                                               ; 8ef4: c8          .     
-    lda zp_iwa                                                        ; 8ef5: a5 2a       .*    
-    sta string_work,y                                                 ; 8ef7: 99 00 06    ...   
-    iny                                                               ; 8efa: c8          .     
-    lda zp_iwa_1                                                      ; 8efb: a5 2b       .+    
-    sta string_work,y                                                 ; 8efd: 99 00 06    ...   
-    iny                                                               ; 8f00: c8          .     
-    lda zp_iwa_2                                                      ; 8f01: a5 2c       .,    
-    sta string_work,y                                                 ; 8f03: 99 00 06    ...   
-    inc string_work                                                   ; 8f06: ee 00 06    ...   
-    jmp c8ee0                                                         ; 8f09: 4c e0 8e    L..   
+    sty l06ff                                                         ; 8ee0: 8c ff 06    ...      ; ...
+    jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..      ; next parameter?
+    cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,       ; a comma?
+    bne c8f0c                                                         ; 8ee8: d0 22       ."       ; no: end of the parameters
+    ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..       ; parse the parameter (a variable)
+    jsr sub_c95d5                                                     ; 8eec: 20 d5 95     ..      ; ...
+    beq c8f1b                                                         ; 8eef: f0 2a       .*       ; bad parameter: error
+    ldy l06ff                                                         ; 8ef1: ac ff 06    ...      ; append its address to the block:
+    iny                                                               ; 8ef4: c8          .        ; ...
+    lda zp_iwa                                                        ; 8ef5: a5 2a       .*       ; address low
+    sta string_work,y                                                 ; 8ef7: 99 00 06    ...      ; ...
+    iny                                                               ; 8efa: c8          .        ; ...
+    lda zp_iwa_1                                                      ; 8efb: a5 2b       .+       ; address high
+    sta string_work,y                                                 ; 8efd: 99 00 06    ...      ; ...
+    iny                                                               ; 8f00: c8          .        ; ...
+    lda zp_iwa_2                                                      ; 8f01: a5 2c       .,       ; type
+    sta string_work,y                                                 ; 8f03: 99 00 06    ...      ; ...
+    inc string_work                                                   ; 8f06: ee 00 06    ...      ; one more parameter
+    jmp c8ee0                                                         ; 8f09: 4c e0 8e    L..      ; next parameter
 ; &8f0c referenced 1 time by &8ee8
 .c8f0c
-    dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..    
-    jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.   
-    jsr unstack_integer                                               ; 8f11: 20 ea bd     ..   
-    jsr usr_call                                                      ; 8f14: 20 1e 8f     ..   
-    cld                                                               ; 8f17: d8          .     
-    jmp statement_loop                                                ; 8f18: 4c 9b 8b    L..   
+    dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..       ; Check for end of statement
+    jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.      ; ...
+    jsr unstack_integer                                               ; 8f11: 20 ea bd     ..      ; pop the address into IWA
+    jsr usr_call                                                      ; 8f14: 20 1e 8f     ..      ; set up registers and call the code
+    cld                                                               ; 8f17: d8          .        ; clear decimal mode on return
+    jmp statement_loop                                                ; 8f18: 4c 9b 8b    L..      ; Back to execution
 ; &8f1b referenced 1 time by &8eef
 .c8f1b
-    jmp cae43                                                         ; 8f1b: 4c 43 ae    LC.   
+    jmp cae43                                                         ; 8f1b: 4c 43 ae    LC.      ; parameter error (shared)
 ; ***************************************************************************************
 ; Call user machine code (USR/CALL)
 ;
@@ -5538,32 +5538,32 @@ l848a = sub_c847b+15
 ; Multiplication, division and the integer DIV and MOD operators.
 ; &9dd1 referenced 3 times by &9c42, &9c8e, &9ce4
 .eval_mul_div
-    jsr sub_c9e20                                                     ; 9dd1: 20 20 9e      .   
+    jsr sub_c9e20                                                     ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
 ; &9dd4 referenced 3 times by &9d36, &9dc8, &9dff
 .c9dd4
-    cpx #&2a ; '*'                                                    ; 9dd4: e0 2a       .*    
-    beq loop_c9dcb                                                    ; 9dd6: f0 f3       ..    
-    cpx #&2f ; '/'                                                    ; 9dd8: e0 2f       ./    
-    beq c9de5                                                         ; 9dda: f0 09       ..    
-    cpx #&83                                                          ; 9ddc: e0 83       ..    
-    beq iwa_mod                                                       ; 9dde: f0 21       .!    
-    cpx #&81                                                          ; 9de0: e0 81       ..    
-    beq iwa_div                                                       ; 9de2: f0 26       .&    
-    rts                                                               ; 9de4: 60          `     
+    cpx #&2a ; '*'                                                    ; 9dd4: e0 2a       .*       ; next operator "*"?
+    beq loop_c9dcb                                                    ; 9dd6: f0 f3       ..       ; yes: multiply
+    cpx #&2f ; '/'                                                    ; 9dd8: e0 2f       ./       ; "/"?
+    beq c9de5                                                         ; 9dda: f0 09       ..       ; yes: divide
+    cpx #&83                                                          ; 9ddc: e0 83       ..       ; MOD token?
+    beq iwa_mod                                                       ; 9dde: f0 21       .!       ; yes: integer remainder
+    cpx #&81                                                          ; 9de0: e0 81       ..       ; DIV token?
+    beq iwa_div                                                       ; 9de2: f0 26       .&       ; yes: integer divide
+    rts                                                               ; 9de4: 60          `        ; no operator: return
 ; &9de5 referenced 1 time by &9dda
 .c9de5
-    tay                                                               ; 9de5: a8          .     
-    jsr sub_c92fd                                                     ; 9de6: 20 fd 92     ..   
-    jsr stack_real                                                    ; 9de9: 20 51 bd     Q.   
-    jsr sub_c9e20                                                     ; 9dec: 20 20 9e      .   
-    stx zp_var_type                                                   ; 9def: 86 27       .'    
-    tay                                                               ; 9df1: a8          .     
-    jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..   
-    jsr unstack_real                                                  ; 9df5: 20 7e bd     ~.   
-    jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..   
-    ldx zp_var_type                                                   ; 9dfb: a6 27       .'    
-    lda #&ff                                                          ; 9dfd: a9 ff       ..    
-    bne c9dd4                                                         ; 9dff: d0 d3       ..    
+    tay                                                               ; 9de5: a8          .        ; Divide: ensure the left operand is real
+    jsr sub_c92fd                                                     ; 9de6: 20 fd 92     ..      ; ...
+    jsr stack_real                                                    ; 9de9: 20 51 bd     Q.      ; stack it
+    jsr sub_c9e20                                                     ; 9dec: 20 20 9e      .      ; evaluate the right operand
+    stx zp_var_type                                                   ; 9def: 86 27       .'       ; remember the operator
+    tay                                                               ; 9df1: a8          .        ; ensure the right operand is real
+    jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..      ; ...
+    jsr unstack_real                                                  ; 9df5: 20 7e bd     ~.      ; pop the left operand as the fp operand
+    jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..      ; FWA = left / right
+    ldx zp_var_type                                                   ; 9dfb: a6 27       .'       ; restore the operator
+    lda #&ff                                                          ; 9dfd: a9 ff       ..       ; real result
+    bne c9dd4                                                         ; 9dff: d0 d3       ..       ; loop for further * / DIV MOD
 ; ***************************************************************************************
 ; Integer remainder
 ;
@@ -9419,31 +9419,31 @@ l848a = sub_c847b+15
 ; restore it, implementing LOCAL.
 ; &b30d referenced 2 times by &932d, &b276
 .stack_local
-    ldy zp_iwa_2                                                      ; b30d: a4 2c       .,    
-    cpy #4                                                            ; b30f: c0 04       ..    
-    bne cb318                                                         ; b311: d0 05       ..    
-    ldx #&37 ; '7'                                                    ; b313: a2 37       .7    
-    jsr iwa_store_zp                                                  ; b315: 20 44 be     D.   
+    ldy zp_iwa_2                                                      ; b30d: a4 2c       .,       ; Variable type
+    cpy #4                                                            ; b30f: c0 04       ..       ; an integer?
+    bne cb318                                                         ; b311: d0 05       ..       ; no
+    ldx #&37 ; '7'                                                    ; b313: a2 37       .7       ; integer: address its 4 bytes via &37
+    jsr iwa_store_zp                                                  ; b315: 20 44 be     D.      ; ...
 ; &b318 referenced 1 time by &b311
 .cb318
-    jsr cb32c                                                         ; b318: 20 2c b3     ,.   
-    php                                                               ; b31b: 08          .     
-    jsr stack_value                                                   ; b31c: 20 90 bd     ..   
-    plp                                                               ; b31f: 28          (     
-    beq cb329                                                         ; b320: f0 07       ..    
-    bmi cb329                                                         ; b322: 30 05       0.    
-    ldx #&37 ; '7'                                                    ; b324: a2 37       .7    
-    jsr iwa_load_zp                                                   ; b326: 20 56 af     V.   
+    jsr cb32c                                                         ; b318: 20 2c b3     ,.      ; Load the variable's current value by type
+    php                                                               ; b31b: 08          .        ; save the type flags
+    jsr stack_value                                                   ; b31c: 20 90 bd     ..      ; push the value onto the stack
+    plp                                                               ; b31f: 28          (        ; restore the type
+    beq cb329                                                         ; b320: f0 07       ..       ; byte/string
+    bmi cb329                                                         ; b322: 30 05       0.       ; ...
+    ldx #&37 ; '7'                                                    ; b324: a2 37       .7       ; integer: reload
+    jsr iwa_load_zp                                                   ; b326: 20 56 af     V.      ; ...
 ; &b329 referenced 2 times by &b320, &b322
 .cb329
-    jmp stack_integer                                                 ; b329: 4c 94 bd    L..   
+    jmp stack_integer                                                 ; b329: 4c 94 bd    L..      ; push the variable identity (as an integer)
 ; &b32c referenced 3 times by &9685, &ae27, &b318
 .cb32c
-    ldy zp_iwa_2                                                      ; b32c: a4 2c       .,    
-    bmi load_string_var                                               ; b32e: 30 54       0T    
-    beq load_byte_var                                                 ; b330: f0 1d       ..    
-    cpy #5                                                            ; b332: c0 05       ..    
-    beq load_real_var                                                 ; b334: f0 1e       ..    
+    ldy zp_iwa_2                                                      ; b32c: a4 2c       .,       ; Load the variable by type:
+    bmi load_string_var                                               ; b32e: 30 54       0T       ; string
+    beq load_byte_var                                                 ; b330: f0 1d       ..       ; byte
+    cpy #5                                                            ; b332: c0 05       ..       ; real?
+    beq load_real_var                                                 ; b334: f0 1e       ..       ; real (else integer)
 ; ***************************************************************************************
 ; Load an integer variable into the accumulator
 ;
