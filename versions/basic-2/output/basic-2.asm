@@ -4954,41 +4954,41 @@ l848a = sub_c847b+15
 ;
 ; Compare the integer operand against IWA and set flags.
 .iwa_test_var
-    lda zp_iwa_3                                                      ; 9aad: a5 2d       .-    
-    eor #&80                                                          ; 9aaf: 49 80       I.    
-    sta zp_iwa_3                                                      ; 9ab1: 85 2d       .-    
-    sec                                                               ; 9ab3: 38          8     
-    ldy #0                                                            ; 9ab4: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 9ab6: b1 04       ..    
-    sbc zp_iwa                                                        ; 9ab8: e5 2a       .*    
-    sta zp_iwa                                                        ; 9aba: 85 2a       .*    
-    iny                                                               ; 9abc: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9abd: b1 04       ..    
-    sbc zp_iwa_1                                                      ; 9abf: e5 2b       .+    
-    sta zp_iwa_1                                                      ; 9ac1: 85 2b       .+    
-    iny                                                               ; 9ac3: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9ac4: b1 04       ..    
-    sbc zp_iwa_2                                                      ; 9ac6: e5 2c       .,    
-    sta zp_iwa_2                                                      ; 9ac8: 85 2c       .,    
-    iny                                                               ; 9aca: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9acb: b1 04       ..    
-    ldy #0                                                            ; 9acd: a0 00       ..    
-    eor #&80                                                          ; 9acf: 49 80       I.    
-    sbc zp_iwa_3                                                      ; 9ad1: e5 2d       .-    
-    ora zp_iwa                                                        ; 9ad3: 05 2a       .*    
-    ora zp_iwa_1                                                      ; 9ad5: 05 2b       .+    
-    ora zp_iwa_2                                                      ; 9ad7: 05 2c       .,    
-    php                                                               ; 9ad9: 08          .     
-    clc                                                               ; 9ada: 18          .     
-    lda #4                                                            ; 9adb: a9 04       ..    
-    adc zp_stack_ptr                                                  ; 9add: 65 04       e.    
-    sta zp_stack_ptr                                                  ; 9adf: 85 04       ..    
-    bcc c9ae5                                                         ; 9ae1: 90 02       ..    
-    inc zp_stack_ptr_1                                                ; 9ae3: e6 05       ..    
+    lda zp_iwa_3                                                      ; 9aad: a5 2d       .-       ; Flip the sign bit of the IWA top byte
+    eor #&80                                                          ; 9aaf: 49 80       I.       ; ...
+    sta zp_iwa_3                                                      ; 9ab1: 85 2d       .-       ; ...
+    sec                                                               ; 9ab3: 38          8        ; Subtract IWA from the stacked integer: byte 0
+    ldy #0                                                            ; 9ab4: a0 00       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; 9ab6: b1 04       ..       ; ...
+    sbc zp_iwa                                                        ; 9ab8: e5 2a       .*       ; ...
+    sta zp_iwa                                                        ; 9aba: 85 2a       .*       ; ...
+    iny                                                               ; 9abc: c8          .        ; byte 1
+    lda (zp_stack_ptr),y                                              ; 9abd: b1 04       ..       ; ...
+    sbc zp_iwa_1                                                      ; 9abf: e5 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; 9ac1: 85 2b       .+       ; ...
+    iny                                                               ; 9ac3: c8          .        ; byte 2
+    lda (zp_stack_ptr),y                                              ; 9ac4: b1 04       ..       ; ...
+    sbc zp_iwa_2                                                      ; 9ac6: e5 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 9ac8: 85 2c       .,       ; ...
+    iny                                                               ; 9aca: c8          .        ; byte 3 (top)
+    lda (zp_stack_ptr),y                                              ; 9acb: b1 04       ..       ; ...
+    ldy #0                                                            ; 9acd: a0 00       ..       ; ...
+    eor #&80                                                          ; 9acf: 49 80       I.       ; flip its sign bit too
+    sbc zp_iwa_3                                                      ; 9ad1: e5 2d       .-       ; finish the signed subtract: sets C
+    ora zp_iwa                                                        ; 9ad3: 05 2a       .*       ; OR the low bytes...
+    ora zp_iwa_1                                                      ; 9ad5: 05 2b       .+       ; ...
+    ora zp_iwa_2                                                      ; 9ad7: 05 2c       .,       ; ...to set Z when the values are equal
+    php                                                               ; 9ad9: 08          .        ; Save the comparison flags
+    clc                                                               ; 9ada: 18          .        ; Drop the integer from the stack
+    lda #4                                                            ; 9adb: a9 04       ..       ; ...
+    adc zp_stack_ptr                                                  ; 9add: 65 04       e.       ; ...
+    sta zp_stack_ptr                                                  ; 9adf: 85 04       ..       ; ...
+    bcc c9ae5                                                         ; 9ae1: 90 02       ..       ; ...
+    inc zp_stack_ptr_1                                                ; 9ae3: e6 05       ..       ; ...
 ; &9ae5 referenced 1 time by &9ae1
 .c9ae5
-    plp                                                               ; 9ae5: 28          (     
-    rts                                                               ; 9ae6: 60          `     
+    plp                                                               ; 9ae5: 28          (        ; Restore the flags
+    rts                                                               ; 9ae6: 60          `        ; Return
 ; &9ae7 referenced 1 time by &9a9e
 .c9ae7
     jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..   
@@ -5137,75 +5137,75 @@ l848a = sub_c847b+15
 ; The relational operators, yielding TRUE (-1) or FALSE (0).
 ; &9b9c referenced 2 times by &9b72, &9b81
 .eval_relational
-    jsr eval_add_sub                                                  ; 9b9c: 20 42 9c     B.   
-    cpx #&3f ; '?'                                                    ; 9b9f: e0 3f       .?    
-    bcs return_18                                                     ; 9ba1: b0 04       ..    
-    cpx #&3c ; '<'                                                    ; 9ba3: e0 3c       .<    
-    bcs c9ba8                                                         ; 9ba5: b0 01       ..    
+    jsr eval_add_sub                                                  ; 9b9c: 20 42 9c     B.      ; Evaluate a + - operand
+    cpx #&3f ; '?'                                                    ; 9b9f: e0 3f       .?       ; next token past '>'?
+    bcs return_18                                                     ; 9ba1: b0 04       ..       ; yes: not a comparison, return
+    cpx #&3c ; '<'                                                    ; 9ba3: e0 3c       .<       ; before '<'?
+    bcs c9ba8                                                         ; 9ba5: b0 01       ..       ; a relational operator: handle it
 ; &9ba7 referenced 1 time by &9ba1
 .return_18
-    rts                                                               ; 9ba7: 60          `     
+    rts                                                               ; 9ba7: 60          `        ; not a comparison: return
 ; &9ba8 referenced 1 time by &9ba5
 .c9ba8
-    beq c9bc0                                                         ; 9ba8: f0 16       ..    
-    cpx #&3e ; '>'                                                    ; 9baa: e0 3e       .>    
-    beq c9be8                                                         ; 9bac: f0 3a       .:    
-    tax                                                               ; 9bae: aa          .     
-    jsr sub_c9a9e                                                     ; 9baf: 20 9e 9a     ..   
-    bne c9bb5                                                         ; 9bb2: d0 01       ..    
+    beq c9bc0                                                         ; 9ba8: f0 16       ..       ; '<' family?
+    cpx #&3e ; '>'                                                    ; 9baa: e0 3e       .>       ; '>' family?
+    beq c9be8                                                         ; 9bac: f0 3a       .:       ; yes
+    tax                                                               ; 9bae: aa          .        ; '=': compare for equality
+    jsr sub_c9a9e                                                     ; 9baf: 20 9e 9a     ..      ; evaluate the right operand and compare
+    bne c9bb5                                                         ; 9bb2: d0 01       ..       ; not equal: result FALSE (0)
 ; &9bb4 referenced 6 times by &9bd0, &9bd9, &9bdb, &9be4, &9bf6, &9bff
 .c9bb4
-    dey                                                               ; 9bb4: 88          .     
+    dey                                                               ; 9bb4: 88          .        ; equal: result TRUE (Y = &FF)
 ; &9bb5 referenced 7 times by &9bb2, &9bd2, &9bdd, &9be6, &9bf4, &9bf8, &9c01
 .c9bb5
-    sty zp_iwa                                                        ; 9bb5: 84 2a       .*    
-    sty zp_iwa_1                                                      ; 9bb7: 84 2b       .+    
-    sty zp_iwa_2                                                      ; 9bb9: 84 2c       .,    
-    sty zp_iwa_3                                                      ; 9bbb: 84 2d       .-    
-    lda #&40 ; '@'                                                    ; 9bbd: a9 40       .@    
-    rts                                                               ; 9bbf: 60          `     
+    sty zp_iwa                                                        ; 9bb5: 84 2a       .*       ; Store 0/-1 in all four IWA bytes
+    sty zp_iwa_1                                                      ; 9bb7: 84 2b       .+       ; ...
+    sty zp_iwa_2                                                      ; 9bb9: 84 2c       .,       ; ...
+    sty zp_iwa_3                                                      ; 9bbb: 84 2d       .-       ; ...
+    lda #&40 ; '@'                                                    ; 9bbd: a9 40       .@       ; Result type = integer
+    rts                                                               ; 9bbf: 60          `        ; Return
 ; &9bc0 referenced 1 time by &9ba8
 .c9bc0
-    tax                                                               ; 9bc0: aa          .     
-    ldy zp_text_ptr2_off                                              ; 9bc1: a4 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..    
-    cmp #&3d ; '='                                                    ; 9bc5: c9 3d       .=    
-    beq c9bd4                                                         ; 9bc7: f0 0b       ..    
-    cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>    
-    beq c9bdf                                                         ; 9bcb: f0 12       ..    
-    jsr sub_c9a9d                                                     ; 9bcd: 20 9d 9a     ..   
-    bcc c9bb4                                                         ; 9bd0: 90 e2       ..    
-    bcs c9bb5                                                         ; 9bd2: b0 e1       ..    
+    tax                                                               ; 9bc0: aa          .        ; '<' family: discard the operator
+    ldy zp_text_ptr2_off                                              ; 9bc1: a4 1b       ..       ; Peek at the next source character
+    lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..       ; ...
+    cmp #&3d ; '='                                                    ; 9bc5: c9 3d       .=       ; '='? (<=)
+    beq c9bd4                                                         ; 9bc7: f0 0b       ..       ; yes
+    cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>       ; '>'? (<>)
+    beq c9bdf                                                         ; 9bcb: f0 12       ..       ; yes
+    jsr sub_c9a9d                                                     ; 9bcd: 20 9d 9a     ..      ; plain "<": evaluate and compare
+    bcc c9bb4                                                         ; 9bd0: 90 e2       ..       ; less: TRUE
+    bcs c9bb5                                                         ; 9bd2: b0 e1       ..       ; not less: FALSE
 ; &9bd4 referenced 1 time by &9bc7
 .c9bd4
-    inc zp_text_ptr2_off                                              ; 9bd4: e6 1b       ..    
-    jsr sub_c9a9d                                                     ; 9bd6: 20 9d 9a     ..   
-    beq c9bb4                                                         ; 9bd9: f0 d9       ..    
-    bcc c9bb4                                                         ; 9bdb: 90 d7       ..    
-    bcs c9bb5                                                         ; 9bdd: b0 d6       ..    
+    inc zp_text_ptr2_off                                              ; 9bd4: e6 1b       ..       ; '<=': step past the '='
+    jsr sub_c9a9d                                                     ; 9bd6: 20 9d 9a     ..      ; evaluate and compare
+    beq c9bb4                                                         ; 9bd9: f0 d9       ..       ; equal: TRUE
+    bcc c9bb4                                                         ; 9bdb: 90 d7       ..       ; less: TRUE
+    bcs c9bb5                                                         ; 9bdd: b0 d6       ..       ; greater: FALSE
 ; &9bdf referenced 1 time by &9bcb
 .c9bdf
-    inc zp_text_ptr2_off                                              ; 9bdf: e6 1b       ..    
-    jsr sub_c9a9d                                                     ; 9be1: 20 9d 9a     ..   
-    bne c9bb4                                                         ; 9be4: d0 ce       ..    
-    beq c9bb5                                                         ; 9be6: f0 cd       ..    
+    inc zp_text_ptr2_off                                              ; 9bdf: e6 1b       ..       ; '<>': step past the '>'
+    jsr sub_c9a9d                                                     ; 9be1: 20 9d 9a     ..      ; evaluate and compare
+    bne c9bb4                                                         ; 9be4: d0 ce       ..       ; unequal: TRUE
+    beq c9bb5                                                         ; 9be6: f0 cd       ..       ; equal: FALSE
 ; &9be8 referenced 1 time by &9bac
 .c9be8
-    tax                                                               ; 9be8: aa          .     
-    ldy zp_text_ptr2_off                                              ; 9be9: a4 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..    
-    cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=    
-    beq c9bfa                                                         ; 9bef: f0 09       ..    
-    jsr sub_c9a9d                                                     ; 9bf1: 20 9d 9a     ..   
-    beq c9bb5                                                         ; 9bf4: f0 bf       ..    
-    bcs c9bb4                                                         ; 9bf6: b0 bc       ..    
-    bcc c9bb5                                                         ; 9bf8: 90 bb       ..    
+    tax                                                               ; 9be8: aa          .        ; '>' family: discard the operator
+    ldy zp_text_ptr2_off                                              ; 9be9: a4 1b       ..       ; Peek at the next source character
+    lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; ...
+    cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=       ; '='? (>=)
+    beq c9bfa                                                         ; 9bef: f0 09       ..       ; yes
+    jsr sub_c9a9d                                                     ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
+    beq c9bb5                                                         ; 9bf4: f0 bf       ..       ; equal: FALSE
+    bcs c9bb4                                                         ; 9bf6: b0 bc       ..       ; greater: TRUE
+    bcc c9bb5                                                         ; 9bf8: 90 bb       ..       ; less: FALSE
 ; &9bfa referenced 1 time by &9bef
 .c9bfa
-    inc zp_text_ptr2_off                                              ; 9bfa: e6 1b       ..    
-    jsr sub_c9a9d                                                     ; 9bfc: 20 9d 9a     ..   
-    bcs c9bb4                                                         ; 9bff: b0 b3       ..    
-    bcc c9bb5                                                         ; 9c01: 90 b2       ..    
+    inc zp_text_ptr2_off                                              ; 9bfa: e6 1b       ..       ; '>=': step past the '='
+    jsr sub_c9a9d                                                     ; 9bfc: 20 9d 9a     ..      ; evaluate and compare
+    bcs c9bb4                                                         ; 9bff: b0 b3       ..       ; greater or equal: TRUE
+    bcc c9bb5                                                         ; 9c01: 90 b2       ..       ; less: FALSE
 ; &9c03 referenced 2 times by &9c27, &b0fb
 .c9c03
     brk                                                               ; 9c03: 00          .     
@@ -6694,22 +6694,22 @@ l848a = sub_c847b+15
 ; Convert FWA to a 4-byte integer in IWA (variant 1).
 ; &a3e4 referenced 5 times by &92f4, &98c9, &9e93, &af36, &b4c3
 .fwa_to_int
-    jsr fwa_to_int2                                                   ; a3e4: 20 fe a3     ..   
+    jsr fwa_to_int2                                                   ; a3e4: 20 fe a3     ..      ; Denormalise FWA to a fixed integer
 ; &a3e7 referenced 1 time by &ac95
 .sub_ca3e7
-    lda zp_fwa_m1                                                     ; a3e7: a5 31       .1    
-    sta zp_iwa_3                                                      ; a3e9: 85 2d       .-    
-    lda zp_fwa_m2                                                     ; a3eb: a5 32       .2    
-    sta zp_iwa_2                                                      ; a3ed: 85 2c       .,    
-    lda zp_fwa_m3                                                     ; a3ef: a5 33       .3    
-    sta zp_iwa_1                                                      ; a3f1: 85 2b       .+    
-    lda zp_fwa_m4                                                     ; a3f3: a5 34       .4    
-    sta zp_iwa                                                        ; a3f5: 85 2a       .*    
-    rts                                                               ; a3f7: 60          `     
+    lda zp_fwa_m1                                                     ; a3e7: a5 31       .1       ; Copy the 32-bit mantissa into IWA: byte 3
+    sta zp_iwa_3                                                      ; a3e9: 85 2d       .-       ; ...
+    lda zp_fwa_m2                                                     ; a3eb: a5 32       .2       ; byte 2
+    sta zp_iwa_2                                                      ; a3ed: 85 2c       .,       ; ...
+    lda zp_fwa_m3                                                     ; a3ef: a5 33       .3       ; byte 1
+    sta zp_iwa_1                                                      ; a3f1: 85 2b       .+       ; ...
+    lda zp_fwa_m4                                                     ; a3f3: a5 34       .4       ; byte 0
+    sta zp_iwa                                                        ; a3f5: 85 2a       .*       ; ...
+    rts                                                               ; a3f7: 60          `        ; Return
 ; &a3f8 referenced 1 time by &a400
 .loop_ca3f8
-    jsr fwb_copy_from_fwa                                             ; a3f8: 20 1e a2     ..   
-    jmp fwa_clear                                                     ; a3fb: 4c 86 a6    L..   
+    jsr fwb_copy_from_fwa                                             ; a3f8: 20 1e a2     ..      ; |x| < 1: FWB = FWA
+    jmp fwa_clear                                                     ; a3fb: 4c 86 a6    L..      ; integer is zero
 ; ***************************************************************************************
 ; Convert the FP accumulator to an integer (variant 2)
 ;
