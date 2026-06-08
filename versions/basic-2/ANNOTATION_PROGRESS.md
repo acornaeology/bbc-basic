@@ -1,5 +1,10 @@
 # BBC BASIC II annotation progress
 
+**STATUS: COMPLETE — 100.0% inline density (7135/7135 code instructions).**
+Every code instruction in the ROM carries an intention-revealing inline
+comment; the disassembly reassembles byte-identically; lint and
+comments-check are clean. The notes below record the bottom-up path taken.
+
 Full per-instruction inline commenting, **every instruction**, working
 bottom-up by call-graph depth (leaves = depth 0 first), to the standard
 of the sibling ADFS/NFS disassemblies (~97%+). Comment intent in light
