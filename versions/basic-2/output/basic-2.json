@@ -10966,6 +10966,7 @@
       "labels": [
         "c85f1"
       ],
+      "comment_inline": "Point to the end of the opcode table",
       "xref_summaries": [
         "&85f1 referenced 1 time by &85df"
       ],
@@ -10982,6 +10983,7 @@
         165,
         61
       ],
+      "comment_inline": "Compacted mnemonic low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -10998,6 +11000,7 @@
       "labels": [
         "loop_c85f5"
       ],
+      "comment_inline": "Compare the low half",
       "xref_summaries": [
         "&85f5 referenced 1 time by &8602"
       ],
@@ -11016,6 +11019,7 @@
         208,
         7
       ],
+      "comment_inline": "no match: next entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8601",
@@ -11029,6 +11033,7 @@
         138,
         132
       ],
+      "comment_inline": "High half",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l848a,x",
@@ -11041,6 +11046,7 @@
         196,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fwb_m1",
@@ -11053,6 +11059,7 @@
         240,
         31
       ],
+      "comment_inline": "matched",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8620",
@@ -11067,6 +11074,7 @@
       "labels": [
         "c8601"
       ],
+      "comment_inline": "Next entry",
       "xref_summaries": [
         "&8601 referenced 1 time by &85f8"
       ],
@@ -11082,6 +11090,7 @@
         208,
         241
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c85f5",
@@ -11098,6 +11107,7 @@
       "labels": [
         "c8604"
       ],
+      "comment_inline": "not matched: Mistake",
       "xref_summaries": [
         "&8604 referenced 4 times by &85a8, &85aa, &8615, &861e"
       ],
@@ -11122,6 +11132,7 @@
       "labels": [
         "c8607"
       ],
+      "comment_inline": "opcode index for AND",
       "xref_summaries": [
         "&8607 referenced 1 time by &85db"
       ],
@@ -11138,6 +11149,7 @@
         201,
         128
       ],
+      "comment_inline": "tokenised AND?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -11148,6 +11160,7 @@
         240,
         19
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8620",
@@ -11159,6 +11172,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "EOR index",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -11168,6 +11182,7 @@
         201,
         130
       ],
+      "comment_inline": "tokenised EOR?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&82"
@@ -11178,6 +11193,7 @@
         240,
         14
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8620",
@@ -11189,6 +11205,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "ORA index",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -11198,6 +11215,7 @@
         201,
         132
       ],
+      "comment_inline": "tokenised OR?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&84"
@@ -11208,6 +11226,7 @@
         208,
         237
       ],
+      "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8604",
@@ -11220,6 +11239,7 @@
         230,
         10
       ],
+      "comment_inline": "step past, expect 'A'",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -11231,6 +11251,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -11240,6 +11261,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -11252,6 +11274,7 @@
         201,
         65
       ],
+      "comment_inline": "'A'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&41"
@@ -11262,6 +11285,7 @@
         208,
         228
       ],
+      "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8604",
@@ -12318,6 +12342,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12511,6 +12536,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12571,6 +12597,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12608,6 +12635,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12620,6 +12648,7 @@
         201,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -12630,6 +12659,7 @@
         208,
         30
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c870d",
@@ -12657,6 +12687,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12669,6 +12700,7 @@
         201,
         89
       ],
+      "comment_inline": "'Y'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&59"
@@ -12679,6 +12711,7 @@
         208,
         20
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c870d",
@@ -12707,6 +12740,7 @@
       "labels": [
         "c86fb"
       ],
+      "comment_inline": "','?",
       "xref_summaries": [
         "&86fb referenced 1 time by &86e6"
       ],
@@ -12723,6 +12757,7 @@
         208,
         14
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c870d",
@@ -12736,6 +12771,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12748,6 +12784,7 @@
         201,
         88
       ],
+      "comment_inline": "'X'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&58"
@@ -12758,6 +12795,7 @@
         208,
         7
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c870d",
@@ -12771,6 +12809,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12783,6 +12822,7 @@
         201,
         41
       ],
+      "comment_inline": "')'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&29"
@@ -12793,6 +12833,7 @@
         240,
         187
       ],
+      "comment_inline": "yes: process",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86c8",
@@ -12899,6 +12940,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12911,6 +12953,7 @@
         201,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -12921,6 +12964,7 @@
         208,
         20
       ],
+      "comment_inline": "no: process as absolute",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8735",
@@ -12948,6 +12992,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -12960,6 +13005,7 @@
         201,
         88
       ],
+      "comment_inline": "'X'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&58"
@@ -12970,6 +13016,7 @@
         240,
         10
       ],
+      "comment_inline": "yes: abs,X",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8735",
@@ -12982,6 +13029,7 @@
         201,
         89
       ],
+      "comment_inline": "'Y'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&59"
@@ -12992,6 +13040,7 @@
         208,
         222
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c870d",
@@ -13177,6 +13226,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13189,6 +13239,7 @@
         201,
         65
       ],
+      "comment_inline": "'A' (accumulator)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&41"
@@ -13199,6 +13250,7 @@
         240,
         25
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8767",
@@ -13248,6 +13300,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13260,6 +13313,7 @@
         201,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -13270,6 +13324,7 @@
         208,
         222
       ],
+      "comment_inline": "no: process",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8738",
@@ -13297,6 +13352,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13309,6 +13365,7 @@
         201,
         88
       ],
+      "comment_inline": "'X'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&58"
@@ -13319,6 +13376,7 @@
         240,
         212
       ],
+      "comment_inline": "yes: address,X",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8738",
@@ -13332,6 +13390,7 @@
         13,
         135
       ],
+      "comment_inline": "Index error",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c870d",
@@ -13449,6 +13508,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13461,6 +13521,7 @@
         201,
         35
       ],
+      "comment_inline": "'#' immediate?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&23"
@@ -13471,6 +13532,7 @@
         208,
         3
       ],
+      "comment_inline": "no: address",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8780",
@@ -13484,6 +13546,7 @@
         197,
         134
       ],
+      "comment_inline": "immediate",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c86c5",
@@ -13602,6 +13665,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13614,6 +13678,7 @@
         201,
         40
       ],
+      "comment_inline": "'(' indirect?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -13624,6 +13689,7 @@
         240,
         10
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c879f",
@@ -13768,6 +13834,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13805,6 +13872,7 @@
         13,
         135
       ],
+      "comment_inline": "Index error",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c870d",
@@ -13884,6 +13952,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "Save the register",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -13904,6 +13973,7 @@
         176,
         47
       ],
+      "comment_inline": "two-register form?",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c87f0",
@@ -13953,6 +14023,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "discard the register",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -13963,6 +14034,7 @@
         197,
         134
       ],
+      "comment_inline": "do immediate",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c86c5",
@@ -14072,6 +14144,7 @@
         53,
         135
       ],
+      "comment_inline": "process as absolute",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8735",
@@ -14131,6 +14204,7 @@
         208,
         6
       ],
+      "comment_inline": "register mismatch?",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c87ed",
@@ -14370,6 +14444,7 @@
         204,
         134
       ],
+      "comment_inline": "Byte error",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c86cc",
@@ -14442,6 +14517,7 @@
         165,
         42
       ],
+      "comment_inline": "OPT value",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -14798,6 +14874,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "two bytes",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -14891,6 +14968,7 @@
         42,
         152
       ],
+      "comment_inline": "Mistake (syntax) error",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c982a",
@@ -15092,6 +15170,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the byte count",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -15270,6 +15349,7 @@
         145,
         55
       ],
+      "comment_inline": "store the inserted byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -19566,6 +19646,7 @@
       "labels": [
         "stmt_new"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -20170,6 +20251,7 @@
       "labels": [
         "c8b38"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&8b38 referenced 1 time by &8b30"
       ],
@@ -20199,6 +20281,7 @@
         176,
         114
       ],
+      "comment_inline": "command token: dispatch it",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "dispatch_token",
@@ -20380,6 +20463,7 @@
       "labels": [
         "c8b59"
       ],
+      "comment_inline": "No FN error",
       "xref_summaries": [
         "&8b59 referenced 2 times by &8b4a, &8b51"
       ],
@@ -20808,6 +20892,7 @@
       "labels": [
         "c8b96"
       ],
+      "comment_inline": "Back up",
       "xref_summaries": [
         "&8b96 referenced 7 times by &8b71, &8d80, &9212, &9350, &9453, &b7a1, &bb1c"
       ],
@@ -20836,6 +20921,7 @@
       "labels": [
         "c8b98"
       ],
+      "comment_inline": "check the statement ends",
       "xref_summaries": [
         "&8b98 referenced 4 times by &8d7a, &9353, &b9cc, &ba41"
       ],
@@ -21616,6 +21702,7 @@
       "labels": [
         "err_type_mismatch"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96"
       ],
@@ -29200,6 +29287,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "This line's number",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -29209,6 +29297,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -29221,6 +29310,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -29232,6 +29322,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -29241,6 +29332,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -29253,6 +29345,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -29266,6 +29359,7 @@
         31,
         153
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_line_number",
@@ -29279,6 +29373,7 @@
         37,
         188
       ],
+      "comment_inline": "newline",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc25",
@@ -29291,6 +29386,7 @@
         240,
         206
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c906d",
@@ -30131,6 +30227,7 @@
         39,
         136
       ],
+      "comment_inline": "sync the pointer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8827",
@@ -30144,6 +30241,7 @@
         11,
         146
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c920b",
@@ -30158,6 +30256,7 @@
       "labels": [
         "c9127"
       ],
+      "comment_inline": "Bad DIM error",
       "xref_summaries": [
         "&9127 referenced 8 times by &90e4, &90e6, &90f5, &9150, &9172, &9193, &91b4, &925a"
       ],
@@ -35243,6 +35342,7 @@
       "labels": [
         "stmt_vdu"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&942f referenced 1 time by &944b"
       ],
@@ -35486,6 +35586,7 @@
       "labels": [
         "sub_c9456"
       ],
+      "comment_inline": "Send the low byte to OSWRCH",
       "xref_summaries": [
         "&9456 referenced 4 times by &8e3a, &93de, &941f, &9443"
       ],
@@ -35508,6 +35609,7 @@
         14,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(wrchv)",
@@ -41947,6 +42049,7 @@
       "labels": [
         "loop_c97dd"
       ],
+      "comment_inline": "Advance",
       "xref_summaries": [
         "&97dd referenced 1 time by &97e5"
       ],
@@ -44399,6 +44502,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -45286,6 +45390,7 @@
       "labels": [
         "c99a7"
       ],
+      "comment_inline": "Division by zero error",
       "xref_summaries": [
         "&99a7 referenced 2 times by &99f0, &a6bb"
       ],
@@ -47391,6 +47496,7 @@
       "labels": [
         "c9ae7"
       ],
+      "comment_inline": "String compare: stack the left",
       "xref_summaries": [
         "&9ae7 referenced 1 time by &9a9e"
       ],
@@ -47410,6 +47516,7 @@
         66,
         156
       ],
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_add_sub",
@@ -47421,6 +47528,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -47430,6 +47538,7 @@
         208,
         170
       ],
+      "comment_inline": "number: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a9a",
@@ -47442,6 +47551,7 @@
         134,
         55
       ],
+      "comment_inline": "Save the current pointer",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general",
@@ -47454,6 +47564,7 @@
         166,
         54
       ],
+      "comment_inline": "current length",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_strbuf_len",
@@ -47466,6 +47577,7 @@
         160,
         0
       ],
+      "comment_inline": "from 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -47476,6 +47588,7 @@
         177,
         4
       ],
+      "comment_inline": "stacked length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47488,6 +47601,7 @@
         133,
         57
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -47500,6 +47614,7 @@
         197,
         54
       ],
+      "comment_inline": "compare lengths",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -47512,6 +47627,7 @@
         176,
         1
       ],
+      "comment_inline": "use the shorter",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9aff",
@@ -47523,6 +47639,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -47535,6 +47652,7 @@
       "labels": [
         "c9aff"
       ],
+      "comment_inline": "shorter length",
       "xref_summaries": [
         "&9aff referenced 1 time by &9afc"
       ],
@@ -47553,6 +47671,7 @@
         160,
         0
       ],
+      "comment_inline": "compare from 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -49364,6 +49483,7 @@
       "labels": [
         "c9c03"
       ],
+      "comment_inline": "String too long error",
       "xref_summaries": [
         "&9c03 referenced 2 times by &9c27, &b0fb"
       ],
@@ -53996,6 +54116,7 @@
       "labels": [
         "loop_c9ec8"
       ],
+      "comment_inline": "positive?",
       "xref_summaries": [
         "&9ec8 referenced 1 time by &9f12"
       ],
@@ -54014,6 +54135,7 @@
         169,
         45
       ],
+      "comment_inline": "negative: output '-'",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&2d"
@@ -54024,6 +54146,7 @@
         133,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -54037,6 +54160,7 @@
         102,
         160
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -54052,6 +54176,7 @@
       "labels": [
         "c9ed1"
       ],
+      "comment_inline": "Exponent",
       "xref_summaries": [
         "&9ed1 referenced 3 times by &9ec8, &9edc, &9f36"
       ],
@@ -54072,6 +54197,7 @@
         201,
         129
       ],
+      "comment_inline": ">= 1?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&81"
@@ -54082,6 +54208,7 @@
         176,
         78
       ],
+      "comment_inline": "yes: output the integer part",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9f25",
@@ -54095,6 +54222,7 @@
         244,
         161
       ],
+      "comment_inline": "< 1: multiply by 10",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul10",
@@ -54107,6 +54235,7 @@
         198,
         73
       ],
+      "comment_inline": "decrement the decimal exponent",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_dec_exp",
@@ -54120,6 +54249,7 @@
         209,
         158
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9ed1",
@@ -64343,6 +64473,7 @@
       "labels": [
         "return_24"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&a485 referenced 1 time by &a46a"
       ],
@@ -74779,6 +74910,7 @@
       "labels": [
         "return_29"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&ab32 referenced 1 time by &ab26"
       ],
@@ -75110,6 +75242,7 @@
         216,
         174
       ],
+      "comment_inline": "return as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "int_result_a",
@@ -76400,6 +76533,7 @@
       "labels": [
         "fn_val"
       ],
+      "comment_inline": "Evaluate the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -76412,6 +76546,7 @@
         208,
         103
       ],
+      "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac9b",
@@ -77086,6 +77221,7 @@
       "labels": [
         "cac9b"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&ac9b referenced 5 times by &ac32, &ac7b, &aca1, &ace5, &acf3"
       ],
@@ -78454,6 +78590,7 @@
       "labels": [
         "cad67"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&ad67 referenced 2 times by &ad6d, &ad8f"
       ],
@@ -79901,6 +80038,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -80020,6 +80158,7 @@
         234,
         174
       ],
+      "comment_inline": "return as a 16-bit integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -84127,6 +84266,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -90840,6 +90980,7 @@
       "labels": [
         "cb4ae"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&b4ae referenced 2 times by &b4bf, &b4e2"
       ],
@@ -90863,6 +91004,7 @@
       "labels": [
         "sub_cb4b1"
       ],
+      "comment_inline": "Evaluate the value",
       "xref_summaries": [
         "&b4b1 referenced 2 times by &b7d1, &bb2c"
       ],
@@ -91188,6 +91330,7 @@
       "labels": [
         "return_34"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&b4df referenced 1 time by &b4ce"
       ],
@@ -91206,6 +91349,7 @@
       "labels": [
         "cb4e0"
       ],
+      "comment_inline": "Value type",
       "xref_summaries": [
         "&b4e0 referenced 1 time by &b4bb"
       ],
@@ -91224,6 +91368,7 @@
         240,
         202
       ],
+      "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb4ae",
@@ -91236,6 +91381,7 @@
         48,
         3
       ],
+      "comment_inline": "real: store it",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb4e9",
@@ -91249,6 +91395,7 @@
         190,
         162
       ],
+      "comment_inline": "integer: convert to real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_to_fwa",
@@ -91264,6 +91411,7 @@
       "labels": [
         "cb4e9"
       ],
+      "comment_inline": "Store the 5-byte real: exponent",
       "xref_summaries": [
         "&b4e9 referenced 2 times by &b4e4, &b77f"
       ],
@@ -91281,6 +91429,7 @@
         165,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -91293,6 +91442,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91304,6 +91454,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91313,6 +91464,7 @@
         165,
         46
       ],
+      "comment_inline": "Pack the sign into the mantissa",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -91325,6 +91477,7 @@
         41,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -91335,6 +91488,7 @@
         133,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -91347,6 +91501,7 @@
         165,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -91359,6 +91514,7 @@
         41,
         127
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -91369,6 +91525,7 @@
         5,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_sign",
@@ -91381,6 +91538,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91392,6 +91550,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "mantissa 2",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91401,6 +91560,7 @@
         165,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -91413,6 +91573,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91424,6 +91585,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "mantissa 3",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91433,6 +91595,7 @@
         165,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -91445,6 +91608,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91456,6 +91620,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "mantissa 4",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91465,6 +91630,7 @@
         165,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -91477,6 +91643,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91488,6 +91655,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -94138,6 +94306,7 @@
       "labels": [
         "cb68e"
       ],
+      "comment_inline": "No FN error",
       "xref_summaries": [
         "&b68e referenced 2 times by &b69c, &b6a7"
       ],
@@ -98992,6 +99161,7 @@
       "labels": [
         "err_no_such_line"
       ],
+      "comment_inline": "No such line error",
       "xref_summaries": [
         "&b9b5 referenced 1 time by &b9b2"
       ],
@@ -99041,6 +99211,7 @@
       "labels": [
         "cb9c4"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&b9c4 referenced 2 times by &ba00, &ba1b"
       ],
@@ -99064,6 +99235,7 @@
       "labels": [
         "loop_cb9c7"
       ],
+      "comment_inline": "Mistake error",
       "xref_summaries": [
         "&b9c7 referenced 1 time by &b9e7"
       ],
@@ -99085,6 +99257,7 @@
       "labels": [
         "loop_cb9ca"
       ],
+      "comment_inline": "Sync the pointer",
       "xref_summaries": [
         "&b9ca referenced 1 time by &b9df"
       ],
@@ -99104,6 +99277,7 @@
         152,
         139
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8b98",
@@ -104589,6 +104763,7 @@
       "labels": [
         "return_38"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&bd10 referenced 1 time by &bc9c"
       ],

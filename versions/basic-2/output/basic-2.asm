@@ -1153,38 +1153,38 @@ l848a = sub_c847b+15
     bne loop_c85d5                                                    ; 85ef: d0 e4       ..       ; loop for three
 ; &85f1 referenced 1 time by &85df
 .c85f1
-    ldx #&3a ; ':'                                                    ; 85f1: a2 3a       .:    
-    lda zp_fwb_exp                                                    ; 85f3: a5 3d       .=    
+    ldx #&3a ; ':'                                                    ; 85f1: a2 3a       .:       ; Point to the end of the opcode table
+    lda zp_fwb_exp                                                    ; 85f3: a5 3d       .=       ; Compacted mnemonic low byte
 ; &85f5 referenced 1 time by &8602
 .loop_c85f5
-    cmp l8450,x                                                       ; 85f5: dd 50 84    .P.   
-    bne c8601                                                         ; 85f8: d0 07       ..    
-    ldy l848a,x                                                       ; 85fa: bc 8a 84    ...   
-    cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>    
-    beq c8620                                                         ; 85ff: f0 1f       ..    
+    cmp l8450,x                                                       ; 85f5: dd 50 84    .P.      ; Compare the low half
+    bne c8601                                                         ; 85f8: d0 07       ..       ; no match: next entry
+    ldy l848a,x                                                       ; 85fa: bc 8a 84    ...      ; High half
+    cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; ...
+    beq c8620                                                         ; 85ff: f0 1f       ..       ; matched
 ; &8601 referenced 1 time by &85f8
 .c8601
-    dex                                                               ; 8601: ca          .     
-    bne loop_c85f5                                                    ; 8602: d0 f1       ..    
+    dex                                                               ; 8601: ca          .        ; Next entry
+    bne loop_c85f5                                                    ; 8602: d0 f1       ..       ; loop
 ; &8604 referenced 4 times by &85a8, &85aa, &8615, &861e
 .c8604
-    jmp c982a                                                         ; 8604: 4c 2a 98    L*.   
+    jmp c982a                                                         ; 8604: 4c 2a 98    L*.      ; not matched: Mistake
 ; &8607 referenced 1 time by &85db
 .c8607
-    ldx #&22                                                          ; 8607: a2 22       ."    
-    cmp #&80                                                          ; 8609: c9 80       ..    
-    beq c8620                                                         ; 860b: f0 13       ..    
-    inx                                                               ; 860d: e8          .     
-    cmp #&82                                                          ; 860e: c9 82       ..    
-    beq c8620                                                         ; 8610: f0 0e       ..    
-    inx                                                               ; 8612: e8          .     
-    cmp #&84                                                          ; 8613: c9 84       ..    
-    bne c8604                                                         ; 8615: d0 ed       ..    
-    inc zp_text_ptr_off                                               ; 8617: e6 0a       ..    
-    iny                                                               ; 8619: c8          .     
-    lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..    
-    cmp #&41 ; 'A'                                                    ; 861c: c9 41       .A    
-    bne c8604                                                         ; 861e: d0 e4       ..    
+    ldx #&22                                                          ; 8607: a2 22       ."       ; opcode index for AND
+    cmp #&80                                                          ; 8609: c9 80       ..       ; tokenised AND?
+    beq c8620                                                         ; 860b: f0 13       ..       ; yes
+    inx                                                               ; 860d: e8          .        ; EOR index
+    cmp #&82                                                          ; 860e: c9 82       ..       ; tokenised EOR?
+    beq c8620                                                         ; 8610: f0 0e       ..       ; yes
+    inx                                                               ; 8612: e8          .        ; ORA index
+    cmp #&84                                                          ; 8613: c9 84       ..       ; tokenised OR?
+    bne c8604                                                         ; 8615: d0 ed       ..       ; no: Mistake
+    inc zp_text_ptr_off                                               ; 8617: e6 0a       ..       ; step past, expect 'A'
+    iny                                                               ; 8619: c8          .        ; ...
+    lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..       ; ...
+    cmp #&41 ; 'A'                                                    ; 861c: c9 41       .A       ; 'A'?
+    bne c8604                                                         ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
 .c8620
     lda l84c4,x                                                       ; 8620: bd c4 84    ...      ; Base opcode from the table
@@ -1289,7 +1289,7 @@ l848a = sub_c847b+15
 .c86b7
     cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)       ; index &29+ : not immediate?
     bcs c86d3                                                         ; 86b9: b0 18       ..       ; yes: indexed/absolute modes
-    jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..      ; Skip spaces
     cmp #&23 ; '#'                                                    ; 86be: c9 23       .#       ; '#' immediate prefix?
     bne c86da                                                         ; 86c0: d0 18       ..       ; no: absolute
     jsr asm_opcode_add8                                               ; 86c2: 20 2f 88     /.      ; Immediate mode: adjust the opcode
@@ -1310,33 +1310,33 @@ l848a = sub_c847b+15
 .c86d3
     cpx #&36 ; '6'                                                    ; 86d3: e0 36       .6       ; index &36 : the (zp),Y / (zp,X) group?
     bne c873f                                                         ; 86d5: d0 68       .h       ; no: absolute/indexed group
-    jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..      ; Skip spaces
 ; &86da referenced 1 time by &86c0
 .c86da
     cmp #&28 ; '('                                                    ; 86da: c9 28       .(       ; '(' opening an indirect mode?
     bne c8715                                                         ; 86dc: d0 37       .7       ; no: absolute
     jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.      ; Evaluate the zero-page address
-    jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)       ; ')' -> (zp),Y form
     bne c86fb                                                         ; 86e6: d0 13       ..       ; no: try (zp,X)
-    jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,    
-    bne c870d                                                         ; 86ed: d0 1e       ..    
+    jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,       ; ','?
+    bne c870d                                                         ; 86ed: d0 1e       ..       ; no: Index error
     jsr asm_opcode_add16                                              ; 86ef: 20 2c 88     ,.      ; adjust the opcode for (zp),Y
-    jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..   
-    cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y    
-    bne c870d                                                         ; 86f7: d0 14       ..    
+    jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..      ; Skip spaces
+    cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y       ; 'Y'?
+    bne c870d                                                         ; 86f7: d0 14       ..       ; no: Index error
     beq c86c8                                                         ; 86f9: f0 cd       ..       ; process as a two-byte instruction
 ; &86fb referenced 1 time by &86e6
 .c86fb
-    cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,    
-    bne c870d                                                         ; 86fd: d0 0e       ..    
-    jsr skip_spaces                                                   ; 86ff: 20 97 8a     ..   
-    cmp #&58 ; 'X'                                                    ; 8702: c9 58       .X    
-    bne c870d                                                         ; 8704: d0 07       ..    
-    jsr skip_spaces                                                   ; 8706: 20 97 8a     ..   
-    cmp #&29 ; ')'                                                    ; 8709: c9 29       .)    
-    beq c86c8                                                         ; 870b: f0 bb       ..    
+    cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,       ; ','?
+    bne c870d                                                         ; 86fd: d0 0e       ..       ; no: Index error
+    jsr skip_spaces                                                   ; 86ff: 20 97 8a     ..      ; Skip spaces
+    cmp #&58 ; 'X'                                                    ; 8702: c9 58       .X       ; 'X'?
+    bne c870d                                                         ; 8704: d0 07       ..       ; no: Index error
+    jsr skip_spaces                                                   ; 8706: 20 97 8a     ..      ; Skip spaces
+    cmp #&29 ; ')'                                                    ; 8709: c9 29       .)       ; ')'?
+    beq c86c8                                                         ; 870b: f0 bb       ..       ; yes: process
 ; &870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed
 .c870d
     brk                                                               ; 870d: 00          .        ; Index error
@@ -1347,15 +1347,15 @@ l848a = sub_c847b+15
 .c8715
     dec zp_text_ptr_off                                               ; 8715: c6 0a       ..       ; Back up over the "("
     jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.      ; Evaluate the address
-    jsr skip_spaces                                                   ; 871a: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 871d: c9 2c       .,    
-    bne c8735                                                         ; 871f: d0 14       ..    
+    jsr skip_spaces                                                   ; 871a: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 871d: c9 2c       .,       ; ','?
+    bne c8735                                                         ; 871f: d0 14       ..       ; no: process as absolute
     jsr asm_opcode_add16                                              ; 8721: 20 2c 88     ,.      ; adjust the opcode for absolute,X/,Y
-    jsr skip_spaces                                                   ; 8724: 20 97 8a     ..   
-    cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X    
-    beq c8735                                                         ; 8729: f0 0a       ..    
-    cmp #&59 ; 'Y'                                                    ; 872b: c9 59       .Y    
-    bne c870d                                                         ; 872d: d0 de       ..    
+    jsr skip_spaces                                                   ; 8724: 20 97 8a     ..      ; Skip spaces
+    cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X       ; 'X'?
+    beq c8735                                                         ; 8729: f0 0a       ..       ; yes: abs,X
+    cmp #&59 ; 'Y'                                                    ; 872b: c9 59       .Y       ; 'Y'?
+    bne c870d                                                         ; 872d: d0 de       ..       ; no: Index error
 ; &872f referenced 1 time by &873a
 .loop_c872f
     jsr asm_opcode_add8                                               ; 872f: 20 2f 88     /.      ; Adjust the opcode for the indexed form
@@ -1374,21 +1374,21 @@ l848a = sub_c847b+15
     bcs c876e                                                         ; 8741: b0 2b       .+       ; yes
     cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-       ; index &2D+ (accumulator-or-absolute)?
     bcs c8750                                                         ; 8745: b0 09       ..       ; yes
-    jsr skip_spaces                                                   ; 8747: 20 97 8a     ..   
-    cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A    
-    beq c8767                                                         ; 874c: f0 19       ..    
+    jsr skip_spaces                                                   ; 8747: 20 97 8a     ..      ; Skip spaces
+    cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A       ; 'A' (accumulator)?
+    beq c8767                                                         ; 874c: f0 19       ..       ; yes
     dec zp_text_ptr_off                                               ; 874e: c6 0a       ..       ; Back up a character
 ; &8750 referenced 1 time by &8745
 .c8750
     jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.      ; Evaluate the address
-    jsr skip_spaces                                                   ; 8753: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 8756: c9 2c       .,    
-    bne c8738                                                         ; 8758: d0 de       ..    
+    jsr skip_spaces                                                   ; 8753: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 8756: c9 2c       .,       ; ','?
+    bne c8738                                                         ; 8758: d0 de       ..       ; no: process
     jsr asm_opcode_add16                                              ; 875a: 20 2c 88     ,.      ; adjust the opcode for indexed mode
-    jsr skip_spaces                                                   ; 875d: 20 97 8a     ..   
-    cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X    
-    beq c8738                                                         ; 8762: f0 d4       ..    
-    jmp c870d                                                         ; 8764: 4c 0d 87    L..   
+    jsr skip_spaces                                                   ; 875d: 20 97 8a     ..      ; Skip spaces
+    cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X       ; 'X'?
+    beq c8738                                                         ; 8762: f0 d4       ..       ; yes: address,X
+    jmp c870d                                                         ; 8764: 4c 0d 87    L..      ; Index error
 ; &8767 referenced 1 time by &874c
 .c8767
     jsr asm_opcode_add4                                               ; 8767: 20 32 88     2.      ; Accumulator form: adjust the opcode
@@ -1400,10 +1400,10 @@ l848a = sub_c847b+15
     bcs c8788                                                         ; 8770: b0 16       ..       ; yes
     cpx #&31 ; '1'                                                    ; 8772: e0 31       .1       ; index &31 (immediate-only)?
     beq c8782                                                         ; 8774: f0 0c       ..       ; yes
-    jsr skip_spaces                                                   ; 8776: 20 97 8a     ..   
-    cmp #&23 ; '#'                                                    ; 8779: c9 23       .#    
-    bne c8780                                                         ; 877b: d0 03       ..    
-    jmp c86c5                                                         ; 877d: 4c c5 86    L..   
+    jsr skip_spaces                                                   ; 8776: 20 97 8a     ..      ; Skip spaces
+    cmp #&23 ; '#'                                                    ; 8779: c9 23       .#       ; '#' immediate?
+    bne c8780                                                         ; 877b: d0 03       ..       ; no: address
+    jmp c86c5                                                         ; 877d: 4c c5 86    L..      ; immediate
 ; &8780 referenced 1 time by &877b
 .c8780
     dec zp_text_ptr_off                                               ; 8780: c6 0a       ..       ; Back up a character
@@ -1416,9 +1416,9 @@ l848a = sub_c847b+15
     cpx #&33 ; '3'                                                    ; 8788: e0 33       .3       ; index &33 (no operand)?
     beq c8797                                                         ; 878a: f0 0b       ..       ; yes
     bcs c87b2                                                         ; 878c: b0 24       .$       ; index &34+ : other forms
-    jsr skip_spaces                                                   ; 878e: 20 97 8a     ..   
-    cmp #&28 ; '('                                                    ; 8791: c9 28       .(    
-    beq c879f                                                         ; 8793: f0 0a       ..    
+    jsr skip_spaces                                                   ; 878e: 20 97 8a     ..      ; Skip spaces
+    cmp #&28 ; '('                                                    ; 8791: c9 28       .(       ; '(' indirect?
+    beq c879f                                                         ; 8793: f0 0a       ..       ; yes
     dec zp_text_ptr_off                                               ; 8795: c6 0a       ..       ; Back up a character
 ; &8797 referenced 1 time by &878a
 .c8797
@@ -1434,10 +1434,10 @@ l848a = sub_c847b+15
     jsr asm_opcode_add16                                              ; 879f: 20 2c 88     ,.      ; Indirect: adjust the opcode
     jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; ...
     jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.      ; evaluate the address
-    jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)       ; ')' to close?
     beq c879a                                                         ; 87ad: f0 eb       ..       ; yes: three-byte instruction
-    jmp c870d                                                         ; 87af: 4c 0d 87    L..   
+    jmp c870d                                                         ; 87af: 4c 0d 87    L..      ; Index error
 ; &87b2 referenced 1 time by &878c
 .c87b2
     cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9       ; index &39+ : EQU directives
@@ -1445,14 +1445,14 @@ l848a = sub_c847b+15
     lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic  ...
     eor #1                                                            ; 87b8: 49 01       I.       ; ...
     and #&1f                                                          ; 87ba: 29 1f       ).       ; save it  index &37+ (two-register form)?
-    pha                                                               ; 87bc: 48          H     
+    pha                                                               ; 87bc: 48          H        ; Save the register
     cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7       ; yes
-    bcs c87f0                                                         ; 87bf: b0 2f       ./    
+    bcs c87f0                                                         ; 87bf: b0 2f       ./       ; two-register form?
     jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..      ; '#' immediate?
     cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#       ; no: absolute
     bne c87cc                                                         ; 87c6: d0 04       ..       ; discard the saved register, do immediate
-    pla                                                               ; 87c8: 68          h     
-    jmp c86c5                                                         ; 87c9: 4c c5 86    L..   
+    pla                                                               ; 87c8: 68          h        ; discard the register
+    jmp c86c5                                                         ; 87c9: 4c c5 86    L..      ; do immediate
 ; &87cc referenced 1 time by &87c6
 .c87cc
     dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..       ; Back up a character
@@ -1462,13 +1462,13 @@ l848a = sub_c847b+15
     jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..      ; ',' index register?
     cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,       ; yes
     beq c87de                                                         ; 87d9: f0 03       ..       ; no: assemble as absolute
-    jmp c8735                                                         ; 87db: 4c 35 87    L5.   
+    jmp c8735                                                         ; 87db: 4c 35 87    L5.      ; process as absolute
 ; &87de referenced 1 time by &87d9
 .c87de
     jsr skip_spaces                                                   ; 87de: 20 97 8a     ..      ; Index register letter  ...
     and #&1f                                                          ; 87e1: 29 1f       ).       ; matches the expected register?
     cmp zp_general                                                    ; 87e3: c5 37       .7       ; no: Index error
-    bne c87ed                                                         ; 87e5: d0 06       ..    
+    bne c87ed                                                         ; 87e5: d0 06       ..       ; register mismatch?
     jsr asm_opcode_add16                                              ; 87e7: 20 2c 88     ,.      ; adjust the opcode for the indexed form
     jmp c8735                                                         ; 87ea: 4c 35 87    L5.      ; assemble as absolute
 ; &87ed referenced 2 times by &87e5, &8804
@@ -1489,7 +1489,7 @@ l848a = sub_c847b+15
     jsr asm_opcode_add16                                              ; 8806: 20 2c 88     ,.      ; high byte zero?
     lda zp_iwa_1                                                      ; 8809: a5 2b       .+       ; yes: continue
     beq c8810                                                         ; 880b: f0 03       ..       ; Byte error (value > 255)
-    jmp c86cc                                                         ; 880d: 4c cc 86    L..   
+    jmp c86cc                                                         ; 880d: 4c cc 86    L..      ; Byte error
 ; &8810 referenced 2 times by &87fb, &880b
 .c8810
     jmp c8738                                                         ; 8810: 4c 38 87    L8.      ; Assemble as zero-page
@@ -1497,7 +1497,7 @@ l848a = sub_c847b+15
 .c8813
     bne c883a                                                         ; 8813: d0 25       .%       ; index &39 (OPT)?
     jsr eval_expr_to_integer                                          ; 8815: 20 21 88     !.      ; no: EQU directives  OPT: evaluate the new setting
-    lda zp_iwa                                                        ; 8818: a5 2a       .*    
+    lda zp_iwa                                                        ; 8818: a5 2a       .*       ; OPT value
     sta zp_opt_flag                                                   ; 881a: 85 28       .(       ; store it as the OPT flag
     ldy #0                                                            ; 881c: a0 00       ..       ; no bytes to assemble
     jmp c862b                                                         ; 881e: 4c 2b 86    L+.      ; finish
@@ -1548,7 +1548,7 @@ l848a = sub_c847b+15
     lda (zp_text_ptr),y                                               ; 8840: b1 0b       ..       ; 'B' (EQUB)?
     cmp #&42 ; 'B'                                                    ; 8842: c9 42       .B       ; yes
     beq c8858                                                         ; 8844: f0 12       ..       ; two bytes (EQUW)  'W' (EQUW)?
-    inx                                                               ; 8846: e8          .     
+    inx                                                               ; 8846: e8          .        ; two bytes
     cmp #&57 ; 'W'                                                    ; 8847: c9 57       .W       ; yes
     beq c8858                                                         ; 8849: f0 0d       ..       ; four bytes (EQUD)
     ldx #4                                                            ; 884b: a2 04       ..       ; 'D' (EQUD)?
@@ -1556,7 +1556,7 @@ l848a = sub_c847b+15
     beq c8858                                                         ; 884f: f0 07       ..       ; 'S' (EQUS)?
     cmp #&53 ; 'S'                                                    ; 8851: c9 53       .S       ; yes
     beq c886a                                                         ; 8853: f0 15       ..       ; none: Mistake (syntax error)
-    jmp c982a                                                         ; 8855: 4c 2a 98    L*.   
+    jmp c982a                                                         ; 8855: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8858 referenced 3 times by &8844, &8849, &884f
 .c8858
     txa                                                               ; 8858: 8a          .        ; Save the byte count
@@ -1578,7 +1578,7 @@ l848a = sub_c847b+15
     pha                                                               ; 886c: 48          H        ; evaluate the string expression
     jsr eval_expr                                                     ; 886d: 20 1d 9b     ..      ; not a string: Type mismatch
     bne loop_c8867                                                    ; 8870: d0 f5       ..       ; restore the OPT flag
-    pla                                                               ; 8872: 68          h     
+    pla                                                               ; 8872: 68          h        ; recover the byte count
     sta zp_opt_flag                                                   ; 8873: 85 28       .(       ; ...
     jsr sub_c8827                                                     ; 8875: 20 27 88     '.      ; sync the text offset
     ldy #&ff                                                          ; 8878: a0 ff       ..       ; flag EQUS (length from the string buffer)
@@ -1595,7 +1595,7 @@ l848a = sub_c847b+15
     adc zp_general_1                                                  ; 8886: 65 38       e8       ; ...
     sta l003a                                                         ; 8888: 85 3a       .:       ; ...
     pla                                                               ; 888a: 68          h        ; Store the inserted byte
-    sta (zp_general),y                                                ; 888b: 91 37       .7    
+    sta (zp_general),y                                                ; 888b: 91 37       .7       ; store the inserted byte
 ; &888d referenced 1 time by &8894
 .loop_c888d
     iny                                                               ; 888d: c8          .        ; Copy the rest of the line up
@@ -2098,7 +2098,7 @@ l848a = sub_c847b+15
 ;
 ; Clear the current program and its variables. NEW.
 .stmt_new
-    jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.      ; Check the statement ends
 ; ***************************************************************************************
 ; Clear program and enter the immediate loop
 ;
@@ -2169,9 +2169,9 @@ l848a = sub_c847b+15
     jmp c8af3                                                         ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
 ; &8b38 referenced 1 time by &8b30
 .c8b38
-    jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..      ; Skip spaces
     cmp #&c6                                                          ; 8b3b: c9 c6       ..       ; Token >= &C6 is a command: dispatch it
-    bcs dispatch_token                                                ; 8b3d: b0 72       .r    
+    bcs dispatch_token                                                ; 8b3d: b0 72       .r       ; command token: dispatch it
     bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~       ; Otherwise treat it as a variable assignment
 ; &8b41 referenced 1 time by &8b8f
 .loop_c8b41
@@ -2191,7 +2191,7 @@ l848a = sub_c847b+15
     jmp c984c                                                         ; 8b56: 4c 4c 98    LL.      ; check end, return from the function
 ; &8b59 referenced 2 times by &8b4a, &8b51
 .c8b59
-    brk                                                               ; 8b59: 00          .     
+    brk                                                               ; 8b59: 00          .        ; No FN error
     equb &07                                                          ; 8b5a: 07          .     
     equs "No "                                                        ; 8b5b: 4e 6f 20    No    
     equb &a4, &00                                                     ; 8b5e: a4 00       ..    
@@ -2246,10 +2246,10 @@ l848a = sub_c847b+15
     bne c8ba3                                                         ; 8b94: d0 0d       ..       ; more: next statement
 ; &8b96 referenced 7 times by &8b71, &8d80, &9212, &9350, &9453, &b7a1, &bb1c
 .c8b96
-    dec zp_text_ptr_off                                               ; 8b96: c6 0a       ..    
+    dec zp_text_ptr_off                                               ; 8b96: c6 0a       ..       ; Back up
 ; &8b98 referenced 4 times by &8d7a, &9353, &b9cc, &ba41
 .c8b98
-    jsr check_end_of_statement                                        ; 8b98: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; 8b98: 20 57 98     W.      ; check the statement ends
 ; ***************************************************************************************
 ; Statement execution loop
 ;
@@ -2344,7 +2344,7 @@ l848a = sub_c847b+15
     jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96
 .err_type_mismatch
-    brk                                                               ; 8c0e: 00          .     
+    brk                                                               ; 8c0e: 00          .        ; Type mismatch error
     equb &06                                                          ; 8c0f: 06          .     
     equs "Type mismatch"                                              ; 8c10: 54 79 70... Typ...
     equb &00                                                          ; 8c1d: 00          .     
@@ -3119,15 +3119,15 @@ l848a = sub_c847b+15
 .c9080
     jsr print_inline_string                                           ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
     equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  ...  ...  ...  print it
-    iny                                                               ; 908d: c8          .     
-    lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..    
-    sta zp_iwa_1                                                      ; 9090: 85 2b       .+    
-    iny                                                               ; 9092: c8          .     
-    lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..    
-    sta zp_iwa                                                        ; 9095: 85 2a       .*    
-    jsr print_line_number                                             ; 9097: 20 1f 99     ..   
-    jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.   
-    beq loop_c906d                                                    ; 909d: f0 ce       ..    
+    iny                                                               ; 908d: c8          .        ; This line's number
+    lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..       ; ...
+    sta zp_iwa_1                                                      ; 9090: 85 2b       .+       ; ...
+    iny                                                               ; 9092: c8          .        ; ...
+    lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..       ; ...
+    sta zp_iwa                                                        ; 9095: 85 2a       .*       ; ...
+    jsr print_line_number                                             ; 9097: 20 1f 99     ..      ; print it
+    jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.      ; newline
+    beq loop_c906d                                                    ; 909d: f0 ce       ..       ; loop
 ; ***************************************************************************************
 ; Advance the general pointer to the next program line
 ;
@@ -3210,11 +3210,11 @@ l848a = sub_c847b+15
     lda #&40 ; '@'                                                    ; 911a: a9 40       .@       ; integer type
     sta zp_var_type                                                   ; 911c: 85 27       .'       ; ...
     jsr assign_number                                                 ; 911e: 20 b4 b4     ..      ; assign the address to the variable
-    jsr sub_c8827                                                     ; 9121: 20 27 88     '.   
-    jmp c920b                                                         ; 9124: 4c 0b 92    L..   
+    jsr sub_c8827                                                     ; 9121: 20 27 88     '.      ; sync the pointer
+    jmp c920b                                                         ; 9124: 4c 0b 92    L..      ; continue
 ; &9127 referenced 8 times by &90e4, &90e6, &90f5, &9150, &9172, &9193, &91b4, &925a
 .c9127
-    brk                                                               ; 9127: 00          .     
+    brk                                                               ; 9127: 00          .        ; Bad DIM error
     equb &0a                                                          ; 9128: 0a          .     
     equs "Bad "                                                       ; 9129: 42 61 64... Bad...
     equb &de, &00                                                     ; 912d: de 00       ..    
@@ -3785,7 +3785,7 @@ l848a = sub_c847b+15
 ; Send bytes to the VDU drivers; ";" sends a 16-bit word. VDU n[,|;]...
 ; &942f referenced 1 time by &944b
 .stmt_vdu
-    jsr skip_spaces                                                   ; 942f: 20 97 8a     ..   
+    jsr skip_spaces                                                   ; 942f: 20 97 8a     ..      ; Next character
 ; &9432 referenced 1 time by &944f
 .loop_c9432
     cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:       ; ':' end of statement?
@@ -3808,8 +3808,8 @@ l848a = sub_c847b+15
     jmp c8b96                                                         ; 9453: 4c 96 8b    L..      ; next statement
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
 .sub_c9456
-    lda zp_iwa                                                        ; 9456: a5 2a       .*    
-    jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..   
+    lda zp_iwa                                                        ; 9456: a5 2a       .*       ; Send the low byte to OSWRCH
+    jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..      ; ...
 ; ***************************************************************************************
 ; Find a PROC or FN definition by name
 ;
@@ -4497,7 +4497,7 @@ l848a = sub_c847b+15
     equb &00                                                          ; 97dc: 00          .     
 ; &97dd referenced 1 time by &97e5
 .loop_c97dd
-    inc zp_text_ptr_off                                               ; 97dd: e6 0a       ..    
+    inc zp_text_ptr_off                                               ; 97dd: e6 0a       ..       ; Advance
 ; ***************************************************************************************
 ; Test for an embedded line number
 ;
@@ -4784,7 +4784,7 @@ l848a = sub_c847b+15
 .loop_c9929
     lda #0                                                            ; 9929: a9 00       ..       ; Clear this digit
     sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?       ; ...
-    sec                                                               ; 992d: 38          8     
+    sec                                                               ; 992d: 38          8        ; ...
 ; &992e referenced 1 time by &9941
 .loop_c992e
     lda zp_iwa                                                        ; 992e: a5 2a       .*       ; Subtract this power of ten from IWA
@@ -4878,7 +4878,7 @@ l848a = sub_c847b+15
     rts                                                               ; 99a6: 60          `        ; Return
 ; &99a7 referenced 2 times by &99f0, &a6bb
 .c99a7
-    brk                                                               ; 99a7: 00          .     
+    brk                                                               ; 99a7: 00          .        ; Division by zero error
     equb &12                                                          ; 99a8: 12          .     
     equs "Division by zero"                                           ; 99a9: 44 69 76... Div...
 ; &99b9 referenced 1 time by &9936
@@ -5093,22 +5093,22 @@ l848a = sub_c847b+15
     rts                                                               ; 9ae6: 60          `        ; Return
 ; &9ae7 referenced 1 time by &9a9e
 .c9ae7
-    jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..   
-    jsr eval_add_sub                                                  ; 9aea: 20 42 9c     B.   
-    tay                                                               ; 9aed: a8          .     
-    bne c9a9a                                                         ; 9aee: d0 aa       ..    
-    stx zp_general                                                    ; 9af0: 86 37       .7    
-    ldx zp_strbuf_len                                                 ; 9af2: a6 36       .6    
-    ldy #0                                                            ; 9af4: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 9af6: b1 04       ..    
-    sta zp_fileblk                                                    ; 9af8: 85 39       .9    
-    cmp zp_strbuf_len                                                 ; 9afa: c5 36       .6    
-    bcs c9aff                                                         ; 9afc: b0 01       ..    
-    tax                                                               ; 9afe: aa          .     
+    jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..      ; String compare: stack the left
+    jsr eval_add_sub                                                  ; 9aea: 20 42 9c     B.      ; evaluate the right operand
+    tay                                                               ; 9aed: a8          .        ; type
+    bne c9a9a                                                         ; 9aee: d0 aa       ..       ; number: Type mismatch
+    stx zp_general                                                    ; 9af0: 86 37       .7       ; Save the current pointer
+    ldx zp_strbuf_len                                                 ; 9af2: a6 36       .6       ; current length
+    ldy #0                                                            ; 9af4: a0 00       ..       ; from 0
+    lda (zp_stack_ptr),y                                              ; 9af6: b1 04       ..       ; stacked length
+    sta zp_fileblk                                                    ; 9af8: 85 39       .9       ; save it
+    cmp zp_strbuf_len                                                 ; 9afa: c5 36       .6       ; compare lengths
+    bcs c9aff                                                         ; 9afc: b0 01       ..       ; use the shorter
+    tax                                                               ; 9afe: aa          .        ; ...
 ; &9aff referenced 1 time by &9afc
 .c9aff
-    stx l003a                                                         ; 9aff: 86 3a       .:    
-    ldy #0                                                            ; 9b01: a0 00       ..    
+    stx l003a                                                         ; 9aff: 86 3a       .:       ; shorter length
+    ldy #0                                                            ; 9b01: a0 00       ..       ; compare from 0
 ; &9b03 referenced 1 time by &9b0d
 .loop_c9b03
     cpy l003a                                                         ; 9b03: c4 3a       .:       ; Reached the shorter length?
@@ -5310,7 +5310,7 @@ l848a = sub_c847b+15
     bcc c9bb5                                                         ; 9c01: 90 b2       ..       ; less: FALSE
 ; &9c03 referenced 2 times by &9c27, &b0fb
 .c9c03
-    brk                                                               ; 9c03: 00          .     
+    brk                                                               ; 9c03: 00          .        ; String too long error
     equb &13                                                          ; 9c04: 13          .     
     equs "String too long"                                            ; 9c05: 53 74 72... Str...
     equb &00                                                          ; 9c14: 00          .     
@@ -5820,18 +5820,18 @@ l848a = sub_c847b+15
     rts                                                               ; 9ec7: 60          `        ; Return
 ; &9ec8 referenced 1 time by &9f12
 .loop_c9ec8
-    bpl c9ed1                                                         ; 9ec8: 10 07       ..    
-    lda #&2d ; '-'                                                    ; 9eca: a9 2d       .-    
-    sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..    
-    jsr output_char                                                   ; 9ece: 20 66 a0     f.   
+    bpl c9ed1                                                         ; 9ec8: 10 07       ..       ; positive?
+    lda #&2d ; '-'                                                    ; 9eca: a9 2d       .-       ; negative: output '-'
+    sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..       ; ...
+    jsr output_char                                                   ; 9ece: 20 66 a0     f.      ; ...
 ; &9ed1 referenced 3 times by &9ec8, &9edc, &9f36
 .c9ed1
-    lda zp_fwa_exp                                                    ; 9ed1: a5 30       .0    
-    cmp #&81                                                          ; 9ed3: c9 81       ..    
-    bcs c9f25                                                         ; 9ed5: b0 4e       .N    
-    jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..   
-    dec zp_dec_exp                                                    ; 9eda: c6 49       .I    
-    jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..   
+    lda zp_fwa_exp                                                    ; 9ed1: a5 30       .0       ; Exponent
+    cmp #&81                                                          ; 9ed3: c9 81       ..       ; > = 1?
+    bcs c9f25                                                         ; 9ed5: b0 4e       .N       ; yes: output the integer part
+    jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..      ; < 1: multiply by 10
+    dec zp_dec_exp                                                    ; 9eda: c6 49       .I       ; decrement the decimal exponent
+    jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..      ; loop
 ; ***************************************************************************************
 ; Convert the current value to an ASCII number
 ;
@@ -6910,7 +6910,7 @@ l848a = sub_c847b+15
     sta zp_fwa_m1                                                     ; a483: 85 31       .1       ; ...
 ; &a485 referenced 1 time by &a46a
 .return_24
-    rts                                                               ; a485: 60          `     
+    rts                                                               ; a485: 60          `        ; Return
 ; ***************************************************************************************
 ; Split FWA into integer part (&4A) and fraction (FWA)
 ;
@@ -8014,7 +8014,7 @@ l848a = sub_c847b+15
     jmp cab25                                                         ; ab2f: 4c 25 ab    L%.      ; loop
 ; &ab32 referenced 1 time by &ab26
 .return_29
-    rts                                                               ; ab32: 60          `     
+    rts                                                               ; ab32: 60          `        ; Return
 ; ***************************************************************************************
 ; ADVAL
 ;
@@ -8050,7 +8050,7 @@ l848a = sub_c847b+15
     jsr osword                                                        ; ab63: 20 f1 ff     ..      ; ...  Read pixel value  ...
     lda zp_fwa_sign                                                   ; ab66: a5 2e       ..       ; Result sign (off-screen = -1)
     bmi cab9d                                                         ; ab68: 30 33       03       ; off-screen?
-    jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..   
+    jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..      ; return as an integer
 ; ***************************************************************************************
 ; POS
 ;
@@ -8215,8 +8215,8 @@ l848a = sub_c847b+15
 ;
 ; Number parsed from the start of a string. VAL string.
 .fn_val
-    jsr eval_factor                                                   ; ac2f: 20 ec ad     ..   
-    bne cac9b                                                         ; ac32: d0 67       .g    
+    jsr eval_factor                                                   ; ac2f: 20 ec ad     ..      ; Evaluate the argument
+    bne cac9b                                                         ; ac32: d0 67       .g       ; not a string: error
 ; ***************************************************************************************
 ; Convert an ASCII number to a value
 ;
@@ -8298,7 +8298,7 @@ l848a = sub_c847b+15
     rts                                                               ; ac9a: 60          `        ; Return
 ; &ac9b referenced 5 times by &ac32, &ac7b, &aca1, &ace5, &acf3
 .cac9b
-    jmp err_type_mismatch                                             ; ac9b: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; ac9b: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; ASC
 ;
@@ -8455,7 +8455,7 @@ l848a = sub_c847b+15
     bne cad3c                                                         ; ad65: d0 d5       ..       ; retry
 ; &ad67 referenced 2 times by &ad6d, &ad8f
 .cad67
-    jmp err_type_mismatch                                             ; ad67: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; ad67: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; ABS
 ;
@@ -8643,7 +8643,7 @@ l848a = sub_c847b+15
 .cae2a
     jsr parse_number                                                  ; ae2a: 20 7b a0     {.      ; Parse the decimal number
     bcc cae43                                                         ; ae2d: 90 14       ..       ; ok  Return
-    rts                                                               ; ae2f: 60          `     
+    rts                                                               ; ae2f: 60          `        ; Return
 ; &ae30 referenced 1 time by &ae25
 .cae30
     lda zp_opt_flag                                                   ; ae30: a5 28       .(       ; Undefined: OPT flag
@@ -8655,7 +8655,7 @@ l848a = sub_c847b+15
 .sub_cae3a
     lda resint_p                                                      ; ae3a: ad 40 04    .@.      ; Use P% as the value
     ldy l0441                                                         ; ae3d: ac 41 04    .A.      ; ...  return it as an integer
-    jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..   
+    jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..      ; return as a 16-bit integer
 ; &ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7
 .cae43
     brk                                                               ; ae43: 00          .        ; No such variable error
@@ -9187,7 +9187,7 @@ l848a = sub_c847b+15
     sta zp_general                                                    ; b0b1: 85 37       .7       ; ...
     jsr c9ef9                                                         ; b0b3: 20 f9 9e     ..      ; string result
     lda #0                                                            ; b0b6: a9 00       ..       ; Return
-    rts                                                               ; b0b8: 60          `     
+    rts                                                               ; b0b8: 60          `        ; Return
 ; &b0b9 referenced 1 time by &b0af
 .cb0b9
     jsr number_to_ascii                                               ; b0b9: 20 df 9e     ..      ; Formatted conversion (@%)
@@ -9892,10 +9892,10 @@ l848a = sub_c847b+15
     jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..      ; next statement
 ; &b4ae referenced 2 times by &b4bf, &b4e2
 .cb4ae
-    jmp err_type_mismatch                                             ; b4ae: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; b4ae: 4c 0e 8c    L..      ; Type mismatch error
 ; &b4b1 referenced 2 times by &b7d1, &bb2c
 .sub_cb4b1
-    jsr eval_or_eor                                                   ; b4b1: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; b4b1: 20 29 9b     ).      ; Evaluate the value
 ; ***************************************************************************************
 ; Store a numeric value into a variable
 ;
@@ -9942,36 +9942,36 @@ l848a = sub_c847b+15
     sta (zp_general),y                                                ; b4dd: 91 37       .7       ; ...
 ; &b4df referenced 1 time by &b4ce
 .return_34
-    rts                                                               ; b4df: 60          `     
+    rts                                                               ; b4df: 60          `        ; Return
 ; &b4e0 referenced 1 time by &b4bb
 .cb4e0
-    lda zp_var_type                                                   ; b4e0: a5 27       .'    
-    beq cb4ae                                                         ; b4e2: f0 ca       ..    
-    bmi cb4e9                                                         ; b4e4: 30 03       0.    
-    jsr int_to_fwa                                                    ; b4e6: 20 be a2     ..   
+    lda zp_var_type                                                   ; b4e0: a5 27       .'       ; Value type
+    beq cb4ae                                                         ; b4e2: f0 ca       ..       ; string: Type mismatch
+    bmi cb4e9                                                         ; b4e4: 30 03       0.       ; real: store it
+    jsr int_to_fwa                                                    ; b4e6: 20 be a2     ..      ; integer: convert to real
 ; &b4e9 referenced 2 times by &b4e4, &b77f
 .cb4e9
-    ldy #0                                                            ; b4e9: a0 00       ..    
-    lda zp_fwa_exp                                                    ; b4eb: a5 30       .0    
-    sta (zp_general),y                                                ; b4ed: 91 37       .7    
-    iny                                                               ; b4ef: c8          .     
-    lda zp_fwa_sign                                                   ; b4f0: a5 2e       ..    
-    and #&80                                                          ; b4f2: 29 80       ).    
-    sta zp_fwa_sign                                                   ; b4f4: 85 2e       ..    
-    lda zp_fwa_m1                                                     ; b4f6: a5 31       .1    
-    and #&7f                                                          ; b4f8: 29 7f       ).    
-    ora zp_fwa_sign                                                   ; b4fa: 05 2e       ..    
-    sta (zp_general),y                                                ; b4fc: 91 37       .7    
-    iny                                                               ; b4fe: c8          .     
-    lda zp_fwa_m2                                                     ; b4ff: a5 32       .2    
-    sta (zp_general),y                                                ; b501: 91 37       .7    
-    iny                                                               ; b503: c8          .     
-    lda zp_fwa_m3                                                     ; b504: a5 33       .3    
-    sta (zp_general),y                                                ; b506: 91 37       .7    
-    iny                                                               ; b508: c8          .     
-    lda zp_fwa_m4                                                     ; b509: a5 34       .4    
-    sta (zp_general),y                                                ; b50b: 91 37       .7    
-    rts                                                               ; b50d: 60          `     
+    ldy #0                                                            ; b4e9: a0 00       ..       ; Store the 5-byte real: exponent
+    lda zp_fwa_exp                                                    ; b4eb: a5 30       .0       ; ...
+    sta (zp_general),y                                                ; b4ed: 91 37       .7       ; ...
+    iny                                                               ; b4ef: c8          .        ; ...
+    lda zp_fwa_sign                                                   ; b4f0: a5 2e       ..       ; Pack the sign into the mantissa
+    and #&80                                                          ; b4f2: 29 80       ).       ; ...
+    sta zp_fwa_sign                                                   ; b4f4: 85 2e       ..       ; ...
+    lda zp_fwa_m1                                                     ; b4f6: a5 31       .1       ; ...
+    and #&7f                                                          ; b4f8: 29 7f       ).       ; ...
+    ora zp_fwa_sign                                                   ; b4fa: 05 2e       ..       ; ...
+    sta (zp_general),y                                                ; b4fc: 91 37       .7       ; ...
+    iny                                                               ; b4fe: c8          .        ; mantissa 2
+    lda zp_fwa_m2                                                     ; b4ff: a5 32       .2       ; ...
+    sta (zp_general),y                                                ; b501: 91 37       .7       ; ...
+    iny                                                               ; b503: c8          .        ; mantissa 3
+    lda zp_fwa_m3                                                     ; b504: a5 33       .3       ; ...
+    sta (zp_general),y                                                ; b506: 91 37       .7       ; ...
+    iny                                                               ; b508: c8          .        ; mantissa 4
+    lda zp_fwa_m4                                                     ; b509: a5 34       .4       ; ...
+    sta (zp_general),y                                                ; b50b: 91 37       .7       ; ...
+    rts                                                               ; b50d: 60          `        ; Return
 ; ***************************************************************************************
 ; De-tokenise and print a character or token
 ;
@@ -10258,7 +10258,7 @@ l848a = sub_c847b+15
     bne cb639                                                         ; b68c: d0 ab       ..       ; loop
 ; &b68e referenced 2 times by &b69c, &b6a7
 .cb68e
-    brk                                                               ; b68e: 00          .     
+    brk                                                               ; b68e: 00          .        ; No FN error
     equs " No "                                                       ; b68f: 20 4e 6f...  No...
     equb &e3, &00                                                     ; b693: e3 00       ..    
 ; ***************************************************************************************
@@ -10730,19 +10730,19 @@ l848a = sub_c847b+15
     rts                                                               ; b9b4: 60          `        ; Return
 ; &b9b5 referenced 1 time by &b9b2
 .err_no_such_line
-    brk                                                               ; b9b5: 00          .     
+    brk                                                               ; b9b5: 00          .        ; No such line error
     equs ")No such line"                                              ; b9b6: 29 4e 6f... )No...
     equb &00                                                          ; b9c3: 00          .     
 ; &b9c4 referenced 2 times by &ba00, &ba1b
 .cb9c4
-    jmp err_type_mismatch                                             ; b9c4: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; b9c4: 4c 0e 8c    L..      ; Type mismatch error
 ; &b9c7 referenced 1 time by &b9e7
 .loop_cb9c7
-    jmp c982a                                                         ; b9c7: 4c 2a 98    L*.   
+    jmp c982a                                                         ; b9c7: 4c 2a 98    L*.      ; Mistake error
 ; &b9ca referenced 1 time by &b9df
 .loop_cb9ca
-    sty zp_text_ptr_off                                               ; b9ca: 84 0a       ..    
-    jmp c8b98                                                         ; b9cc: 4c 98 8b    L..   
+    sty zp_text_ptr_off                                               ; b9ca: 84 0a       ..       ; Sync the pointer
+    jmp c8b98                                                         ; b9cc: 4c 98 8b    L..      ; check the statement ends
 ; &b9cf referenced 1 time by &ba49
 .loop_cb9cf
     dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..       ; Back up over "#"
@@ -11298,7 +11298,7 @@ l848a = sub_c847b+15
     bne loop_cbd07                                                    ; bd0e: d0 f7       ..       ; loop
 ; &bd10 referenced 1 time by &bc9c
 .return_38
-    rts                                                               ; bd10: 60          `     
+    rts                                                               ; bd10: 60          `        ; Return
 ; ***************************************************************************************
 ; RUN
 ;
