@@ -89933,6 +89933,7 @@
         208,
         9
       ],
+      "comment_inline": "a variable named after NEXT?",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb6a3",
@@ -89945,6 +89946,7 @@
         166,
         38
       ],
+      "comment_inline": "innermost FOR frame",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_for_level",
@@ -89957,6 +89959,7 @@
         240,
         240
       ],
+      "comment_inline": "no FOR active: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb68e",
@@ -89969,6 +89972,7 @@
         176,
         55
       ],
+      "comment_inline": "no variable: use the innermost loop",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb6d7",
@@ -89985,6 +89989,7 @@
       "labels": [
         "loop_cb6a0"
       ],
+      "comment_inline": "not a variable: error",
       "xref_summaries": [
         "&b6a0 referenced 1 time by &b6a3"
       ],
@@ -90006,6 +90011,7 @@
       "labels": [
         "cb6a3"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b6a3 referenced 1 time by &b698"
       ],
@@ -90024,6 +90030,7 @@
         166,
         38
       ],
+      "comment_inline": "Search the FOR stack for the named variable:",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_for_level",
@@ -90036,6 +90043,7 @@
         240,
         229
       ],
+      "comment_inline": "not found: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb68e",
@@ -90071,6 +90079,7 @@
         241,
         4
       ],
+      "comment_inline": "match the variable address low?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l04f1,x",
@@ -90083,6 +90092,7 @@
         208,
         14
       ],
+      "comment_inline": "no: next frame",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb6be",
@@ -90095,6 +90105,7 @@
         165,
         43
       ],
+      "comment_inline": "address high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -90108,6 +90119,7 @@
         242,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l04f2,x",
@@ -90120,6 +90132,7 @@
         208,
         7
       ],
+      "comment_inline": "no: next frame",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb6be",
@@ -90132,6 +90145,7 @@
         165,
         44
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -90145,6 +90159,7 @@
         243,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l04f3,x",
@@ -90157,6 +90172,7 @@
         240,
         25
       ],
+      "comment_inline": "match: this loop",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb6d7",
@@ -90187,6 +90203,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "step out one frame (15 bytes)",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -90196,6 +90213,7 @@
         233,
         15
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&0f"
@@ -90205,6 +90223,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -90214,6 +90233,7 @@
         134,
         38
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_for_level",
@@ -90226,6 +90246,7 @@
         208,
         226
       ],
+      "comment_inline": "keep searching",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb6a9",
@@ -90237,6 +90258,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "No FOR error block",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -90302,6 +90324,7 @@
         133,
         42
       ],
+      "comment_inline": "control variable address: low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -90315,6 +90338,7 @@
         242,
         4
       ],
+      "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l04f2,x",
@@ -90327,6 +90351,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -90340,6 +90365,7 @@
         243,
         4
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l04f3,x",
@@ -90352,6 +90378,7 @@
         192,
         5
       ],
+      "comment_inline": "a real (float) loop?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#5"
@@ -90362,6 +90389,7 @@
         240,
         126
       ],
+      "comment_inline": "yes: float NEXT",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb766",
@@ -90374,6 +90402,7 @@
         160,
         0
       ],
+      "comment_inline": "Integer: add STEP to the variable:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -90384,6 +90413,7 @@
         177,
         42
       ],
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -90397,6 +90427,7 @@
         244,
         4
       ],
+      "comment_inline": "+ step byte 0",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l04f4,x",
@@ -90409,6 +90440,7 @@
         145,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -90421,6 +90453,7 @@
         133,
         55
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -90432,6 +90465,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -90441,6 +90475,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -90454,6 +90489,7 @@
         245,
         4
       ],
+      "comment_inline": "+ step byte 1",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l04f5,x",
@@ -90466,6 +90502,7 @@
         145,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -90478,6 +90515,7 @@
         133,
         56
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -90489,6 +90527,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -90498,6 +90537,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -90511,6 +90551,7 @@
         246,
         4
       ],
+      "comment_inline": "+ step byte 2",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l04f6,x",
@@ -90523,6 +90564,7 @@
         145,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -90535,6 +90577,7 @@
         133,
         57
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -90546,6 +90589,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -90555,6 +90599,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -90568,6 +90613,7 @@
         247,
         4
       ],
+      "comment_inline": "+ step byte 3",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l04f7,x",
@@ -90580,6 +90626,7 @@
         145,
         42
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -90591,6 +90638,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -90600,6 +90648,7 @@
         165,
         55
       ],
+      "comment_inline": "Compare the new value with LIMIT:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -90611,6 +90660,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -90621,6 +90671,7 @@
         249,
         4
       ],
+      "comment_inline": "value - limit: byte 0",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04f9,x",
@@ -90633,6 +90684,7 @@
         133,
         55
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -90645,6 +90697,7 @@
         165,
         56
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -90658,6 +90711,7 @@
         250,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fa,x",
@@ -90670,6 +90724,7 @@
         133,
         56
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -90682,6 +90737,7 @@
         165,
         57
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -90695,6 +90751,7 @@
         251,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fb,x",
@@ -90707,6 +90764,7 @@
         133,
         57
       ],
+      "comment_inline": "(keep)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -90718,6 +90776,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -90728,6 +90787,7 @@
         252,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fc,x",
@@ -90740,6 +90800,7 @@
         5,
         55
       ],
+      "comment_inline": "exactly equal to the limit?",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_general",
@@ -90752,6 +90813,7 @@
         5,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_general_1",
@@ -90764,6 +90826,7 @@
         5,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fileblk",
@@ -90776,6 +90839,7 @@
         240,
         15
       ],
+      "comment_inline": "at the limit: last iteration, continue",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb741",
@@ -90787,6 +90851,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Past the limit? (sign of step vs difference)",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -90797,6 +90862,7 @@
         247,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l04f7,x",
@@ -90810,6 +90876,7 @@
         252,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l04fc,x",
@@ -90822,6 +90889,7 @@
         16,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cb73f",
@@ -90834,6 +90902,7 @@
         176,
         4
       ],
+      "comment_inline": "within range: continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb741",
@@ -90846,6 +90915,7 @@
         144,
         18
       ],
+      "comment_inline": "past: exit the loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb751",
@@ -90861,6 +90931,7 @@
       "labels": [
         "cb73f"
       ],
+      "comment_inline": "past: exit the loop",
       "xref_summaries": [
         "&b73f referenced 1 time by &b739"
       ],
@@ -90883,6 +90954,7 @@
       "labels": [
         "cb741"
       ],
+      "comment_inline": "Continue: reload the loop-back position:",
       "xref_summaries": [
         "&b741 referenced 5 times by &b730, &b73b, &b792, &b799, &b79d"
       ],
@@ -90906,6 +90978,7 @@
         255,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l04ff,x",
@@ -90918,6 +90991,7 @@
         132,
         11
       ],
+      "comment_inline": "(text pointer)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr",
@@ -90930,6 +91004,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -90943,6 +91018,7 @@
         119,
         152
       ],
+      "comment_inline": "restore the offset",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9877",
@@ -90956,6 +91032,7 @@
         163,
         139
       ],
+      "comment_inline": "jump back to the loop body",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ba3",
@@ -90971,6 +91048,7 @@
       "labels": [
         "cb751"
       ],
+      "comment_inline": "Exit: pop the FOR frame:",
       "xref_summaries": [
         "&b751 referenced 4 times by &b73d, &b73f, &b79b, &b79f"
       ],
@@ -90991,6 +91069,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -91000,6 +91079,7 @@
         233,
         15
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&0f"
@@ -91010,6 +91090,7 @@
         133,
         38
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_for_level",
@@ -91022,6 +91103,7 @@
         164,
         27
       ],
+      "comment_inline": "continue after NEXT:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -91034,6 +91116,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -91047,6 +91130,7 @@
         151,
         138
       ],
+      "comment_inline": "another NEXT variable (comma)?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -91059,6 +91143,7 @@
         201,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -91069,6 +91154,7 @@
         208,
         62
       ],
+      "comment_inline": "no: end of statement",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb7a1",
@@ -91082,6 +91168,7 @@
         149,
         182
       ],
+      "comment_inline": "yes: handle the next variable",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "stmt_next",
@@ -91098,6 +91185,7 @@
       "labels": [
         "cb766"
       ],
+      "comment_inline": "Float loop: load the control variable",
       "xref_summaries": [
         "&b766 referenced 1 time by &b6e6"
       ],
@@ -91116,6 +91204,7 @@
         165,
         38
       ],
+      "comment_inline": "point at the STEP in the frame:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_for_level",
@@ -91127,6 +91216,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -91136,6 +91226,7 @@
         105,
         244
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&f4"
@@ -91146,6 +91237,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -91158,6 +91250,7 @@
         169,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -91168,6 +91261,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -91181,6 +91275,7 @@
         0,
         165
       ],
+      "comment_inline": "add STEP to the variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -91193,6 +91288,7 @@
         165,
         42
       ],
+      "comment_inline": "store it back:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -91205,6 +91301,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -91217,6 +91314,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -91229,6 +91327,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -91242,6 +91341,7 @@
         233,
         180
       ],
+      "comment_inline": "store the updated variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb4e9",
@@ -91254,6 +91354,7 @@
         165,
         38
       ],
+      "comment_inline": "point at the LIMIT:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_for_level",
@@ -91266,6 +91367,7 @@
         133,
         39
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -91277,6 +91379,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -91286,6 +91389,7 @@
         105,
         249
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&f9"
@@ -91296,6 +91400,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -91308,6 +91413,7 @@
         169,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -91318,6 +91424,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -91331,6 +91438,7 @@
         95,
         154
       ],
+      "comment_inline": "compare the variable with LIMIT",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9a5f",
@@ -91343,6 +91451,7 @@
         240,
         173
       ],
+      "comment_inline": "at the limit: continue",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb741",
@@ -91356,6 +91465,7 @@
         245,
         4
       ],
+      "comment_inline": "sign of STEP...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l04f5,x",
@@ -91368,6 +91478,7 @@
         48,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb79d",
@@ -91380,6 +91491,7 @@
         176,
         166
       ],
+      "comment_inline": "within range: continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb741",
@@ -91392,6 +91504,7 @@
         144,
         180
       ],
+      "comment_inline": "past: exit",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb751",
@@ -91407,6 +91520,7 @@
       "labels": [
         "cb79d"
       ],
+      "comment_inline": "within range: continue",
       "xref_summaries": [
         "&b79d referenced 1 time by &b797"
       ],
@@ -91425,6 +91539,7 @@
         176,
         176
       ],
+      "comment_inline": "past: exit",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb751",
@@ -91441,6 +91556,7 @@
       "labels": [
         "cb7a1"
       ],
+      "comment_inline": "End of statement",
       "xref_summaries": [
         "&b7a1 referenced 1 time by &b761"
       ],
@@ -91461,6 +91577,7 @@
       "labels": [
         "cb7a4"
       ],
+      "comment_inline": "No FOR error block",
       "xref_summaries": [
         "&b7a4 referenced 2 times by &b7c7, &b7c9"
       ],
@@ -91507,6 +91624,7 @@
       "labels": [
         "loop_cb7b0"
       ],
+      "comment_inline": "error block",
       "xref_summaries": [
         "&b7b0 referenced 1 time by &b7d8"
       ],
@@ -91553,6 +91671,7 @@
       "labels": [
         "loop_cb7bd"
       ],
+      "comment_inline": "error block",
       "xref_summaries": [
         "&b7bd referenced 1 time by &b7ef"
       ],

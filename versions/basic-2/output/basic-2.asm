@@ -10071,162 +10071,162 @@ l848a = sub_c847b+15
 ; &b695 referenced 1 time by &b763
 .stmt_next
     jsr sub_c95c9                                                     ; b695: 20 c9 95     ..      ; Parse the optional control variable
-    bne cb6a3                                                         ; b698: d0 09       ..    
-    ldx zp_for_level                                                  ; b69a: a6 26       .&    
-    beq cb68e                                                         ; b69c: f0 f0       ..    
-    bcs cb6d7                                                         ; b69e: b0 37       .7    
+    bne cb6a3                                                         ; b698: d0 09       ..       ; a variable named after NEXT?
+    ldx zp_for_level                                                  ; b69a: a6 26       .&       ; innermost FOR frame
+    beq cb68e                                                         ; b69c: f0 f0       ..       ; no FOR active: error
+    bcs cb6d7                                                         ; b69e: b0 37       .7       ; no variable: use the innermost loop
 ; &b6a0 referenced 1 time by &b6a3
 .loop_cb6a0
-    jmp c982a                                                         ; b6a0: 4c 2a 98    L*.   
+    jmp c982a                                                         ; b6a0: 4c 2a 98    L*.      ; not a variable: error
 ; &b6a3 referenced 1 time by &b698
 .cb6a3
-    bcs loop_cb6a0                                                    ; b6a3: b0 fb       ..    
-    ldx zp_for_level                                                  ; b6a5: a6 26       .&    
-    beq cb68e                                                         ; b6a7: f0 e5       ..    
+    bcs loop_cb6a0                                                    ; b6a3: b0 fb       ..       ; ...
+    ldx zp_for_level                                                  ; b6a5: a6 26       .&       ; Search the FOR stack for the named variable:
+    beq cb68e                                                         ; b6a7: f0 e5       ..       ; not found: error
 ; &b6a9 referenced 1 time by &b6c5
 .loop_cb6a9
     lda zp_iwa                                                        ; b6a9: a5 2a       .*       ; Find the matching FOR frame on the stack
-    cmp l04f1,x                                                       ; b6ab: dd f1 04    ...   
-    bne cb6be                                                         ; b6ae: d0 0e       ..    
-    lda zp_iwa_1                                                      ; b6b0: a5 2b       .+    
-    cmp l04f2,x                                                       ; b6b2: dd f2 04    ...   
-    bne cb6be                                                         ; b6b5: d0 07       ..    
-    lda zp_iwa_2                                                      ; b6b7: a5 2c       .,    
-    cmp l04f3,x                                                       ; b6b9: dd f3 04    ...   
-    beq cb6d7                                                         ; b6bc: f0 19       ..    
+    cmp l04f1,x                                                       ; b6ab: dd f1 04    ...      ; match the variable address low?
+    bne cb6be                                                         ; b6ae: d0 0e       ..       ; no: next frame
+    lda zp_iwa_1                                                      ; b6b0: a5 2b       .+       ; address high
+    cmp l04f2,x                                                       ; b6b2: dd f2 04    ...      ; ...
+    bne cb6be                                                         ; b6b5: d0 07       ..       ; no: next frame
+    lda zp_iwa_2                                                      ; b6b7: a5 2c       .,       ; type
+    cmp l04f3,x                                                       ; b6b9: dd f3 04    ...      ; ...
+    beq cb6d7                                                         ; b6bc: f0 19       ..       ; match: this loop
 ; &b6be referenced 2 times by &b6ae, &b6b5
 .cb6be
     txa                                                               ; b6be: 8a          .        ; Not this loop: discard the frame and look outward
-    sec                                                               ; b6bf: 38          8     
-    sbc #&0f                                                          ; b6c0: e9 0f       ..    
-    tax                                                               ; b6c2: aa          .     
-    stx zp_for_level                                                  ; b6c3: 86 26       .&    
-    bne loop_cb6a9                                                    ; b6c5: d0 e2       ..    
-    brk                                                               ; b6c7: 00          .     
+    sec                                                               ; b6bf: 38          8        ; step out one frame (15 bytes)
+    sbc #&0f                                                          ; b6c0: e9 0f       ..       ; ...
+    tax                                                               ; b6c2: aa          .        ; ...
+    stx zp_for_level                                                  ; b6c3: 86 26       .&       ; ...
+    bne loop_cb6a9                                                    ; b6c5: d0 e2       ..       ; keep searching
+    brk                                                               ; b6c7: 00          .        ; No FOR error block
     equs "!Can't Match "                                              ; b6c8: 21 43 61... !Ca...
     equb &e3, &00                                                     ; b6d5: e3 00       ..    
 ; &b6d7 referenced 2 times by &b69e, &b6bc
 .cb6d7
     lda l04f1,x                                                       ; b6d7: bd f1 04    ...      ; Found: reload the control variable to update it
-    sta zp_iwa                                                        ; b6da: 85 2a       .*    
-    lda l04f2,x                                                       ; b6dc: bd f2 04    ...   
-    sta zp_iwa_1                                                      ; b6df: 85 2b       .+    
-    ldy l04f3,x                                                       ; b6e1: bc f3 04    ...   
-    cpy #5                                                            ; b6e4: c0 05       ..    
-    beq cb766                                                         ; b6e6: f0 7e       .~    
-    ldy #0                                                            ; b6e8: a0 00       ..    
-    lda (zp_iwa),y                                                    ; b6ea: b1 2a       .*    
-    adc l04f4,x                                                       ; b6ec: 7d f4 04    }..   
-    sta (zp_iwa),y                                                    ; b6ef: 91 2a       .*    
-    sta zp_general                                                    ; b6f1: 85 37       .7    
-    iny                                                               ; b6f3: c8          .     
-    lda (zp_iwa),y                                                    ; b6f4: b1 2a       .*    
-    adc l04f5,x                                                       ; b6f6: 7d f5 04    }..   
-    sta (zp_iwa),y                                                    ; b6f9: 91 2a       .*    
-    sta zp_general_1                                                  ; b6fb: 85 38       .8    
-    iny                                                               ; b6fd: c8          .     
-    lda (zp_iwa),y                                                    ; b6fe: b1 2a       .*    
-    adc l04f6,x                                                       ; b700: 7d f6 04    }..   
-    sta (zp_iwa),y                                                    ; b703: 91 2a       .*    
-    sta zp_fileblk                                                    ; b705: 85 39       .9    
-    iny                                                               ; b707: c8          .     
-    lda (zp_iwa),y                                                    ; b708: b1 2a       .*    
-    adc l04f7,x                                                       ; b70a: 7d f7 04    }..   
-    sta (zp_iwa),y                                                    ; b70d: 91 2a       .*    
-    tay                                                               ; b70f: a8          .     
-    lda zp_general                                                    ; b710: a5 37       .7    
-    sec                                                               ; b712: 38          8     
-    sbc l04f9,x                                                       ; b713: fd f9 04    ...   
-    sta zp_general                                                    ; b716: 85 37       .7    
-    lda zp_general_1                                                  ; b718: a5 38       .8    
-    sbc l04fa,x                                                       ; b71a: fd fa 04    ...   
-    sta zp_general_1                                                  ; b71d: 85 38       .8    
-    lda zp_fileblk                                                    ; b71f: a5 39       .9    
-    sbc l04fb,x                                                       ; b721: fd fb 04    ...   
-    sta zp_fileblk                                                    ; b724: 85 39       .9    
-    tya                                                               ; b726: 98          .     
-    sbc l04fc,x                                                       ; b727: fd fc 04    ...   
-    ora zp_general                                                    ; b72a: 05 37       .7    
-    ora zp_general_1                                                  ; b72c: 05 38       .8    
-    ora zp_fileblk                                                    ; b72e: 05 39       .9    
-    beq cb741                                                         ; b730: f0 0f       ..    
-    tya                                                               ; b732: 98          .     
-    eor l04f7,x                                                       ; b733: 5d f7 04    ]..   
-    eor l04fc,x                                                       ; b736: 5d fc 04    ]..   
-    bpl cb73f                                                         ; b739: 10 04       ..    
-    bcs cb741                                                         ; b73b: b0 04       ..    
-    bcc cb751                                                         ; b73d: 90 12       ..    
+    sta zp_iwa                                                        ; b6da: 85 2a       .*       ; control variable address: low
+    lda l04f2,x                                                       ; b6dc: bd f2 04    ...      ; high
+    sta zp_iwa_1                                                      ; b6df: 85 2b       .+       ; ...
+    ldy l04f3,x                                                       ; b6e1: bc f3 04    ...      ; type
+    cpy #5                                                            ; b6e4: c0 05       ..       ; a real (float) loop?
+    beq cb766                                                         ; b6e6: f0 7e       .~       ; yes: float NEXT
+    ldy #0                                                            ; b6e8: a0 00       ..       ; Integer: add STEP to the variable:
+    lda (zp_iwa),y                                                    ; b6ea: b1 2a       .*       ; byte 0
+    adc l04f4,x                                                       ; b6ec: 7d f4 04    }..      ; - step byte 0
+    sta (zp_iwa),y                                                    ; b6ef: 91 2a       .*       ; (store)
+    sta zp_general                                                    ; b6f1: 85 37       .7       ; (keep)
+    iny                                                               ; b6f3: c8          .        ; byte 1
+    lda (zp_iwa),y                                                    ; b6f4: b1 2a       .*       ; ...
+    adc l04f5,x                                                       ; b6f6: 7d f5 04    }..      ; - step byte 1
+    sta (zp_iwa),y                                                    ; b6f9: 91 2a       .*       ; (store)
+    sta zp_general_1                                                  ; b6fb: 85 38       .8       ; (keep)
+    iny                                                               ; b6fd: c8          .        ; byte 2
+    lda (zp_iwa),y                                                    ; b6fe: b1 2a       .*       ; ...
+    adc l04f6,x                                                       ; b700: 7d f6 04    }..      ; - step byte 2
+    sta (zp_iwa),y                                                    ; b703: 91 2a       .*       ; (store)
+    sta zp_fileblk                                                    ; b705: 85 39       .9       ; (keep)
+    iny                                                               ; b707: c8          .        ; byte 3
+    lda (zp_iwa),y                                                    ; b708: b1 2a       .*       ; ...
+    adc l04f7,x                                                       ; b70a: 7d f7 04    }..      ; - step byte 3
+    sta (zp_iwa),y                                                    ; b70d: 91 2a       .*       ; (store)
+    tay                                                               ; b70f: a8          .        ; (keep)
+    lda zp_general                                                    ; b710: a5 37       .7       ; Compare the new value with LIMIT:
+    sec                                                               ; b712: 38          8        ; ...
+    sbc l04f9,x                                                       ; b713: fd f9 04    ...      ; value - limit: byte 0
+    sta zp_general                                                    ; b716: 85 37       .7       ; (keep)
+    lda zp_general_1                                                  ; b718: a5 38       .8       ; byte 1
+    sbc l04fa,x                                                       ; b71a: fd fa 04    ...      ; ...
+    sta zp_general_1                                                  ; b71d: 85 38       .8       ; (keep)
+    lda zp_fileblk                                                    ; b71f: a5 39       .9       ; byte 2
+    sbc l04fb,x                                                       ; b721: fd fb 04    ...      ; ...
+    sta zp_fileblk                                                    ; b724: 85 39       .9       ; (keep)
+    tya                                                               ; b726: 98          .        ; byte 3
+    sbc l04fc,x                                                       ; b727: fd fc 04    ...      ; ...
+    ora zp_general                                                    ; b72a: 05 37       .7       ; exactly equal to the limit?
+    ora zp_general_1                                                  ; b72c: 05 38       .8       ; ...
+    ora zp_fileblk                                                    ; b72e: 05 39       .9       ; ...
+    beq cb741                                                         ; b730: f0 0f       ..       ; at the limit: last iteration, continue
+    tya                                                               ; b732: 98          .        ; Past the limit? (sign of step vs difference)
+    eor l04f7,x                                                       ; b733: 5d f7 04    ]..      ; ...
+    eor l04fc,x                                                       ; b736: 5d fc 04    ]..      ; ...
+    bpl cb73f                                                         ; b739: 10 04       ..       ; ...
+    bcs cb741                                                         ; b73b: b0 04       ..       ; within range: continue
+    bcc cb751                                                         ; b73d: 90 12       ..       ; past: exit the loop
 ; &b73f referenced 1 time by &b739
 .cb73f
-    bcs cb751                                                         ; b73f: b0 10       ..    
+    bcs cb751                                                         ; b73f: b0 10       ..       ; past: exit the loop
 ; &b741 referenced 5 times by &b730, &b73b, &b792, &b799, &b79d
 .cb741
-    ldy l04fe,x                                                       ; b741: bc fe 04    ...   
-    lda l04ff,x                                                       ; b744: bd ff 04    ...   
-    sty zp_text_ptr                                                   ; b747: 84 0b       ..    
-    sta zp_text_ptr_1                                                 ; b749: 85 0c       ..    
-    jsr c9877                                                         ; b74b: 20 77 98     w.   
-    jmp c8ba3                                                         ; b74e: 4c a3 8b    L..   
+    ldy l04fe,x                                                       ; b741: bc fe 04    ...      ; Continue: reload the loop-back position:
+    lda l04ff,x                                                       ; b744: bd ff 04    ...      ; ...
+    sty zp_text_ptr                                                   ; b747: 84 0b       ..       ; (text pointer)
+    sta zp_text_ptr_1                                                 ; b749: 85 0c       ..       ; ...
+    jsr c9877                                                         ; b74b: 20 77 98     w.      ; restore the offset
+    jmp c8ba3                                                         ; b74e: 4c a3 8b    L..      ; jump back to the loop body
 ; &b751 referenced 4 times by &b73d, &b73f, &b79b, &b79f
 .cb751
-    lda zp_for_level                                                  ; b751: a5 26       .&    
-    sec                                                               ; b753: 38          8     
-    sbc #&0f                                                          ; b754: e9 0f       ..    
-    sta zp_for_level                                                  ; b756: 85 26       .&    
-    ldy zp_text_ptr2_off                                              ; b758: a4 1b       ..    
-    sty zp_text_ptr_off                                               ; b75a: 84 0a       ..    
-    jsr skip_spaces                                                   ; b75c: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; b75f: c9 2c       .,    
-    bne cb7a1                                                         ; b761: d0 3e       .>    
-    jmp stmt_next                                                     ; b763: 4c 95 b6    L..   
+    lda zp_for_level                                                  ; b751: a5 26       .&       ; Exit: pop the FOR frame:
+    sec                                                               ; b753: 38          8        ; ...
+    sbc #&0f                                                          ; b754: e9 0f       ..       ; ...
+    sta zp_for_level                                                  ; b756: 85 26       .&       ; ...
+    ldy zp_text_ptr2_off                                              ; b758: a4 1b       ..       ; continue after NEXT:
+    sty zp_text_ptr_off                                               ; b75a: 84 0a       ..       ; ...
+    jsr skip_spaces                                                   ; b75c: 20 97 8a     ..      ; another NEXT variable (comma)?
+    cmp #&2c ; ','                                                    ; b75f: c9 2c       .,       ; ...
+    bne cb7a1                                                         ; b761: d0 3e       .>       ; no: end of statement
+    jmp stmt_next                                                     ; b763: 4c 95 b6    L..      ; yes: handle the next variable
 ; &b766 referenced 1 time by &b6e6
 .cb766
-    jsr load_real_var                                                 ; b766: 20 54 b3     T.   
-    lda zp_for_level                                                  ; b769: a5 26       .&    
-    clc                                                               ; b76b: 18          .     
-    adc #&f4                                                          ; b76c: 69 f4       i.    
-    sta zp_fp_ptr                                                     ; b76e: 85 4b       .K    
-    lda #5                                                            ; b770: a9 05       ..    
-    sta zp_fp_ptr_1                                                   ; b772: 85 4c       .L    
-    jsr fwa_add_var                                                   ; b774: 20 00 a5     ..   
-    lda zp_iwa                                                        ; b777: a5 2a       .*    
-    sta zp_general                                                    ; b779: 85 37       .7    
-    lda zp_iwa_1                                                      ; b77b: a5 2b       .+    
-    sta zp_general_1                                                  ; b77d: 85 38       .8    
-    jsr cb4e9                                                         ; b77f: 20 e9 b4     ..   
-    lda zp_for_level                                                  ; b782: a5 26       .&    
-    sta zp_var_type                                                   ; b784: 85 27       .'    
-    clc                                                               ; b786: 18          .     
-    adc #&f9                                                          ; b787: 69 f9       i.    
-    sta zp_fp_ptr                                                     ; b789: 85 4b       .K    
-    lda #5                                                            ; b78b: a9 05       ..    
-    sta zp_fp_ptr_1                                                   ; b78d: 85 4c       .L    
-    jsr sub_c9a5f                                                     ; b78f: 20 5f 9a     _.   
-    beq cb741                                                         ; b792: f0 ad       ..    
-    lda l04f5,x                                                       ; b794: bd f5 04    ...   
-    bmi cb79d                                                         ; b797: 30 04       0.    
-    bcs cb741                                                         ; b799: b0 a6       ..    
-    bcc cb751                                                         ; b79b: 90 b4       ..    
+    jsr load_real_var                                                 ; b766: 20 54 b3     T.      ; Float loop: load the control variable
+    lda zp_for_level                                                  ; b769: a5 26       .&       ; point at the STEP in the frame:
+    clc                                                               ; b76b: 18          .        ; ...
+    adc #&f4                                                          ; b76c: 69 f4       i.       ; ...
+    sta zp_fp_ptr                                                     ; b76e: 85 4b       .K       ; ...
+    lda #5                                                            ; b770: a9 05       ..       ; ...
+    sta zp_fp_ptr_1                                                   ; b772: 85 4c       .L       ; ...
+    jsr fwa_add_var                                                   ; b774: 20 00 a5     ..      ; add STEP to the variable
+    lda zp_iwa                                                        ; b777: a5 2a       .*       ; store it back:
+    sta zp_general                                                    ; b779: 85 37       .7       ; ...
+    lda zp_iwa_1                                                      ; b77b: a5 2b       .+       ; ...
+    sta zp_general_1                                                  ; b77d: 85 38       .8       ; ...
+    jsr cb4e9                                                         ; b77f: 20 e9 b4     ..      ; store the updated variable
+    lda zp_for_level                                                  ; b782: a5 26       .&       ; point at the LIMIT:
+    sta zp_var_type                                                   ; b784: 85 27       .'       ; ...
+    clc                                                               ; b786: 18          .        ; ...
+    adc #&f9                                                          ; b787: 69 f9       i.       ; ...
+    sta zp_fp_ptr                                                     ; b789: 85 4b       .K       ; ...
+    lda #5                                                            ; b78b: a9 05       ..       ; ...
+    sta zp_fp_ptr_1                                                   ; b78d: 85 4c       .L       ; ...
+    jsr sub_c9a5f                                                     ; b78f: 20 5f 9a     _.      ; compare the variable with LIMIT
+    beq cb741                                                         ; b792: f0 ad       ..       ; at the limit: continue
+    lda l04f5,x                                                       ; b794: bd f5 04    ...      ; sign of STEP...
+    bmi cb79d                                                         ; b797: 30 04       0.       ; ...
+    bcs cb741                                                         ; b799: b0 a6       ..       ; within range: continue
+    bcc cb751                                                         ; b79b: 90 b4       ..       ; past: exit
 ; &b79d referenced 1 time by &b797
 .cb79d
-    bcc cb741                                                         ; b79d: 90 a2       ..    
-    bcs cb751                                                         ; b79f: b0 b0       ..    
+    bcc cb741                                                         ; b79d: 90 a2       ..       ; within range: continue
+    bcs cb751                                                         ; b79f: b0 b0       ..       ; past: exit
 ; &b7a1 referenced 1 time by &b761
 .cb7a1
-    jmp c8b96                                                         ; b7a1: 4c 96 8b    L..   
+    jmp c8b96                                                         ; b7a1: 4c 96 8b    L..      ; End of statement
 ; &b7a4 referenced 2 times by &b7c7, &b7c9
 .cb7a4
-    brk                                                               ; b7a4: 00          .     
+    brk                                                               ; b7a4: 00          .        ; No FOR error block
     equb &22, &e3                                                     ; b7a5: 22 e3       ".    
     equs " variable"                                                  ; b7a7: 20 76 61...  va...
 ; &b7b0 referenced 1 time by &b7d8
 .loop_cb7b0
-    brk                                                               ; b7b0: 00          .     
+    brk                                                               ; b7b0: 00          .        ; error block
     equs "#Too many "                                                 ; b7b1: 23 54 6f... #To...
     equb &e3, &73                                                     ; b7bb: e3 73       .s    
 ; &b7bd referenced 1 time by &b7ef
 .loop_cb7bd
-    brk                                                               ; b7bd: 00          .     
+    brk                                                               ; b7bd: 00          .        ; error block
     equs "$No "                                                       ; b7be: 24 4e 6f... $No...
     equb &b8, &00                                                     ; b7c2: b8 00       ..    
 ; ***************************************************************************************
