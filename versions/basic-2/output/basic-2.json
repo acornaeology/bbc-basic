@@ -1709,11 +1709,17 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 38842,
+      "name": "check_subscript_bound",
+      "title": "Check a subscript against a dimension extent",
+      "description": "Raise Subscript if the subscript in IWA is negative or not less than the dimension size stored at (&37),Y; advances Y past the two-byte extent.",
+      "fall_through": true
+    },
+    {
       "addr": 38623,
       "name": "index_array",
       "title": "Locate an array and evaluate one subscript",
-      "description": "Find the named array and step the value pointer to the addressed element; raises Array on a missing array.",
-      "fall_through": true
+      "description": "Find the named array and step the value pointer to the addressed element; raises Array on a missing array."
     },
     {
       "addr": 38140,
@@ -39125,6 +39131,7 @@
       "labels": [
         "loop_c96ff"
       ],
+      "comment_inline": "Stack the running index",
       "xref_summaries": [
         "&96ff referenced 1 time by &9742"
       ],
@@ -39144,6 +39151,7 @@
         221,
         146
       ],
+      "comment_inline": "Evaluate the next subscript",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -39156,6 +39164,7 @@
         230,
         27
       ],
+      "comment_inline": "step past it",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -39168,6 +39177,7 @@
         224,
         44
       ],
+      "comment_inline": "comma (another subscript)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -39178,6 +39188,7 @@
         208,
         204
       ],
+      "comment_inline": "no: wrong dimension count -> Array",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c96d7",
@@ -39190,6 +39201,7 @@
         162,
         57
       ],
+      "comment_inline": "Unstack the running index",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -39201,6 +39213,7 @@
         13,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -39213,6 +39226,7 @@
         164,
         60
       ],
+      "comment_inline": "dimension descriptor offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_fwb_ovf",
@@ -39224,6 +39238,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the array base pointer",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39233,6 +39248,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -39244,6 +39260,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39253,6 +39270,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -39264,6 +39282,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "re-stack it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -39273,6 +39292,7 @@
         165,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -39284,6 +39304,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -39294,11 +39315,12 @@
         186,
         151
       ],
+      "comment_inline": "Bounds-check this subscript",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97ba",
+      "operand": "check_subscript_bound",
       "target": 38842,
-      "target_label": "sub_c97ba"
+      "target_label": "check_subscript_bound"
     },
     {
       "addr": 38687,
@@ -39306,6 +39328,7 @@
         132,
         45
       ],
+      "comment_inline": "advance to the next dimension",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_3",
@@ -39318,6 +39341,7 @@
         177,
         55
       ],
+      "comment_inline": "This dimension's extent: low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -39330,6 +39354,7 @@
         133,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -39341,6 +39366,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...high",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -39350,6 +39376,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -39362,6 +39389,7 @@
         133,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -39374,6 +39402,7 @@
         165,
         42
       ],
+      "comment_inline": "Add the subscript into the running index",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -39386,6 +39415,7 @@
         101,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -39398,6 +39428,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -39410,6 +39441,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -39422,6 +39454,7 @@
         101,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l003a",
@@ -39434,6 +39467,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -39447,6 +39481,7 @@
         54,
         146
       ],
+      "comment_inline": "index *= this extent (Horner)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "imul16",
@@ -39459,6 +39494,7 @@
         160,
         0
       ],
+      "comment_inline": "Dimensions processed so far",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -39468,6 +39504,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -39477,6 +39514,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -39489,6 +39527,7 @@
         229,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -39501,6 +39540,7 @@
         201,
         3
       ],
+      "comment_inline": "more dimensions to come?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#3"
@@ -39511,6 +39551,7 @@
         176,
         187
       ],
+      "comment_inline": "yes: next subscript",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_c96ff",
@@ -39524,6 +39565,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the running index",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -39537,6 +39579,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the final subscript",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -39550,6 +39593,7 @@
         240,
         146
       ],
+      "comment_inline": "...as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -39561,6 +39605,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the array base",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39570,6 +39615,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -39581,6 +39627,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39590,6 +39637,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -39602,6 +39650,7 @@
         162,
         57
       ],
+      "comment_inline": "Unstack the running index",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -39613,6 +39662,7 @@
         13,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -39625,6 +39675,7 @@
         164,
         60
       ],
+      "comment_inline": "dimension descriptor offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_fwb_ovf",
@@ -39638,17 +39689,19 @@
         186,
         151
       ],
+      "comment_inline": "Bounds-check the final subscript",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97ba",
+      "operand": "check_subscript_bound",
       "target": 38842,
-      "target_label": "sub_c97ba"
+      "target_label": "check_subscript_bound"
     },
     {
       "addr": 38749,
       "bytes": [
         24
       ],
+      "comment_inline": "Add it into the index",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -39658,6 +39711,7 @@
         165,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -39670,6 +39724,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -39682,6 +39737,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -39694,6 +39750,7 @@
         165,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l003a",
@@ -39706,6 +39763,7 @@
         101,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -39718,6 +39776,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -39730,6 +39789,7 @@
         144,
         17
       ],
+      "comment_inline": "scale by the element size",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c977d",
@@ -39746,6 +39806,7 @@
       "labels": [
         "c976c"
       ],
+      "comment_inline": "One subscript: evaluate it",
       "xref_summaries": [
         "&976c referenced 1 time by &96f5"
       ],
@@ -39765,6 +39826,7 @@
         240,
         146
       ],
+      "comment_inline": "...as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -39776,6 +39838,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the array base",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39785,6 +39848,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -39796,6 +39860,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39805,6 +39870,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -39817,6 +39883,7 @@
         160,
         1
       ],
+      "comment_inline": "descriptor offset 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -39828,11 +39895,12 @@
         186,
         151
       ],
+      "comment_inline": "Bounds-check the subscript",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97ba",
+      "operand": "check_subscript_bound",
       "target": 38842,
-      "target_label": "sub_c97ba"
+      "target_label": "check_subscript_bound"
     },
     {
       "addr": 38781,
@@ -39842,6 +39910,7 @@
       "labels": [
         "c977d"
       ],
+      "comment_inline": "Element type",
       "xref_summaries": [
         "&977d referenced 1 time by &976a"
       ],
@@ -39857,6 +39926,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -39869,6 +39939,7 @@
         201,
         5
       ],
+      "comment_inline": "real/string (5 bytes)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#5"
@@ -39879,6 +39950,7 @@
         208,
         23
       ],
+      "comment_inline": "no: integer (4 bytes)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c979b",
@@ -39891,6 +39963,7 @@
         166,
         43
       ],
+      "comment_inline": "index *= 5 (x*4 + x)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa_1",
@@ -39903,6 +39976,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -39915,6 +39989,7 @@
         6,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl",
       "operand": "zp_iwa",
@@ -39927,6 +40002,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -39939,6 +40015,7 @@
         6,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl",
       "operand": "zp_iwa",
@@ -39951,6 +40028,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -39963,6 +40041,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -39975,6 +40054,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -39986,6 +40066,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -39995,6 +40076,7 @@
         101,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -40007,6 +40089,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -40019,6 +40102,7 @@
         144,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c97a3",
@@ -40034,6 +40118,7 @@
       "labels": [
         "c979b"
       ],
+      "comment_inline": "index *= 4",
       "xref_summaries": [
         "&979b referenced 1 time by &9782"
       ],
@@ -40052,6 +40137,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -40064,6 +40150,7 @@
         6,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl",
       "operand": "zp_iwa",
@@ -40076,6 +40163,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -40090,6 +40178,7 @@
       "labels": [
         "c97a3"
       ],
+      "comment_inline": "Add the element offset within the descriptor",
       "xref_summaries": [
         "&97a3 referenced 1 time by &9799"
       ],
@@ -40105,6 +40194,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -40117,6 +40207,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -40129,6 +40220,7 @@
         144,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c97ad",
@@ -40141,6 +40233,7 @@
         230,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -40152,6 +40245,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -40164,6 +40258,7 @@
       "labels": [
         "c97ad"
       ],
+      "comment_inline": "Element address = base + offset",
       "xref_summaries": [
         "&97ad referenced 1 time by &97a8"
       ],
@@ -40182,6 +40277,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -40194,6 +40290,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -40206,6 +40303,7 @@
         165,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -40218,6 +40316,7 @@
         101,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -40230,6 +40329,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -40241,6 +40341,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -40251,8 +40352,9 @@
         43
       ],
       "labels": [
-        "sub_c97ba"
+        "check_subscript_bound"
       ],
+      "comment_inline": "Top bits of the subscript",
       "xref_summaries": [
         "&97ba referenced 3 times by &971c, &975a, &977a"
       ],
@@ -40273,6 +40375,7 @@
         41,
         192
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -40283,6 +40386,7 @@
         5,
         44
       ],
+      "comment_inline": "combine with the high bytes...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -40295,6 +40399,7 @@
         5,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -40307,6 +40412,7 @@
         208,
         13
       ],
+      "comment_inline": "negative or huge: Subscript",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c97d1",
@@ -40319,6 +40425,7 @@
         165,
         42
       ],
+      "comment_inline": "Compare against the dimension extent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -40331,6 +40438,7 @@
         209,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_general),y",
@@ -40342,6 +40450,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -40351,6 +40460,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -40363,6 +40473,7 @@
         241,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "(zp_general),y",
@@ -40375,6 +40486,7 @@
         176,
         2
       ],
+      "comment_inline": "not less than the extent: Subscript",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c97d1",
@@ -40386,6 +40498,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance past the extent",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -40394,6 +40507,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -40405,6 +40519,7 @@
       "labels": [
         "c97d1"
       ],
+      "comment_inline": "Subscript error",
       "xref_summaries": [
         "&97d1 referenced 2 times by &97c2, &97cd"
       ],

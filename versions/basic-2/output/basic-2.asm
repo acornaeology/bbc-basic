@@ -4319,129 +4319,134 @@ l848a = sub_c847b+15
     sta zp_iwa_3                                                      ; 96fd: 85 2d       .-       ; ...
 ; &96ff referenced 1 time by &9742
 .loop_c96ff
-    jsr stack_integer                                                 ; 96ff: 20 94 bd     ..   
-    jsr sub_c92dd                                                     ; 9702: 20 dd 92     ..   
-    inc zp_text_ptr2_off                                              ; 9705: e6 1b       ..    
-    cpx #&2c ; ','                                                    ; 9707: e0 2c       .,    
-    bne c96d7                                                         ; 9709: d0 cc       ..    
-    ldx #&39 ; '9'                                                    ; 970b: a2 39       .9    
-    jsr unstack_int_to_zp                                             ; 970d: 20 0d be     ..   
-    ldy zp_fwb_ovf                                                    ; 9710: a4 3c       .<    
-    pla                                                               ; 9712: 68          h     
-    sta zp_general_1                                                  ; 9713: 85 38       .8    
-    pla                                                               ; 9715: 68          h     
-    sta zp_general                                                    ; 9716: 85 37       .7    
-    pha                                                               ; 9718: 48          H     
-    lda zp_general_1                                                  ; 9719: a5 38       .8    
-    pha                                                               ; 971b: 48          H     
-    jsr sub_c97ba                                                     ; 971c: 20 ba 97     ..   
-    sty zp_iwa_3                                                      ; 971f: 84 2d       .-    
-    lda (zp_general),y                                                ; 9721: b1 37       .7    
-    sta zp_fwb_m2                                                     ; 9723: 85 3f       .?    
-    iny                                                               ; 9725: c8          .     
-    lda (zp_general),y                                                ; 9726: b1 37       .7    
-    sta zp_fwb_m3                                                     ; 9728: 85 40       .@    
-    lda zp_iwa                                                        ; 972a: a5 2a       .*    
-    adc zp_fileblk                                                    ; 972c: 65 39       e9    
-    sta zp_iwa                                                        ; 972e: 85 2a       .*    
-    lda zp_iwa_1                                                      ; 9730: a5 2b       .+    
-    adc l003a                                                         ; 9732: 65 3a       e:    
-    sta zp_iwa_1                                                      ; 9734: 85 2b       .+    
-    jsr imul16                                                        ; 9736: 20 36 92     6.   
-    ldy #0                                                            ; 9739: a0 00       ..    
-    sec                                                               ; 973b: 38          8     
-    lda (zp_general),y                                                ; 973c: b1 37       .7    
-    sbc zp_iwa_3                                                      ; 973e: e5 2d       .-    
-    cmp #3                                                            ; 9740: c9 03       ..    
-    bcs loop_c96ff                                                    ; 9742: b0 bb       ..    
-    jsr stack_integer                                                 ; 9744: 20 94 bd     ..   
-    jsr cae56                                                         ; 9747: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; 974a: 20 f0 92     ..   
-    pla                                                               ; 974d: 68          h     
-    sta zp_general_1                                                  ; 974e: 85 38       .8    
-    pla                                                               ; 9750: 68          h     
-    sta zp_general                                                    ; 9751: 85 37       .7    
-    ldx #&39 ; '9'                                                    ; 9753: a2 39       .9    
-    jsr unstack_int_to_zp                                             ; 9755: 20 0d be     ..   
-    ldy zp_fwb_ovf                                                    ; 9758: a4 3c       .<    
-    jsr sub_c97ba                                                     ; 975a: 20 ba 97     ..   
-    clc                                                               ; 975d: 18          .     
-    lda zp_fileblk                                                    ; 975e: a5 39       .9    
-    adc zp_iwa                                                        ; 9760: 65 2a       e*    
-    sta zp_iwa                                                        ; 9762: 85 2a       .*    
-    lda l003a                                                         ; 9764: a5 3a       .:    
-    adc zp_iwa_1                                                      ; 9766: 65 2b       e+    
-    sta zp_iwa_1                                                      ; 9768: 85 2b       .+    
-    bcc c977d                                                         ; 976a: 90 11       ..    
+    jsr stack_integer                                                 ; 96ff: 20 94 bd     ..      ; Stack the running index
+    jsr sub_c92dd                                                     ; 9702: 20 dd 92     ..      ; Evaluate the next subscript
+    inc zp_text_ptr2_off                                              ; 9705: e6 1b       ..       ; step past it
+    cpx #&2c ; ','                                                    ; 9707: e0 2c       .,       ; comma (another subscript)?
+    bne c96d7                                                         ; 9709: d0 cc       ..       ; no: wrong dimension count -> Array
+    ldx #&39 ; '9'                                                    ; 970b: a2 39       .9       ; Unstack the running index
+    jsr unstack_int_to_zp                                             ; 970d: 20 0d be     ..      ; ...
+    ldy zp_fwb_ovf                                                    ; 9710: a4 3c       .<       ; dimension descriptor offset
+    pla                                                               ; 9712: 68          h        ; Recover the array base pointer
+    sta zp_general_1                                                  ; 9713: 85 38       .8       ; ...
+    pla                                                               ; 9715: 68          h        ; ...
+    sta zp_general                                                    ; 9716: 85 37       .7       ; ...
+    pha                                                               ; 9718: 48          H        ; re-stack it
+    lda zp_general_1                                                  ; 9719: a5 38       .8       ; ...
+    pha                                                               ; 971b: 48          H        ; ...
+    jsr check_subscript_bound                                         ; 971c: 20 ba 97     ..      ; Bounds-check this subscript
+    sty zp_iwa_3                                                      ; 971f: 84 2d       .-       ; advance to the next dimension
+    lda (zp_general),y                                                ; 9721: b1 37       .7       ; This dimension's extent: low
+    sta zp_fwb_m2                                                     ; 9723: 85 3f       .?       ; ...
+    iny                                                               ; 9725: c8          .        ; ...high
+    lda (zp_general),y                                                ; 9726: b1 37       .7       ; ...
+    sta zp_fwb_m3                                                     ; 9728: 85 40       .@       ; ...
+    lda zp_iwa                                                        ; 972a: a5 2a       .*       ; Add the subscript into the running index
+    adc zp_fileblk                                                    ; 972c: 65 39       e9       ; ...
+    sta zp_iwa                                                        ; 972e: 85 2a       .*       ; ...
+    lda zp_iwa_1                                                      ; 9730: a5 2b       .+       ; ...
+    adc l003a                                                         ; 9732: 65 3a       e:       ; ...
+    sta zp_iwa_1                                                      ; 9734: 85 2b       .+       ; ...
+    jsr imul16                                                        ; 9736: 20 36 92     6.      ; index *= this extent (Horner)
+    ldy #0                                                            ; 9739: a0 00       ..       ; Dimensions processed so far
+    sec                                                               ; 973b: 38          8        ; ...
+    lda (zp_general),y                                                ; 973c: b1 37       .7       ; ...
+    sbc zp_iwa_3                                                      ; 973e: e5 2d       .-       ; ...
+    cmp #3                                                            ; 9740: c9 03       ..       ; more dimensions to come?
+    bcs loop_c96ff                                                    ; 9742: b0 bb       ..       ; yes: next subscript
+    jsr stack_integer                                                 ; 9744: 20 94 bd     ..      ; Stack the running index
+    jsr cae56                                                         ; 9747: 20 56 ae     V.      ; Evaluate the final subscript
+    jsr coerce_to_integer                                             ; 974a: 20 f0 92     ..      ; ...as an integer
+    pla                                                               ; 974d: 68          h        ; Recover the array base
+    sta zp_general_1                                                  ; 974e: 85 38       .8       ; ...
+    pla                                                               ; 9750: 68          h        ; ...
+    sta zp_general                                                    ; 9751: 85 37       .7       ; ...
+    ldx #&39 ; '9'                                                    ; 9753: a2 39       .9       ; Unstack the running index
+    jsr unstack_int_to_zp                                             ; 9755: 20 0d be     ..      ; ...
+    ldy zp_fwb_ovf                                                    ; 9758: a4 3c       .<       ; dimension descriptor offset
+    jsr check_subscript_bound                                         ; 975a: 20 ba 97     ..      ; Bounds-check the final subscript
+    clc                                                               ; 975d: 18          .        ; Add it into the index
+    lda zp_fileblk                                                    ; 975e: a5 39       .9       ; ...
+    adc zp_iwa                                                        ; 9760: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 9762: 85 2a       .*       ; ...
+    lda l003a                                                         ; 9764: a5 3a       .:       ; ...
+    adc zp_iwa_1                                                      ; 9766: 65 2b       e+       ; ...
+    sta zp_iwa_1                                                      ; 9768: 85 2b       .+       ; ...
+    bcc c977d                                                         ; 976a: 90 11       ..       ; scale by the element size
 ; &976c referenced 1 time by &96f5
 .c976c
-    jsr cae56                                                         ; 976c: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; 976f: 20 f0 92     ..   
-    pla                                                               ; 9772: 68          h     
-    sta zp_general_1                                                  ; 9773: 85 38       .8    
-    pla                                                               ; 9775: 68          h     
-    sta zp_general                                                    ; 9776: 85 37       .7    
-    ldy #1                                                            ; 9778: a0 01       ..    
-    jsr sub_c97ba                                                     ; 977a: 20 ba 97     ..   
+    jsr cae56                                                         ; 976c: 20 56 ae     V.      ; One subscript: evaluate it
+    jsr coerce_to_integer                                             ; 976f: 20 f0 92     ..      ; ...as an integer
+    pla                                                               ; 9772: 68          h        ; Recover the array base
+    sta zp_general_1                                                  ; 9773: 85 38       .8       ; ...
+    pla                                                               ; 9775: 68          h        ; ...
+    sta zp_general                                                    ; 9776: 85 37       .7       ; ...
+    ldy #1                                                            ; 9778: a0 01       ..       ; descriptor offset 1
+    jsr check_subscript_bound                                         ; 977a: 20 ba 97     ..      ; Bounds-check the subscript
 ; &977d referenced 1 time by &976a
 .c977d
-    pla                                                               ; 977d: 68          h     
-    sta zp_iwa_2                                                      ; 977e: 85 2c       .,    
-    cmp #5                                                            ; 9780: c9 05       ..    
-    bne c979b                                                         ; 9782: d0 17       ..    
-    ldx zp_iwa_1                                                      ; 9784: a6 2b       .+    
-    lda zp_iwa                                                        ; 9786: a5 2a       .*    
-    asl zp_iwa                                                        ; 9788: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 978a: 26 2b       &+    
-    asl zp_iwa                                                        ; 978c: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 978e: 26 2b       &+    
-    adc zp_iwa                                                        ; 9790: 65 2a       e*    
-    sta zp_iwa                                                        ; 9792: 85 2a       .*    
-    txa                                                               ; 9794: 8a          .     
-    adc zp_iwa_1                                                      ; 9795: 65 2b       e+    
-    sta zp_iwa_1                                                      ; 9797: 85 2b       .+    
-    bcc c97a3                                                         ; 9799: 90 08       ..    
+    pla                                                               ; 977d: 68          h        ; Element type
+    sta zp_iwa_2                                                      ; 977e: 85 2c       .,       ; ...
+    cmp #5                                                            ; 9780: c9 05       ..       ; real/string (5 bytes)?
+    bne c979b                                                         ; 9782: d0 17       ..       ; no: integer (4 bytes)
+    ldx zp_iwa_1                                                      ; 9784: a6 2b       .+       ; index = 5 (x4 + x)
+    lda zp_iwa                                                        ; 9786: a5 2a       .*       ; ...
+    asl zp_iwa                                                        ; 9788: 06 2a       .*       ; ...
+    rol zp_iwa_1                                                      ; 978a: 26 2b       &+       ; ...
+    asl zp_iwa                                                        ; 978c: 06 2a       .*       ; ...
+    rol zp_iwa_1                                                      ; 978e: 26 2b       &+       ; ...
+    adc zp_iwa                                                        ; 9790: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 9792: 85 2a       .*       ; ...
+    txa                                                               ; 9794: 8a          .        ; ...
+    adc zp_iwa_1                                                      ; 9795: 65 2b       e+       ; ...
+    sta zp_iwa_1                                                      ; 9797: 85 2b       .+       ; ...
+    bcc c97a3                                                         ; 9799: 90 08       ..       ; ...
 ; &979b referenced 1 time by &9782
 .c979b
-    asl zp_iwa                                                        ; 979b: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 979d: 26 2b       &+    
-    asl zp_iwa                                                        ; 979f: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 97a1: 26 2b       &+    
+    asl zp_iwa                                                        ; 979b: 06 2a       .*       ; index *= 4
+    rol zp_iwa_1                                                      ; 979d: 26 2b       &+       ; ...
+    asl zp_iwa                                                        ; 979f: 06 2a       .*       ; ...
+    rol zp_iwa_1                                                      ; 97a1: 26 2b       &+       ; ...
 ; &97a3 referenced 1 time by &9799
 .c97a3
-    tya                                                               ; 97a3: 98          .     
-    adc zp_iwa                                                        ; 97a4: 65 2a       e*    
-    sta zp_iwa                                                        ; 97a6: 85 2a       .*    
-    bcc c97ad                                                         ; 97a8: 90 03       ..    
-    inc zp_iwa_1                                                      ; 97aa: e6 2b       .+    
-    clc                                                               ; 97ac: 18          .     
+    tya                                                               ; 97a3: 98          .        ; Add the element offset within the descriptor
+    adc zp_iwa                                                        ; 97a4: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 97a6: 85 2a       .*       ; ...
+    bcc c97ad                                                         ; 97a8: 90 03       ..       ; ...
+    inc zp_iwa_1                                                      ; 97aa: e6 2b       .+       ; ...
+    clc                                                               ; 97ac: 18          .        ; ...
 ; &97ad referenced 1 time by &97a8
 .c97ad
-    lda zp_general                                                    ; 97ad: a5 37       .7    
-    adc zp_iwa                                                        ; 97af: 65 2a       e*    
-    sta zp_iwa                                                        ; 97b1: 85 2a       .*    
-    lda zp_general_1                                                  ; 97b3: a5 38       .8    
-    adc zp_iwa_1                                                      ; 97b5: 65 2b       e+    
-    sta zp_iwa_1                                                      ; 97b7: 85 2b       .+    
-    rts                                                               ; 97b9: 60          `     
+    lda zp_general                                                    ; 97ad: a5 37       .7       ; Element address = base + offset
+    adc zp_iwa                                                        ; 97af: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 97b1: 85 2a       .*       ; ...
+    lda zp_general_1                                                  ; 97b3: a5 38       .8       ; ...
+    adc zp_iwa_1                                                      ; 97b5: 65 2b       e+       ; ...
+    sta zp_iwa_1                                                      ; 97b7: 85 2b       .+       ; ...
+    rts                                                               ; 97b9: 60          `        ; Return
+; ***************************************************************************************
+; Check a subscript against a dimension extent
+;
+; Raise Subscript if the subscript in IWA is negative or not less than the dimension size
+; stored at (&37),Y; advances Y past the two-byte extent.
 ; &97ba referenced 3 times by &971c, &975a, &977a
-.sub_c97ba
-    lda zp_iwa_1                                                      ; 97ba: a5 2b       .+    
-    and #&c0                                                          ; 97bc: 29 c0       ).    
-    ora zp_iwa_2                                                      ; 97be: 05 2c       .,    
-    ora zp_iwa_3                                                      ; 97c0: 05 2d       .-    
-    bne c97d1                                                         ; 97c2: d0 0d       ..    
-    lda zp_iwa                                                        ; 97c4: a5 2a       .*    
-    cmp (zp_general),y                                                ; 97c6: d1 37       .7    
-    iny                                                               ; 97c8: c8          .     
-    lda zp_iwa_1                                                      ; 97c9: a5 2b       .+    
-    sbc (zp_general),y                                                ; 97cb: f1 37       .7    
-    bcs c97d1                                                         ; 97cd: b0 02       ..    
-    iny                                                               ; 97cf: c8          .     
-    rts                                                               ; 97d0: 60          `     
+.check_subscript_bound
+    lda zp_iwa_1                                                      ; 97ba: a5 2b       .+       ; Top bits of the subscript
+    and #&c0                                                          ; 97bc: 29 c0       ).       ; ...
+    ora zp_iwa_2                                                      ; 97be: 05 2c       .,       ; combine with the high bytes...
+    ora zp_iwa_3                                                      ; 97c0: 05 2d       .-       ; ...
+    bne c97d1                                                         ; 97c2: d0 0d       ..       ; negative or huge: Subscript
+    lda zp_iwa                                                        ; 97c4: a5 2a       .*       ; Compare against the dimension extent
+    cmp (zp_general),y                                                ; 97c6: d1 37       .7       ; ...
+    iny                                                               ; 97c8: c8          .        ; ...
+    lda zp_iwa_1                                                      ; 97c9: a5 2b       .+       ; ...
+    sbc (zp_general),y                                                ; 97cb: f1 37       .7       ; ...
+    bcs c97d1                                                         ; 97cd: b0 02       ..       ; not less than the extent: Subscript
+    iny                                                               ; 97cf: c8          .        ; advance past the extent
+    rts                                                               ; 97d0: 60          `        ; Return
 ; &97d1 referenced 2 times by &97c2, &97cd
 .c97d1
-    brk                                                               ; 97d1: 00          .     
+    brk                                                               ; 97d1: 00          .        ; Subscript error
     equb &0f                                                          ; 97d2: 0f          .     
     equs "Subscript"                                                  ; 97d3: 53 75 62... Sub...
     equb &00                                                          ; 97dc: 00          .     
@@ -12035,6 +12040,7 @@ save pydis_start, pydis_end
 ;     cb8d2:                       3
 ;     cbb07:                       3
 ;     cbb7a:                       3
+;     check_subscript_bound:       3
 ;     create_variable:             3
 ;     err_no_room:                 3
 ;     eval_channel:                3
@@ -12062,7 +12068,6 @@ save pydis_start, pydis_end
 ;     sub_c882f:                   3
 ;     sub_c8832:                   3
 ;     sub_c894b:                   3
-;     sub_c97ba:                   3
 ;     sub_c991f:                   3
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
@@ -13988,7 +13993,6 @@ save pydis_start, pydis_end
 ;     sub_c9539
 ;     sub_c95d5
 ;     sub_c95dd
-;     sub_c97ba
 ;     sub_c97df
 ;     sub_c97eb
 ;     sub_c9807
