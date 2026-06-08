@@ -46401,7 +46401,7 @@
       "labels": [
         "eval_or_eor"
       ],
-      "comment_inline": "Evaluate the higher-precedence (AND) operand first",
+      "comment_inline": "Evaluate the higher-precedence (AND) operand first Evaluate an AND operand",
       "xref_summaries": [
         "&9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d"
       ],
@@ -46438,7 +46438,7 @@
       "labels": [
         "loop_c9b2c"
       ],
-      "comment_inline": "Is the next operator OR or EOR at this level?",
+      "comment_inline": "Is the next operator OR or EOR at this level? OR token?",
       "xref_summaries": [
         "&9b2c referenced 1 time by &9b53"
       ],
@@ -46455,6 +46455,7 @@
         240,
         10
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9b3a",
@@ -46467,6 +46468,7 @@
         224,
         130
       ],
+      "comment_inline": "EOR token?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&82"
@@ -46477,6 +46479,7 @@
         240,
         33
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9b55",
@@ -46489,6 +46492,7 @@
         198,
         27
       ],
+      "comment_inline": "neither: back up over the token",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr2_off",
@@ -46500,6 +46504,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "set the result-type flags",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -46509,6 +46514,7 @@
         133,
         39
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -46520,6 +46526,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -46533,7 +46540,7 @@
       "labels": [
         "c9b3a"
       ],
-      "comment_inline": "OR: stack the left operand, evaluate the right",
+      "comment_inline": "OR: stack the left operand, evaluate the right OR: stack the left operand, evaluate the right",
       "xref_summaries": [
         "&9b3a referenced 1 time by &9b2e"
       ],
@@ -46551,6 +46558,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "ensure the right operand is integer",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -46561,6 +46569,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -46573,6 +46582,7 @@
         160,
         3
       ],
+      "comment_inline": "Four bytes",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -46586,7 +46596,7 @@
       "labels": [
         "loop_c9b43"
       ],
-      "comment_inline": "Combine the two integers with OR",
+      "comment_inline": "Combine the two integers with OR stacked byte",
       "xref_summaries": [
         "&9b43 referenced 1 time by &9b4c"
       ],
@@ -46606,6 +46616,7 @@
         42,
         0
       ],
+      "comment_inline": "OR with IWA",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa,y",
@@ -46619,6 +46630,7 @@
         42,
         0
       ],
+      "comment_inline": "store back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa,y",
@@ -46630,6 +46642,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -46639,6 +46652,7 @@
         16,
         245
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b43",
@@ -46655,6 +46669,7 @@
       "labels": [
         "loop_c9b4e"
       ],
+      "comment_inline": "Drop the stacked operand",
       "xref_summaries": [
         "&9b4e referenced 1 time by &9b69"
       ],
@@ -46673,6 +46688,7 @@
         169,
         64
       ],
+      "comment_inline": "Result type = integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -46683,7 +46699,7 @@
         208,
         215
       ],
-      "comment_inline": "Loop to handle any further OR / EOR",
+      "comment_inline": "Loop to handle any further OR / EOR loop for further OR/EOR",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9b2c",
@@ -46700,6 +46716,7 @@
       "labels": [
         "c9b55"
       ],
+      "comment_inline": "EOR: stack the left operand, evaluate the right",
       "xref_summaries": [
         "&9b55 referenced 1 time by &9b32"
       ],
@@ -46717,6 +46734,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "ensure the right operand is integer",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -46727,6 +46745,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -46739,6 +46758,7 @@
         160,
         3
       ],
+      "comment_inline": "Four bytes",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -46752,6 +46772,7 @@
       "labels": [
         "loop_c9b5e"
       ],
+      "comment_inline": "stacked byte",
       "xref_summaries": [
         "&9b5e referenced 1 time by &9b67"
       ],
@@ -46771,6 +46792,7 @@
         42,
         0
       ],
+      "comment_inline": "EOR with IWA",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_iwa,y",
@@ -46784,6 +46806,7 @@
         42,
         0
       ],
+      "comment_inline": "store back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa,y",
@@ -46795,6 +46818,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -46804,6 +46828,7 @@
         16,
         245
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b5e",
@@ -46816,6 +46841,7 @@
         48,
         227
       ],
+      "comment_inline": "drop and loop",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_c9b4e",
@@ -46830,6 +46856,7 @@
       "labels": [
         "sub_c9b6b"
       ],
+      "comment_inline": "Coerce the left operand to integer",
       "xref_summaries": [
         "&9b6b referenced 2 times by &9b3a, &9b55"
       ],
@@ -46847,6 +46874,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -46860,6 +46888,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -46876,6 +46905,7 @@
       "labels": [
         "eval_and"
       ],
+      "comment_inline": "Evaluate a relational operand",
       "xref_summaries": [
         "&9b72 referenced 1 time by &9b29"
       ],
@@ -46897,7 +46927,7 @@
       "labels": [
         "loop_c9b75"
       ],
-      "comment_inline": "Apply AND only if the next operator is AND",
+      "comment_inline": "Apply AND only if the next operator is AND AND token?",
       "xref_summaries": [
         "&9b75 referenced 1 time by &9b9a"
       ],
@@ -46914,6 +46944,7 @@
         240,
         1
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9b7a",
@@ -46925,6 +46956,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "no: return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -46936,6 +46968,7 @@
       "labels": [
         "c9b7a"
       ],
+      "comment_inline": "Coerce the left operand to integer",
       "xref_summaries": [
         "&9b7a referenced 1 time by &9b77"
       ],
@@ -46952,6 +46985,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -46965,6 +46999,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -46978,6 +47013,7 @@
         156,
         155
       ],
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_relational",
@@ -46989,6 +47025,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "ensure it is integer",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -46999,6 +47036,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -47011,6 +47049,7 @@
         160,
         3
       ],
+      "comment_inline": "Four bytes",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -47024,6 +47063,7 @@
       "labels": [
         "loop_c9b8a"
       ],
+      "comment_inline": "stacked byte",
       "xref_summaries": [
         "&9b8a referenced 1 time by &9b93"
       ],
@@ -47043,6 +47083,7 @@
         42,
         0
       ],
+      "comment_inline": "AND with IWA",
       "type": "code",
       "mnemonic": "and",
       "operand": "zp_iwa,y",
@@ -47056,6 +47097,7 @@
         42,
         0
       ],
+      "comment_inline": "store back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa,y",
@@ -47067,6 +47109,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -47076,6 +47119,7 @@
         16,
         245
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b8a",
@@ -47089,6 +47133,7 @@
         255,
         189
       ],
+      "comment_inline": "Drop the stacked operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "drop_stack_integer",
@@ -47101,6 +47146,7 @@
         169,
         64
       ],
+      "comment_inline": "Result type = integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -47111,6 +47157,7 @@
         208,
         217
       ],
+      "comment_inline": "loop for further AND",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9b75",

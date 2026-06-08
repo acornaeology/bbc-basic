@@ -5077,85 +5077,85 @@ l848a = sub_c847b+15
 ; Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.
 ; &9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d
 .eval_or_eor
-    jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first
+    jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first  Evaluate an AND operand
 ; &9b2c referenced 1 time by &9b53
 .loop_c9b2c
-    cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?
-    beq c9b3a                                                         ; 9b2e: f0 0a       ..    
-    cpx #&82                                                          ; 9b30: e0 82       ..    
-    beq c9b55                                                         ; 9b32: f0 21       .!    
-    dec zp_text_ptr2_off                                              ; 9b34: c6 1b       ..    
-    tay                                                               ; 9b36: a8          .     
-    sta zp_var_type                                                   ; 9b37: 85 27       .'    
-    rts                                                               ; 9b39: 60          `     
+    cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?  OR token?
+    beq c9b3a                                                         ; 9b2e: f0 0a       ..       ; yes
+    cpx #&82                                                          ; 9b30: e0 82       ..       ; EOR token?
+    beq c9b55                                                         ; 9b32: f0 21       .!       ; yes
+    dec zp_text_ptr2_off                                              ; 9b34: c6 1b       ..       ; neither: back up over the token
+    tay                                                               ; 9b36: a8          .        ; set the result-type flags
+    sta zp_var_type                                                   ; 9b37: 85 27       .'       ; ...
+    rts                                                               ; 9b39: 60          `        ; Return
 ; &9b3a referenced 1 time by &9b2e
 .c9b3a
-    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
-    tay                                                               ; 9b3d: a8          .     
-    jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..   
-    ldy #3                                                            ; 9b41: a0 03       ..    
+    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right  OR: stack the left operand, evaluate the right
+    tay                                                               ; 9b3d: a8          .        ; ensure the right operand is integer
+    jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..      ; ...
+    ldy #3                                                            ; 9b41: a0 03       ..       ; Four bytes
 ; &9b43 referenced 1 time by &9b4c
 .loop_c9b43
-    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; Combine the two integers with OR
-    ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.   
-    sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.   
-    dey                                                               ; 9b4b: 88          .     
-    bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..    
+    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; Combine the two integers with OR  stacked byte
+    ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.      ; OR with IWA
+    sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.      ; store back
+    dey                                                               ; 9b4b: 88          .        ; next byte
+    bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..       ; ...
 ; &9b4e referenced 1 time by &9b69
 .loop_c9b4e
-    jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..   
-    lda #&40 ; '@'                                                    ; 9b51: a9 40       .@    
-    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
+    jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..      ; Drop the stacked operand
+    lda #&40 ; '@'                                                    ; 9b51: a9 40       .@       ; Result type = integer
+    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR  loop for further OR/EOR
 ; &9b55 referenced 1 time by &9b32
 .c9b55
-    jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.   
-    tay                                                               ; 9b58: a8          .     
-    jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..   
-    ldy #3                                                            ; 9b5c: a0 03       ..    
+    jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.      ; EOR: stack the left operand, evaluate the right
+    tay                                                               ; 9b58: a8          .        ; ensure the right operand is integer
+    jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..      ; ...
+    ldy #3                                                            ; 9b5c: a0 03       ..       ; Four bytes
 ; &9b5e referenced 1 time by &9b67
 .loop_c9b5e
-    lda (zp_stack_ptr),y                                              ; 9b5e: b1 04       ..    
-    eor zp_iwa,y                                                      ; 9b60: 59 2a 00    Y*.   
-    sta zp_iwa,y                                                      ; 9b63: 99 2a 00    .*.   
-    dey                                                               ; 9b66: 88          .     
-    bpl loop_c9b5e                                                    ; 9b67: 10 f5       ..    
-    bmi loop_c9b4e                                                    ; 9b69: 30 e3       0.    
+    lda (zp_stack_ptr),y                                              ; 9b5e: b1 04       ..       ; stacked byte
+    eor zp_iwa,y                                                      ; 9b60: 59 2a 00    Y*.      ; EOR with IWA
+    sta zp_iwa,y                                                      ; 9b63: 99 2a 00    .*.      ; store back
+    dey                                                               ; 9b66: 88          .        ; next byte
+    bpl loop_c9b5e                                                    ; 9b67: 10 f5       ..       ; ...
+    bmi loop_c9b4e                                                    ; 9b69: 30 e3       0.       ; drop and loop
 ; &9b6b referenced 2 times by &9b3a, &9b55
 .sub_c9b6b
-    tay                                                               ; 9b6b: a8          .     
-    jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..   
-    jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..   
+    tay                                                               ; 9b6b: a8          .        ; Coerce the left operand to integer
+    jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..      ; ...
+    jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..      ; stack it
 ; ***************************************************************************************
 ; Evaluator level 6: AND
 ;
 ; Bitwise AND (&80) on integers.
 ; &9b72 referenced 1 time by &9b29
 .eval_and
-    jsr eval_relational                                               ; 9b72: 20 9c 9b     ..   
+    jsr eval_relational                                               ; 9b72: 20 9c 9b     ..      ; Evaluate a relational operand
 ; &9b75 referenced 1 time by &9b9a
 .loop_c9b75
-    cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND
-    beq c9b7a                                                         ; 9b77: f0 01       ..    
-    rts                                                               ; 9b79: 60          `     
+    cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND  AND token?
+    beq c9b7a                                                         ; 9b77: f0 01       ..       ; yes
+    rts                                                               ; 9b79: 60          `        ; no: return
 ; &9b7a referenced 1 time by &9b77
 .c9b7a
-    tay                                                               ; 9b7a: a8          .     
-    jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..   
-    jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..   
-    jsr eval_relational                                               ; 9b81: 20 9c 9b     ..   
-    tay                                                               ; 9b84: a8          .     
-    jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..   
-    ldy #3                                                            ; 9b88: a0 03       ..    
+    tay                                                               ; 9b7a: a8          .        ; Coerce the left operand to integer
+    jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..      ; ...
+    jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..      ; stack it
+    jsr eval_relational                                               ; 9b81: 20 9c 9b     ..      ; evaluate the right operand
+    tay                                                               ; 9b84: a8          .        ; ensure it is integer
+    jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..      ; ...
+    ldy #3                                                            ; 9b88: a0 03       ..       ; Four bytes
 ; &9b8a referenced 1 time by &9b93
 .loop_c9b8a
-    lda (zp_stack_ptr),y                                              ; 9b8a: b1 04       ..    
-    and zp_iwa,y                                                      ; 9b8c: 39 2a 00    9*.   
-    sta zp_iwa,y                                                      ; 9b8f: 99 2a 00    .*.   
-    dey                                                               ; 9b92: 88          .     
-    bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..    
-    jsr drop_stack_integer                                            ; 9b95: 20 ff bd     ..   
-    lda #&40 ; '@'                                                    ; 9b98: a9 40       .@    
-    bne loop_c9b75                                                    ; 9b9a: d0 d9       ..    
+    lda (zp_stack_ptr),y                                              ; 9b8a: b1 04       ..       ; stacked byte
+    and zp_iwa,y                                                      ; 9b8c: 39 2a 00    9*.      ; AND with IWA
+    sta zp_iwa,y                                                      ; 9b8f: 99 2a 00    .*.      ; store back
+    dey                                                               ; 9b92: 88          .        ; next byte
+    bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..       ; ...
+    jsr drop_stack_integer                                            ; 9b95: 20 ff bd     ..      ; Drop the stacked operand
+    lda #&40 ; '@'                                                    ; 9b98: a9 40       .@       ; Result type = integer
+    bne loop_c9b75                                                    ; 9b9a: d0 d9       ..       ; loop for further AND
 ; ***************************************************************************************
 ; Evaluator level 5: < <= = >= > <>
 ;
