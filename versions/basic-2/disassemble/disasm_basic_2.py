@@ -4205,6 +4205,65 @@ d.comment(0x9bfc, 'evaluate and compare', align=Align.INLINE)
 d.comment(0x9bff, 'greater or equal: TRUE', align=Align.INLINE)
 d.comment(0x9c01, 'less: FALSE', align=Align.INLINE)
 
+# fn_log (&ABA8): LOG(x) = log10(x) = ln(x) * log10(e).
+d.comment(0xaba8, 'FWA = ln(x)', align=Align.INLINE)
+d.comment(0xabab, 'Point at the constant log10(e): low byte', align=Align.INLINE)
+d.comment(0xabad, 'high byte', align=Align.INLINE)
+d.comment(0xabaf, 'FWA = ln(x) * log10(e)', align=Align.INLINE)
+
+# assign_number (&B4B4): store a numeric value into a numeric variable.
+d.comment(0xb4b4, 'Pop the variable data address from the stack',
+          align=Align.INLINE)
+d.comment(0xb4b7, "Variable's size/type byte", align=Align.INLINE)
+d.comment(0xb4b9, 'size 5 = real variable?', align=Align.INLINE)
+d.comment(0xb4bb, 'yes: store as a real', align=Align.INLINE)
+d.comment(0xb4bd, 'Type of the value', align=Align.INLINE)
+d.comment(0xb4bf, 'string: Type mismatch', align=Align.INLINE)
+d.comment(0xb4c1, 'integer: store directly', align=Align.INLINE)
+d.comment(0xb4c3, 'real value, integer variable: convert', align=Align.INLINE)
+
+# ----------------------------------------------------------------------
+# stmt_if (&98C2): the IF statement.
+# Evaluates the condition, then for a true result executes the THEN
+# part (a statement or a GOTO line number); for false it scans the rest
+# of the line for ELSE and runs what follows, else moves to the next
+# line.
+# ----------------------------------------------------------------------
+d.comment(0x98c2, 'Evaluate the condition', align=Align.INLINE)
+d.comment(0x98c5, 'string: handle elsewhere', align=Align.INLINE)
+d.comment(0x98c7, 'integer: use as is', align=Align.INLINE)
+d.comment(0x98c9, 'real: convert to integer', align=Align.INLINE)
+d.comment(0x98cc, 'Advance the text pointer past the condition',
+          align=Align.INLINE)
+d.comment(0x98ce, '...', align=Align.INLINE)
+d.comment(0x98d0, 'Is the condition value zero (false)?', align=Align.INLINE)
+d.comment(0x98d2, '...', align=Align.INLINE)
+d.comment(0x98d4, '...', align=Align.INLINE)
+d.comment(0x98d6, '...', align=Align.INLINE)
+d.comment(0x98d8, 'false: look for ELSE', align=Align.INLINE)
+d.comment(0x98da, 'true: is the next token THEN?', align=Align.INLINE)
+d.comment(0x98dc, 'yes', align=Align.INLINE)
+d.comment(0x98de, 'no THEN: execute the statement that follows',
+          align=Align.INLINE)
+d.comment(0x98e1, 'Step past THEN', align=Align.INLINE)
+d.comment(0x98e3, 'Is a line number following (THEN <line>)?',
+          align=Align.INLINE)
+d.comment(0x98e6, 'no: execute the statements after THEN', align=Align.INLINE)
+d.comment(0x98e8, 'yes: set up the line number...', align=Align.INLINE)
+d.comment(0x98eb, '...', align=Align.INLINE)
+d.comment(0x98ee, '...and GOTO it', align=Align.INLINE)
+d.comment(0x98f1, 'False: scan the rest of the line for ELSE',
+          align=Align.INLINE)
+d.comment(0x98f3, 'Next character', align=Align.INLINE)
+d.comment(0x98f5, 'end of line?', align=Align.INLINE)
+d.comment(0x98f7, 'yes: move to the next line', align=Align.INLINE)
+d.comment(0x98f9, 'advance', align=Align.INLINE)
+d.comment(0x98fa, 'ELSE token?', align=Align.INLINE)
+d.comment(0x98fc, 'no: keep scanning', align=Align.INLINE)
+d.comment(0x98fe, 'found ELSE: point past it', align=Align.INLINE)
+d.comment(0x9900, 'execute what follows ELSE', align=Align.INLINE)
+d.comment(0x9902, 'No ELSE: continue at the next line', align=Align.INLINE)
+
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)
 d.comment(0x9dd4, 'next operator "*"?', align=Align.INLINE)

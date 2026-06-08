@@ -41857,6 +41857,7 @@
       "labels": [
         "stmt_if"
       ],
+      "comment_inline": "Evaluate the condition",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -41869,6 +41870,7 @@
         240,
         248
       ],
+      "comment_inline": "string: handle elsewhere",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c98bf",
@@ -41881,6 +41883,7 @@
         16,
         3
       ],
+      "comment_inline": "integer: use as is",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c98cc",
@@ -41894,6 +41897,7 @@
         228,
         163
       ],
+      "comment_inline": "real: convert to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int",
@@ -41909,6 +41913,7 @@
       "labels": [
         "c98cc"
       ],
+      "comment_inline": "Advance the text pointer past the condition",
       "xref_summaries": [
         "&98cc referenced 1 time by &98c7"
       ],
@@ -41927,6 +41932,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -41939,6 +41945,7 @@
         165,
         42
       ],
+      "comment_inline": "Is the condition value zero (false)?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -41951,6 +41958,7 @@
         5,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -41963,6 +41971,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -41975,6 +41984,7 @@
         5,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -41987,6 +41997,7 @@
         240,
         23
       ],
+      "comment_inline": "false: look for ELSE",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c98f1",
@@ -41999,6 +42010,7 @@
         224,
         140
       ],
+      "comment_inline": "true: is the next token THEN?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&8c"
@@ -42009,6 +42021,7 @@
         240,
         3
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c98e1",
@@ -42025,6 +42038,7 @@
       "labels": [
         "loop_c98de"
       ],
+      "comment_inline": "no THEN: execute the statement that follows",
       "xref_summaries": [
         "&98de referenced 1 time by &98e6"
       ],
@@ -42046,6 +42060,7 @@
       "labels": [
         "c98e1"
       ],
+      "comment_inline": "Step past THEN",
       "xref_summaries": [
         "&98e1 referenced 1 time by &98dc"
       ],
@@ -42068,6 +42083,7 @@
       "labels": [
         "c98e3"
       ],
+      "comment_inline": "Is a line number following (THEN <line>)?",
       "xref_summaries": [
         "&98e3 referenced 2 times by &9900, &b997"
       ],
@@ -42087,6 +42103,7 @@
         144,
         246
       ],
+      "comment_inline": "no: execute the statements after THEN",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c98de",
@@ -42100,6 +42117,7 @@
         175,
         185
       ],
+      "comment_inline": "yes: set up the line number...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb9af",
@@ -42113,6 +42131,7 @@
         119,
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9877",
@@ -42126,6 +42145,7 @@
         210,
         184
       ],
+      "comment_inline": "...and GOTO it",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb8d2",
@@ -42141,6 +42161,7 @@
       "labels": [
         "c98f1"
       ],
+      "comment_inline": "False: scan the rest of the line for ELSE",
       "xref_summaries": [
         "&98f1 referenced 1 time by &98d8"
       ],
@@ -42162,6 +42183,7 @@
       "labels": [
         "loop_c98f3"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&98f3 referenced 1 time by &98fc"
       ],
@@ -42180,6 +42202,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -42190,6 +42213,7 @@
         240,
         9
       ],
+      "comment_inline": "yes: move to the next line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9902",
@@ -42201,6 +42225,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42210,6 +42235,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -42220,6 +42246,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c98f3",
@@ -42232,6 +42259,7 @@
         132,
         10
       ],
+      "comment_inline": "found ELSE: point past it",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -42244,6 +42272,7 @@
         240,
         225
       ],
+      "comment_inline": "execute what follows ELSE",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c98e3",
@@ -42260,6 +42289,7 @@
       "labels": [
         "c9902"
       ],
+      "comment_inline": "No ELSE: continue at the next line",
       "xref_summaries": [
         "&9902 referenced 1 time by &98f7"
       ],
@@ -73233,6 +73263,7 @@
       "labels": [
         "fn_log"
       ],
+      "comment_inline": "FWA = ln(x)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fn_ln",
@@ -73245,6 +73276,7 @@
         160,
         105
       ],
+      "comment_inline": "Point at the constant log10(e): low byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&69"
@@ -73255,6 +73287,7 @@
         169,
         168
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a8"
@@ -73265,6 +73298,7 @@
         208,
         7
       ],
+      "comment_inline": "FWA = ln(x) * log10(e)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cabb8",
@@ -88018,6 +88052,7 @@
       "labels": [
         "assign_number"
       ],
+      "comment_inline": "Pop the variable data address from the stack",
       "xref_summaries": [
         "&b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6"
       ],
@@ -88044,6 +88079,7 @@
       "labels": [
         "sub_cb4b7"
       ],
+      "comment_inline": "Variable's size/type byte",
       "xref_summaries": [
         "&b4b7 referenced 1 time by &b2f3"
       ],
@@ -88062,6 +88098,7 @@
         201,
         5
       ],
+      "comment_inline": "size 5 = real variable?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#5"
@@ -88072,6 +88109,7 @@
         240,
         35
       ],
+      "comment_inline": "yes: store as a real",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb4e0",
@@ -88084,6 +88122,7 @@
         165,
         39
       ],
+      "comment_inline": "Type of the value",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -88096,6 +88135,7 @@
         240,
         237
       ],
+      "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb4ae",
@@ -88108,6 +88148,7 @@
         16,
         3
       ],
+      "comment_inline": "integer: store directly",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "iwa_store_var",
@@ -88121,6 +88162,7 @@
         228,
         163
       ],
+      "comment_inline": "real value, integer variable: convert",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int",

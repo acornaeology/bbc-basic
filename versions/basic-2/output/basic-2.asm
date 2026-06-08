@@ -4627,50 +4627,50 @@ l848a = sub_c847b+15
 ; Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE
 ; or the end of the line. IF expr [THEN] ... [ELSE ...].
 .stmt_if
-    jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..   
-    beq loop_c98bf                                                    ; 98c5: f0 f8       ..    
-    bpl c98cc                                                         ; 98c7: 10 03       ..    
-    jsr fwa_to_int                                                    ; 98c9: 20 e4 a3     ..   
+    jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..      ; Evaluate the condition
+    beq loop_c98bf                                                    ; 98c5: f0 f8       ..       ; string: handle elsewhere
+    bpl c98cc                                                         ; 98c7: 10 03       ..       ; integer: use as is
+    jsr fwa_to_int                                                    ; 98c9: 20 e4 a3     ..      ; real: convert to integer
 ; &98cc referenced 1 time by &98c7
 .c98cc
-    ldy zp_text_ptr2_off                                              ; 98cc: a4 1b       ..    
-    sty zp_text_ptr_off                                               ; 98ce: 84 0a       ..    
-    lda zp_iwa                                                        ; 98d0: a5 2a       .*    
-    ora zp_iwa_1                                                      ; 98d2: 05 2b       .+    
-    ora zp_iwa_2                                                      ; 98d4: 05 2c       .,    
-    ora zp_iwa_3                                                      ; 98d6: 05 2d       .-    
-    beq c98f1                                                         ; 98d8: f0 17       ..    
-    cpx #&8c                                                          ; 98da: e0 8c       ..    
-    beq c98e1                                                         ; 98dc: f0 03       ..    
+    ldy zp_text_ptr2_off                                              ; 98cc: a4 1b       ..       ; Advance the text pointer past the condition
+    sty zp_text_ptr_off                                               ; 98ce: 84 0a       ..       ; ...
+    lda zp_iwa                                                        ; 98d0: a5 2a       .*       ; Is the condition value zero (false)?
+    ora zp_iwa_1                                                      ; 98d2: 05 2b       .+       ; ...
+    ora zp_iwa_2                                                      ; 98d4: 05 2c       .,       ; ...
+    ora zp_iwa_3                                                      ; 98d6: 05 2d       .-       ; ...
+    beq c98f1                                                         ; 98d8: f0 17       ..       ; false: look for ELSE
+    cpx #&8c                                                          ; 98da: e0 8c       ..       ; true: is the next token THEN?
+    beq c98e1                                                         ; 98dc: f0 03       ..       ; yes
 ; &98de referenced 1 time by &98e6
 .loop_c98de
-    jmp c8ba3                                                         ; 98de: 4c a3 8b    L..   
+    jmp c8ba3                                                         ; 98de: 4c a3 8b    L..      ; no THEN: execute the statement that follows
 ; &98e1 referenced 1 time by &98dc
 .c98e1
-    inc zp_text_ptr_off                                               ; 98e1: e6 0a       ..    
+    inc zp_text_ptr_off                                               ; 98e1: e6 0a       ..       ; Step past THEN
 ; &98e3 referenced 2 times by &9900, &b997
 .c98e3
-    jsr sub_c97df                                                     ; 98e3: 20 df 97     ..   
-    bcc loop_c98de                                                    ; 98e6: 90 f6       ..    
-    jsr cb9af                                                         ; 98e8: 20 af b9     ..   
-    jsr c9877                                                         ; 98eb: 20 77 98     w.   
-    jmp cb8d2                                                         ; 98ee: 4c d2 b8    L..   
+    jsr sub_c97df                                                     ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
+    bcc loop_c98de                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
+    jsr cb9af                                                         ; 98e8: 20 af b9     ..      ; yes: set up the line number...
+    jsr c9877                                                         ; 98eb: 20 77 98     w.      ; ...
+    jmp cb8d2                                                         ; 98ee: 4c d2 b8    L..      ; ...and GOTO it
 ; &98f1 referenced 1 time by &98d8
 .c98f1
-    ldy zp_text_ptr_off                                               ; 98f1: a4 0a       ..    
+    ldy zp_text_ptr_off                                               ; 98f1: a4 0a       ..       ; False: scan the rest of the line for ELSE
 ; &98f3 referenced 1 time by &98fc
 .loop_c98f3
-    lda (zp_text_ptr),y                                               ; 98f3: b1 0b       ..    
-    cmp #&0d                                                          ; 98f5: c9 0d       ..    
-    beq c9902                                                         ; 98f7: f0 09       ..    
-    iny                                                               ; 98f9: c8          .     
-    cmp #&8b                                                          ; 98fa: c9 8b       ..    
-    bne loop_c98f3                                                    ; 98fc: d0 f5       ..    
-    sty zp_text_ptr_off                                               ; 98fe: 84 0a       ..    
-    beq c98e3                                                         ; 9900: f0 e1       ..    
+    lda (zp_text_ptr),y                                               ; 98f3: b1 0b       ..       ; Next character
+    cmp #&0d                                                          ; 98f5: c9 0d       ..       ; end of line?
+    beq c9902                                                         ; 98f7: f0 09       ..       ; yes: move to the next line
+    iny                                                               ; 98f9: c8          .        ; advance
+    cmp #&8b                                                          ; 98fa: c9 8b       ..       ; ELSE token?
+    bne loop_c98f3                                                    ; 98fc: d0 f5       ..       ; no: keep scanning
+    sty zp_text_ptr_off                                               ; 98fe: 84 0a       ..       ; found ELSE: point past it
+    beq c98e3                                                         ; 9900: f0 e1       ..       ; execute what follows ELSE
 ; &9902 referenced 1 time by &98f7
 .c9902
-    jmp c8b87                                                         ; 9902: 4c 87 8b    L..   
+    jmp c8b87                                                         ; 9902: 4c 87 8b    L..      ; No ELSE: continue at the next line
 ; &9905 referenced 2 times by &98a7, &b8d6
 .sub_c9905
     lda zp_iwa                                                        ; 9905: a5 2a       .*    
@@ -8001,10 +8001,10 @@ l848a = sub_c847b+15
 ;
 ; FWA = base-10 log of FWA. Pure routine at &ABAB.
 .fn_log
-    jsr fn_ln                                                         ; aba8: 20 fe a7     ..   
-    ldy #&69 ; 'i'                                                    ; abab: a0 69       .i    
-    lda #&a8                                                          ; abad: a9 a8       ..    
-    bne cabb8                                                         ; abaf: d0 07       ..    
+    jsr fn_ln                                                         ; aba8: 20 fe a7     ..      ; FWA = ln(x)
+    ldy #&69 ; 'i'                                                    ; abab: a0 69       .i       ; Point at the constant log10(e): low byte
+    lda #&a8                                                          ; abad: a9 a8       ..       ; high byte
+    bne cabb8                                                         ; abaf: d0 07       ..       ; FWA = ln(x) * log10(e)
 ; ***************************************************************************************
 ; RAD
 ;
@@ -9791,16 +9791,16 @@ l848a = sub_c847b+15
 ; the stack, in the variable's own type.
 ; &b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6
 .assign_number
-    jsr unstack_int_to_general                                        ; b4b4: 20 0b be     ..   
+    jsr unstack_int_to_general                                        ; b4b4: 20 0b be     ..      ; Pop the variable data address from the stack
 ; &b4b7 referenced 1 time by &b2f3
 .sub_cb4b7
-    lda zp_fileblk                                                    ; b4b7: a5 39       .9    
-    cmp #5                                                            ; b4b9: c9 05       ..    
-    beq cb4e0                                                         ; b4bb: f0 23       .#    
-    lda zp_var_type                                                   ; b4bd: a5 27       .'    
-    beq cb4ae                                                         ; b4bf: f0 ed       ..    
-    bpl iwa_store_var                                                 ; b4c1: 10 03       ..    
-    jsr fwa_to_int                                                    ; b4c3: 20 e4 a3     ..   
+    lda zp_fileblk                                                    ; b4b7: a5 39       .9       ; Variable's size/type byte
+    cmp #5                                                            ; b4b9: c9 05       ..       ; size 5 = real variable?
+    beq cb4e0                                                         ; b4bb: f0 23       .#       ; yes: store as a real
+    lda zp_var_type                                                   ; b4bd: a5 27       .'       ; Type of the value
+    beq cb4ae                                                         ; b4bf: f0 ed       ..       ; string: Type mismatch
+    bpl iwa_store_var                                                 ; b4c1: 10 03       ..       ; integer: store directly
+    jsr fwa_to_int                                                    ; b4c3: 20 e4 a3     ..      ; real value, integer variable: convert
 ; ***************************************************************************************
 ; Store the accumulator into an integer variable
 ;
