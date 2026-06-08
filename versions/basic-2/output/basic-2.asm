@@ -413,23 +413,23 @@ oscli            = &fff7
 ; start_new_program, which clears any program and enters the immediate ("> ") loop.
 ; &8023 referenced 1 time by &8002
 .language_startup
-    lda #osbyte_read_himem                                            ; 8023: a9 84       ..    
+    lda #osbyte_read_himem                                            ; 8023: a9 84       ..       ; OSBYTE &84: read HIMEM
     jsr osbyte                                                        ; 8025: 20 f4 ff     ..      ; Read top of available user RAM (HIMEM)
     stx zp_himem                                                      ; 8028: 86 06       ..       ; X and Y contain the address of HIMEM (low, high)
-    sty zp_himem_1                                                    ; 802a: 84 07       ..    
-    lda #osbyte_read_oshwm                                            ; 802c: a9 83       ..    
+    sty zp_himem_1                                                    ; 802a: 84 07       ..       ; HIMEM high byte
+    lda #osbyte_read_oshwm                                            ; 802c: a9 83       ..       ; OSBYTE &83: read OSHWM (PAGE)
     jsr osbyte                                                        ; 802e: 20 f4 ff     ..      ; Read top of operating system RAM address (OSHWM)
     sty zp_page                                                       ; 8031: 84 18       ..       ; X and Y contain the address of OSHWM (low, high)
-    ldx #0                                                            ; 8033: a2 00       ..    
+    ldx #0                                                            ; 8033: a2 00       ..       ; X = 0
     stx zp_listo                                                      ; 8035: 86 1f       ..       ; LISTO = 0: no LIST indentation
     stx l0402                                                         ; 8037: 8e 02 04    ...      ; @% high two bytes = 0
-    stx l0403                                                         ; 803a: 8e 03 04    ...   
-    dex                                                               ; 803d: ca          .     
+    stx l0403                                                         ; 803a: 8e 03 04    ...      ; @% byte 3 = 0
+    dex                                                               ; 803d: ca          .        ; X = &FF
     stx zp_width                                                      ; 803e: 86 23       .#       ; WIDTH = &FF: no automatic line wrap
-    ldx #&0a                                                          ; 8040: a2 0a       ..    
+    ldx #&0a                                                          ; 8040: a2 0a       ..       ; @% = &0000090A: byte 0 = &0A
     stx resint_at                                                     ; 8042: 8e 00 04    ...      ; @% = &0000090A: default PRINT format
-    dex                                                               ; 8045: ca          .     
-    stx l0401                                                         ; 8046: 8e 01 04    ...   
+    dex                                                               ; 8045: ca          .        ; X = &09
+    stx l0401                                                         ; 8046: 8e 01 04    ...      ; @% byte 1 = &09
     lda #1                                                            ; 8049: a9 01       ..       ; Test the LFSR state for all-zero...
     and zp_rnd_seed_4                                                 ; 804b: 25 11       %.       ; ...only bit 0 of &11 belongs to the register
     ora zp_rnd_seed                                                   ; 804d: 05 0d       ..       ; OR bits 0-7
@@ -452,11 +452,11 @@ oscli            = &fff7
 ; &8063 referenced 1 time by &8055
 .c8063
     lda #2                                                            ; 8063: a9 02       ..       ; Install brk_handler (&B402) into BRKV
-    sta brkv                                                          ; 8065: 8d 02 02    ...   
-    lda #&b4                                                          ; 8068: a9 b4       ..    
-    sta brkv+1                                                        ; 806a: 8d 03 02    ...   
+    sta brkv                                                          ; 8065: 8d 02 02    ...      ; (BRKV low)
+    lda #&b4                                                          ; 8068: a9 b4       ..       ; high byte &B4
+    sta brkv+1                                                        ; 806a: 8d 03 02    ...      ; (BRKV high)
     cli                                                               ; 806d: 58          X        ; Enable IRQs and enter the immediate loop
-    jmp start_new_program                                             ; 806e: 4c dd 8a    L..   
+    jmp start_new_program                                             ; 806e: 4c dd 8a    L..      ; Enter via NEW and the immediate loop
 ; ***************************************************************************************
 ; Keyword / tokeniser table
 ;
@@ -5987,7 +5987,7 @@ l848a = sub_c847b+15
     lda zp_fwa_m1                                                     ; a049: a5 31       .1    
     and #&0f                                                          ; a04b: 29 0f       ).    
     sta zp_fwa_m1                                                     ; a04d: 85 31       .1    
-    jmp ca197                                                         ; a04f: 4c 97 a1    L..   
+    jmp mant_mul10                                                    ; a04f: 4c 97 a1    L..   
 ; &a052 referenced 1 time by &a028
 .sub_ca052
     ldx #&ff                                                          ; a052: a2 ff       ..    
@@ -6078,7 +6078,7 @@ l848a = sub_c847b+15
     dec l0049                                                         ; a0c6: c6 49       .I    
 ; &a0c8 referenced 1 time by &a0c4
 .ca0c8
-    jsr ca197                                                         ; a0c8: 20 97 a1     ..   
+    jsr mant_mul10                                                    ; a0c8: 20 97 a1     ..   
     adc zp_fwa_rnd                                                    ; a0cb: 65 35       e5    
     sta zp_fwa_rnd                                                    ; a0cd: 85 35       .5    
     bcc ca099                                                         ; a0cf: 90 c8       ..    
@@ -6205,64 +6205,68 @@ l848a = sub_c847b+15
 ; FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10).
 ; &a178 referenced 2 times by &a208, &a64f
 .fwa_acc_fwb
-    lda zp_fwa_rnd                                                    ; a178: a5 35       .5    
-    adc zp_fwb_rnd                                                    ; a17a: 65 42       eB    
-    sta zp_fwa_rnd                                                    ; a17c: 85 35       .5    
-    lda zp_fwa_m4                                                     ; a17e: a5 34       .4    
-    adc zp_fwb_m4                                                     ; a180: 65 41       eA    
-    sta zp_fwa_m4                                                     ; a182: 85 34       .4    
-    lda zp_fwa_m3                                                     ; a184: a5 33       .3    
-    adc zp_fwb_m3                                                     ; a186: 65 40       e@    
-    sta zp_fwa_m3                                                     ; a188: 85 33       .3    
-    lda zp_fwa_m2                                                     ; a18a: a5 32       .2    
-    adc zp_fwb_m2                                                     ; a18c: 65 3f       e?    
-    sta zp_fwa_m2                                                     ; a18e: 85 32       .2    
-    lda zp_fwa_m1                                                     ; a190: a5 31       .1    
-    adc zp_fwb_m1                                                     ; a192: 65 3e       e>    
-    sta zp_fwa_m1                                                     ; a194: 85 31       .1    
-    rts                                                               ; a196: 60          `     
+    lda zp_fwa_rnd                                                    ; a178: a5 35       .5       ; Add the mantissas: rounding byte
+    adc zp_fwb_rnd                                                    ; a17a: 65 42       eB       ; - FWB rounding
+    sta zp_fwa_rnd                                                    ; a17c: 85 35       .5       ; (store)
+    lda zp_fwa_m4                                                     ; a17e: a5 34       .4       ; m4
+    adc zp_fwb_m4                                                     ; a180: 65 41       eA       ; - FWB m4
+    sta zp_fwa_m4                                                     ; a182: 85 34       .4       ; (store)
+    lda zp_fwa_m3                                                     ; a184: a5 33       .3       ; m3
+    adc zp_fwb_m3                                                     ; a186: 65 40       e@       ; ...
+    sta zp_fwa_m3                                                     ; a188: 85 33       .3       ; (store)
+    lda zp_fwa_m2                                                     ; a18a: a5 32       .2       ; m2
+    adc zp_fwb_m2                                                     ; a18c: 65 3f       e?       ; ...
+    sta zp_fwa_m2                                                     ; a18e: 85 32       .2       ; (store)
+    lda zp_fwa_m1                                                     ; a190: a5 31       .1       ; m1
+    adc zp_fwb_m1                                                     ; a192: 65 3e       e>       ; ...
+    sta zp_fwa_m1                                                     ; a194: 85 31       .1       ; (store)
+    rts                                                               ; a196: 60          `        ; Return (carry = overflow)
+; ***************************************************************************************
+; Multiply the FWA mantissa by 10
+;
+; Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions.
 ; &a197 referenced 2 times by &a04f, &a0c8
-.ca197
-    pha                                                               ; a197: 48          H     
-    ldx zp_fwa_m4                                                     ; a198: a6 34       .4    
-    lda zp_fwa_m1                                                     ; a19a: a5 31       .1    
-    pha                                                               ; a19c: 48          H     
-    lda zp_fwa_m2                                                     ; a19d: a5 32       .2    
-    pha                                                               ; a19f: 48          H     
-    lda zp_fwa_m3                                                     ; a1a0: a5 33       .3    
-    pha                                                               ; a1a2: 48          H     
-    lda zp_fwa_rnd                                                    ; a1a3: a5 35       .5    
-    asl a                                                             ; a1a5: 0a          .     
-    rol zp_fwa_m4                                                     ; a1a6: 26 34       &4    
-    rol zp_fwa_m3                                                     ; a1a8: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a1aa: 26 32       &2    
-    rol zp_fwa_m1                                                     ; a1ac: 26 31       &1    
-    asl a                                                             ; a1ae: 0a          .     
-    rol zp_fwa_m4                                                     ; a1af: 26 34       &4    
-    rol zp_fwa_m3                                                     ; a1b1: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a1b3: 26 32       &2    
-    rol zp_fwa_m1                                                     ; a1b5: 26 31       &1    
-    adc zp_fwa_rnd                                                    ; a1b7: 65 35       e5    
-    sta zp_fwa_rnd                                                    ; a1b9: 85 35       .5    
-    txa                                                               ; a1bb: 8a          .     
-    adc zp_fwa_m4                                                     ; a1bc: 65 34       e4    
-    sta zp_fwa_m4                                                     ; a1be: 85 34       .4    
-    pla                                                               ; a1c0: 68          h     
-    adc zp_fwa_m3                                                     ; a1c1: 65 33       e3    
-    sta zp_fwa_m3                                                     ; a1c3: 85 33       .3    
-    pla                                                               ; a1c5: 68          h     
-    adc zp_fwa_m2                                                     ; a1c6: 65 32       e2    
-    sta zp_fwa_m2                                                     ; a1c8: 85 32       .2    
-    pla                                                               ; a1ca: 68          h     
-    adc zp_fwa_m1                                                     ; a1cb: 65 31       e1    
-    asl zp_fwa_rnd                                                    ; a1cd: 06 35       .5    
-    rol zp_fwa_m4                                                     ; a1cf: 26 34       &4    
-    rol zp_fwa_m3                                                     ; a1d1: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a1d3: 26 32       &2    
-    rol a                                                             ; a1d5: 2a          *     
-    sta zp_fwa_m1                                                     ; a1d6: 85 31       .1    
-    pla                                                               ; a1d8: 68          h     
-    rts                                                               ; a1d9: 60          `     
+.mant_mul10
+    pha                                                               ; a197: 48          H        ; Save A
+    ldx zp_fwa_m4                                                     ; a198: a6 34       .4       ; keep m4 in X
+    lda zp_fwa_m1                                                     ; a19a: a5 31       .1       ; save the mantissa (m1..m3):
+    pha                                                               ; a19c: 48          H        ; ...
+    lda zp_fwa_m2                                                     ; a19d: a5 32       .2       ; ...
+    pha                                                               ; a19f: 48          H        ; ...
+    lda zp_fwa_m3                                                     ; a1a0: a5 33       .3       ; ...
+    pha                                                               ; a1a2: 48          H        ; ...
+    lda zp_fwa_rnd                                                    ; a1a3: a5 35       .5       ; x2: shift the mantissa left
+    asl a                                                             ; a1a5: 0a          .        ; ...
+    rol zp_fwa_m4                                                     ; a1a6: 26 34       &4       ; ...
+    rol zp_fwa_m3                                                     ; a1a8: 26 33       &3       ; ...
+    rol zp_fwa_m2                                                     ; a1aa: 26 32       &2       ; ...
+    rol zp_fwa_m1                                                     ; a1ac: 26 31       &1       ; ...
+    asl a                                                             ; a1ae: 0a          .        ; x2 again (now x4)
+    rol zp_fwa_m4                                                     ; a1af: 26 34       &4       ; ...
+    rol zp_fwa_m3                                                     ; a1b1: 26 33       &3       ; ...
+    rol zp_fwa_m2                                                     ; a1b3: 26 32       &2       ; ...
+    rol zp_fwa_m1                                                     ; a1b5: 26 31       &1       ; ...
+    adc zp_fwa_rnd                                                    ; a1b7: 65 35       e5       ; add the saved original (x4 + x1 = x5): rnd
+    sta zp_fwa_rnd                                                    ; a1b9: 85 35       .5       ; (store)
+    txa                                                               ; a1bb: 8a          .        ; m4
+    adc zp_fwa_m4                                                     ; a1bc: 65 34       e4       ; ...
+    sta zp_fwa_m4                                                     ; a1be: 85 34       .4       ; (store)
+    pla                                                               ; a1c0: 68          h        ; m3
+    adc zp_fwa_m3                                                     ; a1c1: 65 33       e3       ; ...
+    sta zp_fwa_m3                                                     ; a1c3: 85 33       .3       ; (store)
+    pla                                                               ; a1c5: 68          h        ; m2
+    adc zp_fwa_m2                                                     ; a1c6: 65 32       e2       ; ...
+    sta zp_fwa_m2                                                     ; a1c8: 85 32       .2       ; (store)
+    pla                                                               ; a1ca: 68          h        ; m1
+    adc zp_fwa_m1                                                     ; a1cb: 65 31       e1       ; ...
+    asl zp_fwa_rnd                                                    ; a1cd: 06 35       .5       ; x2 (now x10): shift left
+    rol zp_fwa_m4                                                     ; a1cf: 26 34       &4       ; ...
+    rol zp_fwa_m3                                                     ; a1d1: 26 33       &3       ; ...
+    rol zp_fwa_m2                                                     ; a1d3: 26 32       &2       ; ...
+    rol a                                                             ; a1d5: 2a          *        ; ...
+    sta zp_fwa_m1                                                     ; a1d6: 85 31       .1       ; store m1
+    pla                                                               ; a1d8: 68          h        ; restore A
+    rts                                                               ; a1d9: 60          `        ; Return
 ; ***************************************************************************************
 ; Get the sign of the FP accumulator
 ;
@@ -6881,7 +6885,7 @@ l848a = sub_c847b+15
 ; Reverse subtract: operand minus FWA (normalised, rounded).
 ; &a4fd referenced 2 times by &9cf4, &a4d0
 .fwa_rsub_var
-    jsr fwa_negate                                                    ; a4fd: 20 7e ad     ~.   
+    jsr fwa_negate                                                    ; a4fd: 20 7e ad     ~.      ; Negate FWA, then add the variable: var - FWA
 ; ***************************************************************************************
 ; FWA = FWA + fp var
 ;
@@ -6896,8 +6900,8 @@ l848a = sub_c847b+15
 ; Add FWB to FWA (normalised, rounded).
 ; &a505 referenced 3 times by &a830, &a94a, &a9e8
 .fwa_add_fwb
-    jsr fwa_add_fwb_raw                                               ; a505: 20 0b a5     ..   
-    jmp fwa_round                                                     ; a508: 4c 5c a6    L\.   
+    jsr fwa_add_fwb_raw                                               ; a505: 20 0b a5     ..      ; FWA = FWA + FWB (raw)
+    jmp fwa_round                                                     ; a508: 4c 5c a6    L\.      ; then round
 ; ***************************************************************************************
 ; FWA = FWA + FWB (unrounded)
 ;
@@ -7135,10 +7139,10 @@ l848a = sub_c847b+15
 ; Multiply FWA by the fp variable operand (normalised, rounded).
 ; &a656 referenced 12 times by &9d2f, &9e81, &a842, &a845, &a85d, &a9b4, &a9c6, &aa17, &aa2c, &aad4, &ab2c, &abbc
 .fwa_mul_var
-    jsr fwa_mul_var_raw                                               ; a656: 20 06 a6     ..   
+    jsr fwa_mul_var_raw                                               ; a656: 20 06 a6     ..      ; FWA = FWA * fp var (raw)
 ; &a659 referenced 2 times by &a7a6, &af81
 .ca659
-    jsr fwa_normalise                                                 ; a659: 20 03 a3     ..   
+    jsr fwa_normalise                                                 ; a659: 20 03 a3     ..      ; normalise (round below)
 ; ***************************************************************************************
 ; Round FWA
 ;
@@ -7207,9 +7211,9 @@ l848a = sub_c847b+15
 ; Reciprocal of the FP accumulator (normalised, rounded).
 ; &a6a5 referenced 2 times by &a921, &ab1a
 .fwa_reciprocal
-    jsr fwa_pack_temp1                                                ; a6a5: 20 85 a3     ..   
-    jsr fwa_set_one                                                   ; a6a8: 20 99 a6     ..   
-    bne ca6e7                                                         ; a6ab: d0 3a       .:    
+    jsr fwa_pack_temp1                                                ; a6a5: 20 85 a3     ..      ; Save FWA (the divisor) in TEMP1
+    jsr fwa_set_one                                                   ; a6a8: 20 99 a6     ..      ; FWA = 1
+    bne ca6e7                                                         ; a6ab: d0 3a       .:       ; divide 1 by the saved value
 ; ***************************************************************************************
 ; FWA = fp var / FWA
 ;
@@ -11577,16 +11581,16 @@ l848a = sub_c847b+15
 ;
 ; Write a byte to an open file. BPUT#channel, value.
 .stmt_bput
-    jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..   
-    pha                                                               ; bf5b: 48          H     
-    jsr skip_spaces_expect_comma                                      ; bf5c: 20 ae 8a     ..   
-    jsr c9849                                                         ; bf5f: 20 49 98     I.   
-    jsr sub_c92ee                                                     ; bf62: 20 ee 92     ..   
-    pla                                                               ; bf65: 68          h     
-    tay                                                               ; bf66: a8          .     
-    lda zp_iwa                                                        ; bf67: a5 2a       .*    
-    jsr osbput                                                        ; bf69: 20 d4 ff     ..   
-    jmp statement_loop                                                ; bf6c: 4c 9b 8b    L..   
+    jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..      ; Evaluate the #handle
+    pha                                                               ; bf5b: 48          H        ; save it
+    jsr skip_spaces_expect_comma                                      ; bf5c: 20 ae 8a     ..      ; require a comma
+    jsr c9849                                                         ; bf5f: 20 49 98     I.      ; evaluate the value
+    jsr sub_c92ee                                                     ; bf62: 20 ee 92     ..      ; coerce to an integer
+    pla                                                               ; bf65: 68          h        ; recover the handle
+    tay                                                               ; bf66: a8          .        ; Y = handle
+    lda zp_iwa                                                        ; bf67: a5 2a       .*       ; A = the byte to write
+    jsr osbput                                                        ; bf69: 20 d4 ff     ..      ; OSBPUT: write the byte
+    jmp statement_loop                                                ; bf6c: 4c 9b 8b    L..      ; Back to execution
 ; ***************************************************************************************
 ; BGET
 ;
@@ -12064,7 +12068,6 @@ save pydis_start, pydis_end
 ;     ca118:                       2
 ;     ca170:                       2
 ;     ca174:                       2
-;     ca197:                       2
 ;     ca313:                       2
 ;     ca336:                       2
 ;     ca40c:                       2
@@ -12157,6 +12160,7 @@ save pydis_start, pydis_end
 ;     l06ff:                       2
 ;     load_program:                2
 ;     load_real_var:               2
+;     mant_mul10:                  2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -13318,7 +13322,6 @@ save pydis_start, pydis_end
 ;     ca14e
 ;     ca170
 ;     ca174
-;     ca197
 ;     ca1ed
 ;     ca1ff
 ;     ca208

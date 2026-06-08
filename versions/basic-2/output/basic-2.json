@@ -1712,6 +1712,12 @@
       "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
     },
     {
+      "addr": 41367,
+      "name": "mant_mul10",
+      "title": "Multiply the FWA mantissa by 10",
+      "description": "Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions."
+    },
+    {
       "addr": 41083,
       "name": "parse_number",
       "title": "Parse an unsigned number at PtrB",
@@ -2242,6 +2248,7 @@
       "labels": [
         "language_startup"
       ],
+      "comment_inline": "OSBYTE &84: read HIMEM",
       "xref_summaries": [
         "&8023 referenced 1 time by &8002"
       ],
@@ -2285,6 +2292,7 @@
         132,
         7
       ],
+      "comment_inline": "HIMEM high byte",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_himem_1",
@@ -2297,6 +2305,7 @@
         169,
         131
       ],
+      "comment_inline": "OSBYTE &83: read OSHWM (PAGE)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_oshwm"
@@ -2334,6 +2343,7 @@
         162,
         0
       ],
+      "comment_inline": "X = 0",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#0"
@@ -2372,6 +2382,7 @@
         3,
         4
       ],
+      "comment_inline": "@% byte 3 = 0",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l0403",
@@ -2383,6 +2394,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "X = &FF",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -2405,6 +2417,7 @@
         162,
         10
       ],
+      "comment_inline": "@% = &0000090A: byte 0 = &0A",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&0a"
@@ -2428,6 +2441,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "X = &09",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -2438,6 +2452,7 @@
         1,
         4
       ],
+      "comment_inline": "@% byte 1 = &09",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l0401",
@@ -2635,6 +2650,7 @@
         2,
         2
       ],
+      "comment_inline": "(BRKV low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "brkv",
@@ -2647,6 +2663,7 @@
         169,
         180
       ],
+      "comment_inline": "high byte &B4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -2658,6 +2675,7 @@
         3,
         2
       ],
+      "comment_inline": "(BRKV high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "brkv+1",
@@ -2679,6 +2697,7 @@
         221,
         138
       ],
+      "comment_inline": "Enter via NEW and the immediate loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "start_new_program",
@@ -53800,9 +53819,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca197",
+      "operand": "mant_mul10",
       "target": 41367,
-      "target_label": "ca197"
+      "target_label": "mant_mul10"
     },
     {
       "addr": 41042,
@@ -54625,9 +54644,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca197",
+      "operand": "mant_mul10",
       "target": 41367,
-      "target_label": "ca197"
+      "target_label": "mant_mul10"
     },
     {
       "addr": 41163,
@@ -55783,6 +55802,7 @@
       "labels": [
         "fwa_acc_fwb"
       ],
+      "comment_inline": "Add the mantissas: rounding byte",
       "xref_summaries": [
         "&a178 referenced 2 times by &a208, &a64f"
       ],
@@ -55802,6 +55822,7 @@
         101,
         66
       ],
+      "comment_inline": "+ FWB rounding",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_rnd",
@@ -55814,6 +55835,7 @@
         133,
         53
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -55826,6 +55848,7 @@
         165,
         52
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -55838,6 +55861,7 @@
         101,
         65
       ],
+      "comment_inline": "+ FWB m4",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m4",
@@ -55850,6 +55874,7 @@
         133,
         52
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -55862,6 +55887,7 @@
         165,
         51
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -55874,6 +55900,7 @@
         101,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m3",
@@ -55886,6 +55913,7 @@
         133,
         51
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -55898,6 +55926,7 @@
         165,
         50
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -55910,6 +55939,7 @@
         101,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m2",
@@ -55922,6 +55952,7 @@
         133,
         50
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -55934,6 +55965,7 @@
         165,
         49
       ],
+      "comment_inline": "m1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -55946,6 +55978,7 @@
         101,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m1",
@@ -55958,6 +55991,7 @@
         133,
         49
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -55969,6 +56003,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return (carry = overflow)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -55978,8 +56013,9 @@
         72
       ],
       "labels": [
-        "ca197"
+        "mant_mul10"
       ],
+      "comment_inline": "Save A",
       "xref_summaries": [
         "&a197 referenced 2 times by &a04f, &a0c8"
       ],
@@ -55996,6 +56032,7 @@
         166,
         52
       ],
+      "comment_inline": "keep m4 in X",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m4",
@@ -56008,6 +56045,7 @@
         165,
         49
       ],
+      "comment_inline": "save the mantissa (m1..m3):",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -56019,6 +56057,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -56028,6 +56067,7 @@
         165,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -56039,6 +56079,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -56048,6 +56089,7 @@
         165,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -56059,6 +56101,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -56068,6 +56111,7 @@
         165,
         53
       ],
+      "comment_inline": "x2: shift the mantissa left",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -56079,6 +56123,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -56088,6 +56133,7 @@
         38,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -56100,6 +56146,7 @@
         38,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -56112,6 +56159,7 @@
         38,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -56124,6 +56172,7 @@
         38,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m1",
@@ -56135,6 +56184,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "x2 again (now x4)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -56144,6 +56194,7 @@
         38,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -56156,6 +56207,7 @@
         38,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -56168,6 +56220,7 @@
         38,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -56180,6 +56233,7 @@
         38,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m1",
@@ -56192,6 +56246,7 @@
         101,
         53
       ],
+      "comment_inline": "add the saved original (x4 + x1 = x5): rnd",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_rnd",
@@ -56204,6 +56259,7 @@
         133,
         53
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -56215,6 +56271,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -56224,6 +56281,7 @@
         101,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m4",
@@ -56236,6 +56294,7 @@
         133,
         52
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -56247,6 +56306,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "m3",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -56256,6 +56316,7 @@
         101,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m3",
@@ -56268,6 +56329,7 @@
         133,
         51
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -56279,6 +56341,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "m2",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -56288,6 +56351,7 @@
         101,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m2",
@@ -56300,6 +56364,7 @@
         133,
         50
       ],
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -56311,6 +56376,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "m1",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -56320,6 +56386,7 @@
         101,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m1",
@@ -56332,6 +56399,7 @@
         6,
         53
       ],
+      "comment_inline": "x2 (now x10): shift left",
       "type": "code",
       "mnemonic": "asl",
       "operand": "zp_fwa_rnd",
@@ -56344,6 +56412,7 @@
         38,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -56356,6 +56425,7 @@
         38,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -56368,6 +56438,7 @@
         38,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -56379,6 +56450,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -56388,6 +56460,7 @@
         133,
         49
       ],
+      "comment_inline": "store m1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -56399,6 +56472,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "restore A",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -56407,6 +56481,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -62002,6 +62077,7 @@
       "labels": [
         "fwa_rsub_var"
       ],
+      "comment_inline": "Negate FWA, then add the variable: var - FWA",
       "xref_summaries": [
         "&a4fd referenced 2 times by &9cf4, &a4d0"
       ],
@@ -62070,6 +62146,7 @@
       "labels": [
         "fwa_add_fwb"
       ],
+      "comment_inline": "FWA = FWA + FWB (raw)",
       "xref_summaries": [
         "&a505 referenced 3 times by &a830, &a94a, &a9e8"
       ],
@@ -62091,6 +62168,7 @@
         92,
         166
       ],
+      "comment_inline": "then round",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_round",
@@ -64460,6 +64538,7 @@
       "labels": [
         "fwa_mul_var"
       ],
+      "comment_inline": "FWA = FWA * fp var (raw)",
       "xref_summaries": [
         "&a656 referenced 12 times by &9d2f, &9e81, &a842, &a845, &a85d, &a9b4, &a9c6, &aa17, &aa2c, &aad4, &ab2c, &abbc"
       ],
@@ -64493,6 +64572,7 @@
       "labels": [
         "ca659"
       ],
+      "comment_inline": "normalise (round below)",
       "xref_summaries": [
         "&a659 referenced 2 times by &a7a6, &af81"
       ],
@@ -65029,6 +65109,7 @@
       "labels": [
         "fwa_reciprocal"
       ],
+      "comment_inline": "Save FWA (the divisor) in TEMP1",
       "xref_summaries": [
         "&a6a5 referenced 2 times by &a921, &ab1a"
       ],
@@ -65049,6 +65130,7 @@
         153,
         166
       ],
+      "comment_inline": "FWA = 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_set_one",
@@ -65061,6 +65143,7 @@
         208,
         58
       ],
+      "comment_inline": "divide 1 by the saved value",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca6e7",
@@ -103450,6 +103533,7 @@
       "labels": [
         "stmt_bput"
       ],
+      "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbfa9",
@@ -103461,6 +103545,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -103471,6 +103556,7 @@
         174,
         138
       ],
+      "comment_inline": "require a comma",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_expect_comma",
@@ -103484,6 +103570,7 @@
         73,
         152
       ],
+      "comment_inline": "evaluate the value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9849",
@@ -103497,6 +103584,7 @@
         238,
         146
       ],
+      "comment_inline": "coerce to an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92ee",
@@ -103508,6 +103596,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the handle",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -103516,6 +103605,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Y = handle",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -103525,6 +103615,7 @@
         165,
         42
       ],
+      "comment_inline": "A = the byte to write",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -103538,6 +103629,7 @@
         212,
         255
       ],
+      "comment_inline": "OSBPUT: write the byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbput",
@@ -103551,6 +103643,7 @@
         155,
         139
       ],
+      "comment_inline": "Back to execution",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
