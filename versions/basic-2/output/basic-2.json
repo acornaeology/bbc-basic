@@ -1807,6 +1807,11 @@
       "name": "fwa_acc_fwb",
       "title": "Add FWB into FWA",
       "description": "FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10)."
+    },
+    {
+      "addr": 41280,
+      "name": "parse_exponent",
+      "title": "Parse the \"E\" exponent (optional sign, 1-2 digits)"
     }
   ],
   "banners": [
@@ -1905,8 +1910,8 @@
     "l0045": 69,
     "l0046": 70,
     "l0047": 71,
-    "l0048": 72,
-    "l0049": 73,
+    "zp_dp_flag": 72,
+    "zp_dec_exp": 73,
     "l004a": 74,
     "zp_fp_ptr": 75,
     "zp_fp_ptr_1": 76,
@@ -51600,9 +51605,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40668,
@@ -51885,9 +51890,9 @@
       "comment_inline": "decimal exponent = 0 (&49)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40709,
@@ -52221,9 +52226,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40758,
@@ -52361,9 +52366,9 @@
       "comment_inline": "fixed: digits + decimal exponent",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40780,
@@ -52968,9 +52973,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40871,
@@ -53066,9 +53071,9 @@
       "comment_inline": "decimal exponent",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40885,
@@ -53129,9 +53134,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40895,
@@ -53147,6 +53152,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "output the value",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -53332,9 +53338,9 @@
       ],
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40925,
@@ -53730,9 +53736,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40979,
@@ -53790,9 +53796,9 @@
       "comment_inline": "the exponent",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 40988,
@@ -53861,9 +53867,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41000,
@@ -53934,9 +53940,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41011,
@@ -54490,6 +54496,7 @@
       "labels": [
         "parse_number"
       ],
+      "comment_inline": "Clear FWA:",
       "xref_summaries": [
         "&a07b referenced 3 times by &ac60, &ac6b, &ae2a"
       ],
@@ -54508,6 +54515,7 @@
         134,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m1",
@@ -54520,6 +54528,7 @@
         134,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m2",
@@ -54532,6 +54541,7 @@
         134,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m3",
@@ -54544,6 +54554,7 @@
         134,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m4",
@@ -54556,6 +54567,7 @@
         134,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_rnd",
@@ -54568,11 +54580,12 @@
         134,
         72
       ],
+      "comment_inline": "clear the decimal-point flag",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41097,
@@ -54580,11 +54593,12 @@
         134,
         73
       ],
+      "comment_inline": "decimal exponent = 0",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41099,
@@ -54592,6 +54606,7 @@
         201,
         46
       ],
+      "comment_inline": "a leading decimal point?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2e"
@@ -54602,6 +54617,7 @@
         240,
         17
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca0a0",
@@ -54614,6 +54630,7 @@
         201,
         58
       ],
+      "comment_inline": "not a digit (>= ':')?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -54624,6 +54641,7 @@
         176,
         223
       ],
+      "comment_inline": "finish",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca072",
@@ -54636,6 +54654,7 @@
         233,
         47
       ],
+      "comment_inline": "convert to binary 0-9",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&2f"
@@ -54646,6 +54665,7 @@
         48,
         219
       ],
+      "comment_inline": "not a digit: finish",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "ca072",
@@ -54658,6 +54678,7 @@
         133,
         53
       ],
+      "comment_inline": "store the digit",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -54672,6 +54693,7 @@
       "labels": [
         "ca099"
       ],
+      "comment_inline": "next character",
       "xref_summaries": [
         "&a099 referenced 8 times by &a0a6, &a0bc, &a0c0, &a0cf, &a0d3, &a0d7, &a0db, &a0df"
       ],
@@ -54694,6 +54716,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -54706,6 +54729,7 @@
         201,
         46
       ],
+      "comment_inline": "a decimal point?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2e"
@@ -54716,6 +54740,7 @@
         208,
         8
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca0a8",
@@ -54731,6 +54756,7 @@
       "labels": [
         "ca0a0"
       ],
+      "comment_inline": "already had one?",
       "xref_summaries": [
         "&a0a0 referenced 1 time by &a08d"
       ],
@@ -54739,9 +54765,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41122,
@@ -54749,6 +54775,7 @@
         208,
         68
       ],
+      "comment_inline": "yes: end of the number",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca0e8",
@@ -54761,11 +54788,12 @@
         230,
         72
       ],
+      "comment_inline": "set the decimal-point flag",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41126,
@@ -54773,6 +54801,7 @@
         208,
         241
       ],
+      "comment_inline": "next char",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -54788,6 +54817,7 @@
       "labels": [
         "ca0a8"
       ],
+      "comment_inline": "'E' (exponent)?",
       "xref_summaries": [
         "&a0a8 referenced 1 time by &a09e"
       ],
@@ -54804,6 +54834,7 @@
         240,
         53
       ],
+      "comment_inline": "yes: scan the exponent",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca0e1",
@@ -54816,6 +54847,7 @@
         201,
         58
       ],
+      "comment_inline": "not a digit?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -54826,6 +54858,7 @@
         176,
         56
       ],
+      "comment_inline": "finish",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca0e8",
@@ -54838,6 +54871,7 @@
         233,
         47
       ],
+      "comment_inline": "convert to binary",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&2f"
@@ -54848,6 +54882,7 @@
         144,
         52
       ],
+      "comment_inline": "not a digit: finish",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca0e8",
@@ -54860,6 +54895,7 @@
         166,
         49
       ],
+      "comment_inline": "mantissa top byte",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m1",
@@ -54872,6 +54908,7 @@
         224,
         24
       ],
+      "comment_inline": "room for another digit?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&18"
@@ -54882,6 +54919,7 @@
         144,
         8
       ],
+      "comment_inline": "yes: add it",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca0c2",
@@ -54894,11 +54932,12 @@
         166,
         72
       ],
+      "comment_inline": "too big: had a decimal point?",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41148,
@@ -54906,6 +54945,7 @@
         208,
         219
       ],
+      "comment_inline": "yes: just skip the digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -54918,11 +54958,12 @@
         230,
         73
       ],
+      "comment_inline": "no: bump the exponent and skip",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41152,
@@ -54930,6 +54971,7 @@
         176,
         215
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca099",
@@ -54945,6 +54987,7 @@
       "labels": [
         "ca0c2"
       ],
+      "comment_inline": "had a decimal point?",
       "xref_summaries": [
         "&a0c2 referenced 1 time by &a0b8"
       ],
@@ -54953,9 +54996,9 @@
       ],
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41156,
@@ -54963,6 +55006,7 @@
         240,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca0c8",
@@ -54975,11 +55019,12 @@
         198,
         73
       ],
+      "comment_inline": "yes: decrement the exponent",
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41160,
@@ -54991,6 +55036,7 @@
       "labels": [
         "ca0c8"
       ],
+      "comment_inline": "FWA mantissa *= 10",
       "xref_summaries": [
         "&a0c8 referenced 1 time by &a0c4"
       ],
@@ -55009,6 +55055,7 @@
         101,
         53
       ],
+      "comment_inline": "add the digit to the low byte",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_rnd",
@@ -55021,6 +55068,7 @@
         133,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -55033,6 +55081,7 @@
         144,
         200
       ],
+      "comment_inline": "no carry: next digit",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca099",
@@ -55045,6 +55094,7 @@
         230,
         52
       ],
+      "comment_inline": "carry up through the mantissa",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m4",
@@ -55057,6 +55107,7 @@
         208,
         196
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -55069,6 +55120,7 @@
         230,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m3",
@@ -55081,6 +55133,7 @@
         208,
         192
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -55093,6 +55146,7 @@
         230,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m2",
@@ -55105,6 +55159,7 @@
         208,
         188
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -55117,6 +55172,7 @@
         230,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m1",
@@ -55129,6 +55185,7 @@
         208,
         184
       ],
+      "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -55145,6 +55202,7 @@
       "labels": [
         "ca0e1"
       ],
+      "comment_inline": "scan the E exponent",
       "xref_summaries": [
         "&a0e1 referenced 1 time by &a0aa"
       ],
@@ -55153,9 +55211,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca140",
+      "operand": "parse_exponent",
       "target": 41280,
-      "target_label": "sub_ca140"
+      "target_label": "parse_exponent"
     },
     {
       "addr": 41188,
@@ -55163,11 +55221,12 @@
         101,
         73
       ],
+      "comment_inline": "add to the decimal exponent",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41190,
@@ -55175,11 +55234,12 @@
         133,
         73
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41192,
@@ -55190,6 +55250,7 @@
       "labels": [
         "ca0e8"
       ],
+      "comment_inline": "store the text offset",
       "xref_summaries": [
         "&a0e8 referenced 3 times by &a0a2, &a0ae, &a0b2"
       ],
@@ -55210,11 +55271,12 @@
         165,
         73
       ],
+      "comment_inline": "any exponent or decimal point?",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41196,
@@ -55222,11 +55284,12 @@
         5,
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 41198,
@@ -55234,6 +55297,7 @@
         240,
         47
       ],
+      "comment_inline": "no: return an integer",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca11f",
@@ -55247,6 +55311,7 @@
         218,
         161
       ],
+      "comment_inline": "value zero?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_sign",
@@ -55259,6 +55324,7 @@
         240,
         38
       ],
+      "comment_inline": "yes: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca11b",
@@ -55274,6 +55340,7 @@
       "labels": [
         "loop_ca0f5"
       ],
+      "comment_inline": "Set the FWA exponent (40-bit mantissa)...",
       "xref_summaries": [
         "&a0f5 referenced 1 time by &a127"
       ],
@@ -55290,6 +55357,7 @@
         133,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -55302,6 +55370,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -55312,6 +55381,7 @@
         133,
         47
       ],
+      "comment_inline": "clear overflow",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_ovf",
@@ -55324,6 +55394,7 @@
         133,
         46
       ],
+      "comment_inline": "clear sign",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -55337,6 +55408,7 @@
         3,
         163
       ],
+      "comment_inline": "normalise",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_normalise",
@@ -55349,11 +55421,12 @@
         165,
         73
       ],
+      "comment_inline": "apply the decimal exponent:",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41220,
@@ -55361,6 +55434,7 @@
         48,
         11
       ],
+      "comment_inline": "negative: divide",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "ca111",
@@ -55373,6 +55447,7 @@
         240,
         16
       ],
+      "comment_inline": "zero: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca118",
@@ -55389,6 +55464,7 @@
       "labels": [
         "loop_ca108"
       ],
+      "comment_inline": "positive: multiply by 10",
       "xref_summaries": [
         "&a108 referenced 1 time by &a10d"
       ],
@@ -55407,11 +55483,12 @@
         198,
         73
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41229,
@@ -55419,6 +55496,7 @@
         208,
         249
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca108",
@@ -55431,6 +55509,7 @@
         240,
         7
       ],
+      "comment_inline": "done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca118",
@@ -55447,6 +55526,7 @@
       "labels": [
         "ca111"
       ],
+      "comment_inline": "divide by 10",
       "xref_summaries": [
         "&a111 referenced 2 times by &a104, &a116"
       ],
@@ -55466,11 +55546,12 @@
         230,
         73
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0049",
+      "operand": "zp_dec_exp",
       "target": 73,
-      "target_label": "l0049"
+      "target_label": "zp_dec_exp"
     },
     {
       "addr": 41238,
@@ -55478,6 +55559,7 @@
         208,
         249
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca111",
@@ -55494,6 +55576,7 @@
       "labels": [
         "ca118"
       ],
+      "comment_inline": "round the result",
       "xref_summaries": [
         "&a118 referenced 2 times by &a106, &a10f"
       ],
@@ -55515,6 +55598,7 @@
       "labels": [
         "ca11b"
       ],
+      "comment_inline": "real result",
       "xref_summaries": [
         "&a11b referenced 1 time by &a0f3"
       ],
@@ -55530,6 +55614,7 @@
         169,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -55539,6 +55624,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return (real)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -55551,6 +55637,7 @@
       "labels": [
         "ca11f"
       ],
+      "comment_inline": "Integer: does it fit in 32 signed bits?",
       "xref_summaries": [
         "&a11f referenced 1 time by &a0ee"
       ],
@@ -55569,6 +55656,7 @@
         133,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -55581,6 +55669,7 @@
         41,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -55591,6 +55680,7 @@
         5,
         49
       ],
+      "comment_inline": "top byte set (too big)?",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m1",
@@ -55603,6 +55693,7 @@
         208,
         204
       ],
+      "comment_inline": "yes: use a real instead",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca0f5",
@@ -55615,6 +55706,7 @@
         165,
         53
       ],
+      "comment_inline": "Copy the mantissa to IWA:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -55627,6 +55719,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -55639,6 +55732,7 @@
         165,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -55651,6 +55745,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -55663,6 +55758,7 @@
         165,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -55675,6 +55771,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -55687,6 +55784,7 @@
         169,
         64
       ],
+      "comment_inline": "integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -55696,6 +55794,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -55704,6 +55803,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return (integer)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -55717,6 +55817,7 @@
       "labels": [
         "loop_ca139"
       ],
+      "comment_inline": "negative exponent: scan the digits",
       "xref_summaries": [
         "&a139 referenced 1 time by &a145"
       ],
@@ -55735,6 +55836,7 @@
         73,
         255
       ],
+      "comment_inline": "negate it",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&ff"
@@ -55744,6 +55846,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -55752,6 +55855,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -55761,8 +55865,9 @@
         200
       ],
       "labels": [
-        "sub_ca140"
+        "parse_exponent"
       ],
+      "comment_inline": "Scan exponent: next character",
       "xref_summaries": [
         "&a140 referenced 1 time by &a0e1"
       ],
@@ -55778,6 +55883,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -55790,6 +55896,7 @@
         201,
         45
       ],
+      "comment_inline": "'-'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2d"
@@ -55800,6 +55907,7 @@
         240,
         242
       ],
+      "comment_inline": "yes: negative exponent",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_ca139",
@@ -55812,6 +55920,7 @@
         201,
         43
       ],
+      "comment_inline": "'+'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2b"
@@ -55822,6 +55931,7 @@
         208,
         3
       ],
+      "comment_inline": "no sign",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca14e",
@@ -55836,6 +55946,7 @@
       "labels": [
         "sub_ca14b"
       ],
+      "comment_inline": "skip the sign",
       "xref_summaries": [
         "&a14b referenced 1 time by &a139"
       ],
@@ -55851,6 +55962,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -55866,6 +55978,7 @@
       "labels": [
         "ca14e"
       ],
+      "comment_inline": "a digit?",
       "xref_summaries": [
         "&a14e referenced 1 time by &a149"
       ],
@@ -55882,6 +55995,7 @@
         176,
         34
       ],
+      "comment_inline": "no: exponent = 0",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca174",
@@ -55894,6 +56008,7 @@
         233,
         47
       ],
+      "comment_inline": "convert",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&2f"
@@ -55904,6 +56019,7 @@
         144,
         30
       ],
+      "comment_inline": "not a digit: exponent = 0",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca174",
@@ -55916,6 +56032,7 @@
         133,
         74
       ],
+      "comment_inline": "store the first exponent digit",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -55927,6 +56044,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "second digit?",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -55936,6 +56054,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -55948,6 +56067,7 @@
         201,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -55958,6 +56078,7 @@
         176,
         17
       ],
+      "comment_inline": "one digit only",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca170",
@@ -55970,6 +56091,7 @@
         233,
         47
       ],
+      "comment_inline": "convert",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&2f"
@@ -55980,6 +56102,7 @@
         144,
         13
       ],
+      "comment_inline": "not a digit",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca170",
@@ -55991,6 +56114,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "two digits: exp = d1*10 + d2",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -56000,6 +56124,7 @@
         133,
         67
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_temp",
@@ -56012,6 +56137,7 @@
         165,
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004a",
@@ -56023,6 +56149,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "d1 * 10...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -56031,6 +56158,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -56040,6 +56168,7 @@
         101,
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l004a",
@@ -56051,6 +56180,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -56060,6 +56190,7 @@
         101,
         67
       ],
+      "comment_inline": "+ d2",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fp_temp",
@@ -56071,6 +56202,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the exponent",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -56083,6 +56215,7 @@
       "labels": [
         "ca170"
       ],
+      "comment_inline": "1-digit exponent",
       "xref_summaries": [
         "&a170 referenced 2 times by &a15d, &a161"
       ],
@@ -56101,6 +56234,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -56109,6 +56243,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -56121,6 +56256,7 @@
       "labels": [
         "ca174"
       ],
+      "comment_inline": "no exponent: 0",
       "xref_summaries": [
         "&a174 referenced 2 times by &a150, &a154"
       ],
@@ -56137,6 +56273,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -56145,6 +56282,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -68432,9 +68570,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 43172,
@@ -68698,9 +68836,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 43217,
@@ -103810,9 +103948,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0048",
+      "operand": "zp_dp_flag",
       "target": 72,
-      "target_label": "l0048"
+      "target_label": "zp_dp_flag"
     },
     {
       "addr": 48921,

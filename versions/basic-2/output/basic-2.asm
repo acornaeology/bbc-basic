@@ -161,9 +161,9 @@ l0046            = &46
 ; &46 referenced 4 times by &a644, &a73f, &a796, &befc
 l0047            = &47
 ; &47 referenced 1 time by &bf15
-l0048            = &48
+zp_dp_flag       = &48
 ; &48 referenced 9 times by &a087, &a0a0, &a0a4, &a0ba, &a0c2, &a0ec, &a8a2, &a8cf, &bf17
-l0049            = &49
+zp_dec_exp       = &49
 ; &49 referenced 21 times by &9eda, &9f03, &9f34, &9f4a, &9fa5, &9fb3, &9fbd, &9fdb, &a011, &a01a, &a026, &a031, &a089, &a0be, &a0c6, &a0e4, &a0e6, &a0ea, &a102, &a10b, &a114
 l004a            = &4a
 ; &4a referenced 20 times by &9e50, &9e67, &a156, &a166, &a16a, &a170, &a48c, &a496, &a4a9, &a4ae, &a6c4, &a6cd, &a6d9, &a7ca, &a7e2, &a993, &a99e, &a9aa, &a9f3, &aacc
@@ -5723,7 +5723,7 @@ l848a = sub_c847b+15
     cmp #&81                                                          ; 9ed3: c9 81       ..    
     bcs c9f25                                                         ; 9ed5: b0 4e       .N    
     jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..   
-    dec l0049                                                         ; 9eda: c6 49       .I    
+    dec zp_dec_exp                                                    ; 9eda: c6 49       .I    
     jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..   
 ; ***************************************************************************************
 ; Convert the current value to an ASCII number
@@ -5767,7 +5767,7 @@ l848a = sub_c847b+15
     sta l004e                                                         ; 9efd: 85 4e       .N       ; (copy)
     lda #0                                                            ; 9eff: a9 00       ..       ; output length = 0...
     sta zp_strbuf_len                                                 ; 9f01: 85 36       .6       ; ...
-    sta l0049                                                         ; 9f03: 85 49       .I       ; decimal exponent = 0 (&49)
+    sta zp_dec_exp                                                    ; 9f03: 85 49       .I       ; decimal exponent = 0 (&49)
     bit zp_print_flag                                                 ; 9f05: 24 15       $.       ; hex mode (radix flag bit 7)?
     bmi loop_c9e90                                                    ; 9f07: 30 87       0.       ; yes: hex conversion
     tya                                                               ; 9f09: 98          .        ; an integer value?
@@ -5801,7 +5801,7 @@ l848a = sub_c847b+15
     jsr fwa_div10                                                     ; 9f31: 20 4d a2     M.      ; FWA = FWA / 10
 ; &9f34 referenced 1 time by &9f23
 .c9f34
-    inc l0049                                                         ; 9f34: e6 49       .I       ; count one decimal place up
+    inc zp_dec_exp                                                    ; 9f34: e6 49       .I       ; count one decimal place up
     jmp c9ed1                                                         ; 9f36: 4c d1 9e    L..      ; check the magnitude again
 ; &9f39 referenced 2 times by &9f27, &9f2f
 .c9f39
@@ -5813,7 +5813,7 @@ l848a = sub_c847b+15
     ldx zp_general                                                    ; 9f44: a6 37       .7       ; print format
     cpx #2                                                            ; 9f46: e0 02       ..       ; not fixed format?
     bne c9f5c                                                         ; 9f48: d0 12       ..       ; do exponent/general
-    adc l0049                                                         ; 9f4a: 65 49       eI       ; fixed: digits + decimal exponent
+    adc zp_dec_exp                                                    ; 9f4a: 65 49       eI       ; fixed: digits + decimal exponent
     bmi c9fa0                                                         ; 9f4c: 30 52       0R       ; negative: round to zero
     sta zp_general_1                                                  ; 9f4e: 85 38       .8       ; ...
     cmp #&0b                                                          ; 9f50: c9 0b       ..       ; > 10?
@@ -5870,7 +5870,7 @@ l848a = sub_c847b+15
 .c9fa0
     jsr fwa_clear                                                     ; 9fa0: 20 86 a6     ..      ; Clear FWA (zero / underflow):
     lda #0                                                            ; 9fa3: a9 00       ..       ; ...
-    sta l0049                                                         ; 9fa5: 85 49       .I       ; ...
+    sta zp_dec_exp                                                    ; 9fa5: 85 49       .I       ; ...
     lda l004e                                                         ; 9fa7: a5 4e       .N       ; ...
     sta zp_general_1                                                  ; 9fa9: 85 38       .8       ; ...
     inc zp_general_1                                                  ; 9fab: e6 38       .8       ; ...
@@ -5879,14 +5879,14 @@ l848a = sub_c847b+15
     lda #1                                                            ; 9fad: a9 01       ..       ; General format?
     cmp zp_general                                                    ; 9faf: c5 37       .7       ; ...
     beq c9fe6                                                         ; 9fb1: f0 33       .3       ; output the value
-    ldy l0049                                                         ; 9fb3: a4 49       .I       ; decimal exponent
+    ldy zp_dec_exp                                                    ; 9fb3: a4 49       .I       ; decimal exponent
     bmi c9fc3                                                         ; 9fb5: 30 0c       0.       ; negative: leading zeros
     cpy zp_general_1                                                  ; 9fb7: c4 38       .8       ; within the digit count?
     bcs c9fe6                                                         ; 9fb9: b0 2b       .+       ; no: use E-notation
     lda #0                                                            ; 9fbb: a9 00       ..       ; ...
-    sta l0049                                                         ; 9fbd: 85 49       .I       ; ...
+    sta zp_dec_exp                                                    ; 9fbd: 85 49       .I       ; ...
     iny                                                               ; 9fbf: c8          .        ; ...
-    tya                                                               ; 9fc0: 98          .     
+    tya                                                               ; 9fc0: 98          .        ; output the value
     bne c9fe6                                                         ; 9fc1: d0 23       .#       ; output the value
 ; &9fc3 referenced 1 time by &9fb5
 .c9fc3
@@ -5905,7 +5905,7 @@ l848a = sub_c847b+15
     lda #&30 ; '0'                                                    ; 9fd9: a9 30       .0       ; prepare '0'
 ; &9fdb referenced 1 time by &9fe2
 .loop_c9fdb
-    inc l0049                                                         ; 9fdb: e6 49       .I       ; leading zeros for the fraction:
+    inc zp_dec_exp                                                    ; 9fdb: e6 49       .I       ; leading zeros for the fraction:
     beq c9fe4                                                         ; 9fdd: f0 05       ..       ; ...
     jsr output_char                                                   ; 9fdf: 20 66 a0     f.      ; output a zero
     bne loop_c9fdb                                                    ; 9fe2: d0 f7       ..       ; loop
@@ -5946,26 +5946,26 @@ l848a = sub_c847b+15
     sty zp_strbuf_len                                                 ; a00f: 84 36       .6       ; set the trimmed length
 ; &a011 referenced 1 time by &9ffe
 .ca011
-    lda l0049                                                         ; a011: a5 49       .I       ; a decimal exponent to print?
+    lda zp_dec_exp                                                    ; a011: a5 49       .I       ; a decimal exponent to print?
     beq return_19                                                     ; a013: f0 2a       .*       ; no: done
 ; &a015 referenced 1 time by &9ffb
 .ca015
     lda #&45 ; 'E'                                                    ; a015: a9 45       .E       ; output 'E'
     jsr output_char                                                   ; a017: 20 66 a0     f.      ; ...
-    lda l0049                                                         ; a01a: a5 49       .I       ; the exponent
+    lda zp_dec_exp                                                    ; a01a: a5 49       .I       ; the exponent
     bpl ca028                                                         ; a01c: 10 0a       ..       ; positive
     lda #&2d ; '-'                                                    ; a01e: a9 2d       .-       ; negative: output '-'
     jsr output_char                                                   ; a020: 20 66 a0     f.      ; ...
     sec                                                               ; a023: 38          8        ; negate the exponent
     lda #0                                                            ; a024: a9 00       ..       ; ...
-    sbc l0049                                                         ; a026: e5 49       .I       ; ...
+    sbc zp_dec_exp                                                    ; a026: e5 49       .I       ; ...
 ; &a028 referenced 1 time by &a01c
 .ca028
     jsr output_byte_decimal                                           ; a028: 20 52 a0     R.      ; output the exponent in decimal
     lda zp_general                                                    ; a02b: a5 37       .7       ; General format?
     beq return_19                                                     ; a02d: f0 10       ..       ; done
     lda #&20 ; ' '                                                    ; a02f: a9 20       .        ; pad: a space
-    ldy l0049                                                         ; a031: a4 49       .I       ; ...
+    ldy zp_dec_exp                                                    ; a031: a4 49       .I       ; ...
     bmi ca038                                                         ; a033: 30 03       0.       ; ...
     jsr output_char                                                   ; a035: 20 66 a0     f.      ; output it
 ; &a038 referenced 1 time by &a033
@@ -6040,176 +6040,178 @@ l848a = sub_c847b+15
 ; Parse a decimal/hex number (integer or real) into the accumulator.
 ; &a07b referenced 3 times by &ac60, &ac6b, &ae2a
 .parse_number
-    ldx #0                                                            ; a07b: a2 00       ..    
-    stx zp_fwa_m1                                                     ; a07d: 86 31       .1    
-    stx zp_fwa_m2                                                     ; a07f: 86 32       .2    
-    stx zp_fwa_m3                                                     ; a081: 86 33       .3    
-    stx zp_fwa_m4                                                     ; a083: 86 34       .4    
-    stx zp_fwa_rnd                                                    ; a085: 86 35       .5    
-    stx l0048                                                         ; a087: 86 48       .H    
-    stx l0049                                                         ; a089: 86 49       .I    
-    cmp #&2e ; '.'                                                    ; a08b: c9 2e       ..    
-    beq ca0a0                                                         ; a08d: f0 11       ..    
-    cmp #&3a ; ':'                                                    ; a08f: c9 3a       .:    
-    bcs ca072                                                         ; a091: b0 df       ..    
-    sbc #&2f ; '/'                                                    ; a093: e9 2f       ./    
-    bmi ca072                                                         ; a095: 30 db       0.    
-    sta zp_fwa_rnd                                                    ; a097: 85 35       .5    
+    ldx #0                                                            ; a07b: a2 00       ..       ; Clear FWA:
+    stx zp_fwa_m1                                                     ; a07d: 86 31       .1       ; ...
+    stx zp_fwa_m2                                                     ; a07f: 86 32       .2       ; ...
+    stx zp_fwa_m3                                                     ; a081: 86 33       .3       ; ...
+    stx zp_fwa_m4                                                     ; a083: 86 34       .4       ; ...
+    stx zp_fwa_rnd                                                    ; a085: 86 35       .5       ; ...
+    stx zp_dp_flag                                                    ; a087: 86 48       .H       ; clear the decimal-point flag
+    stx zp_dec_exp                                                    ; a089: 86 49       .I       ; decimal exponent = 0
+    cmp #&2e ; '.'                                                    ; a08b: c9 2e       ..       ; a leading decimal point?
+    beq ca0a0                                                         ; a08d: f0 11       ..       ; yes
+    cmp #&3a ; ':'                                                    ; a08f: c9 3a       .:       ; not a digit (>= ':')?
+    bcs ca072                                                         ; a091: b0 df       ..       ; finish
+    sbc #&2f ; '/'                                                    ; a093: e9 2f       ./       ; convert to binary 0-9
+    bmi ca072                                                         ; a095: 30 db       0.       ; not a digit: finish
+    sta zp_fwa_rnd                                                    ; a097: 85 35       .5       ; store the digit
 ; &a099 referenced 8 times by &a0a6, &a0bc, &a0c0, &a0cf, &a0d3, &a0d7, &a0db, &a0df
 .ca099
-    iny                                                               ; a099: c8          .     
-    lda (zp_text_ptr2),y                                              ; a09a: b1 19       ..    
-    cmp #&2e ; '.'                                                    ; a09c: c9 2e       ..    
-    bne ca0a8                                                         ; a09e: d0 08       ..    
+    iny                                                               ; a099: c8          .        ; next character
+    lda (zp_text_ptr2),y                                              ; a09a: b1 19       ..       ; ...
+    cmp #&2e ; '.'                                                    ; a09c: c9 2e       ..       ; a decimal point?
+    bne ca0a8                                                         ; a09e: d0 08       ..       ; no
 ; &a0a0 referenced 1 time by &a08d
 .ca0a0
-    lda l0048                                                         ; a0a0: a5 48       .H    
-    bne ca0e8                                                         ; a0a2: d0 44       .D    
-    inc l0048                                                         ; a0a4: e6 48       .H    
-    bne ca099                                                         ; a0a6: d0 f1       ..    
+    lda zp_dp_flag                                                    ; a0a0: a5 48       .H       ; already had one?
+    bne ca0e8                                                         ; a0a2: d0 44       .D       ; yes: end of the number
+    inc zp_dp_flag                                                    ; a0a4: e6 48       .H       ; set the decimal-point flag
+    bne ca099                                                         ; a0a6: d0 f1       ..       ; next char
 ; &a0a8 referenced 1 time by &a09e
 .ca0a8
-    cmp #&45 ; 'E'                                                    ; a0a8: c9 45       .E    
-    beq ca0e1                                                         ; a0aa: f0 35       .5    
-    cmp #&3a ; ':'                                                    ; a0ac: c9 3a       .:    
-    bcs ca0e8                                                         ; a0ae: b0 38       .8    
-    sbc #&2f ; '/'                                                    ; a0b0: e9 2f       ./    
-    bcc ca0e8                                                         ; a0b2: 90 34       .4    
-    ldx zp_fwa_m1                                                     ; a0b4: a6 31       .1    
-    cpx #&18                                                          ; a0b6: e0 18       ..    
-    bcc ca0c2                                                         ; a0b8: 90 08       ..    
-    ldx l0048                                                         ; a0ba: a6 48       .H    
-    bne ca099                                                         ; a0bc: d0 db       ..    
-    inc l0049                                                         ; a0be: e6 49       .I    
-    bcs ca099                                                         ; a0c0: b0 d7       ..    
+    cmp #&45 ; 'E'                                                    ; a0a8: c9 45       .E       ; 'E' (exponent)?
+    beq ca0e1                                                         ; a0aa: f0 35       .5       ; yes: scan the exponent
+    cmp #&3a ; ':'                                                    ; a0ac: c9 3a       .:       ; not a digit?
+    bcs ca0e8                                                         ; a0ae: b0 38       .8       ; finish
+    sbc #&2f ; '/'                                                    ; a0b0: e9 2f       ./       ; convert to binary
+    bcc ca0e8                                                         ; a0b2: 90 34       .4       ; not a digit: finish
+    ldx zp_fwa_m1                                                     ; a0b4: a6 31       .1       ; mantissa top byte
+    cpx #&18                                                          ; a0b6: e0 18       ..       ; room for another digit?
+    bcc ca0c2                                                         ; a0b8: 90 08       ..       ; yes: add it
+    ldx zp_dp_flag                                                    ; a0ba: a6 48       .H       ; too big: had a decimal point?
+    bne ca099                                                         ; a0bc: d0 db       ..       ; yes: just skip the digit
+    inc zp_dec_exp                                                    ; a0be: e6 49       .I       ; no: bump the exponent and skip
+    bcs ca099                                                         ; a0c0: b0 d7       ..       ; ...
 ; &a0c2 referenced 1 time by &a0b8
 .ca0c2
-    ldx l0048                                                         ; a0c2: a6 48       .H    
-    beq ca0c8                                                         ; a0c4: f0 02       ..    
-    dec l0049                                                         ; a0c6: c6 49       .I    
+    ldx zp_dp_flag                                                    ; a0c2: a6 48       .H       ; had a decimal point?
+    beq ca0c8                                                         ; a0c4: f0 02       ..       ; no
+    dec zp_dec_exp                                                    ; a0c6: c6 49       .I       ; yes: decrement the exponent
 ; &a0c8 referenced 1 time by &a0c4
 .ca0c8
-    jsr mant_mul10                                                    ; a0c8: 20 97 a1     ..   
-    adc zp_fwa_rnd                                                    ; a0cb: 65 35       e5    
-    sta zp_fwa_rnd                                                    ; a0cd: 85 35       .5    
-    bcc ca099                                                         ; a0cf: 90 c8       ..    
-    inc zp_fwa_m4                                                     ; a0d1: e6 34       .4    
-    bne ca099                                                         ; a0d3: d0 c4       ..    
-    inc zp_fwa_m3                                                     ; a0d5: e6 33       .3    
-    bne ca099                                                         ; a0d7: d0 c0       ..    
-    inc zp_fwa_m2                                                     ; a0d9: e6 32       .2    
-    bne ca099                                                         ; a0db: d0 bc       ..    
-    inc zp_fwa_m1                                                     ; a0dd: e6 31       .1    
-    bne ca099                                                         ; a0df: d0 b8       ..    
+    jsr mant_mul10                                                    ; a0c8: 20 97 a1     ..      ; FWA mantissa *= 10
+    adc zp_fwa_rnd                                                    ; a0cb: 65 35       e5       ; add the digit to the low byte
+    sta zp_fwa_rnd                                                    ; a0cd: 85 35       .5       ; ...
+    bcc ca099                                                         ; a0cf: 90 c8       ..       ; no carry: next digit
+    inc zp_fwa_m4                                                     ; a0d1: e6 34       .4       ; carry up through the mantissa
+    bne ca099                                                         ; a0d3: d0 c4       ..       ; ...
+    inc zp_fwa_m3                                                     ; a0d5: e6 33       .3       ; ...
+    bne ca099                                                         ; a0d7: d0 c0       ..       ; ...
+    inc zp_fwa_m2                                                     ; a0d9: e6 32       .2       ; ...
+    bne ca099                                                         ; a0db: d0 bc       ..       ; ...
+    inc zp_fwa_m1                                                     ; a0dd: e6 31       .1       ; ...
+    bne ca099                                                         ; a0df: d0 b8       ..       ; next digit
 ; &a0e1 referenced 1 time by &a0aa
 .ca0e1
-    jsr sub_ca140                                                     ; a0e1: 20 40 a1     @.   
-    adc l0049                                                         ; a0e4: 65 49       eI    
-    sta l0049                                                         ; a0e6: 85 49       .I    
+    jsr parse_exponent                                                ; a0e1: 20 40 a1     @.      ; scan the E exponent
+    adc zp_dec_exp                                                    ; a0e4: 65 49       eI       ; add to the decimal exponent
+    sta zp_dec_exp                                                    ; a0e6: 85 49       .I       ; ...
 ; &a0e8 referenced 3 times by &a0a2, &a0ae, &a0b2
 .ca0e8
-    sty zp_text_ptr2_off                                              ; a0e8: 84 1b       ..    
-    lda l0049                                                         ; a0ea: a5 49       .I    
-    ora l0048                                                         ; a0ec: 05 48       .H    
-    beq ca11f                                                         ; a0ee: f0 2f       ./    
-    jsr fwa_sign                                                      ; a0f0: 20 da a1     ..   
-    beq ca11b                                                         ; a0f3: f0 26       .&    
+    sty zp_text_ptr2_off                                              ; a0e8: 84 1b       ..       ; store the text offset
+    lda zp_dec_exp                                                    ; a0ea: a5 49       .I       ; any exponent or decimal point?
+    ora zp_dp_flag                                                    ; a0ec: 05 48       .H       ; ...
+    beq ca11f                                                         ; a0ee: f0 2f       ./       ; no: return an integer
+    jsr fwa_sign                                                      ; a0f0: 20 da a1     ..      ; value zero?
+    beq ca11b                                                         ; a0f3: f0 26       .&       ; yes: done
 ; &a0f5 referenced 1 time by &a127
 .loop_ca0f5
-    lda #&a8                                                          ; a0f5: a9 a8       ..    
-    sta zp_fwa_exp                                                    ; a0f7: 85 30       .0    
-    lda #0                                                            ; a0f9: a9 00       ..    
-    sta zp_fwa_ovf                                                    ; a0fb: 85 2f       ./    
-    sta zp_fwa_sign                                                   ; a0fd: 85 2e       ..    
-    jsr fwa_normalise                                                 ; a0ff: 20 03 a3     ..   
-    lda l0049                                                         ; a102: a5 49       .I    
-    bmi ca111                                                         ; a104: 30 0b       0.    
-    beq ca118                                                         ; a106: f0 10       ..    
+    lda #&a8                                                          ; a0f5: a9 a8       ..       ; Set the FWA exponent (40-bit mantissa)...
+    sta zp_fwa_exp                                                    ; a0f7: 85 30       .0       ; ...
+    lda #0                                                            ; a0f9: a9 00       ..       ; ...
+    sta zp_fwa_ovf                                                    ; a0fb: 85 2f       ./       ; clear overflow
+    sta zp_fwa_sign                                                   ; a0fd: 85 2e       ..       ; clear sign
+    jsr fwa_normalise                                                 ; a0ff: 20 03 a3     ..      ; normalise
+    lda zp_dec_exp                                                    ; a102: a5 49       .I       ; apply the decimal exponent:
+    bmi ca111                                                         ; a104: 30 0b       0.       ; negative: divide
+    beq ca118                                                         ; a106: f0 10       ..       ; zero: done
 ; &a108 referenced 1 time by &a10d
 .loop_ca108
-    jsr fwa_mul10                                                     ; a108: 20 f4 a1     ..   
-    dec l0049                                                         ; a10b: c6 49       .I    
-    bne loop_ca108                                                    ; a10d: d0 f9       ..    
-    beq ca118                                                         ; a10f: f0 07       ..    
+    jsr fwa_mul10                                                     ; a108: 20 f4 a1     ..      ; positive: multiply by 10
+    dec zp_dec_exp                                                    ; a10b: c6 49       .I       ; ...
+    bne loop_ca108                                                    ; a10d: d0 f9       ..       ; loop
+    beq ca118                                                         ; a10f: f0 07       ..       ; done
 ; &a111 referenced 2 times by &a104, &a116
 .ca111
-    jsr fwa_div10                                                     ; a111: 20 4d a2     M.   
-    inc l0049                                                         ; a114: e6 49       .I    
-    bne ca111                                                         ; a116: d0 f9       ..    
+    jsr fwa_div10                                                     ; a111: 20 4d a2     M.      ; divide by 10
+    inc zp_dec_exp                                                    ; a114: e6 49       .I       ; ...
+    bne ca111                                                         ; a116: d0 f9       ..       ; loop
 ; &a118 referenced 2 times by &a106, &a10f
 .ca118
-    jsr fwa_round                                                     ; a118: 20 5c a6     \.   
+    jsr fwa_round                                                     ; a118: 20 5c a6     \.      ; round the result
 ; &a11b referenced 1 time by &a0f3
 .ca11b
-    sec                                                               ; a11b: 38          8     
-    lda #&ff                                                          ; a11c: a9 ff       ..    
-    rts                                                               ; a11e: 60          `     
+    sec                                                               ; a11b: 38          8        ; real result
+    lda #&ff                                                          ; a11c: a9 ff       ..       ; ...
+    rts                                                               ; a11e: 60          `        ; Return (real)
 ; &a11f referenced 1 time by &a0ee
 .ca11f
-    lda zp_fwa_m2                                                     ; a11f: a5 32       .2    
-    sta zp_iwa_3                                                      ; a121: 85 2d       .-    
-    and #&80                                                          ; a123: 29 80       ).    
-    ora zp_fwa_m1                                                     ; a125: 05 31       .1    
-    bne loop_ca0f5                                                    ; a127: d0 cc       ..    
-    lda zp_fwa_rnd                                                    ; a129: a5 35       .5    
-    sta zp_iwa                                                        ; a12b: 85 2a       .*    
-    lda zp_fwa_m4                                                     ; a12d: a5 34       .4    
-    sta zp_iwa_1                                                      ; a12f: 85 2b       .+    
-    lda zp_fwa_m3                                                     ; a131: a5 33       .3    
-    sta zp_iwa_2                                                      ; a133: 85 2c       .,    
-    lda #&40 ; '@'                                                    ; a135: a9 40       .@    
-    sec                                                               ; a137: 38          8     
-    rts                                                               ; a138: 60          `     
+    lda zp_fwa_m2                                                     ; a11f: a5 32       .2       ; Integer: does it fit in 32 signed bits?
+    sta zp_iwa_3                                                      ; a121: 85 2d       .-       ; ...
+    and #&80                                                          ; a123: 29 80       ).       ; ...
+    ora zp_fwa_m1                                                     ; a125: 05 31       .1       ; top byte set (too big)?
+    bne loop_ca0f5                                                    ; a127: d0 cc       ..       ; yes: use a real instead
+    lda zp_fwa_rnd                                                    ; a129: a5 35       .5       ; Copy the mantissa to IWA:
+    sta zp_iwa                                                        ; a12b: 85 2a       .*       ; ...
+    lda zp_fwa_m4                                                     ; a12d: a5 34       .4       ; ...
+    sta zp_iwa_1                                                      ; a12f: 85 2b       .+       ; ...
+    lda zp_fwa_m3                                                     ; a131: a5 33       .3       ; ...
+    sta zp_iwa_2                                                      ; a133: 85 2c       .,       ; ...
+    lda #&40 ; '@'                                                    ; a135: a9 40       .@       ; integer result
+    sec                                                               ; a137: 38          8        ; ...
+    rts                                                               ; a138: 60          `        ; Return (integer)
 ; &a139 referenced 1 time by &a145
 .loop_ca139
-    jsr sub_ca14b                                                     ; a139: 20 4b a1     K.   
-    eor #&ff                                                          ; a13c: 49 ff       I.    
-    sec                                                               ; a13e: 38          8     
-    rts                                                               ; a13f: 60          `     
+    jsr sub_ca14b                                                     ; a139: 20 4b a1     K.      ; negative exponent: scan the digits
+    eor #&ff                                                          ; a13c: 49 ff       I.       ; negate it
+    sec                                                               ; a13e: 38          8        ; ...
+    rts                                                               ; a13f: 60          `        ; Return
+; ***************************************************************************************
+; Parse the "E" exponent (optional sign, 1-2 digits)
 ; &a140 referenced 1 time by &a0e1
-.sub_ca140
-    iny                                                               ; a140: c8          .     
-    lda (zp_text_ptr2),y                                              ; a141: b1 19       ..    
-    cmp #&2d ; '-'                                                    ; a143: c9 2d       .-    
-    beq loop_ca139                                                    ; a145: f0 f2       ..    
-    cmp #&2b ; '+'                                                    ; a147: c9 2b       .+    
-    bne ca14e                                                         ; a149: d0 03       ..    
+.parse_exponent
+    iny                                                               ; a140: c8          .        ; Scan exponent: next character
+    lda (zp_text_ptr2),y                                              ; a141: b1 19       ..       ; ...
+    cmp #&2d ; '-'                                                    ; a143: c9 2d       .-       ; '-'?
+    beq loop_ca139                                                    ; a145: f0 f2       ..       ; yes: negative exponent
+    cmp #&2b ; '+'                                                    ; a147: c9 2b       .+       ; '+'?
+    bne ca14e                                                         ; a149: d0 03       ..       ; no sign
 ; &a14b referenced 1 time by &a139
 .sub_ca14b
-    iny                                                               ; a14b: c8          .     
-    lda (zp_text_ptr2),y                                              ; a14c: b1 19       ..    
+    iny                                                               ; a14b: c8          .        ; skip the sign
+    lda (zp_text_ptr2),y                                              ; a14c: b1 19       ..       ; ...
 ; &a14e referenced 1 time by &a149
 .ca14e
-    cmp #&3a ; ':'                                                    ; a14e: c9 3a       .:    
-    bcs ca174                                                         ; a150: b0 22       ."    
-    sbc #&2f ; '/'                                                    ; a152: e9 2f       ./    
-    bcc ca174                                                         ; a154: 90 1e       ..    
-    sta l004a                                                         ; a156: 85 4a       .J    
-    iny                                                               ; a158: c8          .     
-    lda (zp_text_ptr2),y                                              ; a159: b1 19       ..    
-    cmp #&3a ; ':'                                                    ; a15b: c9 3a       .:    
-    bcs ca170                                                         ; a15d: b0 11       ..    
-    sbc #&2f ; '/'                                                    ; a15f: e9 2f       ./    
-    bcc ca170                                                         ; a161: 90 0d       ..    
-    iny                                                               ; a163: c8          .     
-    sta zp_fp_temp                                                    ; a164: 85 43       .C    
-    lda l004a                                                         ; a166: a5 4a       .J    
-    asl a                                                             ; a168: 0a          .     
-    asl a                                                             ; a169: 0a          .     
-    adc l004a                                                         ; a16a: 65 4a       eJ    
-    asl a                                                             ; a16c: 0a          .     
-    adc zp_fp_temp                                                    ; a16d: 65 43       eC    
-    rts                                                               ; a16f: 60          `     
+    cmp #&3a ; ':'                                                    ; a14e: c9 3a       .:       ; a digit?
+    bcs ca174                                                         ; a150: b0 22       ."       ; no: exponent = 0
+    sbc #&2f ; '/'                                                    ; a152: e9 2f       ./       ; convert
+    bcc ca174                                                         ; a154: 90 1e       ..       ; not a digit: exponent = 0
+    sta l004a                                                         ; a156: 85 4a       .J       ; store the first exponent digit
+    iny                                                               ; a158: c8          .        ; second digit?
+    lda (zp_text_ptr2),y                                              ; a159: b1 19       ..       ; ...
+    cmp #&3a ; ':'                                                    ; a15b: c9 3a       .:       ; ...
+    bcs ca170                                                         ; a15d: b0 11       ..       ; one digit only
+    sbc #&2f ; '/'                                                    ; a15f: e9 2f       ./       ; convert
+    bcc ca170                                                         ; a161: 90 0d       ..       ; not a digit
+    iny                                                               ; a163: c8          .        ; two digits: exp = d1*10 + d2
+    sta zp_fp_temp                                                    ; a164: 85 43       .C       ; ...
+    lda l004a                                                         ; a166: a5 4a       .J       ; ...
+    asl a                                                             ; a168: 0a          .        ; d1 * 10...
+    asl a                                                             ; a169: 0a          .        ; ...
+    adc l004a                                                         ; a16a: 65 4a       eJ       ; ...
+    asl a                                                             ; a16c: 0a          .        ; ...
+    adc zp_fp_temp                                                    ; a16d: 65 43       eC       ; - d2
+    rts                                                               ; a16f: 60          `        ; Return the exponent
 ; &a170 referenced 2 times by &a15d, &a161
 .ca170
-    lda l004a                                                         ; a170: a5 4a       .J    
-    clc                                                               ; a172: 18          .     
-    rts                                                               ; a173: 60          `     
+    lda l004a                                                         ; a170: a5 4a       .J       ; 1-digit exponent
+    clc                                                               ; a172: 18          .        ; ...
+    rts                                                               ; a173: 60          `        ; Return
 ; &a174 referenced 2 times by &a150, &a154
 .ca174
-    lda #0                                                            ; a174: a9 00       ..    
-    clc                                                               ; a176: 18          .     
-    rts                                                               ; a177: 60          `     
+    lda #0                                                            ; a174: a9 00       ..       ; no exponent: 0
+    clc                                                               ; a176: 18          .        ; ...
+    rts                                                               ; a177: 60          `        ; Return
 ; ***************************************************************************************
 ; Add FWB into FWA
 ;
@@ -7530,7 +7532,7 @@ l848a = sub_c847b+15
     jsr fwa_pack_temp1                                                ; a89b: 20 85 a3     ..   
     ldy #0                                                            ; a89e: a0 00       ..    
     lda (l004d),y                                                     ; a8a0: b1 4d       .M    
-    sta l0048                                                         ; a8a2: 85 48       .H    
+    sta zp_dp_flag                                                    ; a8a2: 85 48       .H    
     inc l004d                                                         ; a8a4: e6 4d       .M    
     bne ca8aa                                                         ; a8a6: d0 02       ..    
     inc l004e                                                         ; a8a8: e6 4e       .N    
@@ -7555,7 +7557,7 @@ l848a = sub_c847b+15
     sta l004e                                                         ; a8c8: 85 4e       .N    
     sta zp_fp_ptr_1                                                   ; a8ca: 85 4c       .L    
     jsr fwa_add_var                                                   ; a8cc: 20 00 a5     ..   
-    dec l0048                                                         ; a8cf: c6 48       .H    
+    dec zp_dp_flag                                                    ; a8cf: c6 48       .H    
     bne loop_ca8b5                                                    ; a8d1: d0 e2       ..    
     rts                                                               ; a8d3: 60          `     
 ; ***************************************************************************************
@@ -11544,7 +11546,7 @@ l848a = sub_c847b+15
     stx zp_fp_temp                                                    ; bf11: 86 43       .C    
     sty l0044                                                         ; bf13: 84 44       .D    
     stx l0047                                                         ; bf15: 86 47       .G    
-    sty l0048                                                         ; bf17: 84 48       .H    
+    sty zp_dp_flag                                                    ; bf17: 84 48       .H    
     sta zp_fwb_m4                                                     ; bf19: 85 41       .A    
     tay                                                               ; bf1b: a8          .     
     ldx #&37 ; '7'                                                    ; bf1c: a2 37       .7    
@@ -11777,8 +11779,8 @@ save pydis_start, pydis_end
 ;     eval_expr_to_integer:       22
 ;     zp_text_ptr2_1:             22
 ;     coerce_to_integer:          21
-;     l0049:                      21
 ;     skip_spaces_ptr2:           21
+;     zp_dec_exp:                 21
 ;     zp_stack_ptr_1:             21
 ;     zp_top:                     21
 ;     l004a:                      20
@@ -11816,10 +11818,10 @@ save pydis_start, pydis_end
 ;     sub_c97df:                  10
 ;     cb565:                       9
 ;     fwa_pack_temp1:              9
-;     l0048:                       9
 ;     parse_lvalue:                9
 ;     stack_string:                9
 ;     sub_cbc25:                   9
+;     zp_dp_flag:                  9
 ;     zp_print_flag:               9
 ;     c870d:                       8
 ;     c9127:                       8
@@ -12913,6 +12915,7 @@ save pydis_start, pydis_end
 ;     osnewl:                      1
 ;     output_byte_decimal:         1
 ;     output_top_digit:            1
+;     parse_exponent:              1
 ;     resint_a:                    1
 ;     resint_c:                    1
 ;     resint_x:                    1
@@ -12964,7 +12967,6 @@ save pydis_start, pydis_end
 ;     sub_c9880:                   1
 ;     sub_c9a5f:                   1
 ;     sub_c9a9e:                   1
-;     sub_ca140:                   1
 ;     sub_ca14b:                   1
 ;     sub_ca3e7:                   1
 ;     sub_ca4b6:                   1
@@ -13615,8 +13617,6 @@ save pydis_start, pydis_end
 ;     l0045
 ;     l0046
 ;     l0047
-;     l0048
-;     l0049
 ;     l004a
 ;     l004d
 ;     l004e
@@ -13956,7 +13956,6 @@ save pydis_start, pydis_end
 ;     sub_c9dce
 ;     sub_c9e1d
 ;     sub_c9e20
-;     sub_ca140
 ;     sub_ca14b
 ;     sub_ca3e7
 ;     sub_ca486
