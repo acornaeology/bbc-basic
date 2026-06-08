@@ -90200,6 +90200,7 @@
       "labels": [
         "stmt_sound"
       ],
+      "comment_inline": "Evaluate the first parameter",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -90212,6 +90213,7 @@
         162,
         3
       ],
+      "comment_inline": "three more",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#3"
@@ -90225,6 +90227,7 @@
       "labels": [
         "loop_cb451"
       ],
+      "comment_inline": "Stack the 16-bit value",
       "xref_summaries": [
         "&b451 referenced 1 time by &b45f"
       ],
@@ -90242,6 +90245,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90251,6 +90255,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -90262,6 +90267,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90270,6 +90276,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "save the counter",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -90278,6 +90285,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90288,6 +90296,7 @@
         218,
         146
       ],
+      "comment_inline": "step past the comma, evaluate the next",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92da",
@@ -90299,6 +90308,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "restore the counter",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -90307,6 +90317,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -90315,6 +90326,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -90324,6 +90336,7 @@
         208,
         240
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb451",
@@ -90337,6 +90350,7 @@
         82,
         152
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -90349,6 +90363,7 @@
         165,
         42
       ],
+      "comment_inline": "Last value to the block end",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -90361,6 +90376,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -90373,6 +90389,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -90385,6 +90402,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -90397,6 +90415,7 @@
         160,
         7
       ],
+      "comment_inline": "OSWORD 7, 6 bytes",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#7"
@@ -90407,6 +90426,7 @@
         162,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#5"
@@ -90417,6 +90437,7 @@
         208,
         29
       ],
+      "comment_inline": "pop into the block and call",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb48f",
@@ -90433,6 +90454,7 @@
       "labels": [
         "stmt_envelope"
       ],
+      "comment_inline": "Evaluate the first parameter",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -90445,6 +90467,7 @@
         162,
         13
       ],
+      "comment_inline": "13 more",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&0d"
@@ -90458,6 +90481,7 @@
       "labels": [
         "loop_cb477"
       ],
+      "comment_inline": "Stack the 8-bit value",
       "xref_summaries": [
         "&b477 referenced 1 time by &b482"
       ],
@@ -90475,6 +90499,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90483,6 +90508,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "save the counter",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -90491,6 +90517,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90501,6 +90528,7 @@
         218,
         146
       ],
+      "comment_inline": "step past the comma, evaluate the next",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92da",
@@ -90512,6 +90540,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "restore the counter",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -90520,6 +90549,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -90528,6 +90558,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -90537,6 +90568,7 @@
         208,
         243
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb477",
@@ -90550,6 +90582,7 @@
         82,
         152
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -90562,6 +90595,7 @@
         165,
         42
       ],
+      "comment_inline": "Last value to the block end",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -90574,6 +90608,7 @@
         133,
         68
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0044",
@@ -90586,6 +90621,7 @@
         162,
         12
       ],
+      "comment_inline": "OSWORD 8, 12 bytes",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&0c"
@@ -90596,6 +90632,7 @@
         160,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#osword_envelope"
@@ -90608,6 +90645,7 @@
       "labels": [
         "cb48f"
       ],
+      "comment_inline": "Pop a byte into the control block",
       "xref_summaries": [
         "&b48f referenced 2 times by &b470, &b493"
       ],
@@ -90624,6 +90662,7 @@
         149,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general,x",
@@ -90635,6 +90674,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -90644,6 +90684,7 @@
         16,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cb48f",
@@ -90655,6 +90696,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "OSWORD number",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -90664,6 +90706,7 @@
         162,
         55
       ],
+      "comment_inline": "Point at the control block",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#<(zp_general)"
@@ -90674,6 +90717,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#>(zp_general)"
@@ -90699,6 +90743,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",

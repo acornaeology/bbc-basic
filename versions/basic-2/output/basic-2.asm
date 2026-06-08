@@ -9822,63 +9822,63 @@ l848a = sub_c847b+15
 ;
 ; Make a sound on a channel. SOUND channel, amplitude, pitch, duration.
 .stmt_sound
-    jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.   
-    ldx #3                                                            ; b44f: a2 03       ..    
+    jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.      ; Evaluate the first parameter
+    ldx #3                                                            ; b44f: a2 03       ..       ; three more
 ; &b451 referenced 1 time by &b45f
 .loop_cb451
-    lda zp_iwa                                                        ; b451: a5 2a       .*    
-    pha                                                               ; b453: 48          H     
-    lda zp_iwa_1                                                      ; b454: a5 2b       .+    
-    pha                                                               ; b456: 48          H     
-    txa                                                               ; b457: 8a          .     
-    pha                                                               ; b458: 48          H     
-    jsr sub_c92da                                                     ; b459: 20 da 92     ..   
-    pla                                                               ; b45c: 68          h     
-    tax                                                               ; b45d: aa          .     
-    dex                                                               ; b45e: ca          .     
-    bne loop_cb451                                                    ; b45f: d0 f0       ..    
-    jsr sub_c9852                                                     ; b461: 20 52 98     R.   
-    lda zp_iwa                                                        ; b464: a5 2a       .*    
-    sta zp_fwb_exp                                                    ; b466: 85 3d       .=    
-    lda zp_iwa_1                                                      ; b468: a5 2b       .+    
-    sta zp_fwb_m1                                                     ; b46a: 85 3e       .>    
-    ldy #7                                                            ; b46c: a0 07       ..    
-    ldx #5                                                            ; b46e: a2 05       ..    
-    bne cb48f                                                         ; b470: d0 1d       ..    
+    lda zp_iwa                                                        ; b451: a5 2a       .*       ; Stack the 16-bit value
+    pha                                                               ; b453: 48          H        ; ...
+    lda zp_iwa_1                                                      ; b454: a5 2b       .+       ; ...
+    pha                                                               ; b456: 48          H        ; ...
+    txa                                                               ; b457: 8a          .        ; save the counter
+    pha                                                               ; b458: 48          H        ; ...
+    jsr sub_c92da                                                     ; b459: 20 da 92     ..      ; step past the comma, evaluate the next
+    pla                                                               ; b45c: 68          h        ; restore the counter
+    tax                                                               ; b45d: aa          .        ; ...
+    dex                                                               ; b45e: ca          .        ; ...
+    bne loop_cb451                                                    ; b45f: d0 f0       ..       ; loop
+    jsr sub_c9852                                                     ; b461: 20 52 98     R.      ; Check the statement ends
+    lda zp_iwa                                                        ; b464: a5 2a       .*       ; Last value to the block end
+    sta zp_fwb_exp                                                    ; b466: 85 3d       .=       ; ...
+    lda zp_iwa_1                                                      ; b468: a5 2b       .+       ; ...
+    sta zp_fwb_m1                                                     ; b46a: 85 3e       .>       ; ...
+    ldy #7                                                            ; b46c: a0 07       ..       ; OSWORD 7, 6 bytes
+    ldx #5                                                            ; b46e: a2 05       ..       ; ...
+    bne cb48f                                                         ; b470: d0 1d       ..       ; pop into the block and call
 ; ***************************************************************************************
 ; ENVELOPE
 ;
 ; Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters).
 .stmt_envelope
-    jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.   
-    ldx #&0d                                                          ; b475: a2 0d       ..    
+    jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.      ; Evaluate the first parameter
+    ldx #&0d                                                          ; b475: a2 0d       ..       ; 13 more
 ; &b477 referenced 1 time by &b482
 .loop_cb477
-    lda zp_iwa                                                        ; b477: a5 2a       .*    
-    pha                                                               ; b479: 48          H     
-    txa                                                               ; b47a: 8a          .     
-    pha                                                               ; b47b: 48          H     
-    jsr sub_c92da                                                     ; b47c: 20 da 92     ..   
-    pla                                                               ; b47f: 68          h     
-    tax                                                               ; b480: aa          .     
-    dex                                                               ; b481: ca          .     
-    bne loop_cb477                                                    ; b482: d0 f3       ..    
-    jsr sub_c9852                                                     ; b484: 20 52 98     R.   
-    lda zp_iwa                                                        ; b487: a5 2a       .*    
-    sta l0044                                                         ; b489: 85 44       .D    
-    ldx #&0c                                                          ; b48b: a2 0c       ..    
-    ldy #osword_envelope                                              ; b48d: a0 08       ..    
+    lda zp_iwa                                                        ; b477: a5 2a       .*       ; Stack the 8-bit value
+    pha                                                               ; b479: 48          H        ; ...
+    txa                                                               ; b47a: 8a          .        ; save the counter
+    pha                                                               ; b47b: 48          H        ; ...
+    jsr sub_c92da                                                     ; b47c: 20 da 92     ..      ; step past the comma, evaluate the next
+    pla                                                               ; b47f: 68          h        ; restore the counter
+    tax                                                               ; b480: aa          .        ; ...
+    dex                                                               ; b481: ca          .        ; ...
+    bne loop_cb477                                                    ; b482: d0 f3       ..       ; loop
+    jsr sub_c9852                                                     ; b484: 20 52 98     R.      ; Check the statement ends
+    lda zp_iwa                                                        ; b487: a5 2a       .*       ; Last value to the block end
+    sta l0044                                                         ; b489: 85 44       .D       ; ...
+    ldx #&0c                                                          ; b48b: a2 0c       ..       ; OSWORD 8, 12 bytes
+    ldy #osword_envelope                                              ; b48d: a0 08       ..       ; ...
 ; &b48f referenced 2 times by &b470, &b493
 .cb48f
-    pla                                                               ; b48f: 68          h     
-    sta zp_general,x                                                  ; b490: 95 37       .7    
-    dex                                                               ; b492: ca          .     
-    bpl cb48f                                                         ; b493: 10 fa       ..    
-    tya                                                               ; b495: 98          .     
-    ldx #<(zp_general)                                                ; b496: a2 37       .7    
-    ldy #>(zp_general)                                                ; b498: a0 00       ..    
+    pla                                                               ; b48f: 68          h        ; Pop a byte into the control block
+    sta zp_general,x                                                  ; b490: 95 37       .7       ; ...
+    dex                                                               ; b492: ca          .        ; ...
+    bpl cb48f                                                         ; b493: 10 fa       ..       ; loop
+    tya                                                               ; b495: 98          .        ; OSWORD number
+    ldx #<(zp_general)                                                ; b496: a2 37       .7       ; Point at the control block
+    ldy #>(zp_general)                                                ; b498: a0 00       ..       ; ...
     jsr osword                                                        ; b49a: 20 f1 ff     ..      ; ENVELOPE command
-    jmp statement_loop                                                ; b49d: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; b49d: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; WIDTH
 ;
