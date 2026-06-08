@@ -1709,6 +1709,18 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 35061,
+      "name": "encode_line_number",
+      "title": "Encode a 16-bit line number into 3 bytes",
+      "description": "Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide with tokens."
+    },
+    {
+      "addr": 35110,
+      "name": "is_alphanumeric",
+      "title": "Test A for a name character",
+      "description": "Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or FN/PROC name."
+    },
+    {
       "addr": 34234,
       "name": "asm_parse_mnemonic",
       "title": "Parse and compact an assembler mnemonic",
@@ -1725,7 +1737,8 @@
       "addr": 34967,
       "name": "parse_decimal_u16",
       "title": "Parse a 16-bit decimal number",
-      "description": "Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow detection. The first digit is in A on entry; stops at the first non-digit. Used to read line numbers."
+      "description": "Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow detection. The first digit is in A on entry; stops at the first non-digit. Used to read line numbers.",
+      "fall_through": true
     },
     {
       "addr": 44760,
@@ -15789,6 +15802,7 @@
       "labels": [
         "c88da"
       ],
+      "comment_inline": "Back up",
       "xref_summaries": [
         "&88da referenced 2 times by &88a2, &88a6"
       ],
@@ -15805,6 +15819,7 @@
         169,
         141
       ],
+      "comment_inline": "Line-number token &8D",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&8d"
@@ -15816,6 +15831,7 @@
         124,
         136
       ],
+      "comment_inline": "Make room for the 3 encoded bytes",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c887c",
@@ -15828,6 +15844,7 @@
         165,
         55
       ],
+      "comment_inline": "Destination = source + 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -15840,6 +15857,7 @@
         105,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#2"
@@ -15850,6 +15868,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -15862,6 +15881,7 @@
         165,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -15874,6 +15894,7 @@
         105,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -15884,6 +15905,7 @@
         133,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -15899,6 +15921,7 @@
       "labels": [
         "loop_c88ec"
       ],
+      "comment_inline": "Shift the bytes up",
       "xref_summaries": [
         "&88ec referenced 1 time by &88f1"
       ],
@@ -15917,6 +15940,7 @@
         145,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fileblk),y",
@@ -15928,6 +15952,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -15937,6 +15962,7 @@
         208,
         249
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c88ec",
@@ -15949,6 +15975,7 @@
         160,
         3
       ],
+      "comment_inline": "Three encoded bytes",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -15960,8 +15987,9 @@
         62
       ],
       "labels": [
-        "sub_c88f5"
+        "encode_line_number"
       ],
+      "comment_inline": "Byte 2 = low | &40",
       "xref_summaries": [
         "&88f5 referenced 1 time by &906a"
       ],
@@ -15980,6 +16008,7 @@
         9,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&40"
@@ -15990,6 +16019,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -16001,6 +16031,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -16010,6 +16041,7 @@
         165,
         61
       ],
+      "comment_inline": "Byte 1 = high (6 bits) | &40",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -16022,6 +16054,7 @@
         41,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&3f"
@@ -16032,6 +16065,7 @@
         9,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&40"
@@ -16042,6 +16076,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -16053,6 +16088,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Byte 0: scramble the top bits",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -16062,6 +16098,7 @@
         165,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -16074,6 +16111,7 @@
         41,
         192
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -16084,6 +16122,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -16096,6 +16135,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -16108,6 +16148,7 @@
         41,
         192
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -16117,6 +16158,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -16125,6 +16167,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -16134,6 +16177,7 @@
         5,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_exp",
@@ -16145,6 +16189,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -16153,6 +16198,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -16162,6 +16208,7 @@
         73,
         84
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&54"
@@ -16172,6 +16219,7 @@
         145,
         55
       ],
+      "comment_inline": "store the control byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -16185,6 +16233,7 @@
         68,
         137
       ],
+      "comment_inline": "Advance past the 3 bytes",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -16198,6 +16247,7 @@
         68,
         137
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -16211,6 +16261,7 @@
         68,
         137
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "inc_ptr_general",
@@ -16223,6 +16274,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -16235,6 +16287,7 @@
       "labels": [
         "c8924"
       ],
+      "comment_inline": "not a name character",
       "xref_summaries": [
         "&8924 referenced 3 times by &8928, &8930, &8938"
       ],
@@ -16251,6 +16304,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -16261,8 +16315,9 @@
         123
       ],
       "labels": [
-        "sub_c8926"
+        "is_alphanumeric"
       ],
+      "comment_inline": "above 'z'?",
       "xref_summaries": [
         "&8926 referenced 5 times by &89cb, &89d4, &8a43, &8a74, &b167"
       ],
@@ -16283,6 +16338,7 @@
         176,
         250
       ],
+      "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8924",
@@ -16295,6 +16351,7 @@
         201,
         95
       ],
+      "comment_inline": "'_' or above?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&5f"
@@ -16305,6 +16362,7 @@
         176,
         14
       ],
+      "comment_inline": "yes: name char",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_2",
@@ -16317,6 +16375,7 @@
         201,
         91
       ],
+      "comment_inline": "'[' to '^'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&5b"
@@ -16327,6 +16386,7 @@
         176,
         242
       ],
+      "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8924",
@@ -16339,6 +16399,7 @@
         201,
         65
       ],
+      "comment_inline": "'A' or above?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&41"
@@ -16349,6 +16410,7 @@
         176,
         6
       ],
+      "comment_inline": "yes: name char",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_2",
@@ -16364,6 +16426,7 @@
       "labels": [
         "c8936"
       ],
+      "comment_inline": "above '9'?",
       "xref_summaries": [
         "&8936 referenced 3 times by &893f, &896d, &89a7"
       ],
@@ -16382,6 +16445,7 @@
         176,
         234
       ],
+      "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8924",
@@ -16394,6 +16458,7 @@
         201,
         48
       ],
+      "comment_inline": "digit?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&30"
@@ -16406,6 +16471,7 @@
       "labels": [
         "return_2"
       ],
+      "comment_inline": "carry set if so",
       "xref_summaries": [
         "&893c referenced 2 times by &892c, &8934"
       ],
@@ -16425,6 +16491,7 @@
       "labels": [
         "sub_c893d"
       ],
+      "comment_inline": "'.'?",
       "xref_summaries": [
         "&893d referenced 1 time by &89b7"
       ],
@@ -16441,6 +16508,7 @@
         208,
         245
       ],
+      "comment_inline": "no: test alphanumeric",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8936",
@@ -16452,6 +16520,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -17464,9 +17533,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8926",
+      "operand": "is_alphanumeric",
       "target": 35110,
-      "target_label": "sub_c8926"
+      "target_label": "is_alphanumeric"
     },
     {
       "addr": 35278,
@@ -17535,9 +17604,9 @@
       "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8926",
+      "operand": "is_alphanumeric",
       "target": 35110,
-      "target_label": "sub_c8926"
+      "target_label": "is_alphanumeric"
     },
     {
       "addr": 35287,
@@ -18350,9 +18419,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8926",
+      "operand": "is_alphanumeric",
       "target": 35110,
-      "target_label": "sub_c8926"
+      "target_label": "is_alphanumeric"
     },
     {
       "addr": 35398,
@@ -18720,9 +18789,9 @@
       "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8926",
+      "operand": "is_alphanumeric",
       "target": 35110,
-      "target_label": "sub_c8926"
+      "target_label": "is_alphanumeric"
     },
     {
       "addr": 35447,
@@ -28851,9 +28920,9 @@
       "comment_inline": "Re-encode the new line number in place",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c88f5",
+      "operand": "encode_line_number",
       "target": 35061,
-      "target_label": "sub_c88f5"
+      "target_label": "encode_line_number"
     },
     {
       "addr": 36973,
@@ -84986,9 +85055,9 @@
       "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8926",
+      "operand": "is_alphanumeric",
       "target": 35110,
-      "target_label": "sub_c8926"
+      "target_label": "is_alphanumeric"
     },
     {
       "addr": 45418,

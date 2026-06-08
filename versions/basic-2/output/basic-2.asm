@@ -1657,76 +1657,87 @@ l848a = sub_c847b+15
     rts                                                               ; 88d9: 60          `        ; Return
 ; &88da referenced 2 times by &88a2, &88a6
 .c88da
-    dey                                                               ; 88da: 88          .     
-    lda #&8d                                                          ; 88db: a9 8d       ..    
-    jsr sub_c887c                                                     ; 88dd: 20 7c 88     |.   
-    lda zp_general                                                    ; 88e0: a5 37       .7    
-    adc #2                                                            ; 88e2: 69 02       i.    
-    sta zp_fileblk                                                    ; 88e4: 85 39       .9    
-    lda zp_general_1                                                  ; 88e6: a5 38       .8    
-    adc #0                                                            ; 88e8: 69 00       i.    
-    sta l003a                                                         ; 88ea: 85 3a       .:    
+    dey                                                               ; 88da: 88          .        ; Back up
+    lda #&8d                                                          ; 88db: a9 8d       ..       ; Line-number token &8D
+    jsr sub_c887c                                                     ; 88dd: 20 7c 88     |.      ; Make room for the 3 encoded bytes
+    lda zp_general                                                    ; 88e0: a5 37       .7       ; Destination = source + 2
+    adc #2                                                            ; 88e2: 69 02       i.       ; ...
+    sta zp_fileblk                                                    ; 88e4: 85 39       .9       ; ...
+    lda zp_general_1                                                  ; 88e6: a5 38       .8       ; ...
+    adc #0                                                            ; 88e8: 69 00       i.       ; ...
+    sta l003a                                                         ; 88ea: 85 3a       .:       ; ...
 ; &88ec referenced 1 time by &88f1
 .loop_c88ec
-    lda (zp_general),y                                                ; 88ec: b1 37       .7    
-    sta (zp_fileblk),y                                                ; 88ee: 91 39       .9    
-    dey                                                               ; 88f0: 88          .     
-    bne loop_c88ec                                                    ; 88f1: d0 f9       ..    
-    ldy #3                                                            ; 88f3: a0 03       ..    
+    lda (zp_general),y                                                ; 88ec: b1 37       .7       ; Shift the bytes up
+    sta (zp_fileblk),y                                                ; 88ee: 91 39       .9       ; ...
+    dey                                                               ; 88f0: 88          .        ; ...
+    bne loop_c88ec                                                    ; 88f1: d0 f9       ..       ; loop
+    ldy #3                                                            ; 88f3: a0 03       ..       ; Three encoded bytes
+; ***************************************************************************************
+; Encode a 16-bit line number into 3 bytes
+;
+; Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte
+; holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide
+; with tokens.
 ; &88f5 referenced 1 time by &906a
-.sub_c88f5
-    lda zp_fwb_m1                                                     ; 88f5: a5 3e       .>    
-    ora #&40 ; '@'                                                    ; 88f7: 09 40       .@    
-    sta (zp_general),y                                                ; 88f9: 91 37       .7    
-    dey                                                               ; 88fb: 88          .     
-    lda zp_fwb_exp                                                    ; 88fc: a5 3d       .=    
-    and #&3f ; '?'                                                    ; 88fe: 29 3f       )?    
-    ora #&40 ; '@'                                                    ; 8900: 09 40       .@    
-    sta (zp_general),y                                                ; 8902: 91 37       .7    
-    dey                                                               ; 8904: 88          .     
-    lda zp_fwb_exp                                                    ; 8905: a5 3d       .=    
-    and #&c0                                                          ; 8907: 29 c0       ).    
-    sta zp_fwb_exp                                                    ; 8909: 85 3d       .=    
-    lda zp_fwb_m1                                                     ; 890b: a5 3e       .>    
-    and #&c0                                                          ; 890d: 29 c0       ).    
-    lsr a                                                             ; 890f: 4a          J     
-    lsr a                                                             ; 8910: 4a          J     
-    ora zp_fwb_exp                                                    ; 8911: 05 3d       .=    
-    lsr a                                                             ; 8913: 4a          J     
-    lsr a                                                             ; 8914: 4a          J     
-    eor #&54 ; 'T'                                                    ; 8915: 49 54       IT    
-    sta (zp_general),y                                                ; 8917: 91 37       .7    
-    jsr inc_ptr_general                                               ; 8919: 20 44 89     D.   
-    jsr inc_ptr_general                                               ; 891c: 20 44 89     D.   
-    jsr inc_ptr_general                                               ; 891f: 20 44 89     D.   
-    ldy #0                                                            ; 8922: a0 00       ..    
+.encode_line_number
+    lda zp_fwb_m1                                                     ; 88f5: a5 3e       .>       ; Byte 2 = low | &40
+    ora #&40 ; '@'                                                    ; 88f7: 09 40       .@       ; ...
+    sta (zp_general),y                                                ; 88f9: 91 37       .7       ; ...
+    dey                                                               ; 88fb: 88          .        ; ...
+    lda zp_fwb_exp                                                    ; 88fc: a5 3d       .=       ; Byte 1 = high (6 bits) | &40
+    and #&3f ; '?'                                                    ; 88fe: 29 3f       )?       ; ...
+    ora #&40 ; '@'                                                    ; 8900: 09 40       .@       ; ...
+    sta (zp_general),y                                                ; 8902: 91 37       .7       ; ...
+    dey                                                               ; 8904: 88          .        ; Byte 0: scramble the top bits
+    lda zp_fwb_exp                                                    ; 8905: a5 3d       .=       ; ...
+    and #&c0                                                          ; 8907: 29 c0       ).       ; ...
+    sta zp_fwb_exp                                                    ; 8909: 85 3d       .=       ; ...
+    lda zp_fwb_m1                                                     ; 890b: a5 3e       .>       ; ...
+    and #&c0                                                          ; 890d: 29 c0       ).       ; ...
+    lsr a                                                             ; 890f: 4a          J        ; ...
+    lsr a                                                             ; 8910: 4a          J        ; ...
+    ora zp_fwb_exp                                                    ; 8911: 05 3d       .=       ; ...
+    lsr a                                                             ; 8913: 4a          J        ; ...
+    lsr a                                                             ; 8914: 4a          J        ; ...
+    eor #&54 ; 'T'                                                    ; 8915: 49 54       IT       ; ...
+    sta (zp_general),y                                                ; 8917: 91 37       .7       ; store the control byte
+    jsr inc_ptr_general                                               ; 8919: 20 44 89     D.      ; Advance past the 3 bytes
+    jsr inc_ptr_general                                               ; 891c: 20 44 89     D.      ; ...
+    jsr inc_ptr_general                                               ; 891f: 20 44 89     D.      ; ...
+    ldy #0                                                            ; 8922: a0 00       ..       ; ...
 ; &8924 referenced 3 times by &8928, &8930, &8938
 .c8924
-    clc                                                               ; 8924: 18          .     
-    rts                                                               ; 8925: 60          `     
+    clc                                                               ; 8924: 18          .        ; not a name character
+    rts                                                               ; 8925: 60          `        ; ...
+; ***************************************************************************************
+; Test A for a name character
+;
+; Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or
+; FN/PROC name.
 ; &8926 referenced 5 times by &89cb, &89d4, &8a43, &8a74, &b167
-.sub_c8926
-    cmp #&7b ; '{'                                                    ; 8926: c9 7b       .{    
-    bcs c8924                                                         ; 8928: b0 fa       ..    
-    cmp #&5f ; '_'                                                    ; 892a: c9 5f       ._    
-    bcs return_2                                                      ; 892c: b0 0e       ..    
-    cmp #&5b ; '['                                                    ; 892e: c9 5b       .[    
-    bcs c8924                                                         ; 8930: b0 f2       ..    
-    cmp #&41 ; 'A'                                                    ; 8932: c9 41       .A    
-    bcs return_2                                                      ; 8934: b0 06       ..    
+.is_alphanumeric
+    cmp #&7b ; '{'                                                    ; 8926: c9 7b       .{       ; above 'z'?
+    bcs c8924                                                         ; 8928: b0 fa       ..       ; yes: no
+    cmp #&5f ; '_'                                                    ; 892a: c9 5f       ._       ; '_' or above?
+    bcs return_2                                                      ; 892c: b0 0e       ..       ; yes: name char
+    cmp #&5b ; '['                                                    ; 892e: c9 5b       .[       ; '[' to '^'?
+    bcs c8924                                                         ; 8930: b0 f2       ..       ; yes: no
+    cmp #&41 ; 'A'                                                    ; 8932: c9 41       .A       ; 'A' or above?
+    bcs return_2                                                      ; 8934: b0 06       ..       ; yes: name char
 ; &8936 referenced 3 times by &893f, &896d, &89a7
 .c8936
-    cmp #&3a ; ':'                                                    ; 8936: c9 3a       .:    
-    bcs c8924                                                         ; 8938: b0 ea       ..    
-    cmp #&30 ; '0'                                                    ; 893a: c9 30       .0    
+    cmp #&3a ; ':'                                                    ; 8936: c9 3a       .:       ; above '9'?
+    bcs c8924                                                         ; 8938: b0 ea       ..       ; yes: no
+    cmp #&30 ; '0'                                                    ; 893a: c9 30       .0       ; digit?
 ; &893c referenced 2 times by &892c, &8934
 .return_2
-    rts                                                               ; 893c: 60          `     
+    rts                                                               ; 893c: 60          `        ; carry set if so
 ; &893d referenced 1 time by &89b7
 .sub_c893d
-    cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..    
-    bne c8936                                                         ; 893f: d0 f5       ..    
-    rts                                                               ; 8941: 60          `     
+    cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..       ; '.'?
+    bne c8936                                                         ; 893f: d0 f5       ..       ; no: test alphanumeric
+    rts                                                               ; 8941: 60          `        ; Return
 ; ***************************************************************************************
 ; Read a byte via the general pointer, then advance it
 ;
@@ -1844,7 +1855,7 @@ l848a = sub_c847b+15
     jmp c8957                                                         ; 89c8: 4c 57 89    LW.      ; resume scanning
 ; &89cb referenced 1 time by &89ee
 .loop_c89cb
-    jsr sub_c8926                                                     ; 89cb: 20 26 89     &.      ; Skip a variable name: alphanumeric?
+    jsr is_alphanumeric                                               ; 89cb: 20 26 89     &.      ; Skip a variable name: alphanumeric?
     bcc c89e3                                                         ; 89ce: 90 13       ..       ; no: not a name
 ; &89d0 referenced 2 times by &8a16, &8a46
 .c89d0
@@ -1852,7 +1863,7 @@ l848a = sub_c847b+15
 ; &89d2 referenced 2 times by &89dc, &89fa
 .c89d2
     lda (zp_general),y                                                ; 89d2: b1 37       .7       ; ...
-    jsr sub_c8926                                                     ; 89d4: 20 26 89     &.      ; alphanumeric?
+    jsr is_alphanumeric                                               ; 89d4: 20 26 89     &.      ; alphanumeric?
     bcc c89c2                                                         ; 89d7: 90 e9       ..       ; no: end of the name
     jsr inc_ptr_general                                               ; 89d9: 20 44 89     D.      ; advance
     jmp c89d2                                                         ; 89dc: 4c d2 89    L..      ; loop
@@ -1934,7 +1945,7 @@ l848a = sub_c847b+15
     lsr a                                                             ; 8a3e: 4a          J        ; flag bit 0: conditional tokenisation?
     bcc c8a48                                                         ; 8a3f: 90 07       ..       ; no
     lda (zp_general),y                                                ; 8a41: b1 37       .7       ; a letter follows?
-    jsr sub_c8926                                                     ; 8a43: 20 26 89     &.      ; ...
+    jsr is_alphanumeric                                               ; 8a43: 20 26 89     &.      ; ...
     bcs c89d0                                                         ; 8a46: b0 88       ..       ; yes: keep it as a name, not a token
 ; &8a48 referenced 1 time by &8a3f
 .c8a48
@@ -1972,7 +1983,7 @@ l848a = sub_c847b+15
 ; &8a72 referenced 1 time by &8a7c
 .c8a72
     lda (zp_general),y                                                ; 8a72: b1 37       .7       ; char
-    jsr sub_c8926                                                     ; 8a74: 20 26 89     &.      ; alphanumeric?
+    jsr is_alphanumeric                                               ; 8a74: 20 26 89     &.      ; alphanumeric?
     bcc c8a7f                                                         ; 8a77: 90 06       ..       ; no: end of the name
     jsr inc_ptr_general                                               ; 8a79: 20 44 89     D.      ; advance
     jmp c8a72                                                         ; 8a7c: 4c 72 8a    Lr.      ; loop
@@ -3090,7 +3101,7 @@ l848a = sub_c847b+15
     sta zp_general                                                    ; 9064: 85 37       .7       ; ...
     lda zp_text_ptr_1                                                 ; 9066: a5 0c       ..       ; high
     sta zp_general_1                                                  ; 9068: 85 38       .8       ; ...
-    jsr sub_c88f5                                                     ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
+    jsr encode_line_number                                            ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
 ; &906d referenced 1 time by &909d
 .loop_c906d
     ldy zp_text_ptr_off                                               ; 906d: a4 0a       ..       ; resume scanning
@@ -9279,7 +9290,7 @@ l848a = sub_c847b+15
     bne loop_cb158                                                    ; b162: d0 f4       ..       ; no: keep comparing
     iny                                                               ; b164: c8          .        ; definition name also ends?
     lda (zp_fwb_ovf),y                                                ; b165: b1 3c       .<       ; ...
-    jsr sub_c8926                                                     ; b167: 20 26 89     &.      ; alphanumeric?
+    jsr is_alphanumeric                                               ; b167: 20 26 89     &.      ; alphanumeric?
     bcs cb12d                                                         ; b16a: b0 c1       ..       ; definition name is longer: next line
     txa                                                               ; b16c: 8a          .        ; Match: cache the definition
     tay                                                               ; b16d: a8          .        ; ...
@@ -12036,13 +12047,13 @@ save pydis_start, pydis_end
 ;     fwa_to_int:                  5
 ;     fwb_copy_from_fwa:           5
 ;     fwb_div2:                    5
+;     is_alphanumeric:             5
 ;     iwa_store_zp:                5
 ;     l0044:                       5
 ;     osword:                      5
 ;     resint_at:                   5
 ;     return_22:                   5
 ;     skip_spaces_expect_comma:    5
-;     sub_c8926:                   5
 ;     sub_c9a9d:                   5
 ;     sub_cbfa9:                   5
 ;     unstack_int_to_zp:           5
@@ -12815,6 +12826,7 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     encode_line_number:          1
 ;     err_no_gosub:                1
 ;     err_no_repeat:               1
 ;     err_no_such_line:            1
@@ -13109,7 +13121,6 @@ save pydis_start, pydis_end
 ;     stmt_next:                   1
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
-;     sub_c88f5:                   1
 ;     sub_c893d:                   1
 ;     sub_c8955:                   1
 ;     sub_c8f9a:                   1
@@ -14053,8 +14064,6 @@ save pydis_start, pydis_end
 ;     sub_c847b
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c88f5
-;     sub_c8926
 ;     sub_c893d
 ;     sub_c894b
 ;     sub_c8955

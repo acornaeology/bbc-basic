@@ -1827,6 +1827,16 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0x88f5, 'encode_line_number',
+             title='Encode a 16-bit line number into 3 bytes',
+             description='Pack the line number in &3D/&3E into the BBC '
+                         'three-byte GOTO encoding (a control byte holding '
+                         'the scrambled top bits, then low|&40 and high|&40) '
+                         'so the bytes never collide with tokens.')
+d.subroutine(0x8926, 'is_alphanumeric',
+             title='Test A for a name character',
+             description='Return carry set if A is 0-9, A-Z, a-z or _, the '
+                         'characters allowed in a variable or FN/PROC name.')
 d.subroutine(0x85ba, 'asm_parse_mnemonic',
              title='Parse and compact an assembler mnemonic',
              description='Skip to the mnemonic, handling end-of-statement and '
@@ -7550,6 +7560,66 @@ d.comment(0xba3c, 'next variable', align=Align.INLINE)
 d.comment(0xba3f, 'Drop the stacked values', align=Align.INLINE)
 d.comment(0xba40, '...', align=Align.INLINE)
 d.comment(0xba41, 'done', align=Align.INLINE)
+
+# Tokeniser line-number insertion (&88DA) and encode_line_number (&88F5).
+d.comment(0x88da, 'Back up', align=Align.INLINE)
+d.comment(0x88db, 'Line-number token &8D', align=Align.INLINE)
+d.comment(0x88dd, 'Make room for the 3 encoded bytes', align=Align.INLINE)
+d.comment(0x88e0, 'Destination = source + 2', align=Align.INLINE)
+d.comment(0x88e2, '...', align=Align.INLINE)
+d.comment(0x88e4, '...', align=Align.INLINE)
+d.comment(0x88e6, '...', align=Align.INLINE)
+d.comment(0x88e8, '...', align=Align.INLINE)
+d.comment(0x88ea, '...', align=Align.INLINE)
+d.comment(0x88ec, 'Shift the bytes up', align=Align.INLINE)
+d.comment(0x88ee, '...', align=Align.INLINE)
+d.comment(0x88f0, '...', align=Align.INLINE)
+d.comment(0x88f1, 'loop', align=Align.INLINE)
+d.comment(0x88f3, 'Three encoded bytes', align=Align.INLINE)
+d.comment(0x88f5, 'Byte 2 = low | &40', align=Align.INLINE)
+d.comment(0x88f7, '...', align=Align.INLINE)
+d.comment(0x88f9, '...', align=Align.INLINE)
+d.comment(0x88fb, '...', align=Align.INLINE)
+d.comment(0x88fc, 'Byte 1 = high (6 bits) | &40', align=Align.INLINE)
+d.comment(0x88fe, '...', align=Align.INLINE)
+d.comment(0x8900, '...', align=Align.INLINE)
+d.comment(0x8902, '...', align=Align.INLINE)
+d.comment(0x8904, 'Byte 0: scramble the top bits', align=Align.INLINE)
+d.comment(0x8905, '...', align=Align.INLINE)
+d.comment(0x8907, '...', align=Align.INLINE)
+d.comment(0x8909, '...', align=Align.INLINE)
+d.comment(0x890b, '...', align=Align.INLINE)
+d.comment(0x890d, '...', align=Align.INLINE)
+d.comment(0x890f, '...', align=Align.INLINE)
+d.comment(0x8910, '...', align=Align.INLINE)
+d.comment(0x8911, '...', align=Align.INLINE)
+d.comment(0x8913, '...', align=Align.INLINE)
+d.comment(0x8914, '...', align=Align.INLINE)
+d.comment(0x8915, '...', align=Align.INLINE)
+d.comment(0x8917, 'store the control byte', align=Align.INLINE)
+d.comment(0x8919, 'Advance past the 3 bytes', align=Align.INLINE)
+d.comment(0x891c, '...', align=Align.INLINE)
+d.comment(0x891f, '...', align=Align.INLINE)
+d.comment(0x8922, '...', align=Align.INLINE)
+d.comment(0x8924, 'not a name character', align=Align.INLINE)
+d.comment(0x8925, '...', align=Align.INLINE)
+
+# is_alphanumeric (&8926).
+d.comment(0x8926, "above 'z'?", align=Align.INLINE)
+d.comment(0x8928, 'yes: no', align=Align.INLINE)
+d.comment(0x892a, "'_' or above?", align=Align.INLINE)
+d.comment(0x892c, 'yes: name char', align=Align.INLINE)
+d.comment(0x892e, "'[' to '^'?", align=Align.INLINE)
+d.comment(0x8930, 'yes: no', align=Align.INLINE)
+d.comment(0x8932, "'A' or above?", align=Align.INLINE)
+d.comment(0x8934, 'yes: name char', align=Align.INLINE)
+d.comment(0x8936, "above '9'?", align=Align.INLINE)
+d.comment(0x8938, 'yes: no', align=Align.INLINE)
+d.comment(0x893a, "digit?", align=Align.INLINE)
+d.comment(0x893c, 'carry set if so', align=Align.INLINE)
+d.comment(0x893d, "'.'?", align=Align.INLINE)
+d.comment(0x893f, 'no: test alphanumeric', align=Align.INLINE)
+d.comment(0x8941, 'Return', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.
