@@ -987,165 +987,170 @@ l848a = sub_c847b+15
 ; Leave the inline 6502 assembler (reached at "]") and resume interpreting BASIC.
 ; &84fd referenced 1 time by &850d
 .assembler_exit
-    lda #&ff                                                          ; 84fd: a9 ff       ..    
-    sta zp_opt_flag                                                   ; 84ff: 85 28       .(    
-    jmp c8ba3                                                         ; 8501: 4c a3 8b    L..   
+    lda #&ff                                                          ; 84fd: a9 ff       ..       ; Leaving the assembler: OPT = BASIC mode
+    sta zp_opt_flag                                                   ; 84ff: 85 28       .(       ; ...
+    jmp c8ba3                                                         ; 8501: 4c a3 8b    L..      ; resume execution
 ; &8504 referenced 1 time by &8b44
 .c8504
-    lda #3                                                            ; 8504: a9 03       ..    
-    sta zp_opt_flag                                                   ; 8506: 85 28       .(    
+    lda #3                                                            ; 8504: a9 03       ..       ; Entering: default OPT 3
+    sta zp_opt_flag                                                   ; 8506: 85 28       .(       ; ...
 ; &8508 referenced 1 time by &85a2
 .c8508
-    jsr skip_spaces                                                   ; 8508: 20 97 8a     ..   
-    cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]    
-    beq assembler_exit                                                ; 850d: f0 ee       ..    
-    jsr c986d                                                         ; 850f: 20 6d 98     m.   
-    dec zp_text_ptr_off                                               ; 8512: c6 0a       ..    
-    jsr sub_c85ba                                                     ; 8514: 20 ba 85     ..   
-    dec zp_text_ptr_off                                               ; 8517: c6 0a       ..    
-    lda zp_opt_flag                                                   ; 8519: a5 28       .(    
-    lsr a                                                             ; 851b: 4a          J     
-    bcc c857e                                                         ; 851c: 90 60       .`    
-    lda zp_count                                                      ; 851e: a5 1e       ..    
-    adc #4                                                            ; 8520: 69 04       i.    
-    sta zp_fwb_m2                                                     ; 8522: 85 3f       .?    
-    lda zp_general_1                                                  ; 8524: a5 38       .8    
-    jsr print_hex_byte                                                ; 8526: 20 45 b5     E.   
-    lda zp_general                                                    ; 8529: a5 37       .7    
-    jsr sub_cb562                                                     ; 852b: 20 62 b5     b.   
-    ldx #&fc                                                          ; 852e: a2 fc       ..    
-    ldy zp_fileblk                                                    ; 8530: a4 39       .9    
-    bpl c8536                                                         ; 8532: 10 02       ..    
-    ldy zp_strbuf_len                                                 ; 8534: a4 36       .6    
+    jsr skip_spaces                                                   ; 8508: 20 97 8a     ..      ; Skip spaces
+    cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]       ; ']' end of assembler?
+    beq assembler_exit                                                ; 850d: f0 ee       ..       ; yes: exit
+    jsr c986d                                                         ; 850f: 20 6d 98     m.      ; Skip to the statement
+    dec zp_text_ptr_off                                               ; 8512: c6 0a       ..       ; back up
+    jsr asm_parse_mnemonic                                            ; 8514: 20 ba 85     ..      ; Assemble one instruction
+    dec zp_text_ptr_off                                               ; 8517: c6 0a       ..       ; back up
+    lda zp_opt_flag                                                   ; 8519: a5 28       .(       ; OPT listing bit set?
+    lsr a                                                             ; 851b: 4a          J        ; ...
+    bcc c857e                                                         ; 851c: 90 60       .`       ; no: skip the listing
+    lda zp_count                                                      ; 851e: a5 1e       ..       ; Column for the source text
+    adc #4                                                            ; 8520: 69 04       i.       ; ...
+    sta zp_fwb_m2                                                     ; 8522: 85 3f       .?       ; ...
+    lda zp_general_1                                                  ; 8524: a5 38       .8       ; Print P% high
+    jsr print_hex_byte                                                ; 8526: 20 45 b5     E.      ; ...
+    lda zp_general                                                    ; 8529: a5 37       .7       ; Print P% low
+    jsr sub_cb562                                                     ; 852b: 20 62 b5     b.      ; ...
+    ldx #&fc                                                          ; 852e: a2 fc       ..       ; Byte count
+    ldy zp_fileblk                                                    ; 8530: a4 39       .9       ; String (EQUS) length?
+    bpl c8536                                                         ; 8532: 10 02       ..       ; ...
+    ldy zp_strbuf_len                                                 ; 8534: a4 36       .6       ; ...
 ; &8536 referenced 1 time by &8532
 .c8536
-    sty zp_general_1                                                  ; 8536: 84 38       .8    
-    beq c8556                                                         ; 8538: f0 1c       ..    
-    ldy #0                                                            ; 853a: a0 00       ..    
+    sty zp_general_1                                                  ; 8536: 84 38       .8       ; Bytes to list
+    beq c8556                                                         ; 8538: f0 1c       ..       ; none
+    ldy #0                                                            ; 853a: a0 00       ..       ; From byte 0
 ; &853c referenced 1 time by &8554
 .loop_c853c
-    inx                                                               ; 853c: e8          .     
-    bne c854c                                                         ; 853d: d0 0d       ..    
-    jsr sub_cbc25                                                     ; 853f: 20 25 bc     %.   
-    ldx zp_fwb_m2                                                     ; 8542: a6 3f       .?    
+    inx                                                               ; 853c: e8          .        ; Count printed on this line
+    bne c854c                                                         ; 853d: d0 0d       ..       ; still on the line
+    jsr sub_cbc25                                                     ; 853f: 20 25 bc     %.      ; Newline and indent for a continuation
+    ldx zp_fwb_m2                                                     ; 8542: a6 3f       .?       ; ...
 ; &8544 referenced 1 time by &8548
 .loop_c8544
-    jsr print_space                                                   ; 8544: 20 65 b5     e.   
-    dex                                                               ; 8547: ca          .     
-    bne loop_c8544                                                    ; 8548: d0 fa       ..    
-    ldx #&fd                                                          ; 854a: a2 fd       ..    
+    jsr print_space                                                   ; 8544: 20 65 b5     e.      ; Print a space
+    dex                                                               ; 8547: ca          .        ; ...
+    bne loop_c8544                                                    ; 8548: d0 fa       ..       ; loop
+    ldx #&fd                                                          ; 854a: a2 fd       ..       ; reset the per-line count
 ; &854c referenced 1 time by &853d
 .c854c
-    lda (l003a),y                                                     ; 854c: b1 3a       .:    
-    jsr sub_cb562                                                     ; 854e: 20 62 b5     b.   
-    iny                                                               ; 8551: c8          .     
-    dec zp_general_1                                                  ; 8552: c6 38       .8    
-    bne loop_c853c                                                    ; 8554: d0 e6       ..    
+    lda (l003a),y                                                     ; 854c: b1 3a       .:       ; Assembled byte
+    jsr sub_cb562                                                     ; 854e: 20 62 b5     b.      ; print it as hex
+    iny                                                               ; 8551: c8          .        ; next
+    dec zp_general_1                                                  ; 8552: c6 38       .8       ; all bytes?
+    bne loop_c853c                                                    ; 8554: d0 e6       ..       ; no: continue
 ; &8556 referenced 2 times by &8538, &8562
 .c8556
-    inx                                                               ; 8556: e8          .     
-    bpl c8565                                                         ; 8557: 10 0c       ..    
-    jsr print_space                                                   ; 8559: 20 65 b5     e.   
-    jsr print_char                                                    ; 855c: 20 58 b5     X.   
-    jsr print_char                                                    ; 855f: 20 58 b5     X.   
-    jmp c8556                                                         ; 8562: 4c 56 85    LV.   
+    inx                                                               ; 8556: e8          .        ; Pad to the source column
+    bpl c8565                                                         ; 8557: 10 0c       ..       ; done
+    jsr print_space                                                   ; 8559: 20 65 b5     e.      ; print a space
+    jsr print_char                                                    ; 855c: 20 58 b5     X.      ; ...
+    jsr print_char                                                    ; 855f: 20 58 b5     X.      ; ...
+    jmp c8556                                                         ; 8562: 4c 56 85    LV.      ; loop
 ; &8565 referenced 1 time by &8557
 .c8565
-    ldy #0                                                            ; 8565: a0 00       ..    
+    ldy #0                                                            ; 8565: a0 00       ..       ; Print the source: from offset 0
 ; &8567 referenced 1 time by &8575
 .loop_c8567
-    lda (zp_text_ptr),y                                               ; 8567: b1 0b       ..    
-    cmp #&3a ; ':'                                                    ; 8569: c9 3a       .:    
-    beq c8577                                                         ; 856b: f0 0a       ..    
-    cmp #&0d                                                          ; 856d: c9 0d       ..    
-    beq c857b                                                         ; 856f: f0 0a       ..    
+    lda (zp_text_ptr),y                                               ; 8567: b1 0b       ..       ; Next character
+    cmp #&3a ; ':'                                                    ; 8569: c9 3a       .:       ; ':' end of statement?
+    beq c8577                                                         ; 856b: f0 0a       ..       ; yes
+    cmp #&0d                                                          ; 856d: c9 0d       ..       ; end of line?
+    beq c857b                                                         ; 856f: f0 0a       ..       ; yes
 ; &8571 referenced 1 time by &8579
 .loop_c8571
-    jsr print_token                                                   ; 8571: 20 0e b5     ..   
-    iny                                                               ; 8574: c8          .     
-    bne loop_c8567                                                    ; 8575: d0 f0       ..    
+    jsr print_token                                                   ; 8571: 20 0e b5     ..      ; de-tokenise and print
+    iny                                                               ; 8574: c8          .        ; next
+    bne loop_c8567                                                    ; 8575: d0 f0       ..       ; loop
 ; &8577 referenced 1 time by &856b
 .c8577
-    cpy zp_text_ptr_off                                               ; 8577: c4 0a       ..    
-    bcc loop_c8571                                                    ; 8579: 90 f6       ..    
+    cpy zp_text_ptr_off                                               ; 8577: c4 0a       ..       ; reached the statement end?
+    bcc loop_c8571                                                    ; 8579: 90 f6       ..       ; no: continue
 ; &857b referenced 1 time by &856f
 .c857b
-    jsr sub_cbc25                                                     ; 857b: 20 25 bc     %.   
+    jsr sub_cbc25                                                     ; 857b: 20 25 bc     %.      ; Newline
 ; &857e referenced 1 time by &851c
 .c857e
-    ldy zp_text_ptr_off                                               ; 857e: a4 0a       ..    
-    dey                                                               ; 8580: 88          .     
+    ldy zp_text_ptr_off                                               ; 857e: a4 0a       ..       ; Advance to the next statement
+    dey                                                               ; 8580: 88          .        ; ...
 ; &8581 referenced 1 time by &858a
 .loop_c8581
-    iny                                                               ; 8581: c8          .     
-    lda (zp_text_ptr),y                                               ; 8582: b1 0b       ..    
-    cmp #&3a ; ':'                                                    ; 8584: c9 3a       .:    
-    beq c858c                                                         ; 8586: f0 04       ..    
-    cmp #&0d                                                          ; 8588: c9 0d       ..    
-    bne loop_c8581                                                    ; 858a: d0 f5       ..    
+    iny                                                               ; 8581: c8          .        ; scan for the end
+    lda (zp_text_ptr),y                                               ; 8582: b1 0b       ..       ; ...
+    cmp #&3a ; ':'                                                    ; 8584: c9 3a       .:       ; ':'?
+    beq c858c                                                         ; 8586: f0 04       ..       ; yes
+    cmp #&0d                                                          ; 8588: c9 0d       ..       ; end of line?
+    bne loop_c8581                                                    ; 858a: d0 f5       ..       ; no: continue
 ; &858c referenced 1 time by &8586
 .c858c
-    jsr c9859                                                         ; 858c: 20 59 98     Y.   
-    dey                                                               ; 858f: 88          .     
-    lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..    
-    cmp #&3a ; ':'                                                    ; 8592: c9 3a       .:    
-    beq c85a2                                                         ; 8594: f0 0c       ..    
-    lda zp_text_ptr_1                                                 ; 8596: a5 0c       ..    
-    cmp #7                                                            ; 8598: c9 07       ..    
-    bne c859f                                                         ; 859a: d0 03       ..    
-    jmp immediate_loop                                                ; 859c: 4c f6 8a    L..   
+    jsr c9859                                                         ; 858c: 20 59 98     Y.      ; Check Escape and advance
+    dey                                                               ; 858f: 88          .        ; Re-read the terminator
+    lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..       ; ...
+    cmp #&3a ; ':'                                                    ; 8592: c9 3a       .:       ; ':'?
+    beq c85a2                                                         ; 8594: f0 0c       ..       ; yes: same line
+    lda zp_text_ptr_1                                                 ; 8596: a5 0c       ..       ; at end of program memory?
+    cmp #7                                                            ; 8598: c9 07       ..       ; ...
+    bne c859f                                                         ; 859a: d0 03       ..       ; no: next line
+    jmp immediate_loop                                                ; 859c: 4c f6 8a    L..      ; yes: immediate mode
 ; &859f referenced 1 time by &859a
 .c859f
-    jsr sub_c9890                                                     ; 859f: 20 90 98     ..   
+    jsr sub_c9890                                                     ; 859f: 20 90 98     ..      ; Move to the next line
 ; &85a2 referenced 1 time by &8594
 .c85a2
-    jmp c8508                                                         ; 85a2: 4c 08 85    L..   
+    jmp c8508                                                         ; 85a2: 4c 08 85    L..      ; continue assembling
 ; &85a5 referenced 1 time by &85d1
 .loop_c85a5
-    jsr parse_lvalue                                                  ; 85a5: 20 82 95     ..   
-    beq c8604                                                         ; 85a8: f0 5a       .Z    
-    bcs c8604                                                         ; 85aa: b0 58       .X    
-    jsr stack_integer                                                 ; 85ac: 20 94 bd     ..   
-    jsr sub_cae3a                                                     ; 85af: 20 3a ae     :.   
-    sta zp_var_type                                                   ; 85b2: 85 27       .'    
-    jsr assign_number                                                 ; 85b4: 20 b4 b4     ..   
-    jsr sub_c8827                                                     ; 85b7: 20 27 88     '.   
+    jsr parse_lvalue                                                  ; 85a5: 20 82 95     ..      ; Label: parse the variable
+    beq c8604                                                         ; 85a8: f0 5a       .Z       ; end: error
+    bcs c8604                                                         ; 85aa: b0 58       .X       ; indirection: error
+    jsr stack_integer                                                 ; 85ac: 20 94 bd     ..      ; stack the address
+    jsr sub_cae3a                                                     ; 85af: 20 3a ae     :.      ; value = P%
+    sta zp_var_type                                                   ; 85b2: 85 27       .'       ; integer type
+    jsr assign_number                                                 ; 85b4: 20 b4 b4     ..      ; assign P% to the label
+    jsr sub_c8827                                                     ; 85b7: 20 27 88     '.      ; sync the pointer
+; ***************************************************************************************
+; Parse and compact an assembler mnemonic
+;
+; Skip to the mnemonic, handling end-of-statement and labels, then pack its three letters
+; (5 bits each) into &3D/&3E for the opcode-table lookup.
 ; &85ba referenced 1 time by &8514
-.sub_c85ba
-    ldx #3                                                            ; 85ba: a2 03       ..    
-    jsr skip_spaces                                                   ; 85bc: 20 97 8a     ..   
-    ldy #0                                                            ; 85bf: a0 00       ..    
-    sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=    
-    cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:    
-    beq c862b                                                         ; 85c5: f0 64       .d    
-    cmp #&0d                                                          ; 85c7: c9 0d       ..    
-    beq c862b                                                         ; 85c9: f0 60       .`    
-    cmp #&5c ; '\'                                                    ; 85cb: c9 5c       .\    
-    beq c862b                                                         ; 85cd: f0 5c       .\    
-    cmp #&2e ; '.'                                                    ; 85cf: c9 2e       ..    
-    beq loop_c85a5                                                    ; 85d1: f0 d2       ..    
-    dec zp_text_ptr_off                                               ; 85d3: c6 0a       ..    
+.asm_parse_mnemonic
+    ldx #3                                                            ; 85ba: a2 03       ..       ; Three characters
+    jsr skip_spaces                                                   ; 85bc: 20 97 8a     ..      ; Skip spaces
+    ldy #0                                                            ; 85bf: a0 00       ..       ; Clear the compacted value
+    sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=       ; ...
+    cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:       ; ':' end of statement?
+    beq c862b                                                         ; 85c5: f0 64       .d       ; yes: no instruction
+    cmp #&0d                                                          ; 85c7: c9 0d       ..       ; end of line?
+    beq c862b                                                         ; 85c9: f0 60       .`       ; yes
+    cmp #&5c ; '\'                                                    ; 85cb: c9 5c       .\       ; comment?
+    beq c862b                                                         ; 85cd: f0 5c       .\       ; yes
+    cmp #&2e ; '.'                                                    ; 85cf: c9 2e       ..       ; '.' label?
+    beq loop_c85a5                                                    ; 85d1: f0 d2       ..       ; yes: define it
+    dec zp_text_ptr_off                                               ; 85d3: c6 0a       ..       ; back up
 ; &85d5 referenced 1 time by &85ef
 .loop_c85d5
-    ldy zp_text_ptr_off                                               ; 85d5: a4 0a       ..    
-    inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..    
-    lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..    
-    bmi c8607                                                         ; 85db: 30 2a       0*    
-    cmp #&20 ; ' '                                                    ; 85dd: c9 20       .     
-    beq c85f1                                                         ; 85df: f0 10       ..    
-    ldy #5                                                            ; 85e1: a0 05       ..    
-    asl a                                                             ; 85e3: 0a          .     
-    asl a                                                             ; 85e4: 0a          .     
-    asl a                                                             ; 85e5: 0a          .     
+    ldy zp_text_ptr_off                                               ; 85d5: a4 0a       ..       ; Next character
+    inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..       ; ...
+    bmi c8607                                                         ; 85db: 30 2a       0*       ; token: tokenised AND/EOR/OR
+    cmp #&20 ; ' '                                                    ; 85dd: c9 20       .        ; space?
+    beq c85f1                                                         ; 85df: f0 10       ..       ; skip it
+    ldy #5                                                            ; 85e1: a0 05       ..       ; Compact the character (5 bits)
+    asl a                                                             ; 85e3: 0a          .        ; ...
+    asl a                                                             ; 85e4: 0a          .        ; ...
+    asl a                                                             ; 85e5: 0a          .        ; ...
 ; &85e6 referenced 1 time by &85ec
 .loop_c85e6
-    asl a                                                             ; 85e6: 0a          .     
-    rol zp_fwb_exp                                                    ; 85e7: 26 3d       &=    
-    rol zp_fwb_m1                                                     ; 85e9: 26 3e       &>    
-    dey                                                               ; 85eb: 88          .     
-    bne loop_c85e6                                                    ; 85ec: d0 f8       ..    
-    dex                                                               ; 85ee: ca          .     
-    bne loop_c85d5                                                    ; 85ef: d0 e4       ..    
+    asl a                                                             ; 85e6: 0a          .        ; shift into the value
+    rol zp_fwb_exp                                                    ; 85e7: 26 3d       &=       ; ...
+    rol zp_fwb_m1                                                     ; 85e9: 26 3e       &>       ; ...
+    dey                                                               ; 85eb: 88          .        ; ...
+    bne loop_c85e6                                                    ; 85ec: d0 f8       ..       ; ...
+    dex                                                               ; 85ee: ca          .        ; next character
+    bne loop_c85d5                                                    ; 85ef: d0 e4       ..       ; loop for three
 ; &85f1 referenced 1 time by &85df
 .c85f1
     ldx #&3a ; ':'                                                    ; 85f1: a2 3a       .:    
@@ -12405,6 +12410,7 @@ save pydis_start, pydis_end
 ;     zp_rnd_seed_3:               2
 ;     zp_trace_max:                2
 ;     ascii_to_number:             1
+;     asm_parse_mnemonic:          1
 ;     assembler_exit:              1
 ;     brkv:                        1
 ;     brkv+1:                      1
@@ -13103,7 +13109,6 @@ save pydis_start, pydis_end
 ;     stmt_next:                   1
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
-;     sub_c85ba:                   1
 ;     sub_c88f5:                   1
 ;     sub_c893d:                   1
 ;     sub_c8955:                   1
@@ -14046,7 +14051,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c834e
 ;     sub_c847b
-;     sub_c85ba
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c88f5
