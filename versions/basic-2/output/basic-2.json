@@ -32910,6 +32910,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -32922,6 +32923,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -32934,6 +32936,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -32946,6 +32949,7 @@
         165,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_off",
@@ -32958,6 +32962,7 @@
         133,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -32982,6 +32987,7 @@
         151,
         177
       ],
+      "comment_inline": "call it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "call_proc_fn",
@@ -32995,6 +33001,7 @@
         82,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -33008,6 +33015,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -33023,6 +33031,7 @@
       "labels": [
         "loop_c931b"
       ],
+      "comment_inline": "Clear the local string length",
       "xref_summaries": [
         "&931b referenced 1 time by &9332"
       ],
@@ -33039,6 +33048,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -33049,6 +33059,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -33061,6 +33072,7 @@
         240,
         30
       ],
+      "comment_inline": "always",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9341",
@@ -33091,6 +33103,7 @@
         224,
         252
       ],
+      "comment_inline": "inside a PROC/FN?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&fc"
@@ -33101,6 +33114,7 @@
         176,
         67
       ],
+      "comment_inline": "no: Not LOCAL error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c936b",
@@ -33114,6 +33128,7 @@
         130,
         149
       ],
+      "comment_inline": "Parse the local variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -33126,6 +33141,7 @@
         240,
         38
       ],
+      "comment_inline": "not a variable: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9353",
@@ -33152,6 +33168,7 @@
         164,
         44
       ],
+      "comment_inline": "string variable?",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_iwa_2",
@@ -33164,6 +33181,7 @@
         48,
         231
       ],
+      "comment_inline": "yes: leave it cleared",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_c931b",
@@ -33177,6 +33195,7 @@
         148,
         189
       ],
+      "comment_inline": "stack the variable address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -33201,6 +33220,7 @@
         216,
         174
       ],
+      "comment_inline": "value zero",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -33213,6 +33233,7 @@
         133,
         39
       ],
+      "comment_inline": "integer type",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -33226,6 +33247,7 @@
         180,
         180
       ],
+      "comment_inline": "assign it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "assign_number",
@@ -33240,6 +33262,7 @@
       "labels": [
         "c9341"
       ],
+      "comment_inline": "Bump the local count in the frame",
       "xref_summaries": [
         "&9341 referenced 1 time by &9321"
       ],
@@ -33256,6 +33279,7 @@
         6,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l0106,x",
@@ -33268,6 +33292,7 @@
         164,
         27
       ],
+      "comment_inline": "Sync the program pointer",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -33280,6 +33305,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -33293,6 +33319,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -33316,6 +33343,7 @@
         240,
         211
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "stmt_local",
@@ -33329,6 +33357,7 @@
         150,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8b96",
@@ -33345,6 +33374,7 @@
       "labels": [
         "c9353"
       ],
+      "comment_inline": "not a variable: error",
       "xref_summaries": [
         "&9353 referenced 1 time by &932b"
       ],
@@ -33375,6 +33405,7 @@
         224,
         252
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&fc"
@@ -33385,6 +33416,7 @@
         176,
         10
       ],
+      "comment_inline": "no frame: Not PROC error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9365",
@@ -33398,6 +33430,7 @@
         255,
         1
       ],
+      "comment_inline": "Framed call token",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l01ff",
@@ -33421,6 +33454,7 @@
         208,
         3
       ],
+      "comment_inline": "not PROC: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9365",
@@ -33449,6 +33483,7 @@
       "labels": [
         "c9365"
       ],
+      "comment_inline": "No PROC error",
       "xref_summaries": [
         "&9365 referenced 2 times by &9359, &9360"
       ],
@@ -33497,6 +33532,7 @@
       "labels": [
         "c936b"
       ],
+      "comment_inline": "Not LOCAL error",
       "xref_summaries": [
         "&936b referenced 1 time by &9326"
       ],
@@ -33545,6 +33581,7 @@
       "labels": [
         "c9372"
       ],
+      "comment_inline": "Bad statement error",
       "xref_summaries": [
         "&9372 referenced 4 times by &93b2, &93b8, &93c6, &93cd"
       ],

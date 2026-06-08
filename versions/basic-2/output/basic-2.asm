@@ -3554,21 +3554,21 @@ l848a = sub_c847b+15
 ; PROCname[(params)].
 .stmt_proc
     lda zp_text_ptr                                                   ; 9304: a5 0b       ..       ; Remember the call site in PtrB
-    sta zp_text_ptr2                                                  ; 9306: 85 19       ..    
-    lda zp_text_ptr_1                                                 ; 9308: a5 0c       ..    
-    sta zp_text_ptr2_1                                                ; 930a: 85 1a       ..    
-    lda zp_text_ptr_off                                               ; 930c: a5 0a       ..    
-    sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..    
+    sta zp_text_ptr2                                                  ; 9306: 85 19       ..       ; ...
+    lda zp_text_ptr_1                                                 ; 9308: a5 0c       ..       ; ...
+    sta zp_text_ptr2_1                                                ; 930a: 85 1a       ..       ; ...
+    lda zp_text_ptr_off                                               ; 930c: a5 0a       ..       ; ...
+    sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..       ; ...
     lda #&f2                                                          ; 9310: a9 f2       ..       ; Enter the procedure (PROC token &F2)
-    jsr call_proc_fn                                                  ; 9312: 20 97 b1     ..   
-    jsr sub_c9852                                                     ; 9315: 20 52 98     R.   
-    jmp statement_loop                                                ; 9318: 4c 9b 8b    L..   
+    jsr call_proc_fn                                                  ; 9312: 20 97 b1     ..      ; call it
+    jsr sub_c9852                                                     ; 9315: 20 52 98     R.      ; check the statement ends
+    jmp statement_loop                                                ; 9318: 4c 9b 8b    L..      ; next statement
 ; &931b referenced 1 time by &9332
 .loop_c931b
-    ldy #3                                                            ; 931b: a0 03       ..    
-    lda #0                                                            ; 931d: a9 00       ..    
-    sta (zp_iwa),y                                                    ; 931f: 91 2a       .*    
-    beq c9341                                                         ; 9321: f0 1e       ..    
+    ldy #3                                                            ; 931b: a0 03       ..       ; Clear the local string length
+    lda #0                                                            ; 931d: a9 00       ..       ; ...
+    sta (zp_iwa),y                                                    ; 931f: 91 2a       .*       ; ...
+    beq c9341                                                         ; 9321: f0 1e       ..       ; always
 ; ***************************************************************************************
 ; LOCAL
 ;
@@ -3576,58 +3576,58 @@ l848a = sub_c847b+15
 ; &9323 referenced 1 time by &934e
 .stmt_local
     tsx                                                               ; 9323: ba          .        ; LOCAL is only meaningful inside a PROC/FN
-    cpx #&fc                                                          ; 9324: e0 fc       ..    
-    bcs c936b                                                         ; 9326: b0 43       .C    
-    jsr parse_lvalue                                                  ; 9328: 20 82 95     ..   
-    beq c9353                                                         ; 932b: f0 26       .&    
+    cpx #&fc                                                          ; 9324: e0 fc       ..       ; inside a PROC/FN?
+    bcs c936b                                                         ; 9326: b0 43       .C       ; no: Not LOCAL error
+    jsr parse_lvalue                                                  ; 9328: 20 82 95     ..      ; Parse the local variable
+    beq c9353                                                         ; 932b: f0 26       .&       ; not a variable: error
     jsr stack_local                                                   ; 932d: 20 0d b3     ..      ; Save the variable's value for restoration
-    ldy zp_iwa_2                                                      ; 9330: a4 2c       .,    
-    bmi loop_c931b                                                    ; 9332: 30 e7       0.    
-    jsr stack_integer                                                 ; 9334: 20 94 bd     ..   
+    ldy zp_iwa_2                                                      ; 9330: a4 2c       .,       ; string variable?
+    bmi loop_c931b                                                    ; 9332: 30 e7       0.       ; yes: leave it cleared
+    jsr stack_integer                                                 ; 9334: 20 94 bd     ..      ; stack the variable address
     lda #0                                                            ; 9337: a9 00       ..       ; Initialise the local to zero / empty
-    jsr int_result_a                                                  ; 9339: 20 d8 ae     ..   
-    sta zp_var_type                                                   ; 933c: 85 27       .'    
-    jsr assign_number                                                 ; 933e: 20 b4 b4     ..   
+    jsr int_result_a                                                  ; 9339: 20 d8 ae     ..      ; value zero
+    sta zp_var_type                                                   ; 933c: 85 27       .'       ; integer type
+    jsr assign_number                                                 ; 933e: 20 b4 b4     ..      ; assign it
 ; &9341 referenced 1 time by &9321
 .c9341
-    tsx                                                               ; 9341: ba          .     
-    inc l0106,x                                                       ; 9342: fe 06 01    ...   
-    ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..    
-    sty zp_text_ptr_off                                               ; 9347: 84 0a       ..    
-    jsr skip_spaces                                                   ; 9349: 20 97 8a     ..   
+    tsx                                                               ; 9341: ba          .        ; Bump the local count in the frame
+    inc l0106,x                                                       ; 9342: fe 06 01    ...      ; ...
+    ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..       ; Sync the program pointer
+    sty zp_text_ptr_off                                               ; 9347: 84 0a       ..       ; ...
+    jsr skip_spaces                                                   ; 9349: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
-    beq stmt_local                                                    ; 934e: f0 d3       ..    
-    jmp c8b96                                                         ; 9350: 4c 96 8b    L..   
+    beq stmt_local                                                    ; 934e: f0 d3       ..       ; yes
+    jmp c8b96                                                         ; 9350: 4c 96 8b    L..      ; next statement
 ; &9353 referenced 1 time by &932b
 .c9353
-    jmp c8b98                                                         ; 9353: 4c 98 8b    L..   
+    jmp c8b98                                                         ; 9353: 4c 98 8b    L..      ; not a variable: error
 ; ***************************************************************************************
 ; ENDPROC
 ;
 ; Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC.
 .stmt_endproc
     tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
-    cpx #&fc                                                          ; 9357: e0 fc       ..    
-    bcs c9365                                                         ; 9359: b0 0a       ..    
-    lda l01ff                                                         ; 935b: ad ff 01    ...   
+    cpx #&fc                                                          ; 9357: e0 fc       ..       ; ...
+    bcs c9365                                                         ; 9359: b0 0a       ..       ; no frame: Not PROC error
+    lda l01ff                                                         ; 935b: ad ff 01    ...      ; Framed call token
     cmp #&f2                                                          ; 935e: c9 f2       ..       ; The framed call must be a PROC
-    bne c9365                                                         ; 9360: d0 03       ..    
+    bne c9365                                                         ; 9360: d0 03       ..       ; not PROC: error
     jmp check_end_of_statement                                        ; 9362: 4c 57 98    LW.      ; Return to the caller, restoring locals
 ; &9365 referenced 2 times by &9359, &9360
 .c9365
-    brk                                                               ; 9365: 00          .     
+    brk                                                               ; 9365: 00          .        ; No PROC error
     equb &0d                                                          ; 9366: 0d          .     
     equs "No "                                                        ; 9367: 4e 6f 20    No    
     equb &f2                                                          ; 936a: f2          .     
 ; &936b referenced 1 time by &9326
 .c936b
-    brk                                                               ; 936b: 00          .     
+    brk                                                               ; 936b: 00          .        ; Not LOCAL error
     equb &0c                                                          ; 936c: 0c          .     
     equs "Not "                                                       ; 936d: 4e 6f 74... Not...
     equb &ea                                                          ; 9371: ea          .     
 ; &9372 referenced 4 times by &93b2, &93b8, &93c6, &93cd
 .c9372
-    brk                                                               ; 9372: 00          .     
+    brk                                                               ; 9372: 00          .        ; Bad statement error
     equb &19                                                          ; 9373: 19          .     
     equs "Bad "                                                       ; 9374: 42 61 64... Bad...
     equb &eb, &00                                                     ; 9378: eb 00       ..    
