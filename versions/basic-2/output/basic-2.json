@@ -19801,6 +19801,7 @@
         133,
         22
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -19813,6 +19814,7 @@
         169,
         180
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -19823,6 +19825,7 @@
         133,
         23
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -19846,6 +19849,7 @@
         134,
         40
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_opt_flag",
@@ -19858,6 +19862,7 @@
         134,
         60
       ],
+      "comment_inline": "Clear the machine-stack marker",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_ovf",
@@ -19892,6 +19897,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Y = 0",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -19914,6 +19920,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -19926,6 +19933,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -19938,6 +19946,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -19950,6 +19959,7 @@
         132,
         59
       ],
+      "comment_inline": "clear the quote flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -19962,6 +19972,7 @@
         132,
         10
       ],
+      "comment_inline": "and the offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -19975,6 +19986,7 @@
         87,
         137
       ],
+      "comment_inline": "Tokenise the line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c8957",
@@ -20001,6 +20013,7 @@
         144,
         6
       ],
+      "comment_inline": "no line number: execute it",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8b38",
@@ -20028,6 +20041,7 @@
         243,
         138
       ],
+      "comment_inline": "inserted: immediate loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8af3",
@@ -20102,6 +20116,7 @@
       "labels": [
         "loop_c8b41"
       ],
+      "comment_inline": "Back to immediate mode",
       "xref_summaries": [
         "&8b41 referenced 1 time by &8b8f"
       ],
@@ -20124,6 +20139,7 @@
       "labels": [
         "loop_c8b44"
       ],
+      "comment_inline": "Enter the assembler",
       "xref_summaries": [
         "&8b44 referenced 1 time by &8b6f"
       ],
@@ -20144,6 +20160,7 @@
       "labels": [
         "loop_c8b47"
       ],
+      "comment_inline": "Inside a function call?",
       "xref_summaries": [
         "&8b47 referenced 1 time by &8b67"
       ],
@@ -20159,6 +20176,7 @@
         224,
         252
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&fc"
@@ -20169,6 +20187,7 @@
         176,
         13
       ],
+      "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8b59",
@@ -20182,6 +20201,7 @@
         255,
         1
       ],
+      "comment_inline": "Pushed token",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l01ff",
@@ -20194,6 +20214,7 @@
         201,
         164
       ],
+      "comment_inline": "FN?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&a4"
@@ -20204,6 +20225,7 @@
         208,
         6
       ],
+      "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8b59",
@@ -20217,6 +20239,7 @@
         29,
         155
       ],
+      "comment_inline": "Evaluate the return value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -20230,6 +20253,7 @@
         76,
         152
       ],
+      "comment_inline": "check end, return from the function",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c984c",
@@ -20487,6 +20511,7 @@
       "labels": [
         "stmt_data"
       ],
+      "comment_inline": "CR",
       "xref_summaries": [
         "&8b7d referenced 2 times by &8b89, &b907"
       ],
@@ -20504,6 +20529,7 @@
         164,
         10
       ],
+      "comment_inline": "Line offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -20515,6 +20541,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -20526,6 +20553,7 @@
       "labels": [
         "loop_c8b82"
       ],
+      "comment_inline": "Scan to the end of line",
       "xref_summaries": [
         "&8b82 referenced 1 time by &8b85"
       ],
@@ -20541,6 +20569,7 @@
         209,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_text_ptr),y",
@@ -20553,6 +20582,7 @@
         208,
         251
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8b82",
@@ -20568,6 +20598,7 @@
       "labels": [
         "c8b87"
       ],
+      "comment_inline": "ELSE?",
       "xref_summaries": [
         "&8b87 referenced 2 times by &8ba1, &9902"
       ],
@@ -20585,6 +20616,7 @@
         240,
         242
       ],
+      "comment_inline": "yes: skip to end of line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "stmt_data",
@@ -20597,6 +20629,7 @@
         165,
         12
       ],
+      "comment_inline": "In the command buffer?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -20609,6 +20642,7 @@
         201,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#7"
@@ -20619,6 +20653,7 @@
         240,
         176
       ],
+      "comment_inline": "yes: immediate mode",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8b41",
@@ -20632,6 +20667,7 @@
         144,
         152
       ],
+      "comment_inline": "Check for end of program, step past CR",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9890",
@@ -20644,6 +20680,7 @@
         208,
         13
       ],
+      "comment_inline": "more: next statement",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8ba3",

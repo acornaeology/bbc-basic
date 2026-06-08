@@ -2136,26 +2136,26 @@ l848a = sub_c847b+15
 ; &8b0b referenced 1 time by &bd1d
 .execute_line
     lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3       ; Restore the default error handler (ON ERROR OFF)
-    sta zp_error_vec                                                  ; 8b0d: 85 16       ..    
-    lda #&b4                                                          ; 8b0f: a9 b4       ..    
-    sta zp_error_vec_1                                                ; 8b11: 85 17       ..    
+    sta zp_error_vec                                                  ; 8b0d: 85 16       ..       ; ...
+    lda #&b4                                                          ; 8b0f: a9 b4       ..       ; ...
+    sta zp_error_vec_1                                                ; 8b11: 85 17       ..       ; ...
     ldx #&ff                                                          ; 8b13: a2 ff       ..       ; OPT = &FF: not inside the [ ] assembler
-    stx zp_opt_flag                                                   ; 8b15: 86 28       .(    
-    stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<    
+    stx zp_opt_flag                                                   ; 8b15: 86 28       .(       ; ...
+    stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<       ; Clear the machine-stack marker
     txs                                                               ; 8b19: 9a          .        ; Reset the 6502 hardware stack
     jsr sub_cbd3a                                                     ; 8b1a: 20 3a bd     :.      ; Clear the DATA pointer and the BASIC stacks
-    tay                                                               ; 8b1d: a8          .     
+    tay                                                               ; 8b1d: a8          .        ; Y = 0
     lda zp_text_ptr                                                   ; 8b1e: a5 0b       ..       ; Point the general pointer at the line text
-    sta zp_general                                                    ; 8b20: 85 37       .7    
-    lda zp_text_ptr_1                                                 ; 8b22: a5 0c       ..    
-    sta zp_general_1                                                  ; 8b24: 85 38       .8    
-    sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;    
-    sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..    
-    jsr c8957                                                         ; 8b2a: 20 57 89     W.   
+    sta zp_general                                                    ; 8b20: 85 37       .7       ; ...
+    lda zp_text_ptr_1                                                 ; 8b22: a5 0c       ..       ; ...
+    sta zp_general_1                                                  ; 8b24: 85 38       .8       ; ...
+    sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; clear the quote flag
+    sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
+    jsr c8957                                                         ; 8b2a: 20 57 89     W.      ; Tokenise the line
     jsr sub_c97df                                                     ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
-    bcc c8b38                                                         ; 8b30: 90 06       ..    
+    bcc c8b38                                                         ; 8b30: 90 06       ..       ; no line number: execute it
     jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
-    jmp c8af3                                                         ; 8b35: 4c f3 8a    L..   
+    jmp c8af3                                                         ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
 ; &8b38 referenced 1 time by &8b30
 .c8b38
     jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..   
@@ -2164,20 +2164,20 @@ l848a = sub_c847b+15
     bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~       ; Otherwise treat it as a variable assignment
 ; &8b41 referenced 1 time by &8b8f
 .loop_c8b41
-    jmp immediate_loop                                                ; 8b41: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; 8b41: 4c f6 8a    L..      ; Back to immediate mode
 ; &8b44 referenced 1 time by &8b6f
 .loop_c8b44
-    jmp c8504                                                         ; 8b44: 4c 04 85    L..   
+    jmp c8504                                                         ; 8b44: 4c 04 85    L..      ; Enter the assembler
 ; &8b47 referenced 1 time by &8b67
 .loop_c8b47
-    tsx                                                               ; 8b47: ba          .     
-    cpx #&fc                                                          ; 8b48: e0 fc       ..    
-    bcs c8b59                                                         ; 8b4a: b0 0d       ..    
-    lda l01ff                                                         ; 8b4c: ad ff 01    ...   
-    cmp #&a4                                                          ; 8b4f: c9 a4       ..    
-    bne c8b59                                                         ; 8b51: d0 06       ..    
-    jsr eval_expr                                                     ; 8b53: 20 1d 9b     ..   
-    jmp c984c                                                         ; 8b56: 4c 4c 98    LL.   
+    tsx                                                               ; 8b47: ba          .        ; Inside a function call?
+    cpx #&fc                                                          ; 8b48: e0 fc       ..       ; ...
+    bcs c8b59                                                         ; 8b4a: b0 0d       ..       ; no: error
+    lda l01ff                                                         ; 8b4c: ad ff 01    ...      ; Pushed token
+    cmp #&a4                                                          ; 8b4f: c9 a4       ..       ; FN?
+    bne c8b59                                                         ; 8b51: d0 06       ..       ; no: error
+    jsr eval_expr                                                     ; 8b53: 20 1d 9b     ..      ; Evaluate the return value
+    jmp c984c                                                         ; 8b56: 4c 4c 98    LL.      ; check end, return from the function
 ; &8b59 referenced 2 times by &8b4a, &8b51
 .c8b59
     brk                                                               ; 8b59: 00          .     
@@ -2216,23 +2216,23 @@ l848a = sub_c847b+15
 ; so all four share this skip-to-end handler.
 ; &8b7d referenced 2 times by &8b89, &b907
 .stmt_data
-    lda #&0d                                                          ; 8b7d: a9 0d       ..    
-    ldy zp_text_ptr_off                                               ; 8b7f: a4 0a       ..    
-    dey                                                               ; 8b81: 88          .     
+    lda #&0d                                                          ; 8b7d: a9 0d       ..       ; CR
+    ldy zp_text_ptr_off                                               ; 8b7f: a4 0a       ..       ; Line offset
+    dey                                                               ; 8b81: 88          .        ; ...
 ; &8b82 referenced 1 time by &8b85
 .loop_c8b82
-    iny                                                               ; 8b82: c8          .     
-    cmp (zp_text_ptr),y                                               ; 8b83: d1 0b       ..    
-    bne loop_c8b82                                                    ; 8b85: d0 fb       ..    
+    iny                                                               ; 8b82: c8          .        ; Scan to the end of line
+    cmp (zp_text_ptr),y                                               ; 8b83: d1 0b       ..       ; ...
+    bne loop_c8b82                                                    ; 8b85: d0 fb       ..       ; ...
 ; &8b87 referenced 2 times by &8ba1, &9902
 .c8b87
-    cmp #&8b                                                          ; 8b87: c9 8b       ..    
-    beq stmt_data                                                     ; 8b89: f0 f2       ..    
-    lda zp_text_ptr_1                                                 ; 8b8b: a5 0c       ..    
-    cmp #7                                                            ; 8b8d: c9 07       ..    
-    beq loop_c8b41                                                    ; 8b8f: f0 b0       ..    
-    jsr sub_c9890                                                     ; 8b91: 20 90 98     ..   
-    bne c8ba3                                                         ; 8b94: d0 0d       ..    
+    cmp #&8b                                                          ; 8b87: c9 8b       ..       ; ELSE?
+    beq stmt_data                                                     ; 8b89: f0 f2       ..       ; yes: skip to end of line
+    lda zp_text_ptr_1                                                 ; 8b8b: a5 0c       ..       ; In the command buffer?
+    cmp #7                                                            ; 8b8d: c9 07       ..       ; ...
+    beq loop_c8b41                                                    ; 8b8f: f0 b0       ..       ; yes: immediate mode
+    jsr sub_c9890                                                     ; 8b91: 20 90 98     ..      ; Check for end of program, step past CR
+    bne c8ba3                                                         ; 8b94: d0 0d       ..       ; more: next statement
 ; &8b96 referenced 7 times by &8b71, &8d80, &9212, &9350, &9453, &b7a1, &bb1c
 .c8b96
     dec zp_text_ptr_off                                               ; 8b96: c6 0a       ..    
