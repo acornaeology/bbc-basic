@@ -43961,6 +43961,7 @@
       "labels": [
         "find_program_line"
       ],
+      "comment_inline": "Pointer low = 0",
       "xref_summaries": [
         "&9970 referenced 3 times by &b5ec, &b9af, &bc2d"
       ],
@@ -43979,6 +43980,7 @@
         132,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -43991,6 +43993,7 @@
         165,
         24
       ],
+      "comment_inline": "Pointer high = PAGE",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_page",
@@ -44003,6 +44006,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -44018,6 +44022,7 @@
       "labels": [
         "c9978"
       ],
+      "comment_inline": "This line's number: high byte",
       "xref_summaries": [
         "&9978 referenced 2 times by &9988, &998c"
       ],
@@ -44035,6 +44040,7 @@
         177,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_exp),y",
@@ -44047,6 +44053,7 @@
         197,
         43
       ],
+      "comment_inline": "vs the target high byte",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa_1",
@@ -44059,6 +44066,7 @@
         176,
         14
       ],
+      "comment_inline": ">=: a candidate",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c998e",
@@ -44074,6 +44082,7 @@
       "labels": [
         "loop_c9980"
       ],
+      "comment_inline": "Line length",
       "xref_summaries": [
         "&9980 referenced 1 time by &9996"
       ],
@@ -44090,6 +44099,7 @@
         177,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_exp),y",
@@ -44102,6 +44112,7 @@
         101,
         61
       ],
+      "comment_inline": "Advance to the next line",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_exp",
@@ -44114,6 +44125,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -44126,6 +44138,7 @@
         144,
         238
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9978",
@@ -44138,6 +44151,7 @@
         230,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m1",
@@ -44150,6 +44164,7 @@
         176,
         234
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9978",
@@ -44165,6 +44180,7 @@
       "labels": [
         "c998e"
       ],
+      "comment_inline": "high byte greater: found (not exact)",
       "xref_summaries": [
         "&998e referenced 1 time by &997e"
       ],
@@ -44183,6 +44199,7 @@
         160,
         2
       ],
+      "comment_inline": "This line's number: low byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#2"
@@ -44193,6 +44210,7 @@
         177,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_exp),y",
@@ -44205,6 +44223,7 @@
         197,
         42
       ],
+      "comment_inline": "vs the target low byte",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa",
@@ -44217,6 +44236,7 @@
         144,
         232
       ],
+      "comment_inline": "less: next line",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c9980",
@@ -44229,6 +44249,7 @@
         208,
         10
       ],
+      "comment_inline": "greater: found (not exact)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c99a4",
@@ -44240,6 +44261,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Exact match: leave the pointer at this line",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -44249,6 +44271,7 @@
         101,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_exp",
@@ -44261,6 +44284,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -44273,6 +44297,7 @@
         144,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c99a4",
@@ -44285,6 +44310,7 @@
         230,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m1",
@@ -44296,6 +44322,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "flag the exact match (carry clear)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -44308,6 +44335,7 @@
       "labels": [
         "c99a4"
       ],
+      "comment_inline": "Point at the line number",
       "xref_summaries": [
         "&99a4 referenced 3 times by &998e, &9998, &999f"
       ],
@@ -44325,6 +44353,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -97124,6 +97153,7 @@
       "labels": [
         "find_line_target"
       ],
+      "comment_inline": "Embedded line-number token?",
       "xref_summaries": [
         "&b99a referenced 4 times by &b888, &b8cc, &b95c, &baff"
       ],
@@ -97145,6 +97175,7 @@
         176,
         16
       ],
+      "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb9af",
@@ -97158,6 +97189,7 @@
         29,
         155
       ],
+      "comment_inline": "Evaluate the line-number expression",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -97171,6 +97203,7 @@
         240,
         146
       ],
+      "comment_inline": "ensure integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -97183,6 +97216,7 @@
         165,
         27
       ],
+      "comment_inline": "Update the program pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -97195,6 +97229,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -97207,6 +97242,7 @@
         165,
         43
       ],
+      "comment_inline": "Mask the high byte to 7 bits",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -97219,6 +97255,7 @@
         41,
         127
       ],
+      "comment_inline": "(so GOTO &8000+n == GOTO n)",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -97229,6 +97266,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -97245,6 +97283,7 @@
       "labels": [
         "cb9af"
       ],
+      "comment_inline": "Find the line",
       "xref_summaries": [
         "&b9af referenced 2 times by &98e8, &b99d"
       ],
@@ -97264,6 +97303,7 @@
         176,
         1
       ],
+      "comment_inline": "not found: No such line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "err_no_such_line",
@@ -97275,6 +97315,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },

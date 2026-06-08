@@ -5999,6 +5999,57 @@ d.comment(0xb98b, 'ON range error', align=Align.INLINE)
 d.comment(0xb995, 'Step past ELSE', align=Align.INLINE)
 d.comment(0xb997, 'execute what follows', align=Align.INLINE)
 
+# ----------------------------------------------------------------------
+# find_program_line (&9970): find the first line >= the target number.
+# Walks the program from PAGE. Each line is <&0D> <hi> <lo> <len> <body>,
+# stored in ascending order. Returns the line pointer in &3D/&3E; carry
+# is clear when an exact match is found.
+# ----------------------------------------------------------------------
+d.comment(0x9970, 'Pointer low = 0', align=Align.INLINE)
+d.comment(0x9972, '...', align=Align.INLINE)
+d.comment(0x9974, 'Pointer high = PAGE', align=Align.INLINE)
+d.comment(0x9976, '...', align=Align.INLINE)
+d.comment(0x9978, "This line's number: high byte", align=Align.INLINE)
+d.comment(0x997a, '...', align=Align.INLINE)
+d.comment(0x997c, 'vs the target high byte', align=Align.INLINE)
+d.comment(0x997e, '>=: a candidate', align=Align.INLINE)
+d.comment(0x9980, 'Line length', align=Align.INLINE)
+d.comment(0x9982, '...', align=Align.INLINE)
+d.comment(0x9984, 'Advance to the next line', align=Align.INLINE)
+d.comment(0x9986, '...', align=Align.INLINE)
+d.comment(0x9988, '...', align=Align.INLINE)
+d.comment(0x998a, '...', align=Align.INLINE)
+d.comment(0x998c, 'continue', align=Align.INLINE)
+d.comment(0x998e, 'high byte greater: found (not exact)', align=Align.INLINE)
+d.comment(0x9990, "This line's number: low byte", align=Align.INLINE)
+d.comment(0x9992, '...', align=Align.INLINE)
+d.comment(0x9994, 'vs the target low byte', align=Align.INLINE)
+d.comment(0x9996, 'less: next line', align=Align.INLINE)
+d.comment(0x9998, 'greater: found (not exact)', align=Align.INLINE)
+d.comment(0x999a, 'Exact match: leave the pointer at this line',
+          align=Align.INLINE)
+d.comment(0x999b, '...', align=Align.INLINE)
+d.comment(0x999d, '...', align=Align.INLINE)
+d.comment(0x999f, '...', align=Align.INLINE)
+d.comment(0x99a1, '...', align=Align.INLINE)
+d.comment(0x99a3, 'flag the exact match (carry clear)', align=Align.INLINE)
+d.comment(0x99a4, 'Point at the line number', align=Align.INLINE)
+d.comment(0x99a6, 'Return', align=Align.INLINE)
+
+# find_line_target (&B99A): read a line number then locate the line.
+d.comment(0xb99a, 'Embedded line-number token?', align=Align.INLINE)
+d.comment(0xb99d, 'yes: use it', align=Align.INLINE)
+d.comment(0xb99f, 'Evaluate the line-number expression', align=Align.INLINE)
+d.comment(0xb9a2, 'ensure integer', align=Align.INLINE)
+d.comment(0xb9a5, 'Update the program pointer', align=Align.INLINE)
+d.comment(0xb9a7, '...', align=Align.INLINE)
+d.comment(0xb9a9, 'Mask the high byte to 7 bits', align=Align.INLINE)
+d.comment(0xb9ab, '(so GOTO &8000+n == GOTO n)', align=Align.INLINE)
+d.comment(0xb9ad, '...', align=Align.INLINE)
+d.comment(0xb9af, 'Find the line', align=Align.INLINE)
+d.comment(0xb9b2, 'not found: No such line', align=Align.INLINE)
+d.comment(0xb9b4, 'Return', align=Align.INLINE)
+
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)
 d.comment(0x9dd4, 'next operator "*"?', align=Align.INLINE)

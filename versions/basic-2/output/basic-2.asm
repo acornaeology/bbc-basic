@@ -4789,43 +4789,43 @@ l848a = sub_c847b+15
 ; line (carry set if found).
 ; &9970 referenced 3 times by &b5ec, &b9af, &bc2d
 .find_program_line
-    ldy #0                                                            ; 9970: a0 00       ..    
-    sty zp_fwb_exp                                                    ; 9972: 84 3d       .=    
-    lda zp_page                                                       ; 9974: a5 18       ..    
-    sta zp_fwb_m1                                                     ; 9976: 85 3e       .>    
+    ldy #0                                                            ; 9970: a0 00       ..       ; Pointer low = 0
+    sty zp_fwb_exp                                                    ; 9972: 84 3d       .=       ; ...
+    lda zp_page                                                       ; 9974: a5 18       ..       ; Pointer high = PAGE
+    sta zp_fwb_m1                                                     ; 9976: 85 3e       .>       ; ...
 ; &9978 referenced 2 times by &9988, &998c
 .c9978
-    ldy #1                                                            ; 9978: a0 01       ..    
-    lda (zp_fwb_exp),y                                                ; 997a: b1 3d       .=    
-    cmp zp_iwa_1                                                      ; 997c: c5 2b       .+    
-    bcs c998e                                                         ; 997e: b0 0e       ..    
+    ldy #1                                                            ; 9978: a0 01       ..       ; This line's number: high byte
+    lda (zp_fwb_exp),y                                                ; 997a: b1 3d       .=       ; ...
+    cmp zp_iwa_1                                                      ; 997c: c5 2b       .+       ; vs the target high byte
+    bcs c998e                                                         ; 997e: b0 0e       ..       ; > =: a candidate
 ; &9980 referenced 1 time by &9996
 .loop_c9980
-    ldy #3                                                            ; 9980: a0 03       ..    
-    lda (zp_fwb_exp),y                                                ; 9982: b1 3d       .=    
-    adc zp_fwb_exp                                                    ; 9984: 65 3d       e=    
-    sta zp_fwb_exp                                                    ; 9986: 85 3d       .=    
-    bcc c9978                                                         ; 9988: 90 ee       ..    
-    inc zp_fwb_m1                                                     ; 998a: e6 3e       .>    
-    bcs c9978                                                         ; 998c: b0 ea       ..    
+    ldy #3                                                            ; 9980: a0 03       ..       ; Line length
+    lda (zp_fwb_exp),y                                                ; 9982: b1 3d       .=       ; ...
+    adc zp_fwb_exp                                                    ; 9984: 65 3d       e=       ; Advance to the next line
+    sta zp_fwb_exp                                                    ; 9986: 85 3d       .=       ; ...
+    bcc c9978                                                         ; 9988: 90 ee       ..       ; ...
+    inc zp_fwb_m1                                                     ; 998a: e6 3e       .>       ; ...
+    bcs c9978                                                         ; 998c: b0 ea       ..       ; continue
 ; &998e referenced 1 time by &997e
 .c998e
-    bne c99a4                                                         ; 998e: d0 14       ..    
-    ldy #2                                                            ; 9990: a0 02       ..    
-    lda (zp_fwb_exp),y                                                ; 9992: b1 3d       .=    
-    cmp zp_iwa                                                        ; 9994: c5 2a       .*    
-    bcc loop_c9980                                                    ; 9996: 90 e8       ..    
-    bne c99a4                                                         ; 9998: d0 0a       ..    
-    tya                                                               ; 999a: 98          .     
-    adc zp_fwb_exp                                                    ; 999b: 65 3d       e=    
-    sta zp_fwb_exp                                                    ; 999d: 85 3d       .=    
-    bcc c99a4                                                         ; 999f: 90 03       ..    
-    inc zp_fwb_m1                                                     ; 99a1: e6 3e       .>    
-    clc                                                               ; 99a3: 18          .     
+    bne c99a4                                                         ; 998e: d0 14       ..       ; high byte greater: found (not exact)
+    ldy #2                                                            ; 9990: a0 02       ..       ; This line's number: low byte
+    lda (zp_fwb_exp),y                                                ; 9992: b1 3d       .=       ; ...
+    cmp zp_iwa                                                        ; 9994: c5 2a       .*       ; vs the target low byte
+    bcc loop_c9980                                                    ; 9996: 90 e8       ..       ; less: next line
+    bne c99a4                                                         ; 9998: d0 0a       ..       ; greater: found (not exact)
+    tya                                                               ; 999a: 98          .        ; Exact match: leave the pointer at this line
+    adc zp_fwb_exp                                                    ; 999b: 65 3d       e=       ; ...
+    sta zp_fwb_exp                                                    ; 999d: 85 3d       .=       ; ...
+    bcc c99a4                                                         ; 999f: 90 03       ..       ; ...
+    inc zp_fwb_m1                                                     ; 99a1: e6 3e       .>       ; ...
+    clc                                                               ; 99a3: 18          .        ; flag the exact match (carry clear)
 ; &99a4 referenced 3 times by &998e, &9998, &999f
 .c99a4
-    ldy #2                                                            ; 99a4: a0 02       ..    
-    rts                                                               ; 99a6: 60          `     
+    ldy #2                                                            ; 99a4: a0 02       ..       ; Point at the line number
+    rts                                                               ; 99a6: 60          `        ; Return
 ; &99a7 referenced 2 times by &99f0, &a6bb
 .c99a7
     brk                                                               ; 99a7: 00          .     
@@ -10632,20 +10632,20 @@ l848a = sub_c847b+15
 ; GOSUB and RESTORE. Raises "No such line" if absent.
 ; &b99a referenced 4 times by &b888, &b8cc, &b95c, &baff
 .find_line_target
-    jsr sub_c97df                                                     ; b99a: 20 df 97     ..   
-    bcs cb9af                                                         ; b99d: b0 10       ..    
-    jsr eval_expr                                                     ; b99f: 20 1d 9b     ..   
-    jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..   
-    lda zp_text_ptr2_off                                              ; b9a5: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; b9a7: 85 0a       ..    
-    lda zp_iwa_1                                                      ; b9a9: a5 2b       .+    
-    and #&7f                                                          ; b9ab: 29 7f       ).    
-    sta zp_iwa_1                                                      ; b9ad: 85 2b       .+    
+    jsr sub_c97df                                                     ; b99a: 20 df 97     ..      ; Embedded line-number token?
+    bcs cb9af                                                         ; b99d: b0 10       ..       ; yes: use it
+    jsr eval_expr                                                     ; b99f: 20 1d 9b     ..      ; Evaluate the line-number expression
+    jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..      ; ensure integer
+    lda zp_text_ptr2_off                                              ; b9a5: a5 1b       ..       ; Update the program pointer
+    sta zp_text_ptr_off                                               ; b9a7: 85 0a       ..       ; ...
+    lda zp_iwa_1                                                      ; b9a9: a5 2b       .+       ; Mask the high byte to 7 bits
+    and #&7f                                                          ; b9ab: 29 7f       ).       ; (so GOTO &8000+n == GOTO n)
+    sta zp_iwa_1                                                      ; b9ad: 85 2b       .+       ; ...
 ; &b9af referenced 2 times by &98e8, &b99d
 .cb9af
-    jsr find_program_line                                             ; b9af: 20 70 99     p.   
-    bcs err_no_such_line                                              ; b9b2: b0 01       ..    
-    rts                                                               ; b9b4: 60          `     
+    jsr find_program_line                                             ; b9af: 20 70 99     p.      ; Find the line
+    bcs err_no_such_line                                              ; b9b2: b0 01       ..       ; not found: No such line
+    rts                                                               ; b9b4: 60          `        ; Return
 ; &b9b5 referenced 1 time by &b9b2
 .err_no_such_line
     brk                                                               ; b9b5: 00          .     
