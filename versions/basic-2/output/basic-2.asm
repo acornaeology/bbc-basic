@@ -8520,128 +8520,128 @@ l848a = sub_c847b+15
 ; literals; and the built-in functions.
 ; &adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83
 .eval_factor
-    ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..    
-    inc zp_text_ptr2_off                                              ; adee: e6 1b       ..    
-    lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; adf2: c9 20       .     
-    beq eval_factor                                                   ; adf4: f0 f6       ..    
-    cmp #&2d ; '-'                                                    ; adf6: c9 2d       .-    
-    beq loop_cad8c                                                    ; adf8: f0 92       ..    
-    cmp #&22                                                          ; adfa: c9 22       ."    
-    beq cadc9                                                         ; adfc: f0 cb       ..    
-    cmp #&2b ; '+'                                                    ; adfe: c9 2b       .+    
-    bne cae05                                                         ; ae00: d0 03       ..    
+    ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..       ; Next character
+    inc zp_text_ptr2_off                                              ; adee: e6 1b       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..       ; ...
+    cmp #&20 ; ' '                                                    ; adf2: c9 20       .        ; space?
+    beq eval_factor                                                   ; adf4: f0 f6       ..       ; skip it
+    cmp #&2d ; '-'                                                    ; adf6: c9 2d       .-       ; '-' unary minus?
+    beq loop_cad8c                                                    ; adf8: f0 92       ..       ; yes
+    cmp #&22                                                          ; adfa: c9 22       ."       ; '"' string literal?
+    beq cadc9                                                         ; adfc: f0 cb       ..       ; yes
+    cmp #&2b ; '+'                                                    ; adfe: c9 2b       .+       ; '+' unary plus?
+    bne cae05                                                         ; ae00: d0 03       ..       ; no: classify the token
 ; &ae02 referenced 1 time by &ad8c
 .sub_cae02
-    jsr skip_spaces_ptr2                                              ; ae02: 20 8c 8a     ..   
+    jsr skip_spaces_ptr2                                              ; ae02: 20 8c 8a     ..      ; unary plus: re-read the next character
 ; &ae05 referenced 1 time by &ae00
 .cae05
-    cmp #&8e                                                          ; ae05: c9 8e       ..    
-    bcc cae10                                                         ; ae07: 90 07       ..    
-    cmp #&c6                                                          ; ae09: c9 c6       ..    
-    bcs cae43                                                         ; ae0b: b0 36       .6    
-    jmp dispatch_token                                                ; ae0d: 4c b1 8b    L..   
+    cmp #&8e                                                          ; ae05: c9 8e       ..       ; below the lowest function token?
+    bcc cae10                                                         ; ae07: 90 07       ..       ; yes: indirection, number or variable
+    cmp #&c6                                                          ; ae09: c9 c6       ..       ; above the highest function token?
+    bcs cae43                                                         ; ae0b: b0 36       .6       ; yes: No such variable
+    jmp dispatch_token                                                ; ae0d: 4c b1 8b    L..      ; a function: dispatch it
 ; &ae10 referenced 1 time by &ae07
 .cae10
-    cmp #&3f ; '?'                                                    ; ae10: c9 3f       .?    
-    bcs cae20                                                         ; ae12: b0 0c       ..    
-    cmp #&2e ; '.'                                                    ; ae14: c9 2e       ..    
-    bcs cae2a                                                         ; ae16: b0 12       ..    
-    cmp #&26 ; '&'                                                    ; ae18: c9 26       .&    
-    beq cae6d                                                         ; ae1a: f0 51       .Q    
-    cmp #&28 ; '('                                                    ; ae1c: c9 28       .(    
-    beq cae56                                                         ; ae1e: f0 36       .6    
+    cmp #&3f ; '?'                                                    ; ae10: c9 3f       .?       ; '?' (byte indirection) or higher?
+    bcs cae20                                                         ; ae12: b0 0c       ..       ; yes: variable or indirection
+    cmp #&2e ; '.'                                                    ; ae14: c9 2e       ..       ; '.' or a digit?
+    bcs cae2a                                                         ; ae16: b0 12       ..       ; yes: a number
+    cmp #&26 ; '&'                                                    ; ae18: c9 26       .&       ; '&' hex number?
+    beq cae6d                                                         ; ae1a: f0 51       .Q       ; yes
+    cmp #&28 ; '('                                                    ; ae1c: c9 28       .(       ; '(' sub-expression?
+    beq cae56                                                         ; ae1e: f0 36       .6       ; yes
 ; &ae20 referenced 1 time by &ae12
 .cae20
-    dec zp_text_ptr2_off                                              ; ae20: c6 1b       ..    
-    jsr sub_c95dd                                                     ; ae22: 20 dd 95     ..   
-    beq cae30                                                         ; ae25: f0 09       ..    
-    jmp cb32c                                                         ; ae27: 4c 2c b3    L,.   
+    dec zp_text_ptr2_off                                              ; ae20: c6 1b       ..       ; Back up to the name
+    jsr sub_c95dd                                                     ; ae22: 20 dd 95     ..      ; Parse the variable reference
+    beq cae30                                                         ; ae25: f0 09       ..       ; undefined: handle below
+    jmp cb32c                                                         ; ae27: 4c 2c b3    L,.      ; load the variable value
 ; &ae2a referenced 1 time by &ae16
 .cae2a
-    jsr parse_number                                                  ; ae2a: 20 7b a0     {.   
-    bcc cae43                                                         ; ae2d: 90 14       ..    
+    jsr parse_number                                                  ; ae2a: 20 7b a0     {.      ; Parse the decimal number
+    bcc cae43                                                         ; ae2d: 90 14       ..       ; ok  Return
     rts                                                               ; ae2f: 60          `     
 ; &ae30 referenced 1 time by &ae25
 .cae30
-    lda zp_opt_flag                                                   ; ae30: a5 28       .(    
-    and #2                                                            ; ae32: 29 02       ).    
-    bne cae43                                                         ; ae34: d0 0d       ..    
-    bcs cae43                                                         ; ae36: b0 0b       ..    
-    stx zp_text_ptr2_off                                              ; ae38: 86 1b       ..    
+    lda zp_opt_flag                                                   ; ae30: a5 28       .(       ; Undefined: OPT flag
+    and #2                                                            ; ae32: 29 02       ).       ; ignore-undefined set?
+    bne cae43                                                         ; ae34: d0 0d       ..       ; no: No such variable
+    bcs cae43                                                         ; ae36: b0 0b       ..       ; bad name: No such variable
+    stx zp_text_ptr2_off                                              ; ae38: 86 1b       ..       ; accept; advance the offset
 ; &ae3a referenced 1 time by &85af
 .sub_cae3a
-    lda resint_p                                                      ; ae3a: ad 40 04    .@.   
-    ldy l0441                                                         ; ae3d: ac 41 04    .A.   
+    lda resint_p                                                      ; ae3a: ad 40 04    .@.      ; Use P% as the value
+    ldy l0441                                                         ; ae3d: ac 41 04    .A.      ; ...  return it as an integer
     jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..   
 ; &ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7
 .cae43
-    brk                                                               ; ae43: 00          .     
+    brk                                                               ; ae43: 00          .        ; No such variable error
     equb &1a                                                          ; ae44: 1a          .     
     equs "No such variable"                                           ; ae45: 4e 6f 20... No ...
     equb &00                                                          ; ae55: 00          .     
 ; &ae56 referenced 11 times by &8e2b, &9747, &976c, &ab4a, &ad09, &ae1e, &af0c, &afda, &affc, &b05b, &b0cb
 .cae56
-    jsr eval_or_eor                                                   ; ae56: 20 29 9b     ).   
-    inc zp_text_ptr2_off                                              ; ae59: e6 1b       ..    
-    cpx #&29 ; ')'                                                    ; ae5b: e0 29       .)    
-    bne cae61                                                         ; ae5d: d0 02       ..    
-    tay                                                               ; ae5f: a8          .     
-    rts                                                               ; ae60: 60          `     
+    jsr eval_or_eor                                                   ; ae56: 20 29 9b     ).      ; Sub-expression: evaluate it
+    inc zp_text_ptr2_off                                              ; ae59: e6 1b       ..       ; step past
+    cpx #&29 ; ')'                                                    ; ae5b: e0 29       .)       ; ')' to close?
+    bne cae61                                                         ; ae5d: d0 02       ..       ; no: Missing )
+    tay                                                               ; ae5f: a8          .        ; flag the result type
+    rts                                                               ; ae60: 60          `        ; Return
 ; &ae61 referenced 1 time by &ae5d
 .cae61
-    brk                                                               ; ae61: 00          .     
+    brk                                                               ; ae61: 00          .        ; Missing ) error
     equb &1b                                                          ; ae62: 1b          .     
     equs "Missing )"                                                  ; ae63: 4d 69 73... Mis...
     equb &00                                                          ; ae6c: 00          .     
 ; &ae6d referenced 1 time by &ae1a
 .cae6d
-    ldx #0                                                            ; ae6d: a2 00       ..    
-    stx zp_iwa                                                        ; ae6f: 86 2a       .*    
-    stx zp_iwa_1                                                      ; ae71: 86 2b       .+    
-    stx zp_iwa_2                                                      ; ae73: 86 2c       .,    
-    stx zp_iwa_3                                                      ; ae75: 86 2d       .-    
-    ldy zp_text_ptr2_off                                              ; ae77: a4 1b       ..    
+    ldx #0                                                            ; ae6d: a2 00       ..       ; Hex number: clear IWA
+    stx zp_iwa                                                        ; ae6f: 86 2a       .*       ; ...
+    stx zp_iwa_1                                                      ; ae71: 86 2b       .+       ; ...
+    stx zp_iwa_2                                                      ; ae73: 86 2c       .,       ; ...
+    stx zp_iwa_3                                                      ; ae75: 86 2d       .-       ; ...
+    ldy zp_text_ptr2_off                                              ; ae77: a4 1b       ..       ; scan offset
 ; &ae79 referenced 1 time by &aea0
 .loop_cae79
-    lda (zp_text_ptr2),y                                              ; ae79: b1 19       ..    
-    cmp #&30 ; '0'                                                    ; ae7b: c9 30       .0    
-    bcc caea2                                                         ; ae7d: 90 23       .#    
-    cmp #&3a ; ':'                                                    ; ae7f: c9 3a       .:    
-    bcc cae8d                                                         ; ae81: 90 0a       ..    
-    sbc #&37 ; '7'                                                    ; ae83: e9 37       .7    
-    cmp #&0a                                                          ; ae85: c9 0a       ..    
-    bcc caea2                                                         ; ae87: 90 19       ..    
-    cmp #&10                                                          ; ae89: c9 10       ..    
-    bcs caea2                                                         ; ae8b: b0 15       ..    
+    lda (zp_text_ptr2),y                                              ; ae79: b1 19       ..       ; Next character
+    cmp #&30 ; '0'                                                    ; ae7b: c9 30       .0       ; below '0'?
+    bcc caea2                                                         ; ae7d: 90 23       .#       ; yes: end of number
+    cmp #&3a ; ':'                                                    ; ae7f: c9 3a       .:       ; a digit 0-9?
+    bcc cae8d                                                         ; ae81: 90 0a       ..       ; yes
+    sbc #&37 ; '7'                                                    ; ae83: e9 37       .7       ; fold A-F to 10-15
+    cmp #&0a                                                          ; ae85: c9 0a       ..       ; below 10 (a gap char)?
+    bcc caea2                                                         ; ae87: 90 19       ..       ; yes: end of number
+    cmp #&10                                                          ; ae89: c9 10       ..       ; above F?
+    bcs caea2                                                         ; ae8b: b0 15       ..       ; yes: end of number
 ; &ae8d referenced 1 time by &ae81
 .cae8d
-    asl a                                                             ; ae8d: 0a          .     
-    asl a                                                             ; ae8e: 0a          .     
-    asl a                                                             ; ae8f: 0a          .     
-    asl a                                                             ; ae90: 0a          .     
-    ldx #3                                                            ; ae91: a2 03       ..    
+    asl a                                                             ; ae8d: 0a          .        ; Shift the digit into the high nibble
+    asl a                                                             ; ae8e: 0a          .        ; ...
+    asl a                                                             ; ae8f: 0a          .        ; ...
+    asl a                                                             ; ae90: 0a          .        ; ...
+    ldx #3                                                            ; ae91: a2 03       ..       ; four bits to shift
 ; &ae93 referenced 1 time by &ae9d
 .loop_cae93
-    asl a                                                             ; ae93: 0a          .     
-    rol zp_iwa                                                        ; ae94: 26 2a       &*    
-    rol zp_iwa_1                                                      ; ae96: 26 2b       &+    
-    rol zp_iwa_2                                                      ; ae98: 26 2c       &,    
-    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-    
-    dex                                                               ; ae9c: ca          .     
-    bpl loop_cae93                                                    ; ae9d: 10 f4       ..    
-    iny                                                               ; ae9f: c8          .     
-    bne loop_cae79                                                    ; aea0: d0 d7       ..    
+    asl a                                                             ; ae93: 0a          .        ; Shift one bit into IWA
+    rol zp_iwa                                                        ; ae94: 26 2a       &*       ; ...
+    rol zp_iwa_1                                                      ; ae96: 26 2b       &+       ; ...
+    rol zp_iwa_2                                                      ; ae98: 26 2c       &,       ; ...
+    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-       ; ...
+    dex                                                               ; ae9c: ca          .        ; ...
+    bpl loop_cae93                                                    ; ae9d: 10 f4       ..       ; next bit
+    iny                                                               ; ae9f: c8          .        ; advance
+    bne loop_cae79                                                    ; aea0: d0 d7       ..       ; next digit
 ; &aea2 referenced 3 times by &ae7d, &ae87, &ae8b
 .caea2
-    txa                                                               ; aea2: 8a          .     
-    bpl caeaa                                                         ; aea3: 10 05       ..    
-    sty zp_text_ptr2_off                                              ; aea5: 84 1b       ..    
-    lda #&40 ; '@'                                                    ; aea7: a9 40       .@    
-    rts                                                               ; aea9: 60          `     
+    txa                                                               ; aea2: 8a          .        ; Any digits seen?
+    bpl caeaa                                                         ; aea3: 10 05       ..       ; no: Bad HEX
+    sty zp_text_ptr2_off                                              ; aea5: 84 1b       ..       ; Save the offset
+    lda #&40 ; '@'                                                    ; aea7: a9 40       .@       ; Type = integer
+    rts                                                               ; aea9: 60          `        ; Return
 ; &aeaa referenced 1 time by &aea3
 .caeaa
-    brk                                                               ; aeaa: 00          .     
+    brk                                                               ; aeaa: 00          .        ; Bad HEX error
     equb &1c                                                          ; aeab: 1c          .     
     equs "Bad HEX"                                                    ; aeac: 42 61 64... Bad...
     equb &00                                                          ; aeb3: 00          .     

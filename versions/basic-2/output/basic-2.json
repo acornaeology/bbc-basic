@@ -77638,6 +77638,7 @@
       "labels": [
         "eval_factor"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83"
       ],
@@ -77668,6 +77669,7 @@
         230,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -77680,6 +77682,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -77692,6 +77695,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -77702,6 +77706,7 @@
         240,
         246
       ],
+      "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "eval_factor",
@@ -77714,6 +77719,7 @@
         201,
         45
       ],
+      "comment_inline": "'-' unary minus?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2d"
@@ -77724,6 +77730,7 @@
         240,
         146
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cad8c",
@@ -77736,6 +77743,7 @@
         201,
         34
       ],
+      "comment_inline": "'\"' string literal?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -77746,6 +77754,7 @@
         240,
         203
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cadc9",
@@ -77758,6 +77767,7 @@
         201,
         43
       ],
+      "comment_inline": "'+' unary plus?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2b"
@@ -77768,6 +77778,7 @@
         208,
         3
       ],
+      "comment_inline": "no: classify the token",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cae05",
@@ -77784,6 +77795,7 @@
       "labels": [
         "sub_cae02"
       ],
+      "comment_inline": "unary plus: re-read the next character",
       "xref_summaries": [
         "&ae02 referenced 1 time by &ad8c"
       ],
@@ -77805,6 +77817,7 @@
       "labels": [
         "cae05"
       ],
+      "comment_inline": "below the lowest function token?",
       "xref_summaries": [
         "&ae05 referenced 1 time by &ae00"
       ],
@@ -77821,6 +77834,7 @@
         144,
         7
       ],
+      "comment_inline": "yes: indirection, number or variable",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cae10",
@@ -77833,6 +77847,7 @@
         201,
         198
       ],
+      "comment_inline": "above the highest function token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&c6"
@@ -77843,6 +77858,7 @@
         176,
         54
       ],
+      "comment_inline": "yes: No such variable",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cae43",
@@ -77856,6 +77872,7 @@
         177,
         139
       ],
+      "comment_inline": "a function: dispatch it",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "dispatch_token",
@@ -77871,6 +77888,7 @@
       "labels": [
         "cae10"
       ],
+      "comment_inline": "'?' (byte indirection) or higher?",
       "xref_summaries": [
         "&ae10 referenced 1 time by &ae07"
       ],
@@ -77887,6 +77905,7 @@
         176,
         12
       ],
+      "comment_inline": "yes: variable or indirection",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cae20",
@@ -77899,6 +77918,7 @@
         201,
         46
       ],
+      "comment_inline": "'.' or a digit?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2e"
@@ -77909,6 +77929,7 @@
         176,
         18
       ],
+      "comment_inline": "yes: a number",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cae2a",
@@ -77921,6 +77942,7 @@
         201,
         38
       ],
+      "comment_inline": "'&' hex number?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&26"
@@ -77931,6 +77953,7 @@
         240,
         81
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cae6d",
@@ -77943,6 +77966,7 @@
         201,
         40
       ],
+      "comment_inline": "'(' sub-expression?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -77953,6 +77977,7 @@
         240,
         54
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cae56",
@@ -77968,6 +77993,7 @@
       "labels": [
         "cae20"
       ],
+      "comment_inline": "Back up to the name",
       "xref_summaries": [
         "&ae20 referenced 1 time by &ae12"
       ],
@@ -77987,6 +78013,7 @@
         221,
         149
       ],
+      "comment_inline": "Parse the variable reference",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c95dd",
@@ -77999,6 +78026,7 @@
         240,
         9
       ],
+      "comment_inline": "undefined: handle below",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cae30",
@@ -78012,6 +78040,7 @@
         44,
         179
       ],
+      "comment_inline": "load the variable value",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb32c",
@@ -78028,6 +78057,7 @@
       "labels": [
         "cae2a"
       ],
+      "comment_inline": "Parse the decimal number",
       "xref_summaries": [
         "&ae2a referenced 1 time by &ae16"
       ],
@@ -78046,6 +78076,7 @@
         144,
         20
       ],
+      "comment_inline": "ok Return",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cae43",
@@ -78069,6 +78100,7 @@
       "labels": [
         "cae30"
       ],
+      "comment_inline": "Undefined: OPT flag",
       "xref_summaries": [
         "&ae30 referenced 1 time by &ae25"
       ],
@@ -78087,6 +78119,7 @@
         41,
         2
       ],
+      "comment_inline": "ignore-undefined set?",
       "type": "code",
       "mnemonic": "and",
       "operand": "#2"
@@ -78097,6 +78130,7 @@
         208,
         13
       ],
+      "comment_inline": "no: No such variable",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cae43",
@@ -78109,6 +78143,7 @@
         176,
         11
       ],
+      "comment_inline": "bad name: No such variable",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cae43",
@@ -78121,6 +78156,7 @@
         134,
         27
       ],
+      "comment_inline": "accept; advance the offset",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -78137,6 +78173,7 @@
       "labels": [
         "sub_cae3a"
       ],
+      "comment_inline": "Use P% as the value",
       "xref_summaries": [
         "&ae3a referenced 1 time by &85af"
       ],
@@ -78156,6 +78193,7 @@
         65,
         4
       ],
+      "comment_inline": "... return it as an integer",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l0441",
@@ -78183,6 +78221,7 @@
       "labels": [
         "cae43"
       ],
+      "comment_inline": "No such variable error",
       "xref_summaries": [
         "&ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7"
       ],
@@ -78250,6 +78289,7 @@
       "labels": [
         "cae56"
       ],
+      "comment_inline": "Sub-expression: evaluate it",
       "xref_summaries": [
         "&ae56 referenced 11 times by &8e2b, &9747, &976c, &ab4a, &ad09, &ae1e, &af0c, &afda, &affc, &b05b, &b0cb"
       ],
@@ -78278,6 +78318,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -78290,6 +78331,7 @@
         224,
         41
       ],
+      "comment_inline": "')' to close?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&29"
@@ -78300,6 +78342,7 @@
         208,
         2
       ],
+      "comment_inline": "no: Missing )",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cae61",
@@ -78311,6 +78354,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "flag the result type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -78319,6 +78363,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -78330,6 +78375,7 @@
       "labels": [
         "cae61"
       ],
+      "comment_inline": "Missing ) error",
       "xref_summaries": [
         "&ae61 referenced 1 time by &ae5d"
       ],
@@ -78384,6 +78430,7 @@
       "labels": [
         "cae6d"
       ],
+      "comment_inline": "Hex number: clear IWA",
       "xref_summaries": [
         "&ae6d referenced 1 time by &ae1a"
       ],
@@ -78400,6 +78447,7 @@
         134,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa",
@@ -78412,6 +78460,7 @@
         134,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_1",
@@ -78424,6 +78473,7 @@
         134,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -78436,6 +78486,7 @@
         134,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_3",
@@ -78448,6 +78499,7 @@
         164,
         27
       ],
+      "comment_inline": "scan offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -78463,6 +78515,7 @@
       "labels": [
         "loop_cae79"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&ae79 referenced 1 time by &aea0"
       ],
@@ -78481,6 +78534,7 @@
         201,
         48
       ],
+      "comment_inline": "below '0'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&30"
@@ -78491,6 +78545,7 @@
         144,
         35
       ],
+      "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "caea2",
@@ -78503,6 +78558,7 @@
         201,
         58
       ],
+      "comment_inline": "a digit 0-9?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -78513,6 +78569,7 @@
         144,
         10
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cae8d",
@@ -78525,6 +78582,7 @@
         233,
         55
       ],
+      "comment_inline": "fold A-F to 10-15",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&37"
@@ -78535,6 +78593,7 @@
         201,
         10
       ],
+      "comment_inline": "below 10 (a gap char)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0a"
@@ -78545,6 +78604,7 @@
         144,
         25
       ],
+      "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "caea2",
@@ -78557,6 +78617,7 @@
         201,
         16
       ],
+      "comment_inline": "above F?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&10"
@@ -78567,6 +78628,7 @@
         176,
         21
       ],
+      "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "caea2",
@@ -78581,6 +78643,7 @@
       "labels": [
         "cae8d"
       ],
+      "comment_inline": "Shift the digit into the high nibble",
       "xref_summaries": [
         "&ae8d referenced 1 time by &ae81"
       ],
@@ -78595,6 +78658,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -78603,6 +78667,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -78611,6 +78676,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -78620,6 +78686,7 @@
         162,
         3
       ],
+      "comment_inline": "four bits to shift",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#3"
@@ -78632,6 +78699,7 @@
       "labels": [
         "loop_cae93"
       ],
+      "comment_inline": "Shift one bit into IWA",
       "xref_summaries": [
         "&ae93 referenced 1 time by &ae9d"
       ],
@@ -78647,6 +78715,7 @@
         38,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa",
@@ -78659,6 +78728,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -78671,6 +78741,7 @@
         38,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_2",
@@ -78683,6 +78754,7 @@
         38,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -78694,6 +78766,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -78703,6 +78776,7 @@
         16,
         244
       ],
+      "comment_inline": "next bit",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_cae93",
@@ -78714,6 +78788,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -78723,6 +78798,7 @@
         208,
         215
       ],
+      "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cae79",
@@ -78737,6 +78813,7 @@
       "labels": [
         "caea2"
       ],
+      "comment_inline": "Any digits seen?",
       "xref_summaries": [
         "&aea2 referenced 3 times by &ae7d, &ae87, &ae8b"
       ],
@@ -78754,6 +78831,7 @@
         16,
         5
       ],
+      "comment_inline": "no: Bad HEX",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caeaa",
@@ -78766,6 +78844,7 @@
         132,
         27
       ],
+      "comment_inline": "Save the offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -78778,6 +78857,7 @@
         169,
         64
       ],
+      "comment_inline": "Type = integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -78787,6 +78867,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -78798,6 +78879,7 @@
       "labels": [
         "caeaa"
       ],
+      "comment_inline": "Bad HEX error",
       "xref_summaries": [
         "&aeaa referenced 1 time by &aea3"
       ],
