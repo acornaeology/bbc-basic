@@ -10351,98 +10351,98 @@ l848a = sub_c847b+15
 ; Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO
 ; limit [STEP step].
 .stmt_for
-    jsr parse_lvalue                                                  ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)
-    beq cb7a4                                                         ; b7c7: f0 db       ..    
-    bcs cb7a4                                                         ; b7c9: b0 d9       ..    
-    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Evaluate and assign the initial value
-    jsr sub_c9841                                                     ; b7ce: 20 41 98     A.   
-    jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..   
-    ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level
-    cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)
-    bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..    
-    lda zp_general                                                    ; b7da: a5 37       .7       ; Save the control-variable pointer in the frame
-    sta for_gosub_stack,y                                             ; b7dc: 99 00 05    ...   
-    lda zp_general_1                                                  ; b7df: a5 38       .8    
-    sta l0501,y                                                       ; b7e1: 99 01 05    ...   
-    lda zp_fileblk                                                    ; b7e4: a5 39       .9    
-    sta l0502,y                                                       ; b7e6: 99 02 05    ...   
-    tax                                                               ; b7e9: aa          .     
-    jsr skip_spaces_ptr2                                              ; b7ea: 20 8c 8a     ..   
-    cmp #&b8                                                          ; b7ed: c9 b8       ..       ; Require the TO keyword
-    bne loop_cb7bd                                                    ; b7ef: d0 cc       ..    
-    cpx #5                                                            ; b7f1: e0 05       ..    
-    beq cb84f                                                         ; b7f3: f0 5a       .Z    
-    jsr sub_c92dd                                                     ; b7f5: 20 dd 92     ..   
-    ldy zp_for_level                                                  ; b7f8: a4 26       .&    
-    lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Save the loop limit in the frame
-    sta l0508,y                                                       ; b7fc: 99 08 05    ...   
-    lda zp_iwa_1                                                      ; b7ff: a5 2b       .+    
-    sta l0509,y                                                       ; b801: 99 09 05    ...   
-    lda zp_iwa_2                                                      ; b804: a5 2c       .,    
-    sta l050a,y                                                       ; b806: 99 0a 05    ...   
-    lda zp_iwa_3                                                      ; b809: a5 2d       .-    
-    sta l050b,y                                                       ; b80b: 99 0b 05    ...   
-    lda #1                                                            ; b80e: a9 01       ..    
-    jsr caed8                                                         ; b810: 20 d8 ae     ..   
-    jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..   
-    cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)
-    bne cb81f                                                         ; b818: d0 05       ..    
-    jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..   
-    ldy zp_text_ptr2_off                                              ; b81d: a4 1b       ..    
+    jsr parse_lvalue                                                  ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)  Parse the loop variable
+    beq cb7a4                                                         ; b7c7: f0 db       ..       ; not a variable: error
+    bcs cb7a4                                                         ; b7c9: b0 d9       ..       ; indirection: error
+    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Evaluate and assign the initial value  Stack the variable pointer
+    jsr sub_c9841                                                     ; b7ce: 20 41 98     A.      ; Expect "="
+    jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..      ; Assign the initial value
+    ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level  FOR level
+    cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)  too many nested FORs?
+    bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..       ; yes: error
+    lda zp_general                                                    ; b7da: a5 37       .7       ; Save the control-variable pointer in the frame  Store the variable pointer in the frame (+0)
+    sta for_gosub_stack,y                                             ; b7dc: 99 00 05    ...      ; ...
+    lda zp_general_1                                                  ; b7df: a5 38       .8       ; ...
+    sta l0501,y                                                       ; b7e1: 99 01 05    ...      ; ...
+    lda zp_fileblk                                                    ; b7e4: a5 39       .9       ; ...and its type (+2)
+    sta l0502,y                                                       ; b7e6: 99 02 05    ...      ; ...
+    tax                                                               ; b7e9: aa          .        ; keep the type
+    jsr skip_spaces_ptr2                                              ; b7ea: 20 8c 8a     ..      ; Next character
+    cmp #&b8                                                          ; b7ed: c9 b8       ..       ; Require the TO keyword  TO token?
+    bne loop_cb7bd                                                    ; b7ef: d0 cc       ..       ; no: No TO error
+    cpx #5                                                            ; b7f1: e0 05       ..       ; real loop variable?
+    beq cb84f                                                         ; b7f3: f0 5a       .Z       ; yes: real FOR loop
+    jsr sub_c92dd                                                     ; b7f5: 20 dd 92     ..      ; Integer: evaluate the limit
+    ldy zp_for_level                                                  ; b7f8: a4 26       .&       ; FOR level
+    lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Save the loop limit in the frame  Store the limit in the frame (+8)
+    sta l0508,y                                                       ; b7fc: 99 08 05    ...      ; ...
+    lda zp_iwa_1                                                      ; b7ff: a5 2b       .+       ; ...
+    sta l0509,y                                                       ; b801: 99 09 05    ...      ; ...
+    lda zp_iwa_2                                                      ; b804: a5 2c       .,       ; ...
+    sta l050a,y                                                       ; b806: 99 0a 05    ...      ; ...
+    lda zp_iwa_3                                                      ; b809: a5 2d       .-       ; ...
+    sta l050b,y                                                       ; b80b: 99 0b 05    ...      ; ...
+    lda #1                                                            ; b80e: a9 01       ..       ; Default STEP = 1
+    jsr caed8                                                         ; b810: 20 d8 ae     ..      ; ...
+    jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..      ; Next character
+    cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)  STEP token?
+    bne cb81f                                                         ; b818: d0 05       ..       ; no: use the default
+    jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..      ; Evaluate the step
+    ldy zp_text_ptr2_off                                              ; b81d: a4 1b       ..       ; ...
 ; &b81f referenced 1 time by &b818
 .cb81f
-    sty zp_text_ptr_off                                               ; b81f: 84 0a       ..    
-    ldy zp_for_level                                                  ; b821: a4 26       .&    
-    lda zp_iwa                                                        ; b823: a5 2a       .*    
-    sta l0503,y                                                       ; b825: 99 03 05    ...   
-    lda zp_iwa_1                                                      ; b828: a5 2b       .+    
-    sta l0504,y                                                       ; b82a: 99 04 05    ...   
-    lda zp_iwa_2                                                      ; b82d: a5 2c       .,    
-    sta l0505,y                                                       ; b82f: 99 05 05    ...   
-    lda zp_iwa_3                                                      ; b832: a5 2d       .-    
-    sta l0506,y                                                       ; b834: 99 06 05    ...   
+    sty zp_text_ptr_off                                               ; b81f: 84 0a       ..       ; Sync the program pointer
+    ldy zp_for_level                                                  ; b821: a4 26       .&       ; FOR level
+    lda zp_iwa                                                        ; b823: a5 2a       .*       ; Store the step in the frame (+3)
+    sta l0503,y                                                       ; b825: 99 03 05    ...      ; ...
+    lda zp_iwa_1                                                      ; b828: a5 2b       .+       ; ...
+    sta l0504,y                                                       ; b82a: 99 04 05    ...      ; ...
+    lda zp_iwa_2                                                      ; b82d: a5 2c       .,       ; ...
+    sta l0505,y                                                       ; b82f: 99 05 05    ...      ; ...
+    lda zp_iwa_3                                                      ; b832: a5 2d       .-       ; ...
+    sta l0506,y                                                       ; b834: 99 06 05    ...      ; ...
 ; &b837 referenced 1 time by &b885
 .cb837
-    jsr sub_c9880                                                     ; b837: 20 80 98     ..   
-    ldy zp_for_level                                                  ; b83a: a4 26       .&    
-    lda zp_text_ptr                                                   ; b83c: a5 0b       ..    
-    sta l050d,y                                                       ; b83e: 99 0d 05    ...   
-    lda zp_text_ptr_1                                                 ; b841: a5 0c       ..    
-    sta l050e,y                                                       ; b843: 99 0e 05    ...   
-    clc                                                               ; b846: 18          .     
-    tya                                                               ; b847: 98          .     
-    adc #&0f                                                          ; b848: 69 0f       i.    
-    sta zp_for_level                                                  ; b84a: 85 26       .&    
-    jmp c8ba3                                                         ; b84c: 4c a3 8b    L..   
+    jsr sub_c9880                                                     ; b837: 20 80 98     ..      ; Step over the loop body to find its start
+    ldy zp_for_level                                                  ; b83a: a4 26       .&       ; FOR level
+    lda zp_text_ptr                                                   ; b83c: a5 0b       ..       ; Store the loop-body pointer (+D)
+    sta l050d,y                                                       ; b83e: 99 0d 05    ...      ; ...
+    lda zp_text_ptr_1                                                 ; b841: a5 0c       ..       ; ...
+    sta l050e,y                                                       ; b843: 99 0e 05    ...      ; ...
+    clc                                                               ; b846: 18          .        ; Advance the FOR level by 15
+    tya                                                               ; b847: 98          .        ; ...
+    adc #&0f                                                          ; b848: 69 0f       i.       ; ...
+    sta zp_for_level                                                  ; b84a: 85 26       .&       ; ...
+    jmp c8ba3                                                         ; b84c: 4c a3 8b    L..      ; Continue execution
 ; &b84f referenced 1 time by &b7f3
 .cb84f
-    jsr eval_or_eor                                                   ; b84f: 20 29 9b     ).   
-    jsr sub_c92fd                                                     ; b852: 20 fd 92     ..   
-    lda zp_for_level                                                  ; b855: a5 26       .&    
-    clc                                                               ; b857: 18          .     
-    adc #8                                                            ; b858: 69 08       i.    
-    sta zp_fp_ptr                                                     ; b85a: 85 4b       .K    
-    lda #5                                                            ; b85c: a9 05       ..    
-    sta zp_fp_ptr_1                                                   ; b85e: 85 4c       .L    
-    jsr fwa_pack_var                                                  ; b860: 20 8d a3     ..   
-    jsr fwa_set_one                                                   ; b863: 20 99 a6     ..   
-    jsr skip_spaces_ptr2                                              ; b866: 20 8c 8a     ..   
-    cmp #&88                                                          ; b869: c9 88       ..    
-    bne cb875                                                         ; b86b: d0 08       ..    
-    jsr eval_or_eor                                                   ; b86d: 20 29 9b     ).   
-    jsr sub_c92fd                                                     ; b870: 20 fd 92     ..   
-    ldy zp_text_ptr2_off                                              ; b873: a4 1b       ..    
+    jsr eval_or_eor                                                   ; b84f: 20 29 9b     ).      ; Evaluate the limit
+    jsr sub_c92fd                                                     ; b852: 20 fd 92     ..      ; ensure it is real
+    lda zp_for_level                                                  ; b855: a5 26       .&       ; Point at frame +8 (limit slot)
+    clc                                                               ; b857: 18          .        ; ...
+    adc #8                                                            ; b858: 69 08       i.       ; ...
+    sta zp_fp_ptr                                                     ; b85a: 85 4b       .K       ; ...
+    lda #5                                                            ; b85c: a9 05       ..       ; ...
+    sta zp_fp_ptr_1                                                   ; b85e: 85 4c       .L       ; ...
+    jsr fwa_pack_var                                                  ; b860: 20 8d a3     ..      ; Pack the limit there
+    jsr fwa_set_one                                                   ; b863: 20 99 a6     ..      ; Default STEP = 1.0
+    jsr skip_spaces_ptr2                                              ; b866: 20 8c 8a     ..      ; Next character
+    cmp #&88                                                          ; b869: c9 88       ..       ; STEP token?
+    bne cb875                                                         ; b86b: d0 08       ..       ; no: use the default
+    jsr eval_or_eor                                                   ; b86d: 20 29 9b     ).      ; Evaluate the step
+    jsr sub_c92fd                                                     ; b870: 20 fd 92     ..      ; ensure it is real
+    ldy zp_text_ptr2_off                                              ; b873: a4 1b       ..       ; ...
 ; &b875 referenced 1 time by &b86b
 .cb875
-    sty zp_text_ptr_off                                               ; b875: 84 0a       ..    
-    lda zp_for_level                                                  ; b877: a5 26       .&    
-    clc                                                               ; b879: 18          .     
-    adc #3                                                            ; b87a: 69 03       i.    
-    sta zp_fp_ptr                                                     ; b87c: 85 4b       .K    
-    lda #5                                                            ; b87e: a9 05       ..    
-    sta zp_fp_ptr_1                                                   ; b880: 85 4c       .L    
-    jsr fwa_pack_var                                                  ; b882: 20 8d a3     ..   
-    jmp cb837                                                         ; b885: 4c 37 b8    L7.   
+    sty zp_text_ptr_off                                               ; b875: 84 0a       ..       ; Sync the program pointer
+    lda zp_for_level                                                  ; b877: a5 26       .&       ; Point at frame +3 (step slot)
+    clc                                                               ; b879: 18          .        ; ...
+    adc #3                                                            ; b87a: 69 03       i.       ; ...
+    sta zp_fp_ptr                                                     ; b87c: 85 4b       .K       ; ...
+    lda #5                                                            ; b87e: a9 05       ..       ; ...
+    sta zp_fp_ptr_1                                                   ; b880: 85 4c       .L       ; ...
+    jsr fwa_pack_var                                                  ; b882: 20 8d a3     ..      ; Pack the step there
+    jmp cb837                                                         ; b885: 4c 37 b8    L7.      ; Join the common tail
 ; ***************************************************************************************
 ; GOSUB
 ;

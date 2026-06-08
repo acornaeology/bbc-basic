@@ -94208,7 +94208,7 @@
       "labels": [
         "stmt_for"
       ],
-      "comment_inline": "Parse the control variable (numvar =)",
+      "comment_inline": "Parse the control variable (numvar =) Parse the loop variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -94221,6 +94221,7 @@
         240,
         219
       ],
+      "comment_inline": "not a variable: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb7a4",
@@ -94233,6 +94234,7 @@
         176,
         217
       ],
+      "comment_inline": "indirection: error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb7a4",
@@ -94246,7 +94248,7 @@
         148,
         189
       ],
-      "comment_inline": "Evaluate and assign the initial value",
+      "comment_inline": "Evaluate and assign the initial value Stack the variable pointer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -94260,6 +94262,7 @@
         65,
         152
       ],
+      "comment_inline": "Expect \"=\"",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9841",
@@ -94273,6 +94276,7 @@
         177,
         180
       ],
+      "comment_inline": "Assign the initial value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb4b1",
@@ -94285,7 +94289,7 @@
         164,
         38
       ],
-      "comment_inline": "Index the FOR stack by nesting level",
+      "comment_inline": "Index the FOR stack by nesting level FOR level",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_for_level",
@@ -94298,7 +94302,7 @@
         192,
         150
       ],
-      "comment_inline": "At most 10 nested FOR loops (10 * 15)",
+      "comment_inline": "At most 10 nested FOR loops (10 * 15) too many nested FORs?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&96"
@@ -94309,6 +94313,7 @@
         176,
         214
       ],
+      "comment_inline": "yes: error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_cb7b0",
@@ -94321,7 +94326,7 @@
         165,
         55
       ],
-      "comment_inline": "Save the control-variable pointer in the frame",
+      "comment_inline": "Save the control-variable pointer in the frame Store the variable pointer in the frame (+0)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -94335,6 +94340,7 @@
         0,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "for_gosub_stack,y",
@@ -94347,6 +94353,7 @@
         165,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -94360,6 +94367,7 @@
         1,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0501,y",
@@ -94372,6 +94380,7 @@
         165,
         57
       ],
+      "comment_inline": "...and its type (+2)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -94385,6 +94394,7 @@
         2,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0502,y",
@@ -94396,6 +94406,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "keep the type",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -94406,6 +94417,7 @@
         140,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -94418,7 +94430,7 @@
         201,
         184
       ],
-      "comment_inline": "Require the TO keyword",
+      "comment_inline": "Require the TO keyword TO token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&b8"
@@ -94429,6 +94441,7 @@
         208,
         204
       ],
+      "comment_inline": "no: No TO error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb7bd",
@@ -94441,6 +94454,7 @@
         224,
         5
       ],
+      "comment_inline": "real loop variable?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#5"
@@ -94451,6 +94465,7 @@
         240,
         90
       ],
+      "comment_inline": "yes: real FOR loop",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb84f",
@@ -94464,6 +94479,7 @@
         221,
         146
       ],
+      "comment_inline": "Integer: evaluate the limit",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -94476,6 +94492,7 @@
         164,
         38
       ],
+      "comment_inline": "FOR level",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_for_level",
@@ -94488,7 +94505,7 @@
         165,
         42
       ],
-      "comment_inline": "Save the loop limit in the frame",
+      "comment_inline": "Save the loop limit in the frame Store the limit in the frame (+8)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -94502,6 +94519,7 @@
         8,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0508,y",
@@ -94514,6 +94532,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -94527,6 +94546,7 @@
         9,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0509,y",
@@ -94539,6 +94559,7 @@
         165,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -94552,6 +94573,7 @@
         10,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050a,y",
@@ -94564,6 +94586,7 @@
         165,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -94577,6 +94600,7 @@
         11,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050b,y",
@@ -94589,6 +94613,7 @@
         169,
         1
       ],
+      "comment_inline": "Default STEP = 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -94600,6 +94625,7 @@
         216,
         174
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "caed8",
@@ -94613,6 +94639,7 @@
         140,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -94625,7 +94652,7 @@
         201,
         136
       ],
-      "comment_inline": "Optional STEP (otherwise step defaults to 1)",
+      "comment_inline": "Optional STEP (otherwise step defaults to 1) STEP token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&88"
@@ -94636,6 +94663,7 @@
         208,
         5
       ],
+      "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb81f",
@@ -94649,6 +94677,7 @@
         221,
         146
       ],
+      "comment_inline": "Evaluate the step",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -94661,6 +94690,7 @@
         164,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -94676,6 +94706,7 @@
       "labels": [
         "cb81f"
       ],
+      "comment_inline": "Sync the program pointer",
       "xref_summaries": [
         "&b81f referenced 1 time by &b818"
       ],
@@ -94694,6 +94725,7 @@
         164,
         38
       ],
+      "comment_inline": "FOR level",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_for_level",
@@ -94706,6 +94738,7 @@
         165,
         42
       ],
+      "comment_inline": "Store the step in the frame (+3)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -94719,6 +94752,7 @@
         3,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0503,y",
@@ -94731,6 +94765,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -94744,6 +94779,7 @@
         4,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0504,y",
@@ -94756,6 +94792,7 @@
         165,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -94769,6 +94806,7 @@
         5,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0505,y",
@@ -94781,6 +94819,7 @@
         165,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -94794,6 +94833,7 @@
         6,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0506,y",
@@ -94810,6 +94850,7 @@
       "labels": [
         "cb837"
       ],
+      "comment_inline": "Step over the loop body to find its start",
       "xref_summaries": [
         "&b837 referenced 1 time by &b885"
       ],
@@ -94828,6 +94869,7 @@
         164,
         38
       ],
+      "comment_inline": "FOR level",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_for_level",
@@ -94840,6 +94882,7 @@
         165,
         11
       ],
+      "comment_inline": "Store the loop-body pointer (+D)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -94853,6 +94896,7 @@
         13,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050d,y",
@@ -94865,6 +94909,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -94878,6 +94923,7 @@
         14,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050e,y",
@@ -94889,6 +94935,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Advance the FOR level by 15",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -94897,6 +94944,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -94906,6 +94954,7 @@
         105,
         15
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&0f"
@@ -94916,6 +94965,7 @@
         133,
         38
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_for_level",
@@ -94929,6 +94979,7 @@
         163,
         139
       ],
+      "comment_inline": "Continue execution",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ba3",
@@ -94945,6 +94996,7 @@
       "labels": [
         "cb84f"
       ],
+      "comment_inline": "Evaluate the limit",
       "xref_summaries": [
         "&b84f referenced 1 time by &b7f3"
       ],
@@ -94964,6 +95016,7 @@
         253,
         146
       ],
+      "comment_inline": "ensure it is real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fd",
@@ -94976,6 +95029,7 @@
         165,
         38
       ],
+      "comment_inline": "Point at frame +8 (limit slot)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_for_level",
@@ -94987,6 +95041,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -94996,6 +95051,7 @@
         105,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#8"
@@ -95006,6 +95062,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -95018,6 +95075,7 @@
         169,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -95028,6 +95086,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -95041,6 +95100,7 @@
         141,
         163
       ],
+      "comment_inline": "Pack the limit there",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -95054,6 +95114,7 @@
         153,
         166
       ],
+      "comment_inline": "Default STEP = 1.0",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_set_one",
@@ -95067,6 +95128,7 @@
         140,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -95079,6 +95141,7 @@
         201,
         136
       ],
+      "comment_inline": "STEP token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&88"
@@ -95089,6 +95152,7 @@
         208,
         8
       ],
+      "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb875",
@@ -95102,6 +95166,7 @@
         41,
         155
       ],
+      "comment_inline": "Evaluate the step",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -95115,6 +95180,7 @@
         253,
         146
       ],
+      "comment_inline": "ensure it is real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fd",
@@ -95127,6 +95193,7 @@
         164,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -95142,6 +95209,7 @@
       "labels": [
         "cb875"
       ],
+      "comment_inline": "Sync the program pointer",
       "xref_summaries": [
         "&b875 referenced 1 time by &b86b"
       ],
@@ -95160,6 +95228,7 @@
         165,
         38
       ],
+      "comment_inline": "Point at frame +3 (step slot)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_for_level",
@@ -95171,6 +95240,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -95180,6 +95250,7 @@
         105,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#3"
@@ -95190,6 +95261,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -95202,6 +95274,7 @@
         169,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -95212,6 +95285,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -95225,6 +95299,7 @@
         141,
         163
       ],
+      "comment_inline": "Pack the step there",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -95238,6 +95313,7 @@
         55,
         184
       ],
+      "comment_inline": "Join the common tail",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb837",
