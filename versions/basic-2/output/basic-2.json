@@ -1709,6 +1709,24 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 34866,
+      "name": "asm_opcode_add4",
+      "title": "Step the opcode to the next addressing-mode column (+4)",
+      "description": "Add 4 to the base opcode in &29 to select the next 6502 addressing-mode encoding."
+    },
+    {
+      "addr": 34863,
+      "name": "asm_opcode_add8",
+      "title": "Advance the opcode by two addressing-mode columns (+8)",
+      "fall_through": true
+    },
+    {
+      "addr": 34860,
+      "name": "asm_opcode_add16",
+      "title": "Advance the opcode by four addressing-mode columns (+16)",
+      "fall_through": true
+    },
+    {
       "addr": 38842,
       "name": "check_subscript_bound",
       "title": "Check a subscript against a dimension extent",
@@ -10975,6 +10993,7 @@
       "labels": [
         "c8620"
       ],
+      "comment_inline": "Base opcode from the table",
       "xref_summaries": [
         "&8620 referenced 3 times by &85ff, &860b, &8610"
       ],
@@ -10995,6 +11014,7 @@
         133,
         41
       ],
+      "comment_inline": "Save it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_asm_opcode",
@@ -11007,6 +11027,7 @@
         160,
         1
       ],
+      "comment_inline": "Assume a one-byte instruction",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -11017,6 +11038,7 @@
         224,
         26
       ],
+      "comment_inline": "index &1A+ takes an operand?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&1a"
@@ -11027,6 +11049,7 @@
         176,
         72
       ],
+      "comment_inline": "yes: parse the addressing mode",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8673",
@@ -11043,6 +11066,7 @@
       "labels": [
         "c862b"
       ],
+      "comment_inline": "P% low -> destination",
       "xref_summaries": [
         "&862b referenced 7 times by &85c5, &85c9, &85cd, &86aa, &879c, &881e, &8864"
       ],
@@ -11067,6 +11091,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -11079,6 +11104,7 @@
         132,
         57
       ],
+      "comment_inline": "Save the byte count",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fileblk",
@@ -11091,6 +11117,7 @@
         166,
         40
       ],
+      "comment_inline": "OPT setting",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_opt_flag",
@@ -11103,6 +11130,7 @@
         224,
         4
       ],
+      "comment_inline": "offset assembly (OPT >= 4)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#4"
@@ -11114,6 +11142,7 @@
         65,
         4
       ],
+      "comment_inline": "P% high",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "l0441",
@@ -11126,6 +11155,7 @@
         134,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general_1",
@@ -11138,6 +11168,7 @@
         144,
         6
       ],
+      "comment_inline": "no offset: assemble at P%",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8643",
@@ -11151,6 +11182,7 @@
         60,
         4
       ],
+      "comment_inline": "offset: assemble at O% instead",
       "type": "code",
       "mnemonic": "lda",
       "operand": "resint_o",
@@ -11164,6 +11196,7 @@
         61,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "l043d",
@@ -11179,6 +11212,7 @@
       "labels": [
         "c8643"
       ],
+      "comment_inline": "Store the destination pointer",
       "xref_summaries": [
         "&8643 referenced 1 time by &863b"
       ],
@@ -11197,6 +11231,7 @@
         134,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -11208,6 +11243,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Any bytes to store?",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -11217,6 +11253,7 @@
         240,
         40
       ],
+      "comment_inline": "none: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_1",
@@ -11229,6 +11266,7 @@
         16,
         4
       ],
+      "comment_inline": "positive count: store opcode bytes",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c8650",
@@ -11241,6 +11279,7 @@
         164,
         54
       ],
+      "comment_inline": "EQUS: length from the string buffer",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -11253,6 +11292,7 @@
         240,
         34
       ],
+      "comment_inline": "empty: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_1",
@@ -11267,6 +11307,7 @@
       "labels": [
         "c8650"
       ],
+      "comment_inline": "Next byte index",
       "xref_summaries": [
         "&8650 referenced 2 times by &864a, &8670"
       ],
@@ -11284,6 +11325,7 @@
         41,
         0
       ],
+      "comment_inline": "Opcode/operand byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_asm_opcode,y",
@@ -11296,6 +11338,7 @@
         36,
         57
       ],
+      "comment_inline": "storing string (EQUS) bytes?",
       "type": "code",
       "mnemonic": "bit",
       "operand": "zp_fileblk",
@@ -11308,6 +11351,7 @@
         16,
         3
       ],
+      "comment_inline": "no: store the opcode byte",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c865b",
@@ -11321,6 +11365,7 @@
         0,
         6
       ],
+      "comment_inline": "yes: take it from the string buffer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "string_work,y",
@@ -11336,6 +11381,7 @@
       "labels": [
         "c865b"
       ],
+      "comment_inline": "Store the byte at the destination",
       "xref_summaries": [
         "&865b referenced 1 time by &8656"
       ],
@@ -11355,6 +11401,7 @@
         64,
         4
       ],
+      "comment_inline": "Advance P%",
       "type": "code",
       "mnemonic": "inc",
       "operand": "resint_p",
@@ -11367,6 +11414,7 @@
         208,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8665",
@@ -11380,6 +11428,7 @@
         65,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l0441",
@@ -11395,6 +11444,7 @@
       "labels": [
         "c8665"
       ],
+      "comment_inline": "offset assembly?",
       "xref_summaries": [
         "&8665 referenced 1 time by &8660"
       ],
@@ -11414,6 +11464,7 @@
         60,
         4
       ],
+      "comment_inline": "yes: advance O% too",
       "type": "code",
       "mnemonic": "inc",
       "operand": "resint_o",
@@ -11426,6 +11477,7 @@
         208,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c866f",
@@ -11439,6 +11491,7 @@
         61,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l043d",
@@ -11453,6 +11506,7 @@
       "labels": [
         "c866f"
       ],
+      "comment_inline": "More bytes?",
       "xref_summaries": [
         "&866f referenced 2 times by &8665, &866a"
       ],
@@ -11469,6 +11523,7 @@
         208,
         222
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8650",
@@ -11483,6 +11538,7 @@
       "labels": [
         "return_1"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&8672 referenced 2 times by &8648, &864e"
       ],
@@ -11502,6 +11558,7 @@
       "labels": [
         "c8673"
       ],
+      "comment_inline": "index &22+ is not a branch?",
       "xref_summaries": [
         "&8673 referenced 1 time by &8629"
       ],
@@ -11518,6 +11575,7 @@
         176,
         64
       ],
+      "comment_inline": "yes: other operand forms",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c86b7",
@@ -11531,6 +11589,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the target address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -11542,6 +11601,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Offset = target - (P% + 2)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -11551,6 +11611,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -11564,6 +11625,7 @@
         64,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "resint_p",
@@ -11575,6 +11637,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -11584,6 +11647,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -11597,6 +11661,7 @@
         65,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l0441",
@@ -11609,6 +11674,7 @@
         192,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#1"
@@ -11618,6 +11684,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -11627,6 +11694,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -11637,6 +11705,7 @@
         240,
         37
       ],
+      "comment_inline": "in forward range?",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86b2",
@@ -11649,6 +11718,7 @@
         201,
         255
       ],
+      "comment_inline": "in backward range?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&ff"
@@ -11659,6 +11729,7 @@
         240,
         28
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86ad",
@@ -11674,6 +11745,7 @@
       "labels": [
         "c8691"
       ],
+      "comment_inline": "OPT setting errors enabled?",
       "xref_summaries": [
         "&8691 referenced 2 times by &86b0, &86b5"
       ],
@@ -11692,6 +11764,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -11701,6 +11774,7 @@
         240,
         15
       ],
+      "comment_inline": "no: ignore the range error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86a5",
@@ -11712,6 +11786,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "Out of range error",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -11762,6 +11837,7 @@
       "labels": [
         "c86a5"
       ],
+      "comment_inline": "Use the offset byte",
       "xref_summaries": [
         "&86a5 referenced 1 time by &8694"
       ],
@@ -11780,6 +11856,7 @@
       "labels": [
         "c86a6"
       ],
+      "comment_inline": "as the operand",
       "xref_summaries": [
         "&86a6 referenced 2 times by &86ae, &86b3"
       ],
@@ -11802,6 +11879,7 @@
       "labels": [
         "c86a8"
       ],
+      "comment_inline": "Two-byte instruction",
       "xref_summaries": [
         "&86a8 referenced 2 times by &86ca, &873c"
       ],
@@ -11820,6 +11898,7 @@
         43,
         134
       ],
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c862b",
@@ -11834,6 +11913,7 @@
       "labels": [
         "c86ad"
       ],
+      "comment_inline": "forward: check the high byte",
       "xref_summaries": [
         "&86ad referenced 1 time by &868f"
       ],
@@ -11849,6 +11929,7 @@
         48,
         246
       ],
+      "comment_inline": "in range",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c86a6",
@@ -11861,6 +11942,7 @@
         16,
         223
       ],
+      "comment_inline": "out of range",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c8691",
@@ -11875,6 +11957,7 @@
       "labels": [
         "c86b2"
       ],
+      "comment_inline": "backward: check the high byte",
       "xref_summaries": [
         "&86b2 referenced 1 time by &868b"
       ],
@@ -11890,6 +11973,7 @@
         16,
         241
       ],
+      "comment_inline": "in range",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c86a6",
@@ -11902,6 +11986,7 @@
         48,
         218
       ],
+      "comment_inline": "out of range",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c8691",
@@ -11917,6 +12002,7 @@
       "labels": [
         "c86b7"
       ],
+      "comment_inline": "index &29+ : not immediate?",
       "xref_summaries": [
         "&86b7 referenced 1 time by &8675"
       ],
@@ -11933,6 +12019,7 @@
         176,
         24
       ],
+      "comment_inline": "yes: indexed/absolute modes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c86d3",
@@ -11958,6 +12045,7 @@
         201,
         35
       ],
+      "comment_inline": "'#' immediate prefix?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&23"
@@ -11968,6 +12056,7 @@
         208,
         24
       ],
+      "comment_inline": "no: absolute",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c86da",
@@ -11981,11 +12070,12 @@
         47,
         136
       ],
+      "comment_inline": "Immediate mode: adjust the opcode",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882f",
+      "operand": "asm_opcode_add8",
       "target": 34863,
-      "target_label": "sub_c882f"
+      "target_label": "asm_opcode_add8"
     },
     {
       "addr": 34501,
@@ -11997,6 +12087,7 @@
       "labels": [
         "c86c5"
       ],
+      "comment_inline": "Evaluate the immediate value",
       "xref_summaries": [
         "&86c5 referenced 2 times by &877d, &87c9"
       ],
@@ -12019,6 +12110,7 @@
       "labels": [
         "c86c8"
       ],
+      "comment_inline": "high byte zero (fits in a byte)?",
       "xref_summaries": [
         "&86c8 referenced 2 times by &86f9, &870b"
       ],
@@ -12038,6 +12130,7 @@
         240,
         220
       ],
+      "comment_inline": "yes: two-byte instruction",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86a8",
@@ -12052,6 +12145,7 @@
       "labels": [
         "c86cc"
       ],
+      "comment_inline": "Byte error (value > 255)",
       "xref_summaries": [
         "&86cc referenced 1 time by &880d"
       ],
@@ -12101,6 +12195,7 @@
       "labels": [
         "c86d3"
       ],
+      "comment_inline": "index &36 : the (zp),Y / (zp,X) group?",
       "xref_summaries": [
         "&86d3 referenced 1 time by &86b9"
       ],
@@ -12117,6 +12212,7 @@
         208,
         104
       ],
+      "comment_inline": "no: absolute/indexed group",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c873f",
@@ -12145,6 +12241,7 @@
       "labels": [
         "c86da"
       ],
+      "comment_inline": "'(' opening an indirect mode?",
       "xref_summaries": [
         "&86da referenced 1 time by &86c0"
       ],
@@ -12161,6 +12258,7 @@
         208,
         55
       ],
+      "comment_inline": "no: absolute",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8715",
@@ -12174,6 +12272,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the zero-page address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -12199,6 +12298,7 @@
         201,
         41
       ],
+      "comment_inline": "')' -> (zp),Y form",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&29"
@@ -12209,6 +12309,7 @@
         208,
         19
       ],
+      "comment_inline": "no: try (zp,X)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c86fb",
@@ -12257,11 +12358,12 @@
         44,
         136
       ],
+      "comment_inline": "adjust the opcode for (zp),Y",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34546,
@@ -12304,6 +12406,7 @@
         240,
         205
       ],
+      "comment_inline": "process as a two-byte instruction",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86c8",
@@ -12419,6 +12522,7 @@
       "labels": [
         "c870d"
       ],
+      "comment_inline": "Index error",
       "xref_summaries": [
         "&870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed"
       ],
@@ -12476,6 +12580,7 @@
       "labels": [
         "c8715"
       ],
+      "comment_inline": "Back up over the \"(\"",
       "xref_summaries": [
         "&8715 referenced 1 time by &86dc"
       ],
@@ -12495,6 +12600,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -12543,11 +12649,12 @@
         44,
         136
       ],
+      "comment_inline": "adjust the opcode for absolute,X/,Y",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34596,
@@ -12616,6 +12723,7 @@
       "labels": [
         "loop_c872f"
       ],
+      "comment_inline": "Adjust the opcode for the indexed form",
       "xref_summaries": [
         "&872f referenced 1 time by &873a"
       ],
@@ -12624,9 +12732,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882f",
+      "operand": "asm_opcode_add8",
       "target": 34863,
-      "target_label": "sub_c882f"
+      "target_label": "asm_opcode_add8"
     },
     {
       "addr": 34610,
@@ -12635,6 +12743,7 @@
         154,
         135
       ],
+      "comment_inline": "process the absolute operand",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c879a",
@@ -12651,6 +12760,7 @@
       "labels": [
         "c8735"
       ],
+      "comment_inline": "Adjust the opcode for absolute mode",
       "xref_summaries": [
         "&8735 referenced 5 times by &871f, &8729, &8785, &87db, &87ea"
       ],
@@ -12663,9 +12773,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8832",
+      "operand": "asm_opcode_add4",
       "target": 34866,
-      "target_label": "sub_c8832"
+      "target_label": "asm_opcode_add4"
     },
     {
       "addr": 34616,
@@ -12676,6 +12786,7 @@
       "labels": [
         "c8738"
       ],
+      "comment_inline": "address fits in zero page (high byte 0)?",
       "xref_summaries": [
         "&8738 referenced 3 times by &8758, &8762, &8810"
       ],
@@ -12696,6 +12807,7 @@
         208,
         243
       ],
+      "comment_inline": "no: assemble as absolute (three bytes)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c872f",
@@ -12709,6 +12821,7 @@
         168,
         134
       ],
+      "comment_inline": "yes: assemble as two bytes",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c86a8",
@@ -12724,6 +12837,7 @@
       "labels": [
         "c873f"
       ],
+      "comment_inline": "index &2F+ : a different operand class?",
       "xref_summaries": [
         "&873f referenced 1 time by &86d5"
       ],
@@ -12740,6 +12854,7 @@
         176,
         43
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c876e",
@@ -12752,6 +12867,7 @@
         224,
         45
       ],
+      "comment_inline": "index &2D+ (accumulator-or-absolute)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2d"
@@ -12762,6 +12878,7 @@
         176,
         9
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8750",
@@ -12809,6 +12926,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up a character",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -12825,6 +12943,7 @@
       "labels": [
         "c8750"
       ],
+      "comment_inline": "Evaluate the address",
       "xref_summaries": [
         "&8750 referenced 1 time by &8745"
       ],
@@ -12879,11 +12998,12 @@
         44,
         136
       ],
+      "comment_inline": "adjust the opcode for indexed mode",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34653,
@@ -12943,6 +13063,7 @@
       "labels": [
         "c8767"
       ],
+      "comment_inline": "Accumulator form: adjust the opcode",
       "xref_summaries": [
         "&8767 referenced 1 time by &874c"
       ],
@@ -12951,9 +13072,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8832",
+      "operand": "asm_opcode_add4",
       "target": 34866,
-      "target_label": "sub_c8832"
+      "target_label": "asm_opcode_add4"
     },
     {
       "addr": 34666,
@@ -12961,6 +13082,7 @@
         160,
         1
       ],
+      "comment_inline": "one byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -12971,6 +13093,7 @@
         208,
         46
       ],
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c879c",
@@ -12986,6 +13109,7 @@
       "labels": [
         "c876e"
       ],
+      "comment_inline": "index &32+ : implied/branch class?",
       "xref_summaries": [
         "&876e referenced 1 time by &8741"
       ],
@@ -13002,6 +13126,7 @@
         176,
         22
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8788",
@@ -13014,6 +13139,7 @@
         224,
         49
       ],
+      "comment_inline": "index &31 (immediate-only)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&31"
@@ -13024,6 +13150,7 @@
         240,
         12
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8782",
@@ -13087,6 +13214,7 @@
       "labels": [
         "c8780"
       ],
+      "comment_inline": "Back up a character",
       "xref_summaries": [
         "&8780 referenced 1 time by &877b"
       ],
@@ -13109,6 +13237,7 @@
       "labels": [
         "c8782"
       ],
+      "comment_inline": "Evaluate the value",
       "xref_summaries": [
         "&8782 referenced 1 time by &8774"
       ],
@@ -13128,6 +13257,7 @@
         53,
         135
       ],
+      "comment_inline": "assemble as absolute",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8735",
@@ -13143,6 +13273,7 @@
       "labels": [
         "c8788"
       ],
+      "comment_inline": "index &33 (no operand)?",
       "xref_summaries": [
         "&8788 referenced 1 time by &8770"
       ],
@@ -13159,6 +13290,7 @@
         240,
         11
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8797",
@@ -13171,6 +13303,7 @@
         176,
         36
       ],
+      "comment_inline": "index &34+ : other forms",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c87b2",
@@ -13218,6 +13351,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up a character",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -13234,6 +13368,7 @@
       "labels": [
         "c8797"
       ],
+      "comment_inline": "Evaluate the address",
       "xref_summaries": [
         "&8797 referenced 1 time by &878a"
       ],
@@ -13255,6 +13390,7 @@
       "labels": [
         "c879a"
       ],
+      "comment_inline": "Three-byte instruction",
       "xref_summaries": [
         "&879a referenced 2 times by &8732, &87ad"
       ],
@@ -13276,6 +13412,7 @@
       "labels": [
         "c879c"
       ],
+      "comment_inline": "store it",
       "xref_summaries": [
         "&879c referenced 1 time by &876c"
       ],
@@ -13298,6 +13435,7 @@
       "labels": [
         "c879f"
       ],
+      "comment_inline": "Indirect: adjust the opcode",
       "xref_summaries": [
         "&879f referenced 1 time by &8793"
       ],
@@ -13306,9 +13444,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34722,
@@ -13317,11 +13455,12 @@
         44,
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34725,
@@ -13330,6 +13469,7 @@
         33,
         136
       ],
+      "comment_inline": "evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -13355,6 +13495,7 @@
         201,
         41
       ],
+      "comment_inline": "')' to close?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&29"
@@ -13365,6 +13506,7 @@
         240,
         235
       ],
+      "comment_inline": "yes: three-byte instruction",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c879a",
@@ -13393,6 +13535,7 @@
       "labels": [
         "c87b2"
       ],
+      "comment_inline": "index &39+ : EQU directives",
       "xref_summaries": [
         "&87b2 referenced 1 time by &878c"
       ],
@@ -13409,6 +13552,7 @@
         176,
         93
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8813",
@@ -13421,6 +13565,7 @@
         165,
         61
       ],
+      "comment_inline": "Register letter from the mnemonic ...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -13433,6 +13578,7 @@
         73,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#1"
@@ -13443,6 +13589,7 @@
         41,
         31
       ],
+      "comment_inline": "save it index &37+ (two-register form)?",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&1f"
@@ -13461,6 +13608,7 @@
         224,
         55
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&37"
@@ -13484,6 +13632,7 @@
         151,
         138
       ],
+      "comment_inline": "'#' immediate?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13496,6 +13645,7 @@
         201,
         35
       ],
+      "comment_inline": "no: absolute",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&23"
@@ -13506,6 +13656,7 @@
         208,
         4
       ],
+      "comment_inline": "discard the saved register, do immediate",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c87cc",
@@ -13542,6 +13693,7 @@
       "labels": [
         "c87cc"
       ],
+      "comment_inline": "Back up a character",
       "xref_summaries": [
         "&87cc referenced 1 time by &87c6"
       ],
@@ -13561,6 +13713,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -13572,6 +13725,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the register letter",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -13581,6 +13735,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -13594,6 +13749,7 @@
         151,
         138
       ],
+      "comment_inline": "',' index register?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13606,6 +13762,7 @@
         201,
         44
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -13616,6 +13773,7 @@
         240,
         3
       ],
+      "comment_inline": "no: assemble as absolute",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c87de",
@@ -13645,6 +13803,7 @@
       "labels": [
         "c87de"
       ],
+      "comment_inline": "Index register letter ...",
       "xref_summaries": [
         "&87de referenced 1 time by &87d9"
       ],
@@ -13663,6 +13822,7 @@
         41,
         31
       ],
+      "comment_inline": "matches the expected register?",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&1f"
@@ -13673,6 +13833,7 @@
         197,
         55
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_general",
@@ -13698,11 +13859,12 @@
         44,
         136
       ],
+      "comment_inline": "adjust the opcode for the indexed form",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34794,
@@ -13711,6 +13873,7 @@
         53,
         135
       ],
+      "comment_inline": "assemble as absolute",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8735",
@@ -13727,6 +13890,7 @@
       "labels": [
         "c87ed"
       ],
+      "comment_inline": "Index error",
       "xref_summaries": [
         "&87ed referenced 2 times by &87e5, &8804"
       ],
@@ -13750,6 +13914,7 @@
       "labels": [
         "c87f0"
       ],
+      "comment_inline": "Evaluate the address",
       "xref_summaries": [
         "&87f0 referenced 1 time by &87bf"
       ],
@@ -13767,6 +13932,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the register letter",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -13776,6 +13942,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -13789,6 +13956,7 @@
         151,
         138
       ],
+      "comment_inline": "',' index register?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13801,6 +13969,7 @@
         201,
         44
       ],
+      "comment_inline": "no: single operand",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -13811,6 +13980,7 @@
         208,
         19
       ],
+      "comment_inline": "Index register letter",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8810",
@@ -13824,6 +13994,7 @@
         151,
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -13836,6 +14007,7 @@
         41,
         31
       ],
+      "comment_inline": "matches?",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&1f"
@@ -13846,6 +14018,7 @@
         197,
         55
       ],
+      "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_general",
@@ -13858,6 +14031,7 @@
         208,
         231
       ],
+      "comment_inline": "adjust the opcode for indexed mode",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c87ed",
@@ -13871,11 +14045,12 @@
         44,
         136
       ],
+      "comment_inline": "high byte zero?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882c",
+      "operand": "asm_opcode_add16",
       "target": 34860,
-      "target_label": "sub_c882c"
+      "target_label": "asm_opcode_add16"
     },
     {
       "addr": 34825,
@@ -13883,6 +14058,7 @@
         165,
         43
       ],
+      "comment_inline": "yes: continue",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -13895,6 +14071,7 @@
         240,
         3
       ],
+      "comment_inline": "Byte error (value > 255)",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8810",
@@ -13924,6 +14101,7 @@
       "labels": [
         "c8810"
       ],
+      "comment_inline": "Assemble as zero-page",
       "xref_summaries": [
         "&8810 referenced 2 times by &87fb, &880b"
       ],
@@ -13946,6 +14124,7 @@
       "labels": [
         "c8813"
       ],
+      "comment_inline": "index &39 (OPT)?",
       "xref_summaries": [
         "&8813 referenced 1 time by &87b4"
       ],
@@ -13965,6 +14144,7 @@
         33,
         136
       ],
+      "comment_inline": "no: EQU directives OPT: evaluate the new setting",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -13989,6 +14169,7 @@
         133,
         40
       ],
+      "comment_inline": "store it as the OPT flag",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_opt_flag",
@@ -14001,6 +14182,7 @@
         160,
         0
       ],
+      "comment_inline": "no bytes to assemble",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -14012,6 +14194,7 @@
         43,
         134
       ],
+      "comment_inline": "finish",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c862b",
@@ -14028,6 +14211,7 @@
       "labels": [
         "eval_expr_to_integer"
       ],
+      "comment_inline": "Evaluate the expression",
       "xref_summaries": [
         "&8821 referenced 22 times by &8677, &86c5, &86de, &8717, &8750, &8782, &8797, &87a5, &87ce, &87f0, &8815, &885a, &9188, &92a2, &937a, &9391, &939d, &93f1, &9440, &b44c, &b472, &b4a0"
       ],
@@ -14068,6 +14252,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -14083,6 +14268,7 @@
       "labels": [
         "sub_c8827"
       ],
+      "comment_inline": "Sync the primary text offset",
       "xref_summaries": [
         "&8827 referenced 3 times by &85b7, &8875, &9121"
       ],
@@ -14103,6 +14289,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -14114,6 +14301,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -14125,8 +14313,9 @@
         136
       ],
       "labels": [
-        "sub_c882c"
+        "asm_opcode_add16"
       ],
+      "comment_inline": "add 8 then fall through (+16 total)",
       "xref_summaries": [
         "&882c referenced 7 times by &86ef, &8721, &875a, &879f, &87a2, &87e7, &8806"
       ],
@@ -14141,9 +14330,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c882f",
+      "operand": "asm_opcode_add8",
       "target": 34863,
-      "target_label": "sub_c882f"
+      "target_label": "asm_opcode_add8"
     },
     {
       "addr": 34863,
@@ -14153,8 +14342,9 @@
         136
       ],
       "labels": [
-        "sub_c882f"
+        "asm_opcode_add8"
       ],
+      "comment_inline": "add 4 then fall through (+8 total)",
       "xref_summaries": [
         "&882f referenced 3 times by &86c2, &872f, &882c"
       ],
@@ -14165,9 +14355,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8832",
+      "operand": "asm_opcode_add4",
       "target": 34866,
-      "target_label": "sub_c8832"
+      "target_label": "asm_opcode_add4"
     },
     {
       "addr": 34866,
@@ -14176,8 +14366,9 @@
         41
       ],
       "labels": [
-        "sub_c8832"
+        "asm_opcode_add4"
       ],
+      "comment_inline": "Opcode += 4 (next addressing-mode column)",
       "xref_summaries": [
         "&8832 referenced 3 times by &8735, &8767, &882f"
       ],
@@ -14197,6 +14388,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -14206,6 +14398,7 @@
         105,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -14216,6 +14409,7 @@
         133,
         41
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_asm_opcode",
@@ -14227,6 +14421,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -14239,6 +14434,7 @@
       "labels": [
         "c883a"
       ],
+      "comment_inline": "Assume one byte (EQUB)",
       "xref_summaries": [
         "&883a referenced 1 time by &8813"
       ],
@@ -14255,6 +14451,7 @@
         164,
         10
       ],
+      "comment_inline": "Next character of the directive",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -14267,6 +14464,7 @@
         230,
         10
       ],
+      "comment_inline": "... ...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -14279,6 +14477,7 @@
         177,
         11
       ],
+      "comment_inline": "'B' (EQUB)?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -14291,6 +14490,7 @@
         201,
         66
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&42"
@@ -14301,6 +14501,7 @@
         240,
         18
       ],
+      "comment_inline": "two bytes (EQUW) 'W' (EQUW)?",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8858",
@@ -14321,6 +14522,7 @@
         201,
         87
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&57"
@@ -14331,6 +14533,7 @@
         240,
         13
       ],
+      "comment_inline": "four bytes (EQUD)",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8858",
@@ -14343,6 +14546,7 @@
         162,
         4
       ],
+      "comment_inline": "'D' (EQUD)?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#4"
@@ -14353,6 +14557,7 @@
         201,
         68
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&44"
@@ -14363,6 +14568,7 @@
         240,
         7
       ],
+      "comment_inline": "'S' (EQUS)?",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8858",
@@ -14375,6 +14581,7 @@
         201,
         83
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&53"
@@ -14385,6 +14592,7 @@
         240,
         21
       ],
+      "comment_inline": "none: Mistake (syntax error)",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c886a",
@@ -14412,6 +14620,7 @@
       "labels": [
         "c8858"
       ],
+      "comment_inline": "Save the byte count",
       "xref_summaries": [
         "&8858 referenced 3 times by &8844, &8849, &884f"
       ],
@@ -14428,6 +14637,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -14438,6 +14648,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -14450,6 +14661,7 @@
         162,
         41
       ],
+      "comment_inline": "Store it into the opcode bytes",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&29"
@@ -14461,6 +14673,7 @@
         68,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -14472,6 +14685,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the byte count",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -14480,6 +14694,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -14493,6 +14708,7 @@
       "labels": [
         "loop_c8864"
       ],
+      "comment_inline": "Assemble the bytes",
       "xref_summaries": [
         "&8864 referenced 1 time by &887a"
       ],
@@ -14515,6 +14731,7 @@
       "labels": [
         "loop_c8867"
       ],
+      "comment_inline": "String expected: Type mismatch",
       "xref_summaries": [
         "&8867 referenced 1 time by &8870"
       ],
@@ -14536,6 +14753,7 @@
       "labels": [
         "c886a"
       ],
+      "comment_inline": "EQUS: save the OPT flag ...",
       "xref_summaries": [
         "&886a referenced 1 time by &8853"
       ],
@@ -14553,6 +14771,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "evaluate the string expression",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -14563,6 +14782,7 @@
         29,
         155
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -14575,6 +14795,7 @@
         208,
         245
       ],
+      "comment_inline": "restore the OPT flag",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8867",
@@ -14595,6 +14816,7 @@
         133,
         40
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_opt_flag",
@@ -14608,6 +14830,7 @@
         39,
         136
       ],
+      "comment_inline": "sync the text offset",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8827",
@@ -14620,6 +14843,7 @@
         160,
         255
       ],
+      "comment_inline": "flag EQUS (length from the string buffer)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&ff"
@@ -14630,6 +14854,7 @@
         208,
         232
       ],
+      "comment_inline": "assemble the string bytes",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8864",
@@ -14644,6 +14869,7 @@
       "labels": [
         "sub_c887c"
       ],
+      "comment_inline": "Save the byte to insert",
       "xref_summaries": [
         "&887c referenced 2 times by &88dd, &8a55"
       ],
@@ -14659,6 +14885,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Source = dest + Y",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -14667,6 +14894,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -14676,6 +14904,7 @@
         101,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general",
@@ -14688,6 +14917,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -14700,6 +14930,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -14709,6 +14940,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -14718,6 +14950,7 @@
         101,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general_1",
@@ -14730,6 +14963,7 @@
         133,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -14741,6 +14975,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Store the inserted byte",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -14764,6 +14999,7 @@
       "labels": [
         "loop_c888d"
       ],
+      "comment_inline": "Copy the rest of the line up",
       "xref_summaries": [
         "&888d referenced 1 time by &8894"
       ],
@@ -14779,6 +15015,7 @@
         177,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -14791,6 +15028,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -14803,6 +15041,7 @@
         201,
         13
       ],
+      "comment_inline": "until the carriage return",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -14813,6 +15052,7 @@
         208,
         247
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c888d",
@@ -14824,6 +15064,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },

@@ -1182,146 +1182,146 @@ l848a = sub_c847b+15
     bne c8604                                                         ; 861e: d0 e4       ..    
 ; &8620 referenced 3 times by &85ff, &860b, &8610
 .c8620
-    lda l84c4,x                                                       ; 8620: bd c4 84    ...   
-    sta zp_asm_opcode                                                 ; 8623: 85 29       .)    
-    ldy #1                                                            ; 8625: a0 01       ..    
-    cpx #&1a                                                          ; 8627: e0 1a       ..    
-    bcs c8673                                                         ; 8629: b0 48       .H    
+    lda l84c4,x                                                       ; 8620: bd c4 84    ...      ; Base opcode from the table
+    sta zp_asm_opcode                                                 ; 8623: 85 29       .)       ; Save it
+    ldy #1                                                            ; 8625: a0 01       ..       ; Assume a one-byte instruction
+    cpx #&1a                                                          ; 8627: e0 1a       ..       ; index &1A+ takes an operand?
+    bcs c8673                                                         ; 8629: b0 48       .H       ; yes: parse the addressing mode
 ; &862b referenced 7 times by &85c5, &85c9, &85cd, &86aa, &879c, &881e, &8864
 .c862b
-    lda resint_p                                                      ; 862b: ad 40 04    .@.   
-    sta zp_general                                                    ; 862e: 85 37       .7    
-    sty zp_fileblk                                                    ; 8630: 84 39       .9    
-    ldx zp_opt_flag                                                   ; 8632: a6 28       .(    
-    cpx #4                                                            ; 8634: e0 04       ..    
-    ldx l0441                                                         ; 8636: ae 41 04    .A.   
-    stx zp_general_1                                                  ; 8639: 86 38       .8    
-    bcc c8643                                                         ; 863b: 90 06       ..    
-    lda resint_o                                                      ; 863d: ad 3c 04    .<.   
-    ldx l043d                                                         ; 8640: ae 3d 04    .=.   
+    lda resint_p                                                      ; 862b: ad 40 04    .@.      ; P% low -> destination
+    sta zp_general                                                    ; 862e: 85 37       .7       ; ...
+    sty zp_fileblk                                                    ; 8630: 84 39       .9       ; Save the byte count
+    ldx zp_opt_flag                                                   ; 8632: a6 28       .(       ; OPT setting
+    cpx #4                                                            ; 8634: e0 04       ..       ; offset assembly (OPT >= 4)?
+    ldx l0441                                                         ; 8636: ae 41 04    .A.      ; P% high
+    stx zp_general_1                                                  ; 8639: 86 38       .8       ; ...
+    bcc c8643                                                         ; 863b: 90 06       ..       ; no offset: assemble at P%
+    lda resint_o                                                      ; 863d: ad 3c 04    .<.      ; offset: assemble at O% instead
+    ldx l043d                                                         ; 8640: ae 3d 04    .=.      ; ...
 ; &8643 referenced 1 time by &863b
 .c8643
-    sta l003a                                                         ; 8643: 85 3a       .:    
-    stx zp_fwb_sign                                                   ; 8645: 86 3b       .;    
-    tya                                                               ; 8647: 98          .     
-    beq return_1                                                      ; 8648: f0 28       .(    
-    bpl c8650                                                         ; 864a: 10 04       ..    
-    ldy zp_strbuf_len                                                 ; 864c: a4 36       .6    
-    beq return_1                                                      ; 864e: f0 22       ."    
+    sta l003a                                                         ; 8643: 85 3a       .:       ; Store the destination pointer
+    stx zp_fwb_sign                                                   ; 8645: 86 3b       .;       ; ...
+    tya                                                               ; 8647: 98          .        ; Any bytes to store?
+    beq return_1                                                      ; 8648: f0 28       .(       ; none: done
+    bpl c8650                                                         ; 864a: 10 04       ..       ; positive count: store opcode bytes
+    ldy zp_strbuf_len                                                 ; 864c: a4 36       .6       ; EQUS: length from the string buffer
+    beq return_1                                                      ; 864e: f0 22       ."       ; empty: done
 ; &8650 referenced 2 times by &864a, &8670
 .c8650
-    dey                                                               ; 8650: 88          .     
-    lda zp_asm_opcode,y                                               ; 8651: b9 29 00    .).   
-    bit zp_fileblk                                                    ; 8654: 24 39       $9    
-    bpl c865b                                                         ; 8656: 10 03       ..    
-    lda string_work,y                                                 ; 8658: b9 00 06    ...   
+    dey                                                               ; 8650: 88          .        ; Next byte index
+    lda zp_asm_opcode,y                                               ; 8651: b9 29 00    .).      ; Opcode/operand byte
+    bit zp_fileblk                                                    ; 8654: 24 39       $9       ; storing string (EQUS) bytes?
+    bpl c865b                                                         ; 8656: 10 03       ..       ; no: store the opcode byte
+    lda string_work,y                                                 ; 8658: b9 00 06    ...      ; yes: take it from the string buffer
 ; &865b referenced 1 time by &8656
 .c865b
-    sta (l003a),y                                                     ; 865b: 91 3a       .:    
-    inc resint_p                                                      ; 865d: ee 40 04    .@.   
-    bne c8665                                                         ; 8660: d0 03       ..    
-    inc l0441                                                         ; 8662: ee 41 04    .A.   
+    sta (l003a),y                                                     ; 865b: 91 3a       .:       ; Store the byte at the destination
+    inc resint_p                                                      ; 865d: ee 40 04    .@.      ; Advance P%
+    bne c8665                                                         ; 8660: d0 03       ..       ; ...
+    inc l0441                                                         ; 8662: ee 41 04    .A.      ; ...
 ; &8665 referenced 1 time by &8660
 .c8665
-    bcc c866f                                                         ; 8665: 90 08       ..    
-    inc resint_o                                                      ; 8667: ee 3c 04    .<.   
-    bne c866f                                                         ; 866a: d0 03       ..    
-    inc l043d                                                         ; 866c: ee 3d 04    .=.   
+    bcc c866f                                                         ; 8665: 90 08       ..       ; offset assembly?
+    inc resint_o                                                      ; 8667: ee 3c 04    .<.      ; yes: advance O% too
+    bne c866f                                                         ; 866a: d0 03       ..       ; ...
+    inc l043d                                                         ; 866c: ee 3d 04    .=.      ; ...
 ; &866f referenced 2 times by &8665, &866a
 .c866f
-    tya                                                               ; 866f: 98          .     
-    bne c8650                                                         ; 8670: d0 de       ..    
+    tya                                                               ; 866f: 98          .        ; More bytes?
+    bne c8650                                                         ; 8670: d0 de       ..       ; loop
 ; &8672 referenced 2 times by &8648, &864e
 .return_1
-    rts                                                               ; 8672: 60          `     
+    rts                                                               ; 8672: 60          `        ; Return
 ; &8673 referenced 1 time by &8629
 .c8673
-    cpx #&22                                                          ; 8673: e0 22       ."    
-    bcs c86b7                                                         ; 8675: b0 40       .@    
-    jsr eval_expr_to_integer                                          ; 8677: 20 21 88     !.   
-    clc                                                               ; 867a: 18          .     
-    lda zp_iwa                                                        ; 867b: a5 2a       .*    
-    sbc resint_p                                                      ; 867d: ed 40 04    .@.   
-    tay                                                               ; 8680: a8          .     
-    lda zp_iwa_1                                                      ; 8681: a5 2b       .+    
-    sbc l0441                                                         ; 8683: ed 41 04    .A.   
-    cpy #1                                                            ; 8686: c0 01       ..    
-    dey                                                               ; 8688: 88          .     
-    sbc #0                                                            ; 8689: e9 00       ..    
-    beq c86b2                                                         ; 868b: f0 25       .%    
-    cmp #&ff                                                          ; 868d: c9 ff       ..    
-    beq c86ad                                                         ; 868f: f0 1c       ..    
+    cpx #&22                                                          ; 8673: e0 22       ."       ; index &22+ is not a branch?
+    bcs c86b7                                                         ; 8675: b0 40       .@       ; yes: other operand forms
+    jsr eval_expr_to_integer                                          ; 8677: 20 21 88     !.      ; Evaluate the target address
+    clc                                                               ; 867a: 18          .        ; Offset = target - (P% + 2)
+    lda zp_iwa                                                        ; 867b: a5 2a       .*       ; ...
+    sbc resint_p                                                      ; 867d: ed 40 04    .@.      ; ...
+    tay                                                               ; 8680: a8          .        ; ...
+    lda zp_iwa_1                                                      ; 8681: a5 2b       .+       ; ...
+    sbc l0441                                                         ; 8683: ed 41 04    .A.      ; ...
+    cpy #1                                                            ; 8686: c0 01       ..       ; ...
+    dey                                                               ; 8688: 88          .        ; ...
+    sbc #0                                                            ; 8689: e9 00       ..       ; ...
+    beq c86b2                                                         ; 868b: f0 25       .%       ; in forward range?
+    cmp #&ff                                                          ; 868d: c9 ff       ..       ; in backward range?
+    beq c86ad                                                         ; 868f: f0 1c       ..       ; ...
 ; &8691 referenced 2 times by &86b0, &86b5
 .c8691
-    lda zp_opt_flag                                                   ; 8691: a5 28       .(    
-    lsr a                                                             ; 8693: 4a          J     
-    beq c86a5                                                         ; 8694: f0 0f       ..    
-    brk                                                               ; 8696: 00          .     
+    lda zp_opt_flag                                                   ; 8691: a5 28       .(       ; OPT setting  errors enabled?
+    lsr a                                                             ; 8693: 4a          J        ; ...
+    beq c86a5                                                         ; 8694: f0 0f       ..       ; no: ignore the range error
+    brk                                                               ; 8696: 00          .        ; Out of range error
     equb &01                                                          ; 8697: 01          .     
     equs "Out of range"                                               ; 8698: 4f 75 74... Out...
     equb &00                                                          ; 86a4: 00          .     
 ; &86a5 referenced 1 time by &8694
 .c86a5
-    tay                                                               ; 86a5: a8          .     
+    tay                                                               ; 86a5: a8          .        ; Use the offset byte
 ; &86a6 referenced 2 times by &86ae, &86b3
 .c86a6
-    sty zp_iwa                                                        ; 86a6: 84 2a       .*    
+    sty zp_iwa                                                        ; 86a6: 84 2a       .*       ; as the operand
 ; &86a8 referenced 2 times by &86ca, &873c
 .c86a8
-    ldy #2                                                            ; 86a8: a0 02       ..    
-    jmp c862b                                                         ; 86aa: 4c 2b 86    L+.   
+    ldy #2                                                            ; 86a8: a0 02       ..       ; Two-byte instruction
+    jmp c862b                                                         ; 86aa: 4c 2b 86    L+.      ; store it
 ; &86ad referenced 1 time by &868f
 .c86ad
-    tya                                                               ; 86ad: 98          .     
-    bmi c86a6                                                         ; 86ae: 30 f6       0.    
-    bpl c8691                                                         ; 86b0: 10 df       ..    
+    tya                                                               ; 86ad: 98          .        ; forward: check the high byte
+    bmi c86a6                                                         ; 86ae: 30 f6       0.       ; in range
+    bpl c8691                                                         ; 86b0: 10 df       ..       ; out of range
 ; &86b2 referenced 1 time by &868b
 .c86b2
-    tya                                                               ; 86b2: 98          .     
-    bpl c86a6                                                         ; 86b3: 10 f1       ..    
-    bmi c8691                                                         ; 86b5: 30 da       0.    
+    tya                                                               ; 86b2: 98          .        ; backward: check the high byte
+    bpl c86a6                                                         ; 86b3: 10 f1       ..       ; in range
+    bmi c8691                                                         ; 86b5: 30 da       0.       ; out of range
 ; &86b7 referenced 1 time by &8675
 .c86b7
-    cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)    
-    bcs c86d3                                                         ; 86b9: b0 18       ..    
+    cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)       ; index &29+ : not immediate?
+    bcs c86d3                                                         ; 86b9: b0 18       ..       ; yes: indexed/absolute modes
     jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..   
-    cmp #&23 ; '#'                                                    ; 86be: c9 23       .#    
-    bne c86da                                                         ; 86c0: d0 18       ..    
-    jsr sub_c882f                                                     ; 86c2: 20 2f 88     /.   
+    cmp #&23 ; '#'                                                    ; 86be: c9 23       .#       ; '#' immediate prefix?
+    bne c86da                                                         ; 86c0: d0 18       ..       ; no: absolute
+    jsr asm_opcode_add8                                               ; 86c2: 20 2f 88     /.      ; Immediate mode: adjust the opcode
 ; &86c5 referenced 2 times by &877d, &87c9
 .c86c5
-    jsr eval_expr_to_integer                                          ; 86c5: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 86c5: 20 21 88     !.      ; Evaluate the immediate value
 ; &86c8 referenced 2 times by &86f9, &870b
 .c86c8
-    lda zp_iwa_1                                                      ; 86c8: a5 2b       .+    
-    beq c86a8                                                         ; 86ca: f0 dc       ..    
+    lda zp_iwa_1                                                      ; 86c8: a5 2b       .+       ; high byte zero (fits in a byte)?
+    beq c86a8                                                         ; 86ca: f0 dc       ..       ; yes: two-byte instruction
 ; &86cc referenced 1 time by &880d
 .c86cc
-    brk                                                               ; 86cc: 00          .     
+    brk                                                               ; 86cc: 00          .        ; Byte error (value > 255)
     equb &02                                                          ; 86cd: 02          .     
     equs "Byte"                                                       ; 86ce: 42 79 74... Byt...
     equb &00                                                          ; 86d2: 00          .     
 ; &86d3 referenced 1 time by &86b9
 .c86d3
-    cpx #&36 ; '6'                                                    ; 86d3: e0 36       .6    
-    bne c873f                                                         ; 86d5: d0 68       .h    
+    cpx #&36 ; '6'                                                    ; 86d3: e0 36       .6       ; index &36 : the (zp),Y / (zp,X) group?
+    bne c873f                                                         ; 86d5: d0 68       .h       ; no: absolute/indexed group
     jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..   
 ; &86da referenced 1 time by &86c0
 .c86da
-    cmp #&28 ; '('                                                    ; 86da: c9 28       .(    
-    bne c8715                                                         ; 86dc: d0 37       .7    
-    jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.   
+    cmp #&28 ; '('                                                    ; 86da: c9 28       .(       ; '(' opening an indirect mode?
+    bne c8715                                                         ; 86dc: d0 37       .7       ; no: absolute
+    jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.      ; Evaluate the zero-page address
     jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..   
-    cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)    
-    bne c86fb                                                         ; 86e6: d0 13       ..    
+    cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)       ; ')' -> (zp),Y form
+    bne c86fb                                                         ; 86e6: d0 13       ..       ; no: try (zp,X)
     jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,    
     bne c870d                                                         ; 86ed: d0 1e       ..    
-    jsr sub_c882c                                                     ; 86ef: 20 2c 88     ,.   
+    jsr asm_opcode_add16                                              ; 86ef: 20 2c 88     ,.      ; adjust the opcode for (zp),Y
     jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..   
     cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y    
     bne c870d                                                         ; 86f7: d0 14       ..    
-    beq c86c8                                                         ; 86f9: f0 cd       ..    
+    beq c86c8                                                         ; 86f9: f0 cd       ..       ; process as a two-byte instruction
 ; &86fb referenced 1 time by &86e6
 .c86fb
     cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,    
@@ -1334,18 +1334,18 @@ l848a = sub_c847b+15
     beq c86c8                                                         ; 870b: f0 bb       ..    
 ; &870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed
 .c870d
-    brk                                                               ; 870d: 00          .     
+    brk                                                               ; 870d: 00          .        ; Index error
     equb &03                                                          ; 870e: 03          .     
     equs "Index"                                                      ; 870f: 49 6e 64... Ind...
     equb &00                                                          ; 8714: 00          .     
 ; &8715 referenced 1 time by &86dc
 .c8715
-    dec zp_text_ptr_off                                               ; 8715: c6 0a       ..    
-    jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.   
+    dec zp_text_ptr_off                                               ; 8715: c6 0a       ..       ; Back up over the "("
+    jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 871a: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 871d: c9 2c       .,    
     bne c8735                                                         ; 871f: d0 14       ..    
-    jsr sub_c882c                                                     ; 8721: 20 2c 88     ,.   
+    jsr asm_opcode_add16                                              ; 8721: 20 2c 88     ,.      ; adjust the opcode for absolute,X/,Y
     jsr skip_spaces                                                   ; 8724: 20 97 8a     ..   
     cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X    
     beq c8735                                                         ; 8729: f0 0a       ..    
@@ -1353,149 +1353,149 @@ l848a = sub_c847b+15
     bne c870d                                                         ; 872d: d0 de       ..    
 ; &872f referenced 1 time by &873a
 .loop_c872f
-    jsr sub_c882f                                                     ; 872f: 20 2f 88     /.   
-    jmp c879a                                                         ; 8732: 4c 9a 87    L..   
+    jsr asm_opcode_add8                                               ; 872f: 20 2f 88     /.      ; Adjust the opcode for the indexed form
+    jmp c879a                                                         ; 8732: 4c 9a 87    L..      ; process the absolute operand
 ; &8735 referenced 5 times by &871f, &8729, &8785, &87db, &87ea
 .c8735
-    jsr sub_c8832                                                     ; 8735: 20 32 88     2.   
+    jsr asm_opcode_add4                                               ; 8735: 20 32 88     2.      ; Adjust the opcode for absolute mode
 ; &8738 referenced 3 times by &8758, &8762, &8810
 .c8738
-    lda zp_iwa_1                                                      ; 8738: a5 2b       .+    
-    bne loop_c872f                                                    ; 873a: d0 f3       ..    
-    jmp c86a8                                                         ; 873c: 4c a8 86    L..   
+    lda zp_iwa_1                                                      ; 8738: a5 2b       .+       ; address fits in zero page (high byte 0)?
+    bne loop_c872f                                                    ; 873a: d0 f3       ..       ; no: assemble as absolute (three bytes)
+    jmp c86a8                                                         ; 873c: 4c a8 86    L..      ; yes: assemble as two bytes
 ; &873f referenced 1 time by &86d5
 .c873f
-    cpx #&2f ; '/'                                                    ; 873f: e0 2f       ./    
-    bcs c876e                                                         ; 8741: b0 2b       .+    
-    cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-    
-    bcs c8750                                                         ; 8745: b0 09       ..    
+    cpx #&2f ; '/'                                                    ; 873f: e0 2f       ./       ; index &2F+ : a different operand class?
+    bcs c876e                                                         ; 8741: b0 2b       .+       ; yes
+    cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-       ; index &2D+ (accumulator-or-absolute)?
+    bcs c8750                                                         ; 8745: b0 09       ..       ; yes
     jsr skip_spaces                                                   ; 8747: 20 97 8a     ..   
     cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A    
     beq c8767                                                         ; 874c: f0 19       ..    
-    dec zp_text_ptr_off                                               ; 874e: c6 0a       ..    
+    dec zp_text_ptr_off                                               ; 874e: c6 0a       ..       ; Back up a character
 ; &8750 referenced 1 time by &8745
 .c8750
-    jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 8753: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8756: c9 2c       .,    
     bne c8738                                                         ; 8758: d0 de       ..    
-    jsr sub_c882c                                                     ; 875a: 20 2c 88     ,.   
+    jsr asm_opcode_add16                                              ; 875a: 20 2c 88     ,.      ; adjust the opcode for indexed mode
     jsr skip_spaces                                                   ; 875d: 20 97 8a     ..   
     cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X    
     beq c8738                                                         ; 8762: f0 d4       ..    
     jmp c870d                                                         ; 8764: 4c 0d 87    L..   
 ; &8767 referenced 1 time by &874c
 .c8767
-    jsr sub_c8832                                                     ; 8767: 20 32 88     2.   
-    ldy #1                                                            ; 876a: a0 01       ..    
-    bne c879c                                                         ; 876c: d0 2e       ..    
+    jsr asm_opcode_add4                                               ; 8767: 20 32 88     2.      ; Accumulator form: adjust the opcode
+    ldy #1                                                            ; 876a: a0 01       ..       ; one byte
+    bne c879c                                                         ; 876c: d0 2e       ..       ; store it
 ; &876e referenced 1 time by &8741
 .c876e
-    cpx #&32 ; '2'                                                    ; 876e: e0 32       .2    
-    bcs c8788                                                         ; 8770: b0 16       ..    
-    cpx #&31 ; '1'                                                    ; 8772: e0 31       .1    
-    beq c8782                                                         ; 8774: f0 0c       ..    
+    cpx #&32 ; '2'                                                    ; 876e: e0 32       .2       ; index &32+ : implied/branch class?
+    bcs c8788                                                         ; 8770: b0 16       ..       ; yes
+    cpx #&31 ; '1'                                                    ; 8772: e0 31       .1       ; index &31 (immediate-only)?
+    beq c8782                                                         ; 8774: f0 0c       ..       ; yes
     jsr skip_spaces                                                   ; 8776: 20 97 8a     ..   
     cmp #&23 ; '#'                                                    ; 8779: c9 23       .#    
     bne c8780                                                         ; 877b: d0 03       ..    
     jmp c86c5                                                         ; 877d: 4c c5 86    L..   
 ; &8780 referenced 1 time by &877b
 .c8780
-    dec zp_text_ptr_off                                               ; 8780: c6 0a       ..    
+    dec zp_text_ptr_off                                               ; 8780: c6 0a       ..       ; Back up a character
 ; &8782 referenced 1 time by &8774
 .c8782
-    jsr eval_expr_to_integer                                          ; 8782: 20 21 88     !.   
-    jmp c8735                                                         ; 8785: 4c 35 87    L5.   
+    jsr eval_expr_to_integer                                          ; 8782: 20 21 88     !.      ; Evaluate the value
+    jmp c8735                                                         ; 8785: 4c 35 87    L5.      ; assemble as absolute
 ; &8788 referenced 1 time by &8770
 .c8788
-    cpx #&33 ; '3'                                                    ; 8788: e0 33       .3    
-    beq c8797                                                         ; 878a: f0 0b       ..    
-    bcs c87b2                                                         ; 878c: b0 24       .$    
+    cpx #&33 ; '3'                                                    ; 8788: e0 33       .3       ; index &33 (no operand)?
+    beq c8797                                                         ; 878a: f0 0b       ..       ; yes
+    bcs c87b2                                                         ; 878c: b0 24       .$       ; index &34+ : other forms
     jsr skip_spaces                                                   ; 878e: 20 97 8a     ..   
     cmp #&28 ; '('                                                    ; 8791: c9 28       .(    
     beq c879f                                                         ; 8793: f0 0a       ..    
-    dec zp_text_ptr_off                                               ; 8795: c6 0a       ..    
+    dec zp_text_ptr_off                                               ; 8795: c6 0a       ..       ; Back up a character
 ; &8797 referenced 1 time by &878a
 .c8797
-    jsr eval_expr_to_integer                                          ; 8797: 20 21 88     !.   
+    jsr eval_expr_to_integer                                          ; 8797: 20 21 88     !.      ; Evaluate the address
 ; &879a referenced 2 times by &8732, &87ad
 .c879a
-    ldy #3                                                            ; 879a: a0 03       ..    
+    ldy #3                                                            ; 879a: a0 03       ..       ; Three-byte instruction
 ; &879c referenced 1 time by &876c
 .c879c
-    jmp c862b                                                         ; 879c: 4c 2b 86    L+.   
+    jmp c862b                                                         ; 879c: 4c 2b 86    L+.      ; store it
 ; &879f referenced 1 time by &8793
 .c879f
-    jsr sub_c882c                                                     ; 879f: 20 2c 88     ,.   
-    jsr sub_c882c                                                     ; 87a2: 20 2c 88     ,.   
-    jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.   
+    jsr asm_opcode_add16                                              ; 879f: 20 2c 88     ,.      ; Indirect: adjust the opcode
+    jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; ...
+    jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.      ; evaluate the address
     jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..   
-    cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)    
-    beq c879a                                                         ; 87ad: f0 eb       ..    
+    cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)       ; ')' to close?
+    beq c879a                                                         ; 87ad: f0 eb       ..       ; yes: three-byte instruction
     jmp c870d                                                         ; 87af: 4c 0d 87    L..   
 ; &87b2 referenced 1 time by &878c
 .c87b2
-    cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9    
-    bcs c8813                                                         ; 87b4: b0 5d       .]    
-    lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=    
-    eor #1                                                            ; 87b8: 49 01       I.    
-    and #&1f                                                          ; 87ba: 29 1f       ).    
+    cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9       ; index &39+ : EQU directives
+    bcs c8813                                                         ; 87b4: b0 5d       .]       ; yes
+    lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic  ...
+    eor #1                                                            ; 87b8: 49 01       I.       ; ...
+    and #&1f                                                          ; 87ba: 29 1f       ).       ; save it  index &37+ (two-register form)?
     pha                                                               ; 87bc: 48          H     
-    cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7    
+    cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7       ; yes
     bcs c87f0                                                         ; 87bf: b0 2f       ./    
-    jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..   
-    cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#    
-    bne c87cc                                                         ; 87c6: d0 04       ..    
+    jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..      ; '#' immediate?
+    cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#       ; no: absolute
+    bne c87cc                                                         ; 87c6: d0 04       ..       ; discard the saved register, do immediate
     pla                                                               ; 87c8: 68          h     
     jmp c86c5                                                         ; 87c9: 4c c5 86    L..   
 ; &87cc referenced 1 time by &87c6
 .c87cc
-    dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..    
-    jsr eval_expr_to_integer                                          ; 87ce: 20 21 88     !.   
-    pla                                                               ; 87d1: 68          h     
-    sta zp_general                                                    ; 87d2: 85 37       .7    
-    jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,    
-    beq c87de                                                         ; 87d9: f0 03       ..    
+    dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..       ; Back up a character
+    jsr eval_expr_to_integer                                          ; 87ce: 20 21 88     !.      ; Evaluate the address
+    pla                                                               ; 87d1: 68          h        ; recover the register letter
+    sta zp_general                                                    ; 87d2: 85 37       .7       ; ...
+    jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..      ; ',' index register?
+    cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,       ; yes
+    beq c87de                                                         ; 87d9: f0 03       ..       ; no: assemble as absolute
     jmp c8735                                                         ; 87db: 4c 35 87    L5.   
 ; &87de referenced 1 time by &87d9
 .c87de
-    jsr skip_spaces                                                   ; 87de: 20 97 8a     ..   
-    and #&1f                                                          ; 87e1: 29 1f       ).    
-    cmp zp_general                                                    ; 87e3: c5 37       .7    
+    jsr skip_spaces                                                   ; 87de: 20 97 8a     ..      ; Index register letter  ...
+    and #&1f                                                          ; 87e1: 29 1f       ).       ; matches the expected register?
+    cmp zp_general                                                    ; 87e3: c5 37       .7       ; no: Index error
     bne c87ed                                                         ; 87e5: d0 06       ..    
-    jsr sub_c882c                                                     ; 87e7: 20 2c 88     ,.   
-    jmp c8735                                                         ; 87ea: 4c 35 87    L5.   
+    jsr asm_opcode_add16                                              ; 87e7: 20 2c 88     ,.      ; adjust the opcode for the indexed form
+    jmp c8735                                                         ; 87ea: 4c 35 87    L5.      ; assemble as absolute
 ; &87ed referenced 2 times by &87e5, &8804
 .c87ed
-    jmp c870d                                                         ; 87ed: 4c 0d 87    L..   
+    jmp c870d                                                         ; 87ed: 4c 0d 87    L..      ; Index error
 ; &87f0 referenced 1 time by &87bf
 .c87f0
-    jsr eval_expr_to_integer                                          ; 87f0: 20 21 88     !.   
-    pla                                                               ; 87f3: 68          h     
-    sta zp_general                                                    ; 87f4: 85 37       .7    
-    jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,    
-    bne c8810                                                         ; 87fb: d0 13       ..    
-    jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..   
-    and #&1f                                                          ; 8800: 29 1f       ).    
-    cmp zp_general                                                    ; 8802: c5 37       .7    
-    bne c87ed                                                         ; 8804: d0 e7       ..    
-    jsr sub_c882c                                                     ; 8806: 20 2c 88     ,.   
-    lda zp_iwa_1                                                      ; 8809: a5 2b       .+    
-    beq c8810                                                         ; 880b: f0 03       ..    
+    jsr eval_expr_to_integer                                          ; 87f0: 20 21 88     !.      ; Evaluate the address
+    pla                                                               ; 87f3: 68          h        ; recover the register letter
+    sta zp_general                                                    ; 87f4: 85 37       .7       ; ...
+    jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..      ; ',' index register?
+    cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,       ; no: single operand
+    bne c8810                                                         ; 87fb: d0 13       ..       ; Index register letter
+    jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..      ; ...
+    and #&1f                                                          ; 8800: 29 1f       ).       ; matches?
+    cmp zp_general                                                    ; 8802: c5 37       .7       ; no: Index error
+    bne c87ed                                                         ; 8804: d0 e7       ..       ; adjust the opcode for indexed mode
+    jsr asm_opcode_add16                                              ; 8806: 20 2c 88     ,.      ; high byte zero?
+    lda zp_iwa_1                                                      ; 8809: a5 2b       .+       ; yes: continue
+    beq c8810                                                         ; 880b: f0 03       ..       ; Byte error (value > 255)
     jmp c86cc                                                         ; 880d: 4c cc 86    L..   
 ; &8810 referenced 2 times by &87fb, &880b
 .c8810
-    jmp c8738                                                         ; 8810: 4c 38 87    L8.   
+    jmp c8738                                                         ; 8810: 4c 38 87    L8.      ; Assemble as zero-page
 ; &8813 referenced 1 time by &87b4
 .c8813
-    bne c883a                                                         ; 8813: d0 25       .%    
-    jsr eval_expr_to_integer                                          ; 8815: 20 21 88     !.   
+    bne c883a                                                         ; 8813: d0 25       .%       ; index &39 (OPT)?
+    jsr eval_expr_to_integer                                          ; 8815: 20 21 88     !.      ; no: EQU directives  OPT: evaluate the new setting
     lda zp_iwa                                                        ; 8818: a5 2a       .*    
-    sta zp_opt_flag                                                   ; 881a: 85 28       .(    
-    ldy #0                                                            ; 881c: a0 00       ..    
-    jmp c862b                                                         ; 881e: 4c 2b 86    L+.   
+    sta zp_opt_flag                                                   ; 881a: 85 28       .(       ; store it as the OPT flag
+    ldy #0                                                            ; 881c: a0 00       ..       ; no bytes to assemble
+    jmp c862b                                                         ; 881e: 4c 2b 86    L+.      ; finish
 ; ***************************************************************************************
 ; Evaluate an integer expression
 ;
@@ -1507,90 +1507,98 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A): 4-byte integer result
 ; &8821 referenced 22 times by &8677, &86c5, &86de, &8717, &8750, &8782, &8797, &87a5, &87ce, &87f0, &8815, &885a, &9188, &92a2, &937a, &9391, &939d, &93f1, &9440, &b44c, &b472, &b4a0
 .eval_expr_to_integer
-    jsr eval_expr                                                     ; 8821: 20 1d 9b     ..   
-    jsr coerce_to_integer                                             ; 8824: 20 f0 92     ..   
+    jsr eval_expr                                                     ; 8821: 20 1d 9b     ..      ; Evaluate the expression
+    jsr coerce_to_integer                                             ; 8824: 20 f0 92     ..      ; coerce to an integer
 ; &8827 referenced 3 times by &85b7, &8875, &9121
 .sub_c8827
-    ldy zp_text_ptr2_off                                              ; 8827: a4 1b       ..    
-    sty zp_text_ptr_off                                               ; 8829: 84 0a       ..    
-    rts                                                               ; 882b: 60          `     
+    ldy zp_text_ptr2_off                                              ; 8827: a4 1b       ..       ; Sync the primary text offset
+    sty zp_text_ptr_off                                               ; 8829: 84 0a       ..       ; ...
+    rts                                                               ; 882b: 60          `        ; Return
+; ***************************************************************************************
+; Advance the opcode by four addressing-mode columns (+16)
 ; &882c referenced 7 times by &86ef, &8721, &875a, &879f, &87a2, &87e7, &8806
-.sub_c882c
-    jsr sub_c882f                                                     ; 882c: 20 2f 88     /.   
+.asm_opcode_add16
+    jsr asm_opcode_add8                                               ; 882c: 20 2f 88     /.      ; add 8 then fall through (+16 total)
+; ***************************************************************************************
+; Advance the opcode by two addressing-mode columns (+8)
 ; &882f referenced 3 times by &86c2, &872f, &882c
-.sub_c882f
-    jsr sub_c8832                                                     ; 882f: 20 32 88     2.   
+.asm_opcode_add8
+    jsr asm_opcode_add4                                               ; 882f: 20 32 88     2.      ; add 4 then fall through (+8 total)
+; ***************************************************************************************
+; Step the opcode to the next addressing-mode column (+4)
+;
+; Add 4 to the base opcode in &29 to select the next 6502 addressing-mode encoding.
 ; &8832 referenced 3 times by &8735, &8767, &882f
-.sub_c8832
-    lda zp_asm_opcode                                                 ; 8832: a5 29       .)    
-    clc                                                               ; 8834: 18          .     
-    adc #4                                                            ; 8835: 69 04       i.    
-    sta zp_asm_opcode                                                 ; 8837: 85 29       .)    
-    rts                                                               ; 8839: 60          `     
+.asm_opcode_add4
+    lda zp_asm_opcode                                                 ; 8832: a5 29       .)       ; Opcode += 4 (next addressing-mode column)
+    clc                                                               ; 8834: 18          .        ; ...
+    adc #4                                                            ; 8835: 69 04       i.       ; ...
+    sta zp_asm_opcode                                                 ; 8837: 85 29       .)       ; ...
+    rts                                                               ; 8839: 60          `        ; Return
 ; &883a referenced 1 time by &8813
 .c883a
-    ldx #1                                                            ; 883a: a2 01       ..    
-    ldy zp_text_ptr_off                                               ; 883c: a4 0a       ..    
-    inc zp_text_ptr_off                                               ; 883e: e6 0a       ..    
-    lda (zp_text_ptr),y                                               ; 8840: b1 0b       ..    
-    cmp #&42 ; 'B'                                                    ; 8842: c9 42       .B    
-    beq c8858                                                         ; 8844: f0 12       ..    
+    ldx #1                                                            ; 883a: a2 01       ..       ; Assume one byte (EQUB)
+    ldy zp_text_ptr_off                                               ; 883c: a4 0a       ..       ; Next character of the directive
+    inc zp_text_ptr_off                                               ; 883e: e6 0a       ..       ; ...  ...
+    lda (zp_text_ptr),y                                               ; 8840: b1 0b       ..       ; 'B' (EQUB)?
+    cmp #&42 ; 'B'                                                    ; 8842: c9 42       .B       ; yes
+    beq c8858                                                         ; 8844: f0 12       ..       ; two bytes (EQUW)  'W' (EQUW)?
     inx                                                               ; 8846: e8          .     
-    cmp #&57 ; 'W'                                                    ; 8847: c9 57       .W    
-    beq c8858                                                         ; 8849: f0 0d       ..    
-    ldx #4                                                            ; 884b: a2 04       ..    
-    cmp #&44 ; 'D'                                                    ; 884d: c9 44       .D    
-    beq c8858                                                         ; 884f: f0 07       ..    
-    cmp #&53 ; 'S'                                                    ; 8851: c9 53       .S    
-    beq c886a                                                         ; 8853: f0 15       ..    
+    cmp #&57 ; 'W'                                                    ; 8847: c9 57       .W       ; yes
+    beq c8858                                                         ; 8849: f0 0d       ..       ; four bytes (EQUD)
+    ldx #4                                                            ; 884b: a2 04       ..       ; 'D' (EQUD)?
+    cmp #&44 ; 'D'                                                    ; 884d: c9 44       .D       ; yes
+    beq c8858                                                         ; 884f: f0 07       ..       ; 'S' (EQUS)?
+    cmp #&53 ; 'S'                                                    ; 8851: c9 53       .S       ; yes
+    beq c886a                                                         ; 8853: f0 15       ..       ; none: Mistake (syntax error)
     jmp c982a                                                         ; 8855: 4c 2a 98    L*.   
 ; &8858 referenced 3 times by &8844, &8849, &884f
 .c8858
-    txa                                                               ; 8858: 8a          .     
-    pha                                                               ; 8859: 48          H     
-    jsr eval_expr_to_integer                                          ; 885a: 20 21 88     !.   
-    ldx #&29 ; ')'                                                    ; 885d: a2 29       .)    
-    jsr iwa_store_zp                                                  ; 885f: 20 44 be     D.   
-    pla                                                               ; 8862: 68          h     
-    tay                                                               ; 8863: a8          .     
+    txa                                                               ; 8858: 8a          .        ; Save the byte count
+    pha                                                               ; 8859: 48          H        ; ...
+    jsr eval_expr_to_integer                                          ; 885a: 20 21 88     !.      ; Evaluate the value
+    ldx #&29 ; ')'                                                    ; 885d: a2 29       .)       ; Store it into the opcode bytes
+    jsr iwa_store_zp                                                  ; 885f: 20 44 be     D.      ; ...
+    pla                                                               ; 8862: 68          h        ; recover the byte count
+    tay                                                               ; 8863: a8          .        ; ...
 ; &8864 referenced 1 time by &887a
 .loop_c8864
-    jmp c862b                                                         ; 8864: 4c 2b 86    L+.   
+    jmp c862b                                                         ; 8864: 4c 2b 86    L+.      ; Assemble the bytes
 ; &8867 referenced 1 time by &8870
 .loop_c8867
-    jmp err_type_mismatch                                             ; 8867: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 8867: 4c 0e 8c    L..      ; String expected: Type mismatch
 ; &886a referenced 1 time by &8853
 .c886a
-    lda zp_opt_flag                                                   ; 886a: a5 28       .(    
-    pha                                                               ; 886c: 48          H     
-    jsr eval_expr                                                     ; 886d: 20 1d 9b     ..   
-    bne loop_c8867                                                    ; 8870: d0 f5       ..    
+    lda zp_opt_flag                                                   ; 886a: a5 28       .(       ; EQUS: save the OPT flag  ...
+    pha                                                               ; 886c: 48          H        ; evaluate the string expression
+    jsr eval_expr                                                     ; 886d: 20 1d 9b     ..      ; not a string: Type mismatch
+    bne loop_c8867                                                    ; 8870: d0 f5       ..       ; restore the OPT flag
     pla                                                               ; 8872: 68          h     
-    sta zp_opt_flag                                                   ; 8873: 85 28       .(    
-    jsr sub_c8827                                                     ; 8875: 20 27 88     '.   
-    ldy #&ff                                                          ; 8878: a0 ff       ..    
-    bne loop_c8864                                                    ; 887a: d0 e8       ..    
+    sta zp_opt_flag                                                   ; 8873: 85 28       .(       ; ...
+    jsr sub_c8827                                                     ; 8875: 20 27 88     '.      ; sync the text offset
+    ldy #&ff                                                          ; 8878: a0 ff       ..       ; flag EQUS (length from the string buffer)
+    bne loop_c8864                                                    ; 887a: d0 e8       ..       ; assemble the string bytes
 ; &887c referenced 2 times by &88dd, &8a55
 .sub_c887c
-    pha                                                               ; 887c: 48          H     
-    clc                                                               ; 887d: 18          .     
-    tya                                                               ; 887e: 98          .     
-    adc zp_general                                                    ; 887f: 65 37       e7    
-    sta zp_fileblk                                                    ; 8881: 85 39       .9    
-    ldy #0                                                            ; 8883: a0 00       ..    
-    tya                                                               ; 8885: 98          .     
-    adc zp_general_1                                                  ; 8886: 65 38       e8    
-    sta l003a                                                         ; 8888: 85 3a       .:    
-    pla                                                               ; 888a: 68          h     
+    pha                                                               ; 887c: 48          H        ; Save the byte to insert
+    clc                                                               ; 887d: 18          .        ; Source = dest + Y
+    tya                                                               ; 887e: 98          .        ; ...
+    adc zp_general                                                    ; 887f: 65 37       e7       ; ...
+    sta zp_fileblk                                                    ; 8881: 85 39       .9       ; ...
+    ldy #0                                                            ; 8883: a0 00       ..       ; ...
+    tya                                                               ; 8885: 98          .        ; ...
+    adc zp_general_1                                                  ; 8886: 65 38       e8       ; ...
+    sta l003a                                                         ; 8888: 85 3a       .:       ; ...
+    pla                                                               ; 888a: 68          h        ; Store the inserted byte
     sta (zp_general),y                                                ; 888b: 91 37       .7    
 ; &888d referenced 1 time by &8894
 .loop_c888d
-    iny                                                               ; 888d: c8          .     
-    lda (zp_fileblk),y                                                ; 888e: b1 39       .9    
-    sta (zp_general),y                                                ; 8890: 91 37       .7    
-    cmp #&0d                                                          ; 8892: c9 0d       ..    
-    bne loop_c888d                                                    ; 8894: d0 f7       ..    
-    rts                                                               ; 8896: 60          `     
+    iny                                                               ; 888d: c8          .        ; Copy the rest of the line up
+    lda (zp_fileblk),y                                                ; 888e: b1 39       .9       ; ...
+    sta (zp_general),y                                                ; 8890: 91 37       .7       ; ...
+    cmp #&0d                                                          ; 8892: c9 0d       ..       ; until the carriage return
+    bne loop_c888d                                                    ; 8894: d0 f7       ..       ; ...
+    rts                                                               ; 8896: 60          `        ; Return
 ; &8897 referenced 1 time by &89b0
 .sub_c8897
     and #&0f                                                          ; 8897: 29 0f       ).    
@@ -11897,6 +11905,7 @@ save pydis_start, pydis_end
 ;     zp_himem:                    8
 ;     zp_himem_1:                  8
 ;     zp_print_bytes:              8
+;     asm_opcode_add16:            7
 ;     c862b:                       7
 ;     c8b96:                       7
 ;     c982a:                       7
@@ -11904,7 +11913,6 @@ save pydis_start, pydis_end
 ;     fwa_pack_var:                7
 ;     fwb_unpack_var:              7
 ;     immediate_loop:              7
-;     sub_c882c:                   7
 ;     sub_c92fd:                   7
 ;     zp_count:                    7
 ;     assign_number:               6
@@ -12002,6 +12010,8 @@ save pydis_start, pydis_end
 ;     zp_rnd_seed_2:               4
 ;     zp_rnd_seed_4:               4
 ;     advance_to_next_line:        3
+;     asm_opcode_add4:             3
+;     asm_opcode_add8:             3
 ;     assign_string:               3
 ;     c8620:                       3
 ;     c8738:                       3
@@ -12065,8 +12075,6 @@ save pydis_start, pydis_end
 ;     return_8:                    3
 ;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
-;     sub_c882f:                   3
-;     sub_c8832:                   3
 ;     sub_c894b:                   3
 ;     sub_c991f:                   3
 ;     sub_cb50e:                   3
@@ -13964,9 +13972,6 @@ save pydis_start, pydis_end
 ;     sub_c847b
 ;     sub_c85ba
 ;     sub_c8827
-;     sub_c882c
-;     sub_c882f
-;     sub_c8832
 ;     sub_c887c
 ;     sub_c8897
 ;     sub_c88f5
