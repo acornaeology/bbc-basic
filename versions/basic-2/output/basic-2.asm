@@ -5015,29 +5015,34 @@ l848a = sub_c847b+15
     bne c9a93                                                         ; 9a90: d0 01       ..       ; differ
 ; &9a92 referenced 1 time by &9a72
 .return_17
-    rts                                                               ; 9a92: 60          `     
+    rts                                                               ; 9a92: 60          `        ; Equal: return
 ; &9a93 referenced 5 times by &9a78, &9a7e, &9a84, &9a8a, &9a90
 .c9a93
-    ror a                                                             ; 9a93: 6a          j     
-    eor zp_fwb_sign                                                   ; 9a94: 45 3b       E;    
-    rol a                                                             ; 9a96: 2a          *     
-    lda #1                                                            ; 9a97: a9 01       ..    
-    rts                                                               ; 9a99: 60          `     
+    ror a                                                             ; 9a93: 6a          j        ; Combine the compare carry...
+    eor zp_fwb_sign                                                   ; 9a94: 45 3b       E;       ; ...with the sign
+    rol a                                                             ; 9a96: 2a          *        ; ...for the ordering
+    lda #1                                                            ; 9a97: a9 01       ..       ; result nonzero
+    rts                                                               ; 9a99: 60          `        ; Return
 ; &9a9a referenced 2 times by &9aa9, &9aee
 .c9a9a
-    jmp err_type_mismatch                                             ; 9a9a: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 9a9a: 4c 0e 8c    L..      ; Type mismatch error
 ; &9a9d referenced 5 times by &9bcd, &9bd6, &9be1, &9bf1, &9bfc
 .sub_c9a9d
-    txa                                                               ; 9a9d: 8a          .     
+    txa                                                               ; 9a9d: 8a          .        ; Current type
+; ***************************************************************************************
+; Evaluate the next operand and compare
+;
+; Stack the current value, evaluate the next arithmetic operand and compare the two
+; (integer, real or string), returning the ordering flags for the relational operators.
 ; &9a9e referenced 1 time by &9baf
-.sub_c9a9e
-    beq c9ae7                                                         ; 9a9e: f0 47       .G    
-    bmi loop_c9a50                                                    ; 9aa0: 30 ae       0.    
-    jsr stack_integer                                                 ; 9aa2: 20 94 bd     ..   
-    jsr eval_add_sub                                                  ; 9aa5: 20 42 9c     B.   
-    tay                                                               ; 9aa8: a8          .     
-    beq c9a9a                                                         ; 9aa9: f0 ef       ..    
-    bmi loop_c9a39                                                    ; 9aab: 30 8c       0.    
+.eval_and_compare
+    beq c9ae7                                                         ; 9a9e: f0 47       .G       ; string: compare strings
+    bmi loop_c9a50                                                    ; 9aa0: 30 ae       0.       ; float: compare floats
+    jsr stack_integer                                                 ; 9aa2: 20 94 bd     ..      ; Stack the integer
+    jsr eval_add_sub                                                  ; 9aa5: 20 42 9c     B.      ; evaluate the next operand
+    tay                                                               ; 9aa8: a8          .        ; type
+    beq c9a9a                                                         ; 9aa9: f0 ef       ..       ; string: Type mismatch
+    bmi loop_c9a39                                                    ; 9aab: 30 8c       0.       ; float: compare floats
 ; ***************************************************************************************
 ; Compare an integer variable with the accumulator
 ;
@@ -5098,24 +5103,24 @@ l848a = sub_c847b+15
     ldy #0                                                            ; 9b01: a0 00       ..    
 ; &9b03 referenced 1 time by &9b0d
 .loop_c9b03
-    cpy l003a                                                         ; 9b03: c4 3a       .:    
-    beq c9b11                                                         ; 9b05: f0 0a       ..    
-    iny                                                               ; 9b07: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9b08: b1 04       ..    
-    cmp l05ff,y                                                       ; 9b0a: d9 ff 05    ...   
-    beq loop_c9b03                                                    ; 9b0d: f0 f4       ..    
-    bne c9b15                                                         ; 9b0f: d0 04       ..    
+    cpy l003a                                                         ; 9b03: c4 3a       .:       ; Reached the shorter length?
+    beq c9b11                                                         ; 9b05: f0 0a       ..       ; yes: compare lengths
+    iny                                                               ; 9b07: c8          .        ; Next character
+    lda (zp_stack_ptr),y                                              ; 9b08: b1 04       ..       ; stacked string
+    cmp l05ff,y                                                       ; 9b0a: d9 ff 05    ...      ; vs current string
+    beq loop_c9b03                                                    ; 9b0d: f0 f4       ..       ; equal: continue
+    bne c9b15                                                         ; 9b0f: d0 04       ..       ; differ
 ; &9b11 referenced 1 time by &9b05
 .c9b11
-    lda zp_fileblk                                                    ; 9b11: a5 39       .9    
-    cmp zp_strbuf_len                                                 ; 9b13: c5 36       .6    
+    lda zp_fileblk                                                    ; 9b11: a5 39       .9       ; Compare the lengths
+    cmp zp_strbuf_len                                                 ; 9b13: c5 36       .6       ; ...
 ; &9b15 referenced 1 time by &9b0f
 .c9b15
-    php                                                               ; 9b15: 08          .     
-    jsr cbddc                                                         ; 9b16: 20 dc bd     ..   
-    ldx zp_general                                                    ; 9b19: a6 37       .7    
-    plp                                                               ; 9b1b: 28          (     
-    rts                                                               ; 9b1c: 60          `     
+    php                                                               ; 9b15: 08          .        ; Save the result
+    jsr cbddc                                                         ; 9b16: 20 dc bd     ..      ; Drop the stacked string
+    ldx zp_general                                                    ; 9b19: a6 37       .7       ; ...
+    plp                                                               ; 9b1b: 28          (        ; Restore the result
+    rts                                                               ; 9b1c: 60          `        ; Return
 ; ***************************************************************************************
 ; Evaluate an expression
 ;
@@ -5240,7 +5245,7 @@ l848a = sub_c847b+15
     cpx #&3e ; '>'                                                    ; 9baa: e0 3e       .>       ; '>' family?
     beq c9be8                                                         ; 9bac: f0 3a       .:       ; yes
     tax                                                               ; 9bae: aa          .        ; '=': compare for equality
-    jsr sub_c9a9e                                                     ; 9baf: 20 9e 9a     ..      ; evaluate the right operand and compare
+    jsr eval_and_compare                                              ; 9baf: 20 9e 9a     ..      ; evaluate the right operand and compare
     bne c9bb5                                                         ; 9bb2: d0 01       ..       ; not equal: result FALSE (0)
 ; &9bb4 referenced 6 times by &9bd0, &9bd9, &9bdb, &9be4, &9bf6, &9bff
 .c9bb4
@@ -5303,32 +5308,32 @@ l848a = sub_c847b+15
     equb &00                                                          ; 9c14: 00          .     
 ; &9c15 referenced 1 time by &9c4f
 .loop_c9c15
-    jsr stack_string                                                  ; 9c15: 20 b2 bd     ..   
-    jsr eval_power                                                    ; 9c18: 20 20 9e      .   
-    tay                                                               ; 9c1b: a8          .     
-    bne c9c88                                                         ; 9c1c: d0 6a       .j    
-    clc                                                               ; 9c1e: 18          .     
-    stx zp_general                                                    ; 9c1f: 86 37       .7    
-    ldy #0                                                            ; 9c21: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 9c23: b1 04       ..    
-    adc zp_strbuf_len                                                 ; 9c25: 65 36       e6    
-    bcs c9c03                                                         ; 9c27: b0 da       ..    
-    tax                                                               ; 9c29: aa          .     
-    pha                                                               ; 9c2a: 48          H     
-    ldy zp_strbuf_len                                                 ; 9c2b: a4 36       .6    
+    jsr stack_string                                                  ; 9c15: 20 b2 bd     ..      ; Stack the left string
+    jsr eval_power                                                    ; 9c18: 20 20 9e      .      ; Evaluate the right operand
+    tay                                                               ; 9c1b: a8          .        ; type
+    bne c9c88                                                         ; 9c1c: d0 6a       .j       ; number: Type mismatch
+    clc                                                               ; 9c1e: 18          .        ; New length = left + right
+    stx zp_general                                                    ; 9c1f: 86 37       .7       ; ...
+    ldy #0                                                            ; 9c21: a0 00       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; 9c23: b1 04       ..       ; ...
+    adc zp_strbuf_len                                                 ; 9c25: 65 36       e6       ; ...
+    bcs c9c03                                                         ; 9c27: b0 da       ..       ; over 255: error
+    tax                                                               ; 9c29: aa          .        ; Save the new length
+    pha                                                               ; 9c2a: 48          H        ; ...
+    ldy zp_strbuf_len                                                 ; 9c2b: a4 36       .6       ; Move the right string up
 ; &9c2d referenced 1 time by &9c35
 .loop_c9c2d
-    lda l05ff,y                                                       ; 9c2d: b9 ff 05    ...   
-    sta l05ff,x                                                       ; 9c30: 9d ff 05    ...   
-    dex                                                               ; 9c33: ca          .     
-    dey                                                               ; 9c34: 88          .     
-    bne loop_c9c2d                                                    ; 9c35: d0 f6       ..    
-    jsr unstack_string                                                ; 9c37: 20 cb bd     ..   
-    pla                                                               ; 9c3a: 68          h     
-    sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6    
-    ldx zp_general                                                    ; 9c3d: a6 37       .7    
-    tya                                                               ; 9c3f: 98          .     
-    beq c9c45                                                         ; 9c40: f0 03       ..    
+    lda l05ff,y                                                       ; 9c2d: b9 ff 05    ...      ; ...
+    sta l05ff,x                                                       ; 9c30: 9d ff 05    ...      ; ...
+    dex                                                               ; 9c33: ca          .        ; ...
+    dey                                                               ; 9c34: 88          .        ; ...
+    bne loop_c9c2d                                                    ; 9c35: d0 f6       ..       ; loop
+    jsr unstack_string                                                ; 9c37: 20 cb bd     ..      ; Prepend the left string
+    pla                                                               ; 9c3a: 68          h        ; Set the new length
+    sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6       ; ...
+    ldx zp_general                                                    ; 9c3d: a6 37       .7       ; ...
+    tya                                                               ; 9c3f: 98          .        ; string result
+    beq c9c45                                                         ; 9c40: f0 03       ..       ; loop for further + or -
 ; ***************************************************************************************
 ; Evaluator level 4: + -
 ;
@@ -12846,6 +12851,7 @@ save pydis_start, pydis_end
 ;     err_too_many_gosubs:         1
 ;     err_too_many_repeats:        1
 ;     eval_and:                    1
+;     eval_and_compare:            1
 ;     exec_star_command:           1
 ;     execute_line:                1
 ;     find_def:                    1
@@ -13144,7 +13150,6 @@ save pydis_start, pydis_end
 ;     sub_c9807:                   1
 ;     sub_c987b:                   1
 ;     sub_c9880:                   1
-;     sub_c9a9e:                   1
 ;     sub_ca14b:                   1
 ;     sub_ca3e7:                   1
 ;     sub_ca4b6:                   1
@@ -14105,7 +14110,6 @@ save pydis_start, pydis_end
 ;     sub_c9890
 ;     sub_c9923
 ;     sub_c9a9d
-;     sub_c9a9e
 ;     sub_c9b6b
 ;     sub_c9dce
 ;     sub_c9e1d

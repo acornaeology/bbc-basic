@@ -1854,6 +1854,12 @@ d.subroutine(0x85ba, 'asm_parse_mnemonic',
              description='Skip to the mnemonic, handling end-of-statement and '
                          'labels, then pack its three letters (5 bits each) '
                          'into &3D/&3E for the opcode-table lookup.')
+d.subroutine(0x9a9e, 'eval_and_compare',
+             title='Evaluate the next operand and compare',
+             description='Stack the current value, evaluate the next '
+                         'arithmetic operand and compare the two (integer, '
+                         'real or string), returning the ordering flags for '
+                         'the relational operators.')
 d.subroutine(0x9a5f, 'fp_compare',
              title='Compare FWA with a fp variable',
              description='Unpack the operand into FWB and compare it with FWA '
@@ -7747,6 +7753,65 @@ d.comment(0x984d, 'Sync the program pointer', align=Align.INLINE)
 d.comment(0x984f, 'check the statement ends', align=Align.INLINE)
 d.comment(0x9852, 'Sync the program pointer', align=Align.INLINE)
 d.comment(0x9854, 'check the statement ends', align=Align.INLINE)
+
+# Comparison result and the compare helper (&9A92).
+d.comment(0x9a92, 'Equal: return', align=Align.INLINE)
+d.comment(0x9a93, 'Combine the compare carry...', align=Align.INLINE)
+d.comment(0x9a94, '...with the sign', align=Align.INLINE)
+d.comment(0x9a96, '...for the ordering', align=Align.INLINE)
+d.comment(0x9a97, 'result nonzero', align=Align.INLINE)
+d.comment(0x9a99, 'Return', align=Align.INLINE)
+d.comment(0x9a9a, 'Type mismatch error', align=Align.INLINE)
+d.comment(0x9a9d, 'Current type', align=Align.INLINE)
+d.comment(0x9a9e, 'string: compare strings', align=Align.INLINE)
+d.comment(0x9aa0, 'float: compare floats', align=Align.INLINE)
+d.comment(0x9aa2, 'Stack the integer', align=Align.INLINE)
+d.comment(0x9aa5, 'evaluate the next operand', align=Align.INLINE)
+d.comment(0x9aa8, 'type', align=Align.INLINE)
+d.comment(0x9aa9, 'string: Type mismatch', align=Align.INLINE)
+d.comment(0x9aab, 'float: compare floats', align=Align.INLINE)
+
+# String comparison loop (&9B03).
+d.comment(0x9b03, 'Reached the shorter length?', align=Align.INLINE)
+d.comment(0x9b05, 'yes: compare lengths', align=Align.INLINE)
+d.comment(0x9b07, 'Next character', align=Align.INLINE)
+d.comment(0x9b08, 'stacked string', align=Align.INLINE)
+d.comment(0x9b0a, 'vs current string', align=Align.INLINE)
+d.comment(0x9b0d, 'equal: continue', align=Align.INLINE)
+d.comment(0x9b0f, 'differ', align=Align.INLINE)
+d.comment(0x9b11, 'Compare the lengths', align=Align.INLINE)
+d.comment(0x9b13, '...', align=Align.INLINE)
+d.comment(0x9b15, 'Save the result', align=Align.INLINE)
+d.comment(0x9b16, 'Drop the stacked string', align=Align.INLINE)
+d.comment(0x9b19, '...', align=Align.INLINE)
+d.comment(0x9b1b, 'Restore the result', align=Align.INLINE)
+d.comment(0x9b1c, 'Return', align=Align.INLINE)
+
+# String concatenation (&9C15): str + str.
+d.comment(0x9c15, 'Stack the left string', align=Align.INLINE)
+d.comment(0x9c18, 'Evaluate the right operand', align=Align.INLINE)
+d.comment(0x9c1b, 'type', align=Align.INLINE)
+d.comment(0x9c1c, 'number: Type mismatch', align=Align.INLINE)
+d.comment(0x9c1e, 'New length = left + right', align=Align.INLINE)
+d.comment(0x9c1f, '...', align=Align.INLINE)
+d.comment(0x9c21, '...', align=Align.INLINE)
+d.comment(0x9c23, '...', align=Align.INLINE)
+d.comment(0x9c25, '...', align=Align.INLINE)
+d.comment(0x9c27, 'over 255: error', align=Align.INLINE)
+d.comment(0x9c29, 'Save the new length', align=Align.INLINE)
+d.comment(0x9c2a, '...', align=Align.INLINE)
+d.comment(0x9c2b, 'Move the right string up', align=Align.INLINE)
+d.comment(0x9c2d, '...', align=Align.INLINE)
+d.comment(0x9c30, '...', align=Align.INLINE)
+d.comment(0x9c33, '...', align=Align.INLINE)
+d.comment(0x9c34, '...', align=Align.INLINE)
+d.comment(0x9c35, 'loop', align=Align.INLINE)
+d.comment(0x9c37, 'Prepend the left string', align=Align.INLINE)
+d.comment(0x9c3a, 'Set the new length', align=Align.INLINE)
+d.comment(0x9c3b, '...', align=Align.INLINE)
+d.comment(0x9c3d, '...', align=Align.INLINE)
+d.comment(0x9c3f, 'string result', align=Align.INLINE)
+d.comment(0x9c40, 'loop for further + or -', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.

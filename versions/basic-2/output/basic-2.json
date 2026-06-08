@@ -1747,6 +1747,13 @@
       "description": "Skip to the mnemonic, handling end-of-statement and labels, then pack its three letters (5 bits each) into &3D/&3E for the opcode-table lookup."
     },
     {
+      "addr": 39582,
+      "name": "eval_and_compare",
+      "title": "Evaluate the next operand and compare",
+      "description": "Stack the current value, evaluate the next arithmetic operand and compare the two (integer, real or string), returning the ordering flags for the relational operators.",
+      "fall_through": true
+    },
+    {
       "addr": 39519,
       "name": "fp_compare",
       "title": "Compare FWA with a fp variable",
@@ -46663,6 +46670,7 @@
       "labels": [
         "return_17"
       ],
+      "comment_inline": "Equal: return",
       "xref_summaries": [
         "&9a92 referenced 1 time by &9a72"
       ],
@@ -46680,6 +46688,7 @@
       "labels": [
         "c9a93"
       ],
+      "comment_inline": "Combine the compare carry...",
       "xref_summaries": [
         "&9a93 referenced 5 times by &9a78, &9a7e, &9a84, &9a8a, &9a90"
       ],
@@ -46699,6 +46708,7 @@
         69,
         59
       ],
+      "comment_inline": "...with the sign",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_fwb_sign",
@@ -46710,6 +46720,7 @@
       "bytes": [
         42
       ],
+      "comment_inline": "...for the ordering",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -46719,6 +46730,7 @@
         169,
         1
       ],
+      "comment_inline": "result nonzero",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -46728,6 +46740,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -46741,6 +46754,7 @@
       "labels": [
         "c9a9a"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&9a9a referenced 2 times by &9aa9, &9aee"
       ],
@@ -46762,6 +46776,7 @@
       "labels": [
         "sub_c9a9d"
       ],
+      "comment_inline": "Current type",
       "xref_summaries": [
         "&9a9d referenced 5 times by &9bcd, &9bd6, &9be1, &9bf1, &9bfc"
       ],
@@ -46782,8 +46797,9 @@
         71
       ],
       "labels": [
-        "sub_c9a9e"
+        "eval_and_compare"
       ],
+      "comment_inline": "string: compare strings",
       "xref_summaries": [
         "&9a9e referenced 1 time by &9baf"
       ],
@@ -46802,6 +46818,7 @@
         48,
         174
       ],
+      "comment_inline": "float: compare floats",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_c9a50",
@@ -46815,6 +46832,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -46828,6 +46846,7 @@
         66,
         156
       ],
+      "comment_inline": "evaluate the next operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_add_sub",
@@ -46839,6 +46858,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -46848,6 +46868,7 @@
         240,
         239
       ],
+      "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9a9a",
@@ -46860,6 +46881,7 @@
         48,
         140
       ],
+      "comment_inline": "float: compare floats",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_c9a39",
@@ -47450,6 +47472,7 @@
       "labels": [
         "loop_c9b03"
       ],
+      "comment_inline": "Reached the shorter length?",
       "xref_summaries": [
         "&9b03 referenced 1 time by &9b0d"
       ],
@@ -47468,6 +47491,7 @@
         240,
         10
       ],
+      "comment_inline": "yes: compare lengths",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9b11",
@@ -47479,6 +47503,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -47488,6 +47513,7 @@
         177,
         4
       ],
+      "comment_inline": "stacked string",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47501,6 +47527,7 @@
         255,
         5
       ],
+      "comment_inline": "vs current string",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l05ff,y",
@@ -47513,6 +47540,7 @@
         240,
         244
       ],
+      "comment_inline": "equal: continue",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9b03",
@@ -47525,6 +47553,7 @@
         208,
         4
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9b15",
@@ -47540,6 +47569,7 @@
       "labels": [
         "c9b11"
       ],
+      "comment_inline": "Compare the lengths",
       "xref_summaries": [
         "&9b11 referenced 1 time by &9b05"
       ],
@@ -47558,6 +47588,7 @@
         197,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -47572,6 +47603,7 @@
       "labels": [
         "c9b15"
       ],
+      "comment_inline": "Save the result",
       "xref_summaries": [
         "&9b15 referenced 1 time by &9b0f"
       ],
@@ -47588,6 +47620,7 @@
         220,
         189
       ],
+      "comment_inline": "Drop the stacked string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cbddc",
@@ -47600,6 +47633,7 @@
         166,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_general",
@@ -47611,6 +47645,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "Restore the result",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -47619,6 +47654,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -48647,9 +48683,9 @@
       "comment_inline": "evaluate the right operand and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9e",
+      "operand": "eval_and_compare",
       "target": 39582,
-      "target_label": "sub_c9a9e"
+      "target_label": "eval_and_compare"
     },
     {
       "addr": 39858,
@@ -49296,6 +49332,7 @@
       "labels": [
         "loop_c9c15"
       ],
+      "comment_inline": "Stack the left string",
       "xref_summaries": [
         "&9c15 referenced 1 time by &9c4f"
       ],
@@ -49315,6 +49352,7 @@
         32,
         158
       ],
+      "comment_inline": "Evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_power",
@@ -49326,6 +49364,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -49335,6 +49374,7 @@
         208,
         106
       ],
+      "comment_inline": "number: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9c88",
@@ -49346,6 +49386,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "New length = left + right",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -49355,6 +49396,7 @@
         134,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general",
@@ -49367,6 +49409,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -49377,6 +49420,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -49389,6 +49433,7 @@
         101,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_strbuf_len",
@@ -49401,6 +49446,7 @@
         176,
         218
       ],
+      "comment_inline": "over 255: error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9c03",
@@ -49412,6 +49458,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "Save the new length",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -49420,6 +49467,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -49429,6 +49477,7 @@
         164,
         54
       ],
+      "comment_inline": "Move the right string up",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -49445,6 +49494,7 @@
       "labels": [
         "loop_c9c2d"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&9c2d referenced 1 time by &9c35"
       ],
@@ -49464,6 +49514,7 @@
         255,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05ff,x",
@@ -49475,6 +49526,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -49483,6 +49535,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -49492,6 +49545,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9c2d",
@@ -49505,6 +49559,7 @@
         203,
         189
       ],
+      "comment_inline": "Prepend the left string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_string",
@@ -49516,6 +49571,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Set the new length",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -49525,6 +49581,7 @@
         133,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -49537,6 +49594,7 @@
         166,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_general",
@@ -49548,6 +49606,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "string result",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -49557,6 +49616,7 @@
         240,
         3
       ],
+      "comment_inline": "loop for further + or -",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9c45",
