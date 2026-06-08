@@ -2817,13 +2817,13 @@ l848a = sub_c847b+15
 ;
 ; Clear the text window to the text background colour. CLS.
 .stmt_cls
-    jsr check_end_of_statement                                        ; 8ec4: 20 57 98     W.   
-    jsr cbc28                                                         ; 8ec7: 20 28 bc     (.   
-    lda #&0c                                                          ; 8eca: a9 0c       ..    
+    jsr check_end_of_statement                                        ; 8ec4: 20 57 98     W.      ; Check the statement ends
+    jsr cbc28                                                         ; 8ec7: 20 28 bc     (.      ; Reset the print column
+    lda #&0c                                                          ; 8eca: a9 0c       ..       ; VDU 12 (clear screen)
 ; &8ecc referenced 1 time by &8ec2
 .c8ecc
-    jsr oswrch                                                        ; 8ecc: 20 ee ff     ..   
-    jmp statement_loop                                                ; 8ecf: 4c 9b 8b    L..   
+    jsr oswrch                                                        ; 8ecc: 20 ee ff     ..      ; send it
+    jmp statement_loop                                                ; 8ecf: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; CALL
 ;
@@ -3666,7 +3666,7 @@ l848a = sub_c847b+15
     jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..      ; Read the high word of the machine address
     cpx #&ff                                                          ; 93a6: e0 ff       ..       ; not &xxFF: skip the memory test
     bne c93d7                                                         ; 93a8: d0 2d       .-       ; ...
-    cpy #&ff                                                          ; 93aa: c0 ff       ..       ; not &FFFF: skip the memory test
+    cpy #&ff                                                          ; 93aa: c0 ff       ..       ; not all ones: skip the memory test
     bne c93d7                                                         ; 93ac: d0 29       .)       ; ...
     lda zp_stack_ptr                                                  ; 93ae: a5 04       ..       ; Stack not empty (STACK != HIMEM)?
     cmp zp_himem                                                      ; 93b0: c5 06       ..       ; ...
@@ -3721,34 +3721,34 @@ l848a = sub_c847b+15
 ;
 ; Plot a point, line or shape with a given mode. PLOT mode, x, y.
 .stmt_plot
-    jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.   
-    lda zp_iwa                                                        ; 93f4: a5 2a       .*    
-    pha                                                               ; 93f6: 48          H     
-    jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..   
-    jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).   
+    jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.      ; Evaluate the plot mode
+    lda zp_iwa                                                        ; 93f4: a5 2a       .*       ; save it
+    pha                                                               ; 93f6: 48          H        ; ...
+    jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..      ; Step past the comma
+    jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).      ; Evaluate the X coordinate
 ; &93fd referenced 1 time by &93ee
 .c93fd
-    jsr sub_c92ee                                                     ; 93fd: 20 ee 92     ..   
-    jsr stack_integer                                                 ; 9400: 20 94 bd     ..   
-    jsr sub_c92da                                                     ; 9403: 20 da 92     ..   
-    jsr sub_c9852                                                     ; 9406: 20 52 98     R.   
-    lda #&19                                                          ; 9409: a9 19       ..    
-    jsr oswrch                                                        ; 940b: 20 ee ff     ..   
-    pla                                                               ; 940e: 68          h     
-    jsr oswrch                                                        ; 940f: 20 ee ff     ..   
-    jsr unstack_int_to_general                                        ; 9412: 20 0b be     ..   
-    lda zp_general                                                    ; 9415: a5 37       .7    
-    jsr oswrch                                                        ; 9417: 20 ee ff     ..   
-    lda zp_general_1                                                  ; 941a: a5 38       .8    
-    jsr oswrch                                                        ; 941c: 20 ee ff     ..   
-    jsr sub_c9456                                                     ; 941f: 20 56 94     V.   
-    lda zp_iwa_1                                                      ; 9422: a5 2b       .+    
-    jsr oswrch                                                        ; 9424: 20 ee ff     ..   
-    jmp statement_loop                                                ; 9427: 4c 9b 8b    L..   
+    jsr sub_c92ee                                                     ; 93fd: 20 ee 92     ..      ; ensure integer
+    jsr stack_integer                                                 ; 9400: 20 94 bd     ..      ; stack X
+    jsr sub_c92da                                                     ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
+    jsr sub_c9852                                                     ; 9406: 20 52 98     R.      ; check the statement ends
+    lda #&19                                                          ; 9409: a9 19       ..       ; VDU 25 (PLOT)
+    jsr oswrch                                                        ; 940b: 20 ee ff     ..      ; ...
+    pla                                                               ; 940e: 68          h        ; Send the plot action
+    jsr oswrch                                                        ; 940f: 20 ee ff     ..      ; ...
+    jsr unstack_int_to_general                                        ; 9412: 20 0b be     ..      ; Pop X
+    lda zp_general                                                    ; 9415: a5 37       .7       ; Send X low
+    jsr oswrch                                                        ; 9417: 20 ee ff     ..      ; ...
+    lda zp_general_1                                                  ; 941a: a5 38       .8       ; Send X high
+    jsr oswrch                                                        ; 941c: 20 ee ff     ..      ; ...
+    jsr sub_c9456                                                     ; 941f: 20 56 94     V.      ; Send Y low
+    lda zp_iwa_1                                                      ; 9422: a5 2b       .+       ; Send Y high
+    jsr oswrch                                                        ; 9424: 20 ee ff     ..      ; ...
+    jmp statement_loop                                                ; 9427: 4c 9b 8b    L..      ; next statement
 ; &942a referenced 1 time by &9451
 .loop_c942a
-    lda zp_iwa_1                                                      ; 942a: a5 2b       .+    
-    jsr oswrch                                                        ; 942c: 20 ee ff     ..   
+    lda zp_iwa_1                                                      ; 942a: a5 2b       .+       ; Send the high byte
+    jsr oswrch                                                        ; 942c: 20 ee ff     ..      ; ...
 ; ***************************************************************************************
 ; VDU
 ;

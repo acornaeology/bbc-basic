@@ -25992,6 +25992,7 @@
       "labels": [
         "stmt_cls"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -26005,6 +26006,7 @@
         40,
         188
       ],
+      "comment_inline": "Reset the print column",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cbc28",
@@ -26017,6 +26019,7 @@
         169,
         12
       ],
+      "comment_inline": "VDU 12 (clear screen)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&0c"
@@ -26031,6 +26034,7 @@
       "labels": [
         "c8ecc"
       ],
+      "comment_inline": "send it",
       "xref_summaries": [
         "&8ecc referenced 1 time by &8ec2"
       ],
@@ -26050,6 +26054,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -33893,7 +33898,7 @@
         192,
         255
       ],
-      "comment_inline": "not &FFFF: skip the memory test",
+      "comment_inline": "not all ones: skip the memory test",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&ff"
@@ -34357,6 +34362,7 @@
       "labels": [
         "stmt_plot"
       ],
+      "comment_inline": "Evaluate the plot mode",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -34369,6 +34375,7 @@
         165,
         42
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -34380,6 +34387,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -34390,6 +34398,7 @@
         174,
         138
       ],
+      "comment_inline": "Step past the comma",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_expect_comma",
@@ -34403,6 +34412,7 @@
         41,
         155
       ],
+      "comment_inline": "Evaluate the X coordinate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -34419,6 +34429,7 @@
       "labels": [
         "c93fd"
       ],
+      "comment_inline": "ensure integer",
       "xref_summaries": [
         "&93fd referenced 1 time by &93ee"
       ],
@@ -34438,6 +34449,7 @@
         148,
         189
       ],
+      "comment_inline": "stack X",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -34451,6 +34463,7 @@
         218,
         146
       ],
+      "comment_inline": "Step past the comma, evaluate Y",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92da",
@@ -34464,6 +34477,7 @@
         82,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -34476,6 +34490,7 @@
         169,
         25
       ],
+      "comment_inline": "VDU 25 (PLOT)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&19"
@@ -34487,6 +34502,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34498,6 +34514,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Send the plot action",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -34508,6 +34525,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34521,6 +34539,7 @@
         11,
         190
       ],
+      "comment_inline": "Pop X",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_general",
@@ -34533,6 +34552,7 @@
         165,
         55
       ],
+      "comment_inline": "Send X low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -34546,6 +34566,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34558,6 +34579,7 @@
         165,
         56
       ],
+      "comment_inline": "Send X high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -34571,6 +34593,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34584,6 +34607,7 @@
         86,
         148
       ],
+      "comment_inline": "Send Y low",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9456",
@@ -34596,6 +34620,7 @@
         165,
         43
       ],
+      "comment_inline": "Send Y high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -34609,6 +34634,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34622,6 +34648,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -34637,6 +34664,7 @@
       "labels": [
         "loop_c942a"
       ],
+      "comment_inline": "Send the high byte",
       "xref_summaries": [
         "&942a referenced 1 time by &9451"
       ],
@@ -34656,6 +34684,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
