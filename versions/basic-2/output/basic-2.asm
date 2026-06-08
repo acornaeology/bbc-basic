@@ -5257,7 +5257,7 @@ l848a = sub_c847b+15
 ; &9c15 referenced 1 time by &9c4f
 .loop_c9c15
     jsr stack_string                                                  ; 9c15: 20 b2 bd     ..   
-    jsr sub_c9e20                                                     ; 9c18: 20 20 9e      .   
+    jsr eval_power                                                    ; 9c18: 20 20 9e      .   
     tay                                                               ; 9c1b: a8          .     
     bne c9c88                                                         ; 9c1c: d0 6a       .j    
     clc                                                               ; 9c1e: 18          .     
@@ -5450,7 +5450,7 @@ l848a = sub_c847b+15
 ; &9d20 referenced 1 time by &9d3f
 .loop_c9d20
     jsr stack_real                                                    ; 9d20: 20 51 bd     Q.      ; Stack the left real
-    jsr sub_c9e20                                                     ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
+    jsr eval_power                                                    ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
     stx zp_var_type                                                   ; 9d26: 86 27       .'       ; remember the operand type
     tay                                                               ; 9d28: a8          .        ; ...
     jsr sub_c92fd                                                     ; 9d29: 20 fd 92     ..      ; ensure the operand is real
@@ -5458,44 +5458,44 @@ l848a = sub_c847b+15
 .c9d2c
     jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.      ; Pop the stacked left real
     jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.      ; FWA = left * right
-    lda #&ff                                                          ; 9d32: a9 ff       ..    
-    ldx zp_var_type                                                   ; 9d34: a6 27       .'    
-    jmp c9dd4                                                         ; 9d36: 4c d4 9d    L..   
+    lda #&ff                                                          ; 9d32: a9 ff       ..       ; real result
+    ldx zp_var_type                                                   ; 9d34: a6 27       .'       ; restore the operator
+    jmp c9dd4                                                         ; 9d36: 4c d4 9d    L..      ; loop for further * / DIV MOD
 ; &9d39 referenced 2 times by &9d3d, &9d58
 .c9d39
-    jmp err_type_mismatch                                             ; 9d39: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 9d39: 4c 0e 8c    L..      ; String operand: Type mismatch
 ; &9d3c referenced 1 time by &9dcb
 .c9d3c
-    tay                                                               ; 9d3c: a8          .     
-    beq c9d39                                                         ; 9d3d: f0 fa       ..    
-    bmi loop_c9d20                                                    ; 9d3f: 30 df       0.    
-    lda zp_iwa_3                                                      ; 9d41: a5 2d       .-    
-    cmp zp_iwa_2                                                      ; 9d43: c5 2c       .,    
-    bne c9d1d                                                         ; 9d45: d0 d6       ..    
-    tay                                                               ; 9d47: a8          .     
-    beq c9d4e                                                         ; 9d48: f0 04       ..    
-    cmp #&ff                                                          ; 9d4a: c9 ff       ..    
-    bne c9d1d                                                         ; 9d4c: d0 cf       ..    
+    tay                                                               ; 9d3c: a8          .        ; Left operand type
+    beq c9d39                                                         ; 9d3d: f0 fa       ..       ; string: Type mismatch
+    bmi loop_c9d20                                                    ; 9d3f: 30 df       0.       ; real: floating-point multiply
+    lda zp_iwa_3                                                      ; 9d41: a5 2d       .-       ; Integer: does it fit signed 16 bits?
+    cmp zp_iwa_2                                                      ; 9d43: c5 2c       .,       ; ...
+    bne c9d1d                                                         ; 9d45: d0 d6       ..       ; no: floating-point multiply
+    tay                                                               ; 9d47: a8          .        ; high word zero (positive)?
+    beq c9d4e                                                         ; 9d48: f0 04       ..       ; yes
+    cmp #&ff                                                          ; 9d4a: c9 ff       ..       ; high word all ones (negative)?
+    bne c9d1d                                                         ; 9d4c: d0 cf       ..       ; no: floating-point multiply
 ; &9d4e referenced 1 time by &9d48
 .c9d4e
-    eor zp_iwa_1                                                      ; 9d4e: 45 2b       E+    
-    bmi c9d1d                                                         ; 9d50: 30 cb       0.    
-    jsr sub_c9e1d                                                     ; 9d52: 20 1d 9e     ..   
-    stx zp_var_type                                                   ; 9d55: 86 27       .'    
-    tay                                                               ; 9d57: a8          .     
-    beq c9d39                                                         ; 9d58: f0 df       ..    
-    bmi loop_c9d11                                                    ; 9d5a: 30 b5       0.    
-    lda zp_iwa_3                                                      ; 9d5c: a5 2d       .-    
-    cmp zp_iwa_2                                                      ; 9d5e: c5 2c       .,    
-    bne c9d0e                                                         ; 9d60: d0 ac       ..    
-    tay                                                               ; 9d62: a8          .     
-    beq c9d69                                                         ; 9d63: f0 04       ..    
-    cmp #&ff                                                          ; 9d65: c9 ff       ..    
-    bne c9d0e                                                         ; 9d67: d0 a5       ..    
+    eor zp_iwa_1                                                      ; 9d4e: 45 2b       E+       ; sign consistent with bit 15?
+    bmi c9d1d                                                         ; 9d50: 30 cb       0.       ; no: floating-point multiply
+    jsr sub_c9e1d                                                     ; 9d52: 20 1d 9e     ..      ; Stack it, evaluate the right operand
+    stx zp_var_type                                                   ; 9d55: 86 27       .'       ; remember the operator
+    tay                                                               ; 9d57: a8          .        ; right operand type
+    beq c9d39                                                         ; 9d58: f0 df       ..       ; string: Type mismatch
+    bmi loop_c9d11                                                    ; 9d5a: 30 b5       0.       ; real: floating-point multiply
+    lda zp_iwa_3                                                      ; 9d5c: a5 2d       .-       ; fits signed 16 bits?
+    cmp zp_iwa_2                                                      ; 9d5e: c5 2c       .,       ; ...
+    bne c9d0e                                                         ; 9d60: d0 ac       ..       ; no: floating-point multiply
+    tay                                                               ; 9d62: a8          .        ; positive?
+    beq c9d69                                                         ; 9d63: f0 04       ..       ; yes
+    cmp #&ff                                                          ; 9d65: c9 ff       ..       ; negative?
+    bne c9d0e                                                         ; 9d67: d0 a5       ..       ; no: floating-point multiply
 ; &9d69 referenced 1 time by &9d63
 .c9d69
-    eor zp_iwa_1                                                      ; 9d69: 45 2b       E+    
-    bmi c9d0e                                                         ; 9d6b: 30 a1       0.    
+    eor zp_iwa_1                                                      ; 9d69: 45 2b       E+       ; sign consistent?
+    bmi c9d0e                                                         ; 9d6b: 30 a1       0.       ; no: floating-point multiply
 ; ***************************************************************************************
 ; Integer multiply
 ;
@@ -5510,67 +5510,67 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     ZP_IWA: the product
 .iwa_mul
-    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the sign of the first operand
-    pha                                                               ; 9d6f: 48          H        ; ...
-    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; make it positive
-    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)
-    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...
-    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; pop the second operand
-    pla                                                               ; 9d7b: 68          h        ; recover the first sign
-    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign
-    sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)
-    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; make the second positive
-    ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:
-    ldx #0                                                            ; 9d85: a2 00       ..       ; ...
-    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...
-    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...
+    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the sign of the first operand  Save the right operand sign
+    pha                                                               ; 9d6f: 48          H        ; ...  ...
+    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; make it positive  take |right|
+    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)  stash it via &39
+    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...  ...
+    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; pop the second operand  unstack the left operand
+    pla                                                               ; 9d7b: 68          h        ; recover the first sign  product sign = left XOR right
+    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign  ...
+    sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)  ...
+    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; make the second positive  take |left|
+    ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:  Clear the product accumulator
+    ldx #0                                                            ; 9d85: a2 00       ..       ; ...  ...
+    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...  ...
+    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...  ...
 ; &9d8b referenced 1 time by &9db2
 .loop_c9d8b
-    lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit
-    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...
-    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add
-    clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand
-    tya                                                               ; 9d92: 98          .        ; byte 0
-    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...
-    tay                                                               ; 9d95: a8          .        ; ...
-    txa                                                               ; 9d96: 8a          .        ; byte 1
-    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...
-    tax                                                               ; 9d99: aa          .        ; ...
-    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2
-    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...
-    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...
-    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3
-    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...
-    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...
+    lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit  Shift the multiplier right
+    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...  ...
+    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add  bit clear: skip the add
+    clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand  Add the multiplicand to the product
+    tya                                                               ; 9d92: 98          .        ; byte 0  ...
+    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...  ...
+    tay                                                               ; 9d95: a8          .        ; ...  ...
+    txa                                                               ; 9d96: 8a          .        ; byte 1  ...
+    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...  ...
+    tax                                                               ; 9d99: aa          .        ; ...  ...
+    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2  ...
+    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...  ...
+    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...  ...
+    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3  ...
+    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...  ...
+    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...  ...
 ; &9da6 referenced 1 time by &9d8f
 .c9da6
-    asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Double the multiplicand:
-    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...
-    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...
-    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...
-    lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?
-    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...
-    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop
-    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)
-    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...
-    lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign
-    php                                                               ; 9dba: 08          .        ; ...
+    asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Double the multiplicand:  Shift the multiplicand left
+    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...  ...
+    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...  ...
+    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...  ...
+    lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?  multiplier exhausted?
+    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...  ...
+    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop  no: continue
+    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)  Store the high product bytes
+    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...  ...
+    lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign  Product sign
+    php                                                               ; 9dba: 08          .        ; ...  ...
 ; &9dbb referenced 1 time by &9e07
 .c9dbb
-    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA
+    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA  Load the product into IWA
 ; &9dbd referenced 1 time by &9e1a
 .c9dbd
-    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...
-    plp                                                               ; 9dc0: 28          (        ; ...
-    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done
-    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product
+    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...  ...
+    plp                                                               ; 9dc0: 28          (        ; ...  Apply the sign
+    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done  positive
+    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product  negative: negate the product
 ; &9dc6 referenced 1 time by &9dc1
 .c9dc6
-    ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator
-    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for more operators
+    ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator  restore the operator
+    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for more operators  loop for further * / DIV MOD
 ; &9dcb referenced 1 time by &9dd6
 .loop_c9dcb
-    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
+    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code  overflow: floating-point multiply
 ; &9dce referenced 2 times by &9c53, &9cba
 .sub_c9dce
     jsr stack_integer                                                 ; 9dce: 20 94 bd     ..      ; stack the operand, then multiply
@@ -5580,7 +5580,7 @@ l848a = sub_c847b+15
 ; Multiplication, division and the integer DIV and MOD operators.
 ; &9dd1 referenced 3 times by &9c42, &9c8e, &9ce4
 .eval_mul_div
-    jsr sub_c9e20                                                     ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
+    jsr eval_power                                                    ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
 ; &9dd4 referenced 3 times by &9d36, &9dc8, &9dff
 .c9dd4
     cpx #&2a ; '*'                                                    ; 9dd4: e0 2a       .*       ; next operator "*"?
@@ -5597,7 +5597,7 @@ l848a = sub_c847b+15
     tay                                                               ; 9de5: a8          .        ; Divide: ensure the left operand is real
     jsr sub_c92fd                                                     ; 9de6: 20 fd 92     ..      ; ...
     jsr stack_real                                                    ; 9de9: 20 51 bd     Q.      ; stack it
-    jsr sub_c9e20                                                     ; 9dec: 20 20 9e      .      ; evaluate the right operand
+    jsr eval_power                                                    ; 9dec: 20 20 9e      .      ; evaluate the right operand
     stx zp_var_type                                                   ; 9def: 86 27       .'       ; remember the operator
     tay                                                               ; 9df1: a8          .        ; ensure the right operand is real
     jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..      ; ...
@@ -5618,10 +5618,10 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the remainder
 ; &9e01 referenced 1 time by &9dde
 .iwa_mod
-    jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; Ensure the current value is an integer
-    lda zp_general_1                                                  ; 9e04: a5 38       .8       ; Carry the operand sign into the core
-    php                                                               ; 9e06: 08          .        ; Flag MOD (vs DIV) for the shared core
-    jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; Compute the remainder (shared DIV/MOD core)
+    jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; Ensure the current value is an integer  MOD: divide
+    lda zp_general_1                                                  ; 9e04: a5 38       .8       ; Carry the operand sign into the core  remainder takes the dividend sign
+    php                                                               ; 9e06: 08          .        ; Flag MOD (vs DIV) for the shared core  ...
+    jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; Compute the remainder (shared DIV/MOD core)  load the remainder (&3D-&40) and apply the sign
 ; ***************************************************************************************
 ; Integer divide
 ;
@@ -5634,80 +5634,85 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the quotient
 ; &9e0a referenced 1 time by &9de2
 .iwa_div
-    jsr iwa_divide                                                    ; 9e0a: 20 be 99     ..   
-    rol zp_fileblk                                                    ; 9e0d: 26 39       &9    
-    rol l003a                                                         ; 9e0f: 26 3a       &:    
-    rol zp_fwb_sign                                                   ; 9e11: 26 3b       &;    
-    rol zp_fwb_ovf                                                    ; 9e13: 26 3c       &<    
-    bit zp_general                                                    ; 9e15: 24 37       $7    
-    php                                                               ; 9e17: 08          .     
-    ldx #&39 ; '9'                                                    ; 9e18: a2 39       .9    
-    jmp c9dbd                                                         ; 9e1a: 4c bd 9d    L..   
+    jsr iwa_divide                                                    ; 9e0a: 20 be 99     ..      ; DIV: divide
+    rol zp_fileblk                                                    ; 9e0d: 26 39       &9       ; Shift the quotient up by one
+    rol l003a                                                         ; 9e0f: 26 3a       &:       ; ...
+    rol zp_fwb_sign                                                   ; 9e11: 26 3b       &;       ; ...
+    rol zp_fwb_ovf                                                    ; 9e13: 26 3c       &<       ; ...
+    bit zp_general                                                    ; 9e15: 24 37       $7       ; quotient sign
+    php                                                               ; 9e17: 08          .        ; ...
+    ldx #&39 ; '9'                                                    ; 9e18: a2 39       .9       ; load the quotient (&39-&3C)
+    jmp c9dbd                                                         ; 9e1a: 4c bd 9d    L..      ; ...and apply the sign
 ; &9e1d referenced 2 times by &99c8, &9d52
 .sub_c9e1d
-    jsr stack_integer                                                 ; 9e1d: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9e1d: 20 94 bd     ..      ; Stack the integer, evaluate the next ^ operand
+; ***************************************************************************************
+; Expression Level 2 - the ^ operator
+;
+; Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses
+; repeated multiplication, otherwise x^y = x^int * exp(frac * ln x).
 ; &9e20 referenced 4 times by &9c18, &9d23, &9dd1, &9dec
-.sub_c9e20
-    jsr eval_factor                                                   ; 9e20: 20 ec ad     ..   
+.eval_power
+    jsr eval_factor                                                   ; 9e20: 20 ec ad     ..      ; Evaluate the base
 ; &9e23 referenced 2 times by &9e57, &9e86
 .c9e23
-    pha                                                               ; 9e23: 48          H     
+    pha                                                               ; 9e23: 48          H        ; Save the result type
 ; &9e24 referenced 1 time by &9e2c
 .loop_c9e24
-    ldy zp_text_ptr2_off                                              ; 9e24: a4 1b       ..    
-    inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; 9e2a: c9 20       .     
-    beq loop_c9e24                                                    ; 9e2c: f0 f6       ..    
-    tax                                                               ; 9e2e: aa          .     
-    pla                                                               ; 9e2f: 68          h     
-    cpx #&5e ; '^'                                                    ; 9e30: e0 5e       .^    
-    beq c9e35                                                         ; 9e32: f0 01       ..    
-    rts                                                               ; 9e34: 60          `     
+    ldy zp_text_ptr2_off                                              ; 9e24: a4 1b       ..       ; Next character
+    inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..       ; ...
+    cmp #&20 ; ' '                                                    ; 9e2a: c9 20       .        ; space?
+    beq loop_c9e24                                                    ; 9e2c: f0 f6       ..       ; skip it
+    tax                                                               ; 9e2e: aa          .        ; keep the operator
+    pla                                                               ; 9e2f: 68          h        ; restore the type
+    cpx #&5e ; '^'                                                    ; 9e30: e0 5e       .^       ; '^'?
+    beq c9e35                                                         ; 9e32: f0 01       ..       ; yes
+    rts                                                               ; 9e34: 60          `        ; no: return
 ; &9e35 referenced 1 time by &9e32
 .c9e35
-    tay                                                               ; 9e35: a8          .     
-    jsr sub_c92fd                                                     ; 9e36: 20 fd 92     ..   
-    jsr stack_real                                                    ; 9e39: 20 51 bd     Q.   
-    jsr sub_c92fa                                                     ; 9e3c: 20 fa 92     ..   
-    lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0    
-    cmp #&87                                                          ; 9e41: c9 87       ..    
-    bcs c9e88                                                         ; 9e43: b0 43       .C    
-    jsr fp_split_int_frac                                             ; 9e45: 20 86 a4     ..   
-    bne c9e59                                                         ; 9e48: d0 0f       ..    
-    jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.   
-    jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..   
-    lda l004a                                                         ; 9e50: a5 4a       .J    
-    jsr fwa_int_power                                                 ; 9e52: 20 12 ab     ..   
-    lda #&ff                                                          ; 9e55: a9 ff       ..    
-    bne c9e23                                                         ; 9e57: d0 ca       ..    
+    tay                                                               ; 9e35: a8          .        ; Ensure the base is real
+    jsr sub_c92fd                                                     ; 9e36: 20 fd 92     ..      ; ...
+    jsr stack_real                                                    ; 9e39: 20 51 bd     Q.      ; stack the base
+    jsr sub_c92fa                                                     ; 9e3c: 20 fa 92     ..      ; evaluate the exponent as a real
+    lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0       ; Exponent magnitude
+    cmp #&87                                                          ; 9e41: c9 87       ..       ; large (>= 2^7)?
+    bcs c9e88                                                         ; 9e43: b0 43       .C       ; yes: use exp(y*ln x)
+    jsr fp_split_int_frac                                             ; 9e45: 20 86 a4     ..      ; Split into integer and fractional parts
+    bne c9e59                                                         ; 9e48: d0 0f       ..       ; fractional part nonzero?
+    jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.      ; no: integer power - unstack the base
+    jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..      ; ...
+    lda l004a                                                         ; 9e50: a5 4a       .J       ; integer exponent
+    jsr fwa_int_power                                                 ; 9e52: 20 12 ab     ..      ; FWA = base ^ int
+    lda #&ff                                                          ; 9e55: a9 ff       ..       ; real result
+    bne c9e23                                                         ; 9e57: d0 ca       ..       ; continue
 ; &9e59 referenced 1 time by &9e48
 .c9e59
-    jsr fwa_pack_temp3                                                ; 9e59: 20 81 a3     ..   
-    lda zp_stack_ptr                                                  ; 9e5c: a5 04       ..    
-    sta zp_fp_ptr                                                     ; 9e5e: 85 4b       .K    
-    lda zp_stack_ptr_1                                                ; 9e60: a5 05       ..    
-    sta zp_fp_ptr_1                                                   ; 9e62: 85 4c       .L    
-    jsr fwa_unpack_var                                                ; 9e64: 20 b5 a3     ..   
-    lda l004a                                                         ; 9e67: a5 4a       .J    
-    jsr fwa_int_power                                                 ; 9e69: 20 12 ab     ..   
+    jsr fwa_pack_temp3                                                ; 9e59: 20 81 a3     ..      ; Fractional exponent: save the fraction
+    lda zp_stack_ptr                                                  ; 9e5c: a5 04       ..       ; point at the stacked base
+    sta zp_fp_ptr                                                     ; 9e5e: 85 4b       .K       ; ...
+    lda zp_stack_ptr_1                                                ; 9e60: a5 05       ..       ; ...
+    sta zp_fp_ptr_1                                                   ; 9e62: 85 4c       .L       ; ...
+    jsr fwa_unpack_var                                                ; 9e64: 20 b5 a3     ..      ; load the base
+    lda l004a                                                         ; 9e67: a5 4a       .J       ; integer part of the exponent
+    jsr fwa_int_power                                                 ; 9e69: 20 12 ab     ..      ; FWA = base ^ int
 ; &9e6c referenced 1 time by &9e8e
 .loop_c9e6c
-    jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.   
-    jsr unstack_real                                                  ; 9e6f: 20 7e bd     ~.   
-    jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..   
-    jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..   
-    jsr caad1                                                         ; 9e78: 20 d1 aa     ..   
-    jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..   
-    jsr point_fp_temp2                                                ; 9e7e: 20 ed a7     ..   
-    jsr fwa_mul_var                                                   ; 9e81: 20 56 a6     V.   
-    lda #&ff                                                          ; 9e84: a9 ff       ..    
-    bne c9e23                                                         ; 9e86: d0 9b       ..    
+    jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.      ; save base^int in TEMP2
+    jsr unstack_real                                                  ; 9e6f: 20 7e bd     ~.      ; unstack the base
+    jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..      ; ...
+    jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..      ; ln(base)
+    jsr caad1                                                         ; 9e78: 20 d1 aa     ..      ; times the fractional exponent
+    jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..      ; exp(that) = base^frac
+    jsr point_fp_temp2                                                ; 9e7e: 20 ed a7     ..      ; point at base^int
+    jsr fwa_mul_var                                                   ; 9e81: 20 56 a6     V.      ; FWA = base^int * base^frac
+    lda #&ff                                                          ; 9e84: a9 ff       ..       ; real result
+    bne c9e23                                                         ; 9e86: d0 9b       ..       ; continue
 ; &9e88 referenced 1 time by &9e43
 .c9e88
-    jsr fwa_pack_temp3                                                ; 9e88: 20 81 a3     ..   
-    jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..   
-    bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..    
+    jsr fwa_pack_temp3                                                ; 9e88: 20 81 a3     ..      ; Large exponent: x^y = exp(y * ln x)
+    jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..      ; ...
+    bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..       ; evaluate it
 ; &9e90 referenced 1 time by &9f07
 .loop_c9e90
     tya                                                               ; 9e90: 98          .     
@@ -12001,6 +12006,7 @@ save pydis_start, pydis_end
 ;     clear_value_bytes:           4
 ;     eval_add_sub:                4
 ;     eval_after_eq:               4
+;     eval_power:                  4
 ;     find_line_target:            4
 ;     find_variable:               4
 ;     fp_eval_cont_frac:           4
@@ -12019,7 +12025,6 @@ save pydis_start, pydis_end
 ;     sub_c92da:                   4
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
-;     sub_c9e20:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
 ;     zp_data_ptr_1:               4
@@ -14030,7 +14035,6 @@ save pydis_start, pydis_end
 ;     sub_c9b6b
 ;     sub_c9dce
 ;     sub_c9e1d
-;     sub_c9e20
 ;     sub_ca14b
 ;     sub_ca3e7
 ;     sub_ca4b6
