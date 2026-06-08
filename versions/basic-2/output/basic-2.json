@@ -1727,6 +1727,12 @@
       "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
     },
     {
+      "addr": 47952,
+      "name": "next_data_item",
+      "title": "Advance the DATA pointer to the next item",
+      "description": "Move the DATA pointer past the current item to the next comma- or DATA-separated value, searching forward through the program for the next DATA statement at end of line; raises Out of DATA."
+    },
+    {
       "addr": 36033,
       "name": "unstack_value_to_var",
       "title": "Restore a stacked value into a variable",
@@ -99728,6 +99734,7 @@
       "labels": [
         "stmt_read"
       ],
+      "comment_inline": "Parse the target variable",
       "xref_summaries": [
         "&bb1f referenced 1 time by &bb1a"
       ],
@@ -99746,6 +99753,7 @@
         240,
         241
       ],
+      "comment_inline": "end of statement: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbb15",
@@ -99758,6 +99766,7 @@
         176,
         12
       ],
+      "comment_inline": "string variable?",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbb32",
@@ -99771,11 +99780,12 @@
         80,
         187
       ],
+      "comment_inline": "Numeric: find the next DATA item",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbb50",
+      "operand": "next_data_item",
       "target": 47952,
-      "target_label": "sub_cbb50"
+      "target_label": "next_data_item"
     },
     {
       "addr": 47913,
@@ -99784,6 +99794,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the variable address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -99797,6 +99808,7 @@
         177,
         180
       ],
+      "comment_inline": "read the value and assign it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb4b1",
@@ -99810,6 +99822,7 @@
         64,
         187
       ],
+      "comment_inline": "update the DATA pointer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbb40",
@@ -99826,6 +99839,7 @@
       "labels": [
         "cbb32"
       ],
+      "comment_inline": "String: find the next DATA item",
       "xref_summaries": [
         "&bb32 referenced 1 time by &bb24"
       ],
@@ -99834,9 +99848,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbb50",
+      "operand": "next_data_item",
       "target": 47952,
-      "target_label": "sub_cbb50"
+      "target_label": "next_data_item"
     },
     {
       "addr": 47925,
@@ -99845,6 +99859,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the variable address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -99858,6 +99873,7 @@
         173,
         173
       ],
+      "comment_inline": "read the DATA item as a string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_string_literal",
@@ -99870,6 +99886,7 @@
         133,
         39
       ],
+      "comment_inline": "string type",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -99883,6 +99900,7 @@
         30,
         140
       ],
+      "comment_inline": "assign it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "assign_string",
@@ -99897,6 +99915,7 @@
       "labels": [
         "cbb40"
       ],
+      "comment_inline": "Advance the DATA pointer past the item",
       "xref_summaries": [
         "&bb40 referenced 1 time by &bb2f"
       ],
@@ -99912,6 +99931,7 @@
         165,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -99924,6 +99944,7 @@
         101,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -99936,6 +99957,7 @@
         133,
         28
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr",
@@ -99948,6 +99970,7 @@
         165,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -99960,6 +99983,7 @@
         105,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -99970,6 +99994,7 @@
         133,
         29
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr_1",
@@ -99983,6 +100008,7 @@
         21,
         187
       ],
+      "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbb15",
@@ -99996,8 +100022,9 @@
         27
       ],
       "labels": [
-        "sub_cbb50"
+        "next_data_item"
       ],
+      "comment_inline": "Save the program pointer",
       "xref_summaries": [
         "&bb50 referenced 2 times by &bb26, &bb32"
       ],
@@ -100017,6 +100044,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -100029,6 +100057,7 @@
         165,
         28
       ],
+      "comment_inline": "Point at the DATA position",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_data_ptr",
@@ -100041,6 +100070,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -100053,6 +100083,7 @@
         165,
         29
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_data_ptr_1",
@@ -100065,6 +100096,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -100077,6 +100109,7 @@
         160,
         0
       ],
+      "comment_inline": "From offset 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -100087,6 +100120,7 @@
         132,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -100100,6 +100134,7 @@
         140,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -100112,6 +100147,7 @@
         201,
         44
       ],
+      "comment_inline": "','  item separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -100122,6 +100158,7 @@
         240,
         73
       ],
+      "comment_inline": "yes: at the next item",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_36",
@@ -100134,6 +100171,7 @@
         201,
         220
       ],
+      "comment_inline": "DATA token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&dc"
@@ -100144,6 +100182,7 @@
         240,
         69
       ],
+      "comment_inline": "yes: at the first item",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_36",
@@ -100156,6 +100195,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -100166,6 +100206,7 @@
         240,
         11
       ],
+      "comment_inline": "yes: find the next DATA line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbb7a",
@@ -100182,6 +100223,7 @@
       "labels": [
         "loop_cbb6f"
       ],
+      "comment_inline": "Scan to the item end: next character",
       "xref_summaries": [
         "&bb6f referenced 1 time by &bb78"
       ],
@@ -100200,6 +100242,7 @@
         201,
         44
       ],
+      "comment_inline": "','  separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -100210,6 +100253,7 @@
         240,
         58
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_36",
@@ -100222,6 +100266,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -100232,6 +100277,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbb6f",
@@ -100247,6 +100293,7 @@
       "labels": [
         "cbb7a"
       ],
+      "comment_inline": "Line marker",
       "xref_summaries": [
         "&bb7a referenced 3 times by &bb6d, &bb96, &bb9a"
       ],
@@ -100267,6 +100314,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -100279,6 +100327,7 @@
         48,
         28
       ],
+      "comment_inline": "end of program: Out of DATA",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cbb9c",
@@ -100290,6 +100339,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Skip the line number",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -100298,6 +100348,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -100307,6 +100358,7 @@
         177,
         25
       ],
+      "comment_inline": "Line length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -100318,6 +100370,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -100329,6 +100382,7 @@
       "labels": [
         "loop_cbb85"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&bb85 referenced 1 time by &bb8a"
       ],
@@ -100344,6 +100398,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -100356,6 +100411,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -100366,6 +100422,7 @@
         240,
         249
       ],
+      "comment_inline": "skip leading spaces",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cbb85",
@@ -100378,6 +100435,7 @@
         201,
         220
       ],
+      "comment_inline": "DATA token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&dc"
@@ -100388,6 +100446,7 @@
         240,
         29
       ],
+      "comment_inline": "yes: use this line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbbad",
@@ -100399,6 +100458,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "Advance to the next line",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -100407,6 +100467,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -100416,6 +100477,7 @@
         101,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -100428,6 +100490,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -100440,6 +100503,7 @@
         144,
         226
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbb7a",
@@ -100452,6 +100516,7 @@
         230,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_1",
@@ -100464,6 +100529,7 @@
         176,
         222
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbb7a",
@@ -100478,6 +100544,7 @@
       "labels": [
         "cbb9c"
       ],
+      "comment_inline": "Out of DATA error",
       "xref_summaries": [
         "&bb9c referenced 1 time by &bb7e"
       ],
@@ -100520,6 +100587,7 @@
       "labels": [
         "err_no_repeat"
       ],
+      "comment_inline": "No REPEAT error",
       "xref_summaries": [
         "&bba6 referenced 1 time by &bbbc"
       ],
@@ -100560,6 +100628,7 @@
       "labels": [
         "cbbad"
       ],
+      "comment_inline": "Step past the DATA token",
       "xref_summaries": [
         "&bbad referenced 1 time by &bb8e"
       ],
@@ -100575,6 +100644,7 @@
         132,
         27
       ],
+      "comment_inline": "record the offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -100589,6 +100659,7 @@
       "labels": [
         "return_36"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&bbb0 referenced 3 times by &bb65, &bb69, &bb74"
       ],

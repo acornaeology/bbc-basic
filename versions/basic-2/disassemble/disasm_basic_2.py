@@ -1839,6 +1839,12 @@ d.subroutine(0x9e20, 'eval_power',
                          'power: an integer exponent uses repeated '
                          'multiplication, otherwise x^y = x^int * exp(frac * '
                          'ln x).')
+d.subroutine(0xbb50, 'next_data_item',
+             title='Advance the DATA pointer to the next item',
+             description='Move the DATA pointer past the current item to the '
+                         'next comma- or DATA-separated value, searching '
+                         'forward through the program for the next DATA '
+                         'statement at end of line; raises Out of DATA.')
 d.subroutine(0x8cc1, 'unstack_value_to_var',
              title='Restore a stacked value into a variable',
              description='Pop the value at the BASIC stack (&04) into the '
@@ -6303,6 +6309,79 @@ d.comment(0xbadc, 'LINE: string type', align=Align.INLINE)
 d.comment(0xbade, '...', align=Align.INLINE)
 d.comment(0xbae0, 'assign the line as a string', align=Align.INLINE)
 d.comment(0xbae3, 'next variable', align=Align.INLINE)
+
+# ----------------------------------------------------------------------
+# stmt_read (&BB1F): the READ statement.
+# For each variable, advances the DATA pointer to the next item and
+# assigns it (number or string), then records the new DATA position.
+# ----------------------------------------------------------------------
+d.comment(0xbb1f, 'Parse the target variable', align=Align.INLINE)
+d.comment(0xbb22, 'end of statement: done', align=Align.INLINE)
+d.comment(0xbb24, 'string variable?', align=Align.INLINE)
+d.comment(0xbb26, 'Numeric: find the next DATA item', align=Align.INLINE)
+d.comment(0xbb29, 'Stack the variable address', align=Align.INLINE)
+d.comment(0xbb2c, 'read the value and assign it', align=Align.INLINE)
+d.comment(0xbb2f, 'update the DATA pointer', align=Align.INLINE)
+d.comment(0xbb32, 'String: find the next DATA item', align=Align.INLINE)
+d.comment(0xbb35, 'Stack the variable address', align=Align.INLINE)
+d.comment(0xbb38, 'read the DATA item as a string', align=Align.INLINE)
+d.comment(0xbb3b, 'string type', align=Align.INLINE)
+d.comment(0xbb3d, 'assign it', align=Align.INLINE)
+d.comment(0xbb40, 'Advance the DATA pointer past the item', align=Align.INLINE)
+d.comment(0xbb41, '...', align=Align.INLINE)
+d.comment(0xbb43, '...', align=Align.INLINE)
+d.comment(0xbb45, '...', align=Align.INLINE)
+d.comment(0xbb47, '...', align=Align.INLINE)
+d.comment(0xbb49, '...', align=Align.INLINE)
+d.comment(0xbb4b, '...', align=Align.INLINE)
+d.comment(0xbb4d, 'next variable', align=Align.INLINE)
+
+# next_data_item (&BB50): step the DATA pointer to the next value.
+d.comment(0xbb50, 'Save the program pointer', align=Align.INLINE)
+d.comment(0xbb52, '...', align=Align.INLINE)
+d.comment(0xbb54, 'Point at the DATA position', align=Align.INLINE)
+d.comment(0xbb56, '...', align=Align.INLINE)
+d.comment(0xbb58, '...', align=Align.INLINE)
+d.comment(0xbb5a, '...', align=Align.INLINE)
+d.comment(0xbb5c, 'From offset 0', align=Align.INLINE)
+d.comment(0xbb5e, '...', align=Align.INLINE)
+d.comment(0xbb60, 'Next character', align=Align.INLINE)
+d.comment(0xbb63, "','  item separator?", align=Align.INLINE)
+d.comment(0xbb65, 'yes: at the next item', align=Align.INLINE)
+d.comment(0xbb67, 'DATA token?', align=Align.INLINE)
+d.comment(0xbb69, 'yes: at the first item', align=Align.INLINE)
+d.comment(0xbb6b, 'end of line?', align=Align.INLINE)
+d.comment(0xbb6d, 'yes: find the next DATA line', align=Align.INLINE)
+d.comment(0xbb6f, 'Scan to the item end: next character', align=Align.INLINE)
+d.comment(0xbb72, "','  separator?", align=Align.INLINE)
+d.comment(0xbb74, 'yes', align=Align.INLINE)
+d.comment(0xbb76, 'end of line?', align=Align.INLINE)
+d.comment(0xbb78, 'no: keep scanning', align=Align.INLINE)
+d.comment(0xbb7a, 'Line marker', align=Align.INLINE)
+d.comment(0xbb7c, '...', align=Align.INLINE)
+d.comment(0xbb7e, 'end of program: Out of DATA', align=Align.INLINE)
+d.comment(0xbb80, 'Skip the line number', align=Align.INLINE)
+d.comment(0xbb81, '...', align=Align.INLINE)
+d.comment(0xbb82, 'Line length', align=Align.INLINE)
+d.comment(0xbb84, '...', align=Align.INLINE)
+d.comment(0xbb85, 'Next character', align=Align.INLINE)
+d.comment(0xbb86, '...', align=Align.INLINE)
+d.comment(0xbb88, 'space?', align=Align.INLINE)
+d.comment(0xbb8a, 'skip leading spaces', align=Align.INLINE)
+d.comment(0xbb8c, 'DATA token?', align=Align.INLINE)
+d.comment(0xbb8e, 'yes: use this line', align=Align.INLINE)
+d.comment(0xbb90, 'Advance to the next line', align=Align.INLINE)
+d.comment(0xbb91, '...', align=Align.INLINE)
+d.comment(0xbb92, '...', align=Align.INLINE)
+d.comment(0xbb94, '...', align=Align.INLINE)
+d.comment(0xbb96, '...', align=Align.INLINE)
+d.comment(0xbb98, '...', align=Align.INLINE)
+d.comment(0xbb9a, 'continue', align=Align.INLINE)
+d.comment(0xbb9c, 'Out of DATA error', align=Align.INLINE)
+d.comment(0xbba6, 'No REPEAT error', align=Align.INLINE)
+d.comment(0xbbad, 'Step past the DATA token', align=Align.INLINE)
+d.comment(0xbbae, 'record the offset', align=Align.INLINE)
+d.comment(0xbbb0, 'Return', align=Align.INLINE)
 
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)

@@ -10891,95 +10891,101 @@ l848a = sub_c847b+15
 ; Read values from DATA statements into variables. READ var,...
 ; &bb1f referenced 1 time by &bb1a
 .stmt_read
-    jsr parse_lvalue                                                  ; bb1f: 20 82 95     ..   
-    beq cbb15                                                         ; bb22: f0 f1       ..    
-    bcs cbb32                                                         ; bb24: b0 0c       ..    
-    jsr sub_cbb50                                                     ; bb26: 20 50 bb     P.   
-    jsr stack_integer                                                 ; bb29: 20 94 bd     ..   
-    jsr sub_cb4b1                                                     ; bb2c: 20 b1 b4     ..   
-    jmp cbb40                                                         ; bb2f: 4c 40 bb    L@.   
+    jsr parse_lvalue                                                  ; bb1f: 20 82 95     ..      ; Parse the target variable
+    beq cbb15                                                         ; bb22: f0 f1       ..       ; end of statement: done
+    bcs cbb32                                                         ; bb24: b0 0c       ..       ; string variable?
+    jsr next_data_item                                                ; bb26: 20 50 bb     P.      ; Numeric: find the next DATA item
+    jsr stack_integer                                                 ; bb29: 20 94 bd     ..      ; Stack the variable address
+    jsr sub_cb4b1                                                     ; bb2c: 20 b1 b4     ..      ; read the value and assign it
+    jmp cbb40                                                         ; bb2f: 4c 40 bb    L@.      ; update the DATA pointer
 ; &bb32 referenced 1 time by &bb24
 .cbb32
-    jsr sub_cbb50                                                     ; bb32: 20 50 bb     P.   
-    jsr stack_integer                                                 ; bb35: 20 94 bd     ..   
-    jsr read_string_literal                                           ; bb38: 20 ad ad     ..   
-    sta zp_var_type                                                   ; bb3b: 85 27       .'    
-    jsr assign_string                                                 ; bb3d: 20 1e 8c     ..   
+    jsr next_data_item                                                ; bb32: 20 50 bb     P.      ; String: find the next DATA item
+    jsr stack_integer                                                 ; bb35: 20 94 bd     ..      ; Stack the variable address
+    jsr read_string_literal                                           ; bb38: 20 ad ad     ..      ; read the DATA item as a string
+    sta zp_var_type                                                   ; bb3b: 85 27       .'       ; string type
+    jsr assign_string                                                 ; bb3d: 20 1e 8c     ..      ; assign it
 ; &bb40 referenced 1 time by &bb2f
 .cbb40
-    clc                                                               ; bb40: 18          .     
-    lda zp_text_ptr2_off                                              ; bb41: a5 1b       ..    
-    adc zp_text_ptr2                                                  ; bb43: 65 19       e.    
-    sta zp_data_ptr                                                   ; bb45: 85 1c       ..    
-    lda zp_text_ptr2_1                                                ; bb47: a5 1a       ..    
-    adc #0                                                            ; bb49: 69 00       i.    
-    sta zp_data_ptr_1                                                 ; bb4b: 85 1d       ..    
-    jmp cbb15                                                         ; bb4d: 4c 15 bb    L..   
+    clc                                                               ; bb40: 18          .        ; Advance the DATA pointer past the item
+    lda zp_text_ptr2_off                                              ; bb41: a5 1b       ..       ; ...
+    adc zp_text_ptr2                                                  ; bb43: 65 19       e.       ; ...
+    sta zp_data_ptr                                                   ; bb45: 85 1c       ..       ; ...
+    lda zp_text_ptr2_1                                                ; bb47: a5 1a       ..       ; ...
+    adc #0                                                            ; bb49: 69 00       i.       ; ...
+    sta zp_data_ptr_1                                                 ; bb4b: 85 1d       ..       ; ...
+    jmp cbb15                                                         ; bb4d: 4c 15 bb    L..      ; next variable
+; ***************************************************************************************
+; Advance the DATA pointer to the next item
+;
+; Move the DATA pointer past the current item to the next comma- or DATA-separated value,
+; searching forward through the program for the next DATA statement at end of line;
+; raises Out of DATA.
 ; &bb50 referenced 2 times by &bb26, &bb32
-.sub_cbb50
-    lda zp_text_ptr2_off                                              ; bb50: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; bb52: 85 0a       ..    
-    lda zp_data_ptr                                                   ; bb54: a5 1c       ..    
-    sta zp_text_ptr2                                                  ; bb56: 85 19       ..    
-    lda zp_data_ptr_1                                                 ; bb58: a5 1d       ..    
-    sta zp_text_ptr2_1                                                ; bb5a: 85 1a       ..    
-    ldy #0                                                            ; bb5c: a0 00       ..    
-    sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..    
-    jsr skip_spaces_ptr2                                              ; bb60: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; bb63: c9 2c       .,    
-    beq return_36                                                     ; bb65: f0 49       .I    
-    cmp #&dc                                                          ; bb67: c9 dc       ..    
-    beq return_36                                                     ; bb69: f0 45       .E    
-    cmp #&0d                                                          ; bb6b: c9 0d       ..    
-    beq cbb7a                                                         ; bb6d: f0 0b       ..    
+.next_data_item
+    lda zp_text_ptr2_off                                              ; bb50: a5 1b       ..       ; Save the program pointer
+    sta zp_text_ptr_off                                               ; bb52: 85 0a       ..       ; ...
+    lda zp_data_ptr                                                   ; bb54: a5 1c       ..       ; Point at the DATA position
+    sta zp_text_ptr2                                                  ; bb56: 85 19       ..       ; ...
+    lda zp_data_ptr_1                                                 ; bb58: a5 1d       ..       ; ...
+    sta zp_text_ptr2_1                                                ; bb5a: 85 1a       ..       ; ...
+    ldy #0                                                            ; bb5c: a0 00       ..       ; From offset 0
+    sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..       ; ...
+    jsr skip_spaces_ptr2                                              ; bb60: 20 8c 8a     ..      ; Next character
+    cmp #&2c ; ','                                                    ; bb63: c9 2c       .,       ; ',' item separator?
+    beq return_36                                                     ; bb65: f0 49       .I       ; yes: at the next item
+    cmp #&dc                                                          ; bb67: c9 dc       ..       ; DATA token?
+    beq return_36                                                     ; bb69: f0 45       .E       ; yes: at the first item
+    cmp #&0d                                                          ; bb6b: c9 0d       ..       ; end of line?
+    beq cbb7a                                                         ; bb6d: f0 0b       ..       ; yes: find the next DATA line
 ; &bb6f referenced 1 time by &bb78
 .loop_cbb6f
-    jsr skip_spaces_ptr2                                              ; bb6f: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; bb72: c9 2c       .,    
-    beq return_36                                                     ; bb74: f0 3a       .:    
-    cmp #&0d                                                          ; bb76: c9 0d       ..    
-    bne loop_cbb6f                                                    ; bb78: d0 f5       ..    
+    jsr skip_spaces_ptr2                                              ; bb6f: 20 8c 8a     ..      ; Scan to the item end: next character
+    cmp #&2c ; ','                                                    ; bb72: c9 2c       .,       ; ',' separator?
+    beq return_36                                                     ; bb74: f0 3a       .:       ; yes
+    cmp #&0d                                                          ; bb76: c9 0d       ..       ; end of line?
+    bne loop_cbb6f                                                    ; bb78: d0 f5       ..       ; no: keep scanning
 ; &bb7a referenced 3 times by &bb6d, &bb96, &bb9a
 .cbb7a
-    ldy zp_text_ptr2_off                                              ; bb7a: a4 1b       ..    
-    lda (zp_text_ptr2),y                                              ; bb7c: b1 19       ..    
-    bmi cbb9c                                                         ; bb7e: 30 1c       0.    
-    iny                                                               ; bb80: c8          .     
-    iny                                                               ; bb81: c8          .     
-    lda (zp_text_ptr2),y                                              ; bb82: b1 19       ..    
-    tax                                                               ; bb84: aa          .     
+    ldy zp_text_ptr2_off                                              ; bb7a: a4 1b       ..       ; Line marker
+    lda (zp_text_ptr2),y                                              ; bb7c: b1 19       ..       ; ...
+    bmi cbb9c                                                         ; bb7e: 30 1c       0.       ; end of program: Out of DATA
+    iny                                                               ; bb80: c8          .        ; Skip the line number
+    iny                                                               ; bb81: c8          .        ; ...
+    lda (zp_text_ptr2),y                                              ; bb82: b1 19       ..       ; Line length
+    tax                                                               ; bb84: aa          .        ; ...
 ; &bb85 referenced 1 time by &bb8a
 .loop_cbb85
-    iny                                                               ; bb85: c8          .     
-    lda (zp_text_ptr2),y                                              ; bb86: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; bb88: c9 20       .     
-    beq loop_cbb85                                                    ; bb8a: f0 f9       ..    
-    cmp #&dc                                                          ; bb8c: c9 dc       ..    
-    beq cbbad                                                         ; bb8e: f0 1d       ..    
-    txa                                                               ; bb90: 8a          .     
-    clc                                                               ; bb91: 18          .     
-    adc zp_text_ptr2                                                  ; bb92: 65 19       e.    
-    sta zp_text_ptr2                                                  ; bb94: 85 19       ..    
-    bcc cbb7a                                                         ; bb96: 90 e2       ..    
-    inc zp_text_ptr2_1                                                ; bb98: e6 1a       ..    
-    bcs cbb7a                                                         ; bb9a: b0 de       ..    
+    iny                                                               ; bb85: c8          .        ; Next character
+    lda (zp_text_ptr2),y                                              ; bb86: b1 19       ..       ; ...
+    cmp #&20 ; ' '                                                    ; bb88: c9 20       .        ; space?
+    beq loop_cbb85                                                    ; bb8a: f0 f9       ..       ; skip leading spaces
+    cmp #&dc                                                          ; bb8c: c9 dc       ..       ; DATA token?
+    beq cbbad                                                         ; bb8e: f0 1d       ..       ; yes: use this line
+    txa                                                               ; bb90: 8a          .        ; Advance to the next line
+    clc                                                               ; bb91: 18          .        ; ...
+    adc zp_text_ptr2                                                  ; bb92: 65 19       e.       ; ...
+    sta zp_text_ptr2                                                  ; bb94: 85 19       ..       ; ...
+    bcc cbb7a                                                         ; bb96: 90 e2       ..       ; ...
+    inc zp_text_ptr2_1                                                ; bb98: e6 1a       ..       ; ...
+    bcs cbb7a                                                         ; bb9a: b0 de       ..       ; continue
 ; &bb9c referenced 1 time by &bb7e
 .cbb9c
-    brk                                                               ; bb9c: 00          .     
+    brk                                                               ; bb9c: 00          .        ; Out of DATA error
     equs "*Out of "                                                   ; bb9d: 2a 4f 75... *Ou...
     equb &dc                                                          ; bba5: dc          .     
 ; &bba6 referenced 1 time by &bbbc
 .err_no_repeat
-    brk                                                               ; bba6: 00          .     
+    brk                                                               ; bba6: 00          .        ; No REPEAT error
     equs "+No "                                                       ; bba7: 2b 4e 6f... +No...
     equb &f5, &00                                                     ; bbab: f5 00       ..    
 ; &bbad referenced 1 time by &bb8e
 .cbbad
-    iny                                                               ; bbad: c8          .     
-    sty zp_text_ptr2_off                                              ; bbae: 84 1b       ..    
+    iny                                                               ; bbad: c8          .        ; Step past the DATA token
+    sty zp_text_ptr2_off                                              ; bbae: 84 1b       ..       ; record the offset
 ; &bbb0 referenced 3 times by &bb65, &bb69, &bb74
 .return_36
-    rts                                                               ; bbb0: 60          `     
+    rts                                                               ; bbb0: 60          `        ; Return
 ; ***************************************************************************************
 ; UNTIL
 ;
@@ -12296,6 +12302,7 @@ save pydis_start, pydis_end
 ;     load_program:                2
 ;     load_real_var:               2
 ;     mant_mul10:                  2
+;     next_data_item:              2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -12346,7 +12353,6 @@ save pydis_start, pydis_end
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
-;     sub_cbb50:                   2
 ;     sub_cbc2d:                   2
 ;     sub_cbc81:                   2
 ;     sub_cbc8d:                   2
@@ -14065,7 +14071,6 @@ save pydis_start, pydis_end
 ;     sub_cb550
 ;     sub_cb562
 ;     sub_cb577
-;     sub_cbb50
 ;     sub_cbbfc
 ;     sub_cbc25
 ;     sub_cbc2d
