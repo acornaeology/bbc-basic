@@ -9423,119 +9423,119 @@ l848a = sub_c847b+15
     rts                                                               ; b24c: 60          `        ; Return
 ; &b24d referenced 2 times by &b1fe, &b27e
 .cb24d
-    lda zp_text_ptr2_off                                              ; b24d: a5 1b       ..    
-    pha                                                               ; b24f: 48          H     
-    lda zp_text_ptr2                                                  ; b250: a5 19       ..    
-    pha                                                               ; b252: 48          H     
-    lda zp_text_ptr2_1                                                ; b253: a5 1a       ..    
-    pha                                                               ; b255: 48          H     
-    jsr parse_lvalue                                                  ; b256: 20 82 95     ..   
-    beq cb2b5                                                         ; b259: f0 5a       .Z    
-    lda zp_text_ptr2_off                                              ; b25b: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; b25d: 85 0a       ..    
-    pla                                                               ; b25f: 68          h     
-    sta zp_text_ptr2_1                                                ; b260: 85 1a       ..    
-    pla                                                               ; b262: 68          h     
-    sta zp_text_ptr2                                                  ; b263: 85 19       ..    
-    pla                                                               ; b265: 68          h     
-    sta zp_text_ptr2_off                                              ; b266: 85 1b       ..    
-    pla                                                               ; b268: 68          h     
-    tax                                                               ; b269: aa          .     
-    lda zp_iwa_2                                                      ; b26a: a5 2c       .,    
-    pha                                                               ; b26c: 48          H     
-    lda zp_iwa_1                                                      ; b26d: a5 2b       .+    
-    pha                                                               ; b26f: 48          H     
-    lda zp_iwa                                                        ; b270: a5 2a       .*    
-    pha                                                               ; b272: 48          H     
-    inx                                                               ; b273: e8          .     
-    txa                                                               ; b274: 8a          .     
-    pha                                                               ; b275: 48          H     
-    jsr stack_local                                                   ; b276: 20 0d b3     ..   
-    jsr skip_spaces                                                   ; b279: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; b27c: c9 2c       .,    
-    beq cb24d                                                         ; b27e: f0 cd       ..    
-    cmp #&29 ; ')'                                                    ; b280: c9 29       .)    
-    bne cb2b5                                                         ; b282: d0 31       .1    
-    lda #0                                                            ; b284: a9 00       ..    
-    pha                                                               ; b286: 48          H     
-    jsr skip_spaces_ptr2                                              ; b287: 20 8c 8a     ..   
-    cmp #&28 ; '('                                                    ; b28a: c9 28       .(    
-    bne cb2b5                                                         ; b28c: d0 27       .'    
+    lda zp_text_ptr2_off                                              ; b24d: a5 1b       ..       ; Save the parser pointer
+    pha                                                               ; b24f: 48          H        ; ...
+    lda zp_text_ptr2                                                  ; b250: a5 19       ..       ; ...
+    pha                                                               ; b252: 48          H        ; ...
+    lda zp_text_ptr2_1                                                ; b253: a5 1a       ..       ; ...
+    pha                                                               ; b255: 48          H        ; ...
+    jsr parse_lvalue                                                  ; b256: 20 82 95     ..      ; Parse a formal parameter variable
+    beq cb2b5                                                         ; b259: f0 5a       .Z       ; invalid: error
+    lda zp_text_ptr2_off                                              ; b25b: a5 1b       ..       ; Update the program pointer
+    sta zp_text_ptr_off                                               ; b25d: 85 0a       ..       ; ...
+    pla                                                               ; b25f: 68          h        ; Restore the parser pointer
+    sta zp_text_ptr2_1                                                ; b260: 85 1a       ..       ; ...
+    pla                                                               ; b262: 68          h        ; ...
+    sta zp_text_ptr2                                                  ; b263: 85 19       ..       ; ...
+    pla                                                               ; b265: 68          h        ; ...
+    sta zp_text_ptr2_off                                              ; b266: 85 1b       ..       ; ...
+    pla                                                               ; b268: 68          h        ; Recover the running count
+    tax                                                               ; b269: aa          .        ; ...
+    lda zp_iwa_2                                                      ; b26a: a5 2c       .,       ; Push the formal's type/address
+    pha                                                               ; b26c: 48          H        ; ...
+    lda zp_iwa_1                                                      ; b26d: a5 2b       .+       ; ...
+    pha                                                               ; b26f: 48          H        ; ...
+    lda zp_iwa                                                        ; b270: a5 2a       .*       ; ...
+    pha                                                               ; b272: 48          H        ; ...
+    inx                                                               ; b273: e8          .        ; count this parameter
+    txa                                                               ; b274: 8a          .        ; ...
+    pha                                                               ; b275: 48          H        ; ...
+    jsr stack_local                                                   ; b276: 20 0d b3     ..      ; Stack the current value for LOCAL restore
+    jsr skip_spaces                                                   ; b279: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; b27c: c9 2c       .,       ; ',' another parameter?
+    beq cb24d                                                         ; b27e: f0 cd       ..       ; yes
+    cmp #&29 ; ')'                                                    ; b280: c9 29       .)       ; ')' end of parameter list?
+    bne cb2b5                                                         ; b282: d0 31       .1       ; no: error
+    lda #0                                                            ; b284: a9 00       ..       ; Push the end marker
+    pha                                                               ; b286: 48          H        ; ...
+    jsr skip_spaces_ptr2                                              ; b287: 20 8c 8a     ..      ; Expect "(" for the arguments
+    cmp #&28 ; '('                                                    ; b28a: c9 28       .(       ; ...
+    bne cb2b5                                                         ; b28c: d0 27       .'       ; missing: error
 ; &b28e referenced 1 time by &b2a5
 .loop_cb28e
-    jsr eval_or_eor                                                   ; b28e: 20 29 9b     ).   
-    jsr stack_value                                                   ; b291: 20 90 bd     ..   
-    lda zp_var_type                                                   ; b294: a5 27       .'    
-    sta zp_iwa_3                                                      ; b296: 85 2d       .-    
-    jsr stack_integer                                                 ; b298: 20 94 bd     ..   
-    pla                                                               ; b29b: 68          h     
-    tax                                                               ; b29c: aa          .     
-    inx                                                               ; b29d: e8          .     
-    txa                                                               ; b29e: 8a          .     
-    pha                                                               ; b29f: 48          H     
-    jsr skip_spaces_ptr2                                              ; b2a0: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; b2a3: c9 2c       .,    
-    beq loop_cb28e                                                    ; b2a5: f0 e7       ..    
-    cmp #&29 ; ')'                                                    ; b2a7: c9 29       .)    
-    bne cb2b5                                                         ; b2a9: d0 0a       ..    
-    pla                                                               ; b2ab: 68          h     
-    pla                                                               ; b2ac: 68          h     
-    sta l004d                                                         ; b2ad: 85 4d       .M    
-    sta l004e                                                         ; b2af: 85 4e       .N    
-    cpx l004d                                                         ; b2b1: e4 4d       .M    
-    beq cb2ca                                                         ; b2b3: f0 15       ..    
+    jsr eval_or_eor                                                   ; b28e: 20 29 9b     ).      ; Evaluate an argument
+    jsr stack_value                                                   ; b291: 20 90 bd     ..      ; stack its value
+    lda zp_var_type                                                   ; b294: a5 27       .'       ; save the type
+    sta zp_iwa_3                                                      ; b296: 85 2d       .-       ; ...
+    jsr stack_integer                                                 ; b298: 20 94 bd     ..      ; stack the type
+    pla                                                               ; b29b: 68          h        ; Bump the argument count
+    tax                                                               ; b29c: aa          .        ; ...
+    inx                                                               ; b29d: e8          .        ; ...
+    txa                                                               ; b29e: 8a          .        ; ...
+    pha                                                               ; b29f: 48          H        ; ...
+    jsr skip_spaces_ptr2                                              ; b2a0: 20 8c 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; b2a3: c9 2c       .,       ; ',' another argument?
+    beq loop_cb28e                                                    ; b2a5: f0 e7       ..       ; yes
+    cmp #&29 ; ')'                                                    ; b2a7: c9 29       .)       ; ')' end of arguments?
+    bne cb2b5                                                         ; b2a9: d0 0a       ..       ; no: error
+    pla                                                               ; b2ab: 68          h        ; Recover the argument count
+    pla                                                               ; b2ac: 68          h        ; and the formal count
+    sta l004d                                                         ; b2ad: 85 4d       .M       ; ...
+    sta l004e                                                         ; b2af: 85 4e       .N       ; ...
+    cpx l004d                                                         ; b2b1: e4 4d       .M       ; counts match?
+    beq cb2ca                                                         ; b2b3: f0 15       ..       ; yes: bind them
 ; &b2b5 referenced 6 times by &b259, &b282, &b28c, &b2a9, &b2da, &b2fb
 .cb2b5
-    ldx #&fb                                                          ; b2b5: a2 fb       ..    
-    txs                                                               ; b2b7: 9a          .     
-    pla                                                               ; b2b8: 68          h     
-    sta zp_text_ptr_1                                                 ; b2b9: 85 0c       ..    
-    pla                                                               ; b2bb: 68          h     
-    sta zp_text_ptr                                                   ; b2bc: 85 0b       ..    
-    brk                                                               ; b2be: 00          .     
+    ldx #&fb                                                          ; b2b5: a2 fb       ..       ; Reset the stack
+    txs                                                               ; b2b7: 9a          .        ; ...
+    pla                                                               ; b2b8: 68          h        ; restore PtrA
+    sta zp_text_ptr_1                                                 ; b2b9: 85 0c       ..       ; ...
+    pla                                                               ; b2bb: 68          h        ; ...
+    sta zp_text_ptr                                                   ; b2bc: 85 0b       ..       ; ...
+    brk                                                               ; b2be: 00          .        ; Arguments error
     equb &1f                                                          ; b2bf: 1f          .     
     equs "Arguments"                                                  ; b2c0: 41 72 67... Arg...
     equb &00                                                          ; b2c9: 00          .     
 ; &b2ca referenced 2 times by &b2b3, &b305
 .cb2ca
-    jsr unstack_integer                                               ; b2ca: 20 ea bd     ..   
-    pla                                                               ; b2cd: 68          h     
-    sta zp_iwa                                                        ; b2ce: 85 2a       .*    
-    pla                                                               ; b2d0: 68          h     
-    sta zp_iwa_1                                                      ; b2d1: 85 2b       .+    
-    pla                                                               ; b2d3: 68          h     
-    sta zp_iwa_2                                                      ; b2d4: 85 2c       .,    
-    bmi cb2f9                                                         ; b2d6: 30 21       0!    
-    lda zp_iwa_3                                                      ; b2d8: a5 2d       .-    
-    beq cb2b5                                                         ; b2da: f0 d9       ..    
-    sta zp_var_type                                                   ; b2dc: 85 27       .'    
-    ldx #&37 ; '7'                                                    ; b2de: a2 37       .7    
-    jsr iwa_store_zp                                                  ; b2e0: 20 44 be     D.   
-    lda zp_var_type                                                   ; b2e3: a5 27       .'    
-    bpl cb2f0                                                         ; b2e5: 10 09       ..    
-    jsr unstack_real                                                  ; b2e7: 20 7e bd     ~.   
-    jsr fwa_unpack_var                                                ; b2ea: 20 b5 a3     ..   
-    jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..   
+    jsr unstack_integer                                               ; b2ca: 20 ea bd     ..      ; Unstack the argument type
+    pla                                                               ; b2cd: 68          h        ; Unstack the formal address/type
+    sta zp_iwa                                                        ; b2ce: 85 2a       .*       ; ...
+    pla                                                               ; b2d0: 68          h        ; ...
+    sta zp_iwa_1                                                      ; b2d1: 85 2b       .+       ; ...
+    pla                                                               ; b2d3: 68          h        ; ...
+    sta zp_iwa_2                                                      ; b2d4: 85 2c       .,       ; ...
+    bmi cb2f9                                                         ; b2d6: 30 21       0!       ; string formal?
+    lda zp_iwa_3                                                      ; b2d8: a5 2d       .-       ; Argument type
+    beq cb2b5                                                         ; b2da: f0 d9       ..       ; string argument: Arguments error
+    sta zp_var_type                                                   ; b2dc: 85 27       .'       ; numeric: set the formal address
+    ldx #&37 ; '7'                                                    ; b2de: a2 37       .7       ; ...
+    jsr iwa_store_zp                                                  ; b2e0: 20 44 be     D.      ; ...
+    lda zp_var_type                                                   ; b2e3: a5 27       .'       ; Argument type
+    bpl cb2f0                                                         ; b2e5: 10 09       ..       ; integer?
+    jsr unstack_real                                                  ; b2e7: 20 7e bd     ~.      ; real: unstack the real value
+    jsr fwa_unpack_var                                                ; b2ea: 20 b5 a3     ..      ; ...
+    jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..      ; assign it
 ; &b2f0 referenced 1 time by &b2e5
 .cb2f0
-    jsr unstack_integer                                               ; b2f0: 20 ea bd     ..   
+    jsr unstack_integer                                               ; b2f0: 20 ea bd     ..      ; unstack the integer value
 ; &b2f3 referenced 1 time by &b2ed
 .cb2f3
-    jsr sub_cb4b7                                                     ; b2f3: 20 b7 b4     ..   
-    jmp cb303                                                         ; b2f6: 4c 03 b3    L..   
+    jsr sub_cb4b7                                                     ; b2f3: 20 b7 b4     ..      ; Assign to the formal
+    jmp cb303                                                         ; b2f6: 4c 03 b3    L..      ; next argument
 ; &b2f9 referenced 1 time by &b2d6
 .cb2f9
-    lda zp_iwa_3                                                      ; b2f9: a5 2d       .-    
-    bne cb2b5                                                         ; b2fb: d0 b8       ..    
-    jsr unstack_string                                                ; b2fd: 20 cb bd     ..   
-    jsr sub_c8c21                                                     ; b300: 20 21 8c     !.   
+    lda zp_iwa_3                                                      ; b2f9: a5 2d       .-       ; String formal: argument type
+    bne cb2b5                                                         ; b2fb: d0 b8       ..       ; numeric argument: Arguments error
+    jsr unstack_string                                                ; b2fd: 20 cb bd     ..      ; Unstack the string
+    jsr sub_c8c21                                                     ; b300: 20 21 8c     !.      ; assign it
 ; &b303 referenced 1 time by &b2f6
 .cb303
-    dec l004d                                                         ; b303: c6 4d       .M    
-    bne cb2ca                                                         ; b305: d0 c3       ..    
-    lda l004e                                                         ; b307: a5 4e       .N    
-    pha                                                               ; b309: 48          H     
-    jmp cb202                                                         ; b30a: 4c 02 b2    L..   
+    dec l004d                                                         ; b303: c6 4d       .M       ; One parameter bound
+    bne cb2ca                                                         ; b305: d0 c3       ..       ; loop
+    lda l004e                                                         ; b307: a5 4e       .N       ; Push the parameter count for restore
+    pha                                                               ; b309: 48          H        ; ...
+    jmp cb202                                                         ; b30a: 4c 02 b2    L..      ; Execute the body
 ; ***************************************************************************************
 ; Save a variable for LOCAL
 ;
