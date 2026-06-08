@@ -3195,150 +3195,150 @@ l848a = sub_c847b+15
 ; Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size.
 ; &912f referenced 1 time by &9215
 .stmt_dim
-    jsr skip_spaces                                                   ; 912f: 20 97 8a     ..   
-    tya                                                               ; 9132: 98          .     
-    clc                                                               ; 9133: 18          .     
-    adc zp_text_ptr                                                   ; 9134: 65 0b       e.    
-    ldx zp_text_ptr_1                                                 ; 9136: a6 0c       ..    
-    bcc c913c                                                         ; 9138: 90 02       ..    
-    inx                                                               ; 913a: e8          .     
-    clc                                                               ; 913b: 18          .     
+    jsr skip_spaces                                                   ; 912f: 20 97 8a     ..      ; Skip spaces
+    tya                                                               ; 9132: 98          .        ; Point &37/&38 at the name
+    clc                                                               ; 9133: 18          .        ; ...
+    adc zp_text_ptr                                                   ; 9134: 65 0b       e.       ; ...
+    ldx zp_text_ptr_1                                                 ; 9136: a6 0c       ..       ; ...
+    bcc c913c                                                         ; 9138: 90 02       ..       ; ...
+    inx                                                               ; 913a: e8          .        ; ...
+    clc                                                               ; 913b: 18          .        ; ...
 ; &913c referenced 1 time by &9138
 .c913c
-    sbc #0                                                            ; 913c: e9 00       ..    
-    sta zp_general                                                    ; 913e: 85 37       .7    
-    txa                                                               ; 9140: 8a          .     
-    sbc #0                                                            ; 9141: e9 00       ..    
-    sta zp_general_1                                                  ; 9143: 85 38       .8    
-    ldx #5                                                            ; 9145: a2 05       ..    
-    stx zp_fwb_m2                                                     ; 9147: 86 3f       .?    
-    ldx zp_text_ptr_off                                               ; 9149: a6 0a       ..    
-    jsr validate_var_name                                             ; 914b: 20 59 95     Y.   
-    cpy #1                                                            ; 914e: c0 01       ..    
-    beq c9127                                                         ; 9150: f0 d5       ..    
-    cmp #&28 ; '('                                                    ; 9152: c9 28       .(    
-    beq c916b                                                         ; 9154: f0 15       ..    
-    cmp #&24 ; '$'                                                    ; 9156: c9 24       .$    
-    beq c915e                                                         ; 9158: f0 04       ..    
-    cmp #&25 ; '%'                                                    ; 915a: c9 25       .%    
-    bne c9168                                                         ; 915c: d0 0a       ..    
+    sbc #0                                                            ; 913c: e9 00       ..       ; ...
+    sta zp_general                                                    ; 913e: 85 37       .7       ; ...
+    txa                                                               ; 9140: 8a          .        ; ...
+    sbc #0                                                            ; 9141: e9 00       ..       ; ...
+    sta zp_general_1                                                  ; 9143: 85 38       .8       ; ...
+    ldx #5                                                            ; 9145: a2 05       ..       ; Default element size = 5 (real)
+    stx zp_fwb_m2                                                     ; 9147: 86 3f       .?       ; ...
+    ldx zp_text_ptr_off                                               ; 9149: a6 0a       ..       ; Name offset
+    jsr validate_var_name                                             ; 914b: 20 59 95     Y.      ; Validate the name
+    cpy #1                                                            ; 914e: c0 01       ..       ; empty name?
+    beq c9127                                                         ; 9150: f0 d5       ..       ; yes: Bad DIM
+    cmp #&28 ; '('                                                    ; 9152: c9 28       .(       ; '(' array?
+    beq c916b                                                         ; 9154: f0 15       ..       ; yes
+    cmp #&24 ; '$'                                                    ; 9156: c9 24       .$       ; '$' string?
+    beq c915e                                                         ; 9158: f0 04       ..       ; yes
+    cmp #&25 ; '%'                                                    ; 915a: c9 25       .%       ; '%' integer?
+    bne c9168                                                         ; 915c: d0 0a       ..       ; no: DIM var n (byte block)
 ; &915e referenced 1 time by &9158
 .c915e
-    dec zp_fwb_m2                                                     ; 915e: c6 3f       .?    
-    iny                                                               ; 9160: c8          .     
-    inx                                                               ; 9161: e8          .     
-    lda (zp_general),y                                                ; 9162: b1 37       .7    
-    cmp #&28 ; '('                                                    ; 9164: c9 28       .(    
-    beq c916b                                                         ; 9166: f0 03       ..    
+    dec zp_fwb_m2                                                     ; 915e: c6 3f       .?       ; Element size = 4 (integer/string)
+    iny                                                               ; 9160: c8          .        ; step past the suffix
+    inx                                                               ; 9161: e8          .        ; ...
+    lda (zp_general),y                                                ; 9162: b1 37       .7       ; following character
+    cmp #&28 ; '('                                                    ; 9164: c9 28       .(       ; '(' array?
+    beq c916b                                                         ; 9166: f0 03       ..       ; yes
 ; &9168 referenced 1 time by &915c
 .c9168
-    jmp c90df                                                         ; 9168: 4c df 90    L..   
+    jmp c90df                                                         ; 9168: 4c df 90    L..      ; DIM var n: allocate a byte block
 ; &916b referenced 2 times by &9154, &9166
 .c916b
-    sty zp_fileblk                                                    ; 916b: 84 39       .9    
-    stx zp_text_ptr_off                                               ; 916d: 86 0a       ..    
-    jsr find_variable                                                 ; 916f: 20 69 94     i.   
-    bne c9127                                                         ; 9172: d0 b3       ..    
-    jsr create_variable                                               ; 9174: 20 fc 94     ..   
-    ldx #1                                                            ; 9177: a2 01       ..    
-    jsr clear_value_bytes                                             ; 9179: 20 31 95     1.   
-    lda zp_fwb_m2                                                     ; 917c: a5 3f       .?    
-    pha                                                               ; 917e: 48          H     
-    lda #1                                                            ; 917f: a9 01       ..    
-    pha                                                               ; 9181: 48          H     
-    jsr caed8                                                         ; 9182: 20 d8 ae     ..   
+    sty zp_fileblk                                                    ; 916b: 84 39       .9       ; Array: save the name length
+    stx zp_text_ptr_off                                               ; 916d: 86 0a       ..       ; ...
+    jsr find_variable                                                 ; 916f: 20 69 94     i.      ; Already defined?
+    bne c9127                                                         ; 9172: d0 b3       ..       ; yes: Bad DIM (re-DIM)
+    jsr create_variable                                               ; 9174: 20 fc 94     ..      ; Create the array variable
+    ldx #1                                                            ; 9177: a2 01       ..       ; Clear its pointer
+    jsr clear_value_bytes                                             ; 9179: 20 31 95     1.      ; ...
+    lda zp_fwb_m2                                                     ; 917c: a5 3f       .?       ; Save the element size
+    pha                                                               ; 917e: 48          H        ; ...
+    lda #1                                                            ; 917f: a9 01       ..       ; Dimension count starts at 1
+    pha                                                               ; 9181: 48          H        ; ...
+    jsr caed8                                                         ; 9182: 20 d8 ae     ..      ; running size = 1
 ; &9185 referenced 1 time by &91ae
 .loop_c9185
-    jsr stack_integer                                                 ; 9185: 20 94 bd     ..   
-    jsr eval_expr_to_integer                                          ; 9188: 20 21 88     !.   
-    lda zp_iwa_1                                                      ; 918b: a5 2b       .+    
-    and #&c0                                                          ; 918d: 29 c0       ).    
-    ora zp_iwa_2                                                      ; 918f: 05 2c       .,    
-    ora zp_iwa_3                                                      ; 9191: 05 2d       .-    
-    bne c9127                                                         ; 9193: d0 92       ..    
-    jsr iwa_inc                                                       ; 9195: 20 22 92     ".   
-    pla                                                               ; 9198: 68          h     
-    tay                                                               ; 9199: a8          .     
-    lda zp_iwa                                                        ; 919a: a5 2a       .*    
-    sta (zp_vartop),y                                                 ; 919c: 91 02       ..    
-    iny                                                               ; 919e: c8          .     
-    lda zp_iwa_1                                                      ; 919f: a5 2b       .+    
-    sta (zp_vartop),y                                                 ; 91a1: 91 02       ..    
-    iny                                                               ; 91a3: c8          .     
-    tya                                                               ; 91a4: 98          .     
-    pha                                                               ; 91a5: 48          H     
-    jsr sub_c9231                                                     ; 91a6: 20 31 92     1.   
-    jsr skip_spaces                                                   ; 91a9: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 91ac: c9 2c       .,    
-    beq loop_c9185                                                    ; 91ae: f0 d5       ..    
-    cmp #&29 ; ')'                                                    ; 91b0: c9 29       .)    
-    beq c91b7                                                         ; 91b2: f0 03       ..    
-    jmp c9127                                                         ; 91b4: 4c 27 91    L'.   
+    jsr stack_integer                                                 ; 9185: 20 94 bd     ..      ; Stack the running size
+    jsr eval_expr_to_integer                                          ; 9188: 20 21 88     !.      ; Evaluate the next bound
+    lda zp_iwa_1                                                      ; 918b: a5 2b       .+       ; fits in 14 bits?
+    and #&c0                                                          ; 918d: 29 c0       ).       ; ...
+    ora zp_iwa_2                                                      ; 918f: 05 2c       .,       ; ...
+    ora zp_iwa_3                                                      ; 9191: 05 2d       .-       ; ...
+    bne c9127                                                         ; 9193: d0 92       ..       ; no: Bad DIM
+    jsr iwa_inc                                                       ; 9195: 20 22 92     ".      ; Extent = bound + 1
+    pla                                                               ; 9198: 68          h        ; Restore the descriptor offset
+    tay                                                               ; 9199: a8          .        ; ...
+    lda zp_iwa                                                        ; 919a: a5 2a       .*       ; Store the extent in the descriptor
+    sta (zp_vartop),y                                                 ; 919c: 91 02       ..       ; ...
+    iny                                                               ; 919e: c8          .        ; ...
+    lda zp_iwa_1                                                      ; 919f: a5 2b       .+       ; ...
+    sta (zp_vartop),y                                                 ; 91a1: 91 02       ..       ; ...
+    iny                                                               ; 91a3: c8          .        ; ...
+    tya                                                               ; 91a4: 98          .        ; save the offset
+    pha                                                               ; 91a5: 48          H        ; ...
+    jsr sub_c9231                                                     ; 91a6: 20 31 92     1.      ; Multiply the running size by the extent
+    jsr skip_spaces                                                   ; 91a9: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 91ac: c9 2c       .,       ; ',' another dimension?
+    beq loop_c9185                                                    ; 91ae: f0 d5       ..       ; yes
+    cmp #&29 ; ')'                                                    ; 91b0: c9 29       .)       ; ')' end of dimensions?
+    beq c91b7                                                         ; 91b2: f0 03       ..       ; yes
+    jmp c9127                                                         ; 91b4: 4c 27 91    L'.      ; otherwise Bad DIM
 ; &91b7 referenced 1 time by &91b2
 .c91b7
-    pla                                                               ; 91b7: 68          h     
-    sta zp_print_flag                                                 ; 91b8: 85 15       ..    
-    pla                                                               ; 91ba: 68          h     
-    sta zp_fwb_m2                                                     ; 91bb: 85 3f       .?    
-    lda #0                                                            ; 91bd: a9 00       ..    
-    sta zp_fwb_m3                                                     ; 91bf: 85 40       .@    
-    jsr imul16                                                        ; 91c1: 20 36 92     6.   
-    ldy #0                                                            ; 91c4: a0 00       ..    
-    lda zp_print_flag                                                 ; 91c6: a5 15       ..    
-    sta (zp_vartop),y                                                 ; 91c8: 91 02       ..    
-    adc zp_iwa                                                        ; 91ca: 65 2a       e*    
-    sta zp_iwa                                                        ; 91cc: 85 2a       .*    
-    bcc c91d2                                                         ; 91ce: 90 02       ..    
-    inc zp_iwa_1                                                      ; 91d0: e6 2b       .+    
+    pla                                                               ; 91b7: 68          h        ; Recover the element size
+    sta zp_print_flag                                                 ; 91b8: 85 15       ..       ; ...
+    pla                                                               ; 91ba: 68          h        ; ...
+    sta zp_fwb_m2                                                     ; 91bb: 85 3f       .?       ; ...
+    lda #0                                                            ; 91bd: a9 00       ..       ; ...
+    sta zp_fwb_m3                                                     ; 91bf: 85 40       .@       ; ...
+    jsr imul16                                                        ; 91c1: 20 36 92     6.      ; Total = element count * element size
+    ldy #0                                                            ; 91c4: a0 00       ..       ; Store the dimension count in the descriptor
+    lda zp_print_flag                                                 ; 91c6: a5 15       ..       ; ...
+    sta (zp_vartop),y                                                 ; 91c8: 91 02       ..       ; ...
+    adc zp_iwa                                                        ; 91ca: 65 2a       e*       ; Add it to the total size
+    sta zp_iwa                                                        ; 91cc: 85 2a       .*       ; ...
+    bcc c91d2                                                         ; 91ce: 90 02       ..       ; ...
+    inc zp_iwa_1                                                      ; 91d0: e6 2b       .+       ; ...
 ; &91d2 referenced 1 time by &91ce
 .c91d2
-    lda zp_vartop_1                                                   ; 91d2: a5 03       ..    
-    sta zp_general_1                                                  ; 91d4: 85 38       .8    
-    lda zp_vartop                                                     ; 91d6: a5 02       ..    
-    sta zp_general                                                    ; 91d8: 85 37       .7    
-    clc                                                               ; 91da: 18          .     
-    adc zp_iwa                                                        ; 91db: 65 2a       e*    
-    tay                                                               ; 91dd: a8          .     
-    lda zp_iwa_1                                                      ; 91de: a5 2b       .+    
-    adc zp_vartop_1                                                   ; 91e0: 65 03       e.    
-    bcs c9218                                                         ; 91e2: b0 34       .4    
-    tax                                                               ; 91e4: aa          .     
-    cpy zp_stack_ptr                                                  ; 91e5: c4 04       ..    
-    sbc zp_stack_ptr_1                                                ; 91e7: e5 05       ..    
-    bcs c9218                                                         ; 91e9: b0 2d       .-    
-    sty zp_vartop                                                     ; 91eb: 84 02       ..    
-    stx zp_vartop_1                                                   ; 91ed: 86 03       ..    
-    lda zp_general                                                    ; 91ef: a5 37       .7    
-    adc zp_print_flag                                                 ; 91f1: 65 15       e.    
-    tay                                                               ; 91f3: a8          .     
-    lda #0                                                            ; 91f4: a9 00       ..    
-    sta zp_general                                                    ; 91f6: 85 37       .7    
-    bcc c91fc                                                         ; 91f8: 90 02       ..    
-    inc zp_general_1                                                  ; 91fa: e6 38       .8    
+    lda zp_vartop_1                                                   ; 91d2: a5 03       ..       ; Point at the current variable top
+    sta zp_general_1                                                  ; 91d4: 85 38       .8       ; ...
+    lda zp_vartop                                                     ; 91d6: a5 02       ..       ; ...
+    sta zp_general                                                    ; 91d8: 85 37       .7       ; ...
+    clc                                                               ; 91da: 18          .        ; New top = top + total size
+    adc zp_iwa                                                        ; 91db: 65 2a       e*       ; ...
+    tay                                                               ; 91dd: a8          .        ; ...
+    lda zp_iwa_1                                                      ; 91de: a5 2b       .+       ; ...
+    adc zp_vartop_1                                                   ; 91e0: 65 03       e.       ; ...
+    bcs c9218                                                         ; 91e2: b0 34       .4       ; overflow: No room
+    tax                                                               ; 91e4: aa          .        ; ...
+    cpy zp_stack_ptr                                                  ; 91e5: c4 04       ..       ; collides with the stack?
+    sbc zp_stack_ptr_1                                                ; 91e7: e5 05       ..       ; ...
+    bcs c9218                                                         ; 91e9: b0 2d       .-       ; yes: No room
+    sty zp_vartop                                                     ; 91eb: 84 02       ..       ; Commit the new variable top
+    stx zp_vartop_1                                                   ; 91ed: 86 03       ..       ; ...
+    lda zp_general                                                    ; 91ef: a5 37       .7       ; Zero the array storage from the old top
+    adc zp_print_flag                                                 ; 91f1: 65 15       e.       ; ...
+    tay                                                               ; 91f3: a8          .        ; ...
+    lda #0                                                            ; 91f4: a9 00       ..       ; ...
+    sta zp_general                                                    ; 91f6: 85 37       .7       ; ...
+    bcc c91fc                                                         ; 91f8: 90 02       ..       ; ...
+    inc zp_general_1                                                  ; 91fa: e6 38       .8       ; ...
 ; &91fc referenced 3 times by &91f8, &9205, &9209
 .c91fc
-    sta (zp_general),y                                                ; 91fc: 91 37       .7    
-    iny                                                               ; 91fe: c8          .     
-    bne c9203                                                         ; 91ff: d0 02       ..    
-    inc zp_general_1                                                  ; 9201: e6 38       .8    
+    sta (zp_general),y                                                ; 91fc: 91 37       .7       ; store a zero byte
+    iny                                                               ; 91fe: c8          .        ; ...
+    bne c9203                                                         ; 91ff: d0 02       ..       ; ...
+    inc zp_general_1                                                  ; 9201: e6 38       .8       ; ...
 ; &9203 referenced 1 time by &91ff
 .c9203
-    cpy zp_vartop                                                     ; 9203: c4 02       ..    
-    bne c91fc                                                         ; 9205: d0 f5       ..    
-    cpx zp_general_1                                                  ; 9207: e4 38       .8    
-    bne c91fc                                                         ; 9209: d0 f1       ..    
+    cpy zp_vartop                                                     ; 9203: c4 02       ..       ; reached the new top?
+    bne c91fc                                                         ; 9205: d0 f5       ..       ; ...
+    cpx zp_general_1                                                  ; 9207: e4 38       .8       ; ...
+    bne c91fc                                                         ; 9209: d0 f1       ..       ; loop
 ; &920b referenced 1 time by &9124
 .c920b
-    jsr skip_spaces                                                   ; 920b: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 920e: c9 2c       .,    
-    beq c9215                                                         ; 9210: f0 03       ..    
-    jmp c8b96                                                         ; 9212: 4c 96 8b    L..   
+    jsr skip_spaces                                                   ; 920b: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 920e: c9 2c       .,       ; ',' another array?
+    beq c9215                                                         ; 9210: f0 03       ..       ; yes
+    jmp c8b96                                                         ; 9212: 4c 96 8b    L..      ; no: next statement
 ; &9215 referenced 1 time by &9210
 .c9215
-    jmp stmt_dim                                                      ; 9215: 4c 2f 91    L/.   
+    jmp stmt_dim                                                      ; 9215: 4c 2f 91    L/.      ; DIM the next array
 ; &9218 referenced 3 times by &90dc, &91e2, &91e9
 .c9218
-    brk                                                               ; 9218: 00          .     
+    brk                                                               ; 9218: 00          .        ; No room error
     equb &0b, &de                                                     ; 9219: 0b de       ..    
     equs " space"                                                     ; 921b: 20 73 70...  sp...
     equb &00                                                          ; 9221: 00          .     
@@ -3348,16 +3348,16 @@ l848a = sub_c847b+15
 ; IWA = IWA + 1, carrying through all four bytes.
 ; &9222 referenced 4 times by &8f59, &90ee, &9195, &af39
 .iwa_inc
-    inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0
-    bne return_8                                                      ; 9224: d0 0a       ..       ; No carry: done
-    inc zp_iwa_1                                                      ; 9226: e6 2b       .+       ; Carry into byte 1
-    bne return_8                                                      ; 9228: d0 06       ..       ; done
-    inc zp_iwa_2                                                      ; 922a: e6 2c       .,       ; byte 2
-    bne return_8                                                      ; 922c: d0 02       ..       ; done
-    inc zp_iwa_3                                                      ; 922e: e6 2d       .-       ; byte 3
+    inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0  byte 0
+    bne return_8                                                      ; 9224: d0 0a       ..       ; No carry: done  no carry: done
+    inc zp_iwa_1                                                      ; 9226: e6 2b       .+       ; Carry into byte 1  byte 1
+    bne return_8                                                      ; 9228: d0 06       ..       ; done  no carry: done
+    inc zp_iwa_2                                                      ; 922a: e6 2c       .,       ; byte 2  byte 2
+    bne return_8                                                      ; 922c: d0 02       ..       ; done  no carry: done
+    inc zp_iwa_3                                                      ; 922e: e6 2d       .-       ; byte 3  byte 3
 ; &9230 referenced 3 times by &9224, &9228, &922c
 .return_8
-    rts                                                               ; 9230: 60          `        ; IWA incremented
+    rts                                                               ; 9230: 60          `        ; IWA incremented  Return
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
     ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?       ; Unstack the multiplier (into &3F area)

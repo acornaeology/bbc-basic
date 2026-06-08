@@ -29522,6 +29522,7 @@
       "labels": [
         "stmt_dim"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&912f referenced 1 time by &9215"
       ],
@@ -29539,6 +29540,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Point &37/&38 at the name",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -29547,6 +29549,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -29556,6 +29559,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -29568,6 +29572,7 @@
         166,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_1",
@@ -29580,6 +29585,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c913c",
@@ -29591,6 +29597,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -29599,6 +29606,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -29611,6 +29619,7 @@
       "labels": [
         "c913c"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&913c referenced 1 time by &9138"
       ],
@@ -29627,6 +29636,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -29638,6 +29648,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -29647,6 +29658,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -29657,6 +29669,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -29669,6 +29682,7 @@
         162,
         5
       ],
+      "comment_inline": "Default element size = 5 (real)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#5"
@@ -29679,6 +29693,7 @@
         134,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m2",
@@ -29691,6 +29706,7 @@
         166,
         10
       ],
+      "comment_inline": "Name offset",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_off",
@@ -29704,6 +29720,7 @@
         89,
         149
       ],
+      "comment_inline": "Validate the name",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "validate_var_name",
@@ -29716,6 +29733,7 @@
         192,
         1
       ],
+      "comment_inline": "empty name?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#1"
@@ -29726,6 +29744,7 @@
         240,
         213
       ],
+      "comment_inline": "yes: Bad DIM",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9127",
@@ -29738,6 +29757,7 @@
         201,
         40
       ],
+      "comment_inline": "'(' array?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -29748,6 +29768,7 @@
         240,
         21
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c916b",
@@ -29760,6 +29781,7 @@
         201,
         36
       ],
+      "comment_inline": "'$' string?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&24"
@@ -29770,6 +29792,7 @@
         240,
         4
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c915e",
@@ -29782,6 +29805,7 @@
         201,
         37
       ],
+      "comment_inline": "'%' integer?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&25"
@@ -29792,6 +29816,7 @@
         208,
         10
       ],
+      "comment_inline": "no: DIM var n (byte block)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9168",
@@ -29807,6 +29832,7 @@
       "labels": [
         "c915e"
       ],
+      "comment_inline": "Element size = 4 (integer/string)",
       "xref_summaries": [
         "&915e referenced 1 time by &9158"
       ],
@@ -29824,6 +29850,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step past the suffix",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -29832,6 +29859,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -29841,6 +29869,7 @@
         177,
         55
       ],
+      "comment_inline": "following character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -29853,6 +29882,7 @@
         201,
         40
       ],
+      "comment_inline": "'(' array?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -29863,6 +29893,7 @@
         240,
         3
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c916b",
@@ -29879,6 +29910,7 @@
       "labels": [
         "c9168"
       ],
+      "comment_inline": "DIM var n: allocate a byte block",
       "xref_summaries": [
         "&9168 referenced 1 time by &915c"
       ],
@@ -29900,6 +29932,7 @@
       "labels": [
         "c916b"
       ],
+      "comment_inline": "Array: save the name length",
       "xref_summaries": [
         "&916b referenced 2 times by &9154, &9166"
       ],
@@ -29919,6 +29952,7 @@
         134,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr_off",
@@ -29932,6 +29966,7 @@
         105,
         148
       ],
+      "comment_inline": "Already defined?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_variable",
@@ -29944,6 +29979,7 @@
         208,
         179
       ],
+      "comment_inline": "yes: Bad DIM (re-DIM)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9127",
@@ -29957,6 +29993,7 @@
         252,
         148
       ],
+      "comment_inline": "Create the array variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "create_variable",
@@ -29969,6 +30006,7 @@
         162,
         1
       ],
+      "comment_inline": "Clear its pointer",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#1"
@@ -29980,6 +30018,7 @@
         49,
         149
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_value_bytes",
@@ -29992,6 +30031,7 @@
         165,
         63
       ],
+      "comment_inline": "Save the element size",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -30003,6 +30043,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -30012,6 +30053,7 @@
         169,
         1
       ],
+      "comment_inline": "Dimension count starts at 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -30021,6 +30063,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -30031,6 +30074,7 @@
         216,
         174
       ],
+      "comment_inline": "running size = 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "caed8",
@@ -30047,6 +30091,7 @@
       "labels": [
         "loop_c9185"
       ],
+      "comment_inline": "Stack the running size",
       "xref_summaries": [
         "&9185 referenced 1 time by &91ae"
       ],
@@ -30066,6 +30111,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the next bound",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -30078,6 +30124,7 @@
         165,
         43
       ],
+      "comment_inline": "fits in 14 bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30090,6 +30137,7 @@
         41,
         192
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -30100,6 +30148,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -30112,6 +30161,7 @@
         5,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -30124,6 +30174,7 @@
         208,
         146
       ],
+      "comment_inline": "no: Bad DIM",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9127",
@@ -30137,6 +30188,7 @@
         34,
         146
       ],
+      "comment_inline": "Extent = bound + 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_inc",
@@ -30148,6 +30200,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the descriptor offset",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -30156,6 +30209,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -30165,6 +30219,7 @@
         165,
         42
       ],
+      "comment_inline": "Store the extent in the descriptor",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -30177,6 +30232,7 @@
         145,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -30188,6 +30244,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -30197,6 +30254,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30209,6 +30267,7 @@
         145,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -30220,6 +30279,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -30228,6 +30288,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "save the offset",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -30236,6 +30297,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -30246,6 +30308,7 @@
         49,
         146
       ],
+      "comment_inline": "Multiply the running size by the extent",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9231",
@@ -30259,6 +30322,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -30271,6 +30335,7 @@
         201,
         44
       ],
+      "comment_inline": "','  another dimension?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -30281,6 +30346,7 @@
         240,
         213
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9185",
@@ -30293,6 +30359,7 @@
         201,
         41
       ],
+      "comment_inline": "')' end of dimensions?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&29"
@@ -30303,6 +30370,7 @@
         240,
         3
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c91b7",
@@ -30316,6 +30384,7 @@
         39,
         145
       ],
+      "comment_inline": "otherwise Bad DIM",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9127",
@@ -30330,6 +30399,7 @@
       "labels": [
         "c91b7"
       ],
+      "comment_inline": "Recover the element size",
       "xref_summaries": [
         "&91b7 referenced 1 time by &91b2"
       ],
@@ -30345,6 +30415,7 @@
         133,
         21
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -30356,6 +30427,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -30365,6 +30437,7 @@
         133,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -30377,6 +30450,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -30387,6 +30461,7 @@
         133,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -30400,6 +30475,7 @@
         54,
         146
       ],
+      "comment_inline": "Total = element count * element size",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "imul16",
@@ -30412,6 +30488,7 @@
         160,
         0
       ],
+      "comment_inline": "Store the dimension count in the descriptor",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -30422,6 +30499,7 @@
         165,
         21
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_flag",
@@ -30434,6 +30512,7 @@
         145,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -30446,6 +30525,7 @@
         101,
         42
       ],
+      "comment_inline": "Add it to the total size",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -30458,6 +30538,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -30470,6 +30551,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c91d2",
@@ -30482,6 +30564,7 @@
         230,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -30497,6 +30580,7 @@
       "labels": [
         "c91d2"
       ],
+      "comment_inline": "Point at the current variable top",
       "xref_summaries": [
         "&91d2 referenced 1 time by &91ce"
       ],
@@ -30515,6 +30599,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -30527,6 +30612,7 @@
         165,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -30539,6 +30625,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -30550,6 +30637,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "New top = top + total size",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -30559,6 +30647,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -30570,6 +30659,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -30579,6 +30669,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -30591,6 +30682,7 @@
         101,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop_1",
@@ -30603,6 +30695,7 @@
         176,
         52
       ],
+      "comment_inline": "overflow: No room",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9218",
@@ -30614,6 +30707,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -30623,6 +30717,7 @@
         196,
         4
       ],
+      "comment_inline": "collides with the stack?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_stack_ptr",
@@ -30635,6 +30730,7 @@
         229,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_stack_ptr_1",
@@ -30647,6 +30743,7 @@
         176,
         45
       ],
+      "comment_inline": "yes: No room",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9218",
@@ -30659,6 +30756,7 @@
         132,
         2
       ],
+      "comment_inline": "Commit the new variable top",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_vartop",
@@ -30671,6 +30769,7 @@
         134,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_vartop_1",
@@ -30683,6 +30782,7 @@
         165,
         55
       ],
+      "comment_inline": "Zero the array storage from the old top",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -30695,6 +30795,7 @@
         101,
         21
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_print_flag",
@@ -30706,6 +30807,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -30715,6 +30817,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -30725,6 +30828,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -30737,6 +30841,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c91fc",
@@ -30749,6 +30854,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -30764,6 +30870,7 @@
       "labels": [
         "c91fc"
       ],
+      "comment_inline": "store a zero byte",
       "xref_summaries": [
         "&91fc referenced 3 times by &91f8, &9205, &9209"
       ],
@@ -30783,6 +30890,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -30792,6 +30900,7 @@
         208,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9203",
@@ -30804,6 +30913,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -30819,6 +30929,7 @@
       "labels": [
         "c9203"
       ],
+      "comment_inline": "reached the new top?",
       "xref_summaries": [
         "&9203 referenced 1 time by &91ff"
       ],
@@ -30837,6 +30948,7 @@
         208,
         245
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c91fc",
@@ -30849,6 +30961,7 @@
         228,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_general_1",
@@ -30861,6 +30974,7 @@
         208,
         241
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c91fc",
@@ -30877,6 +30991,7 @@
       "labels": [
         "c920b"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&920b referenced 1 time by &9124"
       ],
@@ -30895,6 +31010,7 @@
         201,
         44
       ],
+      "comment_inline": "','  another array?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -30905,6 +31021,7 @@
         240,
         3
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9215",
@@ -30918,6 +31035,7 @@
         150,
         139
       ],
+      "comment_inline": "no: next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8b96",
@@ -30934,6 +31052,7 @@
       "labels": [
         "c9215"
       ],
+      "comment_inline": "DIM the next array",
       "xref_summaries": [
         "&9215 referenced 1 time by &9210"
       ],
@@ -30954,6 +31073,7 @@
       "labels": [
         "c9218"
       ],
+      "comment_inline": "No room error",
       "xref_summaries": [
         "&9218 referenced 3 times by &90dc, &91e2, &91e9"
       ],
@@ -31009,7 +31129,7 @@
       "labels": [
         "iwa_inc"
       ],
-      "comment_inline": "Increment IWA: byte 0",
+      "comment_inline": "Increment IWA: byte 0 byte 0",
       "xref_summaries": [
         "&9222 referenced 4 times by &8f59, &90ee, &9195, &af39"
       ],
@@ -31031,7 +31151,7 @@
         208,
         10
       ],
-      "comment_inline": "No carry: done",
+      "comment_inline": "No carry: done no carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -31044,7 +31164,7 @@
         230,
         43
       ],
-      "comment_inline": "Carry into byte 1",
+      "comment_inline": "Carry into byte 1 byte 1",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -31057,7 +31177,7 @@
         208,
         6
       ],
-      "comment_inline": "done",
+      "comment_inline": "done no carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -31070,7 +31190,7 @@
         230,
         44
       ],
-      "comment_inline": "byte 2",
+      "comment_inline": "byte 2 byte 2",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_2",
@@ -31083,7 +31203,7 @@
         208,
         2
       ],
-      "comment_inline": "done",
+      "comment_inline": "done no carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -31096,7 +31216,7 @@
         230,
         45
       ],
-      "comment_inline": "byte 3",
+      "comment_inline": "byte 3 byte 3",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_3",
@@ -31111,7 +31231,7 @@
       "labels": [
         "return_8"
       ],
-      "comment_inline": "IWA incremented",
+      "comment_inline": "IWA incremented Return",
       "xref_summaries": [
         "&9230 referenced 3 times by &9224, &9228, &922c"
       ],
