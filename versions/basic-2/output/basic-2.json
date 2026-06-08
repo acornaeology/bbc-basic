@@ -96232,6 +96232,7 @@
       "labels": [
         "stmt_on"
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -96244,6 +96245,7 @@
         201,
         133
       ],
+      "comment_inline": "ERROR token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&85"
@@ -96254,6 +96256,7 @@
         240,
         214
       ],
+      "comment_inline": "yes: ON ERROR",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb8f2",
@@ -96266,6 +96269,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up over the character",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -96279,6 +96283,7 @@
         29,
         155
       ],
+      "comment_inline": "Evaluate the selector",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -96292,6 +96297,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -96304,6 +96310,7 @@
         164,
         27
       ],
+      "comment_inline": "Advance past it",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -96315,6 +96322,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -96324,6 +96332,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -96336,6 +96345,7 @@
         224,
         229
       ],
+      "comment_inline": "GOTO token?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&e5"
@@ -96346,6 +96356,7 @@
         240,
         4
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb931",
@@ -96358,6 +96369,7 @@
         224,
         228
       ],
+      "comment_inline": "GOSUB token?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&e4"
@@ -96368,6 +96380,7 @@
         208,
         217
       ],
+      "comment_inline": "no: syntax error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb90a",
@@ -96382,6 +96395,7 @@
       "labels": [
         "cb931"
       ],
+      "comment_inline": "Save the GOTO/GOSUB token",
       "xref_summaries": [
         "&b931 referenced 1 time by &b92b"
       ],
@@ -96396,6 +96410,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -96405,6 +96420,7 @@
         165,
         43
       ],
+      "comment_inline": "Selector > 255?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -96417,6 +96433,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -96429,6 +96446,7 @@
         5,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -96441,6 +96459,7 @@
         208,
         66
       ],
+      "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb97d",
@@ -96453,6 +96472,7 @@
         166,
         42
       ],
+      "comment_inline": "Selector zero?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa",
@@ -96465,6 +96485,7 @@
         240,
         62
       ],
+      "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb97d",
@@ -96476,6 +96497,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "Count down to the n-th destination",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -96485,6 +96507,7 @@
         240,
         26
       ],
+      "comment_inline": "reached it: use the first",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb95c",
@@ -96497,6 +96520,7 @@
         164,
         10
       ],
+      "comment_inline": "Line index",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -96512,6 +96536,7 @@
       "labels": [
         "cb944"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b944 referenced 2 times by &b955, &b958"
       ],
@@ -96530,6 +96555,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -96539,6 +96565,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -96549,6 +96576,7 @@
         240,
         50
       ],
+      "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb97d",
@@ -96561,6 +96589,7 @@
         201,
         58
       ],
+      "comment_inline": "':' end of statement?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -96571,6 +96600,7 @@
         240,
         46
       ],
+      "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb97d",
@@ -96583,6 +96613,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -96593,6 +96624,7 @@
         240,
         42
       ],
+      "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb97d",
@@ -96605,6 +96637,7 @@
         201,
         44
       ],
+      "comment_inline": "',' separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -96615,6 +96648,7 @@
         208,
         237
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb944",
@@ -96626,6 +96660,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "count this destination",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -96635,6 +96670,7 @@
         208,
         234
       ],
+      "comment_inline": "not yet reached: continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb944",
@@ -96647,6 +96683,7 @@
         132,
         10
       ],
+      "comment_inline": "Save the line index",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -96663,6 +96700,7 @@
       "labels": [
         "cb95c"
       ],
+      "comment_inline": "Read the destination line number",
       "xref_summaries": [
         "&b95c referenced 1 time by &b940"
       ],
@@ -96680,6 +96718,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the token",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -96689,6 +96728,7 @@
         201,
         228
       ],
+      "comment_inline": "GOSUB?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&e4"
@@ -96699,6 +96739,7 @@
         240,
         6
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb96a",
@@ -96712,6 +96753,7 @@
         119,
         152
       ],
+      "comment_inline": "GOTO: update the index and check Escape",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9877",
@@ -96725,6 +96767,7 @@
         210,
         184
       ],
+      "comment_inline": "jump to the line",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb8d2",
@@ -96740,6 +96783,7 @@
       "labels": [
         "cb96a"
       ],
+      "comment_inline": "GOSUB: line pointer",
       "xref_summaries": [
         "&b96a referenced 1 time by &b962"
       ],
@@ -96761,6 +96805,7 @@
       "labels": [
         "loop_cb96c"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b96c referenced 1 time by &b975"
       ],
@@ -96778,6 +96823,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -96787,6 +96833,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -96797,6 +96844,7 @@
         240,
         4
       ],
+      "comment_inline": "yes: return point here",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb977",
@@ -96809,6 +96857,7 @@
         201,
         58
       ],
+      "comment_inline": "':' separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -96819,6 +96868,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning to the return point",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb96c",
@@ -96833,6 +96883,7 @@
       "labels": [
         "cb977"
       ],
+      "comment_inline": "Set the return index",
       "xref_summaries": [
         "&b977 referenced 1 time by &b971"
       ],
@@ -96848,6 +96899,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -96861,6 +96913,7 @@
         139,
         184
       ],
+      "comment_inline": "do the GOSUB",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb88b",
@@ -96876,6 +96929,7 @@
       "labels": [
         "cb97d"
       ],
+      "comment_inline": "Out of range: line index",
       "xref_summaries": [
         "&b97d referenced 5 times by &b939, &b93d, &b949, &b94d, &b951"
       ],
@@ -96897,6 +96951,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "drop the token",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -96909,6 +96964,7 @@
       "labels": [
         "loop_cb980"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b980 referenced 1 time by &b989"
       ],
@@ -96926,6 +96982,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -96935,6 +96992,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -96945,6 +97003,7 @@
         240,
         14
       ],
+      "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb995",
@@ -96957,6 +97016,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -96967,6 +97027,7 @@
         208,
         245
       ],
+      "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb980",
@@ -96978,6 +97039,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "ON range error",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -97025,6 +97087,7 @@
       "labels": [
         "cb995"
       ],
+      "comment_inline": "Step past ELSE",
       "xref_summaries": [
         "&b995 referenced 1 time by &b985"
       ],
@@ -97044,6 +97107,7 @@
         227,
         152
       ],
+      "comment_inline": "execute what follows",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c98e3",

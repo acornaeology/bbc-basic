@@ -10539,91 +10539,91 @@ l848a = sub_c847b+15
 ; ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list |
 ; ON ERROR stmts.
 .stmt_on
-    jsr skip_spaces                                                   ; b915: 20 97 8a     ..   
-    cmp #&85                                                          ; b918: c9 85       ..    
-    beq loop_cb8f2                                                    ; b91a: f0 d6       ..    
-    dec zp_text_ptr_off                                               ; b91c: c6 0a       ..    
-    jsr eval_expr                                                     ; b91e: 20 1d 9b     ..   
-    jsr coerce_to_integer                                             ; b921: 20 f0 92     ..   
-    ldy zp_text_ptr2_off                                              ; b924: a4 1b       ..    
-    iny                                                               ; b926: c8          .     
-    sty zp_text_ptr_off                                               ; b927: 84 0a       ..    
-    cpx #&e5                                                          ; b929: e0 e5       ..    
-    beq cb931                                                         ; b92b: f0 04       ..    
-    cpx #&e4                                                          ; b92d: e0 e4       ..    
-    bne loop_cb90a                                                    ; b92f: d0 d9       ..    
+    jsr skip_spaces                                                   ; b915: 20 97 8a     ..      ; Next character
+    cmp #&85                                                          ; b918: c9 85       ..       ; ERROR token?
+    beq loop_cb8f2                                                    ; b91a: f0 d6       ..       ; yes: ON ERROR
+    dec zp_text_ptr_off                                               ; b91c: c6 0a       ..       ; Back up over the character
+    jsr eval_expr                                                     ; b91e: 20 1d 9b     ..      ; Evaluate the selector
+    jsr coerce_to_integer                                             ; b921: 20 f0 92     ..      ; coerce to integer
+    ldy zp_text_ptr2_off                                              ; b924: a4 1b       ..       ; Advance past it
+    iny                                                               ; b926: c8          .        ; ...
+    sty zp_text_ptr_off                                               ; b927: 84 0a       ..       ; ...
+    cpx #&e5                                                          ; b929: e0 e5       ..       ; GOTO token?
+    beq cb931                                                         ; b92b: f0 04       ..       ; yes
+    cpx #&e4                                                          ; b92d: e0 e4       ..       ; GOSUB token?
+    bne loop_cb90a                                                    ; b92f: d0 d9       ..       ; no: syntax error
 ; &b931 referenced 1 time by &b92b
 .cb931
-    txa                                                               ; b931: 8a          .     
-    pha                                                               ; b932: 48          H     
-    lda zp_iwa_1                                                      ; b933: a5 2b       .+    
-    ora zp_iwa_2                                                      ; b935: 05 2c       .,    
-    ora zp_iwa_3                                                      ; b937: 05 2d       .-    
-    bne cb97d                                                         ; b939: d0 42       .B    
-    ldx zp_iwa                                                        ; b93b: a6 2a       .*    
-    beq cb97d                                                         ; b93d: f0 3e       .>    
-    dex                                                               ; b93f: ca          .     
-    beq cb95c                                                         ; b940: f0 1a       ..    
-    ldy zp_text_ptr_off                                               ; b942: a4 0a       ..    
+    txa                                                               ; b931: 8a          .        ; Save the GOTO/GOSUB token
+    pha                                                               ; b932: 48          H        ; ...
+    lda zp_iwa_1                                                      ; b933: a5 2b       .+       ; Selector > 255?
+    ora zp_iwa_2                                                      ; b935: 05 2c       .,       ; ...
+    ora zp_iwa_3                                                      ; b937: 05 2d       .-       ; ...
+    bne cb97d                                                         ; b939: d0 42       .B       ; yes: out of range
+    ldx zp_iwa                                                        ; b93b: a6 2a       .*       ; Selector zero?
+    beq cb97d                                                         ; b93d: f0 3e       .>       ; yes: out of range
+    dex                                                               ; b93f: ca          .        ; Count down to the n-th destination
+    beq cb95c                                                         ; b940: f0 1a       ..       ; reached it: use the first
+    ldy zp_text_ptr_off                                               ; b942: a4 0a       ..       ; Line index
 ; &b944 referenced 2 times by &b955, &b958
 .cb944
-    lda (zp_text_ptr),y                                               ; b944: b1 0b       ..    
-    iny                                                               ; b946: c8          .     
-    cmp #&0d                                                          ; b947: c9 0d       ..    
-    beq cb97d                                                         ; b949: f0 32       .2    
-    cmp #&3a ; ':'                                                    ; b94b: c9 3a       .:    
-    beq cb97d                                                         ; b94d: f0 2e       ..    
-    cmp #&8b                                                          ; b94f: c9 8b       ..    
-    beq cb97d                                                         ; b951: f0 2a       .*    
-    cmp #&2c ; ','                                                    ; b953: c9 2c       .,    
-    bne cb944                                                         ; b955: d0 ed       ..    
-    dex                                                               ; b957: ca          .     
-    bne cb944                                                         ; b958: d0 ea       ..    
-    sty zp_text_ptr_off                                               ; b95a: 84 0a       ..    
+    lda (zp_text_ptr),y                                               ; b944: b1 0b       ..       ; Next character
+    iny                                                               ; b946: c8          .        ; ...
+    cmp #&0d                                                          ; b947: c9 0d       ..       ; end of line?
+    beq cb97d                                                         ; b949: f0 32       .2       ; yes: out of range
+    cmp #&3a ; ':'                                                    ; b94b: c9 3a       .:       ; ':' end of statement?
+    beq cb97d                                                         ; b94d: f0 2e       ..       ; yes: out of range
+    cmp #&8b                                                          ; b94f: c9 8b       ..       ; ELSE?
+    beq cb97d                                                         ; b951: f0 2a       .*       ; yes: out of range
+    cmp #&2c ; ','                                                    ; b953: c9 2c       .,       ; ',' separator?
+    bne cb944                                                         ; b955: d0 ed       ..       ; no: keep scanning
+    dex                                                               ; b957: ca          .        ; count this destination
+    bne cb944                                                         ; b958: d0 ea       ..       ; not yet reached: continue
+    sty zp_text_ptr_off                                               ; b95a: 84 0a       ..       ; Save the line index
 ; &b95c referenced 1 time by &b940
 .cb95c
-    jsr find_line_target                                              ; b95c: 20 9a b9     ..   
-    pla                                                               ; b95f: 68          h     
-    cmp #&e4                                                          ; b960: c9 e4       ..    
-    beq cb96a                                                         ; b962: f0 06       ..    
-    jsr c9877                                                         ; b964: 20 77 98     w.   
-    jmp cb8d2                                                         ; b967: 4c d2 b8    L..   
+    jsr find_line_target                                              ; b95c: 20 9a b9     ..      ; Read the destination line number
+    pla                                                               ; b95f: 68          h        ; Recover the token
+    cmp #&e4                                                          ; b960: c9 e4       ..       ; GOSUB?
+    beq cb96a                                                         ; b962: f0 06       ..       ; yes
+    jsr c9877                                                         ; b964: 20 77 98     w.      ; GOTO: update the index and check Escape
+    jmp cb8d2                                                         ; b967: 4c d2 b8    L..      ; jump to the line
 ; &b96a referenced 1 time by &b962
 .cb96a
-    ldy zp_text_ptr_off                                               ; b96a: a4 0a       ..    
+    ldy zp_text_ptr_off                                               ; b96a: a4 0a       ..       ; GOSUB: line pointer
 ; &b96c referenced 1 time by &b975
 .loop_cb96c
-    lda (zp_text_ptr),y                                               ; b96c: b1 0b       ..    
-    iny                                                               ; b96e: c8          .     
-    cmp #&0d                                                          ; b96f: c9 0d       ..    
-    beq cb977                                                         ; b971: f0 04       ..    
-    cmp #&3a ; ':'                                                    ; b973: c9 3a       .:    
-    bne loop_cb96c                                                    ; b975: d0 f5       ..    
+    lda (zp_text_ptr),y                                               ; b96c: b1 0b       ..       ; Next character
+    iny                                                               ; b96e: c8          .        ; ...
+    cmp #&0d                                                          ; b96f: c9 0d       ..       ; end of line?
+    beq cb977                                                         ; b971: f0 04       ..       ; yes: return point here
+    cmp #&3a ; ':'                                                    ; b973: c9 3a       .:       ; ':' separator?
+    bne loop_cb96c                                                    ; b975: d0 f5       ..       ; no: keep scanning to the return point
 ; &b977 referenced 1 time by &b971
 .cb977
-    dey                                                               ; b977: 88          .     
-    sty zp_text_ptr_off                                               ; b978: 84 0a       ..    
-    jmp cb88b                                                         ; b97a: 4c 8b b8    L..   
+    dey                                                               ; b977: 88          .        ; Set the return index
+    sty zp_text_ptr_off                                               ; b978: 84 0a       ..       ; ...
+    jmp cb88b                                                         ; b97a: 4c 8b b8    L..      ; do the GOSUB
 ; &b97d referenced 5 times by &b939, &b93d, &b949, &b94d, &b951
 .cb97d
-    ldy zp_text_ptr_off                                               ; b97d: a4 0a       ..    
-    pla                                                               ; b97f: 68          h     
+    ldy zp_text_ptr_off                                               ; b97d: a4 0a       ..       ; Out of range: line index
+    pla                                                               ; b97f: 68          h        ; drop the token
 ; &b980 referenced 1 time by &b989
 .loop_cb980
-    lda (zp_text_ptr),y                                               ; b980: b1 0b       ..    
-    iny                                                               ; b982: c8          .     
-    cmp #&8b                                                          ; b983: c9 8b       ..    
-    beq cb995                                                         ; b985: f0 0e       ..    
-    cmp #&0d                                                          ; b987: c9 0d       ..    
-    bne loop_cb980                                                    ; b989: d0 f5       ..    
-    brk                                                               ; b98b: 00          .     
+    lda (zp_text_ptr),y                                               ; b980: b1 0b       ..       ; Next character
+    iny                                                               ; b982: c8          .        ; ...
+    cmp #&8b                                                          ; b983: c9 8b       ..       ; ELSE?
+    beq cb995                                                         ; b985: f0 0e       ..       ; yes: use it
+    cmp #&0d                                                          ; b987: c9 0d       ..       ; end of line?
+    bne loop_cb980                                                    ; b989: d0 f5       ..       ; no: keep scanning
+    brk                                                               ; b98b: 00          .        ; ON range error
     equb &28, &ee                                                     ; b98c: 28 ee       (.    
     equs " range"                                                     ; b98e: 20 72 61...  ra...
     equb &00                                                          ; b994: 00          .     
 ; &b995 referenced 1 time by &b985
 .cb995
-    sty zp_text_ptr_off                                               ; b995: 84 0a       ..    
-    jmp c98e3                                                         ; b997: 4c e3 98    L..   
+    sty zp_text_ptr_off                                               ; b995: 84 0a       ..       ; Step past ELSE
+    jmp c98e3                                                         ; b997: 4c e3 98    L..      ; execute what follows
 ; ***************************************************************************************
 ; Resolve a line-number operand to a program line
 ;
