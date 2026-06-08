@@ -3636,68 +3636,68 @@ l848a = sub_c847b+15
 ;
 ; Set the graphics colour and plotting action. GCOL action, colour.
 .stmt_gcol
-    jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.   
-    lda zp_iwa                                                        ; 937d: a5 2a       .*    
-    pha                                                               ; 937f: 48          H     
-    jsr sub_c92da                                                     ; 9380: 20 da 92     ..   
-    jsr sub_c9852                                                     ; 9383: 20 52 98     R.   
-    lda #&12                                                          ; 9386: a9 12       ..    
-    jsr oswrch                                                        ; 9388: 20 ee ff     ..   
-    jmp c93da                                                         ; 938b: 4c da 93    L..   
+    jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.      ; Evaluate the GCOL mode
+    lda zp_iwa                                                        ; 937d: a5 2a       .*       ; save it
+    pha                                                               ; 937f: 48          H        ; ...
+    jsr sub_c92da                                                     ; 9380: 20 da 92     ..      ; Step past the comma, evaluate the colour
+    jsr sub_c9852                                                     ; 9383: 20 52 98     R.      ; check the statement ends
+    lda #&12                                                          ; 9386: a9 12       ..       ; VDU 18 (GCOL)
+    jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; ...
+    jmp c93da                                                         ; 938b: 4c da 93    L..      ; send the mode and colour
 ; ***************************************************************************************
 ; COLOUR
 ;
 ; Select the text colour or redefine a logical colour. COLOUR n.
 .stmt_colour
-    lda #&11                                                          ; 938e: a9 11       ..    
-    pha                                                               ; 9390: 48          H     
-    jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.   
-    jsr check_end_of_statement                                        ; 9394: 20 57 98     W.   
-    jmp c93da                                                         ; 9397: 4c da 93    L..   
+    lda #&11                                                          ; 938e: a9 11       ..       ; VDU 17 (COLOUR)
+    pha                                                               ; 9390: 48          H        ; ...
+    jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.      ; Evaluate the colour
+    jsr check_end_of_statement                                        ; 9394: 20 57 98     W.      ; check the statement ends
+    jmp c93da                                                         ; 9397: 4c da 93    L..      ; send VDU 17 and the colour
 ; ***************************************************************************************
 ; MODE
 ;
 ; Select a screen mode, resetting the display. MODE n.
 .stmt_mode
-    lda #&16                                                          ; 939a: a9 16       ..    
-    pha                                                               ; 939c: 48          H     
-    jsr eval_expr_to_integer                                          ; 939d: 20 21 88     !.   
-    jsr check_end_of_statement                                        ; 93a0: 20 57 98     W.   
-    jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..   
-    cpx #&ff                                                          ; 93a6: e0 ff       ..    
-    bne c93d7                                                         ; 93a8: d0 2d       .-    
-    cpy #&ff                                                          ; 93aa: c0 ff       ..    
-    bne c93d7                                                         ; 93ac: d0 29       .)    
-    lda zp_stack_ptr                                                  ; 93ae: a5 04       ..    
-    cmp zp_himem                                                      ; 93b0: c5 06       ..    
-    bne c9372                                                         ; 93b2: d0 be       ..    
-    lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..    
-    cmp zp_himem_1                                                    ; 93b6: c5 07       ..    
-    bne c9372                                                         ; 93b8: d0 b8       ..    
-    ldx zp_iwa                                                        ; 93ba: a6 2a       .*    
-    lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..    
+    lda #&16                                                          ; 939a: a9 16       ..       ; VDU 22 (MODE)
+    pha                                                               ; 939c: 48          H        ; ...
+    jsr eval_expr_to_integer                                          ; 939d: 20 21 88     !.      ; Evaluate the mode number
+    jsr check_end_of_statement                                        ; 93a0: 20 57 98     W.      ; check the statement ends
+    jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..      ; Read the high word of the machine address
+    cpx #&ff                                                          ; 93a6: e0 ff       ..       ; not &xxFF: skip the memory test
+    bne c93d7                                                         ; 93a8: d0 2d       .-       ; ...
+    cpy #&ff                                                          ; 93aa: c0 ff       ..       ; not &FFFF: skip the memory test
+    bne c93d7                                                         ; 93ac: d0 29       .)       ; ...
+    lda zp_stack_ptr                                                  ; 93ae: a5 04       ..       ; Stack not empty (STACK != HIMEM)?
+    cmp zp_himem                                                      ; 93b0: c5 06       ..       ; ...
+    bne c9372                                                         ; 93b2: d0 be       ..       ; yes: Bad MODE
+    lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..       ; ...
+    cmp zp_himem_1                                                    ; 93b6: c5 07       ..       ; ...
+    bne c9372                                                         ; 93b8: d0 b8       ..       ; Bad MODE
+    ldx zp_iwa                                                        ; 93ba: a6 2a       .*       ; Top of RAM for this mode
+    lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..       ; ...
     jsr osbyte                                                        ; 93be: 20 f4 ff     ..      ; Read top of user RAM for given screen mode
-    cpx zp_vartop                                                     ; 93c1: e4 02       ..    
-    tya                                                               ; 93c3: 98          .     
-    sbc zp_vartop_1                                                   ; 93c4: e5 03       ..    
-    bcc c9372                                                         ; 93c6: 90 aa       ..    
-    cpx zp_top                                                        ; 93c8: e4 12       ..    
-    tya                                                               ; 93ca: 98          .     
-    sbc zp_top_1                                                      ; 93cb: e5 13       ..    
-    bcc c9372                                                         ; 93cd: 90 a3       ..    
-    stx zp_himem                                                      ; 93cf: 86 06       ..    
-    stx zp_stack_ptr                                                  ; 93d1: 86 04       ..    
-    sty zp_himem_1                                                    ; 93d3: 84 07       ..    
-    sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..    
+    cpx zp_vartop                                                     ; 93c1: e4 02       ..       ; below the variables?
+    tya                                                               ; 93c3: 98          .        ; ...
+    sbc zp_vartop_1                                                   ; 93c4: e5 03       ..       ; ...
+    bcc c9372                                                         ; 93c6: 90 aa       ..       ; yes: Bad MODE
+    cpx zp_top                                                        ; 93c8: e4 12       ..       ; below the program top?
+    tya                                                               ; 93ca: 98          .        ; ...
+    sbc zp_top_1                                                      ; 93cb: e5 13       ..       ; ...
+    bcc c9372                                                         ; 93cd: 90 a3       ..       ; yes: Bad MODE
+    stx zp_himem                                                      ; 93cf: 86 06       ..       ; Set HIMEM and STACK to the new top
+    stx zp_stack_ptr                                                  ; 93d1: 86 04       ..       ; ...
+    sty zp_himem_1                                                    ; 93d3: 84 07       ..       ; ...
+    sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..       ; ...
 ; &93d7 referenced 2 times by &93a8, &93ac
 .c93d7
-    jsr cbc28                                                         ; 93d7: 20 28 bc     (.   
+    jsr cbc28                                                         ; 93d7: 20 28 bc     (.      ; Reset the print column
 ; &93da referenced 2 times by &938b, &9397
 .c93da
-    pla                                                               ; 93da: 68          h     
-    jsr oswrch                                                        ; 93db: 20 ee ff     ..   
-    jsr sub_c9456                                                     ; 93de: 20 56 94     V.   
-    jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..   
+    pla                                                               ; 93da: 68          h        ; Send the stacked VDU byte
+    jsr oswrch                                                        ; 93db: 20 ee ff     ..      ; ...
+    jsr sub_c9456                                                     ; 93de: 20 56 94     V.      ; Send the parameter
+    jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; MOVE
 ;

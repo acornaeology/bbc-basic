@@ -33637,6 +33637,7 @@
       "labels": [
         "stmt_gcol"
       ],
+      "comment_inline": "Evaluate the GCOL mode",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -33649,6 +33650,7 @@
         165,
         42
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -33660,6 +33662,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -33670,6 +33673,7 @@
         218,
         146
       ],
+      "comment_inline": "Step past the comma, evaluate the colour",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92da",
@@ -33683,6 +33687,7 @@
         82,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -33695,6 +33700,7 @@
         169,
         18
       ],
+      "comment_inline": "VDU 18 (GCOL)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&12"
@@ -33706,6 +33712,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -33719,6 +33726,7 @@
         218,
         147
       ],
+      "comment_inline": "send the mode and colour",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c93da",
@@ -33734,6 +33742,7 @@
       "labels": [
         "stmt_colour"
       ],
+      "comment_inline": "VDU 17 (COLOUR)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&11"
@@ -33743,6 +33752,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -33753,6 +33763,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the colour",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -33766,6 +33777,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -33779,6 +33791,7 @@
         218,
         147
       ],
+      "comment_inline": "send VDU 17 and the colour",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c93da",
@@ -33794,6 +33807,7 @@
       "labels": [
         "stmt_mode"
       ],
+      "comment_inline": "VDU 22 (MODE)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&16"
@@ -33803,6 +33817,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -33813,6 +33828,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the mode number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -33826,6 +33842,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -33839,6 +33856,7 @@
         231,
         190
       ],
+      "comment_inline": "Read the high word of the machine address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbee7",
@@ -33851,6 +33869,7 @@
         224,
         255
       ],
+      "comment_inline": "not &xxFF: skip the memory test",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&ff"
@@ -33861,6 +33880,7 @@
         208,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c93d7",
@@ -33873,6 +33893,7 @@
         192,
         255
       ],
+      "comment_inline": "not &FFFF: skip the memory test",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&ff"
@@ -33883,6 +33904,7 @@
         208,
         41
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c93d7",
@@ -33895,6 +33917,7 @@
         165,
         4
       ],
+      "comment_inline": "Stack not empty (STACK != HIMEM)?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -33907,6 +33930,7 @@
         197,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_himem",
@@ -33919,6 +33943,7 @@
         208,
         190
       ],
+      "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9372",
@@ -33931,6 +33956,7 @@
         165,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr_1",
@@ -33943,6 +33969,7 @@
         197,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_himem_1",
@@ -33955,6 +33982,7 @@
         208,
         184
       ],
+      "comment_inline": "Bad MODE",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9372",
@@ -33967,6 +33995,7 @@
         166,
         42
       ],
+      "comment_inline": "Top of RAM for this mode",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_iwa",
@@ -33979,6 +34008,7 @@
         169,
         133
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_himem_for_mode"
@@ -34003,6 +34033,7 @@
         228,
         2
       ],
+      "comment_inline": "below the variables?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_vartop",
@@ -34014,6 +34045,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -34023,6 +34055,7 @@
         229,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_vartop_1",
@@ -34035,6 +34068,7 @@
         144,
         170
       ],
+      "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9372",
@@ -34047,6 +34081,7 @@
         228,
         18
       ],
+      "comment_inline": "below the program top?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_top",
@@ -34058,6 +34093,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -34067,6 +34103,7 @@
         229,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_top_1",
@@ -34079,6 +34116,7 @@
         144,
         163
       ],
+      "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9372",
@@ -34091,6 +34129,7 @@
         134,
         6
       ],
+      "comment_inline": "Set HIMEM and STACK to the new top",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_himem",
@@ -34103,6 +34142,7 @@
         134,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_stack_ptr",
@@ -34115,6 +34155,7 @@
         132,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_himem_1",
@@ -34127,6 +34168,7 @@
         132,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_stack_ptr_1",
@@ -34143,6 +34185,7 @@
       "labels": [
         "c93d7"
       ],
+      "comment_inline": "Reset the print column",
       "xref_summaries": [
         "&93d7 referenced 2 times by &93a8, &93ac"
       ],
@@ -34164,6 +34207,7 @@
       "labels": [
         "c93da"
       ],
+      "comment_inline": "Send the stacked VDU byte",
       "xref_summaries": [
         "&93da referenced 2 times by &938b, &9397"
       ],
@@ -34181,6 +34225,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -34194,6 +34239,7 @@
         86,
         148
       ],
+      "comment_inline": "Send the parameter",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9456",
@@ -34207,6 +34253,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
