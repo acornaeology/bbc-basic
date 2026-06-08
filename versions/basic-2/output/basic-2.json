@@ -26638,6 +26638,7 @@
       "labels": [
         "stmt_delete"
       ],
+      "comment_inline": "Read the start line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -26650,6 +26651,7 @@
         144,
         248
       ],
+      "comment_inline": "none: Syntax error",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8f2e",
@@ -26663,6 +26665,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -26676,6 +26679,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -26688,6 +26692,7 @@
         201,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -26698,6 +26703,7 @@
         208,
         238
       ],
+      "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8f2e",
@@ -26711,6 +26717,7 @@
         223,
         151
       ],
+      "comment_inline": "Read the end line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -26723,6 +26730,7 @@
         144,
         233
       ],
+      "comment_inline": "none: error",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8f2e",
@@ -26736,6 +26744,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -26748,6 +26757,7 @@
         165,
         42
       ],
+      "comment_inline": "Save the end line",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -26760,6 +26770,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -26772,6 +26783,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -26784,6 +26796,7 @@
         133,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -26797,6 +26810,7 @@
         234,
         189
       ],
+      "comment_inline": "Recover the start line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -26813,6 +26827,7 @@
       "labels": [
         "loop_c8f53"
       ],
+      "comment_inline": "Delete the line",
       "xref_summaries": [
         "&8f53 referenced 1 time by &8f64"
       ],
@@ -26832,6 +26847,7 @@
         123,
         152
       ],
+      "comment_inline": "Find the next line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c987b",
@@ -26845,6 +26861,7 @@
         34,
         146
       ],
+      "comment_inline": "Advance the line counter",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_inc",
@@ -26857,6 +26874,7 @@
         165,
         57
       ],
+      "comment_inline": "past the end line?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -26869,6 +26887,7 @@
         197,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa",
@@ -26881,6 +26900,7 @@
         165,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l003a",
@@ -26893,6 +26913,7 @@
         229,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -26905,6 +26926,7 @@
         176,
         237
       ],
+      "comment_inline": "no: delete the next",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_c8f53",
@@ -26918,6 +26940,7 @@
         243,
         138
       ],
+      "comment_inline": "done: immediate mode",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8af3",
@@ -26933,6 +26956,7 @@
       "labels": [
         "sub_c8f69"
       ],
+      "comment_inline": "Default start = 10",
       "xref_summaries": [
         "&8f69 referenced 2 times by &8fa3, &90ac"
       ],
@@ -26951,6 +26975,7 @@
         216,
         174
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -26964,6 +26989,7 @@
         223,
         151
       ],
+      "comment_inline": "Read the start line if given",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -26977,6 +27003,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -26989,6 +27016,7 @@
         169,
         10
       ],
+      "comment_inline": "Default increment = 10",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&0a"
@@ -27000,6 +27028,7 @@
         216,
         174
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -27013,6 +27042,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -27025,6 +27055,7 @@
         201,
         44
       ],
+      "comment_inline": "','  increment given?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -27035,6 +27066,7 @@
         208,
         13
       ],
+      "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8f8d",
@@ -27048,6 +27080,7 @@
         223,
         151
       ],
+      "comment_inline": "Read the increment",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -27060,6 +27093,7 @@
         165,
         43
       ],
+      "comment_inline": "zero?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -27072,6 +27106,7 @@
         208,
         88
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8fdf",
@@ -27084,6 +27119,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -27096,6 +27132,7 @@
         240,
         84
       ],
+      "comment_inline": "zero increment: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8fdf",
@@ -27108,6 +27145,7 @@
         230,
         10
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -27123,6 +27161,7 @@
       "labels": [
         "c8f8d"
       ],
+      "comment_inline": "back up",
       "xref_summaries": [
         "&8f8d referenced 1 time by &8f7e"
       ],
@@ -27142,6 +27181,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "check_end_of_statement",
@@ -29002,6 +29042,7 @@
       "labels": [
         "stmt_auto"
       ],
+      "comment_inline": "Parse the start and increment",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8f69",
@@ -29014,6 +29055,7 @@
         165,
         42
       ],
+      "comment_inline": "Save the increment",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -29025,6 +29067,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -29035,6 +29078,7 @@
         234,
         189
       ],
+      "comment_inline": "Recover the start line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -29051,6 +29095,7 @@
       "labels": [
         "c90b5"
       ],
+      "comment_inline": "Stack the line number",
       "xref_summaries": [
         "&90b5 referenced 2 times by &90d3, &90d7"
       ],
@@ -29071,6 +29116,7 @@
         35,
         153
       ],
+      "comment_inline": "Print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9923",
@@ -29083,6 +29129,7 @@
         169,
         32
       ],
+      "comment_inline": "Print a space and read a line",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&20"
@@ -29094,6 +29141,7 @@
         2,
         188
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "read_input_line",
@@ -29107,6 +29155,7 @@
         234,
         189
       ],
+      "comment_inline": "Pop the line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -29120,6 +29169,7 @@
         81,
         137
       ],
+      "comment_inline": "Tokenise the line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "tokenise_line",
@@ -29133,6 +29183,7 @@
         141,
         188
       ],
+      "comment_inline": "Insert it into the program",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc8d",
@@ -29146,6 +29197,7 @@
         32,
         189
       ],
+      "comment_inline": "Clear variables and heap",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_vars_heap_stack",
@@ -29157,6 +29209,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Increment",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -29165,6 +29218,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -29173,6 +29227,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Next line number = line + increment",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -29182,6 +29237,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -29194,6 +29250,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -29206,6 +29263,7 @@
         144,
         224
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c90b5",
@@ -29218,6 +29276,7 @@
         230,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -29230,6 +29289,7 @@
         16,
         220
       ],
+      "comment_inline": "still in range: loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c90b5",
@@ -29243,6 +29303,7 @@
         243,
         138
       ],
+      "comment_inline": "overflow: stop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8af3",

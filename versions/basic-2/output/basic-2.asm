@@ -2888,52 +2888,52 @@ l848a = sub_c847b+15
 ;
 ; Delete a range of program lines. DELETE start, end.
 .stmt_delete
-    jsr sub_c97df                                                     ; 8f31: 20 df 97     ..   
-    bcc c8f2e                                                         ; 8f34: 90 f8       ..    
-    jsr stack_integer                                                 ; 8f36: 20 94 bd     ..   
-    jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,    
-    bne c8f2e                                                         ; 8f3e: d0 ee       ..    
-    jsr sub_c97df                                                     ; 8f40: 20 df 97     ..   
-    bcc c8f2e                                                         ; 8f43: 90 e9       ..    
-    jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.   
-    lda zp_iwa                                                        ; 8f48: a5 2a       .*    
-    sta zp_fileblk                                                    ; 8f4a: 85 39       .9    
-    lda zp_iwa_1                                                      ; 8f4c: a5 2b       .+    
-    sta l003a                                                         ; 8f4e: 85 3a       .:    
-    jsr unstack_integer                                               ; 8f50: 20 ea bd     ..   
+    jsr sub_c97df                                                     ; 8f31: 20 df 97     ..      ; Read the start line number
+    bcc c8f2e                                                         ; 8f34: 90 f8       ..       ; none: Syntax error
+    jsr stack_integer                                                 ; 8f36: 20 94 bd     ..      ; stack it
+    jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,       ; ','?
+    bne c8f2e                                                         ; 8f3e: d0 ee       ..       ; no: error
+    jsr sub_c97df                                                     ; 8f40: 20 df 97     ..      ; Read the end line number
+    bcc c8f2e                                                         ; 8f43: 90 e9       ..       ; none: error
+    jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.      ; check the statement ends
+    lda zp_iwa                                                        ; 8f48: a5 2a       .*       ; Save the end line
+    sta zp_fileblk                                                    ; 8f4a: 85 39       .9       ; ...
+    lda zp_iwa_1                                                      ; 8f4c: a5 2b       .+       ; ...
+    sta l003a                                                         ; 8f4e: 85 3a       .:       ; ...
+    jsr unstack_integer                                               ; 8f50: 20 ea bd     ..      ; Recover the start line
 ; &8f53 referenced 1 time by &8f64
 .loop_c8f53
-    jsr delete_program_line                                           ; 8f53: 20 2d bc     -.   
-    jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.   
-    jsr iwa_inc                                                       ; 8f59: 20 22 92     ".   
-    lda zp_fileblk                                                    ; 8f5c: a5 39       .9    
-    cmp zp_iwa                                                        ; 8f5e: c5 2a       .*    
-    lda l003a                                                         ; 8f60: a5 3a       .:    
-    sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+    
-    bcs loop_c8f53                                                    ; 8f64: b0 ed       ..    
-    jmp c8af3                                                         ; 8f66: 4c f3 8a    L..   
+    jsr delete_program_line                                           ; 8f53: 20 2d bc     -.      ; Delete the line
+    jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.      ; Find the next line number
+    jsr iwa_inc                                                       ; 8f59: 20 22 92     ".      ; Advance the line counter
+    lda zp_fileblk                                                    ; 8f5c: a5 39       .9       ; past the end line?
+    cmp zp_iwa                                                        ; 8f5e: c5 2a       .*       ; ...
+    lda l003a                                                         ; 8f60: a5 3a       .:       ; ...
+    sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; ...
+    bcs loop_c8f53                                                    ; 8f64: b0 ed       ..       ; no: delete the next
+    jmp c8af3                                                         ; 8f66: 4c f3 8a    L..      ; done: immediate mode
 ; &8f69 referenced 2 times by &8fa3, &90ac
 .sub_c8f69
-    lda #&0a                                                          ; 8f69: a9 0a       ..    
-    jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..   
-    jsr sub_c97df                                                     ; 8f6e: 20 df 97     ..   
-    jsr stack_integer                                                 ; 8f71: 20 94 bd     ..   
-    lda #&0a                                                          ; 8f74: a9 0a       ..    
-    jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..   
-    jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,    
-    bne c8f8d                                                         ; 8f7e: d0 0d       ..    
-    jsr sub_c97df                                                     ; 8f80: 20 df 97     ..   
-    lda zp_iwa_1                                                      ; 8f83: a5 2b       .+    
-    bne c8fdf                                                         ; 8f85: d0 58       .X    
-    lda zp_iwa                                                        ; 8f87: a5 2a       .*    
-    beq c8fdf                                                         ; 8f89: f0 54       .T    
-    inc zp_text_ptr_off                                               ; 8f8b: e6 0a       ..    
+    lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
+    jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..      ; ...
+    jsr sub_c97df                                                     ; 8f6e: 20 df 97     ..      ; Read the start line if given
+    jsr stack_integer                                                 ; 8f71: 20 94 bd     ..      ; stack it
+    lda #&0a                                                          ; 8f74: a9 0a       ..       ; Default increment = 10
+    jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; ...
+    jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,       ; ',' increment given?
+    bne c8f8d                                                         ; 8f7e: d0 0d       ..       ; no: use the default
+    jsr sub_c97df                                                     ; 8f80: 20 df 97     ..      ; Read the increment
+    lda zp_iwa_1                                                      ; 8f83: a5 2b       .+       ; zero?
+    bne c8fdf                                                         ; 8f85: d0 58       .X       ; no
+    lda zp_iwa                                                        ; 8f87: a5 2a       .*       ; ...
+    beq c8fdf                                                         ; 8f89: f0 54       .T       ; zero increment: error
+    inc zp_text_ptr_off                                               ; 8f8b: e6 0a       ..       ; step past
 ; &8f8d referenced 1 time by &8f7e
 .c8f8d
-    dec zp_text_ptr_off                                               ; 8f8d: c6 0a       ..    
-    jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.   
+    dec zp_text_ptr_off                                               ; 8f8d: c6 0a       ..       ; back up
+    jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.      ; check the statement ends
 ; &8f92 referenced 2 times by &8fae, &9040
 .sub_c8f92
     lda zp_top                                                        ; 8f92: a5 12       ..    
@@ -3128,29 +3128,29 @@ l848a = sub_c847b+15
 ; Generate line numbers automatically during program entry until Escape. AUTO
 ; [start[,step]].
 .stmt_auto
-    jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.   
-    lda zp_iwa                                                        ; 90af: a5 2a       .*    
-    pha                                                               ; 90b1: 48          H     
-    jsr unstack_integer                                               ; 90b2: 20 ea bd     ..   
+    jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.      ; Parse the start and increment
+    lda zp_iwa                                                        ; 90af: a5 2a       .*       ; Save the increment
+    pha                                                               ; 90b1: 48          H        ; ...
+    jsr unstack_integer                                               ; 90b2: 20 ea bd     ..      ; Recover the start line
 ; &90b5 referenced 2 times by &90d3, &90d7
 .c90b5
-    jsr stack_integer                                                 ; 90b5: 20 94 bd     ..   
-    jsr sub_c9923                                                     ; 90b8: 20 23 99     #.   
-    lda #&20 ; ' '                                                    ; 90bb: a9 20       .     
-    jsr read_input_line                                               ; 90bd: 20 02 bc     ..   
-    jsr unstack_integer                                               ; 90c0: 20 ea bd     ..   
-    jsr tokenise_line                                                 ; 90c3: 20 51 89     Q.   
-    jsr sub_cbc8d                                                     ; 90c6: 20 8d bc     ..   
-    jsr clear_vars_heap_stack                                         ; 90c9: 20 20 bd      .   
-    pla                                                               ; 90cc: 68          h     
-    pha                                                               ; 90cd: 48          H     
-    clc                                                               ; 90ce: 18          .     
-    adc zp_iwa                                                        ; 90cf: 65 2a       e*    
-    sta zp_iwa                                                        ; 90d1: 85 2a       .*    
-    bcc c90b5                                                         ; 90d3: 90 e0       ..    
-    inc zp_iwa_1                                                      ; 90d5: e6 2b       .+    
-    bpl c90b5                                                         ; 90d7: 10 dc       ..    
-    jmp c8af3                                                         ; 90d9: 4c f3 8a    L..   
+    jsr stack_integer                                                 ; 90b5: 20 94 bd     ..      ; Stack the line number
+    jsr sub_c9923                                                     ; 90b8: 20 23 99     #.      ; Print it
+    lda #&20 ; ' '                                                    ; 90bb: a9 20       .        ; Print a space and read a line
+    jsr read_input_line                                               ; 90bd: 20 02 bc     ..      ; ...
+    jsr unstack_integer                                               ; 90c0: 20 ea bd     ..      ; Pop the line number
+    jsr tokenise_line                                                 ; 90c3: 20 51 89     Q.      ; Tokenise the line
+    jsr sub_cbc8d                                                     ; 90c6: 20 8d bc     ..      ; Insert it into the program
+    jsr clear_vars_heap_stack                                         ; 90c9: 20 20 bd      .      ; Clear variables and heap
+    pla                                                               ; 90cc: 68          h        ; Increment
+    pha                                                               ; 90cd: 48          H        ; ...
+    clc                                                               ; 90ce: 18          .        ; Next line number = line + increment
+    adc zp_iwa                                                        ; 90cf: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 90d1: 85 2a       .*       ; ...
+    bcc c90b5                                                         ; 90d3: 90 e0       ..       ; ...
+    inc zp_iwa_1                                                      ; 90d5: e6 2b       .+       ; ...
+    bpl c90b5                                                         ; 90d7: 10 dc       ..       ; still in range: loop
+    jmp c8af3                                                         ; 90d9: 4c f3 8a    L..      ; overflow: stop
 ; &90dc referenced 1 time by &9106
 .loop_c90dc
     jmp c9218                                                         ; 90dc: 4c 18 92    L..   
