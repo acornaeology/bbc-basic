@@ -1827,6 +1827,21 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0xb50e, 'print_token',
+             title='De-tokenise and print a character or token',
+             description='Print A directly if below &80, otherwise look the '
+                         'token up in the keyword table at &8071 and print '
+                         'its expanded text.')
+d.subroutine(0xb545, 'print_hex_byte', title='Print A as two hex digits')
+d.subroutine(0xb550, 'print_hex_digit',
+             title='Print the low nibble of A as a hex digit')
+d.subroutine(0xb577, 'print_listo_indent',
+             title='Print LISTO indentation',
+             description='If the LISTO flag bit in A is set, print 2*X spaces '
+                         'of indentation for the listing.')
+d.subroutine(0xb58a, 'stmt_listo', title='LISTO - set the listing options',
+             description='Evaluate the option value and store it in the LISTO '
+                         'flag (&1F).')
 d.subroutine(0xb558, 'print_char',
              title='Print a character with column tracking',
              description='Output A through the print formatter, handling CR '
@@ -6604,6 +6619,86 @@ d.comment(0xbd08, 'buffer byte', align=Align.INLINE)
 d.comment(0xbd0a, 'store it', align=Align.INLINE)
 d.comment(0xbd0c, 'until the CR', align=Align.INLINE)
 d.comment(0xbd0e, 'loop', align=Align.INLINE)
+
+# print_token (&B50E): de-tokenise and print.
+d.comment(0xb50e, 'Save the character', align=Align.INLINE)
+d.comment(0xb510, 'a token?', align=Align.INLINE)
+d.comment(0xb512, 'no: print it directly', align=Align.INLINE)
+d.comment(0xb514, 'Point at the token table (&8071)', align=Align.INLINE)
+d.comment(0xb516, '...', align=Align.INLINE)
+d.comment(0xb518, '...', align=Align.INLINE)
+d.comment(0xb51a, '...', align=Align.INLINE)
+d.comment(0xb51c, 'save Y', align=Align.INLINE)
+d.comment(0xb51e, 'Start of an entry', align=Align.INLINE)
+d.comment(0xb520, 'Scan to the token byte', align=Align.INLINE)
+d.comment(0xb521, '...', align=Align.INLINE)
+d.comment(0xb523, '...(skip the keyword text)', align=Align.INLINE)
+d.comment(0xb525, 'this token?', align=Align.INLINE)
+d.comment(0xb527, 'yes: print its keyword', align=Align.INLINE)
+d.comment(0xb529, 'Advance to the next entry', align=Align.INLINE)
+d.comment(0xb52a, '...', align=Align.INLINE)
+d.comment(0xb52b, '...', align=Align.INLINE)
+d.comment(0xb52c, '...', align=Align.INLINE)
+d.comment(0xb52e, '...', align=Align.INLINE)
+d.comment(0xb530, '...', align=Align.INLINE)
+d.comment(0xb532, '...', align=Align.INLINE)
+d.comment(0xb534, 'continue', align=Align.INLINE)
+d.comment(0xb536, 'Print the keyword text: from the start', align=Align.INLINE)
+d.comment(0xb538, 'Next character', align=Align.INLINE)
+d.comment(0xb53a, 'token byte: done', align=Align.INLINE)
+d.comment(0xb53c, 'print it', align=Align.INLINE)
+d.comment(0xb53f, 'next', align=Align.INLINE)
+d.comment(0xb540, 'loop', align=Align.INLINE)
+d.comment(0xb542, 'Restore Y', align=Align.INLINE)
+d.comment(0xb544, 'Return', align=Align.INLINE)
+# print_hex_byte (&B545).
+d.comment(0xb545, 'Save the byte', align=Align.INLINE)
+d.comment(0xb546, 'High nibble', align=Align.INLINE)
+d.comment(0xb547, '...', align=Align.INLINE)
+d.comment(0xb548, '...', align=Align.INLINE)
+d.comment(0xb549, '...', align=Align.INLINE)
+d.comment(0xb54a, 'print it', align=Align.INLINE)
+d.comment(0xb54d, 'Low nibble', align=Align.INLINE)
+d.comment(0xb54e, '...', align=Align.INLINE)
+# print_hex_digit (&B550).
+d.comment(0xb550, 'above 9?', align=Align.INLINE)
+d.comment(0xb552, 'no', align=Align.INLINE)
+d.comment(0xb554, "adjust for A-F", align=Align.INLINE)
+d.comment(0xb556, 'to ASCII, then fall into print_char', align=Align.INLINE)
+# print_char (&B558).
+d.comment(0xb558, 'carriage return?', align=Align.INLINE)
+d.comment(0xb55a, 'no: format and print', align=Align.INLINE)
+d.comment(0xb55c, 'print the CR', align=Align.INLINE)
+d.comment(0xb55f, 'reset the column', align=Align.INLINE)
+d.comment(0xb562, 'Print A as hex then a space', align=Align.INLINE)
+d.comment(0xb565, 'Space', align=Align.INLINE)
+d.comment(0xb567, 'Save the character', align=Align.INLINE)
+d.comment(0xb568, 'WIDTH limit', align=Align.INLINE)
+d.comment(0xb56a, 'vs the current column', align=Align.INLINE)
+d.comment(0xb56c, 'within the width', align=Align.INLINE)
+d.comment(0xb56e, 'else auto-newline', align=Align.INLINE)
+d.comment(0xb571, 'Recover the character', align=Align.INLINE)
+d.comment(0xb572, 'Advance the column', align=Align.INLINE)
+d.comment(0xb574, 'Print it via WRCHV', align=Align.INLINE)
+# print_listo_indent (&B577).
+d.comment(0xb577, 'LISTO bit set?', align=Align.INLINE)
+d.comment(0xb579, 'no: no indent', align=Align.INLINE)
+d.comment(0xb57b, 'Indent count', align=Align.INLINE)
+d.comment(0xb57c, 'zero: none', align=Align.INLINE)
+d.comment(0xb57e, 'single space', align=Align.INLINE)
+d.comment(0xb580, 'Print a space...', align=Align.INLINE)
+d.comment(0xb583, '...and a space (two per level)', align=Align.INLINE)
+d.comment(0xb586, 'next level', align=Align.INLINE)
+d.comment(0xb587, 'loop', align=Align.INLINE)
+d.comment(0xb589, 'Return', align=Align.INLINE)
+# stmt_listo (&B58A): LISTO n.
+d.comment(0xb58a, 'Step past LISTO', align=Align.INLINE)
+d.comment(0xb58c, 'Evaluate the option value', align=Align.INLINE)
+d.comment(0xb58f, 'check the statement ends', align=Align.INLINE)
+d.comment(0xb592, 'coerce to a byte', align=Align.INLINE)
+d.comment(0xb595, 'Store the LISTO flag', align=Align.INLINE)
+d.comment(0xb597, '...', align=Align.INLINE)
+d.comment(0xb599, 'next statement', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.

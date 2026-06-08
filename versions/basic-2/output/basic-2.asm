@@ -1010,7 +1010,7 @@ l848a = sub_c847b+15
     adc #4                                                            ; 8520: 69 04       i.    
     sta zp_fwb_m2                                                     ; 8522: 85 3f       .?    
     lda zp_general_1                                                  ; 8524: a5 38       .8    
-    jsr sub_cb545                                                     ; 8526: 20 45 b5     E.   
+    jsr print_hex_byte                                                ; 8526: 20 45 b5     E.   
     lda zp_general                                                    ; 8529: a5 37       .7    
     jsr sub_cb562                                                     ; 852b: 20 62 b5     b.   
     ldx #&fc                                                          ; 852e: a2 fc       ..    
@@ -1061,7 +1061,7 @@ l848a = sub_c847b+15
     beq c857b                                                         ; 856f: f0 0a       ..    
 ; &8571 referenced 1 time by &8579
 .loop_c8571
-    jsr sub_cb50e                                                     ; 8571: 20 0e b5     ..   
+    jsr print_token                                                   ; 8571: 20 0e b5     ..   
     iny                                                               ; 8574: c8          .     
     bne loop_c8567                                                    ; 8575: d0 f0       ..    
 ; &8577 referenced 1 time by &856b
@@ -9914,66 +9914,75 @@ l848a = sub_c847b+15
     lda zp_fwa_m4                                                     ; b509: a5 34       .4    
     sta (zp_general),y                                                ; b50b: 91 37       .7    
     rts                                                               ; b50d: 60          `     
+; ***************************************************************************************
+; De-tokenise and print a character or token
+;
+; Print A directly if below &80, otherwise look the token up in the keyword table at
+; &8071 and print its expanded text.
 ; &b50e referenced 3 times by &8571, &b688, &bff0
-.sub_cb50e
-    sta zp_general                                                    ; b50e: 85 37       .7    
-    cmp #&80                                                          ; b510: c9 80       ..    
-    bcc print_char                                                    ; b512: 90 44       .D    
-    lda #&71 ; 'q'                                                    ; b514: a9 71       .q    
-    sta zp_general_1                                                  ; b516: 85 38       .8    
-    lda #&80                                                          ; b518: a9 80       ..    
-    sta zp_fileblk                                                    ; b51a: 85 39       .9    
-    sty l003a                                                         ; b51c: 84 3a       .:    
+.print_token
+    sta zp_general                                                    ; b50e: 85 37       .7       ; Save the character
+    cmp #&80                                                          ; b510: c9 80       ..       ; a token?
+    bcc print_char                                                    ; b512: 90 44       .D       ; no: print it directly
+    lda #&71 ; 'q'                                                    ; b514: a9 71       .q       ; Point at the token table (&8071)
+    sta zp_general_1                                                  ; b516: 85 38       .8       ; ...
+    lda #&80                                                          ; b518: a9 80       ..       ; ...
+    sta zp_fileblk                                                    ; b51a: 85 39       .9       ; ...
+    sty l003a                                                         ; b51c: 84 3a       .:       ; save Y
 ; &b51e referenced 2 times by &b530, &b534
 .cb51e
-    ldy #0                                                            ; b51e: a0 00       ..    
+    ldy #0                                                            ; b51e: a0 00       ..       ; Start of an entry
 ; &b520 referenced 1 time by &b523
 .loop_cb520
-    iny                                                               ; b520: c8          .     
-    lda (zp_general_1),y                                              ; b521: b1 38       .8    
-    bpl loop_cb520                                                    ; b523: 10 fb       ..    
-    cmp zp_general                                                    ; b525: c5 37       .7    
-    beq cb536                                                         ; b527: f0 0d       ..    
-    iny                                                               ; b529: c8          .     
-    tya                                                               ; b52a: 98          .     
-    sec                                                               ; b52b: 38          8     
-    adc zp_general_1                                                  ; b52c: 65 38       e8    
-    sta zp_general_1                                                  ; b52e: 85 38       .8    
-    bcc cb51e                                                         ; b530: 90 ec       ..    
-    inc zp_fileblk                                                    ; b532: e6 39       .9    
-    bcs cb51e                                                         ; b534: b0 e8       ..    
+    iny                                                               ; b520: c8          .        ; Scan to the token byte
+    lda (zp_general_1),y                                              ; b521: b1 38       .8       ; ...
+    bpl loop_cb520                                                    ; b523: 10 fb       ..       ; ...(skip the keyword text)
+    cmp zp_general                                                    ; b525: c5 37       .7       ; this token?
+    beq cb536                                                         ; b527: f0 0d       ..       ; yes: print its keyword
+    iny                                                               ; b529: c8          .        ; Advance to the next entry
+    tya                                                               ; b52a: 98          .        ; ...
+    sec                                                               ; b52b: 38          8        ; ...
+    adc zp_general_1                                                  ; b52c: 65 38       e8       ; ...
+    sta zp_general_1                                                  ; b52e: 85 38       .8       ; ...
+    bcc cb51e                                                         ; b530: 90 ec       ..       ; ...
+    inc zp_fileblk                                                    ; b532: e6 39       .9       ; ...
+    bcs cb51e                                                         ; b534: b0 e8       ..       ; continue
 ; &b536 referenced 1 time by &b527
 .cb536
-    ldy #0                                                            ; b536: a0 00       ..    
+    ldy #0                                                            ; b536: a0 00       ..       ; Print the keyword text: from the start
 ; &b538 referenced 1 time by &b540
 .loop_cb538
-    lda (zp_general_1),y                                              ; b538: b1 38       .8    
-    bmi cb542                                                         ; b53a: 30 06       0.    
-    jsr print_char                                                    ; b53c: 20 58 b5     X.   
-    iny                                                               ; b53f: c8          .     
-    bne loop_cb538                                                    ; b540: d0 f6       ..    
+    lda (zp_general_1),y                                              ; b538: b1 38       .8       ; Next character
+    bmi cb542                                                         ; b53a: 30 06       0.       ; token byte: done
+    jsr print_char                                                    ; b53c: 20 58 b5     X.      ; print it
+    iny                                                               ; b53f: c8          .        ; next
+    bne loop_cb538                                                    ; b540: d0 f6       ..       ; loop
 ; &b542 referenced 1 time by &b53a
 .cb542
-    ldy l003a                                                         ; b542: a4 3a       .:    
-    rts                                                               ; b544: 60          `     
+    ldy l003a                                                         ; b542: a4 3a       .:       ; Restore Y
+    rts                                                               ; b544: 60          `        ; Return
+; ***************************************************************************************
+; Print A as two hex digits
 ; &b545 referenced 2 times by &8526, &b562
-.sub_cb545
-    pha                                                               ; b545: 48          H     
-    lsr a                                                             ; b546: 4a          J     
-    lsr a                                                             ; b547: 4a          J     
-    lsr a                                                             ; b548: 4a          J     
-    lsr a                                                             ; b549: 4a          J     
-    jsr sub_cb550                                                     ; b54a: 20 50 b5     P.   
-    pla                                                               ; b54d: 68          h     
-    and #&0f                                                          ; b54e: 29 0f       ).    
+.print_hex_byte
+    pha                                                               ; b545: 48          H        ; Save the byte
+    lsr a                                                             ; b546: 4a          J        ; High nibble
+    lsr a                                                             ; b547: 4a          J        ; ...
+    lsr a                                                             ; b548: 4a          J        ; ...
+    lsr a                                                             ; b549: 4a          J        ; ...
+    jsr print_hex_digit                                               ; b54a: 20 50 b5     P.      ; print it
+    pla                                                               ; b54d: 68          h        ; Low nibble
+    and #&0f                                                          ; b54e: 29 0f       ).       ; ...
+; ***************************************************************************************
+; Print the low nibble of A as a hex digit
 ; &b550 referenced 1 time by &b54a
-.sub_cb550
-    cmp #&0a                                                          ; b550: c9 0a       ..    
-    bcc cb556                                                         ; b552: 90 02       ..    
-    adc #6                                                            ; b554: 69 06       i.    
+.print_hex_digit
+    cmp #&0a                                                          ; b550: c9 0a       ..       ; above 9?
+    bcc cb556                                                         ; b552: 90 02       ..       ; no
+    adc #6                                                            ; b554: 69 06       i.       ; adjust for A-F
 ; &b556 referenced 1 time by &b552
 .cb556
-    adc #&30 ; '0'                                                    ; b556: 69 30       i0    
+    adc #&30 ; '0'                                                    ; b556: 69 30       i0       ; to ASCII, then fall into print_char
 ; ***************************************************************************************
 ; Print a character with column tracking
 ;
@@ -9981,55 +9990,63 @@ l848a = sub_c847b+15
 ; column COUNT.
 ; &b558 referenced 13 times by &855c, &855f, &8e17, &8ea4, &9911, &9919, &9964, &b512, &b53c, &b583, &b64b, &ba9f, &bc02
 .print_char
-    cmp #&0d                                                          ; b558: c9 0d       ..    
-    bne cb567                                                         ; b55a: d0 0b       ..    
-    jsr oswrch                                                        ; b55c: 20 ee ff     ..   
-    jmp cbc28                                                         ; b55f: 4c 28 bc    L(.   
+    cmp #&0d                                                          ; b558: c9 0d       ..       ; carriage return?
+    bne cb567                                                         ; b55a: d0 0b       ..       ; no: format and print
+    jsr oswrch                                                        ; b55c: 20 ee ff     ..      ; print the CR
+    jmp cbc28                                                         ; b55f: 4c 28 bc    L(.      ; reset the column
 ; &b562 referenced 2 times by &852b, &854e
 .sub_cb562
-    jsr sub_cb545                                                     ; b562: 20 45 b5     E.   
+    jsr print_hex_byte                                                ; b562: 20 45 b5     E.      ; Print A as hex then a space
 ; ***************************************************************************************
 ; Print a space through the print formatter
 ; &b565 referenced 9 times by &8544, &8559, &8db5, &8e08, &8e5f, &991c, &995a, &b57e, &b580
 .print_space
-    lda #&20 ; ' '                                                    ; b565: a9 20       .     
+    lda #&20 ; ' '                                                    ; b565: a9 20       .        ; Space
 ; &b567 referenced 1 time by &b55a
 .cb567
-    pha                                                               ; b567: 48          H     
-    lda zp_width                                                      ; b568: a5 23       .#    
-    cmp zp_count                                                      ; b56a: c5 1e       ..    
-    bcs cb571                                                         ; b56c: b0 03       ..    
-    jsr sub_cbc25                                                     ; b56e: 20 25 bc     %.   
+    pha                                                               ; b567: 48          H        ; Save the character
+    lda zp_width                                                      ; b568: a5 23       .#       ; WIDTH limit
+    cmp zp_count                                                      ; b56a: c5 1e       ..       ; vs the current column
+    bcs cb571                                                         ; b56c: b0 03       ..       ; within the width
+    jsr sub_cbc25                                                     ; b56e: 20 25 bc     %.      ; else auto-newline
 ; &b571 referenced 1 time by &b56c
 .cb571
-    pla                                                               ; b571: 68          h     
-    inc zp_count                                                      ; b572: e6 1e       ..    
-    jmp (wrchv)                                                       ; b574: 6c 0e 02    l..   
+    pla                                                               ; b571: 68          h        ; Recover the character
+    inc zp_count                                                      ; b572: e6 1e       ..       ; Advance the column
+    jmp (wrchv)                                                       ; b574: 6c 0e 02    l..      ; Print it via WRCHV
+; ***************************************************************************************
+; Print LISTO indentation
+;
+; If the LISTO flag bit in A is set, print 2*X spaces of indentation for the listing.
 ; &b577 referenced 3 times by &b626, &b62d, &b634
-.sub_cb577
-    and zp_listo                                                      ; b577: 25 1f       %.    
-    beq return_35                                                     ; b579: f0 0e       ..    
-    txa                                                               ; b57b: 8a          .     
-    beq return_35                                                     ; b57c: f0 0b       ..    
-    bmi print_space                                                   ; b57e: 30 e5       0.    
+.print_listo_indent
+    and zp_listo                                                      ; b577: 25 1f       %.       ; LISTO bit set?
+    beq return_35                                                     ; b579: f0 0e       ..       ; no: no indent
+    txa                                                               ; b57b: 8a          .        ; Indent count
+    beq return_35                                                     ; b57c: f0 0b       ..       ; zero: none
+    bmi print_space                                                   ; b57e: 30 e5       0.       ; single space
 ; &b580 referenced 1 time by &b587
 .loop_cb580
-    jsr print_space                                                   ; b580: 20 65 b5     e.   
-    jsr print_char                                                    ; b583: 20 58 b5     X.   
-    dex                                                               ; b586: ca          .     
-    bne loop_cb580                                                    ; b587: d0 f7       ..    
+    jsr print_space                                                   ; b580: 20 65 b5     e.      ; Print a space...
+    jsr print_char                                                    ; b583: 20 58 b5     X.      ; ...and a space (two per level)
+    dex                                                               ; b586: ca          .        ; next level
+    bne loop_cb580                                                    ; b587: d0 f7       ..       ; loop
 ; &b589 referenced 2 times by &b579, &b57c
 .return_35
-    rts                                                               ; b589: 60          `     
+    rts                                                               ; b589: 60          `        ; Return
+; ***************************************************************************************
+; LISTO - set the listing options
+;
+; Evaluate the option value and store it in the LISTO flag (&1F).
 ; &b58a referenced 1 time by &b5a1
-.loop_cb58a
-    inc zp_text_ptr_off                                               ; b58a: e6 0a       ..    
-    jsr eval_expr                                                     ; b58c: 20 1d 9b     ..   
-    jsr c984c                                                         ; b58f: 20 4c 98     L.   
-    jsr sub_c92ee                                                     ; b592: 20 ee 92     ..   
-    lda zp_iwa                                                        ; b595: a5 2a       .*    
-    sta zp_listo                                                      ; b597: 85 1f       ..    
-    jmp immediate_loop                                                ; b599: 4c f6 8a    L..   
+.stmt_listo
+    inc zp_text_ptr_off                                               ; b58a: e6 0a       ..       ; Step past LISTO
+    jsr eval_expr                                                     ; b58c: 20 1d 9b     ..      ; Evaluate the option value
+    jsr c984c                                                         ; b58f: 20 4c 98     L.      ; check the statement ends
+    jsr sub_c92ee                                                     ; b592: 20 ee 92     ..      ; coerce to a byte
+    lda zp_iwa                                                        ; b595: a5 2a       .*       ; Store the LISTO flag
+    sta zp_listo                                                      ; b597: 85 1f       ..       ; ...
+    jmp immediate_loop                                                ; b599: 4c f6 8a    L..      ; next statement
 ; ***************************************************************************************
 ; LIST
 ;
@@ -10038,7 +10055,7 @@ l848a = sub_c847b+15
     iny                                                               ; b59c: c8          .        ; Peek at the next character
     lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..       ; ...
     cmp #&4f ; 'O'                                                    ; b59f: c9 4f       .O       ; 'O' (LISTO)?
-    beq loop_cb58a                                                    ; b5a1: f0 e7       ..       ; yes: set the option
+    beq stmt_listo                                                    ; b5a1: f0 e7       ..       ; yes: set the option
     lda #0                                                            ; b5a3: a9 00       ..       ; Clear the indent levels
     sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;       ; ...
     sta zp_fwb_ovf                                                    ; b5a7: 85 3c       .<       ; ...
@@ -10114,13 +10131,13 @@ l848a = sub_c847b+15
     ldx #&ff                                                          ; b620: a2 ff       ..       ; Reset the quote flag
     stx l004d                                                         ; b622: 86 4d       .M       ; ...
     lda #1                                                            ; b624: a9 01       ..       ; Print the LISTO leading space
-    jsr sub_cb577                                                     ; b626: 20 77 b5     w.      ; ...
+    jsr print_listo_indent                                            ; b626: 20 77 b5     w.      ; ...
     ldx zp_fwb_sign                                                   ; b629: a6 3b       .;       ; FOR/REPEAT indent
     lda #2                                                            ; b62b: a9 02       ..       ; LISTO bit 1 indent
-    jsr sub_cb577                                                     ; b62d: 20 77 b5     w.      ; ...
+    jsr print_listo_indent                                            ; b62d: 20 77 b5     w.      ; ...
     ldx zp_fwb_ovf                                                    ; b630: a6 3c       .<       ; second indent level
     lda #4                                                            ; b632: a9 04       ..       ; LISTO bit 2 indent
-    jsr sub_cb577                                                     ; b634: 20 77 b5     w.      ; ...
+    jsr print_listo_indent                                            ; b634: 20 77 b5     w.      ; ...
 ; &b637 referenced 1 time by &b665
 .cb637
     ldy zp_text_ptr_off                                               ; b637: a4 0a       ..       ; Line offset
@@ -10178,7 +10195,7 @@ l848a = sub_c847b+15
     dec zp_fwb_ovf                                                    ; b686: c6 3c       .<       ; decrease the indent
 ; &b688 referenced 2 times by &b680, &b684
 .cb688
-    jsr sub_cb50e                                                     ; b688: 20 0e b5     ..      ; De-tokenise and print the character
+    jsr print_token                                                   ; b688: 20 0e b5     ..      ; De-tokenise and print the character
     iny                                                               ; b68b: c8          .        ; next
     bne cb639                                                         ; b68c: d0 ab       ..       ; loop
 ; &b68e referenced 2 times by &b69c, &b6a7
@@ -11840,7 +11857,7 @@ l848a = sub_c847b+15
 .loop_cbfec
     lda (zp_error_ptr),y                                              ; bfec: b1 fd       ..    
     beq cbff6                                                         ; bfee: f0 06       ..    
-    jsr sub_cb50e                                                     ; bff0: 20 0e b5     ..   
+    jsr print_token                                                   ; bff0: 20 0e b5     ..   
     iny                                                               ; bff3: c8          .     
     bne loop_cbfec                                                    ; bff4: d0 f6       ..    
 ; &bff6 referenced 1 time by &bfee
@@ -12114,6 +12131,8 @@ save pydis_start, pydis_end
 ;     parse_number:                3
 ;     point_fp_temp2:              3
 ;     print_line_number:           3
+;     print_listo_indent:          3
+;     print_token:                 3
 ;     return_12:                   3
 ;     return_19:                   3
 ;     return_25:                   3
@@ -12124,8 +12143,6 @@ save pydis_start, pydis_end
 ;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
 ;     sub_c894b:                   3
-;     sub_cb50e:                   3
-;     sub_cb577:                   3
 ;     sub_cbd3a:                   3
 ;     unstack_int_to_general:      3
 ;     zp_erl:                      3
@@ -12321,6 +12338,7 @@ save pydis_start, pydis_end
 ;     point_fp_temp3:              2
 ;     point_half_pi_hi:            2
 ;     point_half_pi_lo:            2
+;     print_hex_byte:              2
 ;     print_inline_string:         2
 ;     print_special_item:          2
 ;     read_input_line:             2
@@ -12357,7 +12375,6 @@ save pydis_start, pydis_end
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
 ;     sub_cb4b1:                   2
-;     sub_cb545:                   2
 ;     sub_cb562:                   2
 ;     sub_cbc81:                   2
 ;     sub_cbc8d:                   2
@@ -12995,7 +13012,6 @@ save pydis_start, pydis_end
 ;     loop_cb520:                  1
 ;     loop_cb538:                  1
 ;     loop_cb580:                  1
-;     loop_cb58a:                  1
 ;     loop_cb5fc:                  1
 ;     loop_cb64b:                  1
 ;     loop_cb6a0:                  1
@@ -13032,6 +13048,7 @@ save pydis_start, pydis_end
 ;     output_byte_decimal:         1
 ;     output_top_digit:            1
 ;     parse_exponent:              1
+;     print_hex_digit:             1
 ;     resint_a:                    1
 ;     resint_c:                    1
 ;     resint_x:                    1
@@ -13063,6 +13080,7 @@ save pydis_start, pydis_end
 ;     small_int_to_fwa:            1
 ;     start_new_program:           1
 ;     stmt_dim:                    1
+;     stmt_listo:                  1
 ;     stmt_local:                  1
 ;     stmt_next:                   1
 ;     stmt_read:                   1
@@ -13095,7 +13113,6 @@ save pydis_start, pydis_end
 ;     sub_cae02:                   1
 ;     sub_cae3a:                   1
 ;     sub_cb4b7:                   1
-;     sub_cb550:                   1
 ;     sub_cbbfc:                   1
 ;     sub_cbd2f:                   1
 ;     sub_cbe55:                   1
@@ -13941,7 +13958,6 @@ save pydis_start, pydis_end
 ;     loop_cb520
 ;     loop_cb538
 ;     loop_cb580
-;     loop_cb58a
 ;     loop_cb5fc
 ;     loop_cb64b
 ;     loop_cb6a0
@@ -14071,11 +14087,7 @@ save pydis_start, pydis_end
 ;     sub_cae3a
 ;     sub_cb4b1
 ;     sub_cb4b7
-;     sub_cb50e
-;     sub_cb545
-;     sub_cb550
 ;     sub_cb562
-;     sub_cb577
 ;     sub_cbbfc
 ;     sub_cbc25
 ;     sub_cbc81

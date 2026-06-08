@@ -1190,8 +1190,7 @@
       },
       "on_exit": {
         "X": "preserved"
-      },
-      "fall_through": true
+      }
     },
     {
       "addr": 44886,
@@ -1707,6 +1706,36 @@
       "name": "parse_var_ref",
       "title": "Parse a variable reference / lvalue",
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
+    },
+    {
+      "addr": 46350,
+      "name": "print_token",
+      "title": "De-tokenise and print a character or token",
+      "description": "Print A directly if below &80, otherwise look the token up in the keyword table at &8071 and print its expanded text."
+    },
+    {
+      "addr": 46405,
+      "name": "print_hex_byte",
+      "title": "Print A as two hex digits",
+      "fall_through": true
+    },
+    {
+      "addr": 46416,
+      "name": "print_hex_digit",
+      "title": "Print the low nibble of A as a hex digit",
+      "fall_through": true
+    },
+    {
+      "addr": 46455,
+      "name": "print_listo_indent",
+      "title": "Print LISTO indentation",
+      "description": "If the LISTO flag bit in A is set, print 2*X spaces of indentation for the listing."
+    },
+    {
+      "addr": 46474,
+      "name": "stmt_listo",
+      "title": "LISTO - set the listing options",
+      "description": "Evaluate the option value and store it in the LISTO flag (&1F)."
     },
     {
       "addr": 46424,
@@ -9460,9 +9489,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb545",
+      "operand": "print_hex_byte",
       "target": 46405,
-      "target_label": "sub_cb545"
+      "target_label": "print_hex_byte"
     },
     {
       "addr": 34089,
@@ -9934,9 +9963,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb50e",
+      "operand": "print_token",
       "target": 46350,
-      "target_label": "sub_cb50e"
+      "target_label": "print_token"
     },
     {
       "addr": 34164,
@@ -90456,8 +90485,9 @@
         55
       ],
       "labels": [
-        "sub_cb50e"
+        "print_token"
       ],
+      "comment_inline": "Save the character",
       "xref_summaries": [
         "&b50e referenced 3 times by &8571, &b688, &bff0"
       ],
@@ -90478,6 +90508,7 @@
         201,
         128
       ],
+      "comment_inline": "a token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -90488,6 +90519,7 @@
         144,
         68
       ],
+      "comment_inline": "no: print it directly",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "print_char",
@@ -90500,6 +90532,7 @@
         169,
         113
       ],
+      "comment_inline": "Point at the token table (&8071)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&71"
@@ -90510,6 +90543,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -90522,6 +90556,7 @@
         169,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -90532,6 +90567,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -90544,6 +90580,7 @@
         132,
         58
       ],
+      "comment_inline": "save Y",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l003a",
@@ -90559,6 +90596,7 @@
       "labels": [
         "cb51e"
       ],
+      "comment_inline": "Start of an entry",
       "xref_summaries": [
         "&b51e referenced 2 times by &b530, &b534"
       ],
@@ -90578,6 +90616,7 @@
       "labels": [
         "loop_cb520"
       ],
+      "comment_inline": "Scan to the token byte",
       "xref_summaries": [
         "&b520 referenced 1 time by &b523"
       ],
@@ -90593,6 +90632,7 @@
         177,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general_1),y",
@@ -90605,6 +90645,7 @@
         16,
         251
       ],
+      "comment_inline": "...(skip the keyword text)",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_cb520",
@@ -90617,6 +90658,7 @@
         197,
         55
       ],
+      "comment_inline": "this token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_general",
@@ -90629,6 +90671,7 @@
         240,
         13
       ],
+      "comment_inline": "yes: print its keyword",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb536",
@@ -90640,6 +90683,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Advance to the next entry",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -90648,6 +90692,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -90656,6 +90701,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -90665,6 +90711,7 @@
         101,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general_1",
@@ -90677,6 +90724,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -90689,6 +90737,7 @@
         144,
         236
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb51e",
@@ -90701,6 +90750,7 @@
         230,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fileblk",
@@ -90713,6 +90763,7 @@
         176,
         232
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb51e",
@@ -90728,6 +90779,7 @@
       "labels": [
         "cb536"
       ],
+      "comment_inline": "Print the keyword text: from the start",
       "xref_summaries": [
         "&b536 referenced 1 time by &b527"
       ],
@@ -90747,6 +90799,7 @@
       "labels": [
         "loop_cb538"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b538 referenced 1 time by &b540"
       ],
@@ -90765,6 +90818,7 @@
         48,
         6
       ],
+      "comment_inline": "token byte: done",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb542",
@@ -90778,6 +90832,7 @@
         88,
         181
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -90789,6 +90844,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -90798,6 +90854,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb538",
@@ -90813,6 +90870,7 @@
       "labels": [
         "cb542"
       ],
+      "comment_inline": "Restore Y",
       "xref_summaries": [
         "&b542 referenced 1 time by &b53a"
       ],
@@ -90830,6 +90888,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -90839,8 +90898,9 @@
         72
       ],
       "labels": [
-        "sub_cb545"
+        "print_hex_byte"
       ],
+      "comment_inline": "Save the byte",
       "xref_summaries": [
         "&b545 referenced 2 times by &8526, &b562"
       ],
@@ -90856,6 +90916,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "High nibble",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -90864,6 +90925,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -90872,6 +90934,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -90880,6 +90943,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -90890,17 +90954,19 @@
         80,
         181
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb550",
+      "operand": "print_hex_digit",
       "target": 46416,
-      "target_label": "sub_cb550"
+      "target_label": "print_hex_digit"
     },
     {
       "addr": 46413,
       "bytes": [
         104
       ],
+      "comment_inline": "Low nibble",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -90910,6 +90976,7 @@
         41,
         15
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&0f"
@@ -90921,8 +90988,9 @@
         10
       ],
       "labels": [
-        "sub_cb550"
+        "print_hex_digit"
       ],
+      "comment_inline": "above 9?",
       "xref_summaries": [
         "&b550 referenced 1 time by &b54a"
       ],
@@ -90939,6 +91007,7 @@
         144,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb556",
@@ -90951,6 +91020,7 @@
         105,
         6
       ],
+      "comment_inline": "adjust for A-F",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#6"
@@ -90964,6 +91034,7 @@
       "labels": [
         "cb556"
       ],
+      "comment_inline": "to ASCII, then fall into print_char",
       "xref_summaries": [
         "&b556 referenced 1 time by &b552"
       ],
@@ -90983,6 +91054,7 @@
       "labels": [
         "print_char"
       ],
+      "comment_inline": "carriage return?",
       "xref_summaries": [
         "&b558 referenced 13 times by &855c, &855f, &8e17, &8ea4, &9911, &9919, &9964, &b512, &b53c, &b583, &b64b, &ba9f, &bc02"
       ],
@@ -91011,6 +91083,7 @@
         208,
         11
       ],
+      "comment_inline": "no: format and print",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb567",
@@ -91024,6 +91097,7 @@
         238,
         255
       ],
+      "comment_inline": "print the CR",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -91037,6 +91111,7 @@
         40,
         188
       ],
+      "comment_inline": "reset the column",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbc28",
@@ -91053,6 +91128,7 @@
       "labels": [
         "sub_cb562"
       ],
+      "comment_inline": "Print A as hex then a space",
       "xref_summaries": [
         "&b562 referenced 2 times by &852b, &854e"
       ],
@@ -91062,9 +91138,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb545",
+      "operand": "print_hex_byte",
       "target": 46405,
-      "target_label": "sub_cb545"
+      "target_label": "print_hex_byte"
     },
     {
       "addr": 46437,
@@ -91075,6 +91151,7 @@
       "labels": [
         "print_space"
       ],
+      "comment_inline": "Space",
       "xref_summaries": [
         "&b565 referenced 9 times by &8544, &8559, &8db5, &8e08, &8e5f, &991c, &995a, &b57e, &b580"
       ],
@@ -91101,6 +91178,7 @@
       "labels": [
         "cb567"
       ],
+      "comment_inline": "Save the character",
       "xref_summaries": [
         "&b567 referenced 1 time by &b55a"
       ],
@@ -91116,6 +91194,7 @@
         165,
         35
       ],
+      "comment_inline": "WIDTH limit",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_width",
@@ -91128,6 +91207,7 @@
         197,
         30
       ],
+      "comment_inline": "vs the current column",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_count",
@@ -91140,6 +91220,7 @@
         176,
         3
       ],
+      "comment_inline": "within the width",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb571",
@@ -91153,6 +91234,7 @@
         37,
         188
       ],
+      "comment_inline": "else auto-newline",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc25",
@@ -91167,6 +91249,7 @@
       "labels": [
         "cb571"
       ],
+      "comment_inline": "Recover the character",
       "xref_summaries": [
         "&b571 referenced 1 time by &b56c"
       ],
@@ -91182,6 +91265,7 @@
         230,
         30
       ],
+      "comment_inline": "Advance the column",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_count",
@@ -91195,6 +91279,7 @@
         14,
         2
       ],
+      "comment_inline": "Print it via WRCHV",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(wrchv)",
@@ -91208,8 +91293,9 @@
         31
       ],
       "labels": [
-        "sub_cb577"
+        "print_listo_indent"
       ],
+      "comment_inline": "LISTO bit set?",
       "xref_summaries": [
         "&b577 referenced 3 times by &b626, &b62d, &b634"
       ],
@@ -91230,6 +91316,7 @@
         240,
         14
       ],
+      "comment_inline": "no: no indent",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_35",
@@ -91241,6 +91328,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "Indent count",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -91250,6 +91338,7 @@
         240,
         11
       ],
+      "comment_inline": "zero: none",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_35",
@@ -91262,6 +91351,7 @@
         48,
         229
       ],
+      "comment_inline": "single space",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "print_space",
@@ -91278,6 +91368,7 @@
       "labels": [
         "loop_cb580"
       ],
+      "comment_inline": "Print a space...",
       "xref_summaries": [
         "&b580 referenced 1 time by &b587"
       ],
@@ -91297,6 +91388,7 @@
         88,
         181
       ],
+      "comment_inline": "...and a space (two per level)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -91308,6 +91400,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "next level",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -91317,6 +91410,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb580",
@@ -91331,6 +91425,7 @@
       "labels": [
         "return_35"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&b589 referenced 2 times by &b579, &b57c"
       ],
@@ -91348,8 +91443,9 @@
         10
       ],
       "labels": [
-        "loop_cb58a"
+        "stmt_listo"
       ],
+      "comment_inline": "Step past LISTO",
       "xref_summaries": [
         "&b58a referenced 1 time by &b5a1"
       ],
@@ -91369,6 +91465,7 @@
         29,
         155
       ],
+      "comment_inline": "Evaluate the option value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -91382,6 +91479,7 @@
         76,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c984c",
@@ -91395,6 +91493,7 @@
         238,
         146
       ],
+      "comment_inline": "coerce to a byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92ee",
@@ -91407,6 +91506,7 @@
         165,
         42
       ],
+      "comment_inline": "Store the LISTO flag",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -91419,6 +91519,7 @@
         133,
         31
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_listo",
@@ -91432,6 +91533,7 @@
         246,
         138
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "immediate_loop",
@@ -91483,9 +91585,9 @@
       "comment_inline": "yes: set the option",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb58a",
+      "operand": "stmt_listo",
       "target": 46474,
-      "target_label": "loop_cb58a"
+      "target_label": "stmt_listo"
     },
     {
       "addr": 46499,
@@ -92328,9 +92430,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb577",
+      "operand": "print_listo_indent",
       "target": 46455,
-      "target_label": "sub_cb577"
+      "target_label": "print_listo_indent"
     },
     {
       "addr": 46633,
@@ -92366,9 +92468,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb577",
+      "operand": "print_listo_indent",
       "target": 46455,
-      "target_label": "sub_cb577"
+      "target_label": "print_listo_indent"
     },
     {
       "addr": 46640,
@@ -92404,9 +92506,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb577",
+      "operand": "print_listo_indent",
       "target": 46455,
-      "target_label": "sub_cb577"
+      "target_label": "print_listo_indent"
     },
     {
       "addr": 46647,
@@ -92989,9 +93091,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb50e",
+      "operand": "print_token",
       "target": 46350,
-      "target_label": "sub_cb50e"
+      "target_label": "print_token"
     },
     {
       "addr": 46731,
@@ -108319,9 +108421,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb50e",
+      "operand": "print_token",
       "target": 46350,
-      "target_label": "sub_cb50e"
+      "target_label": "print_token"
     },
     {
       "addr": 49139,
