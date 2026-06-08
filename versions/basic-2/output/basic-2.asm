@@ -9299,128 +9299,128 @@ l848a = sub_c847b+15
 ;     A: PROC token &F2 or FN token &A4
 ; &b197 referenced 1 time by &9312
 .call_proc_fn
-    sta zp_var_type                                                   ; b197: 85 27       .'    
+    sta zp_var_type                                                   ; b197: 85 27       .'       ; Save the PROC/FN token
     tsx                                                               ; b199: ba          .        ; Copy the 6502 stack onto the BASIC stack
-    txa                                                               ; b19a: 8a          .     
-    clc                                                               ; b19b: 18          .     
-    adc zp_stack_ptr                                                  ; b19c: 65 04       e.    
+    txa                                                               ; b19a: 8a          .        ; ...
+    clc                                                               ; b19b: 18          .        ; ...
+    adc zp_stack_ptr                                                  ; b19c: 65 04       e.       ; Drop the BASIC stack by the 6502 stack size
     jsr reserve_stack                                                 ; b19e: 20 2e be     ..      ; so procedures can nest far beyond 256 bytes
-    ldy #0                                                            ; b1a1: a0 00       ..    
-    txa                                                               ; b1a3: 8a          .     
-    sta (zp_stack_ptr),y                                              ; b1a4: 91 04       ..    
+    ldy #0                                                            ; b1a1: a0 00       ..       ; Store the 6502 stack pointer first
+    txa                                                               ; b1a3: 8a          .        ; ...
+    sta (zp_stack_ptr),y                                              ; b1a4: 91 04       ..       ; ...
 ; &b1a6 referenced 1 time by &b1af
 .loop_cb1a6
-    inx                                                               ; b1a6: e8          .     
-    iny                                                               ; b1a7: c8          .     
-    lda l0100,x                                                       ; b1a8: bd 00 01    ...   
-    sta (zp_stack_ptr),y                                              ; b1ab: 91 04       ..    
-    cpx #&ff                                                          ; b1ad: e0 ff       ..    
-    bne loop_cb1a6                                                    ; b1af: d0 f5       ..    
-    txs                                                               ; b1b1: 9a          .     
-    lda zp_var_type                                                   ; b1b2: a5 27       .'    
+    inx                                                               ; b1a6: e8          .        ; Copy each 6502 stack byte
+    iny                                                               ; b1a7: c8          .        ; ...
+    lda l0100,x                                                       ; b1a8: bd 00 01    ...      ; ...
+    sta (zp_stack_ptr),y                                              ; b1ab: 91 04       ..       ; ...
+    cpx #&ff                                                          ; b1ad: e0 ff       ..       ; ...
+    bne loop_cb1a6                                                    ; b1af: d0 f5       ..       ; loop
+    txs                                                               ; b1b1: 9a          .        ; Empty the 6502 stack
+    lda zp_var_type                                                   ; b1b2: a5 27       .'       ; PROC/FN token
     pha                                                               ; b1b4: 48          H        ; Push the call context and return pointers
-    lda zp_text_ptr_off                                               ; b1b5: a5 0a       ..    
-    pha                                                               ; b1b7: 48          H     
-    lda zp_text_ptr                                                   ; b1b8: a5 0b       ..    
-    pha                                                               ; b1ba: 48          H     
-    lda zp_text_ptr_1                                                 ; b1bb: a5 0c       ..    
-    pha                                                               ; b1bd: 48          H     
-    lda zp_text_ptr2_off                                              ; b1be: a5 1b       ..    
-    tax                                                               ; b1c0: aa          .     
-    clc                                                               ; b1c1: 18          .     
-    adc zp_text_ptr2                                                  ; b1c2: 65 19       e.    
-    ldy zp_text_ptr2_1                                                ; b1c4: a4 1a       ..    
-    bcc cb1ca                                                         ; b1c6: 90 02       ..    
-    iny                                                               ; b1c8: c8          .     
-    clc                                                               ; b1c9: 18          .     
+    lda zp_text_ptr_off                                               ; b1b5: a5 0a       ..       ; return line offset
+    pha                                                               ; b1b7: 48          H        ; ...
+    lda zp_text_ptr                                                   ; b1b8: a5 0b       ..       ; return line pointer
+    pha                                                               ; b1ba: 48          H        ; ...
+    lda zp_text_ptr_1                                                 ; b1bb: a5 0c       ..       ; ...
+    pha                                                               ; b1bd: 48          H        ; ...
+    lda zp_text_ptr2_off                                              ; b1be: a5 1b       ..       ; Point &37/&38 at the PROC/FN name
+    tax                                                               ; b1c0: aa          .        ; ...
+    clc                                                               ; b1c1: 18          .        ; ...
+    adc zp_text_ptr2                                                  ; b1c2: 65 19       e.       ; ...
+    ldy zp_text_ptr2_1                                                ; b1c4: a4 1a       ..       ; ...
+    bcc cb1ca                                                         ; b1c6: 90 02       ..       ; ...
+    iny                                                               ; b1c8: c8          .        ; ...
+    clc                                                               ; b1c9: 18          .        ; ...
 ; &b1ca referenced 1 time by &b1c6
 .cb1ca
-    sbc #1                                                            ; b1ca: e9 01       ..    
-    sta zp_general                                                    ; b1cc: 85 37       .7    
-    tya                                                               ; b1ce: 98          .     
-    sbc #0                                                            ; b1cf: e9 00       ..    
-    sta zp_general_1                                                  ; b1d1: 85 38       .8    
-    ldy #2                                                            ; b1d3: a0 02       ..    
-    jsr c955b                                                         ; b1d5: 20 5b 95     [.   
-    cpy #2                                                            ; b1d8: c0 02       ..    
-    beq loop_cb18a                                                    ; b1da: f0 ae       ..    
-    stx zp_text_ptr2_off                                              ; b1dc: 86 1b       ..    
-    dey                                                               ; b1de: 88          .     
-    sty zp_fileblk                                                    ; b1df: 84 39       .9    
-    jsr find_proc_fn                                                  ; b1e1: 20 5b 94     [.   
-    bne cb1e9                                                         ; b1e4: d0 03       ..    
-    jmp find_def                                                      ; b1e6: 4c 12 b1    L..   
+    sbc #1                                                            ; b1ca: e9 01       ..       ; ...
+    sta zp_general                                                    ; b1cc: 85 37       .7       ; ...
+    tya                                                               ; b1ce: 98          .        ; ...
+    sbc #0                                                            ; b1cf: e9 00       ..       ; ...
+    sta zp_general_1                                                  ; b1d1: 85 38       .8       ; ...
+    ldy #2                                                            ; b1d3: a0 02       ..       ; Validate the name
+    jsr c955b                                                         ; b1d5: 20 5b 95     [.      ; ...
+    cpy #2                                                            ; b1d8: c0 02       ..       ; no valid characters?
+    beq loop_cb18a                                                    ; b1da: f0 ae       ..       ; yes: Bad call
+    stx zp_text_ptr2_off                                              ; b1dc: 86 1b       ..       ; Offset past the name
+    dey                                                               ; b1de: 88          .        ; Name length
+    sty zp_fileblk                                                    ; b1df: 84 39       .9       ; ...
+    jsr find_proc_fn                                                  ; b1e1: 20 5b 94     [.      ; Look it up in the heap cache
+    bne cb1e9                                                         ; b1e4: d0 03       ..       ; found: jump to it
+    jmp find_def                                                      ; b1e6: 4c 12 b1    L..      ; not cached: scan the program
 ; &b1e9 referenced 1 time by &b1e4
 .cb1e9
-    ldy #0                                                            ; b1e9: a0 00       ..    
-    lda (zp_iwa),y                                                    ; b1eb: b1 2a       .*    
-    sta zp_text_ptr                                                   ; b1ed: 85 0b       ..    
-    iny                                                               ; b1ef: c8          .     
-    lda (zp_iwa),y                                                    ; b1f0: b1 2a       .*    
-    sta zp_text_ptr_1                                                 ; b1f2: 85 0c       ..    
+    ldy #0                                                            ; b1e9: a0 00       ..       ; Set PtrA to the definition address
+    lda (zp_iwa),y                                                    ; b1eb: b1 2a       .*       ; ...
+    sta zp_text_ptr                                                   ; b1ed: 85 0b       ..       ; ...
+    iny                                                               ; b1ef: c8          .        ; ...
+    lda (zp_iwa),y                                                    ; b1f0: b1 2a       .*       ; ...
+    sta zp_text_ptr_1                                                 ; b1f2: 85 0c       ..       ; ...
 ; &b1f4 referenced 1 time by &b187
 .cb1f4
-    lda #0                                                            ; b1f4: a9 00       ..    
-    pha                                                               ; b1f6: 48          H     
-    sta zp_text_ptr_off                                               ; b1f7: 85 0a       ..    
-    jsr skip_spaces                                                   ; b1f9: 20 97 8a     ..   
-    cmp #&28 ; '('                                                    ; b1fc: c9 28       .(    
-    beq cb24d                                                         ; b1fe: f0 4d       .M    
-    dec zp_text_ptr_off                                               ; b200: c6 0a       ..    
+    lda #0                                                            ; b1f4: a9 00       ..       ; Push the parameter count (0 so far)
+    pha                                                               ; b1f6: 48          H        ; ...
+    sta zp_text_ptr_off                                               ; b1f7: 85 0a       ..       ; ...
+    jsr skip_spaces                                                   ; b1f9: 20 97 8a     ..      ; Next character
+    cmp #&28 ; '('                                                    ; b1fc: c9 28       .(       ; '(' parameters?
+    beq cb24d                                                         ; b1fe: f0 4d       .M       ; yes: bind them
+    dec zp_text_ptr_off                                               ; b200: c6 0a       ..       ; no: back up
 ; &b202 referenced 1 time by &b30a
 .cb202
-    lda zp_text_ptr2_off                                              ; b202: a5 1b       ..    
-    pha                                                               ; b204: 48          H     
-    lda zp_text_ptr2                                                  ; b205: a5 19       ..    
-    pha                                                               ; b207: 48          H     
-    lda zp_text_ptr2_1                                                ; b208: a5 1a       ..    
-    pha                                                               ; b20a: 48          H     
-    jsr c8ba3                                                         ; b20b: 20 a3 8b     ..   
-    pla                                                               ; b20e: 68          h     
-    sta zp_text_ptr2_1                                                ; b20f: 85 1a       ..    
-    pla                                                               ; b211: 68          h     
-    sta zp_text_ptr2                                                  ; b212: 85 19       ..    
-    pla                                                               ; b214: 68          h     
-    sta zp_text_ptr2_off                                              ; b215: 85 1b       ..    
-    pla                                                               ; b217: 68          h     
-    beq cb226                                                         ; b218: f0 0c       ..    
-    sta zp_fwb_m2                                                     ; b21a: 85 3f       .?    
+    lda zp_text_ptr2_off                                              ; b202: a5 1b       ..       ; Save the parser pointer
+    pha                                                               ; b204: 48          H        ; ...
+    lda zp_text_ptr2                                                  ; b205: a5 19       ..       ; ...
+    pha                                                               ; b207: 48          H        ; ...
+    lda zp_text_ptr2_1                                                ; b208: a5 1a       ..       ; ...
+    pha                                                               ; b20a: 48          H        ; ...
+    jsr c8ba3                                                         ; b20b: 20 a3 8b     ..      ; Execute the body
+    pla                                                               ; b20e: 68          h        ; Restore the parser pointer
+    sta zp_text_ptr2_1                                                ; b20f: 85 1a       ..       ; ...
+    pla                                                               ; b211: 68          h        ; ...
+    sta zp_text_ptr2                                                  ; b212: 85 19       ..       ; ...
+    pla                                                               ; b214: 68          h        ; ...
+    sta zp_text_ptr2_off                                              ; b215: 85 1b       ..       ; ...
+    pla                                                               ; b217: 68          h        ; Number of LOCAL/parameter values to restore
+    beq cb226                                                         ; b218: f0 0c       ..       ; none: skip
+    sta zp_fwb_m2                                                     ; b21a: 85 3f       .?       ; count
 ; &b21c referenced 1 time by &b224
 .loop_cb21c
-    jsr unstack_int_to_general                                        ; b21c: 20 0b be     ..   
-    jsr unstack_value_to_var                                          ; b21f: 20 c1 8c     ..   
-    dec zp_fwb_m2                                                     ; b222: c6 3f       .?    
-    bne loop_cb21c                                                    ; b224: d0 f6       ..    
+    jsr unstack_int_to_general                                        ; b21c: 20 0b be     ..      ; Unstack the variable address
+    jsr unstack_value_to_var                                          ; b21f: 20 c1 8c     ..      ; restore its saved value
+    dec zp_fwb_m2                                                     ; b222: c6 3f       .?       ; one done
+    bne loop_cb21c                                                    ; b224: d0 f6       ..       ; loop
 ; &b226 referenced 1 time by &b218
 .cb226
-    pla                                                               ; b226: 68          h     
-    sta zp_text_ptr_1                                                 ; b227: 85 0c       ..    
-    pla                                                               ; b229: 68          h     
-    sta zp_text_ptr                                                   ; b22a: 85 0b       ..    
-    pla                                                               ; b22c: 68          h     
-    sta zp_text_ptr_off                                               ; b22d: 85 0a       ..    
-    pla                                                               ; b22f: 68          h     
-    ldy #0                                                            ; b230: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; b232: b1 04       ..    
-    tax                                                               ; b234: aa          .     
-    txs                                                               ; b235: 9a          .     
+    pla                                                               ; b226: 68          h        ; Restore PtrA
+    sta zp_text_ptr_1                                                 ; b227: 85 0c       ..       ; ...
+    pla                                                               ; b229: 68          h        ; ...
+    sta zp_text_ptr                                                   ; b22a: 85 0b       ..       ; ...
+    pla                                                               ; b22c: 68          h        ; ...
+    sta zp_text_ptr_off                                               ; b22d: 85 0a       ..       ; ...
+    pla                                                               ; b22f: 68          h        ; Recover the saved 6502 stack pointer
+    ldy #0                                                            ; b230: a0 00       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; b232: b1 04       ..       ; ...
+    tax                                                               ; b234: aa          .        ; ...
+    txs                                                               ; b235: 9a          .        ; restore it
 ; &b236 referenced 1 time by &b23f
 .loop_cb236
-    iny                                                               ; b236: c8          .     
-    inx                                                               ; b237: e8          .     
-    lda (zp_stack_ptr),y                                              ; b238: b1 04       ..    
-    sta l0100,x                                                       ; b23a: 9d 00 01    ...   
-    cpx #&ff                                                          ; b23d: e0 ff       ..    
-    bne loop_cb236                                                    ; b23f: d0 f5       ..    
-    tya                                                               ; b241: 98          .     
-    adc zp_stack_ptr                                                  ; b242: 65 04       e.    
-    sta zp_stack_ptr                                                  ; b244: 85 04       ..    
-    bcc cb24a                                                         ; b246: 90 02       ..    
-    inc zp_stack_ptr_1                                                ; b248: e6 05       ..    
+    iny                                                               ; b236: c8          .        ; Copy each byte back to the 6502 stack
+    inx                                                               ; b237: e8          .        ; ...
+    lda (zp_stack_ptr),y                                              ; b238: b1 04       ..       ; ...
+    sta l0100,x                                                       ; b23a: 9d 00 01    ...      ; ...
+    cpx #&ff                                                          ; b23d: e0 ff       ..       ; ...
+    bne loop_cb236                                                    ; b23f: d0 f5       ..       ; loop
+    tya                                                               ; b241: 98          .        ; Adjust the BASIC stack pointer back up
+    adc zp_stack_ptr                                                  ; b242: 65 04       e.       ; ...
+    sta zp_stack_ptr                                                  ; b244: 85 04       ..       ; ...
+    bcc cb24a                                                         ; b246: 90 02       ..       ; ...
+    inc zp_stack_ptr_1                                                ; b248: e6 05       ..       ; ...
 ; &b24a referenced 1 time by &b246
 .cb24a
-    lda zp_var_type                                                   ; b24a: a5 27       .'    
-    rts                                                               ; b24c: 60          `     
+    lda zp_var_type                                                   ; b24a: a5 27       .'       ; Return the PROC/FN token
+    rts                                                               ; b24c: 60          `        ; Return
 ; &b24d referenced 2 times by &b1fe, &b27e
 .cb24d
     lda zp_text_ptr2_off                                              ; b24d: a5 1b       ..    

@@ -84616,6 +84616,7 @@
       "labels": [
         "call_proc_fn"
       ],
+      "comment_inline": "Save the PROC/FN token",
       "xref_summaries": [
         "&b197 referenced 1 time by &9312"
       ],
@@ -84642,6 +84643,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -84650,6 +84652,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -84659,6 +84662,7 @@
         101,
         4
       ],
+      "comment_inline": "Drop the BASIC stack by the 6502 stack size",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr",
@@ -84685,6 +84689,7 @@
         160,
         0
       ],
+      "comment_inline": "Store the 6502 stack pointer first",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -84694,6 +84699,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -84703,6 +84709,7 @@
         145,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -84717,6 +84724,7 @@
       "labels": [
         "loop_cb1a6"
       ],
+      "comment_inline": "Copy each 6502 stack byte",
       "xref_summaries": [
         "&b1a6 referenced 1 time by &b1af"
       ],
@@ -84731,6 +84739,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -84741,6 +84750,7 @@
         0,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l0100,x",
@@ -84753,6 +84763,7 @@
         145,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_stack_ptr),y",
@@ -84765,6 +84776,7 @@
         224,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&ff"
@@ -84775,6 +84787,7 @@
         208,
         245
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb1a6",
@@ -84786,6 +84799,7 @@
       "bytes": [
         154
       ],
+      "comment_inline": "Empty the 6502 stack",
       "type": "code",
       "mnemonic": "txs"
     },
@@ -84795,6 +84809,7 @@
         165,
         39
       ],
+      "comment_inline": "PROC/FN token",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -84816,6 +84831,7 @@
         165,
         10
       ],
+      "comment_inline": "return line offset",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_off",
@@ -84827,6 +84843,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -84836,6 +84853,7 @@
         165,
         11
       ],
+      "comment_inline": "return line pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -84847,6 +84865,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -84856,6 +84875,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -84867,6 +84887,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -84876,6 +84897,7 @@
         165,
         27
       ],
+      "comment_inline": "Point &37/&38 at the PROC/FN name",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -84887,6 +84909,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -84895,6 +84918,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -84904,6 +84928,7 @@
         101,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -84916,6 +84941,7 @@
         164,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_1",
@@ -84928,6 +84954,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb1ca",
@@ -84939,6 +84966,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -84947,6 +84975,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -84959,6 +84988,7 @@
       "labels": [
         "cb1ca"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b1ca referenced 1 time by &b1c6"
       ],
@@ -84975,6 +85005,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -84986,6 +85017,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -84995,6 +85027,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -85005,6 +85038,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -85017,6 +85051,7 @@
         160,
         2
       ],
+      "comment_inline": "Validate the name",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#2"
@@ -85028,6 +85063,7 @@
         91,
         149
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c955b",
@@ -85040,6 +85076,7 @@
         192,
         2
       ],
+      "comment_inline": "no valid characters?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#2"
@@ -85050,6 +85087,7 @@
         240,
         174
       ],
+      "comment_inline": "yes: Bad call",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb18a",
@@ -85062,6 +85100,7 @@
         134,
         27
       ],
+      "comment_inline": "Offset past the name",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -85073,6 +85112,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Name length",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -85082,6 +85122,7 @@
         132,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fileblk",
@@ -85095,6 +85136,7 @@
         91,
         148
       ],
+      "comment_inline": "Look it up in the heap cache",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_proc_fn",
@@ -85107,6 +85149,7 @@
         208,
         3
       ],
+      "comment_inline": "found: jump to it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb1e9",
@@ -85120,6 +85163,7 @@
         18,
         177
       ],
+      "comment_inline": "not cached: scan the program",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "find_def",
@@ -85135,6 +85179,7 @@
       "labels": [
         "cb1e9"
       ],
+      "comment_inline": "Set PtrA to the definition address",
       "xref_summaries": [
         "&b1e9 referenced 1 time by &b1e4"
       ],
@@ -85151,6 +85196,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -85163,6 +85209,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -85174,6 +85221,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -85183,6 +85231,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -85195,6 +85244,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -85210,6 +85260,7 @@
       "labels": [
         "cb1f4"
       ],
+      "comment_inline": "Push the parameter count (0 so far)",
       "xref_summaries": [
         "&b1f4 referenced 1 time by &b187"
       ],
@@ -85225,6 +85276,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -85234,6 +85286,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -85247,6 +85300,7 @@
         151,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -85259,6 +85313,7 @@
         201,
         40
       ],
+      "comment_inline": "'(' parameters?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -85269,6 +85324,7 @@
         240,
         77
       ],
+      "comment_inline": "yes: bind them",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb24d",
@@ -85281,6 +85337,7 @@
         198,
         10
       ],
+      "comment_inline": "no: back up",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -85296,6 +85353,7 @@
       "labels": [
         "cb202"
       ],
+      "comment_inline": "Save the parser pointer",
       "xref_summaries": [
         "&b202 referenced 1 time by &b30a"
       ],
@@ -85313,6 +85371,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -85322,6 +85381,7 @@
         165,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2",
@@ -85333,6 +85393,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -85342,6 +85403,7 @@
         165,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -85353,6 +85415,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -85363,6 +85426,7 @@
         163,
         139
       ],
+      "comment_inline": "Execute the body",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c8ba3",
@@ -85374,6 +85438,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the parser pointer",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85383,6 +85448,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -85394,6 +85460,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85403,6 +85470,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -85414,6 +85482,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85423,6 +85492,7 @@
         133,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -85434,6 +85504,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Number of LOCAL/parameter values to restore",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85443,6 +85514,7 @@
         240,
         12
       ],
+      "comment_inline": "none: skip",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb226",
@@ -85455,6 +85527,7 @@
         133,
         63
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -85471,6 +85544,7 @@
       "labels": [
         "loop_cb21c"
       ],
+      "comment_inline": "Unstack the variable address",
       "xref_summaries": [
         "&b21c referenced 1 time by &b224"
       ],
@@ -85490,6 +85564,7 @@
         193,
         140
       ],
+      "comment_inline": "restore its saved value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_value_to_var",
@@ -85502,6 +85577,7 @@
         198,
         63
       ],
+      "comment_inline": "one done",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwb_m2",
@@ -85514,6 +85590,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb21c",
@@ -85528,6 +85605,7 @@
       "labels": [
         "cb226"
       ],
+      "comment_inline": "Restore PtrA",
       "xref_summaries": [
         "&b226 referenced 1 time by &b218"
       ],
@@ -85543,6 +85621,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -85554,6 +85633,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85563,6 +85643,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -85574,6 +85655,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85583,6 +85665,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -85594,6 +85677,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the saved 6502 stack pointer",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85603,6 +85687,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -85613,6 +85698,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -85624,6 +85710,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -85632,6 +85719,7 @@
       "bytes": [
         154
       ],
+      "comment_inline": "restore it",
       "type": "code",
       "mnemonic": "txs"
     },
@@ -85643,6 +85731,7 @@
       "labels": [
         "loop_cb236"
       ],
+      "comment_inline": "Copy each byte back to the 6502 stack",
       "xref_summaries": [
         "&b236 referenced 1 time by &b23f"
       ],
@@ -85657,6 +85746,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -85666,6 +85756,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -85679,6 +85770,7 @@
         0,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0100,x",
@@ -85691,6 +85783,7 @@
         224,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&ff"
@@ -85701,6 +85794,7 @@
         208,
         245
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb236",
@@ -85712,6 +85806,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Adjust the BASIC stack pointer back up",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -85721,6 +85816,7 @@
         101,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr",
@@ -85733,6 +85829,7 @@
         133,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -85745,6 +85842,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb24a",
@@ -85757,6 +85855,7 @@
         230,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -85772,6 +85871,7 @@
       "labels": [
         "cb24a"
       ],
+      "comment_inline": "Return the PROC/FN token",
       "xref_summaries": [
         "&b24a referenced 1 time by &b246"
       ],
@@ -85789,6 +85889,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
