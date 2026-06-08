@@ -1709,6 +1709,18 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 39173,
+      "name": "trace_line",
+      "title": "Print [line] when TRACE is active",
+      "description": "If the current line number is within the TRACE ceiling, print the line number in brackets."
+    },
+    {
+      "addr": 39199,
+      "name": "print_line_number",
+      "title": "Print a 16-bit line number in decimal",
+      "description": "Convert the value in IWA to decimal by repeated subtraction of the powers of ten at &996B/&99B9, suppressing leading zeros, optionally right-justified in a field."
+    },
+    {
       "addr": 34866,
       "name": "asm_opcode_add4",
       "title": "Step the opcode to the next addressing-mode column (+4)",
@@ -28484,9 +28496,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c991f",
+      "operand": "print_line_number",
       "target": 39199,
-      "target_label": "sub_c991f"
+      "target_label": "print_line_number"
     },
     {
       "addr": 37018,
@@ -41615,6 +41627,7 @@
       "labels": [
         "check_end_of_statement"
       ],
+      "comment_inline": "Program pointer offset",
       "xref_summaries": [
         "&9857 referenced 25 times by &8ab6, &8ac8, &8ad0, &8ada, &8b98, &8ebd, &8ec4, &8f45, &8f8f, &928d, &92a5, &92b9, &92c2, &9362, &9394, &93a0, &9880, &b5e3, &b88b, &b8b6, &b8cf, &b8e4, &bb07, &bd11, &bfe4"
       ],
@@ -41659,6 +41672,7 @@
       "labels": [
         "c9859"
       ],
+      "comment_inline": "step back",
       "xref_summaries": [
         "&9859 referenced 2 times by &858c, &9854"
       ],
@@ -41677,6 +41691,7 @@
       "labels": [
         "loop_c985a"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&985a referenced 1 time by &985f"
       ],
@@ -41692,6 +41707,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -41704,6 +41720,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -41714,6 +41731,7 @@
         240,
         249
       ],
+      "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c985a",
@@ -41729,6 +41747,7 @@
       "labels": [
         "c9861"
       ],
+      "comment_inline": "':' statement separator?",
       "xref_summaries": [
         "&9861 referenced 1 time by &984f"
       ],
@@ -41745,6 +41764,7 @@
         240,
         8
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c986d",
@@ -41757,6 +41777,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -41767,6 +41788,7 @@
         240,
         4
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c986d",
@@ -41779,6 +41801,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -41789,6 +41812,7 @@
         208,
         189
       ],
+      "comment_inline": "none: Mistake (syntax error)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c982a",
@@ -41803,6 +41827,7 @@
       "labels": [
         "c986d"
       ],
+      "comment_inline": "Advance the program pointer past the statement",
       "xref_summaries": [
         "&986d referenced 8 times by &850f, &8b73, &9863, &9867, &b16e, &b5ff, &b8fc, &bbea"
       ],
@@ -41824,6 +41849,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -41833,6 +41859,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -41845,6 +41872,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -41857,6 +41885,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9877",
@@ -41869,6 +41898,7 @@
         230,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -41884,6 +41914,7 @@
       "labels": [
         "c9877"
       ],
+      "comment_inline": "Reset the offset to 1",
       "xref_summaries": [
         "&9877 referenced 4 times by &9873, &98eb, &b74b, &b964"
       ],
@@ -41903,6 +41934,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -41918,6 +41950,7 @@
       "labels": [
         "sub_c987b"
       ],
+      "comment_inline": "Escape pressed (ESCFLG)?",
       "xref_summaries": [
         "&987b referenced 1 time by &8f56"
       ],
@@ -41936,6 +41969,7 @@
         48,
         185
       ],
+      "comment_inline": "yes: raise Escape",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c9838",
@@ -41950,6 +41984,7 @@
       "labels": [
         "return_14"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&987f referenced 1 time by &9888"
       ],
@@ -41969,6 +42004,7 @@
       "labels": [
         "sub_c9880"
       ],
+      "comment_inline": "Check this statement is terminated",
       "xref_summaries": [
         "&9880 referenced 1 time by &b837"
       ],
@@ -41986,6 +42022,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Re-read the terminator",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -41995,6 +42032,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -42007,6 +42045,7 @@
         201,
         58
       ],
+      "comment_inline": "':' (more on this line)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -42017,6 +42056,7 @@
         240,
         245
       ],
+      "comment_inline": "yes: continue on the line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_14",
@@ -42029,6 +42069,7 @@
         165,
         12
       ],
+      "comment_inline": "At the end of program memory?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -42041,6 +42082,7 @@
         201,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#7"
@@ -42051,6 +42093,7 @@
         240,
         44
       ],
+      "comment_inline": "yes: return to immediate mode",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c98bc",
@@ -42065,6 +42108,7 @@
       "labels": [
         "sub_c9890"
       ],
+      "comment_inline": "Next byte (line-number marker)",
       "xref_summaries": [
         "&9890 referenced 2 times by &859f, &8b91"
       ],
@@ -42081,6 +42125,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -42093,6 +42138,7 @@
         48,
         39
       ],
+      "comment_inline": "end of program: immediate mode",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c98bc",
@@ -42105,6 +42151,7 @@
         165,
         32
       ],
+      "comment_inline": "TRACE on?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_trace_flag",
@@ -42117,6 +42164,7 @@
         240,
         19
       ],
+      "comment_inline": "no: skip the line number",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c98ac",
@@ -42128,6 +42176,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Save the offset",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -42136,6 +42185,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -42144,6 +42194,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Line number high byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42153,6 +42204,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -42164,6 +42216,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -42172,6 +42225,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Line number low byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -42181,6 +42235,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -42192,6 +42247,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -42200,6 +42256,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -42210,6 +42267,7 @@
         234,
         174
       ],
+      "comment_inline": "IWA = line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_from_ya",
@@ -42223,17 +42281,19 @@
         5,
         153
       ],
+      "comment_inline": "trace it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9905",
+      "operand": "trace_line",
       "target": 39173,
-      "target_label": "sub_c9905"
+      "target_label": "trace_line"
     },
     {
       "addr": 39082,
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the offset",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -42242,6 +42302,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -42253,6 +42314,7 @@
       "labels": [
         "c98ac"
       ],
+      "comment_inline": "Step past the 3-byte line header",
       "xref_summaries": [
         "&98ac referenced 1 time by &9897"
       ],
@@ -42267,6 +42329,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -42275,6 +42338,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -42284,6 +42348,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -42296,6 +42361,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -42308,6 +42374,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c98b7",
@@ -42320,6 +42387,7 @@
         230,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -42335,6 +42403,7 @@
       "labels": [
         "c98b7"
       ],
+      "comment_inline": "Reset the offset to 1",
       "xref_summaries": [
         "&98b7 referenced 1 time by &98b3"
       ],
@@ -42351,6 +42420,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -42365,6 +42435,7 @@
       "labels": [
         "return_15"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&98bb referenced 1 time by &990d"
       ],
@@ -42384,6 +42455,7 @@
       "labels": [
         "c98bc"
       ],
+      "comment_inline": "End of program: immediate mode",
       "xref_summaries": [
         "&98bc referenced 2 times by &988e, &9893"
       ],
@@ -42407,6 +42479,7 @@
       "labels": [
         "loop_c98bf"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&98bf referenced 1 time by &98c5"
       ],
@@ -42881,8 +42954,9 @@
         42
       ],
       "labels": [
-        "sub_c9905"
+        "trace_line"
       ],
+      "comment_inline": "Line number vs TRACE ceiling",
       "xref_summaries": [
         "&9905 referenced 2 times by &98a7, &b8d6"
       ],
@@ -42902,6 +42976,7 @@
         197,
         33
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_trace_max",
@@ -42914,6 +42989,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -42926,6 +43002,7 @@
         229,
         34
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l0022",
@@ -42938,6 +43015,7 @@
         176,
         172
       ],
+      "comment_inline": "above the ceiling: do not trace",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_15",
@@ -42950,6 +43028,7 @@
         169,
         91
       ],
+      "comment_inline": "Print '['",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&5b"
@@ -42961,6 +43040,7 @@
         88,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb558",
@@ -42974,11 +43054,12 @@
         31,
         153
       ],
+      "comment_inline": "print the line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c991f",
+      "operand": "print_line_number",
       "target": 39199,
-      "target_label": "sub_c991f"
+      "target_label": "print_line_number"
     },
     {
       "addr": 39191,
@@ -42986,6 +43067,7 @@
         169,
         93
       ],
+      "comment_inline": "Print ']'",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&5d"
@@ -42997,6 +43079,7 @@
         88,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb558",
@@ -43010,6 +43093,7 @@
         101,
         181
       ],
+      "comment_inline": "and a space",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb565",
@@ -43023,8 +43107,9 @@
         0
       ],
       "labels": [
-        "sub_c991f"
+        "print_line_number"
       ],
+      "comment_inline": "Default: no field padding",
       "xref_summaries": [
         "&991f referenced 3 times by &9097, &9914, &b662"
       ],
@@ -43043,6 +43128,7 @@
         240,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9925",
@@ -43058,6 +43144,7 @@
       "labels": [
         "sub_c9923"
       ],
+      "comment_inline": "TRACE entry: 5-digit field",
       "xref_summaries": [
         "&9923 referenced 2 times by &90b8, &b61d"
       ],
@@ -43078,6 +43165,7 @@
       "labels": [
         "c9925"
       ],
+      "comment_inline": "Field width",
       "xref_summaries": [
         "&9925 referenced 1 time by &9921"
       ],
@@ -43096,6 +43184,7 @@
         162,
         4
       ],
+      "comment_inline": "Five powers of ten, index 4..0",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#4"
@@ -43109,6 +43198,7 @@
       "labels": [
         "loop_c9929"
       ],
+      "comment_inline": "Clear this digit",
       "xref_summaries": [
         "&9929 referenced 1 time by &9944"
       ],
@@ -43125,6 +43215,7 @@
         149,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -43148,6 +43239,7 @@
       "labels": [
         "loop_c992e"
       ],
+      "comment_inline": "Subtract this power of ten from IWA",
       "xref_summaries": [
         "&992e referenced 1 time by &9941"
       ],
@@ -43167,6 +43259,7 @@
         107,
         153
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l996b,x",
@@ -43178,6 +43271,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -43187,6 +43281,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -43200,6 +43295,7 @@
         185,
         153
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l99b9,x",
@@ -43212,6 +43308,7 @@
         144,
         8
       ],
+      "comment_inline": "underflow: digit complete",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9943",
@@ -43224,6 +43321,7 @@
         133,
         43
       ],
+      "comment_inline": "keep the remainder",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -43236,6 +43334,7 @@
         132,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa",
@@ -43248,6 +43347,7 @@
         246,
         63
       ],
+      "comment_inline": "count the digit",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m2,x",
@@ -43260,6 +43360,7 @@
         208,
         235
       ],
+      "comment_inline": "subtract again",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c992e",
@@ -43274,6 +43375,7 @@
       "labels": [
         "c9943"
       ],
+      "comment_inline": "Next power of ten",
       "xref_summaries": [
         "&9943 referenced 1 time by &9939"
       ],
@@ -43289,6 +43391,7 @@
         16,
         227
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9929",
@@ -43301,6 +43404,7 @@
         162,
         5
       ],
+      "comment_inline": "Find the most significant non-zero digit",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#5"
@@ -43313,6 +43417,7 @@
       "labels": [
         "loop_c9948"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&9948 referenced 1 time by &994d"
       ],
@@ -43328,6 +43433,7 @@
         240,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c994f",
@@ -43340,6 +43446,7 @@
         181,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2,x",
@@ -43352,6 +43459,7 @@
         240,
         249
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9948",
@@ -43367,6 +43475,7 @@
       "labels": [
         "c994f"
       ],
+      "comment_inline": "Index of the top digit",
       "xref_summaries": [
         "&994f referenced 1 time by &9949"
       ],
@@ -43385,6 +43494,7 @@
         165,
         20
       ],
+      "comment_inline": "Field padding requested?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_bytes",
@@ -43397,6 +43507,7 @@
         240,
         11
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9960",
@@ -43409,6 +43520,7 @@
         229,
         55
       ],
+      "comment_inline": "leading spaces = field - digits",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_general",
@@ -43421,6 +43533,7 @@
         240,
         7
       ],
+      "comment_inline": "none",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9960",
@@ -43432,6 +43545,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -43445,6 +43559,7 @@
       "labels": [
         "loop_c995a"
       ],
+      "comment_inline": "print a leading space",
       "xref_summaries": [
         "&995a referenced 1 time by &995e"
       ],
@@ -43462,6 +43577,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -43471,6 +43587,7 @@
         208,
         250
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c995a",
@@ -43486,6 +43603,7 @@
       "labels": [
         "c9960"
       ],
+      "comment_inline": "Digit",
       "xref_summaries": [
         "&9960 referenced 3 times by &9953, &9957, &9968"
       ],
@@ -43506,6 +43624,7 @@
         9,
         48
       ],
+      "comment_inline": "to ASCII",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&30"
@@ -43517,6 +43636,7 @@
         88,
         181
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb558",
@@ -43528,6 +43648,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -43537,6 +43658,7 @@
         16,
         246
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9960",
@@ -43548,6 +43670,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -91515,9 +91638,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c991f",
+      "operand": "print_line_number",
       "target": 39199,
-      "target_label": "sub_c991f"
+      "target_label": "print_line_number"
     },
     {
       "addr": 46693,
@@ -95111,9 +95234,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9905",
+      "operand": "trace_line",
       "target": 39173,
-      "target_label": "sub_c9905"
+      "target_label": "trace_line"
     },
     {
       "addr": 47321,

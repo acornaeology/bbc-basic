@@ -3096,7 +3096,7 @@ l848a = sub_c847b+15
     iny                                                               ; 9092: c8          .     
     lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..    
     sta zp_iwa                                                        ; 9095: 85 2a       .*    
-    jsr sub_c991f                                                     ; 9097: 20 1f 99     ..   
+    jsr print_line_number                                             ; 9097: 20 1f 99     ..   
     jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.   
     beq loop_c906d                                                    ; 909d: f0 ce       ..    
 ; ***************************************************************************************
@@ -4557,95 +4557,95 @@ l848a = sub_c847b+15
 ; ELSE. Anything else raises "Syntax error". Also polls for Escape.
 ; &9857 referenced 25 times by &8ab6, &8ac8, &8ad0, &8ada, &8b98, &8ebd, &8ec4, &8f45, &8f8f, &928d, &92a5, &92b9, &92c2, &9362, &9394, &93a0, &9880, &b5e3, &b88b, &b8b6, &b8cf, &b8e4, &bb07, &bd11, &bfe4
 .check_end_of_statement
-    ldy zp_text_ptr_off                                               ; 9857: a4 0a       ..    
+    ldy zp_text_ptr_off                                               ; 9857: a4 0a       ..       ; Program pointer offset
 ; &9859 referenced 2 times by &858c, &9854
 .c9859
-    dey                                                               ; 9859: 88          .     
+    dey                                                               ; 9859: 88          .        ; step back
 ; &985a referenced 1 time by &985f
 .loop_c985a
-    iny                                                               ; 985a: c8          .     
-    lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..    
-    cmp #&20 ; ' '                                                    ; 985d: c9 20       .     
-    beq loop_c985a                                                    ; 985f: f0 f9       ..    
+    iny                                                               ; 985a: c8          .        ; Next character
+    lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..       ; ...
+    cmp #&20 ; ' '                                                    ; 985d: c9 20       .        ; space?
+    beq loop_c985a                                                    ; 985f: f0 f9       ..       ; skip it
 ; &9861 referenced 1 time by &984f
 .c9861
-    cmp #&3a ; ':'                                                    ; 9861: c9 3a       .:    
-    beq c986d                                                         ; 9863: f0 08       ..    
-    cmp #&0d                                                          ; 9865: c9 0d       ..    
-    beq c986d                                                         ; 9867: f0 04       ..    
-    cmp #&8b                                                          ; 9869: c9 8b       ..    
-    bne c982a                                                         ; 986b: d0 bd       ..    
+    cmp #&3a ; ':'                                                    ; 9861: c9 3a       .:       ; ':' statement separator?
+    beq c986d                                                         ; 9863: f0 08       ..       ; yes
+    cmp #&0d                                                          ; 9865: c9 0d       ..       ; end of line?
+    beq c986d                                                         ; 9867: f0 04       ..       ; yes
+    cmp #&8b                                                          ; 9869: c9 8b       ..       ; ELSE token?
+    bne c982a                                                         ; 986b: d0 bd       ..       ; none: Mistake (syntax error)
 ; &986d referenced 8 times by &850f, &8b73, &9863, &9867, &b16e, &b5ff, &b8fc, &bbea
 .c986d
-    clc                                                               ; 986d: 18          .     
-    tya                                                               ; 986e: 98          .     
-    adc zp_text_ptr                                                   ; 986f: 65 0b       e.    
-    sta zp_text_ptr                                                   ; 9871: 85 0b       ..    
-    bcc c9877                                                         ; 9873: 90 02       ..    
-    inc zp_text_ptr_1                                                 ; 9875: e6 0c       ..    
+    clc                                                               ; 986d: 18          .        ; Advance the program pointer past the statement
+    tya                                                               ; 986e: 98          .        ; ...
+    adc zp_text_ptr                                                   ; 986f: 65 0b       e.       ; ...
+    sta zp_text_ptr                                                   ; 9871: 85 0b       ..       ; ...
+    bcc c9877                                                         ; 9873: 90 02       ..       ; ...
+    inc zp_text_ptr_1                                                 ; 9875: e6 0c       ..       ; ...
 ; &9877 referenced 4 times by &9873, &98eb, &b74b, &b964
 .c9877
-    ldy #1                                                            ; 9877: a0 01       ..    
-    sty zp_text_ptr_off                                               ; 9879: 84 0a       ..    
+    ldy #1                                                            ; 9877: a0 01       ..       ; Reset the offset to 1
+    sty zp_text_ptr_off                                               ; 9879: 84 0a       ..       ; ...
 ; &987b referenced 1 time by &8f56
 .sub_c987b
-    bit l00ff                                                         ; 987b: 24 ff       $.    
-    bmi c9838                                                         ; 987d: 30 b9       0.    
+    bit l00ff                                                         ; 987b: 24 ff       $.       ; Escape pressed (ESCFLG)?
+    bmi c9838                                                         ; 987d: 30 b9       0.       ; yes: raise Escape
 ; &987f referenced 1 time by &9888
 .return_14
-    rts                                                               ; 987f: 60          `     
+    rts                                                               ; 987f: 60          `        ; Return
 ; &9880 referenced 1 time by &b837
 .sub_c9880
-    jsr check_end_of_statement                                        ; 9880: 20 57 98     W.   
-    dey                                                               ; 9883: 88          .     
-    lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..    
-    cmp #&3a ; ':'                                                    ; 9886: c9 3a       .:    
-    beq return_14                                                     ; 9888: f0 f5       ..    
-    lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..    
-    cmp #7                                                            ; 988c: c9 07       ..    
-    beq c98bc                                                         ; 988e: f0 2c       .,    
+    jsr check_end_of_statement                                        ; 9880: 20 57 98     W.      ; Check this statement is terminated
+    dey                                                               ; 9883: 88          .        ; Re-read the terminator
+    lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..       ; ...
+    cmp #&3a ; ':'                                                    ; 9886: c9 3a       .:       ; ':' (more on this line)?
+    beq return_14                                                     ; 9888: f0 f5       ..       ; yes: continue on the line
+    lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..       ; At the end of program memory?
+    cmp #7                                                            ; 988c: c9 07       ..       ; ...
+    beq c98bc                                                         ; 988e: f0 2c       .,       ; yes: return to immediate mode
 ; &9890 referenced 2 times by &859f, &8b91
 .sub_c9890
-    iny                                                               ; 9890: c8          .     
-    lda (zp_text_ptr),y                                               ; 9891: b1 0b       ..    
-    bmi c98bc                                                         ; 9893: 30 27       0'    
-    lda zp_trace_flag                                                 ; 9895: a5 20       .     
-    beq c98ac                                                         ; 9897: f0 13       ..    
-    tya                                                               ; 9899: 98          .     
-    pha                                                               ; 989a: 48          H     
-    iny                                                               ; 989b: c8          .     
-    lda (zp_text_ptr),y                                               ; 989c: b1 0b       ..    
-    pha                                                               ; 989e: 48          H     
-    dey                                                               ; 989f: 88          .     
-    lda (zp_text_ptr),y                                               ; 98a0: b1 0b       ..    
-    tay                                                               ; 98a2: a8          .     
-    pla                                                               ; 98a3: 68          h     
-    jsr iwa_from_ya                                                   ; 98a4: 20 ea ae     ..   
-    jsr sub_c9905                                                     ; 98a7: 20 05 99     ..   
-    pla                                                               ; 98aa: 68          h     
-    tay                                                               ; 98ab: a8          .     
+    iny                                                               ; 9890: c8          .        ; Next byte (line-number marker)
+    lda (zp_text_ptr),y                                               ; 9891: b1 0b       ..       ; ...
+    bmi c98bc                                                         ; 9893: 30 27       0'       ; end of program: immediate mode
+    lda zp_trace_flag                                                 ; 9895: a5 20       .        ; TRACE on?
+    beq c98ac                                                         ; 9897: f0 13       ..       ; no: skip the line number
+    tya                                                               ; 9899: 98          .        ; Save the offset
+    pha                                                               ; 989a: 48          H        ; ...
+    iny                                                               ; 989b: c8          .        ; Line number high byte
+    lda (zp_text_ptr),y                                               ; 989c: b1 0b       ..       ; ...
+    pha                                                               ; 989e: 48          H        ; ...
+    dey                                                               ; 989f: 88          .        ; Line number low byte
+    lda (zp_text_ptr),y                                               ; 98a0: b1 0b       ..       ; ...
+    tay                                                               ; 98a2: a8          .        ; ...
+    pla                                                               ; 98a3: 68          h        ; ...
+    jsr iwa_from_ya                                                   ; 98a4: 20 ea ae     ..      ; IWA = line number
+    jsr trace_line                                                    ; 98a7: 20 05 99     ..      ; trace it
+    pla                                                               ; 98aa: 68          h        ; Restore the offset
+    tay                                                               ; 98ab: a8          .        ; ...
 ; &98ac referenced 1 time by &9897
 .c98ac
-    iny                                                               ; 98ac: c8          .     
-    sec                                                               ; 98ad: 38          8     
-    tya                                                               ; 98ae: 98          .     
-    adc zp_text_ptr                                                   ; 98af: 65 0b       e.    
-    sta zp_text_ptr                                                   ; 98b1: 85 0b       ..    
-    bcc c98b7                                                         ; 98b3: 90 02       ..    
-    inc zp_text_ptr_1                                                 ; 98b5: e6 0c       ..    
+    iny                                                               ; 98ac: c8          .        ; Step past the 3-byte line header
+    sec                                                               ; 98ad: 38          8        ; ...
+    tya                                                               ; 98ae: 98          .        ; ...
+    adc zp_text_ptr                                                   ; 98af: 65 0b       e.       ; ...
+    sta zp_text_ptr                                                   ; 98b1: 85 0b       ..       ; ...
+    bcc c98b7                                                         ; 98b3: 90 02       ..       ; ...
+    inc zp_text_ptr_1                                                 ; 98b5: e6 0c       ..       ; ...
 ; &98b7 referenced 1 time by &98b3
 .c98b7
-    ldy #1                                                            ; 98b7: a0 01       ..    
-    sty zp_text_ptr_off                                               ; 98b9: 84 0a       ..    
+    ldy #1                                                            ; 98b7: a0 01       ..       ; Reset the offset to 1
+    sty zp_text_ptr_off                                               ; 98b9: 84 0a       ..       ; ...
 ; &98bb referenced 1 time by &990d
 .return_15
-    rts                                                               ; 98bb: 60          `     
+    rts                                                               ; 98bb: 60          `        ; Return
 ; &98bc referenced 2 times by &988e, &9893
 .c98bc
-    jmp immediate_loop                                                ; 98bc: 4c f6 8a    L..   
+    jmp immediate_loop                                                ; 98bc: 4c f6 8a    L..      ; End of program: immediate mode
 ; &98bf referenced 1 time by &98c5
 .loop_c98bf
-    jmp err_type_mismatch                                             ; 98bf: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 98bf: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; IF
 ;
@@ -4696,79 +4696,89 @@ l848a = sub_c847b+15
 ; &9902 referenced 1 time by &98f7
 .c9902
     jmp c8b87                                                         ; 9902: 4c 87 8b    L..      ; No ELSE: continue at the next line
+; ***************************************************************************************
+; Print [line] when TRACE is active
+;
+; If the current line number is within the TRACE ceiling, print the line number in
+; brackets.
 ; &9905 referenced 2 times by &98a7, &b8d6
-.sub_c9905
-    lda zp_iwa                                                        ; 9905: a5 2a       .*    
-    cmp zp_trace_max                                                  ; 9907: c5 21       .!    
-    lda zp_iwa_1                                                      ; 9909: a5 2b       .+    
-    sbc l0022                                                         ; 990b: e5 22       ."    
-    bcs return_15                                                     ; 990d: b0 ac       ..    
-    lda #&5b ; '['                                                    ; 990f: a9 5b       .[    
-    jsr cb558                                                         ; 9911: 20 58 b5     X.   
-    jsr sub_c991f                                                     ; 9914: 20 1f 99     ..   
-    lda #&5d ; ']'                                                    ; 9917: a9 5d       .]    
-    jsr cb558                                                         ; 9919: 20 58 b5     X.   
-    jmp cb565                                                         ; 991c: 4c 65 b5    Le.   
+.trace_line
+    lda zp_iwa                                                        ; 9905: a5 2a       .*       ; Line number vs TRACE ceiling
+    cmp zp_trace_max                                                  ; 9907: c5 21       .!       ; ...
+    lda zp_iwa_1                                                      ; 9909: a5 2b       .+       ; ...
+    sbc l0022                                                         ; 990b: e5 22       ."       ; ...
+    bcs return_15                                                     ; 990d: b0 ac       ..       ; above the ceiling: do not trace
+    lda #&5b ; '['                                                    ; 990f: a9 5b       .[       ; Print '['
+    jsr cb558                                                         ; 9911: 20 58 b5     X.      ; ...
+    jsr print_line_number                                             ; 9914: 20 1f 99     ..      ; print the line number
+    lda #&5d ; ']'                                                    ; 9917: a9 5d       .]       ; Print ']'
+    jsr cb558                                                         ; 9919: 20 58 b5     X.      ; ...
+    jmp cb565                                                         ; 991c: 4c 65 b5    Le.      ; and a space
+; ***************************************************************************************
+; Print a 16-bit line number in decimal
+;
+; Convert the value in IWA to decimal by repeated subtraction of the powers of ten at
+; &996B/&99B9, suppressing leading zeros, optionally right-justified in a field.
 ; &991f referenced 3 times by &9097, &9914, &b662
-.sub_c991f
-    lda #0                                                            ; 991f: a9 00       ..    
-    beq c9925                                                         ; 9921: f0 02       ..    
+.print_line_number
+    lda #0                                                            ; 991f: a9 00       ..       ; Default: no field padding
+    beq c9925                                                         ; 9921: f0 02       ..       ; ...
 ; &9923 referenced 2 times by &90b8, &b61d
 .sub_c9923
-    lda #5                                                            ; 9923: a9 05       ..    
+    lda #5                                                            ; 9923: a9 05       ..       ; TRACE entry: 5-digit field
 ; &9925 referenced 1 time by &9921
 .c9925
-    sta zp_print_bytes                                                ; 9925: 85 14       ..    
-    ldx #4                                                            ; 9927: a2 04       ..    
+    sta zp_print_bytes                                                ; 9925: 85 14       ..       ; Field width
+    ldx #4                                                            ; 9927: a2 04       ..       ; Five powers of ten, index 4..0
 ; &9929 referenced 1 time by &9944
 .loop_c9929
-    lda #0                                                            ; 9929: a9 00       ..    
-    sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?    
+    lda #0                                                            ; 9929: a9 00       ..       ; Clear this digit
+    sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?       ; ...
     sec                                                               ; 992d: 38          8     
 ; &992e referenced 1 time by &9941
 .loop_c992e
-    lda zp_iwa                                                        ; 992e: a5 2a       .*    
-    sbc l996b,x                                                       ; 9930: fd 6b 99    .k.   
-    tay                                                               ; 9933: a8          .     
-    lda zp_iwa_1                                                      ; 9934: a5 2b       .+    
-    sbc l99b9,x                                                       ; 9936: fd b9 99    ...   
-    bcc c9943                                                         ; 9939: 90 08       ..    
-    sta zp_iwa_1                                                      ; 993b: 85 2b       .+    
-    sty zp_iwa                                                        ; 993d: 84 2a       .*    
-    inc zp_fwb_m2,x                                                   ; 993f: f6 3f       .?    
-    bne loop_c992e                                                    ; 9941: d0 eb       ..    
+    lda zp_iwa                                                        ; 992e: a5 2a       .*       ; Subtract this power of ten from IWA
+    sbc l996b,x                                                       ; 9930: fd 6b 99    .k.      ; ...
+    tay                                                               ; 9933: a8          .        ; ...
+    lda zp_iwa_1                                                      ; 9934: a5 2b       .+       ; ...
+    sbc l99b9,x                                                       ; 9936: fd b9 99    ...      ; ...
+    bcc c9943                                                         ; 9939: 90 08       ..       ; underflow: digit complete
+    sta zp_iwa_1                                                      ; 993b: 85 2b       .+       ; keep the remainder
+    sty zp_iwa                                                        ; 993d: 84 2a       .*       ; ...
+    inc zp_fwb_m2,x                                                   ; 993f: f6 3f       .?       ; count the digit
+    bne loop_c992e                                                    ; 9941: d0 eb       ..       ; subtract again
 ; &9943 referenced 1 time by &9939
 .c9943
-    dex                                                               ; 9943: ca          .     
-    bpl loop_c9929                                                    ; 9944: 10 e3       ..    
-    ldx #5                                                            ; 9946: a2 05       ..    
+    dex                                                               ; 9943: ca          .        ; Next power of ten
+    bpl loop_c9929                                                    ; 9944: 10 e3       ..       ; ...
+    ldx #5                                                            ; 9946: a2 05       ..       ; Find the most significant non-zero digit
 ; &9948 referenced 1 time by &994d
 .loop_c9948
-    dex                                                               ; 9948: ca          .     
-    beq c994f                                                         ; 9949: f0 04       ..    
-    lda zp_fwb_m2,x                                                   ; 994b: b5 3f       .?    
-    beq loop_c9948                                                    ; 994d: f0 f9       ..    
+    dex                                                               ; 9948: ca          .        ; ...
+    beq c994f                                                         ; 9949: f0 04       ..       ; ...
+    lda zp_fwb_m2,x                                                   ; 994b: b5 3f       .?       ; ...
+    beq loop_c9948                                                    ; 994d: f0 f9       ..       ; ...
 ; &994f referenced 1 time by &9949
 .c994f
-    stx zp_general                                                    ; 994f: 86 37       .7    
-    lda zp_print_bytes                                                ; 9951: a5 14       ..    
-    beq c9960                                                         ; 9953: f0 0b       ..    
-    sbc zp_general                                                    ; 9955: e5 37       .7    
-    beq c9960                                                         ; 9957: f0 07       ..    
-    tay                                                               ; 9959: a8          .     
+    stx zp_general                                                    ; 994f: 86 37       .7       ; Index of the top digit
+    lda zp_print_bytes                                                ; 9951: a5 14       ..       ; Field padding requested?
+    beq c9960                                                         ; 9953: f0 0b       ..       ; no
+    sbc zp_general                                                    ; 9955: e5 37       .7       ; leading spaces = field - digits
+    beq c9960                                                         ; 9957: f0 07       ..       ; none
+    tay                                                               ; 9959: a8          .        ; ...
 ; &995a referenced 1 time by &995e
 .loop_c995a
-    jsr cb565                                                         ; 995a: 20 65 b5     e.   
-    dey                                                               ; 995d: 88          .     
-    bne loop_c995a                                                    ; 995e: d0 fa       ..    
+    jsr cb565                                                         ; 995a: 20 65 b5     e.      ; print a leading space
+    dey                                                               ; 995d: 88          .        ; ...
+    bne loop_c995a                                                    ; 995e: d0 fa       ..       ; ...
 ; &9960 referenced 3 times by &9953, &9957, &9968
 .c9960
-    lda zp_fwb_m2,x                                                   ; 9960: b5 3f       .?    
-    ora #&30 ; '0'                                                    ; 9962: 09 30       .0    
-    jsr cb558                                                         ; 9964: 20 58 b5     X.   
-    dex                                                               ; 9967: ca          .     
-    bpl c9960                                                         ; 9968: 10 f6       ..    
-    rts                                                               ; 996a: 60          `     
+    lda zp_fwb_m2,x                                                   ; 9960: b5 3f       .?       ; Digit
+    ora #&30 ; '0'                                                    ; 9962: 09 30       .0       ; to ASCII
+    jsr cb558                                                         ; 9964: 20 58 b5     X.      ; print it
+    dex                                                               ; 9967: ca          .        ; next digit
+    bpl c9960                                                         ; 9968: 10 f6       ..       ; ...
+    rts                                                               ; 996a: 60          `        ; Return
 ; &996b referenced 1 time by &9930
 .l996b
     equb &01, &0a, &64, &e8, &10                                      ; 996b: 01 0a 64... ..d...
@@ -10114,7 +10124,7 @@ l848a = sub_c847b+15
     sty zp_text_ptr_off                                               ; b65c: 84 0a       ..    
     lda #0                                                            ; b65e: a9 00       ..    
     sta zp_print_bytes                                                ; b660: 85 14       ..    
-    jsr sub_c991f                                                     ; b662: 20 1f 99     ..   
+    jsr print_line_number                                             ; b662: 20 1f 99     ..   
     jmp cb637                                                         ; b665: 4c 37 b6    L7.   
 ; &b668 referenced 1 time by &b657
 .cb668
@@ -10467,7 +10477,7 @@ l848a = sub_c847b+15
 .cb8d2
     lda zp_trace_flag                                                 ; b8d2: a5 20       .        ; TRACE: report the destination line number
     beq cb8d9                                                         ; b8d4: f0 03       ..    
-    jsr sub_c9905                                                     ; b8d6: 20 05 99     ..   
+    jsr trace_line                                                    ; b8d6: 20 05 99     ..   
 ; &b8d9 referenced 1 time by &b8d4
 .cb8d9
     ldy zp_fwb_exp                                                    ; b8d9: a4 3d       .=    
@@ -12066,6 +12076,7 @@ save pydis_start, pydis_end
 ;     l0401:                       3
 ;     parse_number:                3
 ;     point_fp_temp2:              3
+;     print_line_number:           3
 ;     return_12:                   3
 ;     return_19:                   3
 ;     return_25:                   3
@@ -12076,7 +12087,6 @@ save pydis_start, pydis_end
 ;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
 ;     sub_c894b:                   3
-;     sub_c991f:                   3
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
 ;     sub_cbd3a:                   3
@@ -12302,7 +12312,6 @@ save pydis_start, pydis_end
 ;     sub_c97eb:                   2
 ;     sub_c9841:                   2
 ;     sub_c9890:                   2
-;     sub_c9905:                   2
 ;     sub_c9923:                   2
 ;     sub_c99be:                   2
 ;     sub_c9b6b:                   2
@@ -12319,6 +12328,7 @@ save pydis_start, pydis_end
 ;     sub_cbeba:                   2
 ;     sub_cbed2:                   2
 ;     sub_cbedd:                   2
+;     trace_line:                  2
 ;     try_variable_assignment:     2
 ;     usr_call:                    2
 ;     wrchv:                       2
@@ -14006,8 +14016,6 @@ save pydis_start, pydis_end
 ;     sub_c987b
 ;     sub_c9880
 ;     sub_c9890
-;     sub_c9905
-;     sub_c991f
 ;     sub_c9923
 ;     sub_c99be
 ;     sub_c9a5f
