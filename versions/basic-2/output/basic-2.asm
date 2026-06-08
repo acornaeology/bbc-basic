@@ -7226,7 +7226,7 @@ l848a = sub_c847b+15
 .fwa_reciprocal
     jsr fwa_pack_temp1                                                ; a6a5: 20 85 a3     ..      ; Save FWA (the divisor) in TEMP1
     jsr fwa_set_one                                                   ; a6a8: 20 99 a6     ..      ; FWA = 1
-    bne ca6e7                                                         ; a6ab: d0 3a       .:       ; divide 1 by the saved value
+    bne fp_divide                                                     ; a6ab: d0 3a       .:       ; divide 1 by the saved value
 ; ***************************************************************************************
 ; FWA = fp var / FWA
 ;
@@ -7247,149 +7247,154 @@ l848a = sub_c847b+15
 ;
 ; FWA = tan(FWA), argument in radians. Pure routine at &A6C1.
 .fn_tan
-    jsr sub_c92fa                                                     ; a6be: 20 fa 92     ..   
-    jsr sub_ca9d3                                                     ; a6c1: 20 d3 a9     ..   
-    lda l004a                                                         ; a6c4: a5 4a       .J    
-    pha                                                               ; a6c6: 48          H     
-    jsr point_fp_temp4                                                ; a6c7: 20 e9 a7     ..   
-    jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..   
-    inc l004a                                                         ; a6cd: e6 4a       .J    
-    jsr ca99e                                                         ; a6cf: 20 9e a9     ..   
-    jsr point_fp_temp4                                                ; a6d2: 20 e9 a7     ..   
-    jsr fwa_swap_var                                                  ; a6d5: 20 d6 a4     ..   
-    pla                                                               ; a6d8: 68          h     
-    sta l004a                                                         ; a6d9: 85 4a       .J    
-    jsr ca99e                                                         ; a6db: 20 9e a9     ..   
-    jsr point_fp_temp4                                                ; a6de: 20 e9 a7     ..   
-    jsr ca6e7                                                         ; a6e1: 20 e7 a6     ..   
-    lda #&ff                                                          ; a6e4: a9 ff       ..    
-    rts                                                               ; a6e6: 60          `     
+    jsr sub_c92fa                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr sub_ca9d3                                                     ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
+    lda l004a                                                         ; a6c4: a5 4a       .J       ; save the quadrant
+    pha                                                               ; a6c6: 48          H        ; ...
+    jsr point_fp_temp4                                                ; a6c7: 20 e9 a7     ..      ; save the first result (cos) in TEMP4
+    jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..      ; ...
+    inc l004a                                                         ; a6cd: e6 4a       .J       ; shift the quadrant (cos -> sin)
+    jsr ca99e                                                         ; a6cf: 20 9e a9     ..      ; compute the other (sin)
+    jsr point_fp_temp4                                                ; a6d2: 20 e9 a7     ..      ; point at TEMP4
+    jsr fwa_swap_var                                                  ; a6d5: 20 d6 a4     ..      ; swap FWA (sin) with TEMP4 (cos)
+    pla                                                               ; a6d8: 68          h        ; restore the quadrant
+    sta l004a                                                         ; a6d9: 85 4a       .J       ; ...
+    jsr ca99e                                                         ; a6db: 20 9e a9     ..      ; finish the trig (cos in FWA)
+    jsr point_fp_temp4                                                ; a6de: 20 e9 a7     ..      ; point at TEMP4 (sin)
+    jsr fp_divide                                                     ; a6e1: 20 e7 a6     ..      ; TAN = sin / cos
+    lda #&ff                                                          ; a6e4: a9 ff       ..       ; real result
+    rts                                                               ; a6e6: 60          `        ; Return TAN
+; ***************************************************************************************
+; FWA = FWA / divisor (restoring long division)
+;
+; Floating-point divide: 32 quotient bits plus guard bits by repeated
+; compare/subtract/shift; the quotient builds in &43-&46.
 ; &a6e7 referenced 3 times by &a6ab, &a6e1, &a9eb
-.ca6e7
-    jsr fwa_sign                                                      ; a6e7: 20 da a1     ..   
-    beq return_28                                                     ; a6ea: f0 ac       ..    
-    jsr fwb_unpack_var                                                ; a6ec: 20 4e a3     N.   
-    beq ca6bb                                                         ; a6ef: f0 ca       ..    
+.fp_divide
+    jsr fwa_sign                                                      ; a6e7: 20 da a1     ..      ; Is the dividend (FWA) zero?
+    beq return_28                                                     ; a6ea: f0 ac       ..       ; zero: result is zero
+    jsr fwb_unpack_var                                                ; a6ec: 20 4e a3     N.      ; unpack the divisor into FWB
+    beq ca6bb                                                         ; a6ef: f0 ca       ..       ; divisor zero: Division by zero
 ; &a6f1 referenced 1 time by &a6b8
 .ca6f1
-    lda zp_fwa_sign                                                   ; a6f1: a5 2e       ..    
-    eor zp_fwb_sign                                                   ; a6f3: 45 3b       E;    
-    sta zp_fwa_sign                                                   ; a6f5: 85 2e       ..    
-    sec                                                               ; a6f7: 38          8     
-    lda zp_fwa_exp                                                    ; a6f8: a5 30       .0    
-    sbc zp_fwb_exp                                                    ; a6fa: e5 3d       .=    
-    bcs ca701                                                         ; a6fc: b0 03       ..    
-    dec zp_fwa_ovf                                                    ; a6fe: c6 2f       ./    
-    sec                                                               ; a700: 38          8     
+    lda zp_fwa_sign                                                   ; a6f1: a5 2e       ..       ; result sign = sign XOR sign
+    eor zp_fwb_sign                                                   ; a6f3: 45 3b       E;       ; ...
+    sta zp_fwa_sign                                                   ; a6f5: 85 2e       ..       ; ...
+    sec                                                               ; a6f7: 38          8        ; result exponent = dividend - divisor:
+    lda zp_fwa_exp                                                    ; a6f8: a5 30       .0       ; ...
+    sbc zp_fwb_exp                                                    ; a6fa: e5 3d       .=       ; ...
+    bcs ca701                                                         ; a6fc: b0 03       ..       ; ...
+    dec zp_fwa_ovf                                                    ; a6fe: c6 2f       ./       ; borrow into overflow
+    sec                                                               ; a700: 38          8        ; ...
 ; &a701 referenced 1 time by &a6fc
 .ca701
-    adc #&80                                                          ; a701: 69 80       i.    
-    sta zp_fwa_exp                                                    ; a703: 85 30       .0    
-    bcc ca70a                                                         ; a705: 90 03       ..    
-    inc zp_fwa_ovf                                                    ; a707: e6 2f       ./    
-    clc                                                               ; a709: 18          .     
+    adc #&80                                                          ; a701: 69 80       i.       ; re-bias the exponent
+    sta zp_fwa_exp                                                    ; a703: 85 30       .0       ; ...
+    bcc ca70a                                                         ; a705: 90 03       ..       ; ...
+    inc zp_fwa_ovf                                                    ; a707: e6 2f       ./       ; ...
+    clc                                                               ; a709: 18          .        ; ...
 ; &a70a referenced 1 time by &a705
 .ca70a
-    ldx #&20 ; ' '                                                    ; a70a: a2 20       .     
+    ldx #&20 ; ' '                                                    ; a70a: a2 20       .        ; 32 quotient bits (restoring long division):
 ; &a70c referenced 1 time by &a750
 .loop_ca70c
-    bcs ca726                                                         ; a70c: b0 18       ..    
-    lda zp_fwa_m1                                                     ; a70e: a5 31       .1    
-    cmp zp_fwb_m1                                                     ; a710: c5 3e       .>    
-    bne ca724                                                         ; a712: d0 10       ..    
-    lda zp_fwa_m2                                                     ; a714: a5 32       .2    
-    cmp zp_fwb_m2                                                     ; a716: c5 3f       .?    
-    bne ca724                                                         ; a718: d0 0a       ..    
-    lda zp_fwa_m3                                                     ; a71a: a5 33       .3    
-    cmp zp_fwb_m3                                                     ; a71c: c5 40       .@    
-    bne ca724                                                         ; a71e: d0 04       ..    
-    lda zp_fwa_m4                                                     ; a720: a5 34       .4    
-    cmp zp_fwb_m4                                                     ; a722: c5 41       .A    
+    bcs ca726                                                         ; a70c: b0 18       ..       ; remainder >= divisor?
+    lda zp_fwa_m1                                                     ; a70e: a5 31       .1       ; compare FWA (remainder) with FWB (divisor):
+    cmp zp_fwb_m1                                                     ; a710: c5 3e       .>       ; ...
+    bne ca724                                                         ; a712: d0 10       ..       ; ...
+    lda zp_fwa_m2                                                     ; a714: a5 32       .2       ; ...
+    cmp zp_fwb_m2                                                     ; a716: c5 3f       .?       ; ...
+    bne ca724                                                         ; a718: d0 0a       ..       ; ...
+    lda zp_fwa_m3                                                     ; a71a: a5 33       .3       ; ...
+    cmp zp_fwb_m3                                                     ; a71c: c5 40       .@       ; ...
+    bne ca724                                                         ; a71e: d0 04       ..       ; ...
+    lda zp_fwa_m4                                                     ; a720: a5 34       .4       ; ...
+    cmp zp_fwb_m4                                                     ; a722: c5 41       .A       ; ...
 ; &a724 referenced 3 times by &a712, &a718, &a71e
 .ca724
-    bcc ca73f                                                         ; a724: 90 19       ..    
+    bcc ca73f                                                         ; a724: 90 19       ..       ; less: quotient bit 0
 ; &a726 referenced 1 time by &a70c
 .ca726
-    lda zp_fwa_m4                                                     ; a726: a5 34       .4    
-    sbc zp_fwb_m4                                                     ; a728: e5 41       .A    
-    sta zp_fwa_m4                                                     ; a72a: 85 34       .4    
-    lda zp_fwa_m3                                                     ; a72c: a5 33       .3    
-    sbc zp_fwb_m3                                                     ; a72e: e5 40       .@    
-    sta zp_fwa_m3                                                     ; a730: 85 33       .3    
-    lda zp_fwa_m2                                                     ; a732: a5 32       .2    
-    sbc zp_fwb_m2                                                     ; a734: e5 3f       .?    
-    sta zp_fwa_m2                                                     ; a736: 85 32       .2    
-    lda zp_fwa_m1                                                     ; a738: a5 31       .1    
-    sbc zp_fwb_m1                                                     ; a73a: e5 3e       .>    
-    sta zp_fwa_m1                                                     ; a73c: 85 31       .1    
-    sec                                                               ; a73e: 38          8     
+    lda zp_fwa_m4                                                     ; a726: a5 34       .4       ; subtract the divisor from the remainder:
+    sbc zp_fwb_m4                                                     ; a728: e5 41       .A       ; ...
+    sta zp_fwa_m4                                                     ; a72a: 85 34       .4       ; ...
+    lda zp_fwa_m3                                                     ; a72c: a5 33       .3       ; ...
+    sbc zp_fwb_m3                                                     ; a72e: e5 40       .@       ; ...
+    sta zp_fwa_m3                                                     ; a730: 85 33       .3       ; ...
+    lda zp_fwa_m2                                                     ; a732: a5 32       .2       ; ...
+    sbc zp_fwb_m2                                                     ; a734: e5 3f       .?       ; ...
+    sta zp_fwa_m2                                                     ; a736: 85 32       .2       ; ...
+    lda zp_fwa_m1                                                     ; a738: a5 31       .1       ; ...
+    sbc zp_fwb_m1                                                     ; a73a: e5 3e       .>       ; ...
+    sta zp_fwa_m1                                                     ; a73c: 85 31       .1       ; ...
+    sec                                                               ; a73e: 38          8        ; quotient bit 1
 ; &a73f referenced 1 time by &a724
 .ca73f
-    rol l0046                                                         ; a73f: 26 46       &F    
-    rol l0045                                                         ; a741: 26 45       &E    
-    rol l0044                                                         ; a743: 26 44       &D    
-    rol zp_fp_temp                                                    ; a745: 26 43       &C    
-    asl zp_fwa_m4                                                     ; a747: 06 34       .4    
-    rol zp_fwa_m3                                                     ; a749: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a74b: 26 32       &2    
-    rol zp_fwa_m1                                                     ; a74d: 26 31       &1    
-    dex                                                               ; a74f: ca          .     
-    bne loop_ca70c                                                    ; a750: d0 ba       ..    
-    ldx #7                                                            ; a752: a2 07       ..    
+    rol l0046                                                         ; a73f: 26 46       &F       ; shift the quotient left, bring in the bit:
+    rol l0045                                                         ; a741: 26 45       &E       ; ...
+    rol l0044                                                         ; a743: 26 44       &D       ; ...
+    rol zp_fp_temp                                                    ; a745: 26 43       &C       ; ...
+    asl zp_fwa_m4                                                     ; a747: 06 34       .4       ; shift the remainder left:
+    rol zp_fwa_m3                                                     ; a749: 26 33       &3       ; ...
+    rol zp_fwa_m2                                                     ; a74b: 26 32       &2       ; ...
+    rol zp_fwa_m1                                                     ; a74d: 26 31       &1       ; ...
+    dex                                                               ; a74f: ca          .        ; count
+    bne loop_ca70c                                                    ; a750: d0 ba       ..       ; loop 32 times
+    ldx #7                                                            ; a752: a2 07       ..       ; 7 guard bits:
 ; &a754 referenced 1 time by &a792
 .loop_ca754
-    bcs ca76e                                                         ; a754: b0 18       ..    
-    lda zp_fwa_m1                                                     ; a756: a5 31       .1    
-    cmp zp_fwb_m1                                                     ; a758: c5 3e       .>    
-    bne ca76c                                                         ; a75a: d0 10       ..    
-    lda zp_fwa_m2                                                     ; a75c: a5 32       .2    
-    cmp zp_fwb_m2                                                     ; a75e: c5 3f       .?    
-    bne ca76c                                                         ; a760: d0 0a       ..    
-    lda zp_fwa_m3                                                     ; a762: a5 33       .3    
-    cmp zp_fwb_m3                                                     ; a764: c5 40       .@    
-    bne ca76c                                                         ; a766: d0 04       ..    
-    lda zp_fwa_m4                                                     ; a768: a5 34       .4    
-    cmp zp_fwb_m4                                                     ; a76a: c5 41       .A    
+    bcs ca76e                                                         ; a754: b0 18       ..       ; remainder >= divisor?
+    lda zp_fwa_m1                                                     ; a756: a5 31       .1       ; ...
+    cmp zp_fwb_m1                                                     ; a758: c5 3e       .>       ; ...
+    bne ca76c                                                         ; a75a: d0 10       ..       ; ...
+    lda zp_fwa_m2                                                     ; a75c: a5 32       .2       ; ...
+    cmp zp_fwb_m2                                                     ; a75e: c5 3f       .?       ; ...
+    bne ca76c                                                         ; a760: d0 0a       ..       ; ...
+    lda zp_fwa_m3                                                     ; a762: a5 33       .3       ; ...
+    cmp zp_fwb_m3                                                     ; a764: c5 40       .@       ; ...
+    bne ca76c                                                         ; a766: d0 04       ..       ; ...
+    lda zp_fwa_m4                                                     ; a768: a5 34       .4       ; ...
+    cmp zp_fwb_m4                                                     ; a76a: c5 41       .A       ; ...
 ; &a76c referenced 3 times by &a75a, &a760, &a766
 .ca76c
-    bcc ca787                                                         ; a76c: 90 19       ..    
+    bcc ca787                                                         ; a76c: 90 19       ..       ; less: bit 0
 ; &a76e referenced 1 time by &a754
 .ca76e
-    lda zp_fwa_m4                                                     ; a76e: a5 34       .4    
-    sbc zp_fwb_m4                                                     ; a770: e5 41       .A    
-    sta zp_fwa_m4                                                     ; a772: 85 34       .4    
-    lda zp_fwa_m3                                                     ; a774: a5 33       .3    
-    sbc zp_fwb_m3                                                     ; a776: e5 40       .@    
-    sta zp_fwa_m3                                                     ; a778: 85 33       .3    
-    lda zp_fwa_m2                                                     ; a77a: a5 32       .2    
-    sbc zp_fwb_m2                                                     ; a77c: e5 3f       .?    
-    sta zp_fwa_m2                                                     ; a77e: 85 32       .2    
-    lda zp_fwa_m1                                                     ; a780: a5 31       .1    
-    sbc zp_fwb_m1                                                     ; a782: e5 3e       .>    
-    sta zp_fwa_m1                                                     ; a784: 85 31       .1    
-    sec                                                               ; a786: 38          8     
+    lda zp_fwa_m4                                                     ; a76e: a5 34       .4       ; subtract:
+    sbc zp_fwb_m4                                                     ; a770: e5 41       .A       ; ...
+    sta zp_fwa_m4                                                     ; a772: 85 34       .4       ; ...
+    lda zp_fwa_m3                                                     ; a774: a5 33       .3       ; ...
+    sbc zp_fwb_m3                                                     ; a776: e5 40       .@       ; ...
+    sta zp_fwa_m3                                                     ; a778: 85 33       .3       ; ...
+    lda zp_fwa_m2                                                     ; a77a: a5 32       .2       ; ...
+    sbc zp_fwb_m2                                                     ; a77c: e5 3f       .?       ; ...
+    sta zp_fwa_m2                                                     ; a77e: 85 32       .2       ; ...
+    lda zp_fwa_m1                                                     ; a780: a5 31       .1       ; ...
+    sbc zp_fwb_m1                                                     ; a782: e5 3e       .>       ; ...
+    sta zp_fwa_m1                                                     ; a784: 85 31       .1       ; ...
+    sec                                                               ; a786: 38          8        ; ...
 ; &a787 referenced 1 time by &a76c
 .ca787
-    rol zp_fwa_rnd                                                    ; a787: 26 35       &5    
-    asl zp_fwa_m4                                                     ; a789: 06 34       .4    
-    rol zp_fwa_m3                                                     ; a78b: 26 33       &3    
-    rol zp_fwa_m2                                                     ; a78d: 26 32       &2    
-    rol zp_fwa_m1                                                     ; a78f: 26 31       &1    
-    dex                                                               ; a791: ca          .     
-    bne loop_ca754                                                    ; a792: d0 c0       ..    
-    asl zp_fwa_rnd                                                    ; a794: 06 35       .5    
-    lda l0046                                                         ; a796: a5 46       .F    
-    sta zp_fwa_m4                                                     ; a798: 85 34       .4    
-    lda l0045                                                         ; a79a: a5 45       .E    
-    sta zp_fwa_m3                                                     ; a79c: 85 33       .3    
-    lda l0044                                                         ; a79e: a5 44       .D    
-    sta zp_fwa_m2                                                     ; a7a0: 85 32       .2    
-    lda zp_fp_temp                                                    ; a7a2: a5 43       .C    
-    sta zp_fwa_m1                                                     ; a7a4: 85 31       .1    
-    jmp ca659                                                         ; a7a6: 4c 59 a6    LY.   
+    rol zp_fwa_rnd                                                    ; a787: 26 35       &5       ; shift in the guard bit
+    asl zp_fwa_m4                                                     ; a789: 06 34       .4       ; shift the remainder:
+    rol zp_fwa_m3                                                     ; a78b: 26 33       &3       ; ...
+    rol zp_fwa_m2                                                     ; a78d: 26 32       &2       ; ...
+    rol zp_fwa_m1                                                     ; a78f: 26 31       &1       ; ...
+    dex                                                               ; a791: ca          .        ; count
+    bne loop_ca754                                                    ; a792: d0 c0       ..       ; loop
+    asl zp_fwa_rnd                                                    ; a794: 06 35       .5       ; final guard bit
+    lda l0046                                                         ; a796: a5 46       .F       ; move the quotient into the FWA mantissa:
+    sta zp_fwa_m4                                                     ; a798: 85 34       .4       ; ...
+    lda l0045                                                         ; a79a: a5 45       .E       ; ...
+    sta zp_fwa_m3                                                     ; a79c: 85 33       .3       ; ...
+    lda l0044                                                         ; a79e: a5 44       .D       ; ...
+    sta zp_fwa_m2                                                     ; a7a0: 85 32       .2       ; ...
+    lda zp_fp_temp                                                    ; a7a2: a5 43       .C       ; ...
+    sta zp_fwa_m1                                                     ; a7a4: 85 31       .1       ; ...
+    jmp ca659                                                         ; a7a6: 4c 59 a6    LY.      ; normalise and round
 ; &a7a9 referenced 1 time by &a7bc
 .loop_ca7a9
-    brk                                                               ; a7a9: 00          .     
+    brk                                                               ; a7a9: 00          .        ; SQR of a negative: error block
     equb &15                                                          ; a7aa: 15          .     
     equs "-ve root"                                                   ; a7ab: 2d 76 65... -ve...
     equb &00                                                          ; a7b3: 00          .     
@@ -7709,7 +7714,7 @@ l848a = sub_c847b+15
     sta zp_fwb_sign                                                   ; a9e4: 85 3b       .;    
     dec zp_fwb_exp                                                    ; a9e6: c6 3d       .=    
     jsr fwa_add_fwb                                                   ; a9e8: 20 05 a5     ..   
-    jsr ca6e7                                                         ; a9eb: 20 e7 a6     ..   
+    jsr fp_divide                                                     ; a9eb: 20 e7 a6     ..   
     jsr fwa_to_int2                                                   ; a9ee: 20 fe a3     ..   
     lda zp_fwa_m4                                                     ; a9f1: a5 34       .4    
     sta l004a                                                         ; a9f3: 85 4a       .J    
@@ -11968,7 +11973,6 @@ save pydis_start, pydis_end
 ;     ca0e8:                       3
 ;     ca387:                       3
 ;     ca590:                       3
-;     ca6e7:                       3
 ;     ca724:                       3
 ;     ca76c:                       3
 ;     ca7f7:                       3
@@ -11986,6 +11990,7 @@ save pydis_start, pydis_end
 ;     eval_mul_div:                3
 ;     find_program_line:           3
 ;     fn_true:                     3
+;     fp_divide:                   3
 ;     fwa_add_fwb:                 3
 ;     fwa_div10:                   3
 ;     fwb_clear:                   3
@@ -13384,7 +13389,6 @@ save pydis_start, pydis_end
 ;     ca676
 ;     ca67c
 ;     ca6bb
-;     ca6e7
 ;     ca6f1
 ;     ca701
 ;     ca70a
