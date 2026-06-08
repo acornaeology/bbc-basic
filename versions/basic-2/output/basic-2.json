@@ -1727,6 +1727,12 @@
       "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
     },
     {
+      "addr": 48173,
+      "name": "delete_program_line",
+      "title": "Delete a program line and close the gap",
+      "description": "Find the line, then shift every later line down over it (source &37, destination &12) and update the top of program. No-ops if the line is absent."
+    },
+    {
       "addr": 47952,
       "name": "next_data_item",
       "title": "Advance the DATA pointer to the next item",
@@ -26752,9 +26758,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc2d",
+      "operand": "delete_program_line",
       "target": 48173,
-      "target_label": "sub_cbc2d"
+      "target_label": "delete_program_line"
     },
     {
       "addr": 36694,
@@ -101747,8 +101753,9 @@
         153
       ],
       "labels": [
-        "sub_cbc2d"
+        "delete_program_line"
       ],
+      "comment_inline": "Find the line",
       "xref_summaries": [
         "&bc2d referenced 2 times by &8f53, &bc8f"
       ],
@@ -101768,6 +101775,7 @@
         176,
         78
       ],
+      "comment_inline": "not present: nothing to do",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_37",
@@ -101780,6 +101788,7 @@
         165,
         61
       ],
+      "comment_inline": "Destination = line start",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -101792,6 +101801,7 @@
         233,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#2"
@@ -101802,6 +101812,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -101814,6 +101825,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -101826,6 +101838,7 @@
         133,
         18
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top",
@@ -101838,6 +101851,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -101850,6 +101864,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -101860,6 +101875,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -101872,6 +101888,7 @@
         133,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top_1",
@@ -101884,6 +101901,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -101896,6 +101914,7 @@
         160,
         3
       ],
+      "comment_inline": "Line length",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -101906,6 +101925,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -101917,6 +101937,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Source = the next line",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -101926,6 +101947,7 @@
         101,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general",
@@ -101938,6 +101960,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -101950,6 +101973,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbc53",
@@ -101962,6 +101986,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -101977,6 +102002,7 @@
       "labels": [
         "cbc53"
       ],
+      "comment_inline": "From offset 0",
       "xref_summaries": [
         "&bc53 referenced 1 time by &bc4f"
       ],
@@ -101996,6 +102022,7 @@
       "labels": [
         "cbc55"
       ],
+      "comment_inline": "Copy a byte down",
       "xref_summaries": [
         "&bc55 referenced 2 times by &bc5e, &bc64"
       ],
@@ -102015,6 +102042,7 @@
         145,
         18
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -102027,6 +102055,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -102037,6 +102066,7 @@
         240,
         9
       ],
+      "comment_inline": "yes: handle the line boundary",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbc66",
@@ -102051,6 +102081,7 @@
       "labels": [
         "cbc5d"
       ],
+      "comment_inline": "next byte",
       "xref_summaries": [
         "&bc5d referenced 1 time by &bc79"
       ],
@@ -102066,6 +102097,7 @@
         208,
         245
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc55",
@@ -102078,6 +102110,7 @@
         230,
         56
       ],
+      "comment_inline": "cross a page",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -102090,6 +102123,7 @@
         230,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -102102,6 +102136,7 @@
         208,
         239
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc55",
@@ -102116,6 +102151,7 @@
       "labels": [
         "cbc66"
       ],
+      "comment_inline": "Step past the CR",
       "xref_summaries": [
         "&bc66 referenced 1 time by &bc5b"
       ],
@@ -102131,6 +102167,7 @@
         208,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc6d",
@@ -102143,6 +102180,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -102155,6 +102193,7 @@
         230,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -102170,6 +102209,7 @@
       "labels": [
         "cbc6d"
       ],
+      "comment_inline": "Next line marker",
       "xref_summaries": [
         "&bc6d referenced 1 time by &bc67"
       ],
@@ -102188,6 +102228,7 @@
         145,
         18
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -102200,6 +102241,7 @@
         48,
         9
       ],
+      "comment_inline": "end of program?",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cbc7c",
@@ -102213,6 +102255,7 @@
         129,
         188
       ],
+      "comment_inline": "no: copy the line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc81",
@@ -102226,6 +102269,7 @@
         129,
         188
       ],
+      "comment_inline": "...and the length byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc81",
@@ -102239,6 +102283,7 @@
         93,
         188
       ],
+      "comment_inline": "continue with the line body",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbc5d",
@@ -102255,6 +102300,7 @@
       "labels": [
         "cbc7c"
       ],
+      "comment_inline": "Set the new top of program",
       "xref_summaries": [
         "&bc7c referenced 1 time by &bc71"
       ],
@@ -102272,6 +102318,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -102283,6 +102330,7 @@
       "labels": [
         "return_37"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&bc80 referenced 1 time by &bc30"
       ],
@@ -102300,6 +102348,7 @@
       "labels": [
         "sub_cbc81"
       ],
+      "comment_inline": "Copy one byte (source -> destination)",
       "xref_summaries": [
         "&bc81 referenced 2 times by &bc73, &bc76"
       ],
@@ -102316,6 +102365,7 @@
         208,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc88",
@@ -102328,6 +102378,7 @@
         230,
         19
       ],
+      "comment_inline": "cross a page",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -102340,6 +102391,7 @@
         230,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -102355,6 +102407,7 @@
       "labels": [
         "cbc88"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&bc88 referenced 1 time by &bc82"
       ],
@@ -102373,6 +102426,7 @@
         145,
         18
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -102384,6 +102438,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -102396,6 +102451,7 @@
       "labels": [
         "sub_cbc8d"
       ],
+      "comment_inline": "Save the line-buffer pointer",
       "xref_summaries": [
         "&bc8d referenced 2 times by &8b32, &90c6"
       ],
@@ -102416,11 +102472,12 @@
         45,
         188
       ],
+      "comment_inline": "Delete any existing line with this number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc2d",
+      "operand": "delete_program_line",
       "target": 48173,
-      "target_label": "sub_cbc2d"
+      "target_label": "delete_program_line"
     },
     {
       "addr": 48274,
@@ -102428,6 +102485,7 @@
         160,
         7
       ],
+      "comment_inline": "Point past the line header",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#7"
@@ -102438,6 +102496,7 @@
         132,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -102450,6 +102509,7 @@
         160,
         0
       ],
+      "comment_inline": "Measure the new line: from offset 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -102460,6 +102520,7 @@
         169,
         13
       ],
+      "comment_inline": "CR",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&0d"
@@ -102470,6 +102531,7 @@
         209,
         59
       ],
+      "comment_inline": "empty line (deletion only)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_fwb_sign),y",
@@ -102482,6 +102544,7 @@
         240,
         114
       ],
+      "comment_inline": "yes: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_38",
@@ -102496,6 +102559,7 @@
       "labels": [
         "loop_cbc9e"
       ],
+      "comment_inline": "Scan to the CR",
       "xref_summaries": [
         "&bc9e referenced 1 time by &bca1"
       ],
@@ -102511,6 +102575,7 @@
         209,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_fwb_sign),y",
@@ -102523,6 +102588,7 @@
         208,
         251
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbc9e",
@@ -102534,6 +102600,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Add the 4-byte header",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -102542,6 +102609,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -102550,6 +102618,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -102559,6 +102628,7 @@
         132,
         63
       ],
+      "comment_inline": "Line length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -102571,6 +102641,7 @@
         230,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m2",
@@ -102583,6 +102654,7 @@
         165,
         18
       ],
+      "comment_inline": "Old top of program",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top",
@@ -102595,6 +102667,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -102607,6 +102680,7 @@
         165,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -102619,6 +102693,7 @@
         133,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -102632,6 +102707,7 @@
         146,
         190
       ],
+      "comment_inline": "New top = old top + line length",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe92",
@@ -102644,6 +102720,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -102656,6 +102733,7 @@
         165,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -102668,6 +102746,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -102679,6 +102758,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -102688,6 +102768,7 @@
         165,
         6
       ],
+      "comment_inline": "New top vs HIMEM",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_himem",
@@ -102700,6 +102781,7 @@
         197,
         18
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_top",
@@ -102712,6 +102794,7 @@
         165,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_himem_1",
@@ -102724,6 +102807,7 @@
         229,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_top_1",
@@ -102736,6 +102820,7 @@
         176,
         16
       ],
+      "comment_inline": "fits: shift the program up",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbcd6",
@@ -102749,6 +102834,7 @@
         111,
         190
       ],
+      "comment_inline": "no room: tidy up",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_program",
@@ -102762,6 +102848,7 @@
         32,
         189
       ],
+      "comment_inline": "clear variables/heap/stack",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_vars_heap_stack",
@@ -102773,6 +102860,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "LINE space error",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -102820,6 +102908,7 @@
       "labels": [
         "cbcd6"
       ],
+      "comment_inline": "Shift a byte up",
       "xref_summaries": [
         "&bcd6 referenced 2 times by &bcc4, &bcef"
       ],
@@ -102839,6 +102928,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -102850,6 +102940,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -102859,6 +102950,7 @@
         208,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbce1",
@@ -102871,6 +102963,7 @@
         198,
         58
       ],
+      "comment_inline": "cross a page",
       "type": "code",
       "mnemonic": "dec",
       "operand": "l003a",
@@ -102883,6 +102976,7 @@
         198,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_general_1",
@@ -102897,6 +102991,7 @@
       "labels": [
         "cbce1"
       ],
+      "comment_inline": "Next byte down",
       "xref_summaries": [
         "&bce1 referenced 1 time by &bcdb"
       ],
@@ -102911,6 +103006,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -102920,6 +103016,7 @@
         101,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -102932,6 +103029,7 @@
         166,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "l003a",
@@ -102944,6 +103042,7 @@
         144,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbcea",
@@ -102955,6 +103054,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -102967,6 +103067,7 @@
       "labels": [
         "cbcea"
       ],
+      "comment_inline": "reached the insertion point?",
       "xref_summaries": [
         "&bcea referenced 1 time by &bce7"
       ],
@@ -102984,6 +103085,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -102993,6 +103095,7 @@
         229,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m1",
@@ -103005,6 +103108,7 @@
         176,
         229
       ],
+      "comment_inline": "no: keep shifting",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cbcd6",
@@ -103016,6 +103120,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "Write the new line header",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -103025,6 +103130,7 @@
         160,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -103035,6 +103141,7 @@
         165,
         43
       ],
+      "comment_inline": "line number high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -103047,6 +103154,7 @@
         145,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -103058,6 +103166,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -103067,6 +103176,7 @@
         165,
         42
       ],
+      "comment_inline": "line number low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -103079,6 +103189,7 @@
         145,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -103090,6 +103201,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -103099,6 +103211,7 @@
         165,
         63
       ],
+      "comment_inline": "line length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -103111,6 +103224,7 @@
         145,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -103124,6 +103238,7 @@
         86,
         190
       ],
+      "comment_inline": "Set the new top of program",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe56",
@@ -103136,6 +103251,7 @@
         160,
         255
       ],
+      "comment_inline": "Copy the line body in: offset 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&ff"
@@ -103148,6 +103264,7 @@
       "labels": [
         "loop_cbd07"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&bd07 referenced 1 time by &bd0e"
       ],
@@ -103163,6 +103280,7 @@
         177,
         59
       ],
+      "comment_inline": "buffer byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_sign),y",
@@ -103175,6 +103293,7 @@
         145,
         61
       ],
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -103187,6 +103306,7 @@
         201,
         13
       ],
+      "comment_inline": "until the CR",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -103197,6 +103317,7 @@
         208,
         247
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbd07",

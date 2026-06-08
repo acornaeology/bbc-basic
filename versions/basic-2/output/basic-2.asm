@@ -2904,7 +2904,7 @@ l848a = sub_c847b+15
     jsr unstack_integer                                               ; 8f50: 20 ea bd     ..   
 ; &8f53 referenced 1 time by &8f64
 .loop_c8f53
-    jsr sub_cbc2d                                                     ; 8f53: 20 2d bc     -.   
+    jsr delete_program_line                                           ; 8f53: 20 2d bc     -.   
     jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.   
     jsr iwa_inc                                                       ; 8f59: 20 22 92     ".   
     lda zp_fileblk                                                    ; 8f5c: a5 39       .9    
@@ -11066,156 +11066,161 @@ l848a = sub_c847b+15
     lda #0                                                            ; bc28: a9 00       ..    
     sta zp_count                                                      ; bc2a: 85 1e       ..    
     rts                                                               ; bc2c: 60          `     
+; ***************************************************************************************
+; Delete a program line and close the gap
+;
+; Find the line, then shift every later line down over it (source &37, destination &12)
+; and update the top of program. No-ops if the line is absent.
 ; &bc2d referenced 2 times by &8f53, &bc8f
-.sub_cbc2d
-    jsr find_program_line                                             ; bc2d: 20 70 99     p.   
-    bcs return_37                                                     ; bc30: b0 4e       .N    
-    lda zp_fwb_exp                                                    ; bc32: a5 3d       .=    
-    sbc #2                                                            ; bc34: e9 02       ..    
-    sta zp_general                                                    ; bc36: 85 37       .7    
-    sta zp_fwb_exp                                                    ; bc38: 85 3d       .=    
-    sta zp_top                                                        ; bc3a: 85 12       ..    
-    lda zp_fwb_m1                                                     ; bc3c: a5 3e       .>    
-    sbc #0                                                            ; bc3e: e9 00       ..    
-    sta zp_general_1                                                  ; bc40: 85 38       .8    
-    sta zp_top_1                                                      ; bc42: 85 13       ..    
-    sta zp_fwb_m1                                                     ; bc44: 85 3e       .>    
-    ldy #3                                                            ; bc46: a0 03       ..    
-    lda (zp_general),y                                                ; bc48: b1 37       .7    
-    clc                                                               ; bc4a: 18          .     
-    adc zp_general                                                    ; bc4b: 65 37       e7    
-    sta zp_general                                                    ; bc4d: 85 37       .7    
-    bcc cbc53                                                         ; bc4f: 90 02       ..    
-    inc zp_general_1                                                  ; bc51: e6 38       .8    
+.delete_program_line
+    jsr find_program_line                                             ; bc2d: 20 70 99     p.      ; Find the line
+    bcs return_37                                                     ; bc30: b0 4e       .N       ; not present: nothing to do
+    lda zp_fwb_exp                                                    ; bc32: a5 3d       .=       ; Destination = line start
+    sbc #2                                                            ; bc34: e9 02       ..       ; ...
+    sta zp_general                                                    ; bc36: 85 37       .7       ; ...
+    sta zp_fwb_exp                                                    ; bc38: 85 3d       .=       ; ...
+    sta zp_top                                                        ; bc3a: 85 12       ..       ; ...
+    lda zp_fwb_m1                                                     ; bc3c: a5 3e       .>       ; ...
+    sbc #0                                                            ; bc3e: e9 00       ..       ; ...
+    sta zp_general_1                                                  ; bc40: 85 38       .8       ; ...
+    sta zp_top_1                                                      ; bc42: 85 13       ..       ; ...
+    sta zp_fwb_m1                                                     ; bc44: 85 3e       .>       ; ...
+    ldy #3                                                            ; bc46: a0 03       ..       ; Line length
+    lda (zp_general),y                                                ; bc48: b1 37       .7       ; ...
+    clc                                                               ; bc4a: 18          .        ; Source = the next line
+    adc zp_general                                                    ; bc4b: 65 37       e7       ; ...
+    sta zp_general                                                    ; bc4d: 85 37       .7       ; ...
+    bcc cbc53                                                         ; bc4f: 90 02       ..       ; ...
+    inc zp_general_1                                                  ; bc51: e6 38       .8       ; ...
 ; &bc53 referenced 1 time by &bc4f
 .cbc53
-    ldy #0                                                            ; bc53: a0 00       ..    
+    ldy #0                                                            ; bc53: a0 00       ..       ; From offset 0
 ; &bc55 referenced 2 times by &bc5e, &bc64
 .cbc55
-    lda (zp_general),y                                                ; bc55: b1 37       .7    
-    sta (zp_top),y                                                    ; bc57: 91 12       ..    
-    cmp #&0d                                                          ; bc59: c9 0d       ..    
-    beq cbc66                                                         ; bc5b: f0 09       ..    
+    lda (zp_general),y                                                ; bc55: b1 37       .7       ; Copy a byte down
+    sta (zp_top),y                                                    ; bc57: 91 12       ..       ; ...
+    cmp #&0d                                                          ; bc59: c9 0d       ..       ; end of line?
+    beq cbc66                                                         ; bc5b: f0 09       ..       ; yes: handle the line boundary
 ; &bc5d referenced 1 time by &bc79
 .cbc5d
-    iny                                                               ; bc5d: c8          .     
-    bne cbc55                                                         ; bc5e: d0 f5       ..    
-    inc zp_general_1                                                  ; bc60: e6 38       .8    
-    inc zp_top_1                                                      ; bc62: e6 13       ..    
-    bne cbc55                                                         ; bc64: d0 ef       ..    
+    iny                                                               ; bc5d: c8          .        ; next byte
+    bne cbc55                                                         ; bc5e: d0 f5       ..       ; ...
+    inc zp_general_1                                                  ; bc60: e6 38       .8       ; cross a page
+    inc zp_top_1                                                      ; bc62: e6 13       ..       ; ...
+    bne cbc55                                                         ; bc64: d0 ef       ..       ; continue
 ; &bc66 referenced 1 time by &bc5b
 .cbc66
-    iny                                                               ; bc66: c8          .     
-    bne cbc6d                                                         ; bc67: d0 04       ..    
-    inc zp_general_1                                                  ; bc69: e6 38       .8    
-    inc zp_top_1                                                      ; bc6b: e6 13       ..    
+    iny                                                               ; bc66: c8          .        ; Step past the CR
+    bne cbc6d                                                         ; bc67: d0 04       ..       ; ...
+    inc zp_general_1                                                  ; bc69: e6 38       .8       ; ...
+    inc zp_top_1                                                      ; bc6b: e6 13       ..       ; ...
 ; &bc6d referenced 1 time by &bc67
 .cbc6d
-    lda (zp_general),y                                                ; bc6d: b1 37       .7    
-    sta (zp_top),y                                                    ; bc6f: 91 12       ..    
-    bmi cbc7c                                                         ; bc71: 30 09       0.    
-    jsr sub_cbc81                                                     ; bc73: 20 81 bc     ..   
-    jsr sub_cbc81                                                     ; bc76: 20 81 bc     ..   
-    jmp cbc5d                                                         ; bc79: 4c 5d bc    L].   
+    lda (zp_general),y                                                ; bc6d: b1 37       .7       ; Next line marker
+    sta (zp_top),y                                                    ; bc6f: 91 12       ..       ; ...
+    bmi cbc7c                                                         ; bc71: 30 09       0.       ; end of program?
+    jsr sub_cbc81                                                     ; bc73: 20 81 bc     ..      ; no: copy the line number
+    jsr sub_cbc81                                                     ; bc76: 20 81 bc     ..      ; ...and the length byte
+    jmp cbc5d                                                         ; bc79: 4c 5d bc    L].      ; continue with the line body
 ; &bc7c referenced 1 time by &bc71
 .cbc7c
-    jsr sub_cbe92                                                     ; bc7c: 20 92 be     ..   
-    clc                                                               ; bc7f: 18          .     
+    jsr sub_cbe92                                                     ; bc7c: 20 92 be     ..      ; Set the new top of program
+    clc                                                               ; bc7f: 18          .        ; ...
 ; &bc80 referenced 1 time by &bc30
 .return_37
-    rts                                                               ; bc80: 60          `     
+    rts                                                               ; bc80: 60          `        ; Return
 ; &bc81 referenced 2 times by &bc73, &bc76
 .sub_cbc81
-    iny                                                               ; bc81: c8          .     
-    bne cbc88                                                         ; bc82: d0 04       ..    
-    inc zp_top_1                                                      ; bc84: e6 13       ..    
-    inc zp_general_1                                                  ; bc86: e6 38       .8    
+    iny                                                               ; bc81: c8          .        ; Copy one byte (source -> destination)
+    bne cbc88                                                         ; bc82: d0 04       ..       ; ...
+    inc zp_top_1                                                      ; bc84: e6 13       ..       ; cross a page
+    inc zp_general_1                                                  ; bc86: e6 38       .8       ; ...
 ; &bc88 referenced 1 time by &bc82
 .cbc88
-    lda (zp_general),y                                                ; bc88: b1 37       .7    
-    sta (zp_top),y                                                    ; bc8a: 91 12       ..    
-    rts                                                               ; bc8c: 60          `     
+    lda (zp_general),y                                                ; bc88: b1 37       .7       ; ...
+    sta (zp_top),y                                                    ; bc8a: 91 12       ..       ; ...
+    rts                                                               ; bc8c: 60          `        ; Return
 ; &bc8d referenced 2 times by &8b32, &90c6
 .sub_cbc8d
-    sty zp_fwb_sign                                                   ; bc8d: 84 3b       .;    
-    jsr sub_cbc2d                                                     ; bc8f: 20 2d bc     -.   
-    ldy #7                                                            ; bc92: a0 07       ..    
-    sty zp_fwb_ovf                                                    ; bc94: 84 3c       .<    
-    ldy #0                                                            ; bc96: a0 00       ..    
-    lda #&0d                                                          ; bc98: a9 0d       ..    
-    cmp (zp_fwb_sign),y                                               ; bc9a: d1 3b       .;    
-    beq return_38                                                     ; bc9c: f0 72       .r    
+    sty zp_fwb_sign                                                   ; bc8d: 84 3b       .;       ; Save the line-buffer pointer
+    jsr delete_program_line                                           ; bc8f: 20 2d bc     -.      ; Delete any existing line with this number
+    ldy #7                                                            ; bc92: a0 07       ..       ; Point past the line header
+    sty zp_fwb_ovf                                                    ; bc94: 84 3c       .<       ; ...
+    ldy #0                                                            ; bc96: a0 00       ..       ; Measure the new line: from offset 0
+    lda #&0d                                                          ; bc98: a9 0d       ..       ; CR
+    cmp (zp_fwb_sign),y                                               ; bc9a: d1 3b       .;       ; empty line (deletion only)?
+    beq return_38                                                     ; bc9c: f0 72       .r       ; yes: done
 ; &bc9e referenced 1 time by &bca1
 .loop_cbc9e
-    iny                                                               ; bc9e: c8          .     
-    cmp (zp_fwb_sign),y                                               ; bc9f: d1 3b       .;    
-    bne loop_cbc9e                                                    ; bca1: d0 fb       ..    
-    iny                                                               ; bca3: c8          .     
-    iny                                                               ; bca4: c8          .     
-    iny                                                               ; bca5: c8          .     
-    sty zp_fwb_m2                                                     ; bca6: 84 3f       .?    
-    inc zp_fwb_m2                                                     ; bca8: e6 3f       .?    
-    lda zp_top                                                        ; bcaa: a5 12       ..    
-    sta zp_fileblk                                                    ; bcac: 85 39       .9    
-    lda zp_top_1                                                      ; bcae: a5 13       ..    
-    sta l003a                                                         ; bcb0: 85 3a       .:    
-    jsr sub_cbe92                                                     ; bcb2: 20 92 be     ..   
-    sta zp_general                                                    ; bcb5: 85 37       .7    
-    lda zp_top_1                                                      ; bcb7: a5 13       ..    
-    sta zp_general_1                                                  ; bcb9: 85 38       .8    
-    dey                                                               ; bcbb: 88          .     
-    lda zp_himem                                                      ; bcbc: a5 06       ..    
-    cmp zp_top                                                        ; bcbe: c5 12       ..    
-    lda zp_himem_1                                                    ; bcc0: a5 07       ..    
-    sbc zp_top_1                                                      ; bcc2: e5 13       ..    
-    bcs cbcd6                                                         ; bcc4: b0 10       ..    
-    jsr check_program                                                 ; bcc6: 20 6f be     o.   
-    jsr clear_vars_heap_stack                                         ; bcc9: 20 20 bd      .   
-    brk                                                               ; bccc: 00          .     
+    iny                                                               ; bc9e: c8          .        ; Scan to the CR
+    cmp (zp_fwb_sign),y                                               ; bc9f: d1 3b       .;       ; ...
+    bne loop_cbc9e                                                    ; bca1: d0 fb       ..       ; ...
+    iny                                                               ; bca3: c8          .        ; Add the 4-byte header
+    iny                                                               ; bca4: c8          .        ; ...
+    iny                                                               ; bca5: c8          .        ; ...
+    sty zp_fwb_m2                                                     ; bca6: 84 3f       .?       ; Line length
+    inc zp_fwb_m2                                                     ; bca8: e6 3f       .?       ; ...
+    lda zp_top                                                        ; bcaa: a5 12       ..       ; Old top of program
+    sta zp_fileblk                                                    ; bcac: 85 39       .9       ; ...
+    lda zp_top_1                                                      ; bcae: a5 13       ..       ; ...
+    sta l003a                                                         ; bcb0: 85 3a       .:       ; ...
+    jsr sub_cbe92                                                     ; bcb2: 20 92 be     ..      ; New top = old top + line length
+    sta zp_general                                                    ; bcb5: 85 37       .7       ; ...
+    lda zp_top_1                                                      ; bcb7: a5 13       ..       ; ...
+    sta zp_general_1                                                  ; bcb9: 85 38       .8       ; ...
+    dey                                                               ; bcbb: 88          .        ; ...
+    lda zp_himem                                                      ; bcbc: a5 06       ..       ; New top vs HIMEM
+    cmp zp_top                                                        ; bcbe: c5 12       ..       ; ...
+    lda zp_himem_1                                                    ; bcc0: a5 07       ..       ; ...
+    sbc zp_top_1                                                      ; bcc2: e5 13       ..       ; ...
+    bcs cbcd6                                                         ; bcc4: b0 10       ..       ; fits: shift the program up
+    jsr check_program                                                 ; bcc6: 20 6f be     o.      ; no room: tidy up
+    jsr clear_vars_heap_stack                                         ; bcc9: 20 20 bd      .      ; clear variables/heap/stack
+    brk                                                               ; bccc: 00          .        ; LINE space error
     equb &00, &86                                                     ; bccd: 00 86       ..    
     equs " space"                                                     ; bccf: 20 73 70...  sp...
     equb &00                                                          ; bcd5: 00          .     
 ; &bcd6 referenced 2 times by &bcc4, &bcef
 .cbcd6
-    lda (zp_fileblk),y                                                ; bcd6: b1 39       .9    
-    sta (zp_general),y                                                ; bcd8: 91 37       .7    
-    tya                                                               ; bcda: 98          .     
-    bne cbce1                                                         ; bcdb: d0 04       ..    
-    dec l003a                                                         ; bcdd: c6 3a       .:    
-    dec zp_general_1                                                  ; bcdf: c6 38       .8    
+    lda (zp_fileblk),y                                                ; bcd6: b1 39       .9       ; Shift a byte up
+    sta (zp_general),y                                                ; bcd8: 91 37       .7       ; ...
+    tya                                                               ; bcda: 98          .        ; ...
+    bne cbce1                                                         ; bcdb: d0 04       ..       ; ...
+    dec l003a                                                         ; bcdd: c6 3a       .:       ; cross a page
+    dec zp_general_1                                                  ; bcdf: c6 38       .8       ; ...
 ; &bce1 referenced 1 time by &bcdb
 .cbce1
-    dey                                                               ; bce1: 88          .     
-    tya                                                               ; bce2: 98          .     
-    adc zp_fileblk                                                    ; bce3: 65 39       e9    
-    ldx l003a                                                         ; bce5: a6 3a       .:    
-    bcc cbcea                                                         ; bce7: 90 01       ..    
-    inx                                                               ; bce9: e8          .     
+    dey                                                               ; bce1: 88          .        ; Next byte down
+    tya                                                               ; bce2: 98          .        ; ...
+    adc zp_fileblk                                                    ; bce3: 65 39       e9       ; ...
+    ldx l003a                                                         ; bce5: a6 3a       .:       ; ...
+    bcc cbcea                                                         ; bce7: 90 01       ..       ; ...
+    inx                                                               ; bce9: e8          .        ; ...
 ; &bcea referenced 1 time by &bce7
 .cbcea
-    cmp zp_fwb_exp                                                    ; bcea: c5 3d       .=    
-    txa                                                               ; bcec: 8a          .     
-    sbc zp_fwb_m1                                                     ; bced: e5 3e       .>    
-    bcs cbcd6                                                         ; bcef: b0 e5       ..    
-    sec                                                               ; bcf1: 38          8     
-    ldy #1                                                            ; bcf2: a0 01       ..    
-    lda zp_iwa_1                                                      ; bcf4: a5 2b       .+    
-    sta (zp_fwb_exp),y                                                ; bcf6: 91 3d       .=    
-    iny                                                               ; bcf8: c8          .     
-    lda zp_iwa                                                        ; bcf9: a5 2a       .*    
-    sta (zp_fwb_exp),y                                                ; bcfb: 91 3d       .=    
-    iny                                                               ; bcfd: c8          .     
-    lda zp_fwb_m2                                                     ; bcfe: a5 3f       .?    
-    sta (zp_fwb_exp),y                                                ; bd00: 91 3d       .=    
-    jsr sub_cbe56                                                     ; bd02: 20 56 be     V.   
-    ldy #&ff                                                          ; bd05: a0 ff       ..    
+    cmp zp_fwb_exp                                                    ; bcea: c5 3d       .=       ; reached the insertion point?
+    txa                                                               ; bcec: 8a          .        ; ...
+    sbc zp_fwb_m1                                                     ; bced: e5 3e       .>       ; ...
+    bcs cbcd6                                                         ; bcef: b0 e5       ..       ; no: keep shifting
+    sec                                                               ; bcf1: 38          8        ; Write the new line header
+    ldy #1                                                            ; bcf2: a0 01       ..       ; ...
+    lda zp_iwa_1                                                      ; bcf4: a5 2b       .+       ; line number high
+    sta (zp_fwb_exp),y                                                ; bcf6: 91 3d       .=       ; ...
+    iny                                                               ; bcf8: c8          .        ; ...
+    lda zp_iwa                                                        ; bcf9: a5 2a       .*       ; line number low
+    sta (zp_fwb_exp),y                                                ; bcfb: 91 3d       .=       ; ...
+    iny                                                               ; bcfd: c8          .        ; ...
+    lda zp_fwb_m2                                                     ; bcfe: a5 3f       .?       ; line length
+    sta (zp_fwb_exp),y                                                ; bd00: 91 3d       .=       ; ...
+    jsr sub_cbe56                                                     ; bd02: 20 56 be     V.      ; Set the new top of program
+    ldy #&ff                                                          ; bd05: a0 ff       ..       ; Copy the line body in: offset 0
 ; &bd07 referenced 1 time by &bd0e
 .loop_cbd07
-    iny                                                               ; bd07: c8          .     
-    lda (zp_fwb_sign),y                                               ; bd08: b1 3b       .;    
-    sta (zp_fwb_exp),y                                                ; bd0a: 91 3d       .=    
-    cmp #&0d                                                          ; bd0c: c9 0d       ..    
-    bne loop_cbd07                                                    ; bd0e: d0 f7       ..    
+    iny                                                               ; bd07: c8          .        ; ...
+    lda (zp_fwb_sign),y                                               ; bd08: b1 3b       .;       ; buffer byte
+    sta (zp_fwb_exp),y                                                ; bd0a: 91 3d       .=       ; store it
+    cmp #&0d                                                          ; bd0c: c9 0d       ..       ; until the CR
+    bne loop_cbd07                                                    ; bd0e: d0 f7       ..       ; loop
 ; &bd10 referenced 1 time by &bc9c
 .return_38
     rts                                                               ; bd10: 60          `     
@@ -12264,6 +12269,7 @@ save pydis_start, pydis_end
 ;     cbe41:                       2
 ;     cbe9e:                       2
 ;     cbf82:                       2
+;     delete_program_line:         2
 ;     dispatch_token:              2
 ;     drop_stack_integer:          2
 ;     err_too_big:                 2
@@ -12353,7 +12359,6 @@ save pydis_start, pydis_end
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
-;     sub_cbc2d:                   2
 ;     sub_cbc81:                   2
 ;     sub_cbc8d:                   2
 ;     sub_cbe92:                   2
@@ -14073,7 +14078,6 @@ save pydis_start, pydis_end
 ;     sub_cb577
 ;     sub_cbbfc
 ;     sub_cbc25
-;     sub_cbc2d
 ;     sub_cbc81
 ;     sub_cbc8d
 ;     sub_cbd2f
