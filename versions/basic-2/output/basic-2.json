@@ -1709,6 +1709,26 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 38879,
+      "name": "check_line_number",
+      "title": "Test for an embedded line number",
+      "description": "If the text pointer is at a line-number token, decode it into IWA and return carry set; otherwise carry clear.",
+      "fall_through": true
+    },
+    {
+      "addr": 38891,
+      "name": "decode_line_number",
+      "title": "Decode a 3-byte line number into IWA",
+      "description": "Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 38977,
+      "name": "expect_eq",
+      "title": "Require \"=\" at the parser pointer",
+      "description": "Skip spaces and raise Mistake unless the next character is \"=\"."
+    },
+    {
       "addr": 35061,
       "name": "encode_line_number",
       "title": "Encode a 16-bit line number into 3 bytes",
@@ -20072,9 +20092,9 @@
       "comment_inline": "Tokenise; carry set if the line starts with a number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 35632,
@@ -21217,9 +21237,9 @@
       "comment_inline": "Require \"=\"",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9841",
+      "operand": "expect_eq",
       "target": 38977,
-      "target_label": "sub_c9841"
+      "target_label": "expect_eq"
     },
     {
       "addr": 35797,
@@ -26963,9 +26983,9 @@
       "comment_inline": "Read the start line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 36660,
@@ -27042,9 +27062,9 @@
       "comment_inline": "Read the end line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 36675,
@@ -27314,9 +27334,9 @@
       "comment_inline": "Read the start line if given",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 36721,
@@ -27405,9 +27425,9 @@
       "comment_inline": "Read the increment",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 36739,
@@ -28663,9 +28683,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97eb",
+      "operand": "decode_line_number",
       "target": 38891,
-      "target_label": "sub_c97eb"
+      "target_label": "decode_line_number"
     },
     {
       "addr": 36928,
@@ -32532,9 +32552,9 @@
       "comment_inline": "Line number following?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 37528,
@@ -41845,8 +41865,9 @@
         10
       ],
       "labels": [
-        "sub_c97df"
+        "check_line_number"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&97df referenced 10 times by &8b2d, &8f31, &8f40, &8f6e, &8f80, &9295, &98e3, &b5ac, &b5d8, &b99a"
       ],
@@ -41874,6 +41895,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -41886,6 +41908,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -41896,6 +41919,7 @@
         240,
         246
       ],
+      "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c97dd",
@@ -41908,6 +41932,7 @@
         201,
         141
       ],
+      "comment_inline": "line-number token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8d"
@@ -41918,6 +41943,7 @@
         208,
         26
       ],
+      "comment_inline": "no: carry clear",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9805",
@@ -41930,8 +41956,9 @@
         200
       ],
       "labels": [
-        "sub_c97eb"
+        "decode_line_number"
       ],
+      "comment_inline": "Control byte",
       "xref_summaries": [
         "&97eb referenced 2 times by &903d, &b659"
       ],
@@ -41948,6 +41975,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -41959,6 +41987,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "recover the top bits",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -41967,6 +41996,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -41975,6 +42005,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -41984,6 +42015,7 @@
         41,
         192
       ],
+      "comment_inline": "low byte top bits",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -41993,6 +42025,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42002,6 +42035,7 @@
         81,
         11
       ],
+      "comment_inline": "XOR the encoded low byte",
       "type": "code",
       "mnemonic": "eor",
       "operand": "(zp_text_ptr),y",
@@ -42014,6 +42048,7 @@
         133,
         42
       ],
+      "comment_inline": "line number low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -42025,6 +42060,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "high byte top bits",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -42033,6 +42069,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -42041,6 +42078,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -42049,6 +42087,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42058,6 +42097,7 @@
         81,
         11
       ],
+      "comment_inline": "XOR the encoded high byte",
       "type": "code",
       "mnemonic": "eor",
       "operand": "(zp_text_ptr),y",
@@ -42070,6 +42110,7 @@
         133,
         43
       ],
+      "comment_inline": "line number high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -42081,6 +42122,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step past the 3 bytes",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42090,6 +42132,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -42101,6 +42144,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "carry set: found",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -42109,6 +42153,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -42120,6 +42165,7 @@
       "labels": [
         "c9805"
       ],
+      "comment_inline": "carry clear: not a line number",
       "xref_summaries": [
         "&9805 referenced 1 time by &97e9"
       ],
@@ -42134,6 +42180,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -42146,6 +42193,7 @@
       "labels": [
         "sub_c9807"
       ],
+      "comment_inline": "Copy PtrA to PtrB",
       "xref_summaries": [
         "&9807 referenced 1 time by &92eb"
       ],
@@ -42164,6 +42212,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -42176,6 +42225,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -42188,6 +42238,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -42200,6 +42251,7 @@
         165,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_off",
@@ -42212,6 +42264,7 @@
         133,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -42227,6 +42280,7 @@
       "labels": [
         "eval_after_eq"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&9813 referenced 4 times by &8bee, &8bfe, &981b, &bf34"
       ],
@@ -42248,6 +42302,7 @@
         230,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -42260,6 +42315,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -42272,6 +42328,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -42282,6 +42339,7 @@
         240,
         246
       ],
+      "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "eval_after_eq",
@@ -42294,6 +42352,7 @@
         201,
         61
       ],
+      "comment_inline": "\"=\"?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3d"
@@ -42304,6 +42363,7 @@
         240,
         40
       ],
+      "comment_inline": "yes: evaluate",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9849",
@@ -42318,6 +42378,7 @@
       "labels": [
         "loop_c9821"
       ],
+      "comment_inline": "Mistake error",
       "xref_summaries": [
         "&9821 referenced 1 time by &9846"
       ],
@@ -42359,6 +42420,7 @@
       "labels": [
         "c982a"
       ],
+      "comment_inline": "Mistake error",
       "xref_summaries": [
         "&982a referenced 7 times by &8604, &8855, &8c0b, &8f2e, &986b, &b6a0, &b9c7"
       ],
@@ -42411,6 +42473,7 @@
       "labels": [
         "c9838"
       ],
+      "comment_inline": "Escape error",
       "xref_summaries": [
         "&9838 referenced 2 times by &987d, &bc22"
       ],
@@ -42462,8 +42525,9 @@
         138
       ],
       "labels": [
-        "sub_c9841"
+        "expect_eq"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&9841 referenced 2 times by &8bd2, &b7ce"
       ],
@@ -42483,6 +42547,7 @@
         201,
         61
       ],
+      "comment_inline": "\"=\"?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3d"
@@ -42493,6 +42558,7 @@
         208,
         217
       ],
+      "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9821",
@@ -42504,6 +42570,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -42517,6 +42584,7 @@
       "labels": [
         "c9849"
       ],
+      "comment_inline": "Evaluate the right-hand side",
       "xref_summaries": [
         "&9849 referenced 2 times by &981f, &bf5f"
       ],
@@ -42538,6 +42606,7 @@
       "labels": [
         "c984c"
       ],
+      "comment_inline": "Result type",
       "xref_summaries": [
         "&984c referenced 4 times by &8b56, &b58f, &bbb4, &beda"
       ],
@@ -42556,6 +42625,7 @@
         164,
         27
       ],
+      "comment_inline": "Sync the program pointer",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -42569,6 +42639,7 @@
         97,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9861",
@@ -42584,6 +42655,7 @@
       "labels": [
         "sub_c9852"
       ],
+      "comment_inline": "Sync the program pointer",
       "xref_summaries": [
         "&9852 referenced 8 times by &8f0e, &9315, &9383, &9406, &b461, &b484, &b4a3, &bf9c"
       ],
@@ -42610,6 +42682,7 @@
         89,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9859",
@@ -43736,9 +43809,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 39142,
@@ -92378,9 +92451,9 @@
       "comment_inline": "Embedded start line number?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 46511,
@@ -92647,9 +92720,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 46555,
@@ -93493,9 +93566,9 @@
       "comment_inline": "decode the embedded line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97eb",
+      "operand": "decode_line_number",
       "target": 38891,
-      "target_label": "sub_c97eb"
+      "target_label": "decode_line_number"
     },
     {
       "addr": 46684,
@@ -95753,9 +95826,9 @@
       "comment_inline": "Expect \"=\"",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9841",
+      "operand": "expect_eq",
       "target": 38977,
-      "target_label": "sub_c9841"
+      "target_label": "expect_eq"
     },
     {
       "addr": 47057,
@@ -98545,9 +98618,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c97df",
+      "operand": "check_line_number",
       "target": 38879,
-      "target_label": "sub_c97df"
+      "target_label": "check_line_number"
     },
     {
       "addr": 47517,

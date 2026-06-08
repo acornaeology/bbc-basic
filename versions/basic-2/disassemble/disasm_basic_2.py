@@ -1827,6 +1827,18 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0x97df, 'check_line_number',
+             title='Test for an embedded line number',
+             description='If the text pointer is at a line-number token, '
+                         'decode it into IWA and return carry set; otherwise '
+                         'carry clear.')
+d.subroutine(0x97eb, 'decode_line_number',
+             title='Decode a 3-byte line number into IWA',
+             description='Reverse the GOTO three-byte encoding, reconstructing '
+                         'the 16-bit line number in IWA.')
+d.subroutine(0x9841, 'expect_eq', title='Require "=" at the parser pointer',
+             description='Skip spaces and raise Mistake unless the next '
+                         'character is "=".')
 d.subroutine(0x88f5, 'encode_line_number',
              title='Encode a 16-bit line number into 3 bytes',
              description='Pack the line number in &3D/&3E into the BBC '
@@ -7678,6 +7690,63 @@ d.comment(0xb4d8, '...', align=Align.INLINE)
 d.comment(0xb4da, 'Store byte 4', align=Align.INLINE)
 d.comment(0xb4dc, '...', align=Align.INLINE)
 d.comment(0xb4dd, '...', align=Align.INLINE)
+
+# check_line_number (&97DF) / decode_line_number (&97EB).
+d.comment(0x97df, 'Next character', align=Align.INLINE)
+d.comment(0x97e1, '...', align=Align.INLINE)
+d.comment(0x97e3, 'space?', align=Align.INLINE)
+d.comment(0x97e5, 'skip it', align=Align.INLINE)
+d.comment(0x97e7, 'line-number token?', align=Align.INLINE)
+d.comment(0x97e9, 'no: carry clear', align=Align.INLINE)
+d.comment(0x97eb, 'Control byte', align=Align.INLINE)
+d.comment(0x97ec, '...', align=Align.INLINE)
+d.comment(0x97ee, 'recover the top bits', align=Align.INLINE)
+d.comment(0x97ef, '...', align=Align.INLINE)
+d.comment(0x97f0, '...', align=Align.INLINE)
+d.comment(0x97f1, 'low byte top bits', align=Align.INLINE)
+d.comment(0x97f3, '...', align=Align.INLINE)
+d.comment(0x97f4, 'XOR the encoded low byte', align=Align.INLINE)
+d.comment(0x97f6, 'line number low', align=Align.INLINE)
+d.comment(0x97f8, 'high byte top bits', align=Align.INLINE)
+d.comment(0x97f9, '...', align=Align.INLINE)
+d.comment(0x97fa, '...', align=Align.INLINE)
+d.comment(0x97fb, '...', align=Align.INLINE)
+d.comment(0x97fc, 'XOR the encoded high byte', align=Align.INLINE)
+d.comment(0x97fe, 'line number high', align=Align.INLINE)
+d.comment(0x9800, 'step past the 3 bytes', align=Align.INLINE)
+d.comment(0x9801, '...', align=Align.INLINE)
+d.comment(0x9803, 'carry set: found', align=Align.INLINE)
+d.comment(0x9804, 'Return', align=Align.INLINE)
+d.comment(0x9805, 'carry clear: not a line number', align=Align.INLINE)
+d.comment(0x9806, 'Return', align=Align.INLINE)
+
+# sub_c9807: copy PtrA to PtrB, then expect "=" and evaluate.
+d.comment(0x9807, 'Copy PtrA to PtrB', align=Align.INLINE)
+d.comment(0x9809, '...', align=Align.INLINE)
+d.comment(0x980b, '...', align=Align.INLINE)
+d.comment(0x980d, '...', align=Align.INLINE)
+d.comment(0x980f, '...', align=Align.INLINE)
+d.comment(0x9811, '...', align=Align.INLINE)
+d.comment(0x9813, 'Next character', align=Align.INLINE)
+d.comment(0x9815, '...', align=Align.INLINE)
+d.comment(0x9817, '...', align=Align.INLINE)
+d.comment(0x9819, 'space?', align=Align.INLINE)
+d.comment(0x981b, 'skip it', align=Align.INLINE)
+d.comment(0x981d, '"="?', align=Align.INLINE)
+d.comment(0x981f, 'yes: evaluate', align=Align.INLINE)
+d.comment(0x9821, 'Mistake error', align=Align.INLINE)
+d.comment(0x982a, 'Mistake error', align=Align.INLINE)
+d.comment(0x9838, 'Escape error', align=Align.INLINE)
+d.comment(0x9841, 'Skip spaces', align=Align.INLINE)
+d.comment(0x9844, '"="?', align=Align.INLINE)
+d.comment(0x9846, 'no: Mistake', align=Align.INLINE)
+d.comment(0x9848, 'Return', align=Align.INLINE)
+d.comment(0x9849, 'Evaluate the right-hand side', align=Align.INLINE)
+d.comment(0x984c, 'Result type', align=Align.INLINE)
+d.comment(0x984d, 'Sync the program pointer', align=Align.INLINE)
+d.comment(0x984f, 'check the statement ends', align=Align.INLINE)
+d.comment(0x9852, 'Sync the program pointer', align=Align.INLINE)
+d.comment(0x9854, 'check the statement ends', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.

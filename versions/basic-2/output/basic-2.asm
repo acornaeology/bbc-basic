@@ -2163,7 +2163,7 @@ l848a = sub_c847b+15
     sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; clear the quote flag
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
     jsr c8957                                                         ; 8b2a: 20 57 89     W.      ; Tokenise the line
-    jsr sub_c97df                                                     ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
+    jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
     bcc c8b38                                                         ; 8b30: 90 06       ..       ; no line number: execute it
     jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
     jmp c8af3                                                         ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
@@ -2305,7 +2305,7 @@ l848a = sub_c847b+15
     bne c8be9                                                         ; 8bcc: d0 1b       ..       ; Existing variable: do the assignment
     bcs check_eq_star_bracket                                         ; 8bce: b0 90       ..       ; Not a variable: try =, * or [
     stx zp_text_ptr2_off                                              ; 8bd0: 86 1b       ..       ; New variable: position for "="
-    jsr sub_c9841                                                     ; 8bd2: 20 41 98     A.      ; Require "="
+    jsr expect_eq                                                     ; 8bd2: 20 41 98     A.      ; Require "="
     jsr create_variable                                               ; 8bd5: 20 fc 94     ..      ; Create the new variable
     ldx #5                                                            ; 8bd8: a2 05       ..       ; Type 5 = floating point
     cpx zp_iwa_2                                                      ; 8bda: e4 2c       .,       ; Is the destination a float?
@@ -2910,13 +2910,13 @@ l848a = sub_c847b+15
 ;
 ; Delete a range of program lines. DELETE start, end.
 .stmt_delete
-    jsr sub_c97df                                                     ; 8f31: 20 df 97     ..      ; Read the start line number
+    jsr check_line_number                                             ; 8f31: 20 df 97     ..      ; Read the start line number
     bcc c8f2e                                                         ; 8f34: 90 f8       ..       ; none: Syntax error
     jsr stack_integer                                                 ; 8f36: 20 94 bd     ..      ; stack it
     jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,       ; ','?
     bne c8f2e                                                         ; 8f3e: d0 ee       ..       ; no: error
-    jsr sub_c97df                                                     ; 8f40: 20 df 97     ..      ; Read the end line number
+    jsr check_line_number                                             ; 8f40: 20 df 97     ..      ; Read the end line number
     bcc c8f2e                                                         ; 8f43: 90 e9       ..       ; none: error
     jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.      ; check the statement ends
     lda zp_iwa                                                        ; 8f48: a5 2a       .*       ; Save the end line
@@ -2939,14 +2939,14 @@ l848a = sub_c847b+15
 .sub_c8f69
     lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
     jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..      ; ...
-    jsr sub_c97df                                                     ; 8f6e: 20 df 97     ..      ; Read the start line if given
+    jsr check_line_number                                             ; 8f6e: 20 df 97     ..      ; Read the start line if given
     jsr stack_integer                                                 ; 8f71: 20 94 bd     ..      ; stack it
     lda #&0a                                                          ; 8f74: a9 0a       ..       ; Default increment = 10
     jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; ...
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,       ; ',' increment given?
     bne c8f8d                                                         ; 8f7e: d0 0d       ..       ; no: use the default
-    jsr sub_c97df                                                     ; 8f80: 20 df 97     ..      ; Read the increment
+    jsr check_line_number                                             ; 8f80: 20 df 97     ..      ; Read the increment
     lda zp_iwa_1                                                      ; 8f83: a5 2b       .+       ; zero?
     bne c8fdf                                                         ; 8f85: d0 58       .X       ; no
     lda zp_iwa                                                        ; 8f87: a5 2a       .*       ; ...
@@ -3076,7 +3076,7 @@ l848a = sub_c847b+15
     jmp c8af3                                                         ; 903a: 4c f3 8a    L..      ; Done: back to the immediate loop
 ; &903d referenced 1 time by &9020
 .c903d
-    jsr sub_c97eb                                                     ; 903d: 20 eb 97     ..      ; Decode the &8D-encoded line number
+    jsr decode_line_number                                            ; 903d: 20 eb 97     ..      ; Decode the &8D-encoded line number
     jsr sub_c8f92                                                     ; 9040: 20 92 8f     ..      ; Point at the old->new table
 ; &9043 referenced 2 times by &907a, &907e
 .c9043
@@ -3476,7 +3476,7 @@ l848a = sub_c847b+15
 ;
 ; Trace executed line numbers for debugging. TRACE ON | OFF | line.
 .stmt_trace
-    jsr sub_c97df                                                     ; 9295: 20 df 97     ..      ; Line number following?
+    jsr check_line_number                                             ; 9295: 20 df 97     ..      ; Line number following?
     bcs c92a5                                                         ; 9298: b0 0b       ..       ; yes: TRACE to that line
     cmp #&ee                                                          ; 929a: c9 ee       ..       ; ON token?
     beq c92b7                                                         ; 929c: f0 19       ..       ; yes
@@ -4490,47 +4490,56 @@ l848a = sub_c847b+15
 ; &97dd referenced 1 time by &97e5
 .loop_c97dd
     inc zp_text_ptr_off                                               ; 97dd: e6 0a       ..    
+; ***************************************************************************************
+; Test for an embedded line number
+;
+; If the text pointer is at a line-number token, decode it into IWA and return carry set;
+; otherwise carry clear.
 ; &97df referenced 10 times by &8b2d, &8f31, &8f40, &8f6e, &8f80, &9295, &98e3, &b5ac, &b5d8, &b99a
-.sub_c97df
-    ldy zp_text_ptr_off                                               ; 97df: a4 0a       ..    
-    lda (zp_text_ptr),y                                               ; 97e1: b1 0b       ..    
-    cmp #&20 ; ' '                                                    ; 97e3: c9 20       .     
-    beq loop_c97dd                                                    ; 97e5: f0 f6       ..    
-    cmp #&8d                                                          ; 97e7: c9 8d       ..    
-    bne c9805                                                         ; 97e9: d0 1a       ..    
+.check_line_number
+    ldy zp_text_ptr_off                                               ; 97df: a4 0a       ..       ; Next character
+    lda (zp_text_ptr),y                                               ; 97e1: b1 0b       ..       ; ...
+    cmp #&20 ; ' '                                                    ; 97e3: c9 20       .        ; space?
+    beq loop_c97dd                                                    ; 97e5: f0 f6       ..       ; skip it
+    cmp #&8d                                                          ; 97e7: c9 8d       ..       ; line-number token?
+    bne c9805                                                         ; 97e9: d0 1a       ..       ; no: carry clear
+; ***************************************************************************************
+; Decode a 3-byte line number into IWA
+;
+; Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.
 ; &97eb referenced 2 times by &903d, &b659
-.sub_c97eb
-    iny                                                               ; 97eb: c8          .     
-    lda (zp_text_ptr),y                                               ; 97ec: b1 0b       ..    
-    asl a                                                             ; 97ee: 0a          .     
-    asl a                                                             ; 97ef: 0a          .     
-    tax                                                               ; 97f0: aa          .     
-    and #&c0                                                          ; 97f1: 29 c0       ).    
-    iny                                                               ; 97f3: c8          .     
-    eor (zp_text_ptr),y                                               ; 97f4: 51 0b       Q.    
-    sta zp_iwa                                                        ; 97f6: 85 2a       .*    
-    txa                                                               ; 97f8: 8a          .     
-    asl a                                                             ; 97f9: 0a          .     
-    asl a                                                             ; 97fa: 0a          .     
-    iny                                                               ; 97fb: c8          .     
-    eor (zp_text_ptr),y                                               ; 97fc: 51 0b       Q.    
-    sta zp_iwa_1                                                      ; 97fe: 85 2b       .+    
-    iny                                                               ; 9800: c8          .     
-    sty zp_text_ptr_off                                               ; 9801: 84 0a       ..    
-    sec                                                               ; 9803: 38          8     
-    rts                                                               ; 9804: 60          `     
+.decode_line_number
+    iny                                                               ; 97eb: c8          .        ; Control byte
+    lda (zp_text_ptr),y                                               ; 97ec: b1 0b       ..       ; ...
+    asl a                                                             ; 97ee: 0a          .        ; recover the top bits
+    asl a                                                             ; 97ef: 0a          .        ; ...
+    tax                                                               ; 97f0: aa          .        ; ...
+    and #&c0                                                          ; 97f1: 29 c0       ).       ; low byte top bits
+    iny                                                               ; 97f3: c8          .        ; ...
+    eor (zp_text_ptr),y                                               ; 97f4: 51 0b       Q.       ; XOR the encoded low byte
+    sta zp_iwa                                                        ; 97f6: 85 2a       .*       ; line number low
+    txa                                                               ; 97f8: 8a          .        ; high byte top bits
+    asl a                                                             ; 97f9: 0a          .        ; ...
+    asl a                                                             ; 97fa: 0a          .        ; ...
+    iny                                                               ; 97fb: c8          .        ; ...
+    eor (zp_text_ptr),y                                               ; 97fc: 51 0b       Q.       ; XOR the encoded high byte
+    sta zp_iwa_1                                                      ; 97fe: 85 2b       .+       ; line number high
+    iny                                                               ; 9800: c8          .        ; step past the 3 bytes
+    sty zp_text_ptr_off                                               ; 9801: 84 0a       ..       ; ...
+    sec                                                               ; 9803: 38          8        ; carry set: found
+    rts                                                               ; 9804: 60          `        ; Return
 ; &9805 referenced 1 time by &97e9
 .c9805
-    clc                                                               ; 9805: 18          .     
-    rts                                                               ; 9806: 60          `     
+    clc                                                               ; 9805: 18          .        ; carry clear: not a line number
+    rts                                                               ; 9806: 60          `        ; Return
 ; &9807 referenced 1 time by &92eb
 .sub_c9807
-    lda zp_text_ptr                                                   ; 9807: a5 0b       ..    
-    sta zp_text_ptr2                                                  ; 9809: 85 19       ..    
-    lda zp_text_ptr_1                                                 ; 980b: a5 0c       ..    
-    sta zp_text_ptr2_1                                                ; 980d: 85 1a       ..    
-    lda zp_text_ptr_off                                               ; 980f: a5 0a       ..    
-    sta zp_text_ptr2_off                                              ; 9811: 85 1b       ..    
+    lda zp_text_ptr                                                   ; 9807: a5 0b       ..       ; Copy PtrA to PtrB
+    sta zp_text_ptr2                                                  ; 9809: 85 19       ..       ; ...
+    lda zp_text_ptr_1                                                 ; 980b: a5 0c       ..       ; ...
+    sta zp_text_ptr2_1                                                ; 980d: 85 1a       ..       ; ...
+    lda zp_text_ptr_off                                               ; 980f: a5 0a       ..       ; ...
+    sta zp_text_ptr2_off                                              ; 9811: 85 1b       ..       ; ...
 ; ***************************************************************************************
 ; Expect "=" then evaluate the right-hand side
 ;
@@ -4538,47 +4547,51 @@ l848a = sub_c847b+15
 ; the value in the accumulator with its type in zp_var_type.
 ; &9813 referenced 4 times by &8bee, &8bfe, &981b, &bf34
 .eval_after_eq
-    ldy zp_text_ptr2_off                                              ; 9813: a4 1b       ..    
-    inc zp_text_ptr2_off                                              ; 9815: e6 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 9817: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; 9819: c9 20       .     
-    beq eval_after_eq                                                 ; 981b: f0 f6       ..    
-    cmp #&3d ; '='                                                    ; 981d: c9 3d       .=    
-    beq c9849                                                         ; 981f: f0 28       .(    
+    ldy zp_text_ptr2_off                                              ; 9813: a4 1b       ..       ; Next character
+    inc zp_text_ptr2_off                                              ; 9815: e6 1b       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; 9817: b1 19       ..       ; ...
+    cmp #&20 ; ' '                                                    ; 9819: c9 20       .        ; space?
+    beq eval_after_eq                                                 ; 981b: f0 f6       ..       ; skip it
+    cmp #&3d ; '='                                                    ; 981d: c9 3d       .=       ; "="?
+    beq c9849                                                         ; 981f: f0 28       .(       ; yes: evaluate
 ; &9821 referenced 1 time by &9846
 .loop_c9821
-    brk                                                               ; 9821: 00          .     
+    brk                                                               ; 9821: 00          .        ; Mistake error
     equb &04                                                          ; 9822: 04          .     
     equs "Mistake"                                                    ; 9823: 4d 69 73... Mis...
 ; &982a referenced 7 times by &8604, &8855, &8c0b, &8f2e, &986b, &b6a0, &b9c7
 .c982a
-    brk                                                               ; 982a: 00          .     
+    brk                                                               ; 982a: 00          .        ; Mistake error
     equb &10                                                          ; 982b: 10          .     
     equs "Syntax error"                                               ; 982c: 53 79 6e... Syn...
 ; &9838 referenced 2 times by &987d, &bc22
 .c9838
-    brk                                                               ; 9838: 00          .     
+    brk                                                               ; 9838: 00          .        ; Escape error
     equb &11                                                          ; 9839: 11          .     
     equs "Escape"                                                     ; 983a: 45 73 63... Esc...
     equb &00                                                          ; 9840: 00          .     
+; ***************************************************************************************
+; Require "=" at the parser pointer
+;
+; Skip spaces and raise Mistake unless the next character is "=".
 ; &9841 referenced 2 times by &8bd2, &b7ce
-.sub_c9841
-    jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..   
-    cmp #&3d ; '='                                                    ; 9844: c9 3d       .=    
-    bne loop_c9821                                                    ; 9846: d0 d9       ..    
-    rts                                                               ; 9848: 60          `     
+.expect_eq
+    jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..      ; Skip spaces
+    cmp #&3d ; '='                                                    ; 9844: c9 3d       .=       ; "="?
+    bne loop_c9821                                                    ; 9846: d0 d9       ..       ; no: Mistake
+    rts                                                               ; 9848: 60          `        ; Return
 ; &9849 referenced 2 times by &981f, &bf5f
 .c9849
-    jsr eval_or_eor                                                   ; 9849: 20 29 9b     ).   
+    jsr eval_or_eor                                                   ; 9849: 20 29 9b     ).      ; Evaluate the right-hand side
 ; &984c referenced 4 times by &8b56, &b58f, &bbb4, &beda
 .c984c
-    txa                                                               ; 984c: 8a          .     
-    ldy zp_text_ptr2_off                                              ; 984d: a4 1b       ..    
-    jmp c9861                                                         ; 984f: 4c 61 98    La.   
+    txa                                                               ; 984c: 8a          .        ; Result type
+    ldy zp_text_ptr2_off                                              ; 984d: a4 1b       ..       ; Sync the program pointer
+    jmp c9861                                                         ; 984f: 4c 61 98    La.      ; check the statement ends
 ; &9852 referenced 8 times by &8f0e, &9315, &9383, &9406, &b461, &b484, &b4a3, &bf9c
 .sub_c9852
-    ldy zp_text_ptr2_off                                              ; 9852: a4 1b       ..    
-    jmp c9859                                                         ; 9854: 4c 59 98    LY.   
+    ldy zp_text_ptr2_off                                              ; 9852: a4 1b       ..       ; Sync the program pointer
+    jmp c9859                                                         ; 9854: 4c 59 98    LY.      ; check the statement ends
 ; ***************************************************************************************
 ; Check for end of statement
 ;
@@ -4704,7 +4717,7 @@ l848a = sub_c847b+15
     inc zp_text_ptr_off                                               ; 98e1: e6 0a       ..       ; Step past THEN
 ; &98e3 referenced 2 times by &9900, &b997
 .c98e3
-    jsr sub_c97df                                                     ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
+    jsr check_line_number                                             ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
     bcc loop_c98de                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
     jsr cb9af                                                         ; 98e8: 20 af b9     ..      ; yes: set up the line number...
     jsr c9877                                                         ; 98eb: 20 77 98     w.      ; ...
@@ -10092,7 +10105,7 @@ l848a = sub_c847b+15
     sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;       ; ...
     sta zp_fwb_ovf                                                    ; b5a7: 85 3c       .<       ; ...
     jsr int_result_a                                                  ; b5a9: 20 d8 ae     ..      ; Start line default 0
-    jsr sub_c97df                                                     ; b5ac: 20 df 97     ..      ; Embedded start line number?
+    jsr check_line_number                                             ; b5ac: 20 df 97     ..      ; Embedded start line number?
     php                                                               ; b5af: 08          .        ; remember whether one was given
     jsr stack_integer                                                 ; b5b0: 20 94 bd     ..      ; Stack the start line
     lda #&ff                                                          ; b5b3: a9 ff       ..       ; End line default 32767
@@ -10116,7 +10129,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; b5d6: c6 0a       ..       ; back up
 ; &b5d8 referenced 2 times by &b5c3, &b5d4
 .cb5d8
-    jsr sub_c97df                                                     ; b5d8: 20 df 97     ..      ; Read the end line number
+    jsr check_line_number                                             ; b5d8: 20 df 97     ..      ; Read the end line number
 ; &b5db referenced 1 time by &b5cd
 .cb5db
     lda zp_iwa                                                        ; b5db: a5 2a       .*       ; Save the end line
@@ -10195,7 +10208,7 @@ l848a = sub_c847b+15
     bpl loop_cb64b                                                    ; b653: 10 f6       ..       ; yes: print literally
     cmp #&8d                                                          ; b655: c9 8d       ..       ; line-number token?
     bne cb668                                                         ; b657: d0 0f       ..       ; no
-    jsr sub_c97eb                                                     ; b659: 20 eb 97     ..      ; decode the embedded line number
+    jsr decode_line_number                                            ; b659: 20 eb 97     ..      ; decode the embedded line number
     sty zp_text_ptr_off                                               ; b65c: 84 0a       ..       ; ...
     lda #0                                                            ; b65e: a9 00       ..       ; no field padding
     sta zp_print_bytes                                                ; b660: 85 14       ..       ; ...
@@ -10411,7 +10424,7 @@ l848a = sub_c847b+15
     beq cb7a4                                                         ; b7c7: f0 db       ..       ; not a variable: error
     bcs cb7a4                                                         ; b7c9: b0 d9       ..       ; indirection: error
     jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Evaluate and assign the initial value  Stack the variable pointer
-    jsr sub_c9841                                                     ; b7ce: 20 41 98     A.      ; Expect "="
+    jsr expect_eq                                                     ; b7ce: 20 41 98     A.      ; Expect "="
     jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..      ; Assign the initial value
     ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level  FOR level
     cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)  too many nested FORs?
@@ -10688,7 +10701,7 @@ l848a = sub_c847b+15
 ; GOSUB and RESTORE. Raises "No such line" if absent.
 ; &b99a referenced 4 times by &b888, &b8cc, &b95c, &baff
 .find_line_target
-    jsr sub_c97df                                                     ; b99a: 20 df 97     ..      ; Embedded line-number token?
+    jsr check_line_number                                             ; b99a: 20 df 97     ..      ; Embedded line-number token?
     bcs cb9af                                                         ; b99d: b0 10       ..       ; yes: use it
     jsr eval_expr                                                     ; b99f: 20 1d 9b     ..      ; Evaluate the line-number expression
     jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..      ; ensure integer
@@ -11977,10 +11990,10 @@ save pydis_start, pydis_end
 ;     unstack_real:               11
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
+;     check_line_number:          10
 ;     fwa_add_var:                10
 ;     fwa_unpack_var:             10
 ;     sub_c92e3:                  10
-;     sub_c97df:                  10
 ;     fwa_pack_temp1:              9
 ;     parse_lvalue:                9
 ;     print_space:                 9
@@ -12318,11 +12331,13 @@ save pydis_start, pydis_end
 ;     cbe41:                       2
 ;     cbe9e:                       2
 ;     cbf82:                       2
+;     decode_line_number:          2
 ;     delete_program_line:         2
 ;     dispatch_token:              2
 ;     drop_stack_integer:          2
 ;     err_too_big:                 2
 ;     eval_relational:             2
+;     expect_eq:                   2
 ;     fp_split_int_frac:           2
 ;     fp_temp1:                    2
 ;     fwa_acc_fwb:                 2
@@ -12399,8 +12414,6 @@ save pydis_start, pydis_end
 ;     sub_c8f69:                   2
 ;     sub_c8f92:                   2
 ;     sub_c95dd:                   2
-;     sub_c97eb:                   2
-;     sub_c9841:                   2
 ;     sub_c9890:                   2
 ;     sub_c9923:                   2
 ;     sub_c9b6b:                   2
@@ -14085,10 +14098,7 @@ save pydis_start, pydis_end
 ;     sub_c9539
 ;     sub_c95d5
 ;     sub_c95dd
-;     sub_c97df
-;     sub_c97eb
 ;     sub_c9807
-;     sub_c9841
 ;     sub_c9852
 ;     sub_c987b
 ;     sub_c9880
