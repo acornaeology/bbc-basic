@@ -10035,152 +10035,152 @@ l848a = sub_c847b+15
 ;
 ; List program lines, de-tokenising them. LIST [start[,end]].
 .stmt_list
-    iny                                                               ; b59c: c8          .     
-    lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..    
-    cmp #&4f ; 'O'                                                    ; b59f: c9 4f       .O    
-    beq loop_cb58a                                                    ; b5a1: f0 e7       ..    
-    lda #0                                                            ; b5a3: a9 00       ..    
-    sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;    
-    sta zp_fwb_ovf                                                    ; b5a7: 85 3c       .<    
-    jsr caed8                                                         ; b5a9: 20 d8 ae     ..   
-    jsr sub_c97df                                                     ; b5ac: 20 df 97     ..   
-    php                                                               ; b5af: 08          .     
-    jsr stack_integer                                                 ; b5b0: 20 94 bd     ..   
-    lda #&ff                                                          ; b5b3: a9 ff       ..    
-    sta zp_iwa                                                        ; b5b5: 85 2a       .*    
-    lda #&7f                                                          ; b5b7: a9 7f       ..    
-    sta zp_iwa_1                                                      ; b5b9: 85 2b       .+    
-    plp                                                               ; b5bb: 28          (     
-    bcc cb5cf                                                         ; b5bc: 90 11       ..    
-    jsr skip_spaces                                                   ; b5be: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; b5c1: c9 2c       .,    
-    beq cb5d8                                                         ; b5c3: f0 13       ..    
-    jsr unstack_integer                                               ; b5c5: 20 ea bd     ..   
-    jsr stack_integer                                                 ; b5c8: 20 94 bd     ..   
-    dec zp_text_ptr_off                                               ; b5cb: c6 0a       ..    
-    bpl cb5db                                                         ; b5cd: 10 0c       ..    
+    iny                                                               ; b59c: c8          .        ; Peek at the next character
+    lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..       ; ...
+    cmp #&4f ; 'O'                                                    ; b59f: c9 4f       .O       ; 'O' (LISTO)?
+    beq loop_cb58a                                                    ; b5a1: f0 e7       ..       ; yes: set the option
+    lda #0                                                            ; b5a3: a9 00       ..       ; Clear the indent levels
+    sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;       ; ...
+    sta zp_fwb_ovf                                                    ; b5a7: 85 3c       .<       ; ...
+    jsr caed8                                                         ; b5a9: 20 d8 ae     ..      ; Start line default 0
+    jsr sub_c97df                                                     ; b5ac: 20 df 97     ..      ; Embedded start line number?
+    php                                                               ; b5af: 08          .        ; remember whether one was given
+    jsr stack_integer                                                 ; b5b0: 20 94 bd     ..      ; Stack the start line
+    lda #&ff                                                          ; b5b3: a9 ff       ..       ; End line default 32767
+    sta zp_iwa                                                        ; b5b5: 85 2a       .*       ; ...
+    lda #&7f                                                          ; b5b7: a9 7f       ..       ; ...
+    sta zp_iwa_1                                                      ; b5b9: 85 2b       .+       ; ...
+    plp                                                               ; b5bb: 28          (        ; Was a start line given?
+    bcc cb5cf                                                         ; b5bc: 90 11       ..       ; no: check for a range comma
+    jsr skip_spaces                                                   ; b5be: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; b5c1: c9 2c       .,       ; ',' range separator?
+    beq cb5d8                                                         ; b5c3: f0 13       ..       ; yes: read the end line
+    jsr unstack_integer                                               ; b5c5: 20 ea bd     ..      ; Single line: end = start
+    jsr stack_integer                                                 ; b5c8: 20 94 bd     ..      ; ...
+    dec zp_text_ptr_off                                               ; b5cb: c6 0a       ..       ; back up
+    bpl cb5db                                                         ; b5cd: 10 0c       ..       ; ...
 ; &b5cf referenced 1 time by &b5bc
 .cb5cf
-    jsr skip_spaces                                                   ; b5cf: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; b5d2: c9 2c       .,    
-    beq cb5d8                                                         ; b5d4: f0 02       ..    
-    dec zp_text_ptr_off                                               ; b5d6: c6 0a       ..    
+    jsr skip_spaces                                                   ; b5cf: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; b5d2: c9 2c       .,       ; ',' range separator?
+    beq cb5d8                                                         ; b5d4: f0 02       ..       ; yes
+    dec zp_text_ptr_off                                               ; b5d6: c6 0a       ..       ; back up
 ; &b5d8 referenced 2 times by &b5c3, &b5d4
 .cb5d8
-    jsr sub_c97df                                                     ; b5d8: 20 df 97     ..   
+    jsr sub_c97df                                                     ; b5d8: 20 df 97     ..      ; Read the end line number
 ; &b5db referenced 1 time by &b5cd
 .cb5db
-    lda zp_iwa                                                        ; b5db: a5 2a       .*    
-    sta zp_fwa_m1                                                     ; b5dd: 85 31       .1    
-    lda zp_iwa_1                                                      ; b5df: a5 2b       .+    
-    sta zp_fwa_m2                                                     ; b5e1: 85 32       .2    
-    jsr check_end_of_statement                                        ; b5e3: 20 57 98     W.   
-    jsr check_program                                                 ; b5e6: 20 6f be     o.   
-    jsr unstack_integer                                               ; b5e9: 20 ea bd     ..   
-    jsr find_program_line                                             ; b5ec: 20 70 99     p.   
-    lda zp_fwb_exp                                                    ; b5ef: a5 3d       .=    
-    sta zp_text_ptr                                                   ; b5f1: 85 0b       ..    
-    lda zp_fwb_m1                                                     ; b5f3: a5 3e       .>    
-    sta zp_text_ptr_1                                                 ; b5f5: 85 0c       ..    
-    bcc cb60f                                                         ; b5f7: 90 16       ..    
-    dey                                                               ; b5f9: 88          .     
-    bcs cb602                                                         ; b5fa: b0 06       ..    
+    lda zp_iwa                                                        ; b5db: a5 2a       .*       ; Save the end line
+    sta zp_fwa_m1                                                     ; b5dd: 85 31       .1       ; ...
+    lda zp_iwa_1                                                      ; b5df: a5 2b       .+       ; ...
+    sta zp_fwa_m2                                                     ; b5e1: 85 32       .2       ; ...
+    jsr check_end_of_statement                                        ; b5e3: 20 57 98     W.      ; Check the statement ends
+    jsr check_program                                                 ; b5e6: 20 6f be     o.      ; Check a program is present
+    jsr unstack_integer                                               ; b5e9: 20 ea bd     ..      ; Recover the start line
+    jsr find_program_line                                             ; b5ec: 20 70 99     p.      ; Find the first line
+    lda zp_fwb_exp                                                    ; b5ef: a5 3d       .=       ; Point at it
+    sta zp_text_ptr                                                   ; b5f1: 85 0b       ..       ; ...
+    lda zp_fwb_m1                                                     ; b5f3: a5 3e       .>       ; ...
+    sta zp_text_ptr_1                                                 ; b5f5: 85 0c       ..       ; ...
+    bcc cb60f                                                         ; b5f7: 90 16       ..       ; exact line: start here
+    dey                                                               ; b5f9: 88          .        ; ...
+    bcs cb602                                                         ; b5fa: b0 06       ..       ; ...
 ; &b5fc referenced 1 time by &b63d
 .loop_cb5fc
-    jsr sub_cbc25                                                     ; b5fc: 20 25 bc     %.   
-    jsr c986d                                                         ; b5ff: 20 6d 98     m.   
+    jsr sub_cbc25                                                     ; b5fc: 20 25 bc     %.      ; Newline after the previous line
+    jsr c986d                                                         ; b5ff: 20 6d 98     m.      ; check Escape
 ; &b602 referenced 1 time by &b5fa
 .cb602
-    lda (zp_text_ptr),y                                               ; b602: b1 0b       ..    
-    sta zp_iwa_1                                                      ; b604: 85 2b       .+    
-    iny                                                               ; b606: c8          .     
-    lda (zp_text_ptr),y                                               ; b607: b1 0b       ..    
-    sta zp_iwa                                                        ; b609: 85 2a       .*    
-    iny                                                               ; b60b: c8          .     
-    iny                                                               ; b60c: c8          .     
-    sty zp_text_ptr_off                                               ; b60d: 84 0a       ..    
+    lda (zp_text_ptr),y                                               ; b602: b1 0b       ..       ; This line's number: high byte
+    sta zp_iwa_1                                                      ; b604: 85 2b       .+       ; ...
+    iny                                                               ; b606: c8          .        ; ...
+    lda (zp_text_ptr),y                                               ; b607: b1 0b       ..       ; ...low byte
+    sta zp_iwa                                                        ; b609: 85 2a       .*       ; ...
+    iny                                                               ; b60b: c8          .        ; skip the length byte
+    iny                                                               ; b60c: c8          .        ; ...
+    sty zp_text_ptr_off                                               ; b60d: 84 0a       ..       ; ...
 ; &b60f referenced 1 time by &b5f7
 .cb60f
-    lda zp_iwa                                                        ; b60f: a5 2a       .*    
-    clc                                                               ; b611: 18          .     
-    sbc zp_fwa_m1                                                     ; b612: e5 31       .1    
-    lda zp_iwa_1                                                      ; b614: a5 2b       .+    
-    sbc zp_fwa_m2                                                     ; b616: e5 32       .2    
-    bcc cb61d                                                         ; b618: 90 03       ..    
-    jmp immediate_loop                                                ; b61a: 4c f6 8a    L..   
+    lda zp_iwa                                                        ; b60f: a5 2a       .*       ; Past the end line?
+    clc                                                               ; b611: 18          .        ; ...
+    sbc zp_fwa_m1                                                     ; b612: e5 31       .1       ; ...
+    lda zp_iwa_1                                                      ; b614: a5 2b       .+       ; ...
+    sbc zp_fwa_m2                                                     ; b616: e5 32       .2       ; ...
+    bcc cb61d                                                         ; b618: 90 03       ..       ; no: list this line
+    jmp immediate_loop                                                ; b61a: 4c f6 8a    L..      ; yes: done
 ; &b61d referenced 1 time by &b618
 .cb61d
-    jsr sub_c9923                                                     ; b61d: 20 23 99     #.   
-    ldx #&ff                                                          ; b620: a2 ff       ..    
-    stx l004d                                                         ; b622: 86 4d       .M    
-    lda #1                                                            ; b624: a9 01       ..    
-    jsr sub_cb577                                                     ; b626: 20 77 b5     w.   
-    ldx zp_fwb_sign                                                   ; b629: a6 3b       .;    
-    lda #2                                                            ; b62b: a9 02       ..    
-    jsr sub_cb577                                                     ; b62d: 20 77 b5     w.   
-    ldx zp_fwb_ovf                                                    ; b630: a6 3c       .<    
-    lda #4                                                            ; b632: a9 04       ..    
-    jsr sub_cb577                                                     ; b634: 20 77 b5     w.   
+    jsr sub_c9923                                                     ; b61d: 20 23 99     #.      ; Print the line number
+    ldx #&ff                                                          ; b620: a2 ff       ..       ; Reset the quote flag
+    stx l004d                                                         ; b622: 86 4d       .M       ; ...
+    lda #1                                                            ; b624: a9 01       ..       ; Print the LISTO leading space
+    jsr sub_cb577                                                     ; b626: 20 77 b5     w.      ; ...
+    ldx zp_fwb_sign                                                   ; b629: a6 3b       .;       ; FOR/REPEAT indent
+    lda #2                                                            ; b62b: a9 02       ..       ; LISTO bit 1 indent
+    jsr sub_cb577                                                     ; b62d: 20 77 b5     w.      ; ...
+    ldx zp_fwb_ovf                                                    ; b630: a6 3c       .<       ; second indent level
+    lda #4                                                            ; b632: a9 04       ..       ; LISTO bit 2 indent
+    jsr sub_cb577                                                     ; b634: 20 77 b5     w.      ; ...
 ; &b637 referenced 1 time by &b665
 .cb637
-    ldy zp_text_ptr_off                                               ; b637: a4 0a       ..    
+    ldy zp_text_ptr_off                                               ; b637: a4 0a       ..       ; Line offset
 ; &b639 referenced 2 times by &b64f, &b68c
 .cb639
-    lda (zp_text_ptr),y                                               ; b639: b1 0b       ..    
-    cmp #&0d                                                          ; b63b: c9 0d       ..    
-    beq loop_cb5fc                                                    ; b63d: f0 bd       ..    
-    cmp #&22                                                          ; b63f: c9 22       ."    
-    bne cb651                                                         ; b641: d0 0e       ..    
-    lda #&ff                                                          ; b643: a9 ff       ..    
-    eor l004d                                                         ; b645: 45 4d       EM    
-    sta l004d                                                         ; b647: 85 4d       .M    
-    lda #&22                                                          ; b649: a9 22       ."    
+    lda (zp_text_ptr),y                                               ; b639: b1 0b       ..       ; Next character
+    cmp #&0d                                                          ; b63b: c9 0d       ..       ; end of line?
+    beq loop_cb5fc                                                    ; b63d: f0 bd       ..       ; yes: next line
+    cmp #&22                                                          ; b63f: c9 22       ."       ; quote?
+    bne cb651                                                         ; b641: d0 0e       ..       ; no: a token or literal
+    lda #&ff                                                          ; b643: a9 ff       ..       ; toggle the quote flag
+    eor l004d                                                         ; b645: 45 4d       EM       ; ...
+    sta l004d                                                         ; b647: 85 4d       .M       ; ...
+    lda #&22                                                          ; b649: a9 22       ."       ; print the quote
 ; &b64b referenced 1 time by &b653
 .loop_cb64b
-    jsr print_char                                                    ; b64b: 20 58 b5     X.   
-    iny                                                               ; b64e: c8          .     
-    bne cb639                                                         ; b64f: d0 e8       ..    
+    jsr print_char                                                    ; b64b: 20 58 b5     X.      ; ...
+    iny                                                               ; b64e: c8          .        ; next character
+    bne cb639                                                         ; b64f: d0 e8       ..       ; ...
 ; &b651 referenced 1 time by &b641
 .cb651
-    bit l004d                                                         ; b651: 24 4d       $M    
-    bpl loop_cb64b                                                    ; b653: 10 f6       ..    
-    cmp #&8d                                                          ; b655: c9 8d       ..    
-    bne cb668                                                         ; b657: d0 0f       ..    
-    jsr sub_c97eb                                                     ; b659: 20 eb 97     ..   
-    sty zp_text_ptr_off                                               ; b65c: 84 0a       ..    
-    lda #0                                                            ; b65e: a9 00       ..    
-    sta zp_print_bytes                                                ; b660: 85 14       ..    
-    jsr print_line_number                                             ; b662: 20 1f 99     ..   
-    jmp cb637                                                         ; b665: 4c 37 b6    L7.   
+    bit l004d                                                         ; b651: 24 4d       $M       ; Inside a quoted string?
+    bpl loop_cb64b                                                    ; b653: 10 f6       ..       ; yes: print literally
+    cmp #&8d                                                          ; b655: c9 8d       ..       ; line-number token?
+    bne cb668                                                         ; b657: d0 0f       ..       ; no
+    jsr sub_c97eb                                                     ; b659: 20 eb 97     ..      ; decode the embedded line number
+    sty zp_text_ptr_off                                               ; b65c: 84 0a       ..       ; ...
+    lda #0                                                            ; b65e: a9 00       ..       ; no field padding
+    sta zp_print_bytes                                                ; b660: 85 14       ..       ; ...
+    jsr print_line_number                                             ; b662: 20 1f 99     ..      ; print it
+    jmp cb637                                                         ; b665: 4c 37 b6    L7.      ; continue
 ; &b668 referenced 1 time by &b657
 .cb668
-    cmp #&e3                                                          ; b668: c9 e3       ..    
-    bne cb66e                                                         ; b66a: d0 02       ..    
-    inc zp_fwb_sign                                                   ; b66c: e6 3b       .;    
+    cmp #&e3                                                          ; b668: c9 e3       ..       ; FOR token?
+    bne cb66e                                                         ; b66a: d0 02       ..       ; no
+    inc zp_fwb_sign                                                   ; b66c: e6 3b       .;       ; increase the indent
 ; &b66e referenced 1 time by &b66a
 .cb66e
-    cmp #&ed                                                          ; b66e: c9 ed       ..    
-    bne cb678                                                         ; b670: d0 06       ..    
-    ldx zp_fwb_sign                                                   ; b672: a6 3b       .;    
-    beq cb678                                                         ; b674: f0 02       ..    
-    dec zp_fwb_sign                                                   ; b676: c6 3b       .;    
+    cmp #&ed                                                          ; b66e: c9 ed       ..       ; NEXT token?
+    bne cb678                                                         ; b670: d0 06       ..       ; no
+    ldx zp_fwb_sign                                                   ; b672: a6 3b       .;       ; indent active?
+    beq cb678                                                         ; b674: f0 02       ..       ; no
+    dec zp_fwb_sign                                                   ; b676: c6 3b       .;       ; decrease the indent
 ; &b678 referenced 2 times by &b670, &b674
 .cb678
-    cmp #&f5                                                          ; b678: c9 f5       ..    
-    bne cb67e                                                         ; b67a: d0 02       ..    
-    inc zp_fwb_ovf                                                    ; b67c: e6 3c       .<    
+    cmp #&f5                                                          ; b678: c9 f5       ..       ; REPEAT token?
+    bne cb67e                                                         ; b67a: d0 02       ..       ; no
+    inc zp_fwb_ovf                                                    ; b67c: e6 3c       .<       ; increase the indent
 ; &b67e referenced 1 time by &b67a
 .cb67e
-    cmp #&fd                                                          ; b67e: c9 fd       ..    
-    bne cb688                                                         ; b680: d0 06       ..    
-    ldx zp_fwb_ovf                                                    ; b682: a6 3c       .<    
-    beq cb688                                                         ; b684: f0 02       ..    
-    dec zp_fwb_ovf                                                    ; b686: c6 3c       .<    
+    cmp #&fd                                                          ; b67e: c9 fd       ..       ; UNTIL token?
+    bne cb688                                                         ; b680: d0 06       ..       ; no
+    ldx zp_fwb_ovf                                                    ; b682: a6 3c       .<       ; indent active?
+    beq cb688                                                         ; b684: f0 02       ..       ; no
+    dec zp_fwb_ovf                                                    ; b686: c6 3c       .<       ; decrease the indent
 ; &b688 referenced 2 times by &b680, &b684
 .cb688
-    jsr sub_cb50e                                                     ; b688: 20 0e b5     ..   
-    iny                                                               ; b68b: c8          .     
-    bne cb639                                                         ; b68c: d0 ab       ..    
+    jsr sub_cb50e                                                     ; b688: 20 0e b5     ..      ; De-tokenise and print the character
+    iny                                                               ; b68b: c8          .        ; next
+    bne cb639                                                         ; b68c: d0 ab       ..       ; loop
 ; &b68e referenced 2 times by &b69c, &b6a7
 .cb68e
     brk                                                               ; b68e: 00          .     

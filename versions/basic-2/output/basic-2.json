@@ -91206,6 +91206,7 @@
       "labels": [
         "stmt_list"
       ],
+      "comment_inline": "Peek at the next character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91215,6 +91216,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -91227,6 +91229,7 @@
         201,
         79
       ],
+      "comment_inline": "'O' (LISTO)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&4f"
@@ -91237,6 +91240,7 @@
         240,
         231
       ],
+      "comment_inline": "yes: set the option",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb58a",
@@ -91249,6 +91253,7 @@
         169,
         0
       ],
+      "comment_inline": "Clear the indent levels",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -91259,6 +91264,7 @@
         133,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -91271,6 +91277,7 @@
         133,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -91284,6 +91291,7 @@
         216,
         174
       ],
+      "comment_inline": "Start line default 0",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "caed8",
@@ -91297,6 +91305,7 @@
         223,
         151
       ],
+      "comment_inline": "Embedded start line number?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -91308,6 +91317,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "remember whether one was given",
       "type": "code",
       "mnemonic": "php"
     },
@@ -91318,6 +91328,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the start line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -91330,6 +91341,7 @@
         169,
         255
       ],
+      "comment_inline": "End line default 32767",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -91340,6 +91352,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -91352,6 +91365,7 @@
         169,
         127
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&7f"
@@ -91362,6 +91376,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -91373,6 +91388,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "Was a start line given?",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -91382,6 +91398,7 @@
         144,
         17
       ],
+      "comment_inline": "no: check for a range comma",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb5cf",
@@ -91395,6 +91412,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -91407,6 +91425,7 @@
         201,
         44
       ],
+      "comment_inline": "','  range separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -91417,6 +91436,7 @@
         240,
         19
       ],
+      "comment_inline": "yes: read the end line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb5d8",
@@ -91430,6 +91450,7 @@
         234,
         189
       ],
+      "comment_inline": "Single line: end = start",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -91443,6 +91464,7 @@
         148,
         189
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -91455,6 +91477,7 @@
         198,
         10
       ],
+      "comment_inline": "back up",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -91467,6 +91490,7 @@
         16,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cb5db",
@@ -91483,6 +91507,7 @@
       "labels": [
         "cb5cf"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&b5cf referenced 1 time by &b5bc"
       ],
@@ -91501,6 +91526,7 @@
         201,
         44
       ],
+      "comment_inline": "','  range separator?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -91511,6 +91537,7 @@
         240,
         2
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb5d8",
@@ -91523,6 +91550,7 @@
         198,
         10
       ],
+      "comment_inline": "back up",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -91539,6 +91567,7 @@
       "labels": [
         "cb5d8"
       ],
+      "comment_inline": "Read the end line number",
       "xref_summaries": [
         "&b5d8 referenced 2 times by &b5c3, &b5d4"
       ],
@@ -91561,6 +91590,7 @@
       "labels": [
         "cb5db"
       ],
+      "comment_inline": "Save the end line",
       "xref_summaries": [
         "&b5db referenced 1 time by &b5cd"
       ],
@@ -91579,6 +91609,7 @@
         133,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -91591,6 +91622,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -91603,6 +91635,7 @@
         133,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -91616,6 +91649,7 @@
         87,
         152
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -91629,6 +91663,7 @@
         111,
         190
       ],
+      "comment_inline": "Check a program is present",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_program",
@@ -91642,6 +91677,7 @@
         234,
         189
       ],
+      "comment_inline": "Recover the start line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -91655,6 +91691,7 @@
         112,
         153
       ],
+      "comment_inline": "Find the first line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_program_line",
@@ -91667,6 +91704,7 @@
         165,
         61
       ],
+      "comment_inline": "Point at it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -91679,6 +91717,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -91691,6 +91730,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -91703,6 +91743,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -91715,6 +91756,7 @@
         144,
         22
       ],
+      "comment_inline": "exact line: start here",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb60f",
@@ -91726,6 +91768,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -91735,6 +91778,7 @@
         176,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb602",
@@ -91751,6 +91795,7 @@
       "labels": [
         "loop_cb5fc"
       ],
+      "comment_inline": "Newline after the previous line",
       "xref_summaries": [
         "&b5fc referenced 1 time by &b63d"
       ],
@@ -91770,6 +91815,7 @@
         109,
         152
       ],
+      "comment_inline": "check Escape",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c986d",
@@ -91785,6 +91831,7 @@
       "labels": [
         "cb602"
       ],
+      "comment_inline": "This line's number: high byte",
       "xref_summaries": [
         "&b602 referenced 1 time by &b5fa"
       ],
@@ -91803,6 +91850,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -91814,6 +91862,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91823,6 +91872,7 @@
         177,
         11
       ],
+      "comment_inline": "...low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -91835,6 +91885,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -91846,6 +91897,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "skip the length byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91854,6 +91906,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91863,6 +91916,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -91878,6 +91932,7 @@
       "labels": [
         "cb60f"
       ],
+      "comment_inline": "Past the end line?",
       "xref_summaries": [
         "&b60f referenced 1 time by &b5f7"
       ],
@@ -91895,6 +91950,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -91904,6 +91960,7 @@
         229,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m1",
@@ -91916,6 +91973,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -91928,6 +91986,7 @@
         229,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m2",
@@ -91940,6 +91999,7 @@
         144,
         3
       ],
+      "comment_inline": "no: list this line",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb61d",
@@ -91953,6 +92013,7 @@
         246,
         138
       ],
+      "comment_inline": "yes: done",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "immediate_loop",
@@ -91969,6 +92030,7 @@
       "labels": [
         "cb61d"
       ],
+      "comment_inline": "Print the line number",
       "xref_summaries": [
         "&b61d referenced 1 time by &b618"
       ],
@@ -91987,6 +92049,7 @@
         162,
         255
       ],
+      "comment_inline": "Reset the quote flag",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -91997,6 +92060,7 @@
         134,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l004d",
@@ -92009,6 +92073,7 @@
         169,
         1
       ],
+      "comment_inline": "Print the LISTO leading space",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -92020,6 +92085,7 @@
         119,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb577",
@@ -92032,6 +92098,7 @@
         166,
         59
       ],
+      "comment_inline": "FOR/REPEAT indent",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_sign",
@@ -92044,6 +92111,7 @@
         169,
         2
       ],
+      "comment_inline": "LISTO bit 1 indent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#2"
@@ -92055,6 +92123,7 @@
         119,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb577",
@@ -92067,6 +92136,7 @@
         166,
         60
       ],
+      "comment_inline": "second indent level",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_ovf",
@@ -92079,6 +92149,7 @@
         169,
         4
       ],
+      "comment_inline": "LISTO bit 2 indent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -92090,6 +92161,7 @@
         119,
         181
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb577",
@@ -92105,6 +92177,7 @@
       "labels": [
         "cb637"
       ],
+      "comment_inline": "Line offset",
       "xref_summaries": [
         "&b637 referenced 1 time by &b665"
       ],
@@ -92126,6 +92199,7 @@
       "labels": [
         "cb639"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b639 referenced 2 times by &b64f, &b68c"
       ],
@@ -92145,6 +92219,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -92155,6 +92230,7 @@
         240,
         189
       ],
+      "comment_inline": "yes: next line",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb5fc",
@@ -92167,6 +92243,7 @@
         201,
         34
       ],
+      "comment_inline": "quote?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -92177,6 +92254,7 @@
         208,
         14
       ],
+      "comment_inline": "no: a token or literal",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb651",
@@ -92189,6 +92267,7 @@
         169,
         255
       ],
+      "comment_inline": "toggle the quote flag",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -92199,6 +92278,7 @@
         69,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l004d",
@@ -92211,6 +92291,7 @@
         133,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -92223,6 +92304,7 @@
         169,
         34
       ],
+      "comment_inline": "print the quote",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&22"
@@ -92237,6 +92319,7 @@
       "labels": [
         "loop_cb64b"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b64b referenced 1 time by &b653"
       ],
@@ -92254,6 +92337,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -92263,6 +92347,7 @@
         208,
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb639",
@@ -92278,6 +92363,7 @@
       "labels": [
         "cb651"
       ],
+      "comment_inline": "Inside a quoted string?",
       "xref_summaries": [
         "&b651 referenced 1 time by &b641"
       ],
@@ -92296,6 +92382,7 @@
         16,
         246
       ],
+      "comment_inline": "yes: print literally",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_cb64b",
@@ -92308,6 +92395,7 @@
         201,
         141
       ],
+      "comment_inline": "line-number token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8d"
@@ -92318,6 +92406,7 @@
         208,
         15
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb668",
@@ -92331,6 +92420,7 @@
         235,
         151
       ],
+      "comment_inline": "decode the embedded line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97eb",
@@ -92343,6 +92433,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -92355,6 +92446,7 @@
         169,
         0
       ],
+      "comment_inline": "no field padding",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -92365,6 +92457,7 @@
         133,
         20
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -92378,6 +92471,7 @@
         31,
         153
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_line_number",
@@ -92391,6 +92485,7 @@
         55,
         182
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb637",
@@ -92406,6 +92501,7 @@
       "labels": [
         "cb668"
       ],
+      "comment_inline": "FOR token?",
       "xref_summaries": [
         "&b668 referenced 1 time by &b657"
       ],
@@ -92422,6 +92518,7 @@
         208,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb66e",
@@ -92434,6 +92531,7 @@
         230,
         59
       ],
+      "comment_inline": "increase the indent",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_sign",
@@ -92449,6 +92547,7 @@
       "labels": [
         "cb66e"
       ],
+      "comment_inline": "NEXT token?",
       "xref_summaries": [
         "&b66e referenced 1 time by &b66a"
       ],
@@ -92465,6 +92564,7 @@
         208,
         6
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb678",
@@ -92477,6 +92577,7 @@
         166,
         59
       ],
+      "comment_inline": "indent active?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_sign",
@@ -92489,6 +92590,7 @@
         240,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb678",
@@ -92501,6 +92603,7 @@
         198,
         59
       ],
+      "comment_inline": "decrease the indent",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwb_sign",
@@ -92516,6 +92619,7 @@
       "labels": [
         "cb678"
       ],
+      "comment_inline": "REPEAT token?",
       "xref_summaries": [
         "&b678 referenced 2 times by &b670, &b674"
       ],
@@ -92533,6 +92637,7 @@
         208,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb67e",
@@ -92545,6 +92650,7 @@
         230,
         60
       ],
+      "comment_inline": "increase the indent",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_ovf",
@@ -92560,6 +92666,7 @@
       "labels": [
         "cb67e"
       ],
+      "comment_inline": "UNTIL token?",
       "xref_summaries": [
         "&b67e referenced 1 time by &b67a"
       ],
@@ -92576,6 +92683,7 @@
         208,
         6
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb688",
@@ -92588,6 +92696,7 @@
         166,
         60
       ],
+      "comment_inline": "indent active?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_ovf",
@@ -92600,6 +92709,7 @@
         240,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb688",
@@ -92612,6 +92722,7 @@
         198,
         60
       ],
+      "comment_inline": "decrease the indent",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwb_ovf",
@@ -92628,6 +92739,7 @@
       "labels": [
         "cb688"
       ],
+      "comment_inline": "De-tokenise and print the character",
       "xref_summaries": [
         "&b688 referenced 2 times by &b680, &b684"
       ],
@@ -92646,6 +92758,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -92655,6 +92768,7 @@
         208,
         171
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb639",
