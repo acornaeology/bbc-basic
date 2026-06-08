@@ -1827,6 +1827,12 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0x92fa, 'eval_real', title='Evaluate an expression as a real',
+             description='Evaluate a factor and ensure the result is real, '
+                         'converting an integer with int_to_fwa.')
+d.subroutine(0x92fd, 'ensure_real', title='Coerce the result to a real',
+             description='Type mismatch for a string, leave a real, or '
+                         'convert an integer to FWA.')
 d.subroutine(0x97df, 'check_line_number',
              title='Test for an embedded line number',
              description='If the text pointer is at a line-number token, '
@@ -7847,6 +7853,65 @@ d.comment(0x9118, '...', align=Align.INLINE)
 d.comment(0x911a, 'integer type', align=Align.INLINE)
 d.comment(0x911c, '...', align=Align.INLINE)
 d.comment(0x911e, 'assign the address to the variable', align=Align.INLINE)
+
+# language_entry (&8000): the ROM language entry point.
+d.comment(0x8000, 'A=1: language start?', align=Align.INLINE)
+d.comment(0x8002, 'yes: start BASIC', align=Align.INLINE)
+d.comment(0x8004, 'otherwise return', align=Align.INLINE)
+
+# fn_abs (&AD6A): ABS(x).
+d.comment(0xad6a, 'Evaluate the argument', align=Align.INLINE)
+d.comment(0xad6d, 'zero: return it', align=Align.INLINE)
+d.comment(0xad6f, 'real: clear the sign', align=Align.INLINE)
+
+# fn_himem (&AF03): HIMEM.
+d.comment(0xaf03, 'HIMEM low', align=Align.INLINE)
+d.comment(0xaf05, 'HIMEM high', align=Align.INLINE)
+d.comment(0xaf07, 'return as an integer', align=Align.INLINE)
+
+# stmt_clg (&8EBD): CLG -> VDU 16.
+d.comment(0x8ebd, 'Check the statement ends', align=Align.INLINE)
+d.comment(0x8ec0, 'VDU 16 (clear graphics)', align=Align.INLINE)
+d.comment(0x8ec2, 'send it', align=Align.INLINE)
+
+# stmt_clear (&928D): CLEAR.
+d.comment(0x928d, 'Check the statement ends', align=Align.INLINE)
+d.comment(0x9290, 'Clear variables, heap and stack', align=Align.INLINE)
+d.comment(0x9293, 'next statement', align=Align.INLINE)
+
+# coerce_to_integer (&92F0) / eval_real (&92FA) / ensure_real (&92FD).
+d.comment(0x92f0, 'string?', align=Align.INLINE)
+d.comment(0x92f2, 'integer: return', align=Align.INLINE)
+d.comment(0x92f4, 'real: convert to integer', align=Align.INLINE)
+d.comment(0x92f7, 'Type mismatch error', align=Align.INLINE)
+d.comment(0x92fa, 'Evaluate a factor', align=Align.INLINE)
+d.comment(0x92fd, 'string?', align=Align.INLINE)
+d.comment(0x92ff, 'real: return', align=Align.INLINE)
+d.comment(0x9301, 'integer: convert to real', align=Align.INLINE)
+
+# sub_c92e3: evaluate a factor as an integer.
+d.comment(0x92e3, 'Evaluate a factor', align=Align.INLINE)
+d.comment(0x92e6, 'string: Type mismatch', align=Align.INLINE)
+d.comment(0x92e8, 'real: convert to integer', align=Align.INLINE)
+d.comment(0x92ea, 'Return', align=Align.INLINE)
+d.comment(0x92eb, 'Expect "=" and evaluate', align=Align.INLINE)
+d.comment(0x92ee, 'Result type, then coerce to integer', align=Align.INLINE)
+
+# stmt_report (&BFE4): REPORT - print the last error message.
+d.comment(0xbfe4, 'Check the statement ends', align=Align.INLINE)
+d.comment(0xbfe7, 'Newline', align=Align.INLINE)
+d.comment(0xbfea, 'From offset 1', align=Align.INLINE)
+d.comment(0xbfec, 'Error message byte', align=Align.INLINE)
+d.comment(0xbfee, 'terminator: done', align=Align.INLINE)
+d.comment(0xbff0, 'print it', align=Align.INLINE)
+d.comment(0xbff3, 'next', align=Align.INLINE)
+d.comment(0xbff4, 'loop', align=Align.INLINE)
+d.comment(0xbff6, 'next statement', align=Align.INLINE)
+
+# FP constant data (high part of pi/2) mis-traced as code.
+d.comment(0xaa59, 'pi/2 high part: constant byte', align=Align.INLINE)
+d.comment(0xaa5b, '...', align=Align.INLINE)
+d.comment(0xaa5d, '...', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.

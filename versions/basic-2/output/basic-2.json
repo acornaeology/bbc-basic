@@ -1709,6 +1709,19 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 37626,
+      "name": "eval_real",
+      "title": "Evaluate an expression as a real",
+      "description": "Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.",
+      "fall_through": true
+    },
+    {
+      "addr": 37629,
+      "name": "ensure_real",
+      "title": "Coerce the result to a real",
+      "description": "Type mismatch for a string, leave a real, or convert an integer to FWA."
+    },
+    {
       "addr": 38879,
       "name": "check_line_number",
       "title": "Test for an embedded line number",
@@ -2376,6 +2389,7 @@
       "comments_before_label": [
         "# BASIC v&01"
       ],
+      "comment_inline": "A=1: language start?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#1"
@@ -2386,6 +2400,7 @@
         240,
         31
       ],
+      "comment_inline": "yes: start BASIC",
       "type": "code",
       "mnemonic": "beq",
       "operand": "language_startup",
@@ -2397,6 +2412,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "otherwise return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -26325,6 +26341,7 @@
       "labels": [
         "stmt_clg"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -26337,6 +26354,7 @@
         169,
         16
       ],
+      "comment_inline": "VDU 16 (clear graphics)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&10"
@@ -26347,6 +26365,7 @@
         208,
         8
       ],
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8ecc",
@@ -32548,6 +32567,7 @@
       "labels": [
         "stmt_clear"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -32561,6 +32581,7 @@
         32,
         189
       ],
+      "comment_inline": "Clear variables, heap and stack",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_vars_heap_stack",
@@ -32573,6 +32594,7 @@
         240,
         245
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c928a",
@@ -33093,6 +33115,7 @@
       "labels": [
         "sub_c92e3"
       ],
+      "comment_inline": "Evaluate a factor",
       "xref_summaries": [
         "&92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc"
       ],
@@ -33120,6 +33143,7 @@
         240,
         15
       ],
+      "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c92f7",
@@ -33132,6 +33156,7 @@
         48,
         10
       ],
+      "comment_inline": "real: convert to integer",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "c92f4",
@@ -33146,6 +33171,7 @@
       "labels": [
         "return_9"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&92ea referenced 2 times by &92f2, &92ff"
       ],
@@ -33166,6 +33192,7 @@
       "labels": [
         "sub_c92eb"
       ],
+      "comment_inline": "Expect \"=\" and evaluate",
       "xref_summaries": [
         "&92eb referenced 4 times by &925d, &926f, &9283, &92c9"
       ],
@@ -33190,6 +33217,7 @@
       "labels": [
         "sub_c92ee"
       ],
+      "comment_inline": "Result type, then coerce to integer",
       "xref_summaries": [
         "&92ee referenced 6 times by &8ed5, &93fd, &b592, &bbb7, &bf37, &bf62"
       ],
@@ -33216,6 +33244,7 @@
       "labels": [
         "coerce_to_integer"
       ],
+      "comment_inline": "string?",
       "xref_summaries": [
         "&92f0 referenced 21 times by &8824, &8e2e, &92e0, &9688, &974a, &976f, &99bf, &99ce, &9b3e, &9b59, &9b6c, &9b7b, &9b85, &ab4d, &ad0c, &af0f, &afdd, &afff, &b05e, &b921, &b9a2"
       ],
@@ -33254,6 +33283,7 @@
         16,
         246
       ],
+      "comment_inline": "integer: return",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "return_9",
@@ -33270,6 +33300,7 @@
       "labels": [
         "c92f4"
       ],
+      "comment_inline": "real: convert to integer",
       "xref_summaries": [
         "&92f4 referenced 1 time by &92e8"
       ],
@@ -33292,6 +33323,7 @@
       "labels": [
         "c92f7"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&92f7 referenced 3 times by &92e6, &92f0, &92fd"
       ],
@@ -33314,8 +33346,9 @@
         173
       ],
       "labels": [
-        "sub_c92fa"
+        "eval_real"
       ],
+      "comment_inline": "Evaluate a factor",
       "xref_summaries": [
         "&92fa referenced 11 times by &9e3c, &a6be, &a7b4, &a7fe, &a8da, &a907, &a98d, &a998, &aa91, &abb1, &abc2"
       ],
@@ -33345,8 +33378,9 @@
         248
       ],
       "labels": [
-        "sub_c92fd"
+        "ensure_real"
       ],
+      "comment_inline": "string?",
       "xref_summaries": [
         "&92fd referenced 7 times by &9a59, &9d29, &9de6, &9df2, &9e36, &b852, &b870"
       ],
@@ -33371,6 +33405,7 @@
         48,
         233
       ],
+      "comment_inline": "real: return",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "return_9",
@@ -33384,6 +33419,7 @@
         190,
         162
       ],
+      "comment_inline": "integer: convert to real",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "int_to_fwa",
@@ -46339,9 +46375,9 @@
       "comment_inline": "ensure real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 39516,
@@ -51185,9 +51221,9 @@
       "comment_inline": "ensure the operand is real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 40236,
@@ -52485,9 +52521,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 40425,
@@ -52549,9 +52585,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 40437,
@@ -53019,9 +53055,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 40505,
@@ -53047,9 +53083,9 @@
       "comment_inline": "evaluate the exponent as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 40511,
@@ -68326,9 +68362,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 42689,
@@ -69969,9 +70005,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 42935,
@@ -70493,9 +70529,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43009,
@@ -71658,9 +71694,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43229,
@@ -71918,9 +71954,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43274,
@@ -72541,9 +72577,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43408,
@@ -72599,9 +72635,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43419,
@@ -73697,6 +73733,7 @@
         129,
         201
       ],
+      "comment_inline": "pi/2 high part: constant byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(l00c9,x)",
@@ -73709,6 +73746,7 @@
         16,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caa5d",
@@ -73723,6 +73761,7 @@
       "labels": [
         "caa5d"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&aa5d referenced 1 time by &aa5b"
       ],
@@ -73891,9 +73930,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43668,
@@ -75508,9 +75547,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43956,
@@ -75617,9 +75656,9 @@
       "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fa",
+      "operand": "eval_real",
       "target": 37626,
-      "target_label": "sub_c92fa"
+      "target_label": "eval_real"
     },
     {
       "addr": 43973,
@@ -78409,6 +78448,7 @@
       "labels": [
         "fn_abs"
       ],
+      "comment_inline": "Evaluate the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -78421,6 +78461,7 @@
         240,
         248
       ],
+      "comment_inline": "zero: return it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cad67",
@@ -78433,6 +78474,7 @@
         48,
         6
       ],
+      "comment_inline": "real: clear the sign",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cad77",
@@ -81218,6 +81260,7 @@
       "labels": [
         "fn_himem"
       ],
+      "comment_inline": "HIMEM low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_himem",
@@ -81230,6 +81273,7 @@
         164,
         7
       ],
+      "comment_inline": "HIMEM high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_himem_1",
@@ -81243,6 +81287,7 @@
         234,
         174
       ],
+      "comment_inline": "return as an integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "iwa_from_ya",
@@ -96673,9 +96718,9 @@
       "comment_inline": "ensure it is real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 47189,
@@ -96837,9 +96882,9 @@
       "comment_inline": "ensure it is real",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92fd",
+      "operand": "ensure_real",
       "target": 37629,
-      "target_label": "sub_c92fd"
+      "target_label": "ensure_real"
     },
     {
       "addr": 47219,
@@ -109415,6 +109460,7 @@
       "labels": [
         "stmt_report"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -109428,6 +109474,7 @@
         37,
         188
       ],
+      "comment_inline": "Newline",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc25",
@@ -109440,6 +109487,7 @@
         160,
         1
       ],
+      "comment_inline": "From offset 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -109453,6 +109501,7 @@
       "labels": [
         "loop_cbfec"
       ],
+      "comment_inline": "Error message byte",
       "xref_summaries": [
         "&bfec referenced 1 time by &bff4"
       ],
@@ -109471,6 +109520,7 @@
         240,
         6
       ],
+      "comment_inline": "terminator: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbff6",
@@ -109484,6 +109534,7 @@
         14,
         181
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_token",
@@ -109495,6 +109546,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -109504,6 +109556,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbfec",
@@ -109520,6 +109573,7 @@
       "labels": [
         "cbff6"
       ],
+      "comment_inline": "next statement",
       "xref_summaries": [
         "&bff6 referenced 1 time by &bfee"
       ],

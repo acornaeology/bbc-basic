@@ -368,9 +368,9 @@ oscli            = &fff7
 ; | 2 | Request next byte of softkey expansion (Electron) |
 ; | 3 | Request length of softkey expansion (Electron)    |
 .language_entry
-    cmp #1                                                            ; 8000: c9 01       ..    
-    beq language_startup                                              ; 8002: f0 1f       ..    
-    rts                                                               ; 8004: 60          `     
+    cmp #1                                                            ; 8000: c9 01       ..       ; A=1: language start?
+    beq language_startup                                              ; 8002: f0 1f       ..       ; yes: start BASIC
+    rts                                                               ; 8004: 60          `        ; otherwise return
     equb &ea                                                          ; 8005: ea          .     
 ; ***************************************************************************************
 ; ROM identification
@@ -2831,9 +2831,9 @@ l848a = sub_c847b+15
 ;
 ; Clear the graphics window to the graphics background colour. CLG.
 .stmt_clg
-    jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.   
-    lda #&10                                                          ; 8ec0: a9 10       ..    
-    bne c8ecc                                                         ; 8ec2: d0 08       ..    
+    jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.      ; Check the statement ends
+    lda #&10                                                          ; 8ec0: a9 10       ..       ; VDU 16 (clear graphics)
+    bne c8ecc                                                         ; 8ec2: d0 08       ..       ; send it
 ; ***************************************************************************************
 ; CLS
 ;
@@ -3468,9 +3468,9 @@ l848a = sub_c847b+15
 ;
 ; Discard all variables and the stack. CLEAR.
 .stmt_clear
-    jsr check_end_of_statement                                        ; 928d: 20 57 98     W.   
-    jsr clear_vars_heap_stack                                         ; 9290: 20 20 bd      .   
-    beq c928a                                                         ; 9293: f0 f5       ..    
+    jsr check_end_of_statement                                        ; 928d: 20 57 98     W.      ; Check the statement ends
+    jsr clear_vars_heap_stack                                         ; 9290: 20 20 bd      .      ; Clear variables, heap and stack
+    beq c928a                                                         ; 9293: f0 f5       ..       ; next statement
 ; ***************************************************************************************
 ; TRACE
 ;
@@ -3530,18 +3530,18 @@ l848a = sub_c847b+15
     jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..      ; ...and coerce to integer
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
 .sub_c92e3
-    jsr eval_factor                                                   ; 92e3: 20 ec ad     ..   
-    beq c92f7                                                         ; 92e6: f0 0f       ..    
-    bmi c92f4                                                         ; 92e8: 30 0a       0.    
+    jsr eval_factor                                                   ; 92e3: 20 ec ad     ..      ; Evaluate a factor
+    beq c92f7                                                         ; 92e6: f0 0f       ..       ; string: Type mismatch
+    bmi c92f4                                                         ; 92e8: 30 0a       0.       ; real: convert to integer
 ; &92ea referenced 2 times by &92f2, &92ff
 .return_9
-    rts                                                               ; 92ea: 60          `     
+    rts                                                               ; 92ea: 60          `        ; Return
 ; &92eb referenced 4 times by &925d, &926f, &9283, &92c9
 .sub_c92eb
-    jsr sub_c9807                                                     ; 92eb: 20 07 98     ..   
+    jsr sub_c9807                                                     ; 92eb: 20 07 98     ..      ; Expect "=" and evaluate
 ; &92ee referenced 6 times by &8ed5, &93fd, &b592, &bbb7, &bf37, &bf62
 .sub_c92ee
-    lda zp_var_type                                                   ; 92ee: a5 27       .'    
+    lda zp_var_type                                                   ; 92ee: a5 27       .'       ; Result type, then coerce to integer
 ; ***************************************************************************************
 ; Coerce the current value to an integer
 ;
@@ -3553,22 +3553,30 @@ l848a = sub_c847b+15
 ;     A: value type from zp_var_type (&27)
 ; &92f0 referenced 21 times by &8824, &8e2e, &92e0, &9688, &974a, &976f, &99bf, &99ce, &9b3e, &9b59, &9b6c, &9b7b, &9b85, &ab4d, &ad0c, &af0f, &afdd, &afff, &b05e, &b921, &b9a2
 .coerce_to_integer
-    beq c92f7                                                         ; 92f0: f0 05       ..    
-    bpl return_9                                                      ; 92f2: 10 f6       ..    
+    beq c92f7                                                         ; 92f0: f0 05       ..       ; string?
+    bpl return_9                                                      ; 92f2: 10 f6       ..       ; integer: return
 ; &92f4 referenced 1 time by &92e8
 .c92f4
-    jmp fwa_to_int                                                    ; 92f4: 4c e4 a3    L..   
+    jmp fwa_to_int                                                    ; 92f4: 4c e4 a3    L..      ; real: convert to integer
 ; &92f7 referenced 3 times by &92e6, &92f0, &92fd
 .c92f7
-    jmp err_type_mismatch                                             ; 92f7: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 92f7: 4c 0e 8c    L..      ; Type mismatch error
+; ***************************************************************************************
+; Evaluate an expression as a real
+;
+; Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.
 ; &92fa referenced 11 times by &9e3c, &a6be, &a7b4, &a7fe, &a8da, &a907, &a98d, &a998, &aa91, &abb1, &abc2
-.sub_c92fa
-    jsr eval_factor                                                   ; 92fa: 20 ec ad     ..   
+.eval_real
+    jsr eval_factor                                                   ; 92fa: 20 ec ad     ..      ; Evaluate a factor
+; ***************************************************************************************
+; Coerce the result to a real
+;
+; Type mismatch for a string, leave a real, or convert an integer to FWA.
 ; &92fd referenced 7 times by &9a59, &9d29, &9de6, &9df2, &9e36, &b852, &b870
-.sub_c92fd
-    beq c92f7                                                         ; 92fd: f0 f8       ..    
-    bmi return_9                                                      ; 92ff: 30 e9       0.    
-    jmp int_to_fwa                                                    ; 9301: 4c be a2    L..   
+.ensure_real
+    beq c92f7                                                         ; 92fd: f0 f8       ..       ; string?
+    bmi return_9                                                      ; 92ff: 30 e9       0.       ; real: return
+    jmp int_to_fwa                                                    ; 9301: 4c be a2    L..      ; integer: convert to real
 ; ***************************************************************************************
 ; PROC
 ;
@@ -4977,7 +4985,7 @@ l848a = sub_c847b+15
     jsr eval_add_sub                                                  ; 9a53: 20 42 9c     B.      ; evaluate the right operand
     stx zp_var_type                                                   ; 9a56: 86 27       .'       ; save the operator
     tay                                                               ; 9a58: a8          .        ; type
-    jsr sub_c92fd                                                     ; 9a59: 20 fd 92     ..      ; ensure real
+    jsr ensure_real                                                   ; 9a59: 20 fd 92     ..      ; ensure real
     jsr unstack_real                                                  ; 9a5c: 20 7e bd     ~.      ; unstack the left operand
 ; ***************************************************************************************
 ; Compare FWA with a fp variable
@@ -5505,7 +5513,7 @@ l848a = sub_c847b+15
     jsr eval_power                                                    ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
     stx zp_var_type                                                   ; 9d26: 86 27       .'       ; remember the operand type
     tay                                                               ; 9d28: a8          .        ; ...
-    jsr sub_c92fd                                                     ; 9d29: 20 fd 92     ..      ; ensure the operand is real
+    jsr ensure_real                                                   ; 9d29: 20 fd 92     ..      ; ensure the operand is real
 ; &9d2c referenced 1 time by &9d1a
 .c9d2c
     jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.      ; Pop the stacked left real
@@ -5647,12 +5655,12 @@ l848a = sub_c847b+15
 ; &9de5 referenced 1 time by &9dda
 .c9de5
     tay                                                               ; 9de5: a8          .        ; Divide: ensure the left operand is real
-    jsr sub_c92fd                                                     ; 9de6: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9de6: 20 fd 92     ..      ; ...
     jsr stack_real                                                    ; 9de9: 20 51 bd     Q.      ; stack it
     jsr eval_power                                                    ; 9dec: 20 20 9e      .      ; evaluate the right operand
     stx zp_var_type                                                   ; 9def: 86 27       .'       ; remember the operator
     tay                                                               ; 9df1: a8          .        ; ensure the right operand is real
-    jsr sub_c92fd                                                     ; 9df2: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9df2: 20 fd 92     ..      ; ...
     jsr unstack_real                                                  ; 9df5: 20 7e bd     ~.      ; pop the left operand as the fp operand
     jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..      ; FWA = left / right
     ldx zp_var_type                                                   ; 9dfb: a6 27       .'       ; restore the operator
@@ -5724,9 +5732,9 @@ l848a = sub_c847b+15
 ; &9e35 referenced 1 time by &9e32
 .c9e35
     tay                                                               ; 9e35: a8          .        ; Ensure the base is real
-    jsr sub_c92fd                                                     ; 9e36: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9e36: 20 fd 92     ..      ; ...
     jsr stack_real                                                    ; 9e39: 20 51 bd     Q.      ; stack the base
-    jsr sub_c92fa                                                     ; 9e3c: 20 fa 92     ..      ; evaluate the exponent as a real
+    jsr eval_real                                                     ; 9e3c: 20 fa 92     ..      ; evaluate the exponent as a real
     lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0       ; Exponent magnitude
     cmp #&87                                                          ; 9e41: c9 87       ..       ; large (>= 2^7)?
     bcs c9e88                                                         ; 9e43: b0 43       .C       ; yes: use exp(y*ln x)
@@ -7355,7 +7363,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = tan(FWA), argument in radians. Pure routine at &A6C1.
 .fn_tan
-    jsr sub_c92fa                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
     lda l004a                                                         ; a6c4: a5 4a       .J       ; save the quadrant
     pha                                                               ; a6c6: 48          H        ; ...
@@ -7511,7 +7519,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = square root of FWA. Pure routine at &A7B7.
 .fn_sqr
-    jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a7b4: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a7b7 referenced 1 time by &a9c0
 .ca7b7
     jsr fwa_sign                                                      ; a7b7: 20 da a1     ..      ; Sign of the argument
@@ -7576,7 +7584,7 @@ l848a = sub_c847b+15
 ; FWA = natural log of FWA. Pure routine at &A801.
 ; &a7fe referenced 1 time by &aba8
 .fn_ln
-    jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a7fe: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a801 referenced 1 time by &9e75
 .sub_ca801
     jsr fwa_sign                                                      ; a801: 20 da a1     ..      ; Sign of x
@@ -7693,7 +7701,7 @@ l848a = sub_c847b+15
 ; FWA = arcsin(FWA), result in radians. Pure routine at &A8DD.
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
-    jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a8da: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr fwa_sign                                                      ; a8dd: 20 da a1     ..      ; Sign of the argument
     bpl ca8ea                                                         ; a8e0: 10 08       ..       ; positive: compute directly
     lsr zp_fwa_sign                                                   ; a8e2: 46 2e       F.       ; negative: take |x|...
@@ -7721,7 +7729,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = arctan(FWA), result in radians. Pure routine at &A90A.
 .fn_atn
-    jsr sub_c92fa                                                     ; a907: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a907: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a90a referenced 1 time by &a8fb
 .ca90a
     jsr fwa_sign                                                      ; a90a: 20 da a1     ..      ; Sign of the argument
@@ -7784,7 +7792,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = cos(FWA), argument in radians. Pure routine at &A990.
 .fn_cos
-    jsr sub_c92fa                                                     ; a98d: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a98d: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a990: 20 d3 a9     ..      ; Compute the SIN/COS kernel
     inc l004a                                                         ; a993: e6 4a       .J       ; Shift the quadrant: cos x = sin(x + pi/2)
     jmp ca99e                                                         ; a995: 4c 9e a9    L..      ; Finish (shared with SIN)
@@ -7793,7 +7801,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = sin(FWA), argument in radians. Pure routine at &A99B.
 .fn_sin
-    jsr sub_c92fa                                                     ; a998: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; a998: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a99b: 20 d3 a9     ..      ; Range-reduce: leaves the angle in FWA, quadrant in &4A
 ; &a99e referenced 3 times by &a6cf, &a6db, &a995
 .ca99e
@@ -7904,11 +7912,11 @@ l848a = sub_c847b+15
 .point_const_half_pi
     lda #&63 ; 'c'                                                    ; aa55: a9 63       .c       ; pi/2 constant: low byte
     bne caa4e                                                         ; aa57: d0 f5       ..       ; ...(shared tail)
-    sta (l00c9,x)                                                     ; aa59: 81 c9       ..    
-    bpl caa5d                                                         ; aa5b: 10 00       ..    
+    sta (l00c9,x)                                                     ; aa59: 81 c9       ..       ; pi/2 high part: constant byte
+    bpl caa5d                                                         ; aa5b: 10 00       ..       ; ...
 ; &aa5d referenced 1 time by &aa5b
 .caa5d
-    brk                                                               ; aa5d: 00          .     
+    brk                                                               ; aa5d: 00          .        ; ...
     equb &6f, &15                                                     ; aa5e: 6f 15       o.    
     equs "wza"                                                        ; aa60: 77 7a 61    wza   
     equb &81, &49, &0f, &da, &a2, &7b, &0e, &fa, &35, &12, &86, &65   ; aa63: 81 49 0f... .I....
@@ -7923,7 +7931,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = e to the power FWA. Pure routine at &AA94.
 .fn_exp
-    jsr sub_c92fa                                                     ; aa91: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; aa91: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &aa94 referenced 1 time by &9e7b
 .sub_caa94
     lda zp_fwa_exp                                                    ; aa94: a5 30       .0       ; Exponent of x
@@ -8109,7 +8117,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = FWA degrees expressed in radians. Pure routine at &ABB4.
 .fn_rad
-    jsr sub_c92fa                                                     ; abb1: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; abb1: 20 fa 92     ..      ; Evaluate the argument as a real
     ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h       ; Point at the constant pi/180: low byte
     lda #&aa                                                          ; abb6: a9 aa       ..       ; high byte
 ; &abb8 referenced 2 times by &abaf, &abc9
@@ -8124,7 +8132,7 @@ l848a = sub_c847b+15
 ;
 ; FWA = FWA radians expressed in degrees. Pure routine at &ABC5.
 .fn_deg
-    jsr sub_c92fa                                                     ; abc2: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr eval_real                                                     ; abc2: 20 fa 92     ..      ; Evaluate the argument as a real
     ldy #&6d ; 'm'                                                    ; abc5: a0 6d       .m       ; Point at the constant 180/pi: low byte
     lda #&aa                                                          ; abc7: a9 aa       ..       ; high byte
     bne cabb8                                                         ; abc9: d0 ed       ..       ; Multiply FWA by it (radians -> degrees)
@@ -8453,9 +8461,9 @@ l848a = sub_c847b+15
 ;
 ; Absolute value of a number. ABS numeric.
 .fn_abs
-    jsr eval_factor                                                   ; ad6a: 20 ec ad     ..   
-    beq cad67                                                         ; ad6d: f0 f8       ..    
-    bmi cad77                                                         ; ad6f: 30 06       0.    
+    jsr eval_factor                                                   ; ad6a: 20 ec ad     ..      ; Evaluate the argument
+    beq cad67                                                         ; ad6d: f0 f8       ..       ; zero: return it
+    bmi cad77                                                         ; ad6f: 30 06       0.       ; real: clear the sign
 ; ***************************************************************************************
 ; Make the integer accumulator positive
 ;
@@ -8821,9 +8829,9 @@ l848a = sub_c847b+15
 ;
 ; Read HIMEM, the top of memory for BASIC. HIMEM.
 .fn_himem
-    lda zp_himem                                                      ; af03: a5 06       ..    
-    ldy zp_himem_1                                                    ; af05: a4 07       ..    
-    jmp iwa_from_ya                                                   ; af07: 4c ea ae    L..   
+    lda zp_himem                                                      ; af03: a5 06       ..       ; HIMEM low
+    ldy zp_himem_1                                                    ; af05: a4 07       ..       ; HIMEM high
+    jmp iwa_from_ya                                                   ; af07: 4c ea ae    L..      ; return as an integer
 ; &af0a referenced 1 time by &af4f
 .rnd_dispatch
     inc zp_text_ptr2_off                                              ; af0a: e6 1b       ..       ; Skip the "("
@@ -10491,7 +10499,7 @@ l848a = sub_c847b+15
 ; &b84f referenced 1 time by &b7f3
 .cb84f
     jsr eval_or_eor                                                   ; b84f: 20 29 9b     ).      ; Evaluate the limit
-    jsr sub_c92fd                                                     ; b852: 20 fd 92     ..      ; ensure it is real
+    jsr ensure_real                                                   ; b852: 20 fd 92     ..      ; ensure it is real
     lda zp_for_level                                                  ; b855: a5 26       .&       ; Point at frame +8 (limit slot)
     clc                                                               ; b857: 18          .        ; ...
     adc #8                                                            ; b858: 69 08       i.       ; ...
@@ -10504,7 +10512,7 @@ l848a = sub_c847b+15
     cmp #&88                                                          ; b869: c9 88       ..       ; STEP token?
     bne cb875                                                         ; b86b: d0 08       ..       ; no: use the default
     jsr eval_or_eor                                                   ; b86d: 20 29 9b     ).      ; Evaluate the step
-    jsr sub_c92fd                                                     ; b870: 20 fd 92     ..      ; ensure it is real
+    jsr ensure_real                                                   ; b870: 20 fd 92     ..      ; ensure it is real
     ldy zp_text_ptr2_off                                              ; b873: a4 1b       ..       ; ...
 ; &b875 referenced 1 time by &b86b
 .cb875
@@ -11900,19 +11908,19 @@ l848a = sub_c847b+15
 ;
 ; Print the message for the last error. REPORT.
 .stmt_report
-    jsr check_end_of_statement                                        ; bfe4: 20 57 98     W.   
-    jsr sub_cbc25                                                     ; bfe7: 20 25 bc     %.   
-    ldy #1                                                            ; bfea: a0 01       ..    
+    jsr check_end_of_statement                                        ; bfe4: 20 57 98     W.      ; Check the statement ends
+    jsr sub_cbc25                                                     ; bfe7: 20 25 bc     %.      ; Newline
+    ldy #1                                                            ; bfea: a0 01       ..       ; From offset 1
 ; &bfec referenced 1 time by &bff4
 .loop_cbfec
-    lda (zp_error_ptr),y                                              ; bfec: b1 fd       ..    
-    beq cbff6                                                         ; bfee: f0 06       ..    
-    jsr print_token                                                   ; bff0: 20 0e b5     ..   
-    iny                                                               ; bff3: c8          .     
-    bne loop_cbfec                                                    ; bff4: d0 f6       ..    
+    lda (zp_error_ptr),y                                              ; bfec: b1 fd       ..       ; Error message byte
+    beq cbff6                                                         ; bfee: f0 06       ..       ; terminator: done
+    jsr print_token                                                   ; bff0: 20 0e b5     ..      ; print it
+    iny                                                               ; bff3: c8          .        ; next
+    bne loop_cbfec                                                    ; bff4: d0 f6       ..       ; loop
 ; &bff6 referenced 1 time by &bfee
 .cbff6
-    jmp statement_loop                                                ; bff6: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bff6: 4c 9b 8b    L..      ; next statement
     equb &00                                                          ; bff9: 00          .     
     equs "Roger"                                                      ; bffa: 52 6f 67... Rog...
     equb &00                                                          ; bfff: 00          .     
@@ -11988,10 +11996,10 @@ save pydis_start, pydis_end
 ;     stack_real:                 12
 ;     cae56:                      11
 ;     eval_expr:                  11
+;     eval_real:                  11
 ;     iwa_from_ya:                11
 ;     osbyte:                     11
 ;     output_char:                11
-;     sub_c92fa:                  11
 ;     unstack_real:               11
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
@@ -12024,10 +12032,10 @@ save pydis_start, pydis_end
 ;     c8b96:                       7
 ;     c982a:                       7
 ;     c9bb5:                       7
+;     ensure_real:                 7
 ;     fwa_pack_var:                7
 ;     fwb_unpack_var:              7
 ;     immediate_loop:              7
-;     sub_c92fd:                   7
 ;     zp_count:                    7
 ;     assign_number:               6
 ;     c8af3:                       6
@@ -14096,8 +14104,6 @@ save pydis_start, pydis_end
 ;     sub_c92e3
 ;     sub_c92eb
 ;     sub_c92ee
-;     sub_c92fa
-;     sub_c92fd
 ;     sub_c9456
 ;     sub_c94ed
 ;     sub_c9539
