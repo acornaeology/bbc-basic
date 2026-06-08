@@ -2552,60 +2552,60 @@ l848a = sub_c847b+15
     jmp cbde1                                                         ; 8d28: 4c e1 bd    L..      ; drop them from the stack
 ; &8d2b referenced 1 time by &8d9f
 .loop_c8d2b
-    dec zp_text_ptr_off                                               ; 8d2b: c6 0a       ..    
-    jsr sub_cbfa9                                                     ; 8d2d: 20 a9 bf     ..   
+    dec zp_text_ptr_off                                               ; 8d2b: c6 0a       ..       ; Back up over "#"
+    jsr sub_cbfa9                                                     ; 8d2d: 20 a9 bf     ..      ; Get the file handle
 ; &8d30 referenced 4 times by &8d55, &8d62, &8d6a, &8d75
 .c8d30
-    tya                                                               ; 8d30: 98          .     
-    pha                                                               ; 8d31: 48          H     
-    jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..   
-    cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,    
-    bne c8d77                                                         ; 8d37: d0 3e       .>    
-    jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).   
-    jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..   
-    pla                                                               ; 8d3f: 68          h     
-    tay                                                               ; 8d40: a8          .     
-    lda zp_var_type                                                   ; 8d41: a5 27       .'    
-    jsr osbput                                                        ; 8d43: 20 d4 ff     ..   
-    tax                                                               ; 8d46: aa          .     
-    beq c8d64                                                         ; 8d47: f0 1b       ..    
-    bmi c8d57                                                         ; 8d49: 30 0c       0.    
-    ldx #3                                                            ; 8d4b: a2 03       ..    
+    tya                                                               ; 8d30: 98          .        ; Save the handle
+    pha                                                               ; 8d31: 48          H        ; ...
+    jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,       ; ',' another value?
+    bne c8d77                                                         ; 8d37: d0 3e       .>       ; no: done
+    jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).      ; Evaluate the value
+    jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..      ; pack it (in case real)
+    pla                                                               ; 8d3f: 68          h        ; Recover the handle
+    tay                                                               ; 8d40: a8          .        ; ...
+    lda zp_var_type                                                   ; 8d41: a5 27       .'       ; Type byte
+    jsr osbput                                                        ; 8d43: 20 d4 ff     ..      ; write it
+    tax                                                               ; 8d46: aa          .        ; ...
+    beq c8d64                                                         ; 8d47: f0 1b       ..       ; string?
+    bmi c8d57                                                         ; 8d49: 30 0c       0.       ; real?
+    ldx #3                                                            ; 8d4b: a2 03       ..       ; Integer: 4 bytes
 ; &8d4d referenced 1 time by &8d53
 .loop_c8d4d
-    lda zp_iwa,x                                                      ; 8d4d: b5 2a       .*    
-    jsr osbput                                                        ; 8d4f: 20 d4 ff     ..   
-    dex                                                               ; 8d52: ca          .     
-    bpl loop_c8d4d                                                    ; 8d53: 10 f8       ..    
-    bmi c8d30                                                         ; 8d55: 30 d9       0.    
+    lda zp_iwa,x                                                      ; 8d4d: b5 2a       .*       ; Write a byte
+    jsr osbput                                                        ; 8d4f: 20 d4 ff     ..      ; ...
+    dex                                                               ; 8d52: ca          .        ; ...
+    bpl loop_c8d4d                                                    ; 8d53: 10 f8       ..       ; loop
+    bmi c8d30                                                         ; 8d55: 30 d9       0.       ; next value
 ; &8d57 referenced 1 time by &8d49
 .c8d57
-    ldx #4                                                            ; 8d57: a2 04       ..    
+    ldx #4                                                            ; 8d57: a2 04       ..       ; Real: 5 bytes
 ; &8d59 referenced 1 time by &8d60
 .loop_c8d59
-    lda fp_temp1,x                                                    ; 8d59: bd 6c 04    .l.   
-    jsr osbput                                                        ; 8d5c: 20 d4 ff     ..   
-    dex                                                               ; 8d5f: ca          .     
-    bpl loop_c8d59                                                    ; 8d60: 10 f7       ..    
-    bmi c8d30                                                         ; 8d62: 30 cc       0.    
+    lda fp_temp1,x                                                    ; 8d59: bd 6c 04    .l.      ; Write a byte
+    jsr osbput                                                        ; 8d5c: 20 d4 ff     ..      ; ...
+    dex                                                               ; 8d5f: ca          .        ; ...
+    bpl loop_c8d59                                                    ; 8d60: 10 f7       ..       ; loop
+    bmi c8d30                                                         ; 8d62: 30 cc       0.       ; next value
 ; &8d64 referenced 1 time by &8d47
 .c8d64
-    lda zp_strbuf_len                                                 ; 8d64: a5 36       .6    
-    jsr osbput                                                        ; 8d66: 20 d4 ff     ..   
-    tax                                                               ; 8d69: aa          .     
-    beq c8d30                                                         ; 8d6a: f0 c4       ..    
+    lda zp_strbuf_len                                                 ; 8d64: a5 36       .6       ; String: write the length
+    jsr osbput                                                        ; 8d66: 20 d4 ff     ..      ; ...
+    tax                                                               ; 8d69: aa          .        ; ...
+    beq c8d30                                                         ; 8d6a: f0 c4       ..       ; empty
 ; &8d6c referenced 1 time by &8d73
 .loop_c8d6c
-    lda l05ff,x                                                       ; 8d6c: bd ff 05    ...   
-    jsr osbput                                                        ; 8d6f: 20 d4 ff     ..   
-    dex                                                               ; 8d72: ca          .     
-    bne loop_c8d6c                                                    ; 8d73: d0 f7       ..    
-    beq c8d30                                                         ; 8d75: f0 b9       ..    
+    lda l05ff,x                                                       ; 8d6c: bd ff 05    ...      ; Write a character
+    jsr osbput                                                        ; 8d6f: 20 d4 ff     ..      ; ...
+    dex                                                               ; 8d72: ca          .        ; ...
+    bne loop_c8d6c                                                    ; 8d73: d0 f7       ..       ; loop
+    beq c8d30                                                         ; 8d75: f0 b9       ..       ; next value
 ; &8d77 referenced 1 time by &8d37
 .c8d77
-    pla                                                               ; 8d77: 68          h     
-    sty zp_text_ptr_off                                               ; 8d78: 84 0a       ..    
-    jmp c8b98                                                         ; 8d7a: 4c 98 8b    L..   
+    pla                                                               ; 8d77: 68          h        ; Recover the handle
+    sty zp_text_ptr_off                                               ; 8d78: 84 0a       ..       ; sync the pointer
+    jmp c8b98                                                         ; 8d7a: 4c 98 8b    L..      ; next statement
 ; &8d7d referenced 3 times by &8dc8, &8dcc, &8dd0
 .c8d7d
     jsr sub_cbc25                                                     ; 8d7d: 20 25 bc     %.      ; Print a newline
@@ -9900,20 +9900,20 @@ l848a = sub_c847b+15
 ;     X: preserved
 ; &b4c6 referenced 1 time by &b4c1
 .iwa_store_var
-    ldy #0                                                            ; b4c6: a0 00       ..    
-    lda zp_iwa                                                        ; b4c8: a5 2a       .*    
-    sta (zp_general),y                                                ; b4ca: 91 37       .7    
-    lda zp_fileblk                                                    ; b4cc: a5 39       .9    
-    beq return_34                                                     ; b4ce: f0 0f       ..    
-    lda zp_iwa_1                                                      ; b4d0: a5 2b       .+    
-    iny                                                               ; b4d2: c8          .     
-    sta (zp_general),y                                                ; b4d3: 91 37       .7    
-    lda zp_iwa_2                                                      ; b4d5: a5 2c       .,    
-    iny                                                               ; b4d7: c8          .     
-    sta (zp_general),y                                                ; b4d8: 91 37       .7    
-    lda zp_iwa_3                                                      ; b4da: a5 2d       .-    
-    iny                                                               ; b4dc: c8          .     
-    sta (zp_general),y                                                ; b4dd: 91 37       .7    
+    ldy #0                                                            ; b4c6: a0 00       ..       ; Offset 0
+    lda zp_iwa                                                        ; b4c8: a5 2a       .*       ; Store byte 1
+    sta (zp_general),y                                                ; b4ca: 91 37       .7       ; ...
+    lda zp_fileblk                                                    ; b4cc: a5 39       .9       ; Size byte
+    beq return_34                                                     ; b4ce: f0 0f       ..       ; 1-byte value: done
+    lda zp_iwa_1                                                      ; b4d0: a5 2b       .+       ; Store byte 2
+    iny                                                               ; b4d2: c8          .        ; ...
+    sta (zp_general),y                                                ; b4d3: 91 37       .7       ; ...
+    lda zp_iwa_2                                                      ; b4d5: a5 2c       .,       ; Store byte 3
+    iny                                                               ; b4d7: c8          .        ; ...
+    sta (zp_general),y                                                ; b4d8: 91 37       .7       ; ...
+    lda zp_iwa_3                                                      ; b4da: a5 2d       .-       ; Store byte 4
+    iny                                                               ; b4dc: c8          .        ; ...
+    sta (zp_general),y                                                ; b4dd: 91 37       .7       ; ...
 ; &b4df referenced 1 time by &b4ce
 .return_34
     rts                                                               ; b4df: 60          `     
