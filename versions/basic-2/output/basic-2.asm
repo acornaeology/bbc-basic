@@ -2958,17 +2958,17 @@ l848a = sub_c847b+15
     jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.      ; check the statement ends
 ; &8f92 referenced 2 times by &8fae, &9040
 .sub_c8f92
-    lda zp_top                                                        ; 8f92: a5 12       ..    
-    sta zp_fwb_sign                                                   ; 8f94: 85 3b       .;    
-    lda zp_top_1                                                      ; 8f96: a5 13       ..    
-    sta zp_fwb_ovf                                                    ; 8f98: 85 3c       .<    
+    lda zp_top                                                        ; 8f92: a5 12       ..       ; Copy TOP to &3B/&3C
+    sta zp_fwb_sign                                                   ; 8f94: 85 3b       .;       ; ...
+    lda zp_top_1                                                      ; 8f96: a5 13       ..       ; ...
+    sta zp_fwb_ovf                                                    ; 8f98: 85 3c       .<       ; ...
 ; &8f9a referenced 1 time by &8fe7
 .sub_c8f9a
-    lda zp_page                                                       ; 8f9a: a5 18       ..    
-    sta zp_general_1                                                  ; 8f9c: 85 38       .8    
-    lda #1                                                            ; 8f9e: a9 01       ..    
-    sta zp_general                                                    ; 8fa0: 85 37       .7    
-    rts                                                               ; 8fa2: 60          `     
+    lda zp_page                                                       ; 8f9a: a5 18       ..       ; Point &37/&38 at PAGE
+    sta zp_general_1                                                  ; 8f9c: 85 38       .8       ; ...
+    lda #1                                                            ; 8f9e: a9 01       ..       ; ...
+    sta zp_general                                                    ; 8fa0: 85 37       .7       ; ...
+    rts                                                               ; 8fa2: 60          `        ; Return
 ; ***************************************************************************************
 ; RENUMBER
 ;
@@ -3788,24 +3788,24 @@ l848a = sub_c847b+15
     jsr skip_spaces                                                   ; 942f: 20 97 8a     ..   
 ; &9432 referenced 1 time by &944f
 .loop_c9432
-    cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:    
-    beq c9453                                                         ; 9434: f0 1d       ..    
-    cmp #&0d                                                          ; 9436: c9 0d       ..    
-    beq c9453                                                         ; 9438: f0 19       ..    
-    cmp #&8b                                                          ; 943a: c9 8b       ..    
-    beq c9453                                                         ; 943c: f0 15       ..    
-    dec zp_text_ptr_off                                               ; 943e: c6 0a       ..    
-    jsr eval_expr_to_integer                                          ; 9440: 20 21 88     !.   
-    jsr sub_c9456                                                     ; 9443: 20 56 94     V.   
-    jsr skip_spaces                                                   ; 9446: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; 9449: c9 2c       .,    
-    beq stmt_vdu                                                      ; 944b: f0 e2       ..    
-    cmp #&3b ; ';'                                                    ; 944d: c9 3b       .;    
-    bne loop_c9432                                                    ; 944f: d0 e1       ..    
-    beq loop_c942a                                                    ; 9451: f0 d7       ..    
+    cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:       ; ':' end of statement?
+    beq c9453                                                         ; 9434: f0 1d       ..       ; yes
+    cmp #&0d                                                          ; 9436: c9 0d       ..       ; end of line?
+    beq c9453                                                         ; 9438: f0 19       ..       ; yes
+    cmp #&8b                                                          ; 943a: c9 8b       ..       ; ELSE?
+    beq c9453                                                         ; 943c: f0 15       ..       ; yes
+    dec zp_text_ptr_off                                               ; 943e: c6 0a       ..       ; Back up to the value
+    jsr eval_expr_to_integer                                          ; 9440: 20 21 88     !.      ; Evaluate it
+    jsr sub_c9456                                                     ; 9443: 20 56 94     V.      ; send the low byte
+    jsr skip_spaces                                                   ; 9446: 20 97 8a     ..      ; Next character
+    cmp #&2c ; ','                                                    ; 9449: c9 2c       .,       ; ',' another byte?
+    beq stmt_vdu                                                      ; 944b: f0 e2       ..       ; yes
+    cmp #&3b ; ';'                                                    ; 944d: c9 3b       .;       ; ';' 16-bit value?
+    bne loop_c9432                                                    ; 944f: d0 e1       ..       ; no: check the statement ends
+    beq loop_c942a                                                    ; 9451: f0 d7       ..       ; yes: send the high byte too
 ; &9453 referenced 3 times by &9434, &9438, &943c
 .c9453
-    jmp c8b96                                                         ; 9453: 4c 96 8b    L..   
+    jmp c8b96                                                         ; 9453: 4c 96 8b    L..      ; next statement
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
 .sub_c9456
     lda zp_iwa                                                        ; 9456: a5 2a       .*    
@@ -8039,16 +8039,16 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; ab50: a5 2a       .*       ; Save y
     pha                                                               ; ab52: 48          H        ; ...
     lda zp_iwa_1                                                      ; ab53: a5 2b       .+       ; ...
-    pha                                                               ; ab55: 48          H     
+    pha                                                               ; ab55: 48          H        ; ...
     jsr unstack_integer                                               ; ab56: 20 ea bd     ..      ; ...  Recover x
-    pla                                                               ; ab59: 68          h     
+    pla                                                               ; ab59: 68          h        ; ...
     sta zp_iwa_3                                                      ; ab5a: 85 2d       .-       ; into the OSWORD block  ...
-    pla                                                               ; ab5c: 68          h     
+    pla                                                               ; ab5c: 68          h        ; ...
     sta zp_iwa_2                                                      ; ab5d: 85 2c       .,       ; ...
     ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*       ; ...
     lda #osword_read_pixel                                            ; ab61: a9 09       ..       ; Read the pixel colour
     jsr osword                                                        ; ab63: 20 f1 ff     ..      ; ...  Read pixel value  ...
-    lda zp_fwa_sign                                                   ; ab66: a5 2e       ..    
+    lda zp_fwa_sign                                                   ; ab66: a5 2e       ..       ; Result sign (off-screen = -1)
     bmi cab9d                                                         ; ab68: 30 33       03       ; off-screen?
     jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..   
 ; ***************************************************************************************
@@ -11762,16 +11762,16 @@ l848a = sub_c847b+15
 ;
 ; Set the sequential pointer of an open file. PTR#channel = position.
 .stmt_ptr
-    jsr sub_cbfa9                                                     ; bf30: 20 a9 bf     ..   
-    pha                                                               ; bf33: 48          H     
-    jsr eval_after_eq                                                 ; bf34: 20 13 98     ..   
-    jsr sub_c92ee                                                     ; bf37: 20 ee 92     ..   
-    pla                                                               ; bf3a: 68          h     
-    tay                                                               ; bf3b: a8          .     
-    ldx #&2a ; '*'                                                    ; bf3c: a2 2a       .*    
-    lda #1                                                            ; bf3e: a9 01       ..    
+    jsr sub_cbfa9                                                     ; bf30: 20 a9 bf     ..      ; Evaluate the #handle
+    pha                                                               ; bf33: 48          H        ; save it
+    jsr eval_after_eq                                                 ; bf34: 20 13 98     ..      ; Expect "=" and evaluate
+    jsr sub_c92ee                                                     ; bf37: 20 ee 92     ..      ; coerce to integer
+    pla                                                               ; bf3a: 68          h        ; Recover the handle
+    tay                                                               ; bf3b: a8          .        ; ...
+    ldx #&2a ; '*'                                                    ; bf3c: a2 2a       .*       ; Point at the value
+    lda #1                                                            ; bf3e: a9 01       ..       ; Write the file pointer
     jsr osargs                                                        ; bf40: 20 da ff     ..      ; Write sequential file pointer from zero page address X (A=1)
-    jmp statement_loop                                                ; bf43: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; bf43: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; EXT
 ;
@@ -11835,21 +11835,21 @@ l848a = sub_c847b+15
 ;
 ; Open a file for update (read and write), returning its channel. OPENUP string.
 .fn_openup
-    lda #&c0                                                          ; bf80: a9 c0       ..    
+    lda #&c0                                                          ; bf80: a9 c0       ..       ; OPENUP action &C0
 ; &bf82 referenced 2 times by &bf7a, &bf7e
 .cbf82
-    pha                                                               ; bf82: 48          H     
-    jsr eval_factor                                                   ; bf83: 20 ec ad     ..   
-    bne cbf96                                                         ; bf86: d0 0e       ..    
-    jsr sub_cbeba                                                     ; bf88: 20 ba be     ..   
-    ldx #0                                                            ; bf8b: a2 00       ..    
-    ldy #6                                                            ; bf8d: a0 06       ..    
-    pla                                                               ; bf8f: 68          h     
-    jsr osfind                                                        ; bf90: 20 ce ff     ..   
-    jmp int_result_a                                                  ; bf93: 4c d8 ae    L..   
+    pha                                                               ; bf82: 48          H        ; Save the action
+    jsr eval_factor                                                   ; bf83: 20 ec ad     ..      ; Evaluate the filename
+    bne cbf96                                                         ; bf86: d0 0e       ..       ; not a string: error
+    jsr sub_cbeba                                                     ; bf88: 20 ba be     ..      ; CR-terminate it
+    ldx #0                                                            ; bf8b: a2 00       ..       ; Point at the string buffer
+    ldy #6                                                            ; bf8d: a0 06       ..       ; ...
+    pla                                                               ; bf8f: 68          h        ; recover the action
+    jsr osfind                                                        ; bf90: 20 ce ff     ..      ; Open the file
+    jmp int_result_a                                                  ; bf93: 4c d8 ae    L..      ; return the handle
 ; &bf96 referenced 1 time by &bf86
 .cbf96
-    jmp err_type_mismatch                                             ; bf96: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; bf96: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; CLOSE
 ;

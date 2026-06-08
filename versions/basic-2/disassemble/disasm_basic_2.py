@@ -7913,6 +7913,65 @@ d.comment(0xaa59, 'pi/2 high part: constant byte', align=Align.INLINE)
 d.comment(0xaa5b, '...', align=Align.INLINE)
 d.comment(0xaa5d, '...', align=Align.INLINE)
 
+# fn_point continuation gaps.
+d.comment(0xab55, '...', align=Align.INLINE)
+d.comment(0xab59, '...', align=Align.INLINE)
+d.comment(0xab5c, '...', align=Align.INLINE)
+d.comment(0xab66, 'Result sign (off-screen = -1)', align=Align.INLINE)
+
+# fn_openup (&BF80): OPENIN/OPENOUT/OPENUP -> OSFIND.
+d.comment(0xbf80, 'OPENUP action &C0', align=Align.INLINE)
+d.comment(0xbf82, 'Save the action', align=Align.INLINE)
+d.comment(0xbf83, 'Evaluate the filename', align=Align.INLINE)
+d.comment(0xbf86, 'not a string: error', align=Align.INLINE)
+d.comment(0xbf88, 'CR-terminate it', align=Align.INLINE)
+d.comment(0xbf8b, 'Point at the string buffer', align=Align.INLINE)
+d.comment(0xbf8d, '...', align=Align.INLINE)
+d.comment(0xbf8f, 'recover the action', align=Align.INLINE)
+d.comment(0xbf90, 'Open the file', align=Align.INLINE)
+d.comment(0xbf93, 'return the handle', align=Align.INLINE)
+d.comment(0xbf96, 'Type mismatch error', align=Align.INLINE)
+
+# stmt_ptr (&BF30): PTR#n = value -> OSARGS.
+d.comment(0xbf30, 'Evaluate the #handle', align=Align.INLINE)
+d.comment(0xbf33, 'save it', align=Align.INLINE)
+d.comment(0xbf34, 'Expect "=" and evaluate', align=Align.INLINE)
+d.comment(0xbf37, 'coerce to integer', align=Align.INLINE)
+d.comment(0xbf3a, 'Recover the handle', align=Align.INLINE)
+d.comment(0xbf3b, '...', align=Align.INLINE)
+d.comment(0xbf3c, 'Point at the value', align=Align.INLINE)
+d.comment(0xbf3e, 'Write the file pointer', align=Align.INLINE)
+d.comment(0xbf43, 'next statement', align=Align.INLINE)
+
+# stmt_vdu loop (&9432): output bytes via OSWRCH.
+d.comment(0x9432, "':' end of statement?", align=Align.INLINE)
+d.comment(0x9434, 'yes', align=Align.INLINE)
+d.comment(0x9436, 'end of line?', align=Align.INLINE)
+d.comment(0x9438, 'yes', align=Align.INLINE)
+d.comment(0x943a, 'ELSE?', align=Align.INLINE)
+d.comment(0x943c, 'yes', align=Align.INLINE)
+d.comment(0x943e, 'Back up to the value', align=Align.INLINE)
+d.comment(0x9440, 'Evaluate it', align=Align.INLINE)
+d.comment(0x9443, 'send the low byte', align=Align.INLINE)
+d.comment(0x9446, 'Next character', align=Align.INLINE)
+d.comment(0x9449, "','  another byte?", align=Align.INLINE)
+d.comment(0x944b, 'yes', align=Align.INLINE)
+d.comment(0x944d, "';'  16-bit value?", align=Align.INLINE)
+d.comment(0x944f, 'no: check the statement ends', align=Align.INLINE)
+d.comment(0x9451, 'yes: send the high byte too', align=Align.INLINE)
+d.comment(0x9453, 'next statement', align=Align.INLINE)
+
+# sub_c8f92 / sub_c8f9a: set up pointers for the program scan.
+d.comment(0x8f92, 'Copy TOP to &3B/&3C', align=Align.INLINE)
+d.comment(0x8f94, '...', align=Align.INLINE)
+d.comment(0x8f96, '...', align=Align.INLINE)
+d.comment(0x8f98, '...', align=Align.INLINE)
+d.comment(0x8f9a, 'Point &37/&38 at PAGE', align=Align.INLINE)
+d.comment(0x8f9c, '...', align=Align.INLINE)
+d.comment(0x8f9e, '...', align=Align.INLINE)
+d.comment(0x8fa0, '...', align=Align.INLINE)
+d.comment(0x8fa2, 'Return', align=Align.INLINE)
+
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.
 # Handles INPUT, INPUT LINE and INPUT#. Prints any prompt items, reads a

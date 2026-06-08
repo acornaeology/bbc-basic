@@ -27565,6 +27565,7 @@
       "labels": [
         "sub_c8f92"
       ],
+      "comment_inline": "Copy TOP to &3B/&3C",
       "xref_summaries": [
         "&8f92 referenced 2 times by &8fae, &9040"
       ],
@@ -27584,6 +27585,7 @@
         133,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -27596,6 +27598,7 @@
         165,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -27608,6 +27611,7 @@
         133,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -27623,6 +27627,7 @@
       "labels": [
         "sub_c8f9a"
       ],
+      "comment_inline": "Point &37/&38 at PAGE",
       "xref_summaries": [
         "&8f9a referenced 1 time by &8fe7"
       ],
@@ -27641,6 +27646,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -27653,6 +27659,7 @@
         169,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -27663,6 +27670,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -27674,6 +27682,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -35255,6 +35264,7 @@
       "labels": [
         "loop_c9432"
       ],
+      "comment_inline": "':' end of statement?",
       "xref_summaries": [
         "&9432 referenced 1 time by &944f"
       ],
@@ -35271,6 +35281,7 @@
         240,
         29
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9453",
@@ -35283,6 +35294,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -35293,6 +35305,7 @@
         240,
         25
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9453",
@@ -35305,6 +35318,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -35315,6 +35329,7 @@
         240,
         21
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9453",
@@ -35327,6 +35342,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up to the value",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -35340,6 +35356,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -35353,6 +35370,7 @@
         86,
         148
       ],
+      "comment_inline": "send the low byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9456",
@@ -35366,6 +35384,7 @@
         151,
         138
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -35378,6 +35397,7 @@
         201,
         44
       ],
+      "comment_inline": "','  another byte?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -35388,6 +35408,7 @@
         240,
         226
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "stmt_vdu",
@@ -35400,6 +35421,7 @@
         201,
         59
       ],
+      "comment_inline": "';'  16-bit value?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3b"
@@ -35410,6 +35432,7 @@
         208,
         225
       ],
+      "comment_inline": "no: check the statement ends",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9432",
@@ -35422,6 +35445,7 @@
         240,
         215
       ],
+      "comment_inline": "yes: send the high byte too",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c942a",
@@ -35438,6 +35462,7 @@
       "labels": [
         "c9453"
       ],
+      "comment_inline": "next statement",
       "xref_summaries": [
         "&9453 referenced 3 times by &9434, &9438, &943c"
       ],
@@ -74954,6 +74979,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -74976,6 +75002,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -74997,6 +75024,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -75055,6 +75083,7 @@
         165,
         46
       ],
+      "comment_inline": "Result sign (off-screen = -1)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -108391,6 +108420,7 @@
       "labels": [
         "stmt_ptr"
       ],
+      "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbfa9",
@@ -108402,6 +108432,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -108412,6 +108443,7 @@
         19,
         152
       ],
+      "comment_inline": "Expect \"=\" and evaluate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_after_eq",
@@ -108425,6 +108457,7 @@
         238,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92ee",
@@ -108436,6 +108469,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the handle",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -108444,6 +108478,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -108453,6 +108488,7 @@
         162,
         42
       ],
+      "comment_inline": "Point at the value",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&2a"
@@ -108463,6 +108499,7 @@
         169,
         1
       ],
+      "comment_inline": "Write the file pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -108488,6 +108525,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -108850,6 +108888,7 @@
       "labels": [
         "fn_openup"
       ],
+      "comment_inline": "OPENUP action &C0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&c0"
@@ -108862,6 +108901,7 @@
       "labels": [
         "cbf82"
       ],
+      "comment_inline": "Save the action",
       "xref_summaries": [
         "&bf82 referenced 2 times by &bf7a, &bf7e"
       ],
@@ -108879,6 +108919,7 @@
         236,
         173
       ],
+      "comment_inline": "Evaluate the filename",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -108891,6 +108932,7 @@
         208,
         14
       ],
+      "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbf96",
@@ -108904,6 +108946,7 @@
         186,
         190
       ],
+      "comment_inline": "CR-terminate it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbeba",
@@ -108916,6 +108959,7 @@
         162,
         0
       ],
+      "comment_inline": "Point at the string buffer",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#0"
@@ -108926,6 +108970,7 @@
         160,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#6"
@@ -108935,6 +108980,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the action",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -108945,6 +108991,7 @@
         206,
         255
       ],
+      "comment_inline": "Open the file",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osfind",
@@ -108958,6 +109005,7 @@
         216,
         174
       ],
+      "comment_inline": "return the handle",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "int_result_a",
@@ -108974,6 +109022,7 @@
       "labels": [
         "cbf96"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&bf96 referenced 1 time by &bf86"
       ],
