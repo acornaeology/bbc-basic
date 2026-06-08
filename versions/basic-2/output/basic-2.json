@@ -1190,7 +1190,8 @@
       },
       "on_exit": {
         "X": "preserved"
-      }
+      },
+      "fall_through": true
     },
     {
       "addr": 44886,
@@ -1707,6 +1708,18 @@
       "name": "parse_var_ref",
       "title": "Parse a variable reference / lvalue",
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
+    },
+    {
+      "addr": 46424,
+      "name": "print_char",
+      "title": "Print a character with column tracking",
+      "description": "Output A through the print formatter, handling CR specially and maintaining the print column COUNT.",
+      "fall_through": true
+    },
+    {
+      "addr": 46437,
+      "name": "print_space",
+      "title": "Print a space through the print formatter"
     },
     {
       "addr": 40480,
@@ -9619,9 +9632,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 34119,
@@ -9758,9 +9771,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 34140,
@@ -9771,9 +9784,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 34143,
@@ -9784,9 +9797,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 34146,
@@ -23592,6 +23605,7 @@
       "labels": [
         "c8d7d"
       ],
+      "comment_inline": "Print a newline",
       "xref_summaries": [
         "&8d7d referenced 3 times by &8dc8, &8dcc, &8dd0"
       ],
@@ -23616,6 +23630,7 @@
       "labels": [
         "c8d80"
       ],
+      "comment_inline": "next statement",
       "xref_summaries": [
         "&8d80 referenced 3 times by &8d8e, &8d92, &8d96"
       ],
@@ -23639,6 +23654,7 @@
       "labels": [
         "loop_c8d83"
       ],
+      "comment_inline": "Semicolon: clear the field width...",
       "xref_summaries": [
         "&8d83 referenced 1 time by &8ddc"
       ],
@@ -23655,6 +23671,7 @@
         133,
         20
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -23667,6 +23684,7 @@
         133,
         21
       ],
+      "comment_inline": "...and flags",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -23680,6 +23698,7 @@
         151,
         138
       ],
+      "comment_inline": "Next non-space character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -23692,6 +23711,7 @@
         201,
         58
       ],
+      "comment_inline": "':' end?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -23702,6 +23722,7 @@
         240,
         240
       ],
+      "comment_inline": "yes: end without a newline",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d80",
@@ -23714,6 +23735,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -23724,6 +23746,7 @@
         240,
         236
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d80",
@@ -23736,6 +23759,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -23746,6 +23770,7 @@
         240,
         232
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d80",
@@ -23758,6 +23783,7 @@
         208,
         56
       ],
+      "comment_inline": "otherwise continue the print loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8dd2",
@@ -23774,6 +23800,7 @@
       "labels": [
         "stmt_print"
       ],
+      "comment_inline": "Next non-space character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -23797,6 +23824,7 @@
         240,
         138
       ],
+      "comment_inline": "'#': PRINT# to a file",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8d2b",
@@ -23809,6 +23837,7 @@
         198,
         10
       ],
+      "comment_inline": "Back up over the character",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -23822,6 +23851,7 @@
         187,
         141
       ],
+      "comment_inline": "enter the print loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8dbb",
@@ -23838,7 +23868,7 @@
       "labels": [
         "loop_c8da6"
       ],
-      "comment_inline": "Comma: pad with spaces to the next @% field",
+      "comment_inline": "Comma: pad with spaces to the next @% field Comma: field width from @%",
       "xref_summaries": [
         "&8da6 referenced 1 time by &8dd8"
       ],
@@ -23857,6 +23887,7 @@
         240,
         16
       ],
+      "comment_inline": "zero: no padding",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8dbb",
@@ -23869,6 +23900,7 @@
         165,
         30
       ],
+      "comment_inline": "Current column (COUNT)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_count",
@@ -23884,6 +23916,7 @@
       "labels": [
         "loop_c8dad"
       ],
+      "comment_inline": "at column 0: no padding",
       "xref_summaries": [
         "&8dad referenced 1 time by &8db2"
       ],
@@ -23903,6 +23936,7 @@
         0,
         4
       ],
+      "comment_inline": "reduce by the field width...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "resint_at",
@@ -23915,6 +23949,7 @@
         176,
         249
       ],
+      "comment_inline": "...until COUNT mod width",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_c8dad",
@@ -23926,6 +23961,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "spaces needed to the next field",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -23939,6 +23975,7 @@
       "labels": [
         "loop_c8db5"
       ],
+      "comment_inline": "print a space",
       "xref_summaries": [
         "&8db5 referenced 1 time by &8db9"
       ],
@@ -23947,15 +23984,16 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 36280,
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23965,6 +24003,7 @@
         208,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8db5",
@@ -23979,6 +24018,7 @@
       "labels": [
         "c8dbb"
       ],
+      "comment_inline": "Prepare for decimal",
       "xref_summaries": [
         "&8dbb referenced 3 times by &8da3, &8da9, &8dad"
       ],
@@ -23997,7 +24037,7 @@
         0,
         4
       ],
-      "comment_inline": "Take the field width from @% (&0400)",
+      "comment_inline": "Take the field width from @% (&0400) Field width from @%",
       "type": "code",
       "mnemonic": "lda",
       "operand": "resint_at",
@@ -24010,6 +24050,7 @@
         133,
         20
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -24025,7 +24066,7 @@
       "labels": [
         "loop_c8dc1"
       ],
-      "comment_inline": "A tilde \"~\" switches to hexadecimal",
+      "comment_inline": "A tilde \"~\" switches to hexadecimal Set the hex/dec flag from carry",
       "xref_summaries": [
         "&8dc1 referenced 1 time by &8dd4"
       ],
@@ -24048,6 +24089,7 @@
       "labels": [
         "c8dc3"
       ],
+      "comment_inline": "Next non-space character",
       "xref_summaries": [
         "&8dc3 referenced 3 times by &8de1, &8e10, &8e1f"
       ],
@@ -24068,6 +24110,7 @@
         201,
         58
       ],
+      "comment_inline": "':' end of statement?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -24078,6 +24121,7 @@
         240,
         179
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d7d",
@@ -24090,6 +24134,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -24100,6 +24145,7 @@
         240,
         175
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d7d",
@@ -24112,6 +24158,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -24122,6 +24169,7 @@
         240,
         171
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8d7d",
@@ -24137,6 +24185,7 @@
       "labels": [
         "c8dd2"
       ],
+      "comment_inline": "'~' hex mode?",
       "xref_summaries": [
         "&8dd2 referenced 1 time by &8d98"
       ],
@@ -24153,6 +24202,7 @@
         240,
         235
       ],
+      "comment_inline": "yes: set the flag",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8dc1",
@@ -24165,7 +24215,7 @@
         201,
         44
       ],
-      "comment_inline": "Comma: advance to the next print field",
+      "comment_inline": "Comma: advance to the next print field ',' next field?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -24176,6 +24226,7 @@
         240,
         204
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8da6",
@@ -24188,7 +24239,7 @@
         201,
         59
       ],
-      "comment_inline": "Semicolon: print the next item with no gap",
+      "comment_inline": "Semicolon: print the next item with no gap ';' no gap?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3b"
@@ -24199,6 +24250,7 @@
         240,
         165
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c8d83",
@@ -24212,7 +24264,7 @@
         112,
         142
       ],
-      "comment_inline": "Handle the ' TAB and SPC print items",
+      "comment_inline": "Handle the ' TAB and SPC print items TAB/SPC/' token?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_special_item",
@@ -24225,6 +24277,7 @@
         144,
         224
       ],
+      "comment_inline": "handled: next item",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8dc3",
@@ -24237,6 +24290,7 @@
         165,
         20
       ],
+      "comment_inline": "Save the field width...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_bytes",
@@ -24248,6 +24302,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -24257,6 +24312,7 @@
         165,
         21
       ],
+      "comment_inline": "...and flags (the evaluator may PRINT)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_flag",
@@ -24268,6 +24324,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -24277,6 +24334,7 @@
         198,
         27
       ],
+      "comment_inline": "Back up to the item",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr2_off",
@@ -24290,7 +24348,7 @@
         41,
         155
       ],
-      "comment_inline": "Evaluate the expression to print",
+      "comment_inline": "Evaluate the expression to print Evaluate the print item",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -24302,6 +24360,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Restore the flags...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -24311,6 +24370,7 @@
         133,
         21
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -24322,6 +24382,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...and the field width",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -24331,6 +24392,7 @@
         133,
         20
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -24343,6 +24405,7 @@
         165,
         27
       ],
+      "comment_inline": "Update the program pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -24355,6 +24418,7 @@
         133,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -24366,6 +24430,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "String item?",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -24375,7 +24440,7 @@
         240,
         19
       ],
-      "comment_inline": "A string value: print it directly",
+      "comment_inline": "A string value: print it directly yes: print it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e0e",
@@ -24389,7 +24454,7 @@
         223,
         158
       ],
-      "comment_inline": "A number: convert to an ASCII string",
+      "comment_inline": "A number: convert to an ASCII string Number: convert to a string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "number_to_ascii",
@@ -24402,7 +24467,7 @@
         165,
         20
       ],
-      "comment_inline": "and right-justify it within the field width",
+      "comment_inline": "and right-justify it within the field width Field width",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_bytes",
@@ -24414,6 +24479,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "minus the string length",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -24423,6 +24489,7 @@
         229,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_strbuf_len",
@@ -24435,6 +24502,7 @@
         144,
         9
       ],
+      "comment_inline": "longer than the field: print as is",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8e0e",
@@ -24447,6 +24515,7 @@
         240,
         7
       ],
+      "comment_inline": "equal: print as is",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e0e",
@@ -24458,6 +24527,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "spaces to pad with",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -24471,6 +24541,7 @@
       "labels": [
         "loop_c8e08"
       ],
+      "comment_inline": "print a leading space",
       "xref_summaries": [
         "&8e08 referenced 1 time by &8e0c"
       ],
@@ -24479,15 +24550,16 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 36363,
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -24497,6 +24569,7 @@
         208,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8e08",
@@ -24512,6 +24585,7 @@
       "labels": [
         "c8e0e"
       ],
+      "comment_inline": "String length",
       "xref_summaries": [
         "&8e0e referenced 3 times by &8df9, &8e03, &8e05"
       ],
@@ -24532,6 +24606,7 @@
         240,
         177
       ],
+      "comment_inline": "empty: next item",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8dc3",
@@ -24544,6 +24619,7 @@
         160,
         0
       ],
+      "comment_inline": "From the start",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -24558,6 +24634,7 @@
       "labels": [
         "loop_c8e14"
       ],
+      "comment_inline": "String character",
       "xref_summaries": [
         "&8e14 referenced 1 time by &8e1d"
       ],
@@ -24577,17 +24654,19 @@
         88,
         181
       ],
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 36378,
       "bytes": [
         200
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -24597,6 +24676,7 @@
         196,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_strbuf_len",
@@ -24609,6 +24689,7 @@
         208,
         245
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8e14",
@@ -24621,6 +24702,7 @@
         240,
         162
       ],
+      "comment_inline": "next item",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8dc3",
@@ -24637,6 +24719,7 @@
       "labels": [
         "loop_c8e21"
       ],
+      "comment_inline": "Missing , error",
       "xref_summaries": [
         "&8e21 referenced 1 time by &8e26"
       ],
@@ -24658,6 +24741,7 @@
       "labels": [
         "loop_c8e24"
       ],
+      "comment_inline": "',' TAB(x,y) form?",
       "xref_summaries": [
         "&8e24 referenced 1 time by &8e48"
       ],
@@ -24674,6 +24758,7 @@
         208,
         249
       ],
+      "comment_inline": "no: TAB(x) or SPC",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8e21",
@@ -24686,6 +24771,7 @@
         165,
         42
       ],
+      "comment_inline": "Save the x coordinate",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -24697,6 +24783,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -24707,6 +24794,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate y, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -24720,6 +24808,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -24732,6 +24821,7 @@
         169,
         31
       ],
+      "comment_inline": "VDU 31 (move cursor)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&1f"
@@ -24743,6 +24833,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -24754,6 +24845,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "x coordinate",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -24764,6 +24856,7 @@
         238,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -24777,6 +24870,7 @@
         86,
         148
       ],
+      "comment_inline": "y coordinate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9456",
@@ -24790,6 +24884,7 @@
         106,
         142
       ],
+      "comment_inline": "next item",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8e6a",
@@ -24806,6 +24901,7 @@
       "labels": [
         "loop_c8e40"
       ],
+      "comment_inline": "TAB(x): evaluate x",
       "xref_summaries": [
         "&8e40 referenced 1 time by &8e82"
       ],
@@ -24825,6 +24921,7 @@
         140,
         138
       ],
+      "comment_inline": "skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -24837,6 +24934,7 @@
         201,
         41
       ],
+      "comment_inline": "')'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&29"
@@ -24847,6 +24945,7 @@
         208,
         218
       ],
+      "comment_inline": "no: TAB(x,y)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8e24",
@@ -24859,6 +24958,7 @@
         165,
         42
       ],
+      "comment_inline": "Spaces = x - COUNT",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -24871,6 +24971,7 @@
         229,
         30
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_count",
@@ -24883,6 +24984,7 @@
         240,
         26
       ],
+      "comment_inline": "already at column x: nothing to do",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e6a",
@@ -24894,6 +24996,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -24903,6 +25006,7 @@
         176,
         12
       ],
+      "comment_inline": "past column x: skip",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8e5f",
@@ -24916,6 +25020,7 @@
         37,
         188
       ],
+      "comment_inline": "Newline to reach a fresh line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbc25",
@@ -24928,6 +25033,7 @@
         240,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e5b",
@@ -24944,6 +25050,7 @@
       "labels": [
         "loop_c8e58"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&8e58 referenced 1 time by &8e86"
       ],
@@ -24965,6 +25072,7 @@
       "labels": [
         "c8e5b"
       ],
+      "comment_inline": "spaces = x",
       "xref_summaries": [
         "&8e5b referenced 1 time by &8e56"
       ],
@@ -24983,6 +25091,7 @@
         240,
         11
       ],
+      "comment_inline": "none",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e6a",
@@ -24999,6 +25108,7 @@
       "labels": [
         "c8e5f"
       ],
+      "comment_inline": "Print a space",
       "xref_summaries": [
         "&8e5f referenced 2 times by &8e51, &8e63"
       ],
@@ -25008,15 +25118,16 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 36450,
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -25026,6 +25137,7 @@
         208,
         250
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8e5f",
@@ -25038,6 +25150,7 @@
         240,
         3
       ],
+      "comment_inline": "next item",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e6a",
@@ -25054,6 +25167,7 @@
       "labels": [
         "loop_c8e67"
       ],
+      "comment_inline": "SPC: print a newline",
       "xref_summaries": [
         "&8e67 referenced 1 time by &8e7e"
       ],
@@ -25074,6 +25188,7 @@
       "labels": [
         "c8e6a"
       ],
+      "comment_inline": "Sync the program pointer",
       "xref_summaries": [
         "&8e6a referenced 5 times by &8e3d, &8e4e, &8e5d, &8e65, &8eb9"
       ],
@@ -25093,6 +25208,7 @@
         164,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -25105,6 +25221,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -25116,6 +25233,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -25474,9 +25592,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 36519,
@@ -43056,9 +43174,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 39188,
@@ -43095,9 +43213,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 39196,
@@ -43109,9 +43227,9 @@
       "comment_inline": "and a space",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 39199,
@@ -43581,9 +43699,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 39261,
@@ -43652,9 +43770,9 @@
       "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 39271,
@@ -89828,9 +89946,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 46356,
@@ -90118,9 +90236,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 46399,
@@ -90319,7 +90437,7 @@
         13
       ],
       "labels": [
-        "cb558"
+        "print_char"
       ],
       "xref_summaries": [
         "&b558 referenced 13 times by &855c, &855f, &8e17, &8ea4, &9911, &9919, &9964, &b512, &b53c, &b583, &b64b, &ba9f, &bc02"
@@ -90411,7 +90529,7 @@
         32
       ],
       "labels": [
-        "cb565"
+        "print_space"
       ],
       "xref_summaries": [
         "&b565 referenced 9 times by &8544, &8559, &8db5, &8e08, &8e5f, &991c, &995a, &b57e, &b580"
@@ -90602,9 +90720,9 @@
       ],
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 46464,
@@ -90624,9 +90742,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb565",
+      "operand": "print_space",
       "target": 46437,
-      "target_label": "cb565"
+      "target_label": "print_space"
     },
     {
       "addr": 46467,
@@ -90637,9 +90755,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 46470,
@@ -91823,9 +91941,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 46670,
@@ -98336,9 +98454,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 47778,
@@ -100413,9 +100531,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb558",
+      "operand": "print_char",
       "target": 46424,
-      "target_label": "cb558"
+      "target_label": "print_char"
     },
     {
       "addr": 48133,
