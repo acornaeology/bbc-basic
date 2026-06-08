@@ -1606,8 +1606,7 @@
       "addr": 38274,
       "name": "parse_lvalue",
       "title": "Parse an assignment target variable",
-      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n",
-      "fall_through": true
+      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n"
     },
     {
       "addr": 38931,
@@ -1702,6 +1701,19 @@
       "name": "read_input_line",
       "title": "Print the prompt and read a line",
       "description": "Print the character in A as a prompt, then read a line into the input buffer."
+    },
+    {
+      "addr": 38345,
+      "name": "parse_var_ref",
+      "title": "Parse a variable reference / lvalue",
+      "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
+    },
+    {
+      "addr": 38623,
+      "name": "index_array",
+      "title": "Locate an array and evaluate one subscript",
+      "description": "Find the named array and step the value pointer to the addressed element; raises Array on a missing array.",
+      "fall_through": true
     },
     {
       "addr": 38140,
@@ -36360,7 +36372,7 @@
       "labels": [
         "c957f"
       ],
-      "comment_inline": "Zero the value bytes of the new variable",
+      "comment_inline": "Zero the value bytes of the new variable Clear the new variable value bytes",
       "xref_summaries": [
         "&957f referenced 2 times by &9590, &9593"
       ],
@@ -36384,6 +36396,7 @@
       "labels": [
         "parse_lvalue"
       ],
+      "comment_inline": "Parse the variable reference",
       "xref_summaries": [
         "&9582 referenced 9 times by &85a5, &8be4, &90e1, &9328, &b256, &b7c4, &b9e4, &ba7f, &bb1f"
       ],
@@ -36400,9 +36413,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c95c9",
+      "operand": "parse_var_ref",
       "target": 38345,
-      "target_label": "sub_c95c9"
+      "target_label": "parse_var_ref"
     },
     {
       "addr": 38277,
@@ -36410,6 +36423,7 @@
         208,
         29
       ],
+      "comment_inline": "found: return",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_13",
@@ -36422,6 +36436,7 @@
         176,
         27
       ],
+      "comment_inline": "indirection/array: return",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "return_13",
@@ -36435,6 +36450,7 @@
         252,
         148
       ],
+      "comment_inline": "undefined: create the variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "create_variable",
@@ -36447,6 +36463,7 @@
         162,
         5
       ],
+      "comment_inline": "Decide how many value bytes to clear",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#5"
@@ -36457,6 +36474,7 @@
         228,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_iwa_2",
@@ -36469,6 +36487,7 @@
         208,
         237
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c957f",
@@ -36480,6 +36499,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -36489,6 +36509,7 @@
         208,
         234
       ],
+      "comment_inline": "then retry the parse so it is found",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c957f",
@@ -36504,6 +36525,7 @@
       "labels": [
         "loop_c9595"
       ],
+      "comment_inline": "'!' indirection?",
       "xref_summaries": [
         "&9595 referenced 1 time by &95df"
       ],
@@ -36520,6 +36542,7 @@
         240,
         12
       ],
+      "comment_inline": "yes: word indirection",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c95a5",
@@ -36532,6 +36555,7 @@
         201,
         36
       ],
+      "comment_inline": "'$' indirection?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&24"
@@ -36542,6 +36566,7 @@
         240,
         19
       ],
+      "comment_inline": "yes: string indirection",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c95b0",
@@ -36554,6 +36579,7 @@
         73,
         63
       ],
+      "comment_inline": "'?' indirection?",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&3f"
@@ -36564,6 +36590,7 @@
         240,
         6
       ],
+      "comment_inline": "yes: byte indirection",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c95a7",
@@ -36576,6 +36603,7 @@
         169,
         0
       ],
+      "comment_inline": "none: not an lvalue",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -36585,6 +36613,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -36596,6 +36625,7 @@
       "labels": [
         "return_13"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&95a4 referenced 2 times by &9585, &9587"
       ],
@@ -36615,6 +36645,7 @@
       "labels": [
         "c95a5"
       ],
+      "comment_inline": "'!': word width (4)",
       "xref_summaries": [
         "&95a5 referenced 1 time by &9597"
       ],
@@ -36633,6 +36664,7 @@
       "labels": [
         "c95a7"
       ],
+      "comment_inline": "Save the width",
       "xref_summaries": [
         "&95a7 referenced 1 time by &959f"
       ],
@@ -36648,6 +36680,7 @@
         230,
         27
       ],
+      "comment_inline": "step past the operator",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -36661,6 +36694,7 @@
         227,
         146
       ],
+      "comment_inline": "evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -36674,6 +36708,7 @@
         159,
         150
       ],
+      "comment_inline": "finish as an indirection",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c969f",
@@ -36689,6 +36724,7 @@
       "labels": [
         "c95b0"
       ],
+      "comment_inline": "'$': step past the operator",
       "xref_summaries": [
         "&95b0 referenced 1 time by &959b"
       ],
@@ -36708,6 +36744,7 @@
         227,
         146
       ],
+      "comment_inline": "evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -36720,6 +36757,7 @@
         165,
         43
       ],
+      "comment_inline": "address in zero page?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -36732,6 +36770,7 @@
         240,
         6
       ],
+      "comment_inline": "yes: $ range error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c95bf",
@@ -36744,6 +36783,7 @@
         169,
         128
       ],
+      "comment_inline": "Type = string indirection (&80)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -36754,6 +36794,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -36765,6 +36806,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "found: SEC",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -36773,6 +36815,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -36784,6 +36827,7 @@
       "labels": [
         "c95bf"
       ],
+      "comment_inline": "$ range error",
       "xref_summaries": [
         "&95bf referenced 1 time by &95b7"
       ],
@@ -36834,8 +36878,9 @@
         11
       ],
       "labels": [
-        "sub_c95c9"
+        "parse_var_ref"
       ],
+      "comment_inline": "Copy the text pointer into the scan pointer",
       "xref_summaries": [
         "&95c9 referenced 2 times by &9582, &b695"
       ],
@@ -36855,6 +36900,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -36867,6 +36913,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -36879,6 +36926,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -36891,6 +36939,7 @@
         164,
         10
       ],
+      "comment_inline": "Start one before the text offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -36902,6 +36951,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -36913,6 +36963,7 @@
       "labels": [
         "loop_c95d4"
       ],
+      "comment_inline": "Advance",
       "xref_summaries": [
         "&95d4 referenced 1 time by &95db"
       ],
@@ -36931,6 +36982,7 @@
       "labels": [
         "sub_c95d5"
       ],
+      "comment_inline": "Record the scan offset",
       "xref_summaries": [
         "&95d5 referenced 1 time by &8eec"
       ],
@@ -36949,6 +37001,7 @@
         177,
         25
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -36961,6 +37014,7 @@
         201,
         32
       ],
+      "comment_inline": "space?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -36971,6 +37025,7 @@
         240,
         247
       ],
+      "comment_inline": "skip spaces",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c95d4",
@@ -36986,6 +37041,7 @@
       "labels": [
         "sub_c95dd"
       ],
+      "comment_inline": "below '@': an indirection operator",
       "xref_summaries": [
         "&95dd referenced 2 times by &8bc9, &ae22"
       ],
@@ -37003,6 +37059,7 @@
         144,
         180
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c9595",
@@ -37015,6 +37072,7 @@
         201,
         91
       ],
+      "comment_inline": "above 'Z'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&5b"
@@ -37025,6 +37083,7 @@
         176,
         26
       ],
+      "comment_inline": "yes: a named (dynamic) variable",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c95ff",
@@ -37036,6 +37095,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "Resident integer: hash char to &0400 + char*4",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -37044,6 +37104,7 @@
       "bytes": [
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -37053,6 +37114,7 @@
         133,
         42
       ],
+      "comment_inline": "value pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -37065,6 +37127,7 @@
         169,
         4
       ],
+      "comment_inline": "page &04",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -37075,6 +37138,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -37086,6 +37150,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Second character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37095,6 +37160,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -37106,6 +37172,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37115,6 +37182,7 @@
         201,
         37
       ],
+      "comment_inline": "must be '%' for a resident integer",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&25"
@@ -37125,6 +37193,7 @@
         208,
         10
       ],
+      "comment_inline": "not %: treat as a named variable",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c95ff",
@@ -37137,6 +37206,7 @@
         162,
         4
       ],
+      "comment_inline": "Type = integer",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#4"
@@ -37147,6 +37217,7 @@
         134,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -37159,6 +37230,7 @@
         177,
         25
       ],
+      "comment_inline": "Following character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -37171,6 +37243,7 @@
         201,
         40
       ],
+      "comment_inline": "'('  -> array element",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -37181,6 +37254,7 @@
         208,
         102
       ],
+      "comment_inline": "yes: handle as an array",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9665",
@@ -37196,6 +37270,7 @@
       "labels": [
         "c95ff"
       ],
+      "comment_inline": "Named variable: type = real/string (5)",
       "xref_summaries": [
         "&95ff referenced 2 times by &95e3, &95f3"
       ],
@@ -37213,6 +37288,7 @@
         134,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -37225,6 +37301,7 @@
         165,
         27
       ],
+      "comment_inline": "Point &37/&38 at the name in the text",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -37236,6 +37313,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -37245,6 +37323,7 @@
         101,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -37257,6 +37336,7 @@
         166,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr2_1",
@@ -37269,6 +37349,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c960e",
@@ -37280,6 +37361,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -37288,6 +37370,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -37300,6 +37383,7 @@
       "labels": [
         "c960e"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&960e referenced 1 time by &960a"
       ],
@@ -37316,6 +37400,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -37328,6 +37413,7 @@
         176,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9615",
@@ -37339,6 +37425,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -37351,6 +37438,7 @@
       "labels": [
         "c9615"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&9615 referenced 1 time by &9612"
       ],
@@ -37369,6 +37457,7 @@
         166,
         27
       ],
+      "comment_inline": "Reset the length counter",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr2_off",
@@ -37381,6 +37470,7 @@
         160,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -37394,6 +37484,7 @@
       "labels": [
         "c961b"
       ],
+      "comment_inline": "Scan the name: next character",
       "xref_summaries": [
         "&961b referenced 3 times by &962b, &9633, &963f"
       ],
@@ -37414,6 +37505,7 @@
         201,
         65
       ],
+      "comment_inline": "below 'A'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&41"
@@ -37424,6 +37516,7 @@
         176,
         12
       ],
+      "comment_inline": "no: check letters",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c962d",
@@ -37436,6 +37529,7 @@
         201,
         48
       ],
+      "comment_inline": "a digit?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&30"
@@ -37446,6 +37540,7 @@
         144,
         28
       ],
+      "comment_inline": "no: name ends",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9641",
@@ -37458,6 +37553,7 @@
         201,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -37468,6 +37564,7 @@
         176,
         24
       ],
+      "comment_inline": "no: name ends",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9641",
@@ -37479,6 +37576,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "count this character",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -37487,6 +37585,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37496,6 +37595,7 @@
         208,
         238
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c961b",
@@ -37511,6 +37611,7 @@
       "labels": [
         "c962d"
       ],
+      "comment_inline": "above 'Z'?",
       "xref_summaries": [
         "&962d referenced 1 time by &961f"
       ],
@@ -37527,6 +37628,7 @@
         176,
         4
       ],
+      "comment_inline": "yes: check lower case",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9635",
@@ -37538,6 +37640,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "A-Z: count it",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -37546,6 +37649,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37555,6 +37659,7 @@
         208,
         230
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c961b",
@@ -37570,6 +37675,7 @@
       "labels": [
         "c9635"
       ],
+      "comment_inline": "below '_'?",
       "xref_summaries": [
         "&9635 referenced 1 time by &962f"
       ],
@@ -37586,6 +37692,7 @@
         144,
         8
       ],
+      "comment_inline": "yes: name ends",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9641",
@@ -37598,6 +37705,7 @@
         201,
         123
       ],
+      "comment_inline": "above 'z'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&7b"
@@ -37608,6 +37716,7 @@
         176,
         4
       ],
+      "comment_inline": "yes: name ends",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9641",
@@ -37619,6 +37728,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "_ or a-z: count it",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -37627,6 +37737,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37636,6 +37747,7 @@
         208,
         218
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c961b",
@@ -37650,6 +37762,7 @@
       "labels": [
         "c9641"
       ],
+      "comment_inline": "Back up to the terminator",
       "xref_summaries": [
         "&9641 referenced 4 times by &9623, &9627, &9637, &963b"
       ],
@@ -37668,6 +37781,7 @@
         240,
         47
       ],
+      "comment_inline": "empty name: undefined",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9673",
@@ -37680,6 +37794,7 @@
         201,
         36
       ],
+      "comment_inline": "'$' suffix -> string variable",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&24"
@@ -37690,6 +37805,7 @@
         240,
         103
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c96af",
@@ -37702,6 +37818,7 @@
         201,
         37
       ],
+      "comment_inline": "'%' suffix -> integer variable",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&25"
@@ -37712,6 +37829,7 @@
         208,
         8
       ],
+      "comment_inline": "no: real variable",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9654",
@@ -37724,6 +37842,7 @@
         198,
         44
       ],
+      "comment_inline": "mark the type integer",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa_2",
@@ -37735,6 +37854,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step past the %",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37743,6 +37863,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -37751,6 +37872,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -37760,6 +37882,7 @@
         177,
         55
       ],
+      "comment_inline": "check the following character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -37771,6 +37894,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -37783,6 +37907,7 @@
       "labels": [
         "c9654"
       ],
+      "comment_inline": "Record the name length",
       "xref_summaries": [
         "&9654 referenced 1 time by &964a"
       ],
@@ -37801,6 +37926,7 @@
         201,
         40
       ],
+      "comment_inline": "'('  -> array element",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -37811,6 +37937,7 @@
         240,
         76
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c96a6",
@@ -37824,6 +37951,7 @@
         105,
         148
       ],
+      "comment_inline": "Look the variable up in storage",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_variable",
@@ -37836,6 +37964,7 @@
         240,
         24
       ],
+      "comment_inline": "not found: undefined",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9677",
@@ -37848,6 +37977,7 @@
         134,
         27
       ],
+      "comment_inline": "Update the scan offset past the name",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -37863,6 +37993,7 @@
       "labels": [
         "c9661"
       ],
+      "comment_inline": "Next character after the name",
       "xref_summaries": [
         "&9661 referenced 1 time by &96ac"
       ],
@@ -37881,6 +38012,7 @@
         177,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -37896,6 +38028,7 @@
       "labels": [
         "c9665"
       ],
+      "comment_inline": "'!' indirection following?",
       "xref_summaries": [
         "&9665 referenced 1 time by &95fd"
       ],
@@ -37912,6 +38045,7 @@
         240,
         22
       ],
+      "comment_inline": "yes: word indirection",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c967f",
@@ -37924,6 +38058,7 @@
         201,
         63
       ],
+      "comment_inline": "'?' indirection following?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3f"
@@ -37934,6 +38069,7 @@
         240,
         14
       ],
+      "comment_inline": "yes: byte indirection",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c967b",
@@ -37945,6 +38081,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Plain variable: found",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -37954,6 +38091,7 @@
         132,
         27
       ],
+      "comment_inline": "save the scan offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -37966,6 +38104,7 @@
         169,
         255
       ],
+      "comment_inline": "A = &FF (found)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -37975,6 +38114,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -37987,6 +38127,7 @@
       "labels": [
         "c9673"
       ],
+      "comment_inline": "Undefined: A=0, SEC",
       "xref_summaries": [
         "&9673 referenced 1 time by &9642"
       ],
@@ -38002,6 +38143,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -38010,6 +38152,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -38022,6 +38165,7 @@
       "labels": [
         "c9677"
       ],
+      "comment_inline": "Found: A=0, CLC",
       "xref_summaries": [
         "&9677 referenced 2 times by &965d, &96bf"
       ],
@@ -38038,6 +38182,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -38046,6 +38191,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -38058,6 +38204,7 @@
       "labels": [
         "c967b"
       ],
+      "comment_inline": "'?' indirection: byte type (1)",
       "xref_summaries": [
         "&967b referenced 1 time by &966b"
       ],
@@ -38074,6 +38221,7 @@
         240,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9681",
@@ -38089,6 +38237,7 @@
       "labels": [
         "c967f"
       ],
+      "comment_inline": "'!' indirection: word type (4)",
       "xref_summaries": [
         "&967f referenced 1 time by &9667"
       ],
@@ -38107,6 +38256,7 @@
       "labels": [
         "c9681"
       ],
+      "comment_inline": "Save the indirection width",
       "xref_summaries": [
         "&9681 referenced 1 time by &967d"
       ],
@@ -38121,6 +38271,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step past the operator",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -38130,6 +38281,7 @@
         132,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -38143,6 +38295,7 @@
         44,
         179
       ],
+      "comment_inline": "Stack the base address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cb32c",
@@ -38156,6 +38309,7 @@
         240,
         146
       ],
+      "comment_inline": "evaluate it as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -38168,6 +38322,7 @@
         165,
         43
       ],
+      "comment_inline": "Save the offset expression...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -38179,6 +38334,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -38188,6 +38344,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -38199,6 +38356,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -38209,6 +38367,7 @@
         227,
         146
       ],
+      "comment_inline": "evaluate the index expression",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92e3",
@@ -38220,6 +38379,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "address = base + index",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -38228,6 +38388,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -38237,6 +38398,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -38249,6 +38411,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -38260,6 +38423,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -38269,6 +38433,7 @@
         101,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -38281,6 +38446,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -38295,6 +38461,7 @@
       "labels": [
         "c969f"
       ],
+      "comment_inline": "Restore the indirection type",
       "xref_summaries": [
         "&969f referenced 1 time by &95ad"
       ],
@@ -38310,6 +38477,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -38321,6 +38489,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "found: A=&FF, CLC",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -38330,6 +38499,7 @@
         169,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -38339,6 +38509,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -38350,6 +38521,7 @@
       "labels": [
         "c96a6"
       ],
+      "comment_inline": "Resident-integer array: step past \"(\"",
       "xref_summaries": [
         "&96a6 referenced 1 time by &9658"
       ],
@@ -38365,6 +38537,7 @@
         230,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fileblk",
@@ -38378,11 +38551,12 @@
         223,
         150
       ],
+      "comment_inline": "index the array",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c96df",
+      "operand": "index_array",
       "target": 38623,
-      "target_label": "sub_c96df"
+      "target_label": "index_array"
     },
     {
       "addr": 38572,
@@ -38391,6 +38565,7 @@
         97,
         150
       ],
+      "comment_inline": "check for trailing ! or ?",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9661",
@@ -38405,6 +38580,7 @@
       "labels": [
         "c96af"
       ],
+      "comment_inline": "String variable: step past \"$\"",
       "xref_summaries": [
         "&96af referenced 1 time by &9646"
       ],
@@ -38419,6 +38595,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -38428,6 +38605,7 @@
         132,
         57
       ],
+      "comment_inline": "record the name length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fileblk",
@@ -38439,6 +38617,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -38448,6 +38627,7 @@
         198,
         44
       ],
+      "comment_inline": "mark the type string",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa_2",
@@ -38460,6 +38640,7 @@
         177,
         55
       ],
+      "comment_inline": "following character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -38472,6 +38653,7 @@
         201,
         40
       ],
+      "comment_inline": "'('  -> string array",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&28"
@@ -38482,6 +38664,7 @@
         240,
         13
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c96c9",
@@ -38495,6 +38678,7 @@
         105,
         148
       ],
+      "comment_inline": "Look the string variable up",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_variable",
@@ -38507,6 +38691,7 @@
         240,
         182
       ],
+      "comment_inline": "not found: undefined",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9677",
@@ -38519,6 +38704,7 @@
         134,
         27
       ],
+      "comment_inline": "Update the scan offset",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -38531,6 +38717,7 @@
         169,
         129
       ],
+      "comment_inline": "Type = string lvalue (&81)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&81"
@@ -38541,6 +38728,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -38552,6 +38740,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "found: SEC",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -38560,6 +38749,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -38571,6 +38761,7 @@
       "labels": [
         "c96c9"
       ],
+      "comment_inline": "String array: step past \"(\"",
       "xref_summaries": [
         "&96c9 referenced 1 time by &96ba"
       ],
@@ -38586,6 +38777,7 @@
         132,
         57
       ],
+      "comment_inline": "record the name length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fileblk",
@@ -38598,6 +38790,7 @@
         198,
         44
       ],
+      "comment_inline": "mark the type string",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa_2",
@@ -38611,11 +38804,12 @@
         223,
         150
       ],
+      "comment_inline": "index the array",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c96df",
+      "operand": "index_array",
       "target": 38623,
-      "target_label": "sub_c96df"
+      "target_label": "index_array"
     },
     {
       "addr": 38609,
@@ -38623,6 +38817,7 @@
         169,
         129
       ],
+      "comment_inline": "Type = string lvalue (&81)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&81"
@@ -38633,6 +38828,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -38644,6 +38840,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "found: SEC",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -38652,6 +38849,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -38663,6 +38861,7 @@
       "labels": [
         "c96d7"
       ],
+      "comment_inline": "No such array: Array error",
       "xref_summaries": [
         "&96d7 referenced 2 times by &96e2, &9709"
       ],
@@ -38713,8 +38912,9 @@
         148
       ],
       "labels": [
-        "sub_c96df"
+        "index_array"
       ],
+      "comment_inline": "Find the array",
       "xref_summaries": [
         "&96df referenced 2 times by &96a9, &96ce"
       ],
@@ -38734,6 +38934,7 @@
         240,
         243
       ],
+      "comment_inline": "missing: Array error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c96d7",
@@ -38746,6 +38947,7 @@
         134,
         27
       ],
+      "comment_inline": "Update the scan offset",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -38758,6 +38960,7 @@
         165,
         44
       ],
+      "comment_inline": "Save the variable type...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -38769,6 +38972,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -38778,6 +38982,7 @@
         165,
         42
       ],
+      "comment_inline": "...and the array data pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -38789,6 +38994,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -38798,6 +39004,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -38809,6 +39016,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -38818,6 +39026,7 @@
         160,
         0
       ],
+      "comment_inline": "Number of dimensions",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -38828,6 +39037,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -38840,6 +39050,7 @@
         201,
         4
       ],
+      "comment_inline": "more than a few?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#4"
@@ -38850,6 +39061,7 @@
         144,
         117
       ],
+      "comment_inline": "no: handle the small case",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c976c",
@@ -38861,6 +39073,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "Accumulate the flattened index",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -38871,6 +39084,7 @@
         216,
         174
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "caed8",
@@ -38883,6 +39097,7 @@
         169,
         1
       ],
+      "comment_inline": "one subscript so far",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -38893,6 +39108,7 @@
         133,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -91155,9 +91371,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c95c9",
+      "operand": "parse_var_ref",
       "target": 38345,
-      "target_label": "sub_c95c9"
+      "target_label": "parse_var_ref"
     },
     {
       "addr": 46744,

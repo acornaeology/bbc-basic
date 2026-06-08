@@ -4025,7 +4025,7 @@ l848a = sub_c847b+15
     rts                                                               ; 957e: 60          `        ; Return
 ; &957f referenced 2 times by &9590, &9593
 .c957f
-    jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable
+    jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable  Clear the new variable value bytes
 ; ***************************************************************************************
 ; Parse an assignment target variable
 ;
@@ -4033,278 +4033,290 @@ l848a = sub_c847b+15
 ; its type, creating the variable if it does not yet exist. Shared by LET and FOR.
 ; &9582 referenced 9 times by &85a5, &8be4, &90e1, &9328, &b256, &b7c4, &b9e4, &ba7f, &bb1f
 .parse_lvalue
-    jsr sub_c95c9                                                     ; 9582: 20 c9 95     ..   
-    bne return_13                                                     ; 9585: d0 1d       ..    
-    bcs return_13                                                     ; 9587: b0 1b       ..    
-    jsr create_variable                                               ; 9589: 20 fc 94     ..   
-    ldx #5                                                            ; 958c: a2 05       ..    
-    cpx zp_iwa_2                                                      ; 958e: e4 2c       .,    
-    bne c957f                                                         ; 9590: d0 ed       ..    
-    inx                                                               ; 9592: e8          .     
-    bne c957f                                                         ; 9593: d0 ea       ..    
+    jsr parse_var_ref                                                 ; 9582: 20 c9 95     ..      ; Parse the variable reference
+    bne return_13                                                     ; 9585: d0 1d       ..       ; found: return
+    bcs return_13                                                     ; 9587: b0 1b       ..       ; indirection/array: return
+    jsr create_variable                                               ; 9589: 20 fc 94     ..      ; undefined: create the variable
+    ldx #5                                                            ; 958c: a2 05       ..       ; Decide how many value bytes to clear
+    cpx zp_iwa_2                                                      ; 958e: e4 2c       .,       ; ...
+    bne c957f                                                         ; 9590: d0 ed       ..       ; ...
+    inx                                                               ; 9592: e8          .        ; ...
+    bne c957f                                                         ; 9593: d0 ea       ..       ; then retry the parse so it is found
 ; &9595 referenced 1 time by &95df
 .loop_c9595
-    cmp #&21 ; '!'                                                    ; 9595: c9 21       .!    
-    beq c95a5                                                         ; 9597: f0 0c       ..    
-    cmp #&24 ; '$'                                                    ; 9599: c9 24       .$    
-    beq c95b0                                                         ; 959b: f0 13       ..    
-    eor #&3f ; '?'                                                    ; 959d: 49 3f       I?    
-    beq c95a7                                                         ; 959f: f0 06       ..    
-    lda #0                                                            ; 95a1: a9 00       ..    
-    sec                                                               ; 95a3: 38          8     
+    cmp #&21 ; '!'                                                    ; 9595: c9 21       .!       ; '!' indirection?
+    beq c95a5                                                         ; 9597: f0 0c       ..       ; yes: word indirection
+    cmp #&24 ; '$'                                                    ; 9599: c9 24       .$       ; '$' indirection?
+    beq c95b0                                                         ; 959b: f0 13       ..       ; yes: string indirection
+    eor #&3f ; '?'                                                    ; 959d: 49 3f       I?       ; '?' indirection?
+    beq c95a7                                                         ; 959f: f0 06       ..       ; yes: byte indirection
+    lda #0                                                            ; 95a1: a9 00       ..       ; none: not an lvalue
+    sec                                                               ; 95a3: 38          8        ; ...
 ; &95a4 referenced 2 times by &9585, &9587
 .return_13
-    rts                                                               ; 95a4: 60          `     
+    rts                                                               ; 95a4: 60          `        ; Return
 ; &95a5 referenced 1 time by &9597
 .c95a5
-    lda #4                                                            ; 95a5: a9 04       ..    
+    lda #4                                                            ; 95a5: a9 04       ..       ; '!': word width (4)
 ; &95a7 referenced 1 time by &959f
 .c95a7
-    pha                                                               ; 95a7: 48          H     
-    inc zp_text_ptr2_off                                              ; 95a8: e6 1b       ..    
-    jsr sub_c92e3                                                     ; 95aa: 20 e3 92     ..   
-    jmp c969f                                                         ; 95ad: 4c 9f 96    L..   
+    pha                                                               ; 95a7: 48          H        ; Save the width
+    inc zp_text_ptr2_off                                              ; 95a8: e6 1b       ..       ; step past the operator
+    jsr sub_c92e3                                                     ; 95aa: 20 e3 92     ..      ; evaluate the address
+    jmp c969f                                                         ; 95ad: 4c 9f 96    L..      ; finish as an indirection
 ; &95b0 referenced 1 time by &959b
 .c95b0
-    inc zp_text_ptr2_off                                              ; 95b0: e6 1b       ..    
-    jsr sub_c92e3                                                     ; 95b2: 20 e3 92     ..   
-    lda zp_iwa_1                                                      ; 95b5: a5 2b       .+    
-    beq c95bf                                                         ; 95b7: f0 06       ..    
-    lda #&80                                                          ; 95b9: a9 80       ..    
-    sta zp_iwa_2                                                      ; 95bb: 85 2c       .,    
-    sec                                                               ; 95bd: 38          8     
-    rts                                                               ; 95be: 60          `     
+    inc zp_text_ptr2_off                                              ; 95b0: e6 1b       ..       ; '$': step past the operator
+    jsr sub_c92e3                                                     ; 95b2: 20 e3 92     ..      ; evaluate the address
+    lda zp_iwa_1                                                      ; 95b5: a5 2b       .+       ; address in zero page?
+    beq c95bf                                                         ; 95b7: f0 06       ..       ; yes: $ range error
+    lda #&80                                                          ; 95b9: a9 80       ..       ; Type = string indirection (&80)
+    sta zp_iwa_2                                                      ; 95bb: 85 2c       .,       ; ...
+    sec                                                               ; 95bd: 38          8        ; found: SEC
+    rts                                                               ; 95be: 60          `        ; Return
 ; &95bf referenced 1 time by &95b7
 .c95bf
-    brk                                                               ; 95bf: 00          .     
+    brk                                                               ; 95bf: 00          .        ; $ range error
     equb &08                                                          ; 95c0: 08          .     
     equs "$ range"                                                    ; 95c1: 24 20 72... $ r...
     equb &00                                                          ; 95c8: 00          .     
+; ***************************************************************************************
+; Parse a variable reference / lvalue
+;
+; Scan a variable name or indirection operator at the text pointer. On success returns
+; A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer,
+; 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0,
+; SEC when the name is undefined.
 ; &95c9 referenced 2 times by &9582, &b695
-.sub_c95c9
-    lda zp_text_ptr                                                   ; 95c9: a5 0b       ..    
-    sta zp_text_ptr2                                                  ; 95cb: 85 19       ..    
-    lda zp_text_ptr_1                                                 ; 95cd: a5 0c       ..    
-    sta zp_text_ptr2_1                                                ; 95cf: 85 1a       ..    
-    ldy zp_text_ptr_off                                               ; 95d1: a4 0a       ..    
-    dey                                                               ; 95d3: 88          .     
+.parse_var_ref
+    lda zp_text_ptr                                                   ; 95c9: a5 0b       ..       ; Copy the text pointer into the scan pointer
+    sta zp_text_ptr2                                                  ; 95cb: 85 19       ..       ; ...
+    lda zp_text_ptr_1                                                 ; 95cd: a5 0c       ..       ; ...
+    sta zp_text_ptr2_1                                                ; 95cf: 85 1a       ..       ; ...
+    ldy zp_text_ptr_off                                               ; 95d1: a4 0a       ..       ; Start one before the text offset
+    dey                                                               ; 95d3: 88          .        ; ...
 ; &95d4 referenced 1 time by &95db
 .loop_c95d4
-    iny                                                               ; 95d4: c8          .     
+    iny                                                               ; 95d4: c8          .        ; Advance
 ; &95d5 referenced 1 time by &8eec
 .sub_c95d5
-    sty zp_text_ptr2_off                                              ; 95d5: 84 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 95d7: b1 19       ..    
-    cmp #&20 ; ' '                                                    ; 95d9: c9 20       .     
-    beq loop_c95d4                                                    ; 95db: f0 f7       ..    
+    sty zp_text_ptr2_off                                              ; 95d5: 84 1b       ..       ; Record the scan offset
+    lda (zp_text_ptr2),y                                              ; 95d7: b1 19       ..       ; Next character
+    cmp #&20 ; ' '                                                    ; 95d9: c9 20       .        ; space?
+    beq loop_c95d4                                                    ; 95db: f0 f7       ..       ; skip spaces
 ; &95dd referenced 2 times by &8bc9, &ae22
 .sub_c95dd
-    cmp #&40 ; '@'                                                    ; 95dd: c9 40       .@    
-    bcc loop_c9595                                                    ; 95df: 90 b4       ..    
-    cmp #&5b ; '['                                                    ; 95e1: c9 5b       .[    
-    bcs c95ff                                                         ; 95e3: b0 1a       ..    
-    asl a                                                             ; 95e5: 0a          .     
-    asl a                                                             ; 95e6: 0a          .     
-    sta zp_iwa                                                        ; 95e7: 85 2a       .*    
-    lda #4                                                            ; 95e9: a9 04       ..    
-    sta zp_iwa_1                                                      ; 95eb: 85 2b       .+    
-    iny                                                               ; 95ed: c8          .     
-    lda (zp_text_ptr2),y                                              ; 95ee: b1 19       ..    
-    iny                                                               ; 95f0: c8          .     
-    cmp #&25 ; '%'                                                    ; 95f1: c9 25       .%    
-    bne c95ff                                                         ; 95f3: d0 0a       ..    
-    ldx #4                                                            ; 95f5: a2 04       ..    
-    stx zp_iwa_2                                                      ; 95f7: 86 2c       .,    
-    lda (zp_text_ptr2),y                                              ; 95f9: b1 19       ..    
-    cmp #&28 ; '('                                                    ; 95fb: c9 28       .(    
-    bne c9665                                                         ; 95fd: d0 66       .f    
+    cmp #&40 ; '@'                                                    ; 95dd: c9 40       .@       ; below '@': an indirection operator
+    bcc loop_c9595                                                    ; 95df: 90 b4       ..       ; ...
+    cmp #&5b ; '['                                                    ; 95e1: c9 5b       .[       ; above 'Z'?
+    bcs c95ff                                                         ; 95e3: b0 1a       ..       ; yes: a named (dynamic) variable
+    asl a                                                             ; 95e5: 0a          .        ; Resident integer: hash char to &0400 + char*4
+    asl a                                                             ; 95e6: 0a          .        ; ...
+    sta zp_iwa                                                        ; 95e7: 85 2a       .*       ; value pointer low
+    lda #4                                                            ; 95e9: a9 04       ..       ; page &04
+    sta zp_iwa_1                                                      ; 95eb: 85 2b       .+       ; ...
+    iny                                                               ; 95ed: c8          .        ; Second character
+    lda (zp_text_ptr2),y                                              ; 95ee: b1 19       ..       ; ...
+    iny                                                               ; 95f0: c8          .        ; ...
+    cmp #&25 ; '%'                                                    ; 95f1: c9 25       .%       ; must be '%' for a resident integer
+    bne c95ff                                                         ; 95f3: d0 0a       ..       ; not %: treat as a named variable
+    ldx #4                                                            ; 95f5: a2 04       ..       ; Type = integer
+    stx zp_iwa_2                                                      ; 95f7: 86 2c       .,       ; ...
+    lda (zp_text_ptr2),y                                              ; 95f9: b1 19       ..       ; Following character
+    cmp #&28 ; '('                                                    ; 95fb: c9 28       .(       ; '(' -> array element
+    bne c9665                                                         ; 95fd: d0 66       .f       ; yes: handle as an array
 ; &95ff referenced 2 times by &95e3, &95f3
 .c95ff
-    ldx #5                                                            ; 95ff: a2 05       ..    
-    stx zp_iwa_2                                                      ; 9601: 86 2c       .,    
-    lda zp_text_ptr2_off                                              ; 9603: a5 1b       ..    
-    clc                                                               ; 9605: 18          .     
-    adc zp_text_ptr2                                                  ; 9606: 65 19       e.    
-    ldx zp_text_ptr2_1                                                ; 9608: a6 1a       ..    
-    bcc c960e                                                         ; 960a: 90 02       ..    
-    inx                                                               ; 960c: e8          .     
-    clc                                                               ; 960d: 18          .     
+    ldx #5                                                            ; 95ff: a2 05       ..       ; Named variable: type = real/string (5)
+    stx zp_iwa_2                                                      ; 9601: 86 2c       .,       ; ...
+    lda zp_text_ptr2_off                                              ; 9603: a5 1b       ..       ; Point &37/&38 at the name in the text
+    clc                                                               ; 9605: 18          .        ; ...
+    adc zp_text_ptr2                                                  ; 9606: 65 19       e.       ; ...
+    ldx zp_text_ptr2_1                                                ; 9608: a6 1a       ..       ; ...
+    bcc c960e                                                         ; 960a: 90 02       ..       ; ...
+    inx                                                               ; 960c: e8          .        ; ...
+    clc                                                               ; 960d: 18          .        ; ...
 ; &960e referenced 1 time by &960a
 .c960e
-    sbc #0                                                            ; 960e: e9 00       ..    
-    sta zp_general                                                    ; 9610: 85 37       .7    
-    bcs c9615                                                         ; 9612: b0 01       ..    
-    dex                                                               ; 9614: ca          .     
+    sbc #0                                                            ; 960e: e9 00       ..       ; ...
+    sta zp_general                                                    ; 9610: 85 37       .7       ; ...
+    bcs c9615                                                         ; 9612: b0 01       ..       ; ...
+    dex                                                               ; 9614: ca          .        ; ...
 ; &9615 referenced 1 time by &9612
 .c9615
-    stx zp_general_1                                                  ; 9615: 86 38       .8    
-    ldx zp_text_ptr2_off                                              ; 9617: a6 1b       ..    
-    ldy #1                                                            ; 9619: a0 01       ..    
+    stx zp_general_1                                                  ; 9615: 86 38       .8       ; ...
+    ldx zp_text_ptr2_off                                              ; 9617: a6 1b       ..       ; Reset the length counter
+    ldy #1                                                            ; 9619: a0 01       ..       ; ...
 ; &961b referenced 3 times by &962b, &9633, &963f
 .c961b
-    lda (zp_general),y                                                ; 961b: b1 37       .7    
-    cmp #&41 ; 'A'                                                    ; 961d: c9 41       .A    
-    bcs c962d                                                         ; 961f: b0 0c       ..    
-    cmp #&30 ; '0'                                                    ; 9621: c9 30       .0    
-    bcc c9641                                                         ; 9623: 90 1c       ..    
-    cmp #&3a ; ':'                                                    ; 9625: c9 3a       .:    
-    bcs c9641                                                         ; 9627: b0 18       ..    
-    inx                                                               ; 9629: e8          .     
-    iny                                                               ; 962a: c8          .     
-    bne c961b                                                         ; 962b: d0 ee       ..    
+    lda (zp_general),y                                                ; 961b: b1 37       .7       ; Scan the name: next character
+    cmp #&41 ; 'A'                                                    ; 961d: c9 41       .A       ; below 'A'?
+    bcs c962d                                                         ; 961f: b0 0c       ..       ; no: check letters
+    cmp #&30 ; '0'                                                    ; 9621: c9 30       .0       ; a digit?
+    bcc c9641                                                         ; 9623: 90 1c       ..       ; no: name ends
+    cmp #&3a ; ':'                                                    ; 9625: c9 3a       .:       ; ...
+    bcs c9641                                                         ; 9627: b0 18       ..       ; no: name ends
+    inx                                                               ; 9629: e8          .        ; count this character
+    iny                                                               ; 962a: c8          .        ; ...
+    bne c961b                                                         ; 962b: d0 ee       ..       ; continue
 ; &962d referenced 1 time by &961f
 .c962d
-    cmp #&5b ; '['                                                    ; 962d: c9 5b       .[    
-    bcs c9635                                                         ; 962f: b0 04       ..    
-    inx                                                               ; 9631: e8          .     
-    iny                                                               ; 9632: c8          .     
-    bne c961b                                                         ; 9633: d0 e6       ..    
+    cmp #&5b ; '['                                                    ; 962d: c9 5b       .[       ; above 'Z'?
+    bcs c9635                                                         ; 962f: b0 04       ..       ; yes: check lower case
+    inx                                                               ; 9631: e8          .        ; A-Z: count it
+    iny                                                               ; 9632: c8          .        ; ...
+    bne c961b                                                         ; 9633: d0 e6       ..       ; continue
 ; &9635 referenced 1 time by &962f
 .c9635
-    cmp #&5f ; '_'                                                    ; 9635: c9 5f       ._    
-    bcc c9641                                                         ; 9637: 90 08       ..    
-    cmp #&7b ; '{'                                                    ; 9639: c9 7b       .{    
-    bcs c9641                                                         ; 963b: b0 04       ..    
-    inx                                                               ; 963d: e8          .     
-    iny                                                               ; 963e: c8          .     
-    bne c961b                                                         ; 963f: d0 da       ..    
+    cmp #&5f ; '_'                                                    ; 9635: c9 5f       ._       ; below '_'?
+    bcc c9641                                                         ; 9637: 90 08       ..       ; yes: name ends
+    cmp #&7b ; '{'                                                    ; 9639: c9 7b       .{       ; above 'z'?
+    bcs c9641                                                         ; 963b: b0 04       ..       ; yes: name ends
+    inx                                                               ; 963d: e8          .        ; _ or a-z: count it
+    iny                                                               ; 963e: c8          .        ; ...
+    bne c961b                                                         ; 963f: d0 da       ..       ; continue
 ; &9641 referenced 4 times by &9623, &9627, &9637, &963b
 .c9641
-    dey                                                               ; 9641: 88          .     
-    beq c9673                                                         ; 9642: f0 2f       ./    
-    cmp #&24 ; '$'                                                    ; 9644: c9 24       .$    
-    beq c96af                                                         ; 9646: f0 67       .g    
-    cmp #&25 ; '%'                                                    ; 9648: c9 25       .%    
-    bne c9654                                                         ; 964a: d0 08       ..    
-    dec zp_iwa_2                                                      ; 964c: c6 2c       .,    
-    iny                                                               ; 964e: c8          .     
-    inx                                                               ; 964f: e8          .     
-    iny                                                               ; 9650: c8          .     
-    lda (zp_general),y                                                ; 9651: b1 37       .7    
-    dey                                                               ; 9653: 88          .     
+    dey                                                               ; 9641: 88          .        ; Back up to the terminator
+    beq c9673                                                         ; 9642: f0 2f       ./       ; empty name: undefined
+    cmp #&24 ; '$'                                                    ; 9644: c9 24       .$       ; '$' suffix -> string variable
+    beq c96af                                                         ; 9646: f0 67       .g       ; yes
+    cmp #&25 ; '%'                                                    ; 9648: c9 25       .%       ; '%' suffix -> integer variable
+    bne c9654                                                         ; 964a: d0 08       ..       ; no: real variable
+    dec zp_iwa_2                                                      ; 964c: c6 2c       .,       ; mark the type integer
+    iny                                                               ; 964e: c8          .        ; step past the %
+    inx                                                               ; 964f: e8          .        ; ...
+    iny                                                               ; 9650: c8          .        ; ...
+    lda (zp_general),y                                                ; 9651: b1 37       .7       ; check the following character
+    dey                                                               ; 9653: 88          .        ; ...
 ; &9654 referenced 1 time by &964a
 .c9654
-    sty zp_fileblk                                                    ; 9654: 84 39       .9    
-    cmp #&28 ; '('                                                    ; 9656: c9 28       .(    
-    beq c96a6                                                         ; 9658: f0 4c       .L    
-    jsr find_variable                                                 ; 965a: 20 69 94     i.   
-    beq c9677                                                         ; 965d: f0 18       ..    
-    stx zp_text_ptr2_off                                              ; 965f: 86 1b       ..    
+    sty zp_fileblk                                                    ; 9654: 84 39       .9       ; Record the name length
+    cmp #&28 ; '('                                                    ; 9656: c9 28       .(       ; '(' -> array element
+    beq c96a6                                                         ; 9658: f0 4c       .L       ; yes
+    jsr find_variable                                                 ; 965a: 20 69 94     i.      ; Look the variable up in storage
+    beq c9677                                                         ; 965d: f0 18       ..       ; not found: undefined
+    stx zp_text_ptr2_off                                              ; 965f: 86 1b       ..       ; Update the scan offset past the name
 ; &9661 referenced 1 time by &96ac
 .c9661
-    ldy zp_text_ptr2_off                                              ; 9661: a4 1b       ..    
-    lda (zp_text_ptr2),y                                              ; 9663: b1 19       ..    
+    ldy zp_text_ptr2_off                                              ; 9661: a4 1b       ..       ; Next character after the name
+    lda (zp_text_ptr2),y                                              ; 9663: b1 19       ..       ; ...
 ; &9665 referenced 1 time by &95fd
 .c9665
-    cmp #&21 ; '!'                                                    ; 9665: c9 21       .!    
-    beq c967f                                                         ; 9667: f0 16       ..    
-    cmp #&3f ; '?'                                                    ; 9669: c9 3f       .?    
-    beq c967b                                                         ; 966b: f0 0e       ..    
-    clc                                                               ; 966d: 18          .     
-    sty zp_text_ptr2_off                                              ; 966e: 84 1b       ..    
-    lda #&ff                                                          ; 9670: a9 ff       ..    
-    rts                                                               ; 9672: 60          `     
+    cmp #&21 ; '!'                                                    ; 9665: c9 21       .!       ; '!' indirection following?
+    beq c967f                                                         ; 9667: f0 16       ..       ; yes: word indirection
+    cmp #&3f ; '?'                                                    ; 9669: c9 3f       .?       ; '?' indirection following?
+    beq c967b                                                         ; 966b: f0 0e       ..       ; yes: byte indirection
+    clc                                                               ; 966d: 18          .        ; Plain variable: found
+    sty zp_text_ptr2_off                                              ; 966e: 84 1b       ..       ; save the scan offset
+    lda #&ff                                                          ; 9670: a9 ff       ..       ; A = &FF (found)
+    rts                                                               ; 9672: 60          `        ; Return
 ; &9673 referenced 1 time by &9642
 .c9673
-    lda #0                                                            ; 9673: a9 00       ..    
-    sec                                                               ; 9675: 38          8     
-    rts                                                               ; 9676: 60          `     
+    lda #0                                                            ; 9673: a9 00       ..       ; Undefined: A=0, SEC
+    sec                                                               ; 9675: 38          8        ; ...
+    rts                                                               ; 9676: 60          `        ; Return
 ; &9677 referenced 2 times by &965d, &96bf
 .c9677
-    lda #0                                                            ; 9677: a9 00       ..    
-    clc                                                               ; 9679: 18          .     
-    rts                                                               ; 967a: 60          `     
+    lda #0                                                            ; 9677: a9 00       ..       ; Found: A=0, CLC
+    clc                                                               ; 9679: 18          .        ; ...
+    rts                                                               ; 967a: 60          `        ; Return
 ; &967b referenced 1 time by &966b
 .c967b
-    lda #0                                                            ; 967b: a9 00       ..    
-    beq c9681                                                         ; 967d: f0 02       ..    
+    lda #0                                                            ; 967b: a9 00       ..       ; '?' indirection: byte type (1)
+    beq c9681                                                         ; 967d: f0 02       ..       ; ...
 ; &967f referenced 1 time by &9667
 .c967f
-    lda #4                                                            ; 967f: a9 04       ..    
+    lda #4                                                            ; 967f: a9 04       ..       ; '!' indirection: word type (4)
 ; &9681 referenced 1 time by &967d
 .c9681
-    pha                                                               ; 9681: 48          H     
-    iny                                                               ; 9682: c8          .     
-    sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..    
-    jsr cb32c                                                         ; 9685: 20 2c b3     ,.   
-    jsr coerce_to_integer                                             ; 9688: 20 f0 92     ..   
-    lda zp_iwa_1                                                      ; 968b: a5 2b       .+    
-    pha                                                               ; 968d: 48          H     
-    lda zp_iwa                                                        ; 968e: a5 2a       .*    
-    pha                                                               ; 9690: 48          H     
-    jsr sub_c92e3                                                     ; 9691: 20 e3 92     ..   
-    clc                                                               ; 9694: 18          .     
-    pla                                                               ; 9695: 68          h     
-    adc zp_iwa                                                        ; 9696: 65 2a       e*    
-    sta zp_iwa                                                        ; 9698: 85 2a       .*    
-    pla                                                               ; 969a: 68          h     
-    adc zp_iwa_1                                                      ; 969b: 65 2b       e+    
-    sta zp_iwa_1                                                      ; 969d: 85 2b       .+    
+    pha                                                               ; 9681: 48          H        ; Save the indirection width
+    iny                                                               ; 9682: c8          .        ; step past the operator
+    sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..       ; ...
+    jsr cb32c                                                         ; 9685: 20 2c b3     ,.      ; Stack the base address
+    jsr coerce_to_integer                                             ; 9688: 20 f0 92     ..      ; evaluate it as an integer
+    lda zp_iwa_1                                                      ; 968b: a5 2b       .+       ; Save the offset expression...
+    pha                                                               ; 968d: 48          H        ; ...
+    lda zp_iwa                                                        ; 968e: a5 2a       .*       ; ...
+    pha                                                               ; 9690: 48          H        ; ...
+    jsr sub_c92e3                                                     ; 9691: 20 e3 92     ..      ; evaluate the index expression
+    clc                                                               ; 9694: 18          .        ; address = base + index
+    pla                                                               ; 9695: 68          h        ; ...
+    adc zp_iwa                                                        ; 9696: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 9698: 85 2a       .*       ; ...
+    pla                                                               ; 969a: 68          h        ; ...
+    adc zp_iwa_1                                                      ; 969b: 65 2b       e+       ; ...
+    sta zp_iwa_1                                                      ; 969d: 85 2b       .+       ; ...
 ; &969f referenced 1 time by &95ad
 .c969f
-    pla                                                               ; 969f: 68          h     
-    sta zp_iwa_2                                                      ; 96a0: 85 2c       .,    
-    clc                                                               ; 96a2: 18          .     
-    lda #&ff                                                          ; 96a3: a9 ff       ..    
-    rts                                                               ; 96a5: 60          `     
+    pla                                                               ; 969f: 68          h        ; Restore the indirection type
+    sta zp_iwa_2                                                      ; 96a0: 85 2c       .,       ; ...
+    clc                                                               ; 96a2: 18          .        ; found: A=&FF, CLC
+    lda #&ff                                                          ; 96a3: a9 ff       ..       ; ...
+    rts                                                               ; 96a5: 60          `        ; Return
 ; &96a6 referenced 1 time by &9658
 .c96a6
-    inx                                                               ; 96a6: e8          .     
-    inc zp_fileblk                                                    ; 96a7: e6 39       .9    
-    jsr sub_c96df                                                     ; 96a9: 20 df 96     ..   
-    jmp c9661                                                         ; 96ac: 4c 61 96    La.   
+    inx                                                               ; 96a6: e8          .        ; Resident-integer array: step past "("
+    inc zp_fileblk                                                    ; 96a7: e6 39       .9       ; ...
+    jsr index_array                                                   ; 96a9: 20 df 96     ..      ; index the array
+    jmp c9661                                                         ; 96ac: 4c 61 96    La.      ; check for trailing ! or ?
 ; &96af referenced 1 time by &9646
 .c96af
-    inx                                                               ; 96af: e8          .     
-    iny                                                               ; 96b0: c8          .     
-    sty zp_fileblk                                                    ; 96b1: 84 39       .9    
-    iny                                                               ; 96b3: c8          .     
-    dec zp_iwa_2                                                      ; 96b4: c6 2c       .,    
-    lda (zp_general),y                                                ; 96b6: b1 37       .7    
-    cmp #&28 ; '('                                                    ; 96b8: c9 28       .(    
-    beq c96c9                                                         ; 96ba: f0 0d       ..    
-    jsr find_variable                                                 ; 96bc: 20 69 94     i.   
-    beq c9677                                                         ; 96bf: f0 b6       ..    
-    stx zp_text_ptr2_off                                              ; 96c1: 86 1b       ..    
-    lda #&81                                                          ; 96c3: a9 81       ..    
-    sta zp_iwa_2                                                      ; 96c5: 85 2c       .,    
-    sec                                                               ; 96c7: 38          8     
-    rts                                                               ; 96c8: 60          `     
+    inx                                                               ; 96af: e8          .        ; String variable: step past "$"
+    iny                                                               ; 96b0: c8          .        ; ...
+    sty zp_fileblk                                                    ; 96b1: 84 39       .9       ; record the name length
+    iny                                                               ; 96b3: c8          .        ; ...
+    dec zp_iwa_2                                                      ; 96b4: c6 2c       .,       ; mark the type string
+    lda (zp_general),y                                                ; 96b6: b1 37       .7       ; following character
+    cmp #&28 ; '('                                                    ; 96b8: c9 28       .(       ; '(' -> string array
+    beq c96c9                                                         ; 96ba: f0 0d       ..       ; yes
+    jsr find_variable                                                 ; 96bc: 20 69 94     i.      ; Look the string variable up
+    beq c9677                                                         ; 96bf: f0 b6       ..       ; not found: undefined
+    stx zp_text_ptr2_off                                              ; 96c1: 86 1b       ..       ; Update the scan offset
+    lda #&81                                                          ; 96c3: a9 81       ..       ; Type = string lvalue (&81)
+    sta zp_iwa_2                                                      ; 96c5: 85 2c       .,       ; ...
+    sec                                                               ; 96c7: 38          8        ; found: SEC
+    rts                                                               ; 96c8: 60          `        ; Return
 ; &96c9 referenced 1 time by &96ba
 .c96c9
-    inx                                                               ; 96c9: e8          .     
-    sty zp_fileblk                                                    ; 96ca: 84 39       .9    
-    dec zp_iwa_2                                                      ; 96cc: c6 2c       .,    
-    jsr sub_c96df                                                     ; 96ce: 20 df 96     ..   
-    lda #&81                                                          ; 96d1: a9 81       ..    
-    sta zp_iwa_2                                                      ; 96d3: 85 2c       .,    
-    sec                                                               ; 96d5: 38          8     
-    rts                                                               ; 96d6: 60          `     
+    inx                                                               ; 96c9: e8          .        ; String array: step past "("
+    sty zp_fileblk                                                    ; 96ca: 84 39       .9       ; record the name length
+    dec zp_iwa_2                                                      ; 96cc: c6 2c       .,       ; mark the type string
+    jsr index_array                                                   ; 96ce: 20 df 96     ..      ; index the array
+    lda #&81                                                          ; 96d1: a9 81       ..       ; Type = string lvalue (&81)
+    sta zp_iwa_2                                                      ; 96d3: 85 2c       .,       ; ...
+    sec                                                               ; 96d5: 38          8        ; found: SEC
+    rts                                                               ; 96d6: 60          `        ; Return
 ; &96d7 referenced 2 times by &96e2, &9709
 .c96d7
-    brk                                                               ; 96d7: 00          .     
+    brk                                                               ; 96d7: 00          .        ; No such array: Array error
     equb &0e                                                          ; 96d8: 0e          .     
     equs "Array"                                                      ; 96d9: 41 72 72... Arr...
     equb &00                                                          ; 96de: 00          .     
+; ***************************************************************************************
+; Locate an array and evaluate one subscript
+;
+; Find the named array and step the value pointer to the addressed element; raises Array
+; on a missing array.
 ; &96df referenced 2 times by &96a9, &96ce
-.sub_c96df
-    jsr find_variable                                                 ; 96df: 20 69 94     i.   
-    beq c96d7                                                         ; 96e2: f0 f3       ..    
-    stx zp_text_ptr2_off                                              ; 96e4: 86 1b       ..    
-    lda zp_iwa_2                                                      ; 96e6: a5 2c       .,    
-    pha                                                               ; 96e8: 48          H     
-    lda zp_iwa                                                        ; 96e9: a5 2a       .*    
-    pha                                                               ; 96eb: 48          H     
-    lda zp_iwa_1                                                      ; 96ec: a5 2b       .+    
-    pha                                                               ; 96ee: 48          H     
-    ldy #0                                                            ; 96ef: a0 00       ..    
-    lda (zp_iwa),y                                                    ; 96f1: b1 2a       .*    
-    cmp #4                                                            ; 96f3: c9 04       ..    
-    bcc c976c                                                         ; 96f5: 90 75       .u    
-    tya                                                               ; 96f7: 98          .     
-    jsr caed8                                                         ; 96f8: 20 d8 ae     ..   
-    lda #1                                                            ; 96fb: a9 01       ..    
-    sta zp_iwa_3                                                      ; 96fd: 85 2d       .-    
+.index_array
+    jsr find_variable                                                 ; 96df: 20 69 94     i.      ; Find the array
+    beq c96d7                                                         ; 96e2: f0 f3       ..       ; missing: Array error
+    stx zp_text_ptr2_off                                              ; 96e4: 86 1b       ..       ; Update the scan offset
+    lda zp_iwa_2                                                      ; 96e6: a5 2c       .,       ; Save the variable type...
+    pha                                                               ; 96e8: 48          H        ; ...
+    lda zp_iwa                                                        ; 96e9: a5 2a       .*       ; ...and the array data pointer
+    pha                                                               ; 96eb: 48          H        ; ...
+    lda zp_iwa_1                                                      ; 96ec: a5 2b       .+       ; ...
+    pha                                                               ; 96ee: 48          H        ; ...
+    ldy #0                                                            ; 96ef: a0 00       ..       ; Number of dimensions
+    lda (zp_iwa),y                                                    ; 96f1: b1 2a       .*       ; ...
+    cmp #4                                                            ; 96f3: c9 04       ..       ; more than a few?
+    bcc c976c                                                         ; 96f5: 90 75       .u       ; no: handle the small case
+    tya                                                               ; 96f7: 98          .        ; Accumulate the flattened index
+    jsr caed8                                                         ; 96f8: 20 d8 ae     ..      ; ...
+    lda #1                                                            ; 96fb: a9 01       ..       ; one subscript so far
+    sta zp_iwa_3                                                      ; 96fd: 85 2d       .-       ; ...
 ; &96ff referenced 1 time by &9742
 .loop_c96ff
     jsr stack_integer                                                 ; 96ff: 20 94 bd     ..   
@@ -10132,7 +10144,7 @@ l848a = sub_c847b+15
 ; [var,...].
 ; &b695 referenced 1 time by &b763
 .stmt_next
-    jsr sub_c95c9                                                     ; b695: 20 c9 95     ..      ; Parse the optional control variable
+    jsr parse_var_ref                                                 ; b695: 20 c9 95     ..      ; Parse the optional control variable
     bne cb6a3                                                         ; b698: d0 09       ..       ; a variable named after NEXT?
     ldx zp_for_level                                                  ; b69a: a6 26       .&       ; innermost FOR frame
     beq cb68e                                                         ; b69c: f0 f0       ..       ; no FOR active: error
@@ -12216,6 +12228,7 @@ save pydis_start, pydis_end
 ;     fwa_unpack_temp1:            2
 ;     fwb_half_fwa:                2
 ;     imul16:                      2
+;     index_array:                 2
 ;     iwa_load_zp:                 2
 ;     l0022:                       2
 ;     l0100:                       2
@@ -12240,6 +12253,7 @@ save pydis_start, pydis_end
 ;     osfind:                      2
 ;     osrdch:                      2
 ;     output_digit:                2
+;     parse_var_ref:               2
 ;     point_const_half_pi:         2
 ;     point_fp_temp3:              2
 ;     point_half_pi_hi:            2
@@ -12271,9 +12285,7 @@ save pydis_start, pydis_end
 ;     sub_c8e8a:                   2
 ;     sub_c8f69:                   2
 ;     sub_c8f92:                   2
-;     sub_c95c9:                   2
 ;     sub_c95dd:                   2
-;     sub_c96df:                   2
 ;     sub_c97eb:                   2
 ;     sub_c9841:                   2
 ;     sub_c9890:                   2
@@ -13974,10 +13986,8 @@ save pydis_start, pydis_end
 ;     sub_c9456
 ;     sub_c94ed
 ;     sub_c9539
-;     sub_c95c9
 ;     sub_c95d5
 ;     sub_c95dd
-;     sub_c96df
 ;     sub_c97ba
 ;     sub_c97df
 ;     sub_c97eb
