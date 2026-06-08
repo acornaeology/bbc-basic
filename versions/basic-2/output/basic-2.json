@@ -1599,8 +1599,7 @@
       "addr": 39280,
       "name": "find_program_line",
       "title": "Search the program for a line number",
-      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n",
-      "fall_through": true
+      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n"
     },
     {
       "addr": 38274,
@@ -1707,6 +1706,13 @@
       "name": "parse_var_ref",
       "title": "Parse a variable reference / lvalue",
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
+    },
+    {
+      "addr": 39358,
+      "name": "iwa_divide",
+      "title": "Unsigned/signed 32-bit integer division",
+      "description": "Evaluate the right operand, take absolute values, and do a 32-step shift-subtract division. The dividend/quotient builds in &39-&3C and the remainder in &3D-&40; the divisor is IWA. The quotient sign is the XOR of the operand signs in &37, the remainder sign the dividend sign in &38. Raises Division by zero. Shared by DIV and MOD.",
+      "fall_through": true
     },
     {
       "addr": 39173,
@@ -44161,8 +44167,9 @@
         168
       ],
       "labels": [
-        "sub_c99be"
+        "iwa_divide"
       ],
+      "comment_inline": "Coerce the divisor to integer",
       "xref_summaries": [
         "&99be referenced 2 times by &9e01, &9e0a"
       ],
@@ -44180,6 +44187,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -44192,6 +44200,7 @@
         165,
         45
       ],
+      "comment_inline": "Save the divisor sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -44203,6 +44212,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -44213,6 +44223,7 @@
         113,
         173
       ],
+      "comment_inline": "take |divisor|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -44226,6 +44237,7 @@
         29,
         158
       ],
+      "comment_inline": "Stack it, evaluate the dividend",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9e1d",
@@ -44238,6 +44250,7 @@
         134,
         39
       ],
+      "comment_inline": "remember the operator",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_var_type",
@@ -44249,6 +44262,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "coerce the dividend to integer",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -44259,6 +44273,7 @@
         240,
         146
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -44270,6 +44285,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the divisor sign",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -44279,6 +44295,7 @@
         133,
         56
       ],
+      "comment_inline": "remainder takes the dividend sign",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -44291,6 +44308,7 @@
         69,
         45
       ],
+      "comment_inline": "quotient sign = divisor XOR dividend",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_iwa_3",
@@ -44303,6 +44321,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -44316,6 +44335,7 @@
         113,
         173
       ],
+      "comment_inline": "take |dividend|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -44328,6 +44348,7 @@
         162,
         57
       ],
+      "comment_inline": "Move the dividend to the work area (&39-&3C)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -44339,6 +44360,7 @@
         13,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -44351,6 +44373,7 @@
         132,
         61
       ],
+      "comment_inline": "Clear the remainder (&3D-&40)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -44363,6 +44386,7 @@
         132,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -44375,6 +44399,7 @@
         132,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -44387,6 +44412,7 @@
         132,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -44399,6 +44425,7 @@
         165,
         45
       ],
+      "comment_inline": "Divisor zero?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -44411,6 +44438,7 @@
         5,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa",
@@ -44423,6 +44451,7 @@
         5,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -44435,6 +44464,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -44447,6 +44477,7 @@
         240,
         181
       ],
+      "comment_inline": "yes: Division by zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c99a7",
@@ -44459,6 +44490,7 @@
         160,
         32
       ],
+      "comment_inline": "32 bits",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&20"
@@ -44471,6 +44503,7 @@
       "labels": [
         "loop_c99f4"
       ],
+      "comment_inline": "Normalise: count down",
       "xref_summaries": [
         "&99f4 referenced 1 time by &99ff"
       ],
@@ -44486,6 +44519,7 @@
         240,
         65
       ],
+      "comment_inline": "dividend exhausted: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_16",
@@ -44498,6 +44532,7 @@
         6,
         57
       ],
+      "comment_inline": "shift the dividend left until the top bit is set",
       "type": "code",
       "mnemonic": "asl",
       "operand": "zp_fileblk",
@@ -44510,6 +44545,7 @@
         38,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l003a",
@@ -44522,6 +44558,7 @@
         38,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_sign",
@@ -44534,6 +44571,7 @@
         38,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_ovf",
@@ -44546,6 +44584,7 @@
         16,
         243
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c99f4",
@@ -44561,6 +44600,7 @@
       "labels": [
         "loop_c9a01"
       ],
+      "comment_inline": "Shift a bit from dividend into the remainder",
       "xref_summaries": [
         "&9a01 referenced 1 time by &9a36"
       ],
@@ -44579,6 +44619,7 @@
         38,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l003a",
@@ -44591,6 +44632,7 @@
         38,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_sign",
@@ -44603,6 +44645,7 @@
         38,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_ovf",
@@ -44615,6 +44658,7 @@
         38,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_exp",
@@ -44627,6 +44671,7 @@
         38,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m1",
@@ -44639,6 +44684,7 @@
         38,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m2",
@@ -44651,6 +44697,7 @@
         38,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m3",
@@ -44662,6 +44709,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "Try remainder - divisor",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -44671,6 +44719,7 @@
         165,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -44683,6 +44732,7 @@
         229,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -44694,6 +44744,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -44703,6 +44754,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -44715,6 +44767,7 @@
         229,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -44726,6 +44779,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -44735,6 +44789,7 @@
         165,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -44747,6 +44802,7 @@
         229,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -44758,6 +44814,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -44767,6 +44824,7 @@
         165,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -44779,6 +44837,7 @@
         229,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -44791,6 +44850,7 @@
         144,
         12
       ],
+      "comment_inline": "doesn't fit: leave the remainder",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9a33",
@@ -44803,6 +44863,7 @@
         133,
         64
       ],
+      "comment_inline": "fits: keep the new remainder (quotient bit = 1)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -44815,6 +44876,7 @@
         134,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m2",
@@ -44826,6 +44888,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -44835,6 +44898,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -44846,6 +44910,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -44855,6 +44920,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -44867,6 +44933,7 @@
         176,
         2
       ],
+      "comment_inline": "next bit",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9a35",
@@ -44881,6 +44948,7 @@
       "labels": [
         "c9a33"
       ],
+      "comment_inline": "discard the trial subtraction",
       "xref_summaries": [
         "&9a33 referenced 1 time by &9a25"
       ],
@@ -44895,6 +44963,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -44906,6 +44975,7 @@
       "labels": [
         "c9a35"
       ],
+      "comment_inline": "Next bit",
       "xref_summaries": [
         "&9a35 referenced 1 time by &9a31"
       ],
@@ -44921,6 +44991,7 @@
         208,
         201
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9a01",
@@ -44935,6 +45006,7 @@
       "labels": [
         "return_16"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&9a38 referenced 1 time by &99f5"
       ],
@@ -51309,9 +51381,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c99be",
+      "operand": "iwa_divide",
       "target": 39358,
-      "target_label": "sub_c99be"
+      "target_label": "iwa_divide"
     },
     {
       "addr": 40452,
@@ -51367,9 +51439,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c99be",
+      "operand": "iwa_divide",
       "target": 39358,
-      "target_label": "sub_c99be"
+      "target_label": "iwa_divide"
     },
     {
       "addr": 40461,

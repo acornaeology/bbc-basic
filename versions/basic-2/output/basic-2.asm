@@ -4834,84 +4834,91 @@ l848a = sub_c847b+15
 ; &99b9 referenced 1 time by &9936
 .l99b9
     equb &00, &00, &00, &03, &27                                      ; 99b9: 00 00 00... ......
+; ***************************************************************************************
+; Unsigned/signed 32-bit integer division
+;
+; Evaluate the right operand, take absolute values, and do a 32-step shift-subtract
+; division. The dividend/quotient builds in &39-&3C and the remainder in &3D-&40; the
+; divisor is IWA. The quotient sign is the XOR of the operand signs in &37, the remainder
+; sign the dividend sign in &38. Raises Division by zero. Shared by DIV and MOD.
 ; &99be referenced 2 times by &9e01, &9e0a
-.sub_c99be
-    tay                                                               ; 99be: a8          .     
-    jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..   
-    lda zp_iwa_3                                                      ; 99c2: a5 2d       .-    
-    pha                                                               ; 99c4: 48          H     
-    jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.   
-    jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..   
-    stx zp_var_type                                                   ; 99cb: 86 27       .'    
-    tay                                                               ; 99cd: a8          .     
-    jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..   
-    pla                                                               ; 99d1: 68          h     
-    sta zp_general_1                                                  ; 99d2: 85 38       .8    
-    eor zp_iwa_3                                                      ; 99d4: 45 2d       E-    
-    sta zp_general                                                    ; 99d6: 85 37       .7    
-    jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.   
-    ldx #&39 ; '9'                                                    ; 99db: a2 39       .9    
-    jsr unstack_int_to_zp                                             ; 99dd: 20 0d be     ..   
-    sty zp_fwb_exp                                                    ; 99e0: 84 3d       .=    
-    sty zp_fwb_m1                                                     ; 99e2: 84 3e       .>    
-    sty zp_fwb_m2                                                     ; 99e4: 84 3f       .?    
-    sty zp_fwb_m3                                                     ; 99e6: 84 40       .@    
-    lda zp_iwa_3                                                      ; 99e8: a5 2d       .-    
-    ora zp_iwa                                                        ; 99ea: 05 2a       .*    
-    ora zp_iwa_1                                                      ; 99ec: 05 2b       .+    
-    ora zp_iwa_2                                                      ; 99ee: 05 2c       .,    
-    beq c99a7                                                         ; 99f0: f0 b5       ..    
-    ldy #&20 ; ' '                                                    ; 99f2: a0 20       .     
+.iwa_divide
+    tay                                                               ; 99be: a8          .        ; Coerce the divisor to integer
+    jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..      ; ...
+    lda zp_iwa_3                                                      ; 99c2: a5 2d       .-       ; Save the divisor sign
+    pha                                                               ; 99c4: 48          H        ; ...
+    jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.      ; take |divisor|
+    jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..      ; Stack it, evaluate the dividend
+    stx zp_var_type                                                   ; 99cb: 86 27       .'       ; remember the operator
+    tay                                                               ; 99cd: a8          .        ; coerce the dividend to integer
+    jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..      ; ...
+    pla                                                               ; 99d1: 68          h        ; Recover the divisor sign
+    sta zp_general_1                                                  ; 99d2: 85 38       .8       ; remainder takes the dividend sign
+    eor zp_iwa_3                                                      ; 99d4: 45 2d       E-       ; quotient sign = divisor XOR dividend
+    sta zp_general                                                    ; 99d6: 85 37       .7       ; ...
+    jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.      ; take |dividend|
+    ldx #&39 ; '9'                                                    ; 99db: a2 39       .9       ; Move the dividend to the work area (&39-&3C)
+    jsr unstack_int_to_zp                                             ; 99dd: 20 0d be     ..      ; ...
+    sty zp_fwb_exp                                                    ; 99e0: 84 3d       .=       ; Clear the remainder (&3D-&40)
+    sty zp_fwb_m1                                                     ; 99e2: 84 3e       .>       ; ...
+    sty zp_fwb_m2                                                     ; 99e4: 84 3f       .?       ; ...
+    sty zp_fwb_m3                                                     ; 99e6: 84 40       .@       ; ...
+    lda zp_iwa_3                                                      ; 99e8: a5 2d       .-       ; Divisor zero?
+    ora zp_iwa                                                        ; 99ea: 05 2a       .*       ; ...
+    ora zp_iwa_1                                                      ; 99ec: 05 2b       .+       ; ...
+    ora zp_iwa_2                                                      ; 99ee: 05 2c       .,       ; ...
+    beq c99a7                                                         ; 99f0: f0 b5       ..       ; yes: Division by zero
+    ldy #&20 ; ' '                                                    ; 99f2: a0 20       .        ; 32 bits
 ; &99f4 referenced 1 time by &99ff
 .loop_c99f4
-    dey                                                               ; 99f4: 88          .     
-    beq return_16                                                     ; 99f5: f0 41       .A    
-    asl zp_fileblk                                                    ; 99f7: 06 39       .9    
-    rol l003a                                                         ; 99f9: 26 3a       &:    
-    rol zp_fwb_sign                                                   ; 99fb: 26 3b       &;    
-    rol zp_fwb_ovf                                                    ; 99fd: 26 3c       &<    
-    bpl loop_c99f4                                                    ; 99ff: 10 f3       ..    
+    dey                                                               ; 99f4: 88          .        ; Normalise: count down
+    beq return_16                                                     ; 99f5: f0 41       .A       ; dividend exhausted: done
+    asl zp_fileblk                                                    ; 99f7: 06 39       .9       ; shift the dividend left until the top bit is set
+    rol l003a                                                         ; 99f9: 26 3a       &:       ; ...
+    rol zp_fwb_sign                                                   ; 99fb: 26 3b       &;       ; ...
+    rol zp_fwb_ovf                                                    ; 99fd: 26 3c       &<       ; ...
+    bpl loop_c99f4                                                    ; 99ff: 10 f3       ..       ; loop
 ; &9a01 referenced 1 time by &9a36
 .loop_c9a01
-    rol zp_fileblk                                                    ; 9a01: 26 39       &9    
-    rol l003a                                                         ; 9a03: 26 3a       &:    
-    rol zp_fwb_sign                                                   ; 9a05: 26 3b       &;    
-    rol zp_fwb_ovf                                                    ; 9a07: 26 3c       &<    
-    rol zp_fwb_exp                                                    ; 9a09: 26 3d       &=    
-    rol zp_fwb_m1                                                     ; 9a0b: 26 3e       &>    
-    rol zp_fwb_m2                                                     ; 9a0d: 26 3f       &?    
-    rol zp_fwb_m3                                                     ; 9a0f: 26 40       &@    
-    sec                                                               ; 9a11: 38          8     
-    lda zp_fwb_exp                                                    ; 9a12: a5 3d       .=    
-    sbc zp_iwa                                                        ; 9a14: e5 2a       .*    
-    pha                                                               ; 9a16: 48          H     
-    lda zp_fwb_m1                                                     ; 9a17: a5 3e       .>    
-    sbc zp_iwa_1                                                      ; 9a19: e5 2b       .+    
-    pha                                                               ; 9a1b: 48          H     
-    lda zp_fwb_m2                                                     ; 9a1c: a5 3f       .?    
-    sbc zp_iwa_2                                                      ; 9a1e: e5 2c       .,    
-    tax                                                               ; 9a20: aa          .     
-    lda zp_fwb_m3                                                     ; 9a21: a5 40       .@    
-    sbc zp_iwa_3                                                      ; 9a23: e5 2d       .-    
-    bcc c9a33                                                         ; 9a25: 90 0c       ..    
-    sta zp_fwb_m3                                                     ; 9a27: 85 40       .@    
-    stx zp_fwb_m2                                                     ; 9a29: 86 3f       .?    
-    pla                                                               ; 9a2b: 68          h     
-    sta zp_fwb_m1                                                     ; 9a2c: 85 3e       .>    
-    pla                                                               ; 9a2e: 68          h     
-    sta zp_fwb_exp                                                    ; 9a2f: 85 3d       .=    
-    bcs c9a35                                                         ; 9a31: b0 02       ..    
+    rol zp_fileblk                                                    ; 9a01: 26 39       &9       ; Shift a bit from dividend into the remainder
+    rol l003a                                                         ; 9a03: 26 3a       &:       ; ...
+    rol zp_fwb_sign                                                   ; 9a05: 26 3b       &;       ; ...
+    rol zp_fwb_ovf                                                    ; 9a07: 26 3c       &<       ; ...
+    rol zp_fwb_exp                                                    ; 9a09: 26 3d       &=       ; ...
+    rol zp_fwb_m1                                                     ; 9a0b: 26 3e       &>       ; ...
+    rol zp_fwb_m2                                                     ; 9a0d: 26 3f       &?       ; ...
+    rol zp_fwb_m3                                                     ; 9a0f: 26 40       &@       ; ...
+    sec                                                               ; 9a11: 38          8        ; Try remainder - divisor
+    lda zp_fwb_exp                                                    ; 9a12: a5 3d       .=       ; ...
+    sbc zp_iwa                                                        ; 9a14: e5 2a       .*       ; ...
+    pha                                                               ; 9a16: 48          H        ; ...
+    lda zp_fwb_m1                                                     ; 9a17: a5 3e       .>       ; ...
+    sbc zp_iwa_1                                                      ; 9a19: e5 2b       .+       ; ...
+    pha                                                               ; 9a1b: 48          H        ; ...
+    lda zp_fwb_m2                                                     ; 9a1c: a5 3f       .?       ; ...
+    sbc zp_iwa_2                                                      ; 9a1e: e5 2c       .,       ; ...
+    tax                                                               ; 9a20: aa          .        ; ...
+    lda zp_fwb_m3                                                     ; 9a21: a5 40       .@       ; ...
+    sbc zp_iwa_3                                                      ; 9a23: e5 2d       .-       ; ...
+    bcc c9a33                                                         ; 9a25: 90 0c       ..       ; doesn't fit: leave the remainder
+    sta zp_fwb_m3                                                     ; 9a27: 85 40       .@       ; fits: keep the new remainder (quotient bit = 1)
+    stx zp_fwb_m2                                                     ; 9a29: 86 3f       .?       ; ...
+    pla                                                               ; 9a2b: 68          h        ; ...
+    sta zp_fwb_m1                                                     ; 9a2c: 85 3e       .>       ; ...
+    pla                                                               ; 9a2e: 68          h        ; ...
+    sta zp_fwb_exp                                                    ; 9a2f: 85 3d       .=       ; ...
+    bcs c9a35                                                         ; 9a31: b0 02       ..       ; next bit
 ; &9a33 referenced 1 time by &9a25
 .c9a33
-    pla                                                               ; 9a33: 68          h     
-    pla                                                               ; 9a34: 68          h     
+    pla                                                               ; 9a33: 68          h        ; discard the trial subtraction
+    pla                                                               ; 9a34: 68          h        ; ...
 ; &9a35 referenced 1 time by &9a31
 .c9a35
-    dey                                                               ; 9a35: 88          .     
-    bne loop_c9a01                                                    ; 9a36: d0 c9       ..    
+    dey                                                               ; 9a35: 88          .        ; Next bit
+    bne loop_c9a01                                                    ; 9a36: d0 c9       ..       ; loop
 ; &9a38 referenced 1 time by &99f5
 .return_16
-    rts                                                               ; 9a38: 60          `     
+    rts                                                               ; 9a38: 60          `        ; Return
 ; &9a39 referenced 1 time by &9aab
 .loop_c9a39
     stx zp_var_type                                                   ; 9a39: 86 27       .'    
@@ -5611,7 +5618,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the remainder
 ; &9e01 referenced 1 time by &9dde
 .iwa_mod
-    jsr sub_c99be                                                     ; 9e01: 20 be 99     ..      ; Ensure the current value is an integer
+    jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; Ensure the current value is an integer
     lda zp_general_1                                                  ; 9e04: a5 38       .8       ; Carry the operand sign into the core
     php                                                               ; 9e06: 08          .        ; Flag MOD (vs DIV) for the shared core
     jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; Compute the remainder (shared DIV/MOD core)
@@ -5627,7 +5634,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the quotient
 ; &9e0a referenced 1 time by &9de2
 .iwa_div
-    jsr sub_c99be                                                     ; 9e0a: 20 be 99     ..   
+    jsr iwa_divide                                                    ; 9e0a: 20 be 99     ..   
     rol zp_fileblk                                                    ; 9e0d: 26 39       &9    
     rol l003a                                                         ; 9e0f: 26 3a       &:    
     rol zp_fwb_sign                                                   ; 9e11: 26 3b       &;    
@@ -12252,6 +12259,7 @@ save pydis_start, pydis_end
 ;     fwb_half_fwa:                2
 ;     imul16:                      2
 ;     index_array:                 2
+;     iwa_divide:                  2
 ;     iwa_load_zp:                 2
 ;     l0022:                       2
 ;     l0100:                       2
@@ -12313,7 +12321,6 @@ save pydis_start, pydis_end
 ;     sub_c9841:                   2
 ;     sub_c9890:                   2
 ;     sub_c9923:                   2
-;     sub_c99be:                   2
 ;     sub_c9b6b:                   2
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
@@ -14017,7 +14024,6 @@ save pydis_start, pydis_end
 ;     sub_c9880
 ;     sub_c9890
 ;     sub_c9923
-;     sub_c99be
 ;     sub_c9a5f
 ;     sub_c9a9d
 ;     sub_c9a9e

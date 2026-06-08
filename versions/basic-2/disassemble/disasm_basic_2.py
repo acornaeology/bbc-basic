@@ -1827,6 +1827,15 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0x99be, 'iwa_divide',
+             title='Unsigned/signed 32-bit integer division',
+             description='Evaluate the right operand, take absolute values, '
+                         'and do a 32-step shift-subtract division. The '
+                         'dividend/quotient builds in &39-&3C and the '
+                         'remainder in &3D-&40; the divisor is IWA. The '
+                         'quotient sign is the XOR of the operand signs in '
+                         '&37, the remainder sign the dividend sign in &38. '
+                         'Raises Division by zero. Shared by DIV and MOD.')
 d.subroutine(0x9905, 'trace_line',
              title='Print [line] when TRACE is active',
              description='If the current line number is within the TRACE '
@@ -5163,6 +5172,78 @@ d.comment(0x9964, 'print it', align=Align.INLINE)
 d.comment(0x9967, 'next digit', align=Align.INLINE)
 d.comment(0x9968, '...', align=Align.INLINE)
 d.comment(0x996a, 'Return', align=Align.INLINE)
+
+# iwa_divide (&99BE): shift-subtract 32-bit integer division.
+d.comment(0x99be, 'Coerce the divisor to integer', align=Align.INLINE)
+d.comment(0x99bf, '...', align=Align.INLINE)
+d.comment(0x99c2, 'Save the divisor sign', align=Align.INLINE)
+d.comment(0x99c4, '...', align=Align.INLINE)
+d.comment(0x99c5, 'take |divisor|', align=Align.INLINE)
+d.comment(0x99c8, 'Stack it, evaluate the dividend', align=Align.INLINE)
+d.comment(0x99cb, 'remember the operator', align=Align.INLINE)
+d.comment(0x99cd, 'coerce the dividend to integer', align=Align.INLINE)
+d.comment(0x99ce, '...', align=Align.INLINE)
+d.comment(0x99d1, 'Recover the divisor sign', align=Align.INLINE)
+d.comment(0x99d2, 'remainder takes the dividend sign', align=Align.INLINE)
+d.comment(0x99d4, 'quotient sign = divisor XOR dividend', align=Align.INLINE)
+d.comment(0x99d6, '...', align=Align.INLINE)
+d.comment(0x99d8, 'take |dividend|', align=Align.INLINE)
+d.comment(0x99db, 'Move the dividend to the work area (&39-&3C)',
+          align=Align.INLINE)
+d.comment(0x99dd, '...', align=Align.INLINE)
+d.comment(0x99e0, 'Clear the remainder (&3D-&40)', align=Align.INLINE)
+d.comment(0x99e2, '...', align=Align.INLINE)
+d.comment(0x99e4, '...', align=Align.INLINE)
+d.comment(0x99e6, '...', align=Align.INLINE)
+d.comment(0x99e8, 'Divisor zero?', align=Align.INLINE)
+d.comment(0x99ea, '...', align=Align.INLINE)
+d.comment(0x99ec, '...', align=Align.INLINE)
+d.comment(0x99ee, '...', align=Align.INLINE)
+d.comment(0x99f0, 'yes: Division by zero', align=Align.INLINE)
+d.comment(0x99f2, '32 bits', align=Align.INLINE)
+d.comment(0x99f4, 'Normalise: count down', align=Align.INLINE)
+d.comment(0x99f5, 'dividend exhausted: done', align=Align.INLINE)
+d.comment(0x99f7, 'shift the dividend left until the top bit is set',
+          align=Align.INLINE)
+d.comment(0x99f9, '...', align=Align.INLINE)
+d.comment(0x99fb, '...', align=Align.INLINE)
+d.comment(0x99fd, '...', align=Align.INLINE)
+d.comment(0x99ff, 'loop', align=Align.INLINE)
+d.comment(0x9a01, 'Shift a bit from dividend into the remainder',
+          align=Align.INLINE)
+d.comment(0x9a03, '...', align=Align.INLINE)
+d.comment(0x9a05, '...', align=Align.INLINE)
+d.comment(0x9a07, '...', align=Align.INLINE)
+d.comment(0x9a09, '...', align=Align.INLINE)
+d.comment(0x9a0b, '...', align=Align.INLINE)
+d.comment(0x9a0d, '...', align=Align.INLINE)
+d.comment(0x9a0f, '...', align=Align.INLINE)
+d.comment(0x9a11, 'Try remainder - divisor', align=Align.INLINE)
+d.comment(0x9a12, '...', align=Align.INLINE)
+d.comment(0x9a14, '...', align=Align.INLINE)
+d.comment(0x9a16, '...', align=Align.INLINE)
+d.comment(0x9a17, '...', align=Align.INLINE)
+d.comment(0x9a19, '...', align=Align.INLINE)
+d.comment(0x9a1b, '...', align=Align.INLINE)
+d.comment(0x9a1c, '...', align=Align.INLINE)
+d.comment(0x9a1e, '...', align=Align.INLINE)
+d.comment(0x9a20, '...', align=Align.INLINE)
+d.comment(0x9a21, '...', align=Align.INLINE)
+d.comment(0x9a23, '...', align=Align.INLINE)
+d.comment(0x9a25, "doesn't fit: leave the remainder", align=Align.INLINE)
+d.comment(0x9a27, 'fits: keep the new remainder (quotient bit = 1)',
+          align=Align.INLINE)
+d.comment(0x9a29, '...', align=Align.INLINE)
+d.comment(0x9a2b, '...', align=Align.INLINE)
+d.comment(0x9a2c, '...', align=Align.INLINE)
+d.comment(0x9a2e, '...', align=Align.INLINE)
+d.comment(0x9a2f, '...', align=Align.INLINE)
+d.comment(0x9a31, 'next bit', align=Align.INLINE)
+d.comment(0x9a33, 'discard the trial subtraction', align=Align.INLINE)
+d.comment(0x9a34, '...', align=Align.INLINE)
+d.comment(0x9a35, 'Next bit', align=Align.INLINE)
+d.comment(0x9a36, 'loop', align=Align.INLINE)
+d.comment(0x9a38, 'Return', align=Align.INLINE)
 
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)
