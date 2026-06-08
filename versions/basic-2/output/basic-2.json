@@ -96193,6 +96193,7 @@
       "labels": [
         "cb88b"
       ],
+      "comment_inline": "Check the statement ends",
       "xref_summaries": [
         "&b88b referenced 1 time by &b97a"
       ],
@@ -96235,6 +96236,7 @@
         176,
         14
       ],
+      "comment_inline": "too many: error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "err_too_many_gosubs",
@@ -96261,6 +96263,7 @@
         204,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05cc,y",
@@ -96273,6 +96276,7 @@
         165,
         12
       ],
+      "comment_inline": "return position high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -96286,6 +96290,7 @@
         230,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05e6,y",
@@ -96298,6 +96303,7 @@
         230,
         37
       ],
+      "comment_inline": "one more nesting level",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_gosub_level",
@@ -96310,6 +96316,7 @@
         144,
         48
       ],
+      "comment_inline": "jump to the line",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb8d2",
@@ -96324,6 +96331,7 @@
       "labels": [
         "err_too_many_gosubs"
       ],
+      "comment_inline": "Too many GOSUBs error",
       "xref_summaries": [
         "&b8a2 referenced 1 time by &b892"
       ],
@@ -96370,6 +96378,7 @@
       "labels": [
         "err_no_gosub"
       ],
+      "comment_inline": "No GOSUB error",
       "xref_summaries": [
         "&b8af referenced 1 time by &b8bb"
       ],
@@ -96412,6 +96421,7 @@
       "labels": [
         "stmt_return"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -96437,6 +96447,7 @@
         240,
         242
       ],
+      "comment_inline": "nothing stacked: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "err_no_gosub",
@@ -96463,6 +96474,7 @@
         203,
         5
       ],
+      "comment_inline": "return position low byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l05cb,x",
@@ -96476,6 +96488,7 @@
         229,
         5
       ],
+      "comment_inline": "...high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l05e5,x",
@@ -96488,6 +96501,7 @@
         132,
         11
       ],
+      "comment_inline": "restore the text pointer",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr",
@@ -96500,6 +96514,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -96530,6 +96545,7 @@
       "labels": [
         "stmt_goto"
       ],
+      "comment_inline": "Resolve the destination line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_line_target",
@@ -96543,6 +96559,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -96579,6 +96596,7 @@
         240,
         3
       ],
+      "comment_inline": "TRACE off?",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb8d9",
@@ -96592,6 +96610,7 @@
         5,
         153
       ],
+      "comment_inline": "trace the line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "trace_line",
@@ -96607,6 +96626,7 @@
       "labels": [
         "cb8d9"
       ],
+      "comment_inline": "Destination line pointer",
       "xref_summaries": [
         "&b8d9 referenced 1 time by &b8d4"
       ],
@@ -96625,6 +96645,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -96659,6 +96680,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -96672,6 +96694,7 @@
         163,
         139
       ],
+      "comment_inline": "execute from there",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8ba3",
@@ -96688,6 +96711,7 @@
       "labels": [
         "loop_cb8e4"
       ],
+      "comment_inline": "Check the statement ends",
       "xref_summaries": [
         "&b8e4 referenced 1 time by &b8f7"
       ],
@@ -96706,6 +96730,7 @@
         169,
         51
       ],
+      "comment_inline": "Restore the default error handler",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&33"
@@ -96716,6 +96741,7 @@
         133,
         22
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -96728,6 +96754,7 @@
         169,
         180
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -96738,6 +96765,7 @@
         133,
         23
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -96751,6 +96779,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -96767,6 +96796,7 @@
       "labels": [
         "loop_cb8f2"
       ],
+      "comment_inline": "Next character",
       "xref_summaries": [
         "&b8f2 referenced 1 time by &b91a"
       ],
@@ -96785,6 +96815,7 @@
         201,
         135
       ],
+      "comment_inline": "OFF token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&87"
@@ -96795,6 +96826,7 @@
         240,
         235
       ],
+      "comment_inline": "yes: ON ERROR OFF",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb8e4",
@@ -96807,6 +96839,7 @@
         164,
         10
       ],
+      "comment_inline": "Point at the handler statement",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_off",
@@ -96818,6 +96851,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -96828,6 +96862,7 @@
         109,
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c986d",
@@ -96840,6 +96875,7 @@
         165,
         11
       ],
+      "comment_inline": "Set the error handler to this line",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -96852,6 +96888,7 @@
         133,
         22
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -96864,6 +96901,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -96876,6 +96914,7 @@
         133,
         23
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -96889,6 +96928,7 @@
         125,
         139
       ],
+      "comment_inline": "skip the rest of the line",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "stmt_data",
@@ -96903,6 +96943,7 @@
       "labels": [
         "loop_cb90a"
       ],
+      "comment_inline": "ON syntax error",
       "xref_summaries": [
         "&b90a referenced 1 time by &b92f"
       ],

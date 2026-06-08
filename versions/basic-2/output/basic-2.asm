@@ -10480,24 +10480,24 @@ l848a = sub_c847b+15
     jsr find_line_target                                              ; b888: 20 9a b9     ..      ; Resolve the destination line
 ; &b88b referenced 1 time by &b97a
 .cb88b
-    jsr check_end_of_statement                                        ; b88b: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b88b: 20 57 98     W.      ; Check the statement ends
     ldy zp_gosub_level                                                ; b88e: a4 25       .%       ; Index the GOSUB return stack
     cpy #&1a                                                          ; b890: c0 1a       ..       ; At most 26 nested GOSUBs
-    bcs err_too_many_gosubs                                           ; b892: b0 0e       ..    
+    bcs err_too_many_gosubs                                           ; b892: b0 0e       ..       ; too many: error
     lda zp_text_ptr                                                   ; b894: a5 0b       ..       ; Push the return position (text pointer)
-    sta l05cc,y                                                       ; b896: 99 cc 05    ...   
-    lda zp_text_ptr_1                                                 ; b899: a5 0c       ..    
-    sta l05e6,y                                                       ; b89b: 99 e6 05    ...   
-    inc zp_gosub_level                                                ; b89e: e6 25       .%    
-    bcc cb8d2                                                         ; b8a0: 90 30       .0    
+    sta l05cc,y                                                       ; b896: 99 cc 05    ...      ; ...
+    lda zp_text_ptr_1                                                 ; b899: a5 0c       ..       ; return position high byte
+    sta l05e6,y                                                       ; b89b: 99 e6 05    ...      ; ...
+    inc zp_gosub_level                                                ; b89e: e6 25       .%       ; one more nesting level
+    bcc cb8d2                                                         ; b8a0: 90 30       .0       ; jump to the line
 ; &b8a2 referenced 1 time by &b892
 .err_too_many_gosubs
-    brk                                                               ; b8a2: 00          .     
+    brk                                                               ; b8a2: 00          .        ; Too many GOSUBs error
     equs "%Too many "                                                 ; b8a3: 25 54 6f... %To...
     equb &e4, &73                                                     ; b8ad: e4 73       .s    
 ; &b8af referenced 1 time by &b8bb
 .err_no_gosub
-    brk                                                               ; b8af: 00          .     
+    brk                                                               ; b8af: 00          .        ; No GOSUB error
     equs "&No "                                                       ; b8b0: 26 4e 6f... &No...
     equb &e4, &00                                                     ; b8b4: e4 00       ..    
 ; ***************************************************************************************
@@ -10505,60 +10505,60 @@ l848a = sub_c847b+15
 ;
 ; Return from a GOSUB to the stacked return position. RETURN.
 .stmt_return
-    jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.      ; Check the statement ends
     ldx zp_gosub_level                                                ; b8b9: a6 25       .%       ; RETURN with nothing on the GOSUB stack: error
-    beq err_no_gosub                                                  ; b8bb: f0 f2       ..    
+    beq err_no_gosub                                                  ; b8bb: f0 f2       ..       ; nothing stacked: error
     dec zp_gosub_level                                                ; b8bd: c6 25       .%       ; Pop the return position
-    ldy l05cb,x                                                       ; b8bf: bc cb 05    ...   
-    lda l05e5,x                                                       ; b8c2: bd e5 05    ...   
-    sty zp_text_ptr                                                   ; b8c5: 84 0b       ..    
-    sta zp_text_ptr_1                                                 ; b8c7: 85 0c       ..    
+    ldy l05cb,x                                                       ; b8bf: bc cb 05    ...      ; return position low byte
+    lda l05e5,x                                                       ; b8c2: bd e5 05    ...      ; ...high byte
+    sty zp_text_ptr                                                   ; b8c5: 84 0b       ..       ; restore the text pointer
+    sta zp_text_ptr_1                                                 ; b8c7: 85 0c       ..       ; ...
     jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..      ; Resume execution after the GOSUB
 ; ***************************************************************************************
 ; GOTO
 ;
 ; Jump to a line number. GOTO line.
 .stmt_goto
-    jsr find_line_target                                              ; b8cc: 20 9a b9     ..   
-    jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.   
+    jsr find_line_target                                              ; b8cc: 20 9a b9     ..      ; Resolve the destination line
+    jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.      ; check the statement ends
 ; &b8d2 referenced 3 times by &98ee, &b8a0, &b967
 .cb8d2
     lda zp_trace_flag                                                 ; b8d2: a5 20       .        ; TRACE: report the destination line number
-    beq cb8d9                                                         ; b8d4: f0 03       ..    
-    jsr trace_line                                                    ; b8d6: 20 05 99     ..   
+    beq cb8d9                                                         ; b8d4: f0 03       ..       ; TRACE off?
+    jsr trace_line                                                    ; b8d6: 20 05 99     ..      ; trace the line
 ; &b8d9 referenced 1 time by &b8d4
 .cb8d9
-    ldy zp_fwb_exp                                                    ; b8d9: a4 3d       .=    
-    lda zp_fwb_m1                                                     ; b8db: a5 3e       .>    
+    ldy zp_fwb_exp                                                    ; b8d9: a4 3d       .=       ; Destination line pointer
+    lda zp_fwb_m1                                                     ; b8db: a5 3e       .>       ; ...
 ; &b8dd referenced 1 time by &bbd3
 .cb8dd
     sty zp_text_ptr                                                   ; b8dd: 84 0b       ..       ; Point the interpreter at the destination line
-    sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..    
-    jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..   
+    sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..       ; ...
+    jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..      ; execute from there
 ; &b8e4 referenced 1 time by &b8f7
 .loop_cb8e4
-    jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.   
-    lda #&33 ; '3'                                                    ; b8e7: a9 33       .3    
-    sta zp_error_vec                                                  ; b8e9: 85 16       ..    
-    lda #&b4                                                          ; b8eb: a9 b4       ..    
-    sta zp_error_vec_1                                                ; b8ed: 85 17       ..    
-    jmp statement_loop                                                ; b8ef: 4c 9b 8b    L..   
+    jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.      ; Check the statement ends
+    lda #&33 ; '3'                                                    ; b8e7: a9 33       .3       ; Restore the default error handler
+    sta zp_error_vec                                                  ; b8e9: 85 16       ..       ; ...
+    lda #&b4                                                          ; b8eb: a9 b4       ..       ; ...
+    sta zp_error_vec_1                                                ; b8ed: 85 17       ..       ; ...
+    jmp statement_loop                                                ; b8ef: 4c 9b 8b    L..      ; next statement
 ; &b8f2 referenced 1 time by &b91a
 .loop_cb8f2
-    jsr skip_spaces                                                   ; b8f2: 20 97 8a     ..   
-    cmp #&87                                                          ; b8f5: c9 87       ..    
-    beq loop_cb8e4                                                    ; b8f7: f0 eb       ..    
-    ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..    
-    dey                                                               ; b8fb: 88          .     
-    jsr c986d                                                         ; b8fc: 20 6d 98     m.   
-    lda zp_text_ptr                                                   ; b8ff: a5 0b       ..    
-    sta zp_error_vec                                                  ; b901: 85 16       ..    
-    lda zp_text_ptr_1                                                 ; b903: a5 0c       ..    
-    sta zp_error_vec_1                                                ; b905: 85 17       ..    
-    jmp stmt_data                                                     ; b907: 4c 7d 8b    L}.   
+    jsr skip_spaces                                                   ; b8f2: 20 97 8a     ..      ; Next character
+    cmp #&87                                                          ; b8f5: c9 87       ..       ; OFF token?
+    beq loop_cb8e4                                                    ; b8f7: f0 eb       ..       ; yes: ON ERROR OFF
+    ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..       ; Point at the handler statement
+    dey                                                               ; b8fb: 88          .        ; ...
+    jsr c986d                                                         ; b8fc: 20 6d 98     m.      ; ...
+    lda zp_text_ptr                                                   ; b8ff: a5 0b       ..       ; Set the error handler to this line
+    sta zp_error_vec                                                  ; b901: 85 16       ..       ; ...
+    lda zp_text_ptr_1                                                 ; b903: a5 0c       ..       ; ...
+    sta zp_error_vec_1                                                ; b905: 85 17       ..       ; ...
+    jmp stmt_data                                                     ; b907: 4c 7d 8b    L}.      ; skip the rest of the line
 ; &b90a referenced 1 time by &b92f
 .loop_cb90a
-    brk                                                               ; b90a: 00          .     
+    brk                                                               ; b90a: 00          .        ; ON syntax error
     equb &27, &ee                                                     ; b90b: 27 ee       '.    
     equs " syntax"                                                    ; b90d: 20 73 79...  sy...
     equb &00                                                          ; b914: 00          .     
