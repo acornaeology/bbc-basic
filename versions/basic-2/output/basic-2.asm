@@ -8116,47 +8116,47 @@ l848a = sub_c847b+15
 ;
 ; Evaluate a string as a BASIC expression. EVAL string.
 .fn_eval
-    jsr eval_factor                                                   ; abe9: 20 ec ad     ..   
-    bne cabe6                                                         ; abec: d0 f8       ..    
-    inc zp_strbuf_len                                                 ; abee: e6 36       .6    
-    ldy zp_strbuf_len                                                 ; abf0: a4 36       .6    
-    lda #&0d                                                          ; abf2: a9 0d       ..    
-    sta l05ff,y                                                       ; abf4: 99 ff 05    ...   
-    jsr stack_string                                                  ; abf7: 20 b2 bd     ..   
-    lda zp_text_ptr2                                                  ; abfa: a5 19       ..    
-    pha                                                               ; abfc: 48          H     
-    lda zp_text_ptr2_1                                                ; abfd: a5 1a       ..    
-    pha                                                               ; abff: 48          H     
-    lda zp_text_ptr2_off                                              ; ac00: a5 1b       ..    
-    pha                                                               ; ac02: 48          H     
-    ldy zp_stack_ptr                                                  ; ac03: a4 04       ..    
-    ldx zp_stack_ptr_1                                                ; ac05: a6 05       ..    
-    iny                                                               ; ac07: c8          .     
-    sty zp_text_ptr2                                                  ; ac08: 84 19       ..    
-    sty zp_general                                                    ; ac0a: 84 37       .7    
-    bne cac0f                                                         ; ac0c: d0 01       ..    
-    inx                                                               ; ac0e: e8          .     
+    jsr eval_factor                                                   ; abe9: 20 ec ad     ..      ; Evaluate the argument string
+    bne cabe6                                                         ; abec: d0 f8       ..       ; not a string: error
+    inc zp_strbuf_len                                                 ; abee: e6 36       .6       ; Append a CR terminator
+    ldy zp_strbuf_len                                                 ; abf0: a4 36       .6       ; ...
+    lda #&0d                                                          ; abf2: a9 0d       ..       ; ...
+    sta l05ff,y                                                       ; abf4: 99 ff 05    ...      ; ...
+    jsr stack_string                                                  ; abf7: 20 b2 bd     ..      ; Stack the string
+    lda zp_text_ptr2                                                  ; abfa: a5 19       ..       ; Save the parser pointer
+    pha                                                               ; abfc: 48          H        ; ...
+    lda zp_text_ptr2_1                                                ; abfd: a5 1a       ..       ; ...
+    pha                                                               ; abff: 48          H        ; ...
+    lda zp_text_ptr2_off                                              ; ac00: a5 1b       ..       ; ...
+    pha                                                               ; ac02: 48          H        ; ...
+    ldy zp_stack_ptr                                                  ; ac03: a4 04       ..       ; Point at the stacked string
+    ldx zp_stack_ptr_1                                                ; ac05: a6 05       ..       ; ...
+    iny                                                               ; ac07: c8          .        ; step over the length byte
+    sty zp_text_ptr2                                                  ; ac08: 84 19       ..       ; parser pointer low
+    sty zp_general                                                    ; ac0a: 84 37       .7       ; name pointer low
+    bne cac0f                                                         ; ac0c: d0 01       ..       ; ...
+    inx                                                               ; ac0e: e8          .        ; carry into the high byte
 ; &ac0f referenced 1 time by &ac0c
 .cac0f
-    stx zp_text_ptr2_1                                                ; ac0f: 86 1a       ..    
-    stx zp_general_1                                                  ; ac11: 86 38       .8    
-    ldy #&ff                                                          ; ac13: a0 ff       ..    
-    sty zp_fwb_sign                                                   ; ac15: 84 3b       .;    
-    iny                                                               ; ac17: c8          .     
-    sty zp_text_ptr2_off                                              ; ac18: 84 1b       ..    
-    jsr sub_c8955                                                     ; ac1a: 20 55 89     U.   
-    jsr eval_or_eor                                                   ; ac1d: 20 29 9b     ).   
-    jsr cbddc                                                         ; ac20: 20 dc bd     ..   
+    stx zp_text_ptr2_1                                                ; ac0f: 86 1a       ..       ; parser pointer high
+    stx zp_general_1                                                  ; ac11: 86 38       .8       ; name pointer high
+    ldy #&ff                                                          ; ac13: a0 ff       ..       ; Quote flag reset
+    sty zp_fwb_sign                                                   ; ac15: 84 3b       .;       ; ...
+    iny                                                               ; ac17: c8          .        ; Offset back to the start
+    sty zp_text_ptr2_off                                              ; ac18: 84 1b       ..       ; ...
+    jsr sub_c8955                                                     ; ac1a: 20 55 89     U.      ; Tokenise the stacked string
+    jsr eval_or_eor                                                   ; ac1d: 20 29 9b     ).      ; Evaluate the expression
+    jsr cbddc                                                         ; ac20: 20 dc bd     ..      ; Drop the stacked string
 ; &ac23 referenced 1 time by &ac75
 .cac23
-    pla                                                               ; ac23: 68          h     
-    sta zp_text_ptr2_off                                              ; ac24: 85 1b       ..    
-    pla                                                               ; ac26: 68          h     
-    sta zp_text_ptr2_1                                                ; ac27: 85 1a       ..    
-    pla                                                               ; ac29: 68          h     
-    sta zp_text_ptr2                                                  ; ac2a: 85 19       ..    
-    lda zp_var_type                                                   ; ac2c: a5 27       .'    
-    rts                                                               ; ac2e: 60          `     
+    pla                                                               ; ac23: 68          h        ; Restore the parser pointer
+    sta zp_text_ptr2_off                                              ; ac24: 85 1b       ..       ; ...
+    pla                                                               ; ac26: 68          h        ; ...
+    sta zp_text_ptr2_1                                                ; ac27: 85 1a       ..       ; ...
+    pla                                                               ; ac29: 68          h        ; ...
+    sta zp_text_ptr2                                                  ; ac2a: 85 19       ..       ; ...
+    lda zp_var_type                                                   ; ac2c: a5 27       .'       ; Result type
+    rts                                                               ; ac2e: 60          `        ; Return
 ; ***************************************************************************************
 ; VAL
 ;

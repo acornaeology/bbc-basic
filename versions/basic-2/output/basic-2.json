@@ -75009,6 +75009,7 @@
       "labels": [
         "fn_eval"
       ],
+      "comment_inline": "Evaluate the argument string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -75021,6 +75022,7 @@
         208,
         248
       ],
+      "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cabe6",
@@ -75033,6 +75035,7 @@
         230,
         54
       ],
+      "comment_inline": "Append a CR terminator",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_strbuf_len",
@@ -75045,6 +75048,7 @@
         164,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -75057,6 +75061,7 @@
         169,
         13
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&0d"
@@ -75068,6 +75073,7 @@
         255,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05ff,y",
@@ -75081,6 +75087,7 @@
         178,
         189
       ],
+      "comment_inline": "Stack the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_string",
@@ -75093,6 +75100,7 @@
         165,
         25
       ],
+      "comment_inline": "Save the parser pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2",
@@ -75104,6 +75112,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -75113,6 +75122,7 @@
         165,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -75124,6 +75134,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -75133,6 +75144,7 @@
         165,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -75144,6 +75156,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -75153,6 +75166,7 @@
         164,
         4
       ],
+      "comment_inline": "Point at the stacked string",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_stack_ptr",
@@ -75165,6 +75179,7 @@
         166,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_stack_ptr_1",
@@ -75176,6 +75191,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "step over the length byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -75185,6 +75201,7 @@
         132,
         25
       ],
+      "comment_inline": "parser pointer low",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2",
@@ -75197,6 +75214,7 @@
         132,
         55
       ],
+      "comment_inline": "name pointer low",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_general",
@@ -75209,6 +75227,7 @@
         208,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac0f",
@@ -75220,6 +75239,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -75232,6 +75252,7 @@
       "labels": [
         "cac0f"
       ],
+      "comment_inline": "parser pointer high",
       "xref_summaries": [
         "&ac0f referenced 1 time by &ac0c"
       ],
@@ -75250,6 +75271,7 @@
         134,
         56
       ],
+      "comment_inline": "name pointer high",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general_1",
@@ -75262,6 +75284,7 @@
         160,
         255
       ],
+      "comment_inline": "Quote flag reset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&ff"
@@ -75272,6 +75295,7 @@
         132,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -75283,6 +75307,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "Offset back to the start",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -75292,6 +75317,7 @@
         132,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -75305,6 +75331,7 @@
         85,
         137
       ],
+      "comment_inline": "Tokenise the stacked string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8955",
@@ -75318,6 +75345,7 @@
         41,
         155
       ],
+      "comment_inline": "Evaluate the expression",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -75331,6 +75359,7 @@
         220,
         189
       ],
+      "comment_inline": "Drop the stacked string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cbddc",
@@ -75345,6 +75374,7 @@
       "labels": [
         "cac23"
       ],
+      "comment_inline": "Restore the parser pointer",
       "xref_summaries": [
         "&ac23 referenced 1 time by &ac75"
       ],
@@ -75360,6 +75390,7 @@
         133,
         27
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -75371,6 +75402,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -75380,6 +75412,7 @@
         133,
         26
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -75391,6 +75424,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -75400,6 +75434,7 @@
         133,
         25
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -75412,6 +75447,7 @@
         165,
         39
       ],
+      "comment_inline": "Result type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -75423,6 +75459,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
