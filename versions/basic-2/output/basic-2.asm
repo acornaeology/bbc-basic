@@ -1599,51 +1599,57 @@ l848a = sub_c847b+15
     cmp #&0d                                                          ; 8892: c9 0d       ..       ; until the carriage return
     bne loop_c888d                                                    ; 8894: d0 f7       ..       ; ...
     rts                                                               ; 8896: 60          `        ; Return
+; ***************************************************************************************
+; Parse a 16-bit decimal number
+;
+; Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow
+; detection. The first digit is in A on entry; stops at the first non-digit. Used to read
+; line numbers.
 ; &8897 referenced 1 time by &89b0
-.sub_c8897
-    and #&0f                                                          ; 8897: 29 0f       ).    
-    sta zp_fwb_exp                                                    ; 8899: 85 3d       .=    
-    sty zp_fwb_m1                                                     ; 889b: 84 3e       .>    
+.parse_decimal_u16
+    and #&0f                                                          ; 8897: 29 0f       ).       ; First digit
+    sta zp_fwb_exp                                                    ; 8899: 85 3d       .=       ; Value low = digit
+    sty zp_fwb_m1                                                     ; 889b: 84 3e       .>       ; Value high = 0
 ; &889d referenced 2 times by &88ce, &88d2
 .c889d
-    iny                                                               ; 889d: c8          .     
-    lda (zp_general),y                                                ; 889e: b1 37       .7    
-    cmp #&3a ; ':'                                                    ; 88a0: c9 3a       .:    
-    bcs c88da                                                         ; 88a2: b0 36       .6    
-    cmp #&30 ; '0'                                                    ; 88a4: c9 30       .0    
-    bcc c88da                                                         ; 88a6: 90 32       .2    
-    and #&0f                                                          ; 88a8: 29 0f       ).    
-    pha                                                               ; 88aa: 48          H     
-    ldx zp_fwb_m1                                                     ; 88ab: a6 3e       .>    
-    lda zp_fwb_exp                                                    ; 88ad: a5 3d       .=    
-    asl a                                                             ; 88af: 0a          .     
-    rol zp_fwb_m1                                                     ; 88b0: 26 3e       &>    
-    bmi c88d5                                                         ; 88b2: 30 21       0!    
-    asl a                                                             ; 88b4: 0a          .     
-    rol zp_fwb_m1                                                     ; 88b5: 26 3e       &>    
-    bmi c88d5                                                         ; 88b7: 30 1c       0.    
-    adc zp_fwb_exp                                                    ; 88b9: 65 3d       e=    
-    sta zp_fwb_exp                                                    ; 88bb: 85 3d       .=    
-    txa                                                               ; 88bd: 8a          .     
-    adc zp_fwb_m1                                                     ; 88be: 65 3e       e>    
-    asl zp_fwb_exp                                                    ; 88c0: 06 3d       .=    
-    rol a                                                             ; 88c2: 2a          *     
-    bmi c88d5                                                         ; 88c3: 30 10       0.    
-    bcs c88d5                                                         ; 88c5: b0 0e       ..    
-    sta zp_fwb_m1                                                     ; 88c7: 85 3e       .>    
-    pla                                                               ; 88c9: 68          h     
-    adc zp_fwb_exp                                                    ; 88ca: 65 3d       e=    
-    sta zp_fwb_exp                                                    ; 88cc: 85 3d       .=    
-    bcc c889d                                                         ; 88ce: 90 cd       ..    
-    inc zp_fwb_m1                                                     ; 88d0: e6 3e       .>    
-    bpl c889d                                                         ; 88d2: 10 c9       ..    
-    pha                                                               ; 88d4: 48          H     
+    iny                                                               ; 889d: c8          .        ; Next character
+    lda (zp_general),y                                                ; 889e: b1 37       .7       ; ...
+    cmp #&3a ; ':'                                                    ; 88a0: c9 3a       .:       ; above 9?
+    bcs c88da                                                         ; 88a2: b0 36       .6       ; not a digit: done
+    cmp #&30 ; '0'                                                    ; 88a4: c9 30       .0       ; below 0?
+    bcc c88da                                                         ; 88a6: 90 32       .2       ; not a digit: done
+    and #&0f                                                          ; 88a8: 29 0f       ).       ; Digit value
+    pha                                                               ; 88aa: 48          H        ; save it
+    ldx zp_fwb_m1                                                     ; 88ab: a6 3e       .>       ; value high
+    lda zp_fwb_exp                                                    ; 88ad: a5 3d       .=       ; value low
+    asl a                                                             ; 88af: 0a          .        ; value * 2
+    rol zp_fwb_m1                                                     ; 88b0: 26 3e       &>       ; ...
+    bmi c88d5                                                         ; 88b2: 30 21       0!       ; overflow
+    asl a                                                             ; 88b4: 0a          .        ; value * 4
+    rol zp_fwb_m1                                                     ; 88b5: 26 3e       &>       ; ...
+    bmi c88d5                                                         ; 88b7: 30 1c       0.       ; overflow
+    adc zp_fwb_exp                                                    ; 88b9: 65 3d       e=       ; - value = value * 5
+    sta zp_fwb_exp                                                    ; 88bb: 85 3d       .=       ; ...
+    txa                                                               ; 88bd: 8a          .        ; ...
+    adc zp_fwb_m1                                                     ; 88be: 65 3e       e>       ; ...
+    asl zp_fwb_exp                                                    ; 88c0: 06 3d       .=       ; - 2 = value * 10
+    rol a                                                             ; 88c2: 2a          *        ; ...
+    bmi c88d5                                                         ; 88c3: 30 10       0.       ; overflow
+    bcs c88d5                                                         ; 88c5: b0 0e       ..       ; overflow
+    sta zp_fwb_m1                                                     ; 88c7: 85 3e       .>       ; store the high byte
+    pla                                                               ; 88c9: 68          h        ; Add the digit
+    adc zp_fwb_exp                                                    ; 88ca: 65 3d       e=       ; ...
+    sta zp_fwb_exp                                                    ; 88cc: 85 3d       .=       ; ...
+    bcc c889d                                                         ; 88ce: 90 cd       ..       ; next digit
+    inc zp_fwb_m1                                                     ; 88d0: e6 3e       .>       ; ...
+    bpl c889d                                                         ; 88d2: 10 c9       ..       ; next digit
+    pha                                                               ; 88d4: 48          H        ; overflow marker
 ; &88d5 referenced 4 times by &88b2, &88b7, &88c3, &88c5
 .c88d5
-    pla                                                               ; 88d5: 68          h     
-    ldy #0                                                            ; 88d6: a0 00       ..    
-    sec                                                               ; 88d8: 38          8     
-    rts                                                               ; 88d9: 60          `     
+    pla                                                               ; 88d5: 68          h        ; Discard the saved digit
+    ldy #0                                                            ; 88d6: a0 00       ..       ; Offset 0
+    sec                                                               ; 88d8: 38          8        ; flag a value was read
+    rts                                                               ; 88d9: 60          `        ; Return
 ; &88da referenced 2 times by &88a2, &88a6
 .c88da
     dey                                                               ; 88da: 88          .     
@@ -1816,7 +1822,7 @@ l848a = sub_c847b+15
     bcc c89df                                                         ; 89aa: 90 33       .3       ; no: a letter or symbol
     ldx zp_fwb_ovf                                                    ; 89ac: a6 3c       .<       ; inside a quote?
     beq c89b5                                                         ; 89ae: f0 05       ..       ; no: a line number
-    jsr sub_c8897                                                     ; 89b0: 20 97 88     ..      ; tokenise the line number
+    jsr parse_decimal_u16                                             ; 89b0: 20 97 88     ..      ; tokenise the line number
     bcc c89e9                                                         ; 89b3: 90 34       .4       ; continue
 ; &89b5 referenced 3 times by &89a5, &89ae, &89bf
 .c89b5
@@ -13052,6 +13058,7 @@ save pydis_start, pydis_end
 ;     osnewl:                      1
 ;     output_byte_decimal:         1
 ;     output_top_digit:            1
+;     parse_decimal_u16:           1
 ;     parse_exponent:              1
 ;     print_hex_digit:             1
 ;     resint_a:                    1
@@ -13091,7 +13098,6 @@ save pydis_start, pydis_end
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
 ;     sub_c85ba:                   1
-;     sub_c8897:                   1
 ;     sub_c88f5:                   1
 ;     sub_c893d:                   1
 ;     sub_c8955:                   1
@@ -14038,7 +14044,6 @@ save pydis_start, pydis_end
 ;     sub_c85ba
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c8897
 ;     sub_c88f5
 ;     sub_c8926
 ;     sub_c893d

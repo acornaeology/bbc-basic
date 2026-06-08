@@ -1827,6 +1827,12 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0x8897, 'parse_decimal_u16',
+             title='Parse a 16-bit decimal number',
+             description='Accumulate decimal digits from (&37) into &3D/&3E '
+                         'as value*10 + digit, with overflow detection. The '
+                         'first digit is in A on entry; stops at the first '
+                         'non-digit. Used to read line numbers.')
 d.subroutine(0xaed8, 'int_result_a',
              title='Return A as an integer result',
              description='Set the result to the unsigned byte in A (high '
@@ -7173,6 +7179,47 @@ d.comment(0xbf1b, '...', align=Align.INLINE)
 d.comment(0xbf1c, 'Point at the OSFILE block (&37)', align=Align.INLINE)
 d.comment(0xbf1e, 'Save the file', align=Align.INLINE)
 d.comment(0xbf21, 'next statement', align=Align.INLINE)
+
+# parse_decimal_u16 (&8897): accumulate value*10 + digit.
+d.comment(0x8897, 'First digit', align=Align.INLINE)
+d.comment(0x8899, 'Value low = digit', align=Align.INLINE)
+d.comment(0x889b, 'Value high = 0', align=Align.INLINE)
+d.comment(0x889d, 'Next character', align=Align.INLINE)
+d.comment(0x889e, '...', align=Align.INLINE)
+d.comment(0x88a0, 'above 9?', align=Align.INLINE)
+d.comment(0x88a2, 'not a digit: done', align=Align.INLINE)
+d.comment(0x88a4, 'below 0?', align=Align.INLINE)
+d.comment(0x88a6, 'not a digit: done', align=Align.INLINE)
+d.comment(0x88a8, 'Digit value', align=Align.INLINE)
+d.comment(0x88aa, 'save it', align=Align.INLINE)
+d.comment(0x88ab, 'value high', align=Align.INLINE)
+d.comment(0x88ad, 'value low', align=Align.INLINE)
+d.comment(0x88af, 'value * 2', align=Align.INLINE)
+d.comment(0x88b0, '...', align=Align.INLINE)
+d.comment(0x88b2, 'overflow', align=Align.INLINE)
+d.comment(0x88b4, 'value * 4', align=Align.INLINE)
+d.comment(0x88b5, '...', align=Align.INLINE)
+d.comment(0x88b7, 'overflow', align=Align.INLINE)
+d.comment(0x88b9, '+ value = value * 5', align=Align.INLINE)
+d.comment(0x88bb, '...', align=Align.INLINE)
+d.comment(0x88bd, '...', align=Align.INLINE)
+d.comment(0x88be, '...', align=Align.INLINE)
+d.comment(0x88c0, '* 2 = value * 10', align=Align.INLINE)
+d.comment(0x88c2, '...', align=Align.INLINE)
+d.comment(0x88c3, 'overflow', align=Align.INLINE)
+d.comment(0x88c5, 'overflow', align=Align.INLINE)
+d.comment(0x88c7, 'store the high byte', align=Align.INLINE)
+d.comment(0x88c9, 'Add the digit', align=Align.INLINE)
+d.comment(0x88ca, '...', align=Align.INLINE)
+d.comment(0x88cc, '...', align=Align.INLINE)
+d.comment(0x88ce, 'next digit', align=Align.INLINE)
+d.comment(0x88d0, '...', align=Align.INLINE)
+d.comment(0x88d2, 'next digit', align=Align.INLINE)
+d.comment(0x88d4, 'overflow marker', align=Align.INLINE)
+d.comment(0x88d5, 'Discard the saved digit', align=Align.INLINE)
+d.comment(0x88d6, 'Offset 0', align=Align.INLINE)
+d.comment(0x88d8, 'flag a value was read', align=Align.INLINE)
+d.comment(0x88d9, 'Return', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.
