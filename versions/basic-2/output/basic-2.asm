@@ -10708,79 +10708,79 @@ l848a = sub_c847b+15
     jmp c8b98                                                         ; b9cc: 4c 98 8b    L..   
 ; &b9cf referenced 1 time by &ba49
 .loop_cb9cf
-    dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..    
-    jsr sub_cbfa9                                                     ; b9d1: 20 a9 bf     ..   
-    lda zp_text_ptr2_off                                              ; b9d4: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; b9d6: 85 0a       ..    
-    sty l004d                                                         ; b9d8: 84 4d       .M    
+    dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..       ; Back up over "#"
+    jsr sub_cbfa9                                                     ; b9d1: 20 a9 bf     ..      ; Get the file handle
+    lda zp_text_ptr2_off                                              ; b9d4: a5 1b       ..       ; Sync the program pointer
+    sta zp_text_ptr_off                                               ; b9d6: 85 0a       ..       ; ...
+    sty l004d                                                         ; b9d8: 84 4d       .M       ; save the handle
 ; &b9da referenced 2 times by &ba16, &ba3c
 .cb9da
-    jsr skip_spaces                                                   ; b9da: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,    
-    bne loop_cb9ca                                                    ; b9df: d0 e9       ..    
-    lda l004d                                                         ; b9e1: a5 4d       .M    
-    pha                                                               ; b9e3: 48          H     
-    jsr parse_lvalue                                                  ; b9e4: 20 82 95     ..   
-    beq loop_cb9c7                                                    ; b9e7: f0 de       ..    
-    lda zp_text_ptr2_off                                              ; b9e9: a5 1b       ..    
-    sta zp_text_ptr_off                                               ; b9eb: 85 0a       ..    
-    pla                                                               ; b9ed: 68          h     
-    sta l004d                                                         ; b9ee: 85 4d       .M    
-    php                                                               ; b9f0: 08          .     
-    jsr stack_integer                                                 ; b9f1: 20 94 bd     ..   
-    ldy l004d                                                         ; b9f4: a4 4d       .M    
-    jsr osbget                                                        ; b9f6: 20 d7 ff     ..   
-    sta zp_var_type                                                   ; b9f9: 85 27       .'    
-    plp                                                               ; b9fb: 28          (     
-    bcc cba19                                                         ; b9fc: 90 1b       ..    
-    lda zp_var_type                                                   ; b9fe: a5 27       .'    
-    bne cb9c4                                                         ; ba00: d0 c2       ..    
-    jsr osbget                                                        ; ba02: 20 d7 ff     ..   
-    sta zp_strbuf_len                                                 ; ba05: 85 36       .6    
-    tax                                                               ; ba07: aa          .     
-    beq cba13                                                         ; ba08: f0 09       ..    
+    jsr skip_spaces                                                   ; b9da: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,       ; ',' another variable?
+    bne loop_cb9ca                                                    ; b9df: d0 e9       ..       ; no: done
+    lda l004d                                                         ; b9e1: a5 4d       .M       ; Save the handle
+    pha                                                               ; b9e3: 48          H        ; ...
+    jsr parse_lvalue                                                  ; b9e4: 20 82 95     ..      ; Parse the target variable
+    beq loop_cb9c7                                                    ; b9e7: f0 de       ..       ; end: error
+    lda zp_text_ptr2_off                                              ; b9e9: a5 1b       ..       ; Sync the program pointer
+    sta zp_text_ptr_off                                               ; b9eb: 85 0a       ..       ; ...
+    pla                                                               ; b9ed: 68          h        ; Recover the handle
+    sta l004d                                                         ; b9ee: 85 4d       .M       ; ...
+    php                                                               ; b9f0: 08          .        ; ...
+    jsr stack_integer                                                 ; b9f1: 20 94 bd     ..      ; Stack the variable address
+    ldy l004d                                                         ; b9f4: a4 4d       .M       ; Handle
+    jsr osbget                                                        ; b9f6: 20 d7 ff     ..      ; Read the type byte
+    sta zp_var_type                                                   ; b9f9: 85 27       .'       ; save it
+    plp                                                               ; b9fb: 28          (        ; ...
+    bcc cba19                                                         ; b9fc: 90 1b       ..       ; string?
+    lda zp_var_type                                                   ; b9fe: a5 27       .'       ; String type byte
+    bne cb9c4                                                         ; ba00: d0 c2       ..       ; mismatch: error
+    jsr osbget                                                        ; ba02: 20 d7 ff     ..      ; Read the length
+    sta zp_strbuf_len                                                 ; ba05: 85 36       .6       ; ...
+    tax                                                               ; ba07: aa          .        ; ...
+    beq cba13                                                         ; ba08: f0 09       ..       ; empty
 ; &ba0a referenced 1 time by &ba11
 .loop_cba0a
-    jsr osbget                                                        ; ba0a: 20 d7 ff     ..   
-    sta l05ff,x                                                       ; ba0d: 9d ff 05    ...   
-    dex                                                               ; ba10: ca          .     
-    bne loop_cba0a                                                    ; ba11: d0 f7       ..    
+    jsr osbget                                                        ; ba0a: 20 d7 ff     ..      ; Read a character
+    sta l05ff,x                                                       ; ba0d: 9d ff 05    ...      ; ...
+    dex                                                               ; ba10: ca          .        ; ...
+    bne loop_cba0a                                                    ; ba11: d0 f7       ..       ; loop
 ; &ba13 referenced 1 time by &ba08
 .cba13
-    jsr assign_string                                                 ; ba13: 20 1e 8c     ..   
-    jmp cb9da                                                         ; ba16: 4c da b9    L..   
+    jsr assign_string                                                 ; ba13: 20 1e 8c     ..      ; Assign the string
+    jmp cb9da                                                         ; ba16: 4c da b9    L..      ; next variable
 ; &ba19 referenced 1 time by &b9fc
 .cba19
-    lda zp_var_type                                                   ; ba19: a5 27       .'    
-    beq cb9c4                                                         ; ba1b: f0 a7       ..    
-    bmi cba2b                                                         ; ba1d: 30 0c       0.    
-    ldx #3                                                            ; ba1f: a2 03       ..    
+    lda zp_var_type                                                   ; ba19: a5 27       .'       ; Numeric type byte
+    beq cb9c4                                                         ; ba1b: f0 a7       ..       ; mismatch: error
+    bmi cba2b                                                         ; ba1d: 30 0c       0.       ; real?
+    ldx #3                                                            ; ba1f: a2 03       ..       ; Integer: 4 bytes
 ; &ba21 referenced 1 time by &ba27
 .loop_cba21
-    jsr osbget                                                        ; ba21: 20 d7 ff     ..   
-    sta zp_iwa,x                                                      ; ba24: 95 2a       .*    
-    dex                                                               ; ba26: ca          .     
-    bpl loop_cba21                                                    ; ba27: 10 f8       ..    
-    bmi cba39                                                         ; ba29: 30 0e       0.    
+    jsr osbget                                                        ; ba21: 20 d7 ff     ..      ; Read a byte
+    sta zp_iwa,x                                                      ; ba24: 95 2a       .*       ; ...
+    dex                                                               ; ba26: ca          .        ; ...
+    bpl loop_cba21                                                    ; ba27: 10 f8       ..       ; loop
+    bmi cba39                                                         ; ba29: 30 0e       0.       ; assign
 ; &ba2b referenced 1 time by &ba1d
 .cba2b
-    ldx #4                                                            ; ba2b: a2 04       ..    
+    ldx #4                                                            ; ba2b: a2 04       ..       ; Real: 5 bytes
 ; &ba2d referenced 1 time by &ba34
 .loop_cba2d
-    jsr osbget                                                        ; ba2d: 20 d7 ff     ..   
-    sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.   
-    dex                                                               ; ba33: ca          .     
-    bpl loop_cba2d                                                    ; ba34: 10 f7       ..    
-    jsr fwa_unpack_temp1                                              ; ba36: 20 b2 a3     ..   
+    jsr osbget                                                        ; ba2d: 20 d7 ff     ..      ; Read a byte
+    sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.      ; ...
+    dex                                                               ; ba33: ca          .        ; ...
+    bpl loop_cba2d                                                    ; ba34: 10 f7       ..       ; loop
+    jsr fwa_unpack_temp1                                              ; ba36: 20 b2 a3     ..      ; unpack into FWA
 ; &ba39 referenced 1 time by &ba29
 .cba39
-    jsr assign_number                                                 ; ba39: 20 b4 b4     ..   
-    jmp cb9da                                                         ; ba3c: 4c da b9    L..   
+    jsr assign_number                                                 ; ba39: 20 b4 b4     ..      ; Assign the number
+    jmp cb9da                                                         ; ba3c: 4c da b9    L..      ; next variable
 ; &ba3f referenced 1 time by &ba82
 .loop_cba3f
-    pla                                                               ; ba3f: 68          h     
-    pla                                                               ; ba40: 68          h     
-    jmp c8b98                                                         ; ba41: 4c 98 8b    L..   
+    pla                                                               ; ba3f: 68          h        ; Drop the stacked values
+    pla                                                               ; ba40: 68          h        ; ...
+    jmp c8b98                                                         ; ba41: 4c 98 8b    L..      ; done
 ; ***************************************************************************************
 ; INPUT
 ;
@@ -11077,33 +11077,33 @@ l848a = sub_c847b+15
 ; Print the character in A as a prompt, then read a line into the input buffer.
 ; &bc02 referenced 2 times by &8b08, &90bd
 .read_input_line
-    jsr print_char                                                    ; bc02: 20 58 b5     X.   
-    ldy #0                                                            ; bc05: a0 00       ..    
-    lda #7                                                            ; bc07: a9 07       ..    
+    jsr print_char                                                    ; bc02: 20 58 b5     X.      ; Print the prompt character
+    ldy #0                                                            ; bc05: a0 00       ..       ; Input buffer at &0700
+    lda #7                                                            ; bc07: a9 07       ..       ; ...
 ; &bc09 referenced 1 time by &bc00
 .cbc09
-    sty zp_general                                                    ; bc09: 84 37       .7    
-    sta zp_general_1                                                  ; bc0b: 85 38       .8    
-    lda #&ee                                                          ; bc0d: a9 ee       ..    
-    sta zp_fileblk                                                    ; bc0f: 85 39       .9    
-    lda #&20 ; ' '                                                    ; bc11: a9 20       .     
-    sta l003a                                                         ; bc13: 85 3a       .:    
-    ldy #&ff                                                          ; bc15: a0 ff       ..    
-    sty zp_fwb_sign                                                   ; bc17: 84 3b       .;    
-    iny                                                               ; bc19: c8          .     
-    ldx #&37 ; '7'                                                    ; bc1a: a2 37       .7    
-    tya                                                               ; bc1c: 98          .     
-    jsr osword                                                        ; bc1d: 20 f1 ff     ..   
-    bcc cbc28                                                         ; bc20: 90 06       ..    
-    jmp c9838                                                         ; bc22: 4c 38 98    L8.   
+    sty zp_general                                                    ; bc09: 84 37       .7       ; ...
+    sta zp_general_1                                                  ; bc0b: 85 38       .8       ; ...
+    lda #&ee                                                          ; bc0d: a9 ee       ..       ; Max length 238
+    sta zp_fileblk                                                    ; bc0f: 85 39       .9       ; ...
+    lda #&20 ; ' '                                                    ; bc11: a9 20       .        ; Lowest accepted character
+    sta l003a                                                         ; bc13: 85 3a       .:       ; ...
+    ldy #&ff                                                          ; bc15: a0 ff       ..       ; Highest accepted character (&FF)
+    sty zp_fwb_sign                                                   ; bc17: 84 3b       .;       ; ...
+    iny                                                               ; bc19: c8          .        ; ...
+    ldx #&37 ; '7'                                                    ; bc1a: a2 37       .7       ; Point at the OSWORD block
+    tya                                                               ; bc1c: 98          .        ; ...
+    jsr osword                                                        ; bc1d: 20 f1 ff     ..      ; Read a line
+    bcc cbc28                                                         ; bc20: 90 06       ..       ; ok: reset the column
+    jmp c9838                                                         ; bc22: 4c 38 98    L8.      ; Escape: raise it
 ; &bc25 referenced 9 times by &853f, &857b, &8d7d, &8e53, &8e67, &909a, &b56e, &b5fc, &bfe7
 .sub_cbc25
-    jsr osnewl                                                        ; bc25: 20 e7 ff     ..   
+    jsr osnewl                                                        ; bc25: 20 e7 ff     ..      ; Print a newline
 ; &bc28 referenced 4 times by &8ec7, &93d7, &b55f, &bc20
 .cbc28
-    lda #0                                                            ; bc28: a9 00       ..    
-    sta zp_count                                                      ; bc2a: 85 1e       ..    
-    rts                                                               ; bc2c: 60          `     
+    lda #0                                                            ; bc28: a9 00       ..       ; Reset the column to 0
+    sta zp_count                                                      ; bc2a: 85 1e       ..       ; ...
+    rts                                                               ; bc2c: 60          `        ; Return
 ; ***************************************************************************************
 ; Delete a program line and close the gap
 ;
