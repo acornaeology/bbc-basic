@@ -8962,61 +8962,61 @@ l848a = sub_c847b+15
 ;
 ; Leftmost n characters of a string. LEFT$(string, n).
 .fn_lefts
-    jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).   
-    bne cb033                                                         ; afcf: d0 62       .b    
-    cpx #&2c ; ','                                                    ; afd1: e0 2c       .,    
-    bne cb036                                                         ; afd3: d0 61       .a    
-    inc zp_text_ptr2_off                                              ; afd5: e6 1b       ..    
-    jsr stack_string                                                  ; afd7: 20 b2 bd     ..   
-    jsr cae56                                                         ; afda: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; afdd: 20 f0 92     ..   
-    jsr unstack_string                                                ; afe0: 20 cb bd     ..   
-    lda zp_iwa                                                        ; afe3: a5 2a       .*    
-    cmp zp_strbuf_len                                                 ; afe5: c5 36       .6    
-    bcs cafeb                                                         ; afe7: b0 02       ..    
-    sta zp_strbuf_len                                                 ; afe9: 85 36       .6    
+    jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).      ; Evaluate the source string
+    bne cb033                                                         ; afcf: d0 62       .b       ; not a string: Type mismatch
+    cpx #&2c ; ','                                                    ; afd1: e0 2c       .,       ; ','?
+    bne cb036                                                         ; afd3: d0 61       .a       ; no: Missing ,
+    inc zp_text_ptr2_off                                              ; afd5: e6 1b       ..       ; step past
+    jsr stack_string                                                  ; afd7: 20 b2 bd     ..      ; Stack the string
+    jsr cae56                                                         ; afda: 20 56 ae     V.      ; Evaluate the count, expect )
+    jsr coerce_to_integer                                             ; afdd: 20 f0 92     ..      ; coerce to integer
+    jsr unstack_string                                                ; afe0: 20 cb bd     ..      ; Restore the string
+    lda zp_iwa                                                        ; afe3: a5 2a       .*       ; Count
+    cmp zp_strbuf_len                                                 ; afe5: c5 36       .6       ; count >= length?
+    bcs cafeb                                                         ; afe7: b0 02       ..       ; yes: keep the whole string
+    sta zp_strbuf_len                                                 ; afe9: 85 36       .6       ; truncate to the count
 ; &afeb referenced 1 time by &afe7
 .cafeb
-    lda #0                                                            ; afeb: a9 00       ..    
-    rts                                                               ; afed: 60          `     
+    lda #0                                                            ; afeb: a9 00       ..       ; String result
+    rts                                                               ; afed: 60          `        ; Return
 ; ***************************************************************************************
 ; RIGHT$
 ;
 ; Rightmost n characters of a string. RIGHT$(string, n).
 .fn_rights
-    jsr eval_or_eor                                                   ; afee: 20 29 9b     ).   
-    bne cb033                                                         ; aff1: d0 40       .@    
-    cpx #&2c ; ','                                                    ; aff3: e0 2c       .,    
-    bne cb036                                                         ; aff5: d0 3f       .?    
-    inc zp_text_ptr2_off                                              ; aff7: e6 1b       ..    
-    jsr stack_string                                                  ; aff9: 20 b2 bd     ..   
-    jsr cae56                                                         ; affc: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; afff: 20 f0 92     ..   
-    jsr unstack_string                                                ; b002: 20 cb bd     ..   
-    lda zp_strbuf_len                                                 ; b005: a5 36       .6    
-    sec                                                               ; b007: 38          8     
-    sbc zp_iwa                                                        ; b008: e5 2a       .*    
-    bcc cb023                                                         ; b00a: 90 17       ..    
-    beq return_31                                                     ; b00c: f0 17       ..    
-    tax                                                               ; b00e: aa          .     
-    lda zp_iwa                                                        ; b00f: a5 2a       .*    
-    sta zp_strbuf_len                                                 ; b011: 85 36       .6    
-    beq return_31                                                     ; b013: f0 10       ..    
-    ldy #0                                                            ; b015: a0 00       ..    
+    jsr eval_or_eor                                                   ; afee: 20 29 9b     ).      ; Evaluate the source string
+    bne cb033                                                         ; aff1: d0 40       .@       ; not a string: Type mismatch
+    cpx #&2c ; ','                                                    ; aff3: e0 2c       .,       ; ','?
+    bne cb036                                                         ; aff5: d0 3f       .?       ; no: Missing ,
+    inc zp_text_ptr2_off                                              ; aff7: e6 1b       ..       ; step past
+    jsr stack_string                                                  ; aff9: 20 b2 bd     ..      ; Stack the string
+    jsr cae56                                                         ; affc: 20 56 ae     V.      ; Evaluate the count, expect )
+    jsr coerce_to_integer                                             ; afff: 20 f0 92     ..      ; coerce to integer
+    jsr unstack_string                                                ; b002: 20 cb bd     ..      ; Restore the string
+    lda zp_strbuf_len                                                 ; b005: a5 36       .6       ; Start = length - count
+    sec                                                               ; b007: 38          8        ; ...
+    sbc zp_iwa                                                        ; b008: e5 2a       .*       ; ...
+    bcc cb023                                                         ; b00a: 90 17       ..       ; count > length: keep the whole string
+    beq return_31                                                     ; b00c: f0 17       ..       ; count == length: keep it
+    tax                                                               ; b00e: aa          .        ; Start offset
+    lda zp_iwa                                                        ; b00f: a5 2a       .*       ; New length = count
+    sta zp_strbuf_len                                                 ; b011: 85 36       .6       ; ...
+    beq return_31                                                     ; b013: f0 10       ..       ; zero: empty string
+    ldy #0                                                            ; b015: a0 00       ..       ; Copy the last count chars to the front
 ; &b017 referenced 1 time by &b021
 .loop_cb017
-    lda string_work,x                                                 ; b017: bd 00 06    ...   
-    sta string_work,y                                                 ; b01a: 99 00 06    ...   
-    inx                                                               ; b01d: e8          .     
-    iny                                                               ; b01e: c8          .     
-    dec zp_iwa                                                        ; b01f: c6 2a       .*    
-    bne loop_cb017                                                    ; b021: d0 f4       ..    
+    lda string_work,x                                                 ; b017: bd 00 06    ...      ; ...
+    sta string_work,y                                                 ; b01a: 99 00 06    ...      ; ...
+    inx                                                               ; b01d: e8          .        ; ...
+    iny                                                               ; b01e: c8          .        ; ...
+    dec zp_iwa                                                        ; b01f: c6 2a       .*       ; ...
+    bne loop_cb017                                                    ; b021: d0 f4       ..       ; loop
 ; &b023 referenced 1 time by &b00a
 .cb023
-    lda #0                                                            ; b023: a9 00       ..    
+    lda #0                                                            ; b023: a9 00       ..       ; Keep the whole string
 ; &b025 referenced 2 times by &b00c, &b013
 .return_31
-    rts                                                               ; b025: 60          `     
+    rts                                                               ; b025: 60          `        ; Return
 ; ***************************************************************************************
 ; INKEY$
 ;
@@ -9042,61 +9042,61 @@ l848a = sub_c847b+15
 ;
 ; Substring from a start position. MID$(string, start [,length]).
 .fn_mids
-    jsr eval_or_eor                                                   ; b039: 20 29 9b     ).   
-    bne cb033                                                         ; b03c: d0 f5       ..    
-    cpx #&2c ; ','                                                    ; b03e: e0 2c       .,    
-    bne cb036                                                         ; b040: d0 f4       ..    
-    jsr stack_string                                                  ; b042: 20 b2 bd     ..   
-    inc zp_text_ptr2_off                                              ; b045: e6 1b       ..    
-    jsr sub_c92dd                                                     ; b047: 20 dd 92     ..   
-    lda zp_iwa                                                        ; b04a: a5 2a       .*    
-    pha                                                               ; b04c: 48          H     
-    lda #&ff                                                          ; b04d: a9 ff       ..    
-    sta zp_iwa                                                        ; b04f: 85 2a       .*    
-    inc zp_text_ptr2_off                                              ; b051: e6 1b       ..    
-    cpx #&29 ; ')'                                                    ; b053: e0 29       .)    
-    beq cb061                                                         ; b055: f0 0a       ..    
-    cpx #&2c ; ','                                                    ; b057: e0 2c       .,    
-    bne cb036                                                         ; b059: d0 db       ..    
-    jsr cae56                                                         ; b05b: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..   
+    jsr eval_or_eor                                                   ; b039: 20 29 9b     ).      ; Evaluate the source string
+    bne cb033                                                         ; b03c: d0 f5       ..       ; not a string: Type mismatch
+    cpx #&2c ; ','                                                    ; b03e: e0 2c       .,       ; ','?
+    bne cb036                                                         ; b040: d0 f4       ..       ; no: Missing ,
+    jsr stack_string                                                  ; b042: 20 b2 bd     ..      ; Stack the string
+    inc zp_text_ptr2_off                                              ; b045: e6 1b       ..       ; step past
+    jsr sub_c92dd                                                     ; b047: 20 dd 92     ..      ; Evaluate the start position
+    lda zp_iwa                                                        ; b04a: a5 2a       .*       ; Save it
+    pha                                                               ; b04c: 48          H        ; ...
+    lda #&ff                                                          ; b04d: a9 ff       ..       ; Default length = 255
+    sta zp_iwa                                                        ; b04f: 85 2a       .*       ; ...
+    inc zp_text_ptr2_off                                              ; b051: e6 1b       ..       ; step past
+    cpx #&29 ; ')'                                                    ; b053: e0 29       .)       ; ')' (no length given)?
+    beq cb061                                                         ; b055: f0 0a       ..       ; yes: use the default
+    cpx #&2c ; ','                                                    ; b057: e0 2c       .,       ; ','?
+    bne cb036                                                         ; b059: d0 db       ..       ; no: Missing ,
+    jsr cae56                                                         ; b05b: 20 56 ae     V.      ; Evaluate the length, expect )
+    jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..      ; coerce to integer
 ; &b061 referenced 1 time by &b055
 .cb061
-    jsr unstack_string                                                ; b061: 20 cb bd     ..   
-    pla                                                               ; b064: 68          h     
-    tay                                                               ; b065: a8          .     
-    clc                                                               ; b066: 18          .     
-    beq cb06f                                                         ; b067: f0 06       ..    
-    sbc zp_strbuf_len                                                 ; b069: e5 36       .6    
-    bcs cb02e                                                         ; b06b: b0 c1       ..    
-    dey                                                               ; b06d: 88          .     
-    tya                                                               ; b06e: 98          .     
+    jsr unstack_string                                                ; b061: 20 cb bd     ..      ; Restore the string
+    pla                                                               ; b064: 68          h        ; Start position
+    tay                                                               ; b065: a8          .        ; ...
+    clc                                                               ; b066: 18          .        ; ...
+    beq cb06f                                                         ; b067: f0 06       ..       ; position 0: treat as 1
+    sbc zp_strbuf_len                                                 ; b069: e5 36       .6       ; past the end?
+    bcs cb02e                                                         ; b06b: b0 c1       ..       ; yes: empty string
+    dey                                                               ; b06d: 88          .        ; Zero-based start = p - 1
+    tya                                                               ; b06e: 98          .        ; ...
 ; &b06f referenced 1 time by &b067
 .cb06f
-    sta zp_iwa_2                                                      ; b06f: 85 2c       .,    
-    tax                                                               ; b071: aa          .     
-    ldy #0                                                            ; b072: a0 00       ..    
-    lda zp_strbuf_len                                                 ; b074: a5 36       .6    
-    sec                                                               ; b076: 38          8     
-    sbc zp_iwa_2                                                      ; b077: e5 2c       .,    
-    cmp zp_iwa                                                        ; b079: c5 2a       .*    
-    bcs cb07f                                                         ; b07b: b0 02       ..    
-    sta zp_iwa                                                        ; b07d: 85 2a       .*    
+    sta zp_iwa_2                                                      ; b06f: 85 2c       .,       ; Save the start offset
+    tax                                                               ; b071: aa          .        ; ...
+    ldy #0                                                            ; b072: a0 00       ..       ; Destination index
+    lda zp_strbuf_len                                                 ; b074: a5 36       .6       ; Available = length - start
+    sec                                                               ; b076: 38          8        ; ...
+    sbc zp_iwa_2                                                      ; b077: e5 2c       .,       ; ...
+    cmp zp_iwa                                                        ; b079: c5 2a       .*       ; more than requested?
+    bcs cb07f                                                         ; b07b: b0 02       ..       ; no: use the available count
+    sta zp_iwa                                                        ; b07d: 85 2a       .*       ; clamp the length
 ; &b07f referenced 1 time by &b07b
 .cb07f
-    lda zp_iwa                                                        ; b07f: a5 2a       .*    
-    beq cb02e                                                         ; b081: f0 ab       ..    
+    lda zp_iwa                                                        ; b07f: a5 2a       .*       ; Length
+    beq cb02e                                                         ; b081: f0 ab       ..       ; zero: empty string
 ; &b083 referenced 1 time by &b08d
 .loop_cb083
-    lda string_work,x                                                 ; b083: bd 00 06    ...   
-    sta string_work,y                                                 ; b086: 99 00 06    ...   
-    iny                                                               ; b089: c8          .     
-    inx                                                               ; b08a: e8          .     
-    cpy zp_iwa                                                        ; b08b: c4 2a       .*    
-    bne loop_cb083                                                    ; b08d: d0 f4       ..    
-    sty zp_strbuf_len                                                 ; b08f: 84 36       .6    
-    lda #0                                                            ; b091: a9 00       ..    
-    rts                                                               ; b093: 60          `     
+    lda string_work,x                                                 ; b083: bd 00 06    ...      ; Copy the substring to the front
+    sta string_work,y                                                 ; b086: 99 00 06    ...      ; ...
+    iny                                                               ; b089: c8          .        ; ...
+    inx                                                               ; b08a: e8          .        ; ...
+    cpy zp_iwa                                                        ; b08b: c4 2a       .*       ; ...
+    bne loop_cb083                                                    ; b08d: d0 f4       ..       ; loop
+    sty zp_strbuf_len                                                 ; b08f: 84 36       .6       ; Set the result length
+    lda #0                                                            ; b091: a9 00       ..       ; String result
+    rts                                                               ; b093: 60          `        ; Return
 ; ***************************************************************************************
 ; STR$
 ;

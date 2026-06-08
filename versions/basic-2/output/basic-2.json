@@ -81109,6 +81109,7 @@
       "labels": [
         "fn_lefts"
       ],
+      "comment_inline": "Evaluate the source string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -81121,6 +81122,7 @@
         208,
         98
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb033",
@@ -81133,6 +81135,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -81143,6 +81146,7 @@
         208,
         97
       ],
+      "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb036",
@@ -81155,6 +81159,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -81168,6 +81173,7 @@
         178,
         189
       ],
+      "comment_inline": "Stack the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_string",
@@ -81181,6 +81187,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the count, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -81194,6 +81201,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -81207,6 +81215,7 @@
         203,
         189
       ],
+      "comment_inline": "Restore the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_string",
@@ -81219,6 +81228,7 @@
         165,
         42
       ],
+      "comment_inline": "Count",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -81231,6 +81241,7 @@
         197,
         54
       ],
+      "comment_inline": "count >= length?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -81243,6 +81254,7 @@
         176,
         2
       ],
+      "comment_inline": "yes: keep the whole string",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cafeb",
@@ -81255,6 +81267,7 @@
         133,
         54
       ],
+      "comment_inline": "truncate to the count",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -81270,6 +81283,7 @@
       "labels": [
         "cafeb"
       ],
+      "comment_inline": "String result",
       "xref_summaries": [
         "&afeb referenced 1 time by &afe7"
       ],
@@ -81285,6 +81299,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -81298,6 +81313,7 @@
       "labels": [
         "fn_rights"
       ],
+      "comment_inline": "Evaluate the source string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -81310,6 +81326,7 @@
         208,
         64
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb033",
@@ -81322,6 +81339,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -81332,6 +81350,7 @@
         208,
         63
       ],
+      "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb036",
@@ -81344,6 +81363,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -81357,6 +81377,7 @@
         178,
         189
       ],
+      "comment_inline": "Stack the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_string",
@@ -81370,6 +81391,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the count, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -81383,6 +81405,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -81396,6 +81419,7 @@
         203,
         189
       ],
+      "comment_inline": "Restore the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_string",
@@ -81408,6 +81432,7 @@
         165,
         54
       ],
+      "comment_inline": "Start = length - count",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -81419,6 +81444,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -81428,6 +81454,7 @@
         229,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -81440,6 +81467,7 @@
         144,
         23
       ],
+      "comment_inline": "count > length: keep the whole string",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb023",
@@ -81452,6 +81480,7 @@
         240,
         23
       ],
+      "comment_inline": "count == length: keep it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_31",
@@ -81463,6 +81492,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "Start offset",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -81472,6 +81502,7 @@
         165,
         42
       ],
+      "comment_inline": "New length = count",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -81484,6 +81515,7 @@
         133,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -81496,6 +81528,7 @@
         240,
         16
       ],
+      "comment_inline": "zero: empty string",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_31",
@@ -81508,6 +81541,7 @@
         160,
         0
       ],
+      "comment_inline": "Copy the last count chars to the front",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -81522,6 +81556,7 @@
       "labels": [
         "loop_cb017"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b017 referenced 1 time by &b021"
       ],
@@ -81541,6 +81576,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -81552,6 +81588,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -81560,6 +81597,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -81569,6 +81607,7 @@
         198,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa",
@@ -81581,6 +81620,7 @@
         208,
         244
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb017",
@@ -81596,6 +81636,7 @@
       "labels": [
         "cb023"
       ],
+      "comment_inline": "Keep the whole string",
       "xref_summaries": [
         "&b023 referenced 1 time by &b00a"
       ],
@@ -81614,6 +81655,7 @@
       "labels": [
         "return_31"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&b025 referenced 2 times by &b00c, &b013"
       ],
@@ -81778,6 +81820,7 @@
       "labels": [
         "fn_mids"
       ],
+      "comment_inline": "Evaluate the source string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -81790,6 +81833,7 @@
         208,
         245
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb033",
@@ -81802,6 +81846,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -81812,6 +81857,7 @@
         208,
         244
       ],
+      "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb036",
@@ -81825,6 +81871,7 @@
         178,
         189
       ],
+      "comment_inline": "Stack the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_string",
@@ -81837,6 +81884,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -81850,6 +81898,7 @@
         221,
         146
       ],
+      "comment_inline": "Evaluate the start position",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -81862,6 +81911,7 @@
         165,
         42
       ],
+      "comment_inline": "Save it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -81873,6 +81923,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -81882,6 +81933,7 @@
         169,
         255
       ],
+      "comment_inline": "Default length = 255",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -81892,6 +81944,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -81904,6 +81957,7 @@
         230,
         27
       ],
+      "comment_inline": "step past",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -81916,6 +81970,7 @@
         224,
         41
       ],
+      "comment_inline": "')' (no length given)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&29"
@@ -81926,6 +81981,7 @@
         240,
         10
       ],
+      "comment_inline": "yes: use the default",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb061",
@@ -81938,6 +81994,7 @@
         224,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&2c"
@@ -81948,6 +82005,7 @@
         208,
         219
       ],
+      "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb036",
@@ -81961,6 +82019,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate the length, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -81974,6 +82033,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -81990,6 +82050,7 @@
       "labels": [
         "cb061"
       ],
+      "comment_inline": "Restore the string",
       "xref_summaries": [
         "&b061 referenced 1 time by &b055"
       ],
@@ -82007,6 +82068,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Start position",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -82015,6 +82077,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -82023,6 +82086,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -82032,6 +82096,7 @@
         240,
         6
       ],
+      "comment_inline": "position 0: treat as 1",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb06f",
@@ -82044,6 +82109,7 @@
         229,
         54
       ],
+      "comment_inline": "past the end?",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_strbuf_len",
@@ -82056,6 +82122,7 @@
         176,
         193
       ],
+      "comment_inline": "yes: empty string",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb02e",
@@ -82067,6 +82134,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Zero-based start = p - 1",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -82075,6 +82143,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -82087,6 +82156,7 @@
       "labels": [
         "cb06f"
       ],
+      "comment_inline": "Save the start offset",
       "xref_summaries": [
         "&b06f referenced 1 time by &b067"
       ],
@@ -82104,6 +82174,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -82113,6 +82184,7 @@
         160,
         0
       ],
+      "comment_inline": "Destination index",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -82123,6 +82195,7 @@
         165,
         54
       ],
+      "comment_inline": "Available = length - start",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -82134,6 +82207,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -82143,6 +82217,7 @@
         229,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -82155,6 +82230,7 @@
         197,
         42
       ],
+      "comment_inline": "more than requested?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa",
@@ -82167,6 +82243,7 @@
         176,
         2
       ],
+      "comment_inline": "no: use the available count",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb07f",
@@ -82179,6 +82256,7 @@
         133,
         42
       ],
+      "comment_inline": "clamp the length",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -82194,6 +82272,7 @@
       "labels": [
         "cb07f"
       ],
+      "comment_inline": "Length",
       "xref_summaries": [
         "&b07f referenced 1 time by &b07b"
       ],
@@ -82212,6 +82291,7 @@
         240,
         171
       ],
+      "comment_inline": "zero: empty string",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb02e",
@@ -82228,6 +82308,7 @@
       "labels": [
         "loop_cb083"
       ],
+      "comment_inline": "Copy the substring to the front",
       "xref_summaries": [
         "&b083 referenced 1 time by &b08d"
       ],
@@ -82247,6 +82328,7 @@
         0,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -82258,6 +82340,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -82266,6 +82349,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -82275,6 +82359,7 @@
         196,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_iwa",
@@ -82287,6 +82372,7 @@
         208,
         244
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb083",
@@ -82299,6 +82385,7 @@
         132,
         54
       ],
+      "comment_inline": "Set the result length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_strbuf_len",
@@ -82311,6 +82398,7 @@
         169,
         0
       ],
+      "comment_inline": "String result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -82320,6 +82408,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
