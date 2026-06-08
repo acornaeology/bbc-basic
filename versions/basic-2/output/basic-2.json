@@ -19070,6 +19070,7 @@
       "labels": [
         "stmt_old"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -19082,6 +19083,7 @@
         165,
         24
       ],
+      "comment_inline": "Point at PAGE",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_page",
@@ -19094,6 +19096,7 @@
         133,
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -19106,6 +19109,7 @@
         169,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -19116,6 +19120,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -19128,6 +19133,7 @@
         145,
         55
       ],
+      "comment_inline": "Remove the end marker",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -19141,6 +19147,7 @@
         111,
         190
       ],
+      "comment_inline": "Re-check the program and set TOP",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_program",
@@ -19153,6 +19160,7 @@
         208,
         43
       ],
+      "comment_inline": "clear heap and return to immediate mode",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8af3",
@@ -19169,6 +19177,7 @@
       "labels": [
         "stmt_end"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -19182,6 +19191,7 @@
         111,
         190
       ],
+      "comment_inline": "Check the program",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_program",
@@ -19194,6 +19204,7 @@
         208,
         38
       ],
+      "comment_inline": "return to immediate mode (keep variables)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "immediate_loop",
@@ -19210,6 +19221,7 @@
       "labels": [
         "stmt_stop"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -19221,6 +19233,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "STOP error",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -21045,6 +21058,7 @@
         240,
         34
       ],
+      "comment_inline": "end of statement: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8c0b",
@@ -21060,6 +21074,7 @@
       "labels": [
         "c8be9"
       ],
+      "comment_inline": "numeric target?",
       "xref_summaries": [
         "&8be9 referenced 1 time by &8bcc"
       ],
@@ -21106,6 +21121,7 @@
         165,
         39
       ],
+      "comment_inline": "value type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -21146,6 +21162,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -21162,6 +21179,7 @@
       "labels": [
         "c8bfb"
       ],
+      "comment_inline": "Stack the destination address",
       "xref_summaries": [
         "&8bfb referenced 1 time by &8be9"
       ],
@@ -21181,6 +21199,7 @@
         19,
         152
       ],
+      "comment_inline": "Expect \"=\" and evaluate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_after_eq",
@@ -21193,6 +21212,7 @@
         165,
         39
       ],
+      "comment_inline": "value type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -21233,6 +21253,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -21249,6 +21270,7 @@
       "labels": [
         "c8c0b"
       ],
+      "comment_inline": "Mistake (syntax) error",
       "xref_summaries": [
         "&8c0b referenced 1 time by &8be7"
       ],
@@ -32124,6 +32146,7 @@
       "labels": [
         "stmt_trace"
       ],
+      "comment_inline": "Line number following?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c97df",
@@ -32136,6 +32159,7 @@
         176,
         11
       ],
+      "comment_inline": "yes: TRACE to that line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c92a5",
@@ -32148,6 +32172,7 @@
         201,
         238
       ],
+      "comment_inline": "ON token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&ee"
@@ -32158,6 +32183,7 @@
         240,
         25
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c92b7",
@@ -32170,6 +32196,7 @@
         201,
         135
       ],
+      "comment_inline": "OFF token?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&87"
@@ -32180,6 +32207,7 @@
         240,
         30
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c92c0",
@@ -32193,6 +32221,7 @@
         33,
         136
       ],
+      "comment_inline": "Evaluate the trace ceiling",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -32209,6 +32238,7 @@
       "labels": [
         "c92a5"
       ],
+      "comment_inline": "check the statement ends",
       "xref_summaries": [
         "&92a5 referenced 1 time by &9298"
       ],
@@ -32227,6 +32257,7 @@
         165,
         42
       ],
+      "comment_inline": "Set the trace ceiling",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -32239,6 +32270,7 @@
         133,
         33
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_trace_max",
@@ -32251,6 +32283,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -32266,6 +32299,7 @@
       "labels": [
         "loop_c92ae"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&92ae referenced 1 time by &92be"
       ],
@@ -32284,6 +32318,7 @@
         169,
         255
       ],
+      "comment_inline": "TRACE on",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -32297,6 +32332,7 @@
       "labels": [
         "loop_c92b2"
       ],
+      "comment_inline": "Set the TRACE flag",
       "xref_summaries": [
         "&92b2 referenced 1 time by &92c7"
       ],
@@ -32316,6 +32352,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -32331,6 +32368,7 @@
       "labels": [
         "c92b7"
       ],
+      "comment_inline": "TRACE ON: step past",
       "xref_summaries": [
         "&92b7 referenced 1 time by &929c"
       ],
@@ -32350,6 +32388,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -32362,6 +32401,7 @@
         169,
         255
       ],
+      "comment_inline": "ceiling = max",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -32372,6 +32412,7 @@
         208,
         238
       ],
+      "comment_inline": "set it on",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c92ae",
@@ -32387,6 +32428,7 @@
       "labels": [
         "c92c0"
       ],
+      "comment_inline": "TRACE OFF: step past",
       "xref_summaries": [
         "&92c0 referenced 1 time by &92a0"
       ],
@@ -32406,6 +32448,7 @@
         87,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -32418,6 +32461,7 @@
         169,
         0
       ],
+      "comment_inline": "flag = 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -32428,6 +32472,7 @@
         240,
         233
       ],
+      "comment_inline": "set it off",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c92b2",
@@ -32444,6 +32489,7 @@
       "labels": [
         "stmt_time"
       ],
+      "comment_inline": "Step past \"=\", evaluate the value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92eb",
@@ -32456,6 +32502,7 @@
         162,
         42
       ],
+      "comment_inline": "Point at IWA",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#<(zp_iwa)"
@@ -32466,6 +32513,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#>(zp_iwa)"
@@ -32476,6 +32524,7 @@
         132,
         46
       ],
+      "comment_inline": "clear the 5th byte",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_sign",
@@ -32488,6 +32537,7 @@
         169,
         2
       ],
+      "comment_inline": "OSWORD 2 (write clock)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osword_write_clock"
@@ -32513,6 +32563,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -32529,6 +32580,7 @@
       "labels": [
         "sub_c92da"
       ],
+      "comment_inline": "Step past the comma",
       "xref_summaries": [
         "&92da referenced 4 times by &9380, &9403, &b459, &b47c"
       ],
@@ -32554,6 +32606,7 @@
       "labels": [
         "sub_c92dd"
       ],
+      "comment_inline": "Evaluate the expression",
       "xref_summaries": [
         "&92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a"
       ],
@@ -32580,6 +32633,7 @@
         240,
         146
       ],
+      "comment_inline": "...and coerce to integer",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "coerce_to_integer",

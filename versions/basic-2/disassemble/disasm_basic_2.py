@@ -6975,6 +6975,70 @@ d.comment(0x8eca, 'VDU 12 (clear screen)', align=Align.INLINE)
 d.comment(0x8ecc, 'send it', align=Align.INLINE)
 d.comment(0x8ecf, 'next statement', align=Align.INLINE)
 
+# stmt_trace (&9295): TRACE line / TRACE ON / TRACE OFF.
+d.comment(0x9295, 'Line number following?', align=Align.INLINE)
+d.comment(0x9298, 'yes: TRACE to that line', align=Align.INLINE)
+d.comment(0x929a, 'ON token?', align=Align.INLINE)
+d.comment(0x929c, 'yes', align=Align.INLINE)
+d.comment(0x929e, 'OFF token?', align=Align.INLINE)
+d.comment(0x92a0, 'yes', align=Align.INLINE)
+d.comment(0x92a2, 'Evaluate the trace ceiling', align=Align.INLINE)
+d.comment(0x92a5, 'check the statement ends', align=Align.INLINE)
+d.comment(0x92a8, 'Set the trace ceiling', align=Align.INLINE)
+d.comment(0x92aa, '...', align=Align.INLINE)
+d.comment(0x92ac, '...', align=Align.INLINE)
+d.comment(0x92ae, '...', align=Align.INLINE)
+d.comment(0x92b0, 'TRACE on', align=Align.INLINE)
+d.comment(0x92b2, 'Set the TRACE flag', align=Align.INLINE)
+d.comment(0x92b4, 'next statement', align=Align.INLINE)
+d.comment(0x92b7, 'TRACE ON: step past', align=Align.INLINE)
+d.comment(0x92b9, 'check the statement ends', align=Align.INLINE)
+d.comment(0x92bc, 'ceiling = max', align=Align.INLINE)
+d.comment(0x92be, 'set it on', align=Align.INLINE)
+d.comment(0x92c0, 'TRACE OFF: step past', align=Align.INLINE)
+d.comment(0x92c2, 'check the statement ends', align=Align.INLINE)
+d.comment(0x92c5, 'flag = 0', align=Align.INLINE)
+d.comment(0x92c7, 'set it off', align=Align.INLINE)
+
+# stmt_time (&92C9): TIME = n -> OSWORD 2.
+d.comment(0x92c9, 'Step past "=", evaluate the value', align=Align.INLINE)
+d.comment(0x92cc, 'Point at IWA', align=Align.INLINE)
+d.comment(0x92ce, '...', align=Align.INLINE)
+d.comment(0x92d0, 'clear the 5th byte', align=Align.INLINE)
+d.comment(0x92d2, 'OSWORD 2 (write clock)', align=Align.INLINE)
+d.comment(0x92d7, 'next statement', align=Align.INLINE)
+d.comment(0x92da, 'Step past the comma', align=Align.INLINE)
+d.comment(0x92dd, 'Evaluate the expression', align=Align.INLINE)
+d.comment(0x92e0, '...and coerce to integer', align=Align.INLINE)
+
+# stmt_old (&8AB6): OLD - recover a NEWed program.
+d.comment(0x8ab6, 'Check the statement ends', align=Align.INLINE)
+d.comment(0x8ab9, 'Point at PAGE', align=Align.INLINE)
+d.comment(0x8abb, '...', align=Align.INLINE)
+d.comment(0x8abd, '...', align=Align.INLINE)
+d.comment(0x8abf, '...', align=Align.INLINE)
+d.comment(0x8ac1, 'Remove the end marker', align=Align.INLINE)
+d.comment(0x8ac3, 'Re-check the program and set TOP', align=Align.INLINE)
+d.comment(0x8ac6, 'clear heap and return to immediate mode', align=Align.INLINE)
+# stmt_end (&8AC8) and stmt_stop (&8AD0).
+d.comment(0x8ac8, 'Check the statement ends', align=Align.INLINE)
+d.comment(0x8acb, 'Check the program', align=Align.INLINE)
+d.comment(0x8ace, 'return to immediate mode (keep variables)',
+          align=Align.INLINE)
+d.comment(0x8ad0, 'Check the statement ends', align=Align.INLINE)
+d.comment(0x8ad3, 'STOP error', align=Align.INLINE)
+
+# stmt_let (&8BE4) remaining gaps.
+d.comment(0x8be7, 'end of statement: error', align=Align.INLINE)
+d.comment(0x8be9, 'numeric target?', align=Align.INLINE)
+d.comment(0x8bf1, 'value type', align=Align.INLINE)
+d.comment(0x8bf8, 'next statement', align=Align.INLINE)
+d.comment(0x8bfb, 'Stack the destination address', align=Align.INLINE)
+d.comment(0x8bfe, 'Expect "=" and evaluate', align=Align.INLINE)
+d.comment(0x8c01, 'value type', align=Align.INLINE)
+d.comment(0x8c08, 'next statement', align=Align.INLINE)
+d.comment(0x8c0b, 'Mistake (syntax) error', align=Align.INLINE)
+
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.
 # Handles INPUT, INPUT LINE and INPUT#. Prints any prompt items, reads a

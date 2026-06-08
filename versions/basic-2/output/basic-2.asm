@@ -2045,29 +2045,29 @@ l848a = sub_c847b+15
 ;
 ; Recover the program cleared by NEW, if memory is intact. OLD.
 .stmt_old
-    jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.   
-    lda zp_page                                                       ; 8ab9: a5 18       ..    
-    sta zp_general_1                                                  ; 8abb: 85 38       .8    
-    lda #0                                                            ; 8abd: a9 00       ..    
-    sta zp_general                                                    ; 8abf: 85 37       .7    
-    sta (zp_general),y                                                ; 8ac1: 91 37       .7    
-    jsr check_program                                                 ; 8ac3: 20 6f be     o.   
-    bne c8af3                                                         ; 8ac6: d0 2b       .+    
+    jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.      ; Check the statement ends
+    lda zp_page                                                       ; 8ab9: a5 18       ..       ; Point at PAGE
+    sta zp_general_1                                                  ; 8abb: 85 38       .8       ; ...
+    lda #0                                                            ; 8abd: a9 00       ..       ; ...
+    sta zp_general                                                    ; 8abf: 85 37       .7       ; ...
+    sta (zp_general),y                                                ; 8ac1: 91 37       .7       ; Remove the end marker
+    jsr check_program                                                 ; 8ac3: 20 6f be     o.      ; Re-check the program and set TOP
+    bne c8af3                                                         ; 8ac6: d0 2b       .+       ; clear heap and return to immediate mode
 ; ***************************************************************************************
 ; END
 ;
 ; End the program and return to the immediate prompt. END.
 .stmt_end
-    jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.   
-    jsr check_program                                                 ; 8acb: 20 6f be     o.   
-    bne immediate_loop                                                ; 8ace: d0 26       .&    
+    jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.      ; Check the statement ends
+    jsr check_program                                                 ; 8acb: 20 6f be     o.      ; Check the program
+    bne immediate_loop                                                ; 8ace: d0 26       .&       ; return to immediate mode (keep variables)
 ; ***************************************************************************************
 ; STOP
 ;
 ; Stop the program, reporting "STOP at line nnnn". STOP.
 .stmt_stop
-    jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.   
-    brk                                                               ; 8ad3: 00          .     
+    jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.      ; Check the statement ends
+    brk                                                               ; 8ad3: 00          .        ; STOP error
     equb &00                                                          ; 8ad4: 00          .     
     equs "STOP"                                                       ; 8ad5: 53 54 4f... STO...
     equb &00                                                          ; 8ad9: 00          .     
@@ -2299,27 +2299,27 @@ l848a = sub_c847b+15
 ; Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.
 .stmt_let
     jsr parse_lvalue                                                  ; 8be4: 20 82 95     ..      ; Parse the variable being assigned
-    beq c8c0b                                                         ; 8be7: f0 22       ."    
+    beq c8c0b                                                         ; 8be7: f0 22       ."       ; end of statement: error
 ; &8be9 referenced 1 time by &8bcc
 .c8be9
-    bcc c8bfb                                                         ; 8be9: 90 10       ..    
+    bcc c8bfb                                                         ; 8be9: 90 10       ..       ; numeric target?
     jsr stack_integer                                                 ; 8beb: 20 94 bd     ..      ; Stack the destination address
     jsr eval_after_eq                                                 ; 8bee: 20 13 98     ..      ; Expect "=" and evaluate the right-hand side
-    lda zp_var_type                                                   ; 8bf1: a5 27       .'    
+    lda zp_var_type                                                   ; 8bf1: a5 27       .'       ; value type
     bne err_type_mismatch                                             ; 8bf3: d0 19       ..       ; A string variable needs a string value
     jsr assign_string                                                 ; 8bf5: 20 1e 8c     ..      ; Store the string
-    jmp statement_loop                                                ; 8bf8: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8bf8: 4c 9b 8b    L..      ; next statement
 ; &8bfb referenced 1 time by &8be9
 .c8bfb
-    jsr stack_integer                                                 ; 8bfb: 20 94 bd     ..   
-    jsr eval_after_eq                                                 ; 8bfe: 20 13 98     ..   
-    lda zp_var_type                                                   ; 8c01: a5 27       .'    
+    jsr stack_integer                                                 ; 8bfb: 20 94 bd     ..      ; Stack the destination address
+    jsr eval_after_eq                                                 ; 8bfe: 20 13 98     ..      ; Expect "=" and evaluate
+    lda zp_var_type                                                   ; 8c01: a5 27       .'       ; value type
     beq err_type_mismatch                                             ; 8c03: f0 09       ..       ; A numeric variable needs a numeric value
     jsr assign_number                                                 ; 8c05: 20 b4 b4     ..      ; Store the number
-    jmp statement_loop                                                ; 8c08: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 8c08: 4c 9b 8b    L..      ; next statement
 ; &8c0b referenced 1 time by &8be7
 .c8c0b
-    jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.   
+    jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96
 .err_type_mismatch
     brk                                                               ; 8c0e: 00          .     
@@ -3454,58 +3454,58 @@ l848a = sub_c847b+15
 ;
 ; Trace executed line numbers for debugging. TRACE ON | OFF | line.
 .stmt_trace
-    jsr sub_c97df                                                     ; 9295: 20 df 97     ..   
-    bcs c92a5                                                         ; 9298: b0 0b       ..    
-    cmp #&ee                                                          ; 929a: c9 ee       ..    
-    beq c92b7                                                         ; 929c: f0 19       ..    
-    cmp #&87                                                          ; 929e: c9 87       ..    
-    beq c92c0                                                         ; 92a0: f0 1e       ..    
-    jsr eval_expr_to_integer                                          ; 92a2: 20 21 88     !.   
+    jsr sub_c97df                                                     ; 9295: 20 df 97     ..      ; Line number following?
+    bcs c92a5                                                         ; 9298: b0 0b       ..       ; yes: TRACE to that line
+    cmp #&ee                                                          ; 929a: c9 ee       ..       ; ON token?
+    beq c92b7                                                         ; 929c: f0 19       ..       ; yes
+    cmp #&87                                                          ; 929e: c9 87       ..       ; OFF token?
+    beq c92c0                                                         ; 92a0: f0 1e       ..       ; yes
+    jsr eval_expr_to_integer                                          ; 92a2: 20 21 88     !.      ; Evaluate the trace ceiling
 ; &92a5 referenced 1 time by &9298
 .c92a5
-    jsr check_end_of_statement                                        ; 92a5: 20 57 98     W.   
-    lda zp_iwa                                                        ; 92a8: a5 2a       .*    
-    sta zp_trace_max                                                  ; 92aa: 85 21       .!    
-    lda zp_iwa_1                                                      ; 92ac: a5 2b       .+    
+    jsr check_end_of_statement                                        ; 92a5: 20 57 98     W.      ; check the statement ends
+    lda zp_iwa                                                        ; 92a8: a5 2a       .*       ; Set the trace ceiling
+    sta zp_trace_max                                                  ; 92aa: 85 21       .!       ; ...
+    lda zp_iwa_1                                                      ; 92ac: a5 2b       .+       ; ...
 ; &92ae referenced 1 time by &92be
 .loop_c92ae
-    sta l0022                                                         ; 92ae: 85 22       ."    
-    lda #&ff                                                          ; 92b0: a9 ff       ..    
+    sta l0022                                                         ; 92ae: 85 22       ."       ; ...
+    lda #&ff                                                          ; 92b0: a9 ff       ..       ; TRACE on
 ; &92b2 referenced 1 time by &92c7
 .loop_c92b2
-    sta zp_trace_flag                                                 ; 92b2: 85 20       .     
-    jmp statement_loop                                                ; 92b4: 4c 9b 8b    L..   
+    sta zp_trace_flag                                                 ; 92b2: 85 20       .        ; Set the TRACE flag
+    jmp statement_loop                                                ; 92b4: 4c 9b 8b    L..      ; next statement
 ; &92b7 referenced 1 time by &929c
 .c92b7
-    inc zp_text_ptr_off                                               ; 92b7: e6 0a       ..    
-    jsr check_end_of_statement                                        ; 92b9: 20 57 98     W.   
-    lda #&ff                                                          ; 92bc: a9 ff       ..    
-    bne loop_c92ae                                                    ; 92be: d0 ee       ..    
+    inc zp_text_ptr_off                                               ; 92b7: e6 0a       ..       ; TRACE ON: step past
+    jsr check_end_of_statement                                        ; 92b9: 20 57 98     W.      ; check the statement ends
+    lda #&ff                                                          ; 92bc: a9 ff       ..       ; ceiling = max
+    bne loop_c92ae                                                    ; 92be: d0 ee       ..       ; set it on
 ; &92c0 referenced 1 time by &92a0
 .c92c0
-    inc zp_text_ptr_off                                               ; 92c0: e6 0a       ..    
-    jsr check_end_of_statement                                        ; 92c2: 20 57 98     W.   
-    lda #0                                                            ; 92c5: a9 00       ..    
-    beq loop_c92b2                                                    ; 92c7: f0 e9       ..    
+    inc zp_text_ptr_off                                               ; 92c0: e6 0a       ..       ; TRACE OFF: step past
+    jsr check_end_of_statement                                        ; 92c2: 20 57 98     W.      ; check the statement ends
+    lda #0                                                            ; 92c5: a9 00       ..       ; flag = 0
+    beq loop_c92b2                                                    ; 92c7: f0 e9       ..       ; set it off
 ; ***************************************************************************************
 ; TIME=
 ;
 ; Set the centisecond elapsed-time clock. TIME = value.
 .stmt_time
-    jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..   
-    ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*    
-    ldy #>(zp_iwa)                                                    ; 92ce: a0 00       ..    
-    sty zp_fwa_sign                                                   ; 92d0: 84 2e       ..    
-    lda #osword_write_clock                                           ; 92d2: a9 02       ..    
+    jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..      ; Step past "=", evaluate the value
+    ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*       ; Point at IWA
+    ldy #>(zp_iwa)                                                    ; 92ce: a0 00       ..       ; ...
+    sty zp_fwa_sign                                                   ; 92d0: 84 2e       ..       ; clear the 5th byte
+    lda #osword_write_clock                                           ; 92d2: a9 02       ..       ; OSWORD 2 (write clock)
     jsr osword                                                        ; 92d4: 20 f1 ff     ..      ; Write system clock
-    jmp statement_loop                                                ; 92d7: 4c 9b 8b    L..   
+    jmp statement_loop                                                ; 92d7: 4c 9b 8b    L..      ; next statement
 ; &92da referenced 4 times by &9380, &9403, &b459, &b47c
 .sub_c92da
-    jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..   
+    jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..      ; Step past the comma
 ; &92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a
 .sub_c92dd
-    jsr eval_or_eor                                                   ; 92dd: 20 29 9b     ).   
-    jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..   
+    jsr eval_or_eor                                                   ; 92dd: 20 29 9b     ).      ; Evaluate the expression
+    jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..      ; ...and coerce to integer
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
 .sub_c92e3
     jsr eval_factor                                                   ; 92e3: 20 ec ad     ..   
