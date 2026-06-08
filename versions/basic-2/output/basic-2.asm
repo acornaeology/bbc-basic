@@ -5246,23 +5246,23 @@ l848a = sub_c847b+15
 ; Addition and subtraction (numeric, or string concatenation).
 ; &9c42 referenced 4 times by &9a53, &9aa5, &9aea, &9b9c
 .eval_add_sub
-    jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..   
+    jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..      ; Evaluate a * / DIV MOD operand
 ; &9c45 referenced 4 times by &9c40, &9c82, &9c86, &9ca5
 .c9c45
     cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
-    beq c9c4e                                                         ; 9c47: f0 05       ..    
-    cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-    
-    beq c9cb5                                                         ; 9c4b: f0 68       .h    
-    rts                                                               ; 9c4d: 60          `     
+    beq c9c4e                                                         ; 9c47: f0 05       ..       ; yes: addition
+    cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-       ; next operator "-"?
+    beq c9cb5                                                         ; 9c4b: f0 68       .h       ; yes: subtraction
+    rts                                                               ; 9c4d: 60          `        ; neither: expression complete
 ; &9c4e referenced 1 time by &9c47
 .c9c4e
-    tay                                                               ; 9c4e: a8          .     
-    beq loop_c9c15                                                    ; 9c4f: f0 c4       ..    
-    bmi c9c8b                                                         ; 9c51: 30 38       08    
-    jsr sub_c9dce                                                     ; 9c53: 20 ce 9d     ..   
-    tay                                                               ; 9c56: a8          .     
-    beq c9c88                                                         ; 9c57: f0 2f       ./    
-    bmi c9ca7                                                         ; 9c59: 30 4c       0L    
+    tay                                                               ; 9c4e: a8          .        ; Addition: type of the left operand
+    beq loop_c9c15                                                    ; 9c4f: f0 c4       ..       ; string: concatenate
+    bmi c9c8b                                                         ; 9c51: 30 38       08       ; real: handle as float add
+    jsr sub_c9dce                                                     ; 9c53: 20 ce 9d     ..      ; integer: stack it and evaluate the right operand
+    tay                                                               ; 9c56: a8          .        ; Type of the right operand
+    beq c9c88                                                         ; 9c57: f0 2f       ./       ; string: Type mismatch
+    bmi c9ca7                                                         ; 9c59: 30 4c       0L       ; real: convert the left integer to float
 ; ***************************************************************************************
 ; Integer add
 ;
@@ -5276,70 +5276,70 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     ZP_IWA: the sum
 .iwa_add
-    ldy #0                                                            ; 9c5b: a0 00       ..    
-    clc                                                               ; 9c5d: 18          .     
-    lda (zp_stack_ptr),y                                              ; 9c5e: b1 04       ..    
-    adc zp_iwa                                                        ; 9c60: 65 2a       e*    
-    sta zp_iwa                                                        ; 9c62: 85 2a       .*    
-    iny                                                               ; 9c64: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9c65: b1 04       ..    
-    adc zp_iwa_1                                                      ; 9c67: 65 2b       e+    
-    sta zp_iwa_1                                                      ; 9c69: 85 2b       .+    
-    iny                                                               ; 9c6b: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9c6c: b1 04       ..    
-    adc zp_iwa_2                                                      ; 9c6e: 65 2c       e,    
-    sta zp_iwa_2                                                      ; 9c70: 85 2c       .,    
-    iny                                                               ; 9c72: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9c73: b1 04       ..    
-    adc zp_iwa_3                                                      ; 9c75: 65 2d       e-    
+    ldy #0                                                            ; 9c5b: a0 00       ..       ; int + int: add the 32-bit stacked value to IWA
+    clc                                                               ; 9c5d: 18          .        ; ...byte 0
+    lda (zp_stack_ptr),y                                              ; 9c5e: b1 04       ..       ; ...
+    adc zp_iwa                                                        ; 9c60: 65 2a       e*       ; ...
+    sta zp_iwa                                                        ; 9c62: 85 2a       .*       ; ...
+    iny                                                               ; 9c64: c8          .        ; ...byte 1
+    lda (zp_stack_ptr),y                                              ; 9c65: b1 04       ..       ; ...
+    adc zp_iwa_1                                                      ; 9c67: 65 2b       e+       ; ...
+    sta zp_iwa_1                                                      ; 9c69: 85 2b       .+       ; ...
+    iny                                                               ; 9c6b: c8          .        ; ...byte 2
+    lda (zp_stack_ptr),y                                              ; 9c6c: b1 04       ..       ; ...
+    adc zp_iwa_2                                                      ; 9c6e: 65 2c       e,       ; ...
+    sta zp_iwa_2                                                      ; 9c70: 85 2c       .,       ; ...
+    iny                                                               ; 9c72: c8          .        ; ...byte 3
+    lda (zp_stack_ptr),y                                              ; 9c73: b1 04       ..       ; ...
+    adc zp_iwa_3                                                      ; 9c75: 65 2d       e-       ; ...
 ; &9c77 referenced 1 time by &9cde
 .c9c77
-    sta zp_iwa_3                                                      ; 9c77: 85 2d       .-    
-    clc                                                               ; 9c79: 18          .     
-    lda zp_stack_ptr                                                  ; 9c7a: a5 04       ..    
-    adc #4                                                            ; 9c7c: 69 04       i.    
-    sta zp_stack_ptr                                                  ; 9c7e: 85 04       ..    
-    lda #&40 ; '@'                                                    ; 9c80: a9 40       .@    
-    bcc c9c45                                                         ; 9c82: 90 c1       ..    
-    inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..    
-    bcs c9c45                                                         ; 9c86: b0 bd       ..    
+    sta zp_iwa_3                                                      ; 9c77: 85 2d       .-       ; Drop the operand from the stack
+    clc                                                               ; 9c79: 18          .        ; ...
+    lda zp_stack_ptr                                                  ; 9c7a: a5 04       ..       ; ...
+    adc #4                                                            ; 9c7c: 69 04       i.       ; ...(four bytes)
+    sta zp_stack_ptr                                                  ; 9c7e: 85 04       ..       ; ...
+    lda #&40 ; '@'                                                    ; 9c80: a9 40       .@       ; Result type = integer
+    bcc c9c45                                                         ; 9c82: 90 c1       ..       ; loop for further + or -
+    inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..       ; ...
+    bcs c9c45                                                         ; 9c86: b0 bd       ..       ; ...
 ; &9c88 referenced 6 times by &9c1c, &9c57, &9c92, &9cb6, &9cbe, &9ce8
 .c9c88
-    jmp err_type_mismatch                                             ; 9c88: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; 9c88: 4c 0e 8c    L..      ; Type mismatch error
 ; &9c8b referenced 1 time by &9c51
 .c9c8b
-    jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.   
-    jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..   
-    tay                                                               ; 9c91: a8          .     
-    beq c9c88                                                         ; 9c92: f0 f4       ..    
-    stx zp_var_type                                                   ; 9c94: 86 27       .'    
-    bmi c9c9b                                                         ; 9c96: 30 03       0.    
-    jsr int_to_fwa                                                    ; 9c98: 20 be a2     ..   
+    jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
+    jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..      ; ...
+    tay                                                               ; 9c91: a8          .        ; Type of the right operand
+    beq c9c88                                                         ; 9c92: f0 f4       ..       ; string: Type mismatch
+    stx zp_var_type                                                   ; 9c94: 86 27       .'       ; remember it for later
+    bmi c9c9b                                                         ; 9c96: 30 03       0.       ; real: no conversion needed
+    jsr int_to_fwa                                                    ; 9c98: 20 be a2     ..      ; integer: convert the right operand to float
 ; &9c9b referenced 2 times by &9c96, &9cb2
 .c9c9b
-    jsr unstack_real                                                  ; 9c9b: 20 7e bd     ~.   
-    jsr fwa_add_var                                                   ; 9c9e: 20 00 a5     ..   
+    jsr unstack_real                                                  ; 9c9b: 20 7e bd     ~.      ; Pop the stacked real as the fp operand
+    jsr fwa_add_var                                                   ; 9c9e: 20 00 a5     ..      ; FWA = left + right
 ; &9ca1 referenced 2 times by &9cf7, &9d0b
 .c9ca1
-    ldx zp_var_type                                                   ; 9ca1: a6 27       .'    
-    lda #&ff                                                          ; 9ca3: a9 ff       ..    
-    bne c9c45                                                         ; 9ca5: d0 9e       ..    
+    ldx zp_var_type                                                   ; 9ca1: a6 27       .'       ; Restore the next character
+    lda #&ff                                                          ; 9ca3: a9 ff       ..       ; Result type = real
+    bne c9c45                                                         ; 9ca5: d0 9e       ..       ; loop for further + or -
 ; &9ca7 referenced 1 time by &9c59
 .c9ca7
-    stx zp_var_type                                                   ; 9ca7: 86 27       .'    
-    jsr unstack_integer                                               ; 9ca9: 20 ea bd     ..   
-    jsr stack_real                                                    ; 9cac: 20 51 bd     Q.   
-    jsr int_to_fwa                                                    ; 9caf: 20 be a2     ..   
-    jmp c9c9b                                                         ; 9cb2: 4c 9b 9c    L..   
+    stx zp_var_type                                                   ; 9ca7: 86 27       .'       ; Left int, right real: save the operator
+    jsr unstack_integer                                               ; 9ca9: 20 ea bd     ..      ; pop the stacked left integer
+    jsr stack_real                                                    ; 9cac: 20 51 bd     Q.      ; stack the right real
+    jsr int_to_fwa                                                    ; 9caf: 20 be a2     ..      ; convert the left integer to float
+    jmp c9c9b                                                         ; 9cb2: 4c 9b 9c    L..      ; then do float + float
 ; &9cb5 referenced 1 time by &9c4b
 .c9cb5
-    tay                                                               ; 9cb5: a8          .     
-    beq c9c88                                                         ; 9cb6: f0 d0       ..    
-    bmi c9ce1                                                         ; 9cb8: 30 27       0'    
-    jsr sub_c9dce                                                     ; 9cba: 20 ce 9d     ..   
-    tay                                                               ; 9cbd: a8          .     
-    beq c9c88                                                         ; 9cbe: f0 c8       ..    
-    bmi c9cfa                                                         ; 9cc0: 30 38       08    
+    tay                                                               ; 9cb5: a8          .        ; Subtraction: type of the left operand
+    beq c9c88                                                         ; 9cb6: f0 d0       ..       ; string: Type mismatch
+    bmi c9ce1                                                         ; 9cb8: 30 27       0'       ; real: handle as float subtract
+    jsr sub_c9dce                                                     ; 9cba: 20 ce 9d     ..      ; integer: stack it, evaluate the right operand
+    tay                                                               ; 9cbd: a8          .        ; Type of the right operand
+    beq c9c88                                                         ; 9cbe: f0 c8       ..       ; string: Type mismatch
+    bmi c9cfa                                                         ; 9cc0: 30 38       08       ; real: convert and subtract as floats
 ; ***************************************************************************************
 ; Reverse integer subtract
 ;
@@ -5353,69 +5353,69 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     ZP_IWA: operand - IWA
 .iwa_rsub
-    sec                                                               ; 9cc2: 38          8     
-    ldy #0                                                            ; 9cc3: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 9cc5: b1 04       ..    
-    sbc zp_iwa                                                        ; 9cc7: e5 2a       .*    
-    sta zp_iwa                                                        ; 9cc9: 85 2a       .*    
-    iny                                                               ; 9ccb: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9ccc: b1 04       ..    
-    sbc zp_iwa_1                                                      ; 9cce: e5 2b       .+    
-    sta zp_iwa_1                                                      ; 9cd0: 85 2b       .+    
-    iny                                                               ; 9cd2: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9cd3: b1 04       ..    
-    sbc zp_iwa_2                                                      ; 9cd5: e5 2c       .,    
-    sta zp_iwa_2                                                      ; 9cd7: 85 2c       .,    
-    iny                                                               ; 9cd9: c8          .     
-    lda (zp_stack_ptr),y                                              ; 9cda: b1 04       ..    
-    sbc zp_iwa_3                                                      ; 9cdc: e5 2d       .-    
-    jmp c9c77                                                         ; 9cde: 4c 77 9c    Lw.   
+    sec                                                               ; 9cc2: 38          8        ; int - int: stacked value minus IWA, byte 0
+    ldy #0                                                            ; 9cc3: a0 00       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; 9cc5: b1 04       ..       ; ...
+    sbc zp_iwa                                                        ; 9cc7: e5 2a       .*       ; ...
+    sta zp_iwa                                                        ; 9cc9: 85 2a       .*       ; ...
+    iny                                                               ; 9ccb: c8          .        ; ...byte 1
+    lda (zp_stack_ptr),y                                              ; 9ccc: b1 04       ..       ; ...
+    sbc zp_iwa_1                                                      ; 9cce: e5 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; 9cd0: 85 2b       .+       ; ...
+    iny                                                               ; 9cd2: c8          .        ; ...byte 2
+    lda (zp_stack_ptr),y                                              ; 9cd3: b1 04       ..       ; ...
+    sbc zp_iwa_2                                                      ; 9cd5: e5 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 9cd7: 85 2c       .,       ; ...
+    iny                                                               ; 9cd9: c8          .        ; ...byte 3
+    lda (zp_stack_ptr),y                                              ; 9cda: b1 04       ..       ; ...
+    sbc zp_iwa_3                                                      ; 9cdc: e5 2d       .-       ; ...
+    jmp c9c77                                                         ; 9cde: 4c 77 9c    Lw.      ; store byte 3, drop the operand and loop
 ; &9ce1 referenced 1 time by &9cb8
 .c9ce1
-    jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.   
-    jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..   
-    tay                                                               ; 9ce7: a8          .     
-    beq c9c88                                                         ; 9ce8: f0 9e       ..    
-    stx zp_var_type                                                   ; 9cea: 86 27       .'    
-    bmi c9cf1                                                         ; 9cec: 30 03       0.    
-    jsr int_to_fwa                                                    ; 9cee: 20 be a2     ..   
+    jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
+    jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..      ; ...
+    tay                                                               ; 9ce7: a8          .        ; Type of the right operand
+    beq c9c88                                                         ; 9ce8: f0 9e       ..       ; string: Type mismatch
+    stx zp_var_type                                                   ; 9cea: 86 27       .'       ; remember it
+    bmi c9cf1                                                         ; 9cec: 30 03       0.       ; real: no conversion needed
+    jsr int_to_fwa                                                    ; 9cee: 20 be a2     ..      ; integer: convert the right operand to float
 ; &9cf1 referenced 1 time by &9cec
 .c9cf1
-    jsr unstack_real                                                  ; 9cf1: 20 7e bd     ~.   
-    jsr fwa_rsub_var                                                  ; 9cf4: 20 fd a4     ..   
-    jmp c9ca1                                                         ; 9cf7: 4c a1 9c    L..   
+    jsr unstack_real                                                  ; 9cf1: 20 7e bd     ~.      ; Pop the stacked real as the fp operand
+    jsr fwa_rsub_var                                                  ; 9cf4: 20 fd a4     ..      ; FWA = left - right
+    jmp c9ca1                                                         ; 9cf7: 4c a1 9c    L..      ; set result type and loop
 ; &9cfa referenced 1 time by &9cc0
 .c9cfa
-    stx zp_var_type                                                   ; 9cfa: 86 27       .'    
-    jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..   
-    jsr stack_real                                                    ; 9cff: 20 51 bd     Q.   
-    jsr int_to_fwa                                                    ; 9d02: 20 be a2     ..   
-    jsr unstack_real                                                  ; 9d05: 20 7e bd     ~.   
-    jsr sub_ca4d0                                                     ; 9d08: 20 d0 a4     ..   
-    jmp c9ca1                                                         ; 9d0b: 4c a1 9c    L..   
+    stx zp_var_type                                                   ; 9cfa: 86 27       .'       ; Left int, right real: save the operator
+    jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..      ; pop the stacked left integer
+    jsr stack_real                                                    ; 9cff: 20 51 bd     Q.      ; stack the right real
+    jsr int_to_fwa                                                    ; 9d02: 20 be a2     ..      ; convert the left integer to float
+    jsr unstack_real                                                  ; 9d05: 20 7e bd     ~.      ; pop the stacked right real
+    jsr fwa_sub_var                                                   ; 9d08: 20 d0 a4     ..      ; FWA = left - right
+    jmp c9ca1                                                         ; 9d0b: 4c a1 9c    L..      ; set result type and loop
 ; &9d0e referenced 3 times by &9d60, &9d67, &9d6b
 .c9d0e
-    jsr int_to_fwa                                                    ; 9d0e: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d0e: 20 be a2     ..      ; Convert the right integer to float
 ; &9d11 referenced 1 time by &9d5a
 .loop_c9d11
-    jsr unstack_integer                                               ; 9d11: 20 ea bd     ..   
-    jsr stack_real                                                    ; 9d14: 20 51 bd     Q.   
-    jsr int_to_fwa                                                    ; 9d17: 20 be a2     ..   
-    jmp c9d2c                                                         ; 9d1a: 4c 2c 9d    L,.   
+    jsr unstack_integer                                               ; 9d11: 20 ea bd     ..      ; Pop the stacked left integer
+    jsr stack_real                                                    ; 9d14: 20 51 bd     Q.      ; stack the right real
+    jsr int_to_fwa                                                    ; 9d17: 20 be a2     ..      ; convert the left integer to float
+    jmp c9d2c                                                         ; 9d1a: 4c 2c 9d    L,.      ; then do float * float
 ; &9d1d referenced 3 times by &9d45, &9d4c, &9d50
 .c9d1d
-    jsr int_to_fwa                                                    ; 9d1d: 20 be a2     ..   
+    jsr int_to_fwa                                                    ; 9d1d: 20 be a2     ..      ; Convert the left integer to float
 ; &9d20 referenced 1 time by &9d3f
 .loop_c9d20
-    jsr stack_real                                                    ; 9d20: 20 51 bd     Q.   
-    jsr sub_c9e20                                                     ; 9d23: 20 20 9e      .   
-    stx zp_var_type                                                   ; 9d26: 86 27       .'    
-    tay                                                               ; 9d28: a8          .     
-    jsr sub_c92fd                                                     ; 9d29: 20 fd 92     ..   
+    jsr stack_real                                                    ; 9d20: 20 51 bd     Q.      ; Stack the left real
+    jsr sub_c9e20                                                     ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
+    stx zp_var_type                                                   ; 9d26: 86 27       .'       ; remember the operand type
+    tay                                                               ; 9d28: a8          .        ; ...
+    jsr sub_c92fd                                                     ; 9d29: 20 fd 92     ..      ; ensure the operand is real
 ; &9d2c referenced 1 time by &9d1a
 .c9d2c
-    jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.   
-    jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.   
+    jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.      ; Pop the stacked left real
+    jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.      ; FWA = left * right
     lda #&ff                                                          ; 9d32: a9 ff       ..    
     ldx zp_var_type                                                   ; 9d34: a6 27       .'    
     jmp c9dd4                                                         ; 9d36: 4c d4 9d    L..   
@@ -6716,91 +6716,91 @@ l848a = sub_c847b+15
 ; Convert FWA to a 4-byte integer in IWA (variant 2).
 ; &a3fe referenced 4 times by &a3e4, &a491, &a9ee, &ac82
 .fwa_to_int2
-    lda zp_fwa_exp                                                    ; a3fe: a5 30       .0    
-    bpl loop_ca3f8                                                    ; a400: 10 f6       ..    
-    jsr fwb_clear                                                     ; a402: 20 53 a4     S.   
-    jsr fwa_sign                                                      ; a405: 20 da a1     ..   
-    bne ca43c                                                         ; a408: d0 32       .2    
-    beq ca468                                                         ; a40a: f0 5c       .\    
+    lda zp_fwa_exp                                                    ; a3fe: a5 30       .0       ; Exponent of FWA
+    bpl loop_ca3f8                                                    ; a400: 10 f6       ..       ; < 1: result is zero
+    jsr fwb_clear                                                     ; a402: 20 53 a4     S.      ; Clear the low-order extension (FWB)
+    jsr fwa_sign                                                      ; a405: 20 da a1     ..      ; Sign of FWA
+    bne ca43c                                                         ; a408: d0 32       .2       ; non-zero: denormalise
+    beq ca468                                                         ; a40a: f0 5c       .\       ; zero: nothing to do
 ; &a40c referenced 2 times by &a43a, &a44e
 .ca40c
-    lda zp_fwa_exp                                                    ; a40c: a5 30       .0    
-    cmp #&a0                                                          ; a40e: c9 a0       ..    
-    bcs ca466                                                         ; a410: b0 54       .T    
-    cmp #&99                                                          ; a412: c9 99       ..    
-    bcs ca43c                                                         ; a414: b0 26       .&    
-    adc #8                                                            ; a416: 69 08       i.    
-    sta zp_fwa_exp                                                    ; a418: 85 30       .0    
-    lda zp_fwb_m3                                                     ; a41a: a5 40       .@    
-    sta zp_fwb_m4                                                     ; a41c: 85 41       .A    
-    lda zp_fwb_m2                                                     ; a41e: a5 3f       .?    
-    sta zp_fwb_m3                                                     ; a420: 85 40       .@    
-    lda zp_fwb_m1                                                     ; a422: a5 3e       .>    
-    sta zp_fwb_m2                                                     ; a424: 85 3f       .?    
-    lda zp_fwa_m4                                                     ; a426: a5 34       .4    
-    sta zp_fwb_m1                                                     ; a428: 85 3e       .>    
-    lda zp_fwa_m3                                                     ; a42a: a5 33       .3    
-    sta zp_fwa_m4                                                     ; a42c: 85 34       .4    
-    lda zp_fwa_m2                                                     ; a42e: a5 32       .2    
-    sta zp_fwa_m3                                                     ; a430: 85 33       .3    
-    lda zp_fwa_m1                                                     ; a432: a5 31       .1    
-    sta zp_fwa_m2                                                     ; a434: 85 32       .2    
-    lda #0                                                            ; a436: a9 00       ..    
-    sta zp_fwa_m1                                                     ; a438: 85 31       .1    
-    beq ca40c                                                         ; a43a: f0 d0       ..    
+    lda zp_fwa_exp                                                    ; a40c: a5 30       .0       ; Exponent
+    cmp #&a0                                                          ; a40e: c9 a0       ..       ; already a 32-bit integer (exp = +32)?
+    bcs ca466                                                         ; a410: b0 54       .T       ; yes: check it fits
+    cmp #&99                                                          ; a412: c9 99       ..       ; within a byte-shift of integer?
+    bcs ca43c                                                         ; a414: b0 26       .&       ; yes: finish with bit shifts
+    adc #8                                                            ; a416: 69 08       i.       ; Fast path: shift right one byte (exp += 8)
+    sta zp_fwa_exp                                                    ; a418: 85 30       .0       ; ...
+    lda zp_fwb_m3                                                     ; a41a: a5 40       .@       ; shift the mantissa down a byte, low byte into FWB
+    sta zp_fwb_m4                                                     ; a41c: 85 41       .A       ; ...
+    lda zp_fwb_m2                                                     ; a41e: a5 3f       .?       ; ...
+    sta zp_fwb_m3                                                     ; a420: 85 40       .@       ; ...
+    lda zp_fwb_m1                                                     ; a422: a5 3e       .>       ; ...
+    sta zp_fwb_m2                                                     ; a424: 85 3f       .?       ; ...
+    lda zp_fwa_m4                                                     ; a426: a5 34       .4       ; ...
+    sta zp_fwb_m1                                                     ; a428: 85 3e       .>       ; ...
+    lda zp_fwa_m3                                                     ; a42a: a5 33       .3       ; ...
+    sta zp_fwa_m4                                                     ; a42c: 85 34       .4       ; ...
+    lda zp_fwa_m2                                                     ; a42e: a5 32       .2       ; ...
+    sta zp_fwa_m3                                                     ; a430: 85 33       .3       ; ...
+    lda zp_fwa_m1                                                     ; a432: a5 31       .1       ; ...
+    sta zp_fwa_m2                                                     ; a434: 85 32       .2       ; ...
+    lda #0                                                            ; a436: a9 00       ..       ; ...
+    sta zp_fwa_m1                                                     ; a438: 85 31       .1       ; ...
+    beq ca40c                                                         ; a43a: f0 d0       ..       ; loop
 ; &a43c referenced 2 times by &a408, &a414
 .ca43c
-    lsr zp_fwa_m1                                                     ; a43c: 46 31       F1    
-    ror zp_fwa_m2                                                     ; a43e: 66 32       f2    
-    ror zp_fwa_m3                                                     ; a440: 66 33       f3    
-    ror zp_fwa_m4                                                     ; a442: 66 34       f4    
-    ror zp_fwb_m1                                                     ; a444: 66 3e       f>    
-    ror zp_fwb_m2                                                     ; a446: 66 3f       f?    
-    ror zp_fwb_m3                                                     ; a448: 66 40       f@    
-    ror zp_fwb_m4                                                     ; a44a: 66 41       fA    
-    inc zp_fwa_exp                                                    ; a44c: e6 30       .0    
-    bne ca40c                                                         ; a44e: d0 bc       ..    
+    lsr zp_fwa_m1                                                     ; a43c: 46 31       F1       ; Slow path: shift FWA:FWB right one bit
+    ror zp_fwa_m2                                                     ; a43e: 66 32       f2       ; ...
+    ror zp_fwa_m3                                                     ; a440: 66 33       f3       ; ...
+    ror zp_fwa_m4                                                     ; a442: 66 34       f4       ; ...
+    ror zp_fwb_m1                                                     ; a444: 66 3e       f>       ; ...
+    ror zp_fwb_m2                                                     ; a446: 66 3f       f?       ; ...
+    ror zp_fwb_m3                                                     ; a448: 66 40       f@       ; ...
+    ror zp_fwb_m4                                                     ; a44a: 66 41       fA       ; ...
+    inc zp_fwa_exp                                                    ; a44c: e6 30       .0       ; exp += 1
+    bne ca40c                                                         ; a44e: d0 bc       ..       ; loop until an exact integer
 ; &a450 referenced 2 times by &a466, &a4c4
 .ca450
-    jmp err_too_big                                                   ; a450: 4c 6c a6    Ll.   
+    jmp err_too_big                                                   ; a450: 4c 6c a6    Ll.      ; Magnitude too large: Too big error
 ; ***************************************************************************************
 ; FWB = 0
 ;
 ; Set the second floating-point accumulator to zero.
 ; &a453 referenced 3 times by &a402, &a814, &a93f
 .fwb_clear
-    lda #0                                                            ; a453: a9 00       ..    
-    sta zp_fwb_sign                                                   ; a455: 85 3b       .;    
-    sta zp_fwb_ovf                                                    ; a457: 85 3c       .<    
-    sta zp_fwb_exp                                                    ; a459: 85 3d       .=    
-    sta zp_fwb_m1                                                     ; a45b: 85 3e       .>    
-    sta zp_fwb_m2                                                     ; a45d: 85 3f       .?    
-    sta zp_fwb_m3                                                     ; a45f: 85 40       .@    
-    sta zp_fwb_m4                                                     ; a461: 85 41       .A    
-    sta zp_fwb_rnd                                                    ; a463: 85 42       .B    
-    rts                                                               ; a465: 60          `     
+    lda #0                                                            ; a453: a9 00       ..       ; Zero every byte of FWB
+    sta zp_fwb_sign                                                   ; a455: 85 3b       .;       ; ...sign
+    sta zp_fwb_ovf                                                    ; a457: 85 3c       .<       ; ...overflow
+    sta zp_fwb_exp                                                    ; a459: 85 3d       .=       ; ...exponent
+    sta zp_fwb_m1                                                     ; a45b: 85 3e       .>       ; ...mantissa byte 1
+    sta zp_fwb_m2                                                     ; a45d: 85 3f       .?       ; ...byte 2
+    sta zp_fwb_m3                                                     ; a45f: 85 40       .@       ; ...byte 3
+    sta zp_fwb_m4                                                     ; a461: 85 41       .A       ; ...byte 4
+    sta zp_fwb_rnd                                                    ; a463: 85 42       .B       ; ...rounding byte
+    rts                                                               ; a465: 60          `        ; Return
 ; &a466 referenced 1 time by &a410
 .ca466
-    bne ca450                                                         ; a466: d0 e8       ..    
+    bne ca450                                                         ; a466: d0 e8       ..       ; Exponent > 32: Too big error
 ; &a468 referenced 1 time by &a40a
 .ca468
-    lda zp_fwa_sign                                                   ; a468: a5 2e       ..    
-    bpl return_24                                                     ; a46a: 10 19       ..    
+    lda zp_fwa_sign                                                   ; a468: a5 2e       ..       ; Positive: integer ready, return
+    bpl return_24                                                     ; a46a: 10 19       ..       ; ...
 ; &a46c referenced 4 times by &a4b0, &a4c7, &a4cd, &aa0b
 .ca46c
-    sec                                                               ; a46c: 38          8     
-    lda #0                                                            ; a46d: a9 00       ..    
-    sbc zp_fwa_m4                                                     ; a46f: e5 34       .4    
-    sta zp_fwa_m4                                                     ; a471: 85 34       .4    
-    lda #0                                                            ; a473: a9 00       ..    
-    sbc zp_fwa_m3                                                     ; a475: e5 33       .3    
-    sta zp_fwa_m3                                                     ; a477: 85 33       .3    
-    lda #0                                                            ; a479: a9 00       ..    
-    sbc zp_fwa_m2                                                     ; a47b: e5 32       .2    
-    sta zp_fwa_m2                                                     ; a47d: 85 32       .2    
-    lda #0                                                            ; a47f: a9 00       ..    
-    sbc zp_fwa_m1                                                     ; a481: e5 31       .1    
-    sta zp_fwa_m1                                                     ; a483: 85 31       .1    
+    sec                                                               ; a46c: 38          8        ; Negative: negate the 32-bit mantissa
+    lda #0                                                            ; a46d: a9 00       ..       ; ...
+    sbc zp_fwa_m4                                                     ; a46f: e5 34       .4       ; ...
+    sta zp_fwa_m4                                                     ; a471: 85 34       .4       ; ...
+    lda #0                                                            ; a473: a9 00       ..       ; ...
+    sbc zp_fwa_m3                                                     ; a475: e5 33       .3       ; ...
+    sta zp_fwa_m3                                                     ; a477: 85 33       .3       ; ...
+    lda #0                                                            ; a479: a9 00       ..       ; ...
+    sbc zp_fwa_m2                                                     ; a47b: e5 32       .2       ; ...
+    sta zp_fwa_m2                                                     ; a47d: 85 32       .2       ; ...
+    lda #0                                                            ; a47f: a9 00       ..       ; ...
+    sbc zp_fwa_m1                                                     ; a481: e5 31       .1       ; ...
+    sta zp_fwa_m1                                                     ; a483: 85 31       .1       ; ...
 ; &a485 referenced 1 time by &a46a
 .return_24
     rts                                                               ; a485: 60          `     
@@ -6853,10 +6853,14 @@ l848a = sub_c847b+15
     jsr ca46c                                                         ; a4c7: 20 6c a4     l.   
     jsr sub_ca4b6                                                     ; a4ca: 20 b6 a4     ..   
     jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.   
+; ***************************************************************************************
+; FWA = FWA - fp var
+;
+; Subtract the fp variable operand from FWA (reverse subtract, then negate).
 ; &a4d0 referenced 2 times by &9d08, &a9bd
-.sub_ca4d0
-    jsr fwa_rsub_var                                                  ; a4d0: 20 fd a4     ..   
-    jmp fwa_negate                                                    ; a4d3: 4c 7e ad    L~.   
+.fwa_sub_var
+    jsr fwa_rsub_var                                                  ; a4d0: 20 fd a4     ..      ; operand - FWA...
+    jmp fwa_negate                                                    ; a4d3: 4c 7e ad    L~.      ; ...then negate to give FWA - operand
 ; ***************************************************************************************
 ; Swap FWA and a fp variable
 ;
@@ -7705,7 +7709,7 @@ l848a = sub_c847b+15
     jsr fwa_mul_var                                                   ; a9b4: 20 56 a6     V.      ; FWA = sin^2
     jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..      ; ...
     jsr fwa_set_one                                                   ; a9ba: 20 99 a6     ..      ; FWA = 1
-    jsr sub_ca4d0                                                     ; a9bd: 20 d0 a4     ..      ; FWA = 1 - sin^2
+    jsr fwa_sub_var                                                   ; a9bd: 20 d0 a4     ..      ; FWA = 1 - sin^2
     jmp ca7b7                                                         ; a9c0: 4c b7 a7    L..      ; cos = sqrt(1 - sin^2)
 ; &a9c3 referenced 2 times by &a9ac, &a9ae
 .ca9c3
@@ -12197,6 +12201,7 @@ save pydis_start, pydis_end
 ;     fwa_reciprocal:              2
 ;     fwa_round:                   2
 ;     fwa_rsub_var:                2
+;     fwa_sub_var:                 2
 ;     fwa_unpack_temp1:            2
 ;     fwb_half_fwa:                2
 ;     imul16:                      2
@@ -12268,7 +12273,6 @@ save pydis_start, pydis_end
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
 ;     sub_ca486:                   2
-;     sub_ca4d0:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -13989,7 +13993,6 @@ save pydis_start, pydis_end
 ;     sub_ca486
 ;     sub_ca4b6
 ;     sub_ca4c7
-;     sub_ca4d0
 ;     sub_ca4e8
 ;     sub_ca801
 ;     sub_ca9b1
