@@ -1619,8 +1619,7 @@
       "addr": 35870,
       "name": "assign_string",
       "title": "Store a string value into a variable",
-      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n",
-      "fall_through": true
+      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n"
     },
     {
       "addr": 46260,
@@ -1726,6 +1725,13 @@
       "name": "eval_power",
       "title": "Expression Level 2 - the ^ operator",
       "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
+    },
+    {
+      "addr": 36033,
+      "name": "unstack_value_to_var",
+      "title": "Restore a stacked value into a variable",
+      "description": "Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated), or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and parameter machinery.",
+      "fall_through": true
     },
     {
       "addr": 39358,
@@ -22440,8 +22446,9 @@
         57
       ],
       "labels": [
-        "sub_c8cc1"
+        "unstack_value_to_var"
       ],
+      "comment_inline": "Type/size byte",
       "xref_summaries": [
         "&8cc1 referenced 1 time by &b21f"
       ],
@@ -22460,6 +22467,7 @@
         201,
         128
       ],
+      "comment_inline": "$addr string?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -22470,6 +22478,7 @@
         240,
         39
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8cee",
@@ -22482,6 +22491,7 @@
         144,
         58
       ],
+      "comment_inline": "numeric?",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8d03",
@@ -22494,6 +22504,7 @@
         160,
         0
       ],
+      "comment_inline": "String variable: length on the stack",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -22504,6 +22515,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -22515,6 +22527,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -22524,6 +22537,7 @@
         240,
         21
       ],
+      "comment_inline": "empty: just set the length",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8ce5",
@@ -22536,6 +22550,7 @@
         177,
         55
       ],
+      "comment_inline": "Data address - 1 (for 1-based copy)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -22548,6 +22563,7 @@
         233,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#1"
@@ -22558,6 +22574,7 @@
         133,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -22569,6 +22586,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22578,6 +22596,7 @@
         177,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -22590,6 +22609,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -22600,6 +22620,7 @@
         133,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -22615,6 +22636,7 @@
       "labels": [
         "loop_c8cdd"
       ],
+      "comment_inline": "Copy the string bytes",
       "xref_summaries": [
         "&8cdd referenced 1 time by &8ce3"
       ],
@@ -22633,6 +22655,7 @@
         145,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fileblk),y",
@@ -22644,6 +22667,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22652,6 +22676,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -22661,6 +22686,7 @@
         208,
         248
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8cdd",
@@ -22676,6 +22702,7 @@
       "labels": [
         "c8ce5"
       ],
+      "comment_inline": "String length",
       "xref_summaries": [
         "&8ce5 referenced 1 time by &8cce"
       ],
@@ -22694,6 +22721,7 @@
         160,
         3
       ],
+      "comment_inline": "descriptor offset 3",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -22707,6 +22735,7 @@
       "labels": [
         "loop_c8ce9"
       ],
+      "comment_inline": "Store the length",
       "xref_summaries": [
         "&8ce9 referenced 1 time by &8d01"
       ],
@@ -22726,6 +22755,7 @@
         220,
         189
       ],
+      "comment_inline": "drop the value from the stack",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbddc",
@@ -22741,6 +22771,7 @@
       "labels": [
         "c8cee"
       ],
+      "comment_inline": "$addr: length on the stack",
       "xref_summaries": [
         "&8cee referenced 1 time by &8cc5"
       ],
@@ -22757,6 +22788,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -22768,6 +22800,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -22777,6 +22810,7 @@
         240,
         10
       ],
+      "comment_inline": "empty: just the terminator",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8cff",
@@ -22791,6 +22825,7 @@
       "labels": [
         "loop_c8cf5"
       ],
+      "comment_inline": "Copy the string to the address",
       "xref_summaries": [
         "&8cf5 referenced 1 time by &8cfd"
       ],
@@ -22806,6 +22841,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -22817,6 +22853,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22826,6 +22863,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -22837,6 +22875,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22845,6 +22884,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -22854,6 +22894,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8cf5",
@@ -22869,6 +22910,7 @@
       "labels": [
         "c8cff"
       ],
+      "comment_inline": "CR terminator",
       "xref_summaries": [
         "&8cff referenced 1 time by &8cf3"
       ],
@@ -22885,6 +22927,7 @@
         208,
         230
       ],
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8ce9",
@@ -22900,6 +22943,7 @@
       "labels": [
         "c8d03"
       ],
+      "comment_inline": "Numeric: copy byte 0",
       "xref_summaries": [
         "&8d03 referenced 1 time by &8cc7"
       ],
@@ -22916,6 +22960,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -22928,6 +22973,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -22939,6 +22985,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22948,6 +22995,7 @@
         196,
         57
       ],
+      "comment_inline": "all bytes done?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -22960,6 +23008,7 @@
         176,
         24
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8d26",
@@ -22972,6 +23021,7 @@
         177,
         4
       ],
+      "comment_inline": "Copy byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -22984,6 +23034,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -22995,6 +23046,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23004,6 +23056,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23016,6 +23069,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23027,6 +23081,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23036,6 +23091,7 @@
         177,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23048,6 +23104,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23059,6 +23116,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23068,6 +23126,7 @@
         196,
         57
       ],
+      "comment_inline": "all bytes done?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -23080,6 +23139,7 @@
         176,
         5
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8d26",
@@ -23092,6 +23152,7 @@
         177,
         4
       ],
+      "comment_inline": "byte 4 (real only)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23104,6 +23165,7 @@
         145,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23115,6 +23177,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23126,6 +23189,7 @@
       "labels": [
         "c8d26"
       ],
+      "comment_inline": "Bytes copied",
       "xref_summaries": [
         "&8d26 referenced 2 times by &8d0c, &8d1f"
       ],
@@ -23141,6 +23205,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -23151,6 +23216,7 @@
         225,
         189
       ],
+      "comment_inline": "drop them from the stack",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cbde1",
@@ -85383,9 +85449,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8cc1",
+      "operand": "unstack_value_to_var",
       "target": 36033,
-      "target_label": "sub_c8cc1"
+      "target_label": "unstack_value_to_var"
     },
     {
       "addr": 45602,

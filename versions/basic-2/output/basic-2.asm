@@ -2443,84 +2443,91 @@ l848a = sub_c847b+15
     equb &00                                                          ; 8cb8: 00          .     
     equs "No room"                                                    ; 8cb9: 4e 6f 20... No ...
     equb &00                                                          ; 8cc0: 00          .     
+; ***************************************************************************************
+; Restore a stacked value into a variable
+;
+; Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the
+; type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated),
+; or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and
+; parameter machinery.
 ; &8cc1 referenced 1 time by &b21f
-.sub_c8cc1
-    lda zp_fileblk                                                    ; 8cc1: a5 39       .9    
-    cmp #&80                                                          ; 8cc3: c9 80       ..    
-    beq c8cee                                                         ; 8cc5: f0 27       .'    
-    bcc c8d03                                                         ; 8cc7: 90 3a       .:    
-    ldy #0                                                            ; 8cc9: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 8ccb: b1 04       ..    
-    tax                                                               ; 8ccd: aa          .     
-    beq c8ce5                                                         ; 8cce: f0 15       ..    
-    lda (zp_general),y                                                ; 8cd0: b1 37       .7    
-    sbc #1                                                            ; 8cd2: e9 01       ..    
-    sta zp_fileblk                                                    ; 8cd4: 85 39       .9    
-    iny                                                               ; 8cd6: c8          .     
-    lda (zp_general),y                                                ; 8cd7: b1 37       .7    
-    sbc #0                                                            ; 8cd9: e9 00       ..    
-    sta l003a                                                         ; 8cdb: 85 3a       .:    
+.unstack_value_to_var
+    lda zp_fileblk                                                    ; 8cc1: a5 39       .9       ; Type/size byte
+    cmp #&80                                                          ; 8cc3: c9 80       ..       ; $addr string?
+    beq c8cee                                                         ; 8cc5: f0 27       .'       ; yes
+    bcc c8d03                                                         ; 8cc7: 90 3a       .:       ; numeric?
+    ldy #0                                                            ; 8cc9: a0 00       ..       ; String variable: length on the stack
+    lda (zp_stack_ptr),y                                              ; 8ccb: b1 04       ..       ; ...
+    tax                                                               ; 8ccd: aa          .        ; ...
+    beq c8ce5                                                         ; 8cce: f0 15       ..       ; empty: just set the length
+    lda (zp_general),y                                                ; 8cd0: b1 37       .7       ; Data address - 1 (for 1-based copy)
+    sbc #1                                                            ; 8cd2: e9 01       ..       ; ...
+    sta zp_fileblk                                                    ; 8cd4: 85 39       .9       ; ...
+    iny                                                               ; 8cd6: c8          .        ; ...
+    lda (zp_general),y                                                ; 8cd7: b1 37       .7       ; ...
+    sbc #0                                                            ; 8cd9: e9 00       ..       ; ...
+    sta l003a                                                         ; 8cdb: 85 3a       .:       ; ...
 ; &8cdd referenced 1 time by &8ce3
 .loop_c8cdd
-    lda (zp_stack_ptr),y                                              ; 8cdd: b1 04       ..    
-    sta (zp_fileblk),y                                                ; 8cdf: 91 39       .9    
-    iny                                                               ; 8ce1: c8          .     
-    dex                                                               ; 8ce2: ca          .     
-    bne loop_c8cdd                                                    ; 8ce3: d0 f8       ..    
+    lda (zp_stack_ptr),y                                              ; 8cdd: b1 04       ..       ; Copy the string bytes
+    sta (zp_fileblk),y                                                ; 8cdf: 91 39       .9       ; ...
+    iny                                                               ; 8ce1: c8          .        ; ...
+    dex                                                               ; 8ce2: ca          .        ; ...
+    bne loop_c8cdd                                                    ; 8ce3: d0 f8       ..       ; loop
 ; &8ce5 referenced 1 time by &8cce
 .c8ce5
-    lda (zp_stack_ptr,x)                                              ; 8ce5: a1 04       ..    
-    ldy #3                                                            ; 8ce7: a0 03       ..    
+    lda (zp_stack_ptr,x)                                              ; 8ce5: a1 04       ..       ; String length
+    ldy #3                                                            ; 8ce7: a0 03       ..       ; descriptor offset 3
 ; &8ce9 referenced 1 time by &8d01
 .loop_c8ce9
-    sta (zp_general),y                                                ; 8ce9: 91 37       .7    
-    jmp cbddc                                                         ; 8ceb: 4c dc bd    L..   
+    sta (zp_general),y                                                ; 8ce9: 91 37       .7       ; Store the length
+    jmp cbddc                                                         ; 8ceb: 4c dc bd    L..      ; drop the value from the stack
 ; &8cee referenced 1 time by &8cc5
 .c8cee
-    ldy #0                                                            ; 8cee: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 8cf0: b1 04       ..    
-    tax                                                               ; 8cf2: aa          .     
-    beq c8cff                                                         ; 8cf3: f0 0a       ..    
+    ldy #0                                                            ; 8cee: a0 00       ..       ; $addr: length on the stack
+    lda (zp_stack_ptr),y                                              ; 8cf0: b1 04       ..       ; ...
+    tax                                                               ; 8cf2: aa          .        ; ...
+    beq c8cff                                                         ; 8cf3: f0 0a       ..       ; empty: just the terminator
 ; &8cf5 referenced 1 time by &8cfd
 .loop_c8cf5
-    iny                                                               ; 8cf5: c8          .     
-    lda (zp_stack_ptr),y                                              ; 8cf6: b1 04       ..    
-    dey                                                               ; 8cf8: 88          .     
-    sta (zp_general),y                                                ; 8cf9: 91 37       .7    
-    iny                                                               ; 8cfb: c8          .     
-    dex                                                               ; 8cfc: ca          .     
-    bne loop_c8cf5                                                    ; 8cfd: d0 f6       ..    
+    iny                                                               ; 8cf5: c8          .        ; Copy the string to the address
+    lda (zp_stack_ptr),y                                              ; 8cf6: b1 04       ..       ; ...
+    dey                                                               ; 8cf8: 88          .        ; ...
+    sta (zp_general),y                                                ; 8cf9: 91 37       .7       ; ...
+    iny                                                               ; 8cfb: c8          .        ; ...
+    dex                                                               ; 8cfc: ca          .        ; ...
+    bne loop_c8cf5                                                    ; 8cfd: d0 f6       ..       ; loop
 ; &8cff referenced 1 time by &8cf3
 .c8cff
-    lda #&0d                                                          ; 8cff: a9 0d       ..    
-    bne loop_c8ce9                                                    ; 8d01: d0 e6       ..    
+    lda #&0d                                                          ; 8cff: a9 0d       ..       ; CR terminator
+    bne loop_c8ce9                                                    ; 8d01: d0 e6       ..       ; store it
 ; &8d03 referenced 1 time by &8cc7
 .c8d03
-    ldy #0                                                            ; 8d03: a0 00       ..    
-    lda (zp_stack_ptr),y                                              ; 8d05: b1 04       ..    
-    sta (zp_general),y                                                ; 8d07: 91 37       .7    
-    iny                                                               ; 8d09: c8          .     
-    cpy zp_fileblk                                                    ; 8d0a: c4 39       .9    
-    bcs c8d26                                                         ; 8d0c: b0 18       ..    
-    lda (zp_stack_ptr),y                                              ; 8d0e: b1 04       ..    
-    sta (zp_general),y                                                ; 8d10: 91 37       .7    
-    iny                                                               ; 8d12: c8          .     
-    lda (zp_stack_ptr),y                                              ; 8d13: b1 04       ..    
-    sta (zp_general),y                                                ; 8d15: 91 37       .7    
-    iny                                                               ; 8d17: c8          .     
-    lda (zp_stack_ptr),y                                              ; 8d18: b1 04       ..    
-    sta (zp_general),y                                                ; 8d1a: 91 37       .7    
-    iny                                                               ; 8d1c: c8          .     
-    cpy zp_fileblk                                                    ; 8d1d: c4 39       .9    
-    bcs c8d26                                                         ; 8d1f: b0 05       ..    
-    lda (zp_stack_ptr),y                                              ; 8d21: b1 04       ..    
-    sta (zp_general),y                                                ; 8d23: 91 37       .7    
-    iny                                                               ; 8d25: c8          .     
+    ldy #0                                                            ; 8d03: a0 00       ..       ; Numeric: copy byte 0
+    lda (zp_stack_ptr),y                                              ; 8d05: b1 04       ..       ; ...
+    sta (zp_general),y                                                ; 8d07: 91 37       .7       ; ...
+    iny                                                               ; 8d09: c8          .        ; ...
+    cpy zp_fileblk                                                    ; 8d0a: c4 39       .9       ; all bytes done?
+    bcs c8d26                                                         ; 8d0c: b0 18       ..       ; yes
+    lda (zp_stack_ptr),y                                              ; 8d0e: b1 04       ..       ; Copy byte 1
+    sta (zp_general),y                                                ; 8d10: 91 37       .7       ; ...
+    iny                                                               ; 8d12: c8          .        ; byte 2
+    lda (zp_stack_ptr),y                                              ; 8d13: b1 04       ..       ; ...
+    sta (zp_general),y                                                ; 8d15: 91 37       .7       ; ...
+    iny                                                               ; 8d17: c8          .        ; byte 3
+    lda (zp_stack_ptr),y                                              ; 8d18: b1 04       ..       ; ...
+    sta (zp_general),y                                                ; 8d1a: 91 37       .7       ; ...
+    iny                                                               ; 8d1c: c8          .        ; ...
+    cpy zp_fileblk                                                    ; 8d1d: c4 39       .9       ; all bytes done?
+    bcs c8d26                                                         ; 8d1f: b0 05       ..       ; yes
+    lda (zp_stack_ptr),y                                              ; 8d21: b1 04       ..       ; byte 4 (real only)
+    sta (zp_general),y                                                ; 8d23: 91 37       .7       ; ...
+    iny                                                               ; 8d25: c8          .        ; ...
 ; &8d26 referenced 2 times by &8d0c, &8d1f
 .c8d26
-    tya                                                               ; 8d26: 98          .     
-    clc                                                               ; 8d27: 18          .     
-    jmp cbde1                                                         ; 8d28: 4c e1 bd    L..   
+    tya                                                               ; 8d26: 98          .        ; Bytes copied
+    clc                                                               ; 8d27: 18          .        ; ...
+    jmp cbde1                                                         ; 8d28: 4c e1 bd    L..      ; drop them from the stack
 ; &8d2b referenced 1 time by &8d9f
 .loop_c8d2b
     dec zp_text_ptr_off                                               ; 8d2b: c6 0a       ..    
@@ -9381,7 +9388,7 @@ l848a = sub_c847b+15
 ; &b21c referenced 1 time by &b224
 .loop_cb21c
     jsr unstack_int_to_general                                        ; b21c: 20 0b be     ..   
-    jsr sub_c8cc1                                                     ; b21f: 20 c1 8c     ..   
+    jsr unstack_value_to_var                                          ; b21f: 20 c1 8c     ..   
     dec zp_fwb_m2                                                     ; b222: c6 3f       .?    
     bne loop_cb21c                                                    ; b224: d0 f6       ..    
 ; &b226 referenced 1 time by &b218
@@ -13054,7 +13061,6 @@ save pydis_start, pydis_end
 ;     sub_c88f5:                   1
 ;     sub_c893d:                   1
 ;     sub_c8955:                   1
-;     sub_c8cc1:                   1
 ;     sub_c8f9a:                   1
 ;     sub_c9231:                   1
 ;     sub_c94ed:                   1
@@ -13087,6 +13093,7 @@ save pydis_start, pydis_end
 ;     sub_cbeb2:                   1
 ;     sub_cbee7:                   1
 ;     tokenise_line:               1
+;     unstack_value_to_var:        1
 ;     validate_var_name:           1
 
 ; Automatically generated labels:
@@ -14007,7 +14014,6 @@ save pydis_start, pydis_end
 ;     sub_c894b
 ;     sub_c8955
 ;     sub_c8c21
-;     sub_c8cc1
 ;     sub_c8e8a
 ;     sub_c8f69
 ;     sub_c8f92

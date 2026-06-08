@@ -1839,6 +1839,14 @@ d.subroutine(0x9e20, 'eval_power',
                          'power: an integer exponent uses repeated '
                          'multiplication, otherwise x^y = x^int * exp(frac * '
                          'ln x).')
+d.subroutine(0x8cc1, 'unstack_value_to_var',
+             title='Restore a stacked value into a variable',
+             description='Pop the value at the BASIC stack (&04) into the '
+                         'variable at &37, dispatched by the type/size byte '
+                         '&39: a numeric value of that many bytes, a $addr '
+                         'string (CR terminated), or a string variable '
+                         '(copied into its heap allocation). Used by the '
+                         'FN/PROC LOCAL and parameter machinery.')
 d.subroutine(0x99be, 'iwa_divide',
              title='Unsigned/signed 32-bit integer division',
              description='Evaluate the right operand, take absolute values, '
@@ -6145,6 +6153,68 @@ d.comment(0x8cb4, 'Store it (with the CR terminator following)',
           align=Align.INLINE)
 d.comment(0x8cb6, 'Return', align=Align.INLINE)
 d.comment(0x8cb7, 'No room error', align=Align.INLINE)
+
+# unstack_value_to_var (&8CC1): pop a stacked value into a variable.
+d.comment(0x8cc1, 'Type/size byte', align=Align.INLINE)
+d.comment(0x8cc3, '$addr string?', align=Align.INLINE)
+d.comment(0x8cc5, 'yes', align=Align.INLINE)
+d.comment(0x8cc7, 'numeric?', align=Align.INLINE)
+d.comment(0x8cc9, 'String variable: length on the stack', align=Align.INLINE)
+d.comment(0x8ccb, '...', align=Align.INLINE)
+d.comment(0x8ccd, '...', align=Align.INLINE)
+d.comment(0x8cce, 'empty: just set the length', align=Align.INLINE)
+d.comment(0x8cd0, 'Data address - 1 (for 1-based copy)', align=Align.INLINE)
+d.comment(0x8cd2, '...', align=Align.INLINE)
+d.comment(0x8cd4, '...', align=Align.INLINE)
+d.comment(0x8cd6, '...', align=Align.INLINE)
+d.comment(0x8cd7, '...', align=Align.INLINE)
+d.comment(0x8cd9, '...', align=Align.INLINE)
+d.comment(0x8cdb, '...', align=Align.INLINE)
+d.comment(0x8cdd, 'Copy the string bytes', align=Align.INLINE)
+d.comment(0x8cdf, '...', align=Align.INLINE)
+d.comment(0x8ce1, '...', align=Align.INLINE)
+d.comment(0x8ce2, '...', align=Align.INLINE)
+d.comment(0x8ce3, 'loop', align=Align.INLINE)
+d.comment(0x8ce5, 'String length', align=Align.INLINE)
+d.comment(0x8ce7, 'descriptor offset 3', align=Align.INLINE)
+d.comment(0x8ce9, 'Store the length', align=Align.INLINE)
+d.comment(0x8ceb, 'drop the value from the stack', align=Align.INLINE)
+d.comment(0x8cee, '$addr: length on the stack', align=Align.INLINE)
+d.comment(0x8cf0, '...', align=Align.INLINE)
+d.comment(0x8cf2, '...', align=Align.INLINE)
+d.comment(0x8cf3, 'empty: just the terminator', align=Align.INLINE)
+d.comment(0x8cf5, 'Copy the string to the address', align=Align.INLINE)
+d.comment(0x8cf6, '...', align=Align.INLINE)
+d.comment(0x8cf8, '...', align=Align.INLINE)
+d.comment(0x8cf9, '...', align=Align.INLINE)
+d.comment(0x8cfb, '...', align=Align.INLINE)
+d.comment(0x8cfc, '...', align=Align.INLINE)
+d.comment(0x8cfd, 'loop', align=Align.INLINE)
+d.comment(0x8cff, 'CR terminator', align=Align.INLINE)
+d.comment(0x8d01, 'store it', align=Align.INLINE)
+d.comment(0x8d03, 'Numeric: copy byte 0', align=Align.INLINE)
+d.comment(0x8d05, '...', align=Align.INLINE)
+d.comment(0x8d07, '...', align=Align.INLINE)
+d.comment(0x8d09, '...', align=Align.INLINE)
+d.comment(0x8d0a, 'all bytes done?', align=Align.INLINE)
+d.comment(0x8d0c, 'yes', align=Align.INLINE)
+d.comment(0x8d0e, 'Copy byte 1', align=Align.INLINE)
+d.comment(0x8d10, '...', align=Align.INLINE)
+d.comment(0x8d12, 'byte 2', align=Align.INLINE)
+d.comment(0x8d13, '...', align=Align.INLINE)
+d.comment(0x8d15, '...', align=Align.INLINE)
+d.comment(0x8d17, 'byte 3', align=Align.INLINE)
+d.comment(0x8d18, '...', align=Align.INLINE)
+d.comment(0x8d1a, '...', align=Align.INLINE)
+d.comment(0x8d1c, '...', align=Align.INLINE)
+d.comment(0x8d1d, 'all bytes done?', align=Align.INLINE)
+d.comment(0x8d1f, 'yes', align=Align.INLINE)
+d.comment(0x8d21, 'byte 4 (real only)', align=Align.INLINE)
+d.comment(0x8d23, '...', align=Align.INLINE)
+d.comment(0x8d25, '...', align=Align.INLINE)
+d.comment(0x8d26, 'Bytes copied', align=Align.INLINE)
+d.comment(0x8d27, '...', align=Align.INLINE)
+d.comment(0x8d28, 'drop them from the stack', align=Align.INLINE)
 
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)
