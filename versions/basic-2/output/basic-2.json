@@ -1764,6 +1764,12 @@
       "title": "Append a character to the output string"
     },
     {
+      "addr": 45330,
+      "name": "find_def",
+      "title": "Find a PROC/FN definition by name",
+      "description": "Search the program for the DEF line whose name matches, then cache its body address in the variable entry."
+    },
+    {
       "addr": 41083,
       "name": "parse_number",
       "title": "Parse an unsigned number at PtrB",
@@ -80718,6 +80724,7 @@
       "labels": [
         "fn_strings"
       ],
+      "comment_inline": "Evaluate the count (n) as an integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -80731,6 +80738,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -80744,6 +80752,7 @@
         174,
         138
       ],
+      "comment_inline": "require a comma",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_expect_comma",
@@ -80757,6 +80766,7 @@
         86,
         174
       ],
+      "comment_inline": "evaluate the string s$",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -80769,6 +80779,7 @@
         208,
         239
       ],
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb0bf",
@@ -80782,6 +80793,7 @@
         234,
         189
       ],
+      "comment_inline": "recover the count",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -80794,6 +80806,7 @@
         164,
         54
       ],
+      "comment_inline": "source string length",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -80806,6 +80819,7 @@
         240,
         30
       ],
+      "comment_inline": "empty source: empty result",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0f5",
@@ -80818,6 +80832,7 @@
         165,
         42
       ],
+      "comment_inline": "count = 0?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -80830,6 +80845,7 @@
         240,
         29
       ],
+      "comment_inline": "yes: empty result",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0f8",
@@ -80842,6 +80858,7 @@
         198,
         42
       ],
+      "comment_inline": "one copy is already there; need count-1 more",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa",
@@ -80854,6 +80871,7 @@
         240,
         22
       ],
+      "comment_inline": "count = 1: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0f5",
@@ -80869,6 +80887,7 @@
       "labels": [
         "loop_cb0df"
       ],
+      "comment_inline": "Append another copy:",
       "xref_summaries": [
         "&b0df referenced 1 time by &b0f1"
       ],
@@ -80889,6 +80908,7 @@
       "labels": [
         "loop_cb0e1"
       ],
+      "comment_inline": "source char...",
       "xref_summaries": [
         "&b0e1 referenced 1 time by &b0ed"
       ],
@@ -80908,6 +80928,7 @@
         0,
         6
       ],
+      "comment_inline": "...appended",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -80919,6 +80940,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "next source",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -80927,6 +80949,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "next dest",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -80936,6 +80959,7 @@
         240,
         16
       ],
+      "comment_inline": "too long: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0fb",
@@ -80948,6 +80972,7 @@
         228,
         54
       ],
+      "comment_inline": "end of this copy?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_strbuf_len",
@@ -80960,6 +80985,7 @@
         144,
         242
       ],
+      "comment_inline": "no: keep copying",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_cb0e1",
@@ -80972,6 +80998,7 @@
         198,
         42
       ],
+      "comment_inline": "one fewer copy",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa",
@@ -80984,6 +81011,7 @@
         208,
         236
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb0df",
@@ -80996,6 +81024,7 @@
         132,
         54
       ],
+      "comment_inline": "set the result length",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_strbuf_len",
@@ -81011,6 +81040,7 @@
       "labels": [
         "cb0f5"
       ],
+      "comment_inline": "string type",
       "xref_summaries": [
         "&b0f5 referenced 2 times by &b0d5, &b0dd"
       ],
@@ -81027,6 +81057,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -81039,6 +81070,7 @@
       "labels": [
         "cb0f8"
       ],
+      "comment_inline": "empty result (length 0)",
       "xref_summaries": [
         "&b0f8 referenced 1 time by &b0d9"
       ],
@@ -81056,6 +81088,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -81069,6 +81102,7 @@
       "labels": [
         "cb0fb"
       ],
+      "comment_inline": "String too long error",
       "xref_summaries": [
         "&b0fb referenced 1 time by &b0e9"
       ],
@@ -81089,6 +81123,7 @@
       "labels": [
         "loop_cb0fe"
       ],
+      "comment_inline": "No such FN/PROC: restore the text pointer",
       "xref_summaries": [
         "&b0fe referenced 1 time by &b11e"
       ],
@@ -81104,6 +81139,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -81115,6 +81151,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -81124,6 +81161,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -81135,6 +81173,7 @@
       "bytes": [
         0
       ],
+      "comment_inline": "\"No such FN/PROC\" error block",
       "type": "code",
       "mnemonic": "brk"
     },
@@ -81186,8 +81225,9 @@
         24
       ],
       "labels": [
-        "cb112"
+        "find_def"
       ],
+      "comment_inline": "Search from PAGE: high",
       "xref_summaries": [
         "&b112 referenced 1 time by &b1e6"
       ],
@@ -81206,6 +81246,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -81218,6 +81259,7 @@
         169,
         0
       ],
+      "comment_inline": "low 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -81228,6 +81270,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -81243,6 +81286,7 @@
       "labels": [
         "cb11a"
       ],
+      "comment_inline": "line number high byte",
       "xref_summaries": [
         "&b11a referenced 2 times by &b136, &b13a"
       ],
@@ -81260,6 +81304,7 @@
         177,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -81272,6 +81317,7 @@
         48,
         222
       ],
+      "comment_inline": "end of program: not found",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_cb0fe",
@@ -81284,6 +81330,7 @@
         160,
         3
       ],
+      "comment_inline": "skip to the line body",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#3"
@@ -81296,6 +81343,7 @@
       "labels": [
         "loop_cb122"
       ],
+      "comment_inline": "advance",
       "xref_summaries": [
         "&b122 referenced 1 time by &b127"
       ],
@@ -81311,6 +81359,7 @@
         177,
         11
       ],
+      "comment_inline": "char",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -81323,6 +81372,7 @@
         201,
         32
       ],
+      "comment_inline": "skip leading spaces",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&20"
@@ -81333,6 +81383,7 @@
         240,
         249
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb122",
@@ -81345,6 +81396,7 @@
         201,
         221
       ],
+      "comment_inline": "DEF token at the start?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&dd"
@@ -81355,6 +81407,7 @@
         240,
         15
       ],
+      "comment_inline": "yes: check the name",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb13c",
@@ -81370,6 +81423,7 @@
       "labels": [
         "cb12d"
       ],
+      "comment_inline": "no DEF: skip to the next line",
       "xref_summaries": [
         "&b12d referenced 2 times by &b15e, &b16a"
       ],
@@ -81387,6 +81441,7 @@
         177,
         11
       ],
+      "comment_inline": "line length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -81398,6 +81453,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -81407,6 +81463,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -81419,6 +81476,7 @@
         133,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -81431,6 +81489,7 @@
         144,
         226
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb11a",
@@ -81443,6 +81502,7 @@
         230,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -81455,6 +81515,7 @@
         176,
         222
       ],
+      "comment_inline": "next line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb11a",
@@ -81469,6 +81530,7 @@
       "labels": [
         "cb13c"
       ],
+      "comment_inline": "DEF found: skip past the FN/PROC token",
       "xref_summaries": [
         "&b13c referenced 1 time by &b12b"
       ],
@@ -81484,6 +81546,7 @@
         132,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -81497,6 +81560,7 @@
         151,
         138
       ],
+      "comment_inline": "skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -81508,6 +81572,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "point at the definition name:",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -81516,6 +81581,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -81524,6 +81590,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -81533,6 +81600,7 @@
         101,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -81545,6 +81613,7 @@
         164,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr_1",
@@ -81557,6 +81626,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb14d",
@@ -81568,6 +81638,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -81576,6 +81647,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -81588,6 +81660,7 @@
       "labels": [
         "cb14d"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b14d referenced 1 time by &b149"
       ],
@@ -81604,6 +81677,7 @@
         133,
         60
       ],
+      "comment_inline": "(save pointer low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -81615,6 +81689,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -81624,6 +81699,7 @@
         233,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -81634,6 +81710,7 @@
         133,
         61
       ],
+      "comment_inline": "(save pointer high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -81646,6 +81723,7 @@
         160,
         0
       ],
+      "comment_inline": "Compare the definition name with the called name:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -81658,6 +81736,7 @@
       "labels": [
         "loop_cb158"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&b158 referenced 1 time by &b162"
       ],
@@ -81672,6 +81751,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -81681,6 +81761,7 @@
         177,
         60
       ],
+      "comment_inline": "definition char",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -81693,6 +81774,7 @@
         209,
         55
       ],
+      "comment_inline": "vs called char",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_general),y",
@@ -81705,6 +81787,7 @@
         208,
         205
       ],
+      "comment_inline": "differ: next line",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb12d",
@@ -81717,6 +81800,7 @@
         196,
         57
       ],
+      "comment_inline": "end of the called name?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fileblk",
@@ -81729,6 +81813,7 @@
         208,
         244
       ],
+      "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cb158",
@@ -81740,6 +81825,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "definition name also ends?",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -81749,6 +81835,7 @@
         177,
         60
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fwb_ovf),y",
@@ -81762,6 +81849,7 @@
         38,
         137
       ],
+      "comment_inline": "alphanumeric?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c8926",
@@ -81774,6 +81862,7 @@
         176,
         193
       ],
+      "comment_inline": "definition name is longer: next line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb12d",
@@ -81785,6 +81874,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "Match: cache the definition",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -81793,6 +81883,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -81803,6 +81894,7 @@
         109,
         152
       ],
+      "comment_inline": "point PtrA at the body",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c986d",
@@ -81816,6 +81908,7 @@
         237,
         148
       ],
+      "comment_inline": "create/find the FN/PROC entry",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c94ed",
@@ -81828,6 +81921,7 @@
         162,
         1
       ],
+      "comment_inline": "init it",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#1"
@@ -81839,6 +81933,7 @@
         49,
         149
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_value_bytes",
@@ -81851,6 +81946,7 @@
         160,
         0
       ],
+      "comment_inline": "store the body pointer:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -81861,6 +81957,7 @@
         165,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr",
@@ -81873,6 +81970,7 @@
         145,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -81884,6 +81982,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -81893,6 +81992,7 @@
         165,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -81905,6 +82005,7 @@
         145,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -81918,6 +82019,7 @@
         57,
         149
       ],
+      "comment_inline": "advance VARTOP",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9539",
@@ -81931,6 +82033,7 @@
         244,
         177
       ],
+      "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cb1f4",
@@ -81945,6 +82048,7 @@
       "labels": [
         "loop_cb18a"
       ],
+      "comment_inline": "error block",
       "xref_summaries": [
         "&b18a referenced 1 time by &b1da"
       ],
@@ -82518,9 +82622,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb112",
+      "operand": "find_def",
       "target": 45330,
-      "target_label": "cb112"
+      "target_label": "find_def"
     },
     {
       "addr": 45545,

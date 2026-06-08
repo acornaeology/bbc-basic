@@ -9043,135 +9043,140 @@ l848a = sub_c847b+15
 ;
 ; A string repeated n times. STRING$(n, string).
 .fn_strings
-    jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..   
-    jsr stack_integer                                                 ; b0c5: 20 94 bd     ..   
-    jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..   
-    jsr cae56                                                         ; b0cb: 20 56 ae     V.   
-    bne cb0bf                                                         ; b0ce: d0 ef       ..    
-    jsr unstack_integer                                               ; b0d0: 20 ea bd     ..   
-    ldy zp_strbuf_len                                                 ; b0d3: a4 36       .6    
-    beq cb0f5                                                         ; b0d5: f0 1e       ..    
-    lda zp_iwa                                                        ; b0d7: a5 2a       .*    
-    beq cb0f8                                                         ; b0d9: f0 1d       ..    
-    dec zp_iwa                                                        ; b0db: c6 2a       .*    
-    beq cb0f5                                                         ; b0dd: f0 16       ..    
+    jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..      ; Evaluate the count (n) as an integer
+    jsr stack_integer                                                 ; b0c5: 20 94 bd     ..      ; stack it
+    jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..      ; require a comma
+    jsr cae56                                                         ; b0cb: 20 56 ae     V.      ; evaluate the string s$
+    bne cb0bf                                                         ; b0ce: d0 ef       ..       ; not a string: Type mismatch
+    jsr unstack_integer                                               ; b0d0: 20 ea bd     ..      ; recover the count
+    ldy zp_strbuf_len                                                 ; b0d3: a4 36       .6       ; source string length
+    beq cb0f5                                                         ; b0d5: f0 1e       ..       ; empty source: empty result
+    lda zp_iwa                                                        ; b0d7: a5 2a       .*       ; count = 0?
+    beq cb0f8                                                         ; b0d9: f0 1d       ..       ; yes: empty result
+    dec zp_iwa                                                        ; b0db: c6 2a       .*       ; one copy is already there; need count-1 more
+    beq cb0f5                                                         ; b0dd: f0 16       ..       ; count = 1: done
 ; &b0df referenced 1 time by &b0f1
 .loop_cb0df
-    ldx #0                                                            ; b0df: a2 00       ..    
+    ldx #0                                                            ; b0df: a2 00       ..       ; Append another copy:
 ; &b0e1 referenced 1 time by &b0ed
 .loop_cb0e1
-    lda string_work,x                                                 ; b0e1: bd 00 06    ...   
-    sta string_work,y                                                 ; b0e4: 99 00 06    ...   
-    inx                                                               ; b0e7: e8          .     
-    iny                                                               ; b0e8: c8          .     
-    beq cb0fb                                                         ; b0e9: f0 10       ..    
-    cpx zp_strbuf_len                                                 ; b0eb: e4 36       .6    
-    bcc loop_cb0e1                                                    ; b0ed: 90 f2       ..    
-    dec zp_iwa                                                        ; b0ef: c6 2a       .*    
-    bne loop_cb0df                                                    ; b0f1: d0 ec       ..    
-    sty zp_strbuf_len                                                 ; b0f3: 84 36       .6    
+    lda string_work,x                                                 ; b0e1: bd 00 06    ...      ; source char...
+    sta string_work,y                                                 ; b0e4: 99 00 06    ...      ; ...appended
+    inx                                                               ; b0e7: e8          .        ; next source
+    iny                                                               ; b0e8: c8          .        ; next dest
+    beq cb0fb                                                         ; b0e9: f0 10       ..       ; too long: error
+    cpx zp_strbuf_len                                                 ; b0eb: e4 36       .6       ; end of this copy?
+    bcc loop_cb0e1                                                    ; b0ed: 90 f2       ..       ; no: keep copying
+    dec zp_iwa                                                        ; b0ef: c6 2a       .*       ; one fewer copy
+    bne loop_cb0df                                                    ; b0f1: d0 ec       ..       ; loop
+    sty zp_strbuf_len                                                 ; b0f3: 84 36       .6       ; set the result length
 ; &b0f5 referenced 2 times by &b0d5, &b0dd
 .cb0f5
-    lda #0                                                            ; b0f5: a9 00       ..    
-    rts                                                               ; b0f7: 60          `     
+    lda #0                                                            ; b0f5: a9 00       ..       ; string type
+    rts                                                               ; b0f7: 60          `        ; Return
 ; &b0f8 referenced 1 time by &b0d9
 .cb0f8
-    sta zp_strbuf_len                                                 ; b0f8: 85 36       .6    
-    rts                                                               ; b0fa: 60          `     
+    sta zp_strbuf_len                                                 ; b0f8: 85 36       .6       ; empty result (length 0)
+    rts                                                               ; b0fa: 60          `        ; Return
 ; &b0fb referenced 1 time by &b0e9
 .cb0fb
-    jmp c9c03                                                         ; b0fb: 4c 03 9c    L..   
+    jmp c9c03                                                         ; b0fb: 4c 03 9c    L..      ; String too long error
 ; &b0fe referenced 1 time by &b11e
 .loop_cb0fe
-    pla                                                               ; b0fe: 68          h     
-    sta zp_text_ptr_1                                                 ; b0ff: 85 0c       ..    
-    pla                                                               ; b101: 68          h     
-    sta zp_text_ptr                                                   ; b102: 85 0b       ..    
-    brk                                                               ; b104: 00          .     
+    pla                                                               ; b0fe: 68          h        ; No such FN/PROC: restore the text pointer
+    sta zp_text_ptr_1                                                 ; b0ff: 85 0c       ..       ; ...
+    pla                                                               ; b101: 68          h        ; ...
+    sta zp_text_ptr                                                   ; b102: 85 0b       ..       ; ...
+    brk                                                               ; b104: 00          .        ; "No such FN/PROC" error block
     equb &1d                                                          ; b105: 1d          .     
     equs "No such "                                                   ; b106: 4e 6f 20... No ...
     equb &a4, &2f, &f2, &00                                           ; b10e: a4 2f f2... ./....
+; ***************************************************************************************
+; Find a PROC/FN definition by name
+;
+; Search the program for the DEF line whose name matches, then cache its body address in
+; the variable entry.
 ; &b112 referenced 1 time by &b1e6
-.cb112
-    lda zp_page                                                       ; b112: a5 18       ..    
-    sta zp_text_ptr_1                                                 ; b114: 85 0c       ..    
-    lda #0                                                            ; b116: a9 00       ..    
-    sta zp_text_ptr                                                   ; b118: 85 0b       ..    
+.find_def
+    lda zp_page                                                       ; b112: a5 18       ..       ; Search from PAGE: high
+    sta zp_text_ptr_1                                                 ; b114: 85 0c       ..       ; ...
+    lda #0                                                            ; b116: a9 00       ..       ; low 0
+    sta zp_text_ptr                                                   ; b118: 85 0b       ..       ; ...
 ; &b11a referenced 2 times by &b136, &b13a
 .cb11a
-    ldy #1                                                            ; b11a: a0 01       ..    
-    lda (zp_text_ptr),y                                               ; b11c: b1 0b       ..    
-    bmi loop_cb0fe                                                    ; b11e: 30 de       0.    
-    ldy #3                                                            ; b120: a0 03       ..    
+    ldy #1                                                            ; b11a: a0 01       ..       ; line number high byte
+    lda (zp_text_ptr),y                                               ; b11c: b1 0b       ..       ; ...
+    bmi loop_cb0fe                                                    ; b11e: 30 de       0.       ; end of program: not found
+    ldy #3                                                            ; b120: a0 03       ..       ; skip to the line body
 ; &b122 referenced 1 time by &b127
 .loop_cb122
-    iny                                                               ; b122: c8          .     
-    lda (zp_text_ptr),y                                               ; b123: b1 0b       ..    
-    cmp #&20 ; ' '                                                    ; b125: c9 20       .     
-    beq loop_cb122                                                    ; b127: f0 f9       ..    
-    cmp #&dd                                                          ; b129: c9 dd       ..    
-    beq cb13c                                                         ; b12b: f0 0f       ..    
+    iny                                                               ; b122: c8          .        ; advance
+    lda (zp_text_ptr),y                                               ; b123: b1 0b       ..       ; char
+    cmp #&20 ; ' '                                                    ; b125: c9 20       .        ; skip leading spaces
+    beq loop_cb122                                                    ; b127: f0 f9       ..       ; ...
+    cmp #&dd                                                          ; b129: c9 dd       ..       ; DEF token at the start?
+    beq cb13c                                                         ; b12b: f0 0f       ..       ; yes: check the name
 ; &b12d referenced 2 times by &b15e, &b16a
 .cb12d
-    ldy #3                                                            ; b12d: a0 03       ..    
-    lda (zp_text_ptr),y                                               ; b12f: b1 0b       ..    
-    clc                                                               ; b131: 18          .     
-    adc zp_text_ptr                                                   ; b132: 65 0b       e.    
-    sta zp_text_ptr                                                   ; b134: 85 0b       ..    
-    bcc cb11a                                                         ; b136: 90 e2       ..    
-    inc zp_text_ptr_1                                                 ; b138: e6 0c       ..    
-    bcs cb11a                                                         ; b13a: b0 de       ..    
+    ldy #3                                                            ; b12d: a0 03       ..       ; no DEF: skip to the next line
+    lda (zp_text_ptr),y                                               ; b12f: b1 0b       ..       ; line length
+    clc                                                               ; b131: 18          .        ; ...
+    adc zp_text_ptr                                                   ; b132: 65 0b       e.       ; ...
+    sta zp_text_ptr                                                   ; b134: 85 0b       ..       ; ...
+    bcc cb11a                                                         ; b136: 90 e2       ..       ; ...
+    inc zp_text_ptr_1                                                 ; b138: e6 0c       ..       ; ...
+    bcs cb11a                                                         ; b13a: b0 de       ..       ; next line
 ; &b13c referenced 1 time by &b12b
 .cb13c
-    iny                                                               ; b13c: c8          .     
-    sty zp_text_ptr_off                                               ; b13d: 84 0a       ..    
-    jsr skip_spaces                                                   ; b13f: 20 97 8a     ..   
-    tya                                                               ; b142: 98          .     
-    tax                                                               ; b143: aa          .     
-    clc                                                               ; b144: 18          .     
-    adc zp_text_ptr                                                   ; b145: 65 0b       e.    
-    ldy zp_text_ptr_1                                                 ; b147: a4 0c       ..    
-    bcc cb14d                                                         ; b149: 90 02       ..    
-    iny                                                               ; b14b: c8          .     
-    clc                                                               ; b14c: 18          .     
+    iny                                                               ; b13c: c8          .        ; DEF found: skip past the FN/PROC token
+    sty zp_text_ptr_off                                               ; b13d: 84 0a       ..       ; ...
+    jsr skip_spaces                                                   ; b13f: 20 97 8a     ..      ; skip spaces
+    tya                                                               ; b142: 98          .        ; point at the definition name:
+    tax                                                               ; b143: aa          .        ; ...
+    clc                                                               ; b144: 18          .        ; ...
+    adc zp_text_ptr                                                   ; b145: 65 0b       e.       ; ...
+    ldy zp_text_ptr_1                                                 ; b147: a4 0c       ..       ; ...
+    bcc cb14d                                                         ; b149: 90 02       ..       ; ...
+    iny                                                               ; b14b: c8          .        ; ...
+    clc                                                               ; b14c: 18          .        ; ...
 ; &b14d referenced 1 time by &b149
 .cb14d
-    sbc #0                                                            ; b14d: e9 00       ..    
-    sta zp_fwb_ovf                                                    ; b14f: 85 3c       .<    
-    tya                                                               ; b151: 98          .     
-    sbc #0                                                            ; b152: e9 00       ..    
-    sta zp_fwb_exp                                                    ; b154: 85 3d       .=    
-    ldy #0                                                            ; b156: a0 00       ..    
+    sbc #0                                                            ; b14d: e9 00       ..       ; ...
+    sta zp_fwb_ovf                                                    ; b14f: 85 3c       .<       ; (save pointer low)
+    tya                                                               ; b151: 98          .        ; ...
+    sbc #0                                                            ; b152: e9 00       ..       ; ...
+    sta zp_fwb_exp                                                    ; b154: 85 3d       .=       ; (save pointer high)
+    ldy #0                                                            ; b156: a0 00       ..       ; Compare the definition name with the called name:
 ; &b158 referenced 1 time by &b162
 .loop_cb158
-    iny                                                               ; b158: c8          .     
-    inx                                                               ; b159: e8          .     
-    lda (zp_fwb_ovf),y                                                ; b15a: b1 3c       .<    
-    cmp (zp_general),y                                                ; b15c: d1 37       .7    
-    bne cb12d                                                         ; b15e: d0 cd       ..    
-    cpy zp_fileblk                                                    ; b160: c4 39       .9    
-    bne loop_cb158                                                    ; b162: d0 f4       ..    
-    iny                                                               ; b164: c8          .     
-    lda (zp_fwb_ovf),y                                                ; b165: b1 3c       .<    
-    jsr sub_c8926                                                     ; b167: 20 26 89     &.   
-    bcs cb12d                                                         ; b16a: b0 c1       ..    
-    txa                                                               ; b16c: 8a          .     
-    tay                                                               ; b16d: a8          .     
-    jsr c986d                                                         ; b16e: 20 6d 98     m.   
-    jsr sub_c94ed                                                     ; b171: 20 ed 94     ..   
-    ldx #1                                                            ; b174: a2 01       ..    
-    jsr clear_value_bytes                                             ; b176: 20 31 95     1.   
-    ldy #0                                                            ; b179: a0 00       ..    
-    lda zp_text_ptr                                                   ; b17b: a5 0b       ..    
-    sta (zp_vartop),y                                                 ; b17d: 91 02       ..    
-    iny                                                               ; b17f: c8          .     
-    lda zp_text_ptr_1                                                 ; b180: a5 0c       ..    
-    sta (zp_vartop),y                                                 ; b182: 91 02       ..    
-    jsr sub_c9539                                                     ; b184: 20 39 95     9.   
-    jmp cb1f4                                                         ; b187: 4c f4 b1    L..   
+    iny                                                               ; b158: c8          .        ; ...
+    inx                                                               ; b159: e8          .        ; ...
+    lda (zp_fwb_ovf),y                                                ; b15a: b1 3c       .<       ; definition char
+    cmp (zp_general),y                                                ; b15c: d1 37       .7       ; vs called char
+    bne cb12d                                                         ; b15e: d0 cd       ..       ; differ: next line
+    cpy zp_fileblk                                                    ; b160: c4 39       .9       ; end of the called name?
+    bne loop_cb158                                                    ; b162: d0 f4       ..       ; no: keep comparing
+    iny                                                               ; b164: c8          .        ; definition name also ends?
+    lda (zp_fwb_ovf),y                                                ; b165: b1 3c       .<       ; ...
+    jsr sub_c8926                                                     ; b167: 20 26 89     &.      ; alphanumeric?
+    bcs cb12d                                                         ; b16a: b0 c1       ..       ; definition name is longer: next line
+    txa                                                               ; b16c: 8a          .        ; Match: cache the definition
+    tay                                                               ; b16d: a8          .        ; ...
+    jsr c986d                                                         ; b16e: 20 6d 98     m.      ; point PtrA at the body
+    jsr sub_c94ed                                                     ; b171: 20 ed 94     ..      ; create/find the FN/PROC entry
+    ldx #1                                                            ; b174: a2 01       ..       ; init it
+    jsr clear_value_bytes                                             ; b176: 20 31 95     1.      ; ...
+    ldy #0                                                            ; b179: a0 00       ..       ; store the body pointer:
+    lda zp_text_ptr                                                   ; b17b: a5 0b       ..       ; ...
+    sta (zp_vartop),y                                                 ; b17d: 91 02       ..       ; ...
+    iny                                                               ; b17f: c8          .        ; ...
+    lda zp_text_ptr_1                                                 ; b180: a5 0c       ..       ; ...
+    sta (zp_vartop),y                                                 ; b182: 91 02       ..       ; ...
+    jsr sub_c9539                                                     ; b184: 20 39 95     9.      ; advance VARTOP
+    jmp cb1f4                                                         ; b187: 4c f4 b1    L..      ; continue
 ; &b18a referenced 1 time by &b1da
 .loop_cb18a
-    brk                                                               ; b18a: 00          .     
+    brk                                                               ; b18a: 00          .        ; error block
     equb &1e                                                          ; b18b: 1e          .     
     equs "Bad call"                                                   ; b18c: 42 61 64... Bad...
     equb &00                                                          ; b194: 00          .     
@@ -9244,7 +9249,7 @@ l848a = sub_c847b+15
     sty zp_fileblk                                                    ; b1df: 84 39       .9    
     jsr find_proc_fn                                                  ; b1e1: 20 5b 94     [.   
     bne cb1e9                                                         ; b1e4: d0 03       ..    
-    jmp cb112                                                         ; b1e6: 4c 12 b1    L..   
+    jmp find_def                                                      ; b1e6: 4c 12 b1    L..   
 ; &b1e9 referenced 1 time by &b1e4
 .cb1e9
     ldy #0                                                            ; b1e9: a0 00       ..    
@@ -12564,7 +12569,6 @@ save pydis_start, pydis_end
 ;     cb0b9:                       1
 ;     cb0f8:                       1
 ;     cb0fb:                       1
-;     cb112:                       1
 ;     cb13c:                       1
 ;     cb14d:                       1
 ;     cb1ca:                       1
@@ -12663,6 +12667,7 @@ save pydis_start, pydis_end
 ;     eval_and:                    1
 ;     exec_star_command:           1
 ;     execute_line:                1
+;     find_def:                    1
 ;     find_error_line:             1
 ;     find_proc_fn:                1
 ;     fn_asn:                      1
@@ -13475,7 +13480,6 @@ save pydis_start, pydis_end
 ;     cb0f5
 ;     cb0f8
 ;     cb0fb
-;     cb112
 ;     cb11a
 ;     cb12d
 ;     cb13c
