@@ -29669,6 +29669,7 @@
       "labels": [
         "loop_c90dc"
       ],
+      "comment_inline": "No room error",
       "xref_summaries": [
         "&90dc referenced 1 time by &9106"
       ],
@@ -29690,6 +29691,7 @@
       "labels": [
         "c90df"
       ],
+      "comment_inline": "Back up to the variable",
       "xref_summaries": [
         "&90df referenced 1 time by &9168"
       ],
@@ -29709,6 +29711,7 @@
         130,
         149
       ],
+      "comment_inline": "Parse it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -29721,6 +29724,7 @@
         240,
         65
       ],
+      "comment_inline": "not a variable: Bad DIM",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9127",
@@ -29733,6 +29737,7 @@
         176,
         63
       ],
+      "comment_inline": "indirection: Bad DIM",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9127",
@@ -29746,6 +29751,7 @@
         148,
         189
       ],
+      "comment_inline": "Stack the variable address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -29759,6 +29765,7 @@
         221,
         146
       ],
+      "comment_inline": "Evaluate the size",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -29772,6 +29779,7 @@
         34,
         146
       ],
+      "comment_inline": "n + 1 bytes",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_inc",
@@ -29784,6 +29792,7 @@
         165,
         45
       ],
+      "comment_inline": "fits in 16 bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -29796,6 +29805,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -29808,6 +29818,7 @@
         208,
         48
       ],
+      "comment_inline": "no: Bad DIM",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9127",
@@ -29819,6 +29830,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "New top = top + size",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -29828,6 +29840,7 @@
         165,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -29840,6 +29853,7 @@
         101,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop",
@@ -29851,6 +29865,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -29860,6 +29875,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -29872,6 +29888,7 @@
         101,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop_1",
@@ -29883,6 +29900,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -29892,6 +29910,7 @@
         196,
         4
       ],
+      "comment_inline": "collides with the stack?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_stack_ptr",
@@ -29904,6 +29923,7 @@
         229,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_stack_ptr_1",
@@ -29916,6 +29936,7 @@
         176,
         212
       ],
+      "comment_inline": "yes: No room",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "loop_c90dc",
@@ -29928,6 +29949,7 @@
         165,
         2
       ],
+      "comment_inline": "Block address = old top",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -29940,6 +29962,7 @@
         133,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -29952,6 +29975,7 @@
         165,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1",
@@ -29964,6 +29988,7 @@
         133,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -29976,6 +30001,7 @@
         132,
         2
       ],
+      "comment_inline": "Commit the new top",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_vartop",
@@ -29988,6 +30014,7 @@
         134,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_vartop_1",
@@ -30000,6 +30027,7 @@
         169,
         0
       ],
+      "comment_inline": "Result is the address",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -30010,6 +30038,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -30022,6 +30051,7 @@
         133,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -30034,6 +30064,7 @@
         169,
         64
       ],
+      "comment_inline": "integer type",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -30044,6 +30075,7 @@
         133,
         39
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -30057,6 +30089,7 @@
         180,
         180
       ],
+      "comment_inline": "assign the address to the variable",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "assign_number",

@@ -3175,41 +3175,41 @@ l848a = sub_c847b+15
     jmp c8af3                                                         ; 90d9: 4c f3 8a    L..      ; overflow: stop
 ; &90dc referenced 1 time by &9106
 .loop_c90dc
-    jmp c9218                                                         ; 90dc: 4c 18 92    L..   
+    jmp c9218                                                         ; 90dc: 4c 18 92    L..      ; No room error
 ; &90df referenced 1 time by &9168
 .c90df
-    dec zp_text_ptr_off                                               ; 90df: c6 0a       ..    
-    jsr parse_lvalue                                                  ; 90e1: 20 82 95     ..   
-    beq c9127                                                         ; 90e4: f0 41       .A    
-    bcs c9127                                                         ; 90e6: b0 3f       .?    
-    jsr stack_integer                                                 ; 90e8: 20 94 bd     ..   
-    jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..   
-    jsr iwa_inc                                                       ; 90ee: 20 22 92     ".   
-    lda zp_iwa_3                                                      ; 90f1: a5 2d       .-    
-    ora zp_iwa_2                                                      ; 90f3: 05 2c       .,    
-    bne c9127                                                         ; 90f5: d0 30       .0    
-    clc                                                               ; 90f7: 18          .     
-    lda zp_iwa                                                        ; 90f8: a5 2a       .*    
-    adc zp_vartop                                                     ; 90fa: 65 02       e.    
-    tay                                                               ; 90fc: a8          .     
-    lda zp_iwa_1                                                      ; 90fd: a5 2b       .+    
-    adc zp_vartop_1                                                   ; 90ff: 65 03       e.    
-    tax                                                               ; 9101: aa          .     
-    cpy zp_stack_ptr                                                  ; 9102: c4 04       ..    
-    sbc zp_stack_ptr_1                                                ; 9104: e5 05       ..    
-    bcs loop_c90dc                                                    ; 9106: b0 d4       ..    
-    lda zp_vartop                                                     ; 9108: a5 02       ..    
-    sta zp_iwa                                                        ; 910a: 85 2a       .*    
-    lda zp_vartop_1                                                   ; 910c: a5 03       ..    
-    sta zp_iwa_1                                                      ; 910e: 85 2b       .+    
-    sty zp_vartop                                                     ; 9110: 84 02       ..    
-    stx zp_vartop_1                                                   ; 9112: 86 03       ..    
-    lda #0                                                            ; 9114: a9 00       ..    
-    sta zp_iwa_2                                                      ; 9116: 85 2c       .,    
-    sta zp_iwa_3                                                      ; 9118: 85 2d       .-    
-    lda #&40 ; '@'                                                    ; 911a: a9 40       .@    
-    sta zp_var_type                                                   ; 911c: 85 27       .'    
-    jsr assign_number                                                 ; 911e: 20 b4 b4     ..   
+    dec zp_text_ptr_off                                               ; 90df: c6 0a       ..       ; Back up to the variable
+    jsr parse_lvalue                                                  ; 90e1: 20 82 95     ..      ; Parse it
+    beq c9127                                                         ; 90e4: f0 41       .A       ; not a variable: Bad DIM
+    bcs c9127                                                         ; 90e6: b0 3f       .?       ; indirection: Bad DIM
+    jsr stack_integer                                                 ; 90e8: 20 94 bd     ..      ; Stack the variable address
+    jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..      ; Evaluate the size
+    jsr iwa_inc                                                       ; 90ee: 20 22 92     ".      ; n + 1 bytes
+    lda zp_iwa_3                                                      ; 90f1: a5 2d       .-       ; fits in 16 bits?
+    ora zp_iwa_2                                                      ; 90f3: 05 2c       .,       ; ...
+    bne c9127                                                         ; 90f5: d0 30       .0       ; no: Bad DIM
+    clc                                                               ; 90f7: 18          .        ; New top = top + size
+    lda zp_iwa                                                        ; 90f8: a5 2a       .*       ; ...
+    adc zp_vartop                                                     ; 90fa: 65 02       e.       ; ...
+    tay                                                               ; 90fc: a8          .        ; ...
+    lda zp_iwa_1                                                      ; 90fd: a5 2b       .+       ; ...
+    adc zp_vartop_1                                                   ; 90ff: 65 03       e.       ; ...
+    tax                                                               ; 9101: aa          .        ; ...
+    cpy zp_stack_ptr                                                  ; 9102: c4 04       ..       ; collides with the stack?
+    sbc zp_stack_ptr_1                                                ; 9104: e5 05       ..       ; ...
+    bcs loop_c90dc                                                    ; 9106: b0 d4       ..       ; yes: No room
+    lda zp_vartop                                                     ; 9108: a5 02       ..       ; Block address = old top
+    sta zp_iwa                                                        ; 910a: 85 2a       .*       ; ...
+    lda zp_vartop_1                                                   ; 910c: a5 03       ..       ; ...
+    sta zp_iwa_1                                                      ; 910e: 85 2b       .+       ; ...
+    sty zp_vartop                                                     ; 9110: 84 02       ..       ; Commit the new top
+    stx zp_vartop_1                                                   ; 9112: 86 03       ..       ; ...
+    lda #0                                                            ; 9114: a9 00       ..       ; Result is the address
+    sta zp_iwa_2                                                      ; 9116: 85 2c       .,       ; ...
+    sta zp_iwa_3                                                      ; 9118: 85 2d       .-       ; ...
+    lda #&40 ; '@'                                                    ; 911a: a9 40       .@       ; integer type
+    sta zp_var_type                                                   ; 911c: 85 27       .'       ; ...
+    jsr assign_number                                                 ; 911e: 20 b4 b4     ..      ; assign the address to the variable
     jsr sub_c8827                                                     ; 9121: 20 27 88     '.   
     jmp c920b                                                         ; 9124: 4c 0b 92    L..   
 ; &9127 referenced 8 times by &90e4, &90e6, &90f5, &9150, &9172, &9193, &91b4, &925a
