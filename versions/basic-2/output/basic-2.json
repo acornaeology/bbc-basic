@@ -90081,6 +90081,7 @@
       "labels": [
         "stmt_width"
       ],
+      "comment_inline": "Evaluate the width",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr_to_integer",
@@ -90094,6 +90095,7 @@
         82,
         152
       ],
+      "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",
@@ -90106,6 +90108,7 @@
         164,
         42
       ],
+      "comment_inline": "Auto-newline column = width - 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_iwa",
@@ -90117,6 +90120,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -90126,6 +90130,7 @@
         132,
         35
       ],
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_width",
@@ -90139,6 +90144,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -100225,6 +100231,7 @@
       "labels": [
         "stmt_restore"
       ],
+      "comment_inline": "DATA pointer = PAGE",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -100235,6 +100242,7 @@
         132,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -100247,6 +100255,7 @@
         164,
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_page",
@@ -100259,6 +100268,7 @@
         132,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -100272,6 +100282,7 @@
         151,
         138
       ],
+      "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
@@ -100284,6 +100295,7 @@
         198,
         10
       ],
+      "comment_inline": "back up",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr_off",
@@ -100296,6 +100308,7 @@
         201,
         58
       ],
+      "comment_inline": "':' end?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -100306,6 +100319,7 @@
         240,
         16
       ],
+      "comment_inline": "yes: restore to PAGE",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbb07",
@@ -100318,6 +100332,7 @@
         201,
         13
       ],
+      "comment_inline": "end of line?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0d"
@@ -100328,6 +100343,7 @@
         240,
         12
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbb07",
@@ -100340,6 +100356,7 @@
         201,
         139
       ],
+      "comment_inline": "ELSE?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&8b"
@@ -100350,6 +100367,7 @@
         240,
         8
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cbb07",
@@ -100363,6 +100381,7 @@
         154,
         185
       ],
+      "comment_inline": "Find the given line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "find_line_target",
@@ -100375,6 +100394,7 @@
         160,
         1
       ],
+      "comment_inline": "point at it",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -100386,6 +100406,7 @@
         85,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe55",
@@ -100402,6 +100423,7 @@
       "labels": [
         "cbb07"
       ],
+      "comment_inline": "Check the statement ends",
       "xref_summaries": [
         "&bb07 referenced 3 times by &baf5, &baf9, &bafd"
       ],
@@ -100422,6 +100444,7 @@
         165,
         61
       ],
+      "comment_inline": "Set the DATA pointer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -100434,6 +100457,7 @@
         133,
         28
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr",
@@ -100446,6 +100470,7 @@
         165,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -100458,6 +100483,7 @@
         133,
         29
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr_1",
@@ -100471,6 +100497,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",
@@ -100487,6 +100514,7 @@
       "labels": [
         "cbb15"
       ],
+      "comment_inline": "Skip spaces",
       "xref_summaries": [
         "&bb15 referenced 2 times by &bb22, &bb4d"
       ],
@@ -100506,6 +100534,7 @@
         201,
         44
       ],
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -100516,6 +100545,7 @@
         240,
         3
       ],
+      "comment_inline": "yes: READ",
       "type": "code",
       "mnemonic": "beq",
       "operand": "stmt_read",
@@ -100529,6 +100559,7 @@
         150,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c8b96",
@@ -103808,6 +103839,7 @@
       "labels": [
         "stmt_run"
       ],
+      "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_end_of_statement",
@@ -103824,6 +103856,7 @@
       "labels": [
         "cbd14"
       ],
+      "comment_inline": "Clear variables, heap and stack",
       "xref_summaries": [
         "&bd14 referenced 1 time by &bf2d"
       ],
@@ -103842,6 +103875,7 @@
         165,
         24
       ],
+      "comment_inline": "Point PtrA at PAGE",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_page",
@@ -103854,6 +103888,7 @@
         133,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -103866,6 +103901,7 @@
         134,
         11
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr",
@@ -103879,6 +103915,7 @@
         11,
         139
       ],
+      "comment_inline": "execute from the start",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "execute_line",
@@ -107301,6 +107338,7 @@
       "labels": [
         "stmt_save"
       ],
+      "comment_inline": "Check the program, set TOP",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_program",
@@ -107313,6 +107351,7 @@
         165,
         18
       ],
+      "comment_inline": "End address = TOP",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top",
@@ -107325,6 +107364,7 @@
         133,
         69
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0045",
@@ -107337,6 +107377,7 @@
         165,
         19
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -107349,6 +107390,7 @@
         133,
         70
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0046",
@@ -107361,6 +107403,7 @@
         169,
         35
       ],
+      "comment_inline": "Exec address = language startup",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&23"
@@ -107371,6 +107414,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -107383,6 +107427,7 @@
         169,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -107393,6 +107438,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -107405,6 +107451,7 @@
         165,
         24
       ],
+      "comment_inline": "Start address = PAGE",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_page",
@@ -107417,6 +107464,7 @@
         133,
         66
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -107430,6 +107478,7 @@
         221,
         190
       ],
+      "comment_inline": "Read the machine high address words",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbedd",
@@ -107442,6 +107491,7 @@
         134,
         63
       ],
+      "comment_inline": "Fill the address high words",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m2",
@@ -107454,6 +107504,7 @@
         132,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -107466,6 +107517,7 @@
         134,
         67
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fp_temp",
@@ -107478,6 +107530,7 @@
         132,
         68
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l0044",
@@ -107490,6 +107543,7 @@
         134,
         71
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l0047",
@@ -107502,6 +107556,7 @@
         132,
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_dp_flag",
@@ -107514,6 +107569,7 @@
         133,
         65
       ],
+      "comment_inline": "Load address low = PAGE",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m4",
@@ -107525,6 +107581,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -107534,6 +107591,7 @@
         162,
         55
       ],
+      "comment_inline": "Point at the OSFILE block (&37)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&37"
@@ -107545,6 +107603,7 @@
         221,
         255
       ],
+      "comment_inline": "Save the file",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osfile",
@@ -107558,6 +107617,7 @@
         155,
         139
       ],
+      "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "statement_loop",

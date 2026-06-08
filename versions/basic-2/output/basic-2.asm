@@ -9831,12 +9831,12 @@ l848a = sub_c847b+15
 ;
 ; Set the output line width for PRINT. WIDTH n.
 .stmt_width
-    jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.   
-    jsr sub_c9852                                                     ; b4a3: 20 52 98     R.   
-    ldy zp_iwa                                                        ; b4a6: a4 2a       .*    
-    dey                                                               ; b4a8: 88          .     
-    sty zp_width                                                      ; b4a9: 84 23       .#    
-    jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..   
+    jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.      ; Evaluate the width
+    jsr sub_c9852                                                     ; b4a3: 20 52 98     R.      ; check the statement ends
+    ldy zp_iwa                                                        ; b4a6: a4 2a       .*       ; Auto-newline column = width - 1
+    dey                                                               ; b4a8: 88          .        ; ...
+    sty zp_width                                                      ; b4a9: 84 23       .#       ; store it
+    jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..      ; next statement
 ; &b4ae referenced 2 times by &b4bf, &b4e2
 .cb4ae
     jmp err_type_mismatch                                             ; b4ae: 4c 0e 8c    L..   
@@ -10878,35 +10878,35 @@ l848a = sub_c847b+15
 ;
 ; Reset the DATA pointer, optionally to a given line. RESTORE [line].
 .stmt_restore
-    ldy #0                                                            ; bae6: a0 00       ..    
-    sty zp_fwb_exp                                                    ; bae8: 84 3d       .=    
-    ldy zp_page                                                       ; baea: a4 18       ..    
-    sty zp_fwb_m1                                                     ; baec: 84 3e       .>    
-    jsr skip_spaces                                                   ; baee: 20 97 8a     ..   
-    dec zp_text_ptr_off                                               ; baf1: c6 0a       ..    
-    cmp #&3a ; ':'                                                    ; baf3: c9 3a       .:    
-    beq cbb07                                                         ; baf5: f0 10       ..    
-    cmp #&0d                                                          ; baf7: c9 0d       ..    
-    beq cbb07                                                         ; baf9: f0 0c       ..    
-    cmp #&8b                                                          ; bafb: c9 8b       ..    
-    beq cbb07                                                         ; bafd: f0 08       ..    
-    jsr find_line_target                                              ; baff: 20 9a b9     ..   
-    ldy #1                                                            ; bb02: a0 01       ..    
-    jsr sub_cbe55                                                     ; bb04: 20 55 be     U.   
+    ldy #0                                                            ; bae6: a0 00       ..       ; DATA pointer = PAGE
+    sty zp_fwb_exp                                                    ; bae8: 84 3d       .=       ; ...
+    ldy zp_page                                                       ; baea: a4 18       ..       ; ...
+    sty zp_fwb_m1                                                     ; baec: 84 3e       .>       ; ...
+    jsr skip_spaces                                                   ; baee: 20 97 8a     ..      ; Skip spaces
+    dec zp_text_ptr_off                                               ; baf1: c6 0a       ..       ; back up
+    cmp #&3a ; ':'                                                    ; baf3: c9 3a       .:       ; ':' end?
+    beq cbb07                                                         ; baf5: f0 10       ..       ; yes: restore to PAGE
+    cmp #&0d                                                          ; baf7: c9 0d       ..       ; end of line?
+    beq cbb07                                                         ; baf9: f0 0c       ..       ; yes
+    cmp #&8b                                                          ; bafb: c9 8b       ..       ; ELSE?
+    beq cbb07                                                         ; bafd: f0 08       ..       ; yes
+    jsr find_line_target                                              ; baff: 20 9a b9     ..      ; Find the given line
+    ldy #1                                                            ; bb02: a0 01       ..       ; point at it
+    jsr sub_cbe55                                                     ; bb04: 20 55 be     U.      ; ...
 ; &bb07 referenced 3 times by &baf5, &baf9, &bafd
 .cbb07
-    jsr check_end_of_statement                                        ; bb07: 20 57 98     W.   
-    lda zp_fwb_exp                                                    ; bb0a: a5 3d       .=    
-    sta zp_data_ptr                                                   ; bb0c: 85 1c       ..    
-    lda zp_fwb_m1                                                     ; bb0e: a5 3e       .>    
-    sta zp_data_ptr_1                                                 ; bb10: 85 1d       ..    
-    jmp statement_loop                                                ; bb12: 4c 9b 8b    L..   
+    jsr check_end_of_statement                                        ; bb07: 20 57 98     W.      ; Check the statement ends
+    lda zp_fwb_exp                                                    ; bb0a: a5 3d       .=       ; Set the DATA pointer
+    sta zp_data_ptr                                                   ; bb0c: 85 1c       ..       ; ...
+    lda zp_fwb_m1                                                     ; bb0e: a5 3e       .>       ; ...
+    sta zp_data_ptr_1                                                 ; bb10: 85 1d       ..       ; ...
+    jmp statement_loop                                                ; bb12: 4c 9b 8b    L..      ; next statement
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .cbb15
-    jsr skip_spaces                                                   ; bb15: 20 97 8a     ..   
-    cmp #&2c ; ','                                                    ; bb18: c9 2c       .,    
-    beq stmt_read                                                     ; bb1a: f0 03       ..    
-    jmp c8b96                                                         ; bb1c: 4c 96 8b    L..   
+    jsr skip_spaces                                                   ; bb15: 20 97 8a     ..      ; Skip spaces
+    cmp #&2c ; ','                                                    ; bb18: c9 2c       .,       ; ','?
+    beq stmt_read                                                     ; bb1a: f0 03       ..       ; yes: READ
+    jmp c8b96                                                         ; bb1c: 4c 96 8b    L..      ; next statement
 ; ***************************************************************************************
 ; READ
 ;
@@ -11251,14 +11251,14 @@ l848a = sub_c847b+15
 ;
 ; Run the current program from the start. RUN.
 .stmt_run
-    jsr check_end_of_statement                                        ; bd11: 20 57 98     W.   
+    jsr check_end_of_statement                                        ; bd11: 20 57 98     W.      ; Check the statement ends
 ; &bd14 referenced 1 time by &bf2d
 .cbd14
-    jsr clear_vars_heap_stack                                         ; bd14: 20 20 bd      .   
-    lda zp_page                                                       ; bd17: a5 18       ..    
-    sta zp_text_ptr_1                                                 ; bd19: 85 0c       ..    
-    stx zp_text_ptr                                                   ; bd1b: 86 0b       ..    
-    jmp execute_line                                                  ; bd1d: 4c 0b 8b    L..   
+    jsr clear_vars_heap_stack                                         ; bd14: 20 20 bd      .      ; Clear variables, heap and stack
+    lda zp_page                                                       ; bd17: a5 18       ..       ; Point PtrA at PAGE
+    sta zp_text_ptr_1                                                 ; bd19: 85 0c       ..       ; ...
+    stx zp_text_ptr                                                   ; bd1b: 86 0b       ..       ; ...
+    jmp execute_line                                                  ; bd1d: 4c 0b 8b    L..      ; execute from the start
 ; ***************************************************************************************
 ; Clear all variables, the heap and the stack
 ;
@@ -11667,29 +11667,29 @@ l848a = sub_c847b+15
 ;
 ; Save the current program to the filing system. SAVE string.
 .stmt_save
-    jsr check_program                                                 ; bef3: 20 6f be     o.   
-    lda zp_top                                                        ; bef6: a5 12       ..    
-    sta l0045                                                         ; bef8: 85 45       .E    
-    lda zp_top_1                                                      ; befa: a5 13       ..    
-    sta l0046                                                         ; befc: 85 46       .F    
-    lda #&23 ; '#'                                                    ; befe: a9 23       .#    
-    sta zp_fwb_exp                                                    ; bf00: 85 3d       .=    
-    lda #&80                                                          ; bf02: a9 80       ..    
-    sta zp_fwb_m1                                                     ; bf04: 85 3e       .>    
-    lda zp_page                                                       ; bf06: a5 18       ..    
-    sta zp_fwb_rnd                                                    ; bf08: 85 42       .B    
-    jsr sub_cbedd                                                     ; bf0a: 20 dd be     ..   
-    stx zp_fwb_m2                                                     ; bf0d: 86 3f       .?    
-    sty zp_fwb_m3                                                     ; bf0f: 84 40       .@    
-    stx zp_fp_temp                                                    ; bf11: 86 43       .C    
-    sty l0044                                                         ; bf13: 84 44       .D    
-    stx l0047                                                         ; bf15: 86 47       .G    
-    sty zp_dp_flag                                                    ; bf17: 84 48       .H    
-    sta zp_fwb_m4                                                     ; bf19: 85 41       .A    
-    tay                                                               ; bf1b: a8          .     
-    ldx #&37 ; '7'                                                    ; bf1c: a2 37       .7    
-    jsr osfile                                                        ; bf1e: 20 dd ff     ..   
-    jmp statement_loop                                                ; bf21: 4c 9b 8b    L..   
+    jsr check_program                                                 ; bef3: 20 6f be     o.      ; Check the program, set TOP
+    lda zp_top                                                        ; bef6: a5 12       ..       ; End address = TOP
+    sta l0045                                                         ; bef8: 85 45       .E       ; ...
+    lda zp_top_1                                                      ; befa: a5 13       ..       ; ...
+    sta l0046                                                         ; befc: 85 46       .F       ; ...
+    lda #&23 ; '#'                                                    ; befe: a9 23       .#       ; Exec address = language startup
+    sta zp_fwb_exp                                                    ; bf00: 85 3d       .=       ; ...
+    lda #&80                                                          ; bf02: a9 80       ..       ; ...
+    sta zp_fwb_m1                                                     ; bf04: 85 3e       .>       ; ...
+    lda zp_page                                                       ; bf06: a5 18       ..       ; Start address = PAGE
+    sta zp_fwb_rnd                                                    ; bf08: 85 42       .B       ; ...
+    jsr sub_cbedd                                                     ; bf0a: 20 dd be     ..      ; Read the machine high address words
+    stx zp_fwb_m2                                                     ; bf0d: 86 3f       .?       ; Fill the address high words
+    sty zp_fwb_m3                                                     ; bf0f: 84 40       .@       ; ...
+    stx zp_fp_temp                                                    ; bf11: 86 43       .C       ; ...
+    sty l0044                                                         ; bf13: 84 44       .D       ; ...
+    stx l0047                                                         ; bf15: 86 47       .G       ; ...
+    sty zp_dp_flag                                                    ; bf17: 84 48       .H       ; ...
+    sta zp_fwb_m4                                                     ; bf19: 85 41       .A       ; Load address low = PAGE
+    tay                                                               ; bf1b: a8          .        ; ...
+    ldx #&37 ; '7'                                                    ; bf1c: a2 37       .7       ; Point at the OSFILE block (&37)
+    jsr osfile                                                        ; bf1e: 20 dd ff     ..      ; Save the file
+    jmp statement_loop                                                ; bf21: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; LOAD
 ;
