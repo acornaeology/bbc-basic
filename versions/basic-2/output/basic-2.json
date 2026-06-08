@@ -1718,6 +1718,29 @@
       "description": "Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions."
     },
     {
+      "addr": 42985,
+      "name": "point_fp_temp4",
+      "title": "Point zp_fp_ptr at FP TEMP4 (&047B)",
+      "fall_through": true
+    },
+    {
+      "addr": 42989,
+      "name": "point_fp_temp2",
+      "title": "Point zp_fp_ptr at FP TEMP2 (&0471)",
+      "fall_through": true
+    },
+    {
+      "addr": 42993,
+      "name": "point_fp_temp3",
+      "title": "Point zp_fp_ptr at FP TEMP3 (&0476)",
+      "fall_through": true
+    },
+    {
+      "addr": 42997,
+      "name": "point_fp_temp1",
+      "title": "Point zp_fp_ptr at FP TEMP1 (&046C)"
+    },
+    {
       "addr": 41083,
       "name": "parse_number",
       "title": "Parse an unsigned number at PtrB",
@@ -49234,6 +49257,7 @@
       "labels": [
         "iwa_mul"
       ],
+      "comment_inline": "Save the sign of the first operand",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -49245,6 +49269,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -49255,6 +49280,7 @@
         113,
         173
       ],
+      "comment_inline": "make it positive",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -49267,6 +49293,7 @@
         162,
         57
       ],
+      "comment_inline": "save it (via &39)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -49278,6 +49305,7 @@
         68,
         190
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -49291,6 +49319,7 @@
         234,
         189
       ],
+      "comment_inline": "pop the second operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -49302,6 +49331,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "recover the first sign",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -49311,6 +49341,7 @@
         69,
         45
       ],
+      "comment_inline": "product sign = sign XOR sign",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_iwa_3",
@@ -49323,6 +49354,7 @@
         133,
         55
       ],
+      "comment_inline": "(save it)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -49336,6 +49368,7 @@
         113,
         173
       ],
+      "comment_inline": "make the second positive",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -49348,6 +49381,7 @@
         160,
         0
       ],
+      "comment_inline": "Clear the running product:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -49358,6 +49392,7 @@
         162,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#0"
@@ -49368,6 +49403,7 @@
         132,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -49380,6 +49416,7 @@
         132,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -49395,6 +49432,7 @@
       "labels": [
         "loop_c9d8b"
       ],
+      "comment_inline": "Shift the multiplier right: next bit",
       "xref_summaries": [
         "&9d8b referenced 1 time by &9db2"
       ],
@@ -49413,6 +49451,7 @@
         102,
         57
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fileblk",
@@ -49425,6 +49464,7 @@
         144,
         21
       ],
+      "comment_inline": "bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9da6",
@@ -49436,6 +49476,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "bit set: add the multiplicand",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -49444,6 +49485,7 @@
       "bytes": [
         152
       ],
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -49453,6 +49495,7 @@
         101,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -49464,6 +49507,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -49472,6 +49516,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -49481,6 +49526,7 @@
         101,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -49492,6 +49538,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -49501,6 +49548,7 @@
         165,
         63
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -49513,6 +49561,7 @@
         101,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_2",
@@ -49525,6 +49574,7 @@
         133,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -49537,6 +49587,7 @@
         165,
         64
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -49549,6 +49600,7 @@
         101,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_3",
@@ -49561,6 +49613,7 @@
         133,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -49576,6 +49629,7 @@
       "labels": [
         "c9da6"
       ],
+      "comment_inline": "Double the multiplicand:",
       "xref_summaries": [
         "&9da6 referenced 1 time by &9d8f"
       ],
@@ -49594,6 +49648,7 @@
         38,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -49606,6 +49661,7 @@
         38,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_2",
@@ -49618,6 +49674,7 @@
         38,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -49630,6 +49687,7 @@
         165,
         57
       ],
+      "comment_inline": "more multiplier bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -49642,6 +49700,7 @@
         5,
         58
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "l003a",
@@ -49654,6 +49713,7 @@
         208,
         215
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9d8b",
@@ -49666,6 +49726,7 @@
         132,
         61
       ],
+      "comment_inline": "store the product (low 2 bytes)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -49678,6 +49739,7 @@
         134,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m1",
@@ -49690,6 +49752,7 @@
         165,
         55
       ],
+      "comment_inline": "product sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -49701,6 +49764,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "php"
     },
@@ -49713,6 +49777,7 @@
       "labels": [
         "c9dbb"
       ],
+      "comment_inline": "load the product into IWA",
       "xref_summaries": [
         "&9dbb referenced 1 time by &9e07"
       ],
@@ -49733,6 +49798,7 @@
       "labels": [
         "c9dbd"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&9dbd referenced 1 time by &9e1a"
       ],
@@ -49750,6 +49816,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -49759,6 +49826,7 @@
         16,
         3
       ],
+      "comment_inline": "positive: done",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9dc6",
@@ -49772,6 +49840,7 @@
         147,
         173
       ],
+      "comment_inline": "negative: negate the product",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_negate",
@@ -49787,6 +49856,7 @@
       "labels": [
         "c9dc6"
       ],
+      "comment_inline": "restore the operator",
       "xref_summaries": [
         "&9dc6 referenced 1 time by &9dc1"
       ],
@@ -49806,6 +49876,7 @@
         212,
         157
       ],
+      "comment_inline": "loop for more operators",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9dd4",
@@ -49822,6 +49893,7 @@
       "labels": [
         "loop_c9dcb"
       ],
+      "comment_inline": "bounce back to the multiply code",
       "xref_summaries": [
         "&9dcb referenced 1 time by &9dd6"
       ],
@@ -49844,6 +49916,7 @@
       "labels": [
         "sub_c9dce"
       ],
+      "comment_inline": "stack the operand, then multiply",
       "xref_summaries": [
         "&9dce referenced 2 times by &9c53, &9cba"
       ],
@@ -50902,9 +50975,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7ed",
+      "operand": "point_fp_temp2",
       "target": 42989,
-      "target_label": "sub_ca7ed"
+      "target_label": "point_fp_temp2"
     },
     {
       "addr": 40577,
@@ -52454,9 +52527,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 40820,
@@ -59929,9 +60002,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 41909,
@@ -65374,9 +65447,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7e9",
+      "operand": "point_fp_temp4",
       "target": 42985,
-      "target_label": "sub_ca7e9"
+      "target_label": "point_fp_temp4"
     },
     {
       "addr": 42698,
@@ -65425,9 +65498,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7e9",
+      "operand": "point_fp_temp4",
       "target": 42985,
-      "target_label": "sub_ca7e9"
+      "target_label": "point_fp_temp4"
     },
     {
       "addr": 42709,
@@ -65484,9 +65557,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7e9",
+      "operand": "point_fp_temp4",
       "target": 42985,
-      "target_label": "sub_ca7e9"
+      "target_label": "point_fp_temp4"
     },
     {
       "addr": 42721,
@@ -66852,6 +66925,7 @@
       "labels": [
         "fn_sqr"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -66868,6 +66942,7 @@
       "labels": [
         "ca7b7"
       ],
+      "comment_inline": "Sign of the argument",
       "xref_summaries": [
         "&a7b7 referenced 1 time by &a9c0"
       ],
@@ -66886,6 +66961,7 @@
         240,
         42
       ],
+      "comment_inline": "zero: the root is zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca7e6",
@@ -66898,6 +66974,7 @@
         48,
         235
       ],
+      "comment_inline": "negative: -ve root error",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_ca7a9",
@@ -66911,6 +66988,7 @@
         133,
         163
       ],
+      "comment_inline": "Save the argument in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -66923,6 +67001,7 @@
         165,
         48
       ],
+      "comment_inline": "Initial guess: halve the exponent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -66934,6 +67013,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -66943,6 +67023,7 @@
         105,
         64
       ],
+      "comment_inline": "(re-bias)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&40"
@@ -66953,6 +67034,7 @@
         133,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -66965,6 +67047,7 @@
         169,
         5
       ],
+      "comment_inline": "5 Newton iterations",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -66975,6 +67058,7 @@
         133,
         74
       ],
+      "comment_inline": "(counter)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -66988,11 +67072,12 @@
         237,
         167
       ],
+      "comment_inline": "point at TEMP2 (the guess)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7ed",
+      "operand": "point_fp_temp2",
       "target": 42989,
-      "target_label": "sub_ca7ed"
+      "target_label": "point_fp_temp2"
     },
     {
       "addr": 42959,
@@ -67004,6 +67089,7 @@
       "labels": [
         "loop_ca7cf"
       ],
+      "comment_inline": "save the current guess",
       "xref_summaries": [
         "&a7cf referenced 1 time by &a7e4"
       ],
@@ -67022,6 +67108,7 @@
         169,
         108
       ],
+      "comment_inline": "point at TEMP1 (the argument)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&6c"
@@ -67032,6 +67119,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -67045,6 +67133,7 @@
         173,
         166
       ],
+      "comment_inline": "FWA = argument / guess",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_rdiv_var",
@@ -67057,6 +67146,7 @@
         169,
         113
       ],
+      "comment_inline": "point at TEMP2 (the guess)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&71"
@@ -67067,6 +67157,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -67080,6 +67171,7 @@
         0,
         165
       ],
+      "comment_inline": "FWA = arg/guess + guess",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -67092,6 +67184,7 @@
         198,
         48
       ],
+      "comment_inline": "halve it: next guess",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwa_exp",
@@ -67104,6 +67197,7 @@
         198,
         74
       ],
+      "comment_inline": "count",
       "type": "code",
       "mnemonic": "dec",
       "operand": "l004a",
@@ -67116,6 +67210,7 @@
         208,
         233
       ],
+      "comment_inline": "iterate",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca7cf",
@@ -67131,6 +67226,7 @@
       "labels": [
         "ca7e6"
       ],
+      "comment_inline": "real result",
       "xref_summaries": [
         "&a7e6 referenced 1 time by &a7ba"
       ],
@@ -67146,6 +67242,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the root",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -67156,8 +67253,9 @@
         123
       ],
       "labels": [
-        "sub_ca7e9"
+        "point_fp_temp4"
       ],
+      "comment_inline": "TEMP4 low (&7B)",
       "xref_summaries": [
         "&a7e9 referenced 4 times by &a6c7, &a6d2, &a6de, &a83f"
       ],
@@ -67177,6 +67275,7 @@
         208,
         10
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca7f7",
@@ -67190,8 +67289,9 @@
         113
       ],
       "labels": [
-        "sub_ca7ed"
+        "point_fp_temp2"
       ],
+      "comment_inline": "TEMP2 low (&71)",
       "xref_summaries": [
         "&a7ed referenced 3 times by &9e7e, &a7cc, &aa23"
       ],
@@ -67210,6 +67310,7 @@
         208,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca7f7",
@@ -67223,8 +67324,9 @@
         118
       ],
       "labels": [
-        "sub_ca7f1"
+        "point_fp_temp3"
       ],
+      "comment_inline": "TEMP3 low (&76)",
       "xref_summaries": [
         "&a7f1 referenced 2 times by &a8f5, &aad1"
       ],
@@ -67242,6 +67344,7 @@
         208,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca7f7",
@@ -67255,8 +67358,9 @@
         108
       ],
       "labels": [
-        "sub_ca7f5"
+        "point_fp_temp1"
       ],
+      "comment_inline": "TEMP1 low (&6C)",
       "xref_summaries": [
         "&a7f5 referenced 6 times by &9f71, &a3b2, &a860, &a8b5, &aa1a, &aa2f"
       ],
@@ -67281,6 +67385,7 @@
       "labels": [
         "ca7f7"
       ],
+      "comment_inline": "set the pointer low",
       "xref_summaries": [
         "&a7f7 referenced 3 times by &a7eb, &a7ef, &a7f3"
       ],
@@ -67301,6 +67406,7 @@
         169,
         4
       ],
+      "comment_inline": "high &04",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -67311,6 +67417,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -67322,6 +67429,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -67720,9 +67828,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7e9",
+      "operand": "point_fp_temp4",
       "target": 42985,
-      "target_label": "sub_ca7e9"
+      "target_label": "point_fp_temp4"
     },
     {
       "addr": 43074,
@@ -67881,9 +67989,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 43107,
@@ -68223,9 +68331,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 43192,
@@ -68424,6 +68532,7 @@
       "labels": [
         "fn_asn"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "xref_summaries": [
         "&a8da referenced 1 time by &a8d4"
       ],
@@ -68443,6 +68552,7 @@
         218,
         161
       ],
+      "comment_inline": "Sign of the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_sign",
@@ -68455,6 +68565,7 @@
         16,
         8
       ],
+      "comment_inline": "positive: compute directly",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca8ea",
@@ -68467,6 +68578,7 @@
         70,
         46
       ],
+      "comment_inline": "negative: take |x|...",
       "type": "code",
       "mnemonic": "lsr",
       "operand": "zp_fwa_sign",
@@ -68480,6 +68592,7 @@
         234,
         168
       ],
+      "comment_inline": "compute asn(|x|)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca8ea",
@@ -68493,6 +68606,7 @@
         22,
         169
       ],
+      "comment_inline": "...and negate the result",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca916",
@@ -68509,6 +68623,7 @@
       "labels": [
         "ca8ea"
       ],
+      "comment_inline": "Save x in TEMP3",
       "xref_summaries": [
         "&a8ea referenced 2 times by &a8e0, &a8e4"
       ],
@@ -68529,6 +68644,7 @@
         177,
         169
       ],
+      "comment_inline": "compute sqrt(1 - x^2)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca9b1",
@@ -68542,6 +68658,7 @@
         218,
         161
       ],
+      "comment_inline": "is it zero (x = 1)?",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_sign",
@@ -68554,6 +68671,7 @@
         240,
         9
       ],
+      "comment_inline": "yes: result is pi/2",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca8fe",
@@ -68567,11 +68685,12 @@
         241,
         167
       ],
+      "comment_inline": "point at x (TEMP3)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f1",
+      "operand": "point_fp_temp3",
       "target": 42993,
-      "target_label": "sub_ca7f1"
+      "target_label": "point_fp_temp3"
     },
     {
       "addr": 43256,
@@ -68580,6 +68699,7 @@
         173,
         166
       ],
+      "comment_inline": "FWA = x / sqrt(1 - x^2)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_rdiv_var",
@@ -68593,6 +68713,7 @@
         10,
         169
       ],
+      "comment_inline": "asn(x) = atn(that)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca90a",
@@ -68609,6 +68730,7 @@
       "labels": [
         "ca8fe"
       ],
+      "comment_inline": "x = 1: load pi/2",
       "xref_summaries": [
         "&a8fe referenced 2 times by &a8f3, &abcb"
       ],
@@ -68629,6 +68751,7 @@
         181,
         163
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -68644,6 +68767,7 @@
       "labels": [
         "ca904"
       ],
+      "comment_inline": "real result",
       "xref_summaries": [
         "&a904 referenced 2 times by &a90d, &a93a"
       ],
@@ -68660,6 +68784,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -70019,9 +70144,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 43549,
@@ -70058,9 +70183,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7ed",
+      "operand": "point_fp_temp2",
       "target": 42989,
-      "target_label": "sub_ca7ed"
+      "target_label": "point_fp_temp2"
     },
     {
       "addr": 43558,
@@ -70110,9 +70235,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f5",
+      "operand": "point_fp_temp1",
       "target": 42997,
-      "target_label": "sub_ca7f5"
+      "target_label": "point_fp_temp1"
     },
     {
       "addr": 43570,
@@ -70902,9 +71027,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca7f1",
+      "operand": "point_fp_temp3",
       "target": 42993,
-      "target_label": "sub_ca7f1"
+      "target_label": "point_fp_temp3"
     },
     {
       "addr": 43732,

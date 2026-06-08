@@ -5468,70 +5468,70 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     ZP_IWA: the product
 .iwa_mul
-    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-    
-    pha                                                               ; 9d6f: 48          H     
-    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.   
-    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9    
-    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.   
-    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..   
-    pla                                                               ; 9d7b: 68          h     
-    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-    
-    sta zp_general                                                    ; 9d7e: 85 37       .7    
-    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.   
-    ldy #0                                                            ; 9d83: a0 00       ..    
-    ldx #0                                                            ; 9d85: a2 00       ..    
-    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?    
-    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@    
+    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the sign of the first operand
+    pha                                                               ; 9d6f: 48          H        ; ...
+    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; make it positive
+    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)
+    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...
+    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; pop the second operand
+    pla                                                               ; 9d7b: 68          h        ; recover the first sign
+    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign
+    sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)
+    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; make the second positive
+    ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:
+    ldx #0                                                            ; 9d85: a2 00       ..       ; ...
+    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...
+    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...
 ; &9d8b referenced 1 time by &9db2
 .loop_c9d8b
-    lsr l003a                                                         ; 9d8b: 46 3a       F:    
-    ror zp_fileblk                                                    ; 9d8d: 66 39       f9    
-    bcc c9da6                                                         ; 9d8f: 90 15       ..    
-    clc                                                               ; 9d91: 18          .     
-    tya                                                               ; 9d92: 98          .     
-    adc zp_iwa                                                        ; 9d93: 65 2a       e*    
-    tay                                                               ; 9d95: a8          .     
-    txa                                                               ; 9d96: 8a          .     
-    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+    
-    tax                                                               ; 9d99: aa          .     
-    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?    
-    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,    
-    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?    
-    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@    
-    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-    
-    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@    
+    lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit
+    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...
+    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add
+    clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand
+    tya                                                               ; 9d92: 98          .        ; byte 0
+    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...
+    tay                                                               ; 9d95: a8          .        ; ...
+    txa                                                               ; 9d96: 8a          .        ; byte 1
+    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...
+    tax                                                               ; 9d99: aa          .        ; ...
+    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2
+    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...
+    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...
+    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3
+    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...
+    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...
 ; &9da6 referenced 1 time by &9d8f
 .c9da6
-    asl zp_iwa                                                        ; 9da6: 06 2a       .*    
-    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+    
-    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,    
-    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-    
-    lda zp_fileblk                                                    ; 9dae: a5 39       .9    
-    ora l003a                                                         ; 9db0: 05 3a       .:    
-    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..    
-    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=    
-    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>    
-    lda zp_general                                                    ; 9db8: a5 37       .7    
-    php                                                               ; 9dba: 08          .     
+    asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Double the multiplicand:
+    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...
+    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...
+    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...
+    lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?
+    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...
+    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop
+    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)
+    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...
+    lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign
+    php                                                               ; 9dba: 08          .        ; ...
 ; &9dbb referenced 1 time by &9e07
 .c9dbb
-    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=    
+    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA
 ; &9dbd referenced 1 time by &9e1a
 .c9dbd
-    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.   
-    plp                                                               ; 9dc0: 28          (     
-    bpl c9dc6                                                         ; 9dc1: 10 03       ..    
-    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..   
+    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...
+    plp                                                               ; 9dc0: 28          (        ; ...
+    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done
+    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product
 ; &9dc6 referenced 1 time by &9dc1
 .c9dc6
-    ldx zp_var_type                                                   ; 9dc6: a6 27       .'    
-    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..   
+    ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator
+    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for more operators
 ; &9dcb referenced 1 time by &9dd6
 .loop_c9dcb
-    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.   
+    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
 ; &9dce referenced 2 times by &9c53, &9cba
 .sub_c9dce
-    jsr stack_integer                                                 ; 9dce: 20 94 bd     ..   
+    jsr stack_integer                                                 ; 9dce: 20 94 bd     ..      ; stack the operand, then multiply
 ; ***************************************************************************************
 ; Evaluator level 3: * / DIV MOD
 ;
@@ -5657,7 +5657,7 @@ l848a = sub_c847b+15
     jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..   
     jsr caad1                                                         ; 9e78: 20 d1 aa     ..   
     jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..   
-    jsr sub_ca7ed                                                     ; 9e7e: 20 ed a7     ..   
+    jsr point_fp_temp2                                                ; 9e7e: 20 ed a7     ..   
     jsr fwa_mul_var                                                   ; 9e81: 20 56 a6     V.   
     lda #&ff                                                          ; 9e84: a9 ff       ..    
     bne c9e23                                                         ; 9e86: d0 9b       ..    
@@ -5838,7 +5838,7 @@ l848a = sub_c847b+15
     bne loop_c9f6b                                                    ; 9f6f: d0 fa       ..    
 ; &9f71 referenced 1 time by &9f69
 .c9f71
-    jsr sub_ca7f5                                                     ; 9f71: 20 f5 a7     ..   
+    jsr point_fp_temp1                                                ; 9f71: 20 f5 a7     ..   
     jsr fwb_unpack_var                                                ; 9f74: 20 4e a3     N.   
     lda zp_var_type                                                   ; 9f77: a5 27       .'    
     sta zp_fwb_rnd                                                    ; 9f79: 85 42       .B    
@@ -6639,7 +6639,7 @@ l848a = sub_c847b+15
 ; Unpack the floating-point temporary at &046C into FWA.
 ; &a3b2 referenced 2 times by &aa35, &ba36
 .fwa_unpack_temp1
-    jsr sub_ca7f5                                                     ; a3b2: 20 f5 a7     ..      ; Point at FP TEMP1, then unpack it into FWA
+    jsr point_fp_temp1                                                ; a3b2: 20 f5 a7     ..      ; Point at FP TEMP1, then unpack it into FWA
 ; ***************************************************************************************
 ; Unpack a floating-point variable into FWA
 ;
@@ -7238,16 +7238,16 @@ l848a = sub_c847b+15
     jsr sub_ca9d3                                                     ; a6c1: 20 d3 a9     ..   
     lda l004a                                                         ; a6c4: a5 4a       .J    
     pha                                                               ; a6c6: 48          H     
-    jsr sub_ca7e9                                                     ; a6c7: 20 e9 a7     ..   
+    jsr point_fp_temp4                                                ; a6c7: 20 e9 a7     ..   
     jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..   
     inc l004a                                                         ; a6cd: e6 4a       .J    
     jsr ca99e                                                         ; a6cf: 20 9e a9     ..   
-    jsr sub_ca7e9                                                     ; a6d2: 20 e9 a7     ..   
+    jsr point_fp_temp4                                                ; a6d2: 20 e9 a7     ..   
     jsr fwa_swap_var                                                  ; a6d5: 20 d6 a4     ..   
     pla                                                               ; a6d8: 68          h     
     sta l004a                                                         ; a6d9: 85 4a       .J    
     jsr ca99e                                                         ; a6db: 20 9e a9     ..   
-    jsr sub_ca7e9                                                     ; a6de: 20 e9 a7     ..   
+    jsr point_fp_temp4                                                ; a6de: 20 e9 a7     ..   
     jsr ca6e7                                                         ; a6e1: 20 e7 a6     ..   
     lda #&ff                                                          ; a6e4: a9 ff       ..    
     rts                                                               ; a6e6: 60          `     
@@ -7385,57 +7385,65 @@ l848a = sub_c847b+15
 ;
 ; FWA = square root of FWA. Pure routine at &A7B7.
 .fn_sqr
-    jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..   
+    jsr sub_c92fa                                                     ; a7b4: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a7b7 referenced 1 time by &a9c0
 .ca7b7
-    jsr fwa_sign                                                      ; a7b7: 20 da a1     ..   
-    beq ca7e6                                                         ; a7ba: f0 2a       .*    
-    bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.    
-    jsr fwa_pack_temp1                                                ; a7be: 20 85 a3     ..   
-    lda zp_fwa_exp                                                    ; a7c1: a5 30       .0    
-    lsr a                                                             ; a7c3: 4a          J     
-    adc #&40 ; '@'                                                    ; a7c4: 69 40       i@    
-    sta zp_fwa_exp                                                    ; a7c6: 85 30       .0    
-    lda #5                                                            ; a7c8: a9 05       ..    
-    sta l004a                                                         ; a7ca: 85 4a       .J    
-    jsr sub_ca7ed                                                     ; a7cc: 20 ed a7     ..   
+    jsr fwa_sign                                                      ; a7b7: 20 da a1     ..      ; Sign of the argument
+    beq ca7e6                                                         ; a7ba: f0 2a       .*       ; zero: the root is zero
+    bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.       ; negative: -ve root error
+    jsr fwa_pack_temp1                                                ; a7be: 20 85 a3     ..      ; Save the argument in TEMP1
+    lda zp_fwa_exp                                                    ; a7c1: a5 30       .0       ; Initial guess: halve the exponent
+    lsr a                                                             ; a7c3: 4a          J        ; ...
+    adc #&40 ; '@'                                                    ; a7c4: 69 40       i@       ; (re-bias)
+    sta zp_fwa_exp                                                    ; a7c6: 85 30       .0       ; ...
+    lda #5                                                            ; a7c8: a9 05       ..       ; 5 Newton iterations
+    sta l004a                                                         ; a7ca: 85 4a       .J       ; (counter)
+    jsr point_fp_temp2                                                ; a7cc: 20 ed a7     ..      ; point at TEMP2 (the guess)
 ; &a7cf referenced 1 time by &a7e4
 .loop_ca7cf
-    jsr fwa_pack_var                                                  ; a7cf: 20 8d a3     ..   
-    lda #&6c ; 'l'                                                    ; a7d2: a9 6c       .l    
-    sta zp_fp_ptr                                                     ; a7d4: 85 4b       .K    
-    jsr fwa_rdiv_var                                                  ; a7d6: 20 ad a6     ..   
-    lda #&71 ; 'q'                                                    ; a7d9: a9 71       .q    
-    sta zp_fp_ptr                                                     ; a7db: 85 4b       .K    
-    jsr fwa_add_var                                                   ; a7dd: 20 00 a5     ..   
-    dec zp_fwa_exp                                                    ; a7e0: c6 30       .0    
-    dec l004a                                                         ; a7e2: c6 4a       .J    
-    bne loop_ca7cf                                                    ; a7e4: d0 e9       ..    
+    jsr fwa_pack_var                                                  ; a7cf: 20 8d a3     ..      ; save the current guess
+    lda #&6c ; 'l'                                                    ; a7d2: a9 6c       .l       ; point at TEMP1 (the argument)
+    sta zp_fp_ptr                                                     ; a7d4: 85 4b       .K       ; ...
+    jsr fwa_rdiv_var                                                  ; a7d6: 20 ad a6     ..      ; FWA = argument / guess
+    lda #&71 ; 'q'                                                    ; a7d9: a9 71       .q       ; point at TEMP2 (the guess)
+    sta zp_fp_ptr                                                     ; a7db: 85 4b       .K       ; ...
+    jsr fwa_add_var                                                   ; a7dd: 20 00 a5     ..      ; FWA = arg/guess + guess
+    dec zp_fwa_exp                                                    ; a7e0: c6 30       .0       ; halve it: next guess
+    dec l004a                                                         ; a7e2: c6 4a       .J       ; count
+    bne loop_ca7cf                                                    ; a7e4: d0 e9       ..       ; iterate
 ; &a7e6 referenced 1 time by &a7ba
 .ca7e6
-    lda #&ff                                                          ; a7e6: a9 ff       ..    
-    rts                                                               ; a7e8: 60          `     
+    lda #&ff                                                          ; a7e6: a9 ff       ..       ; real result
+    rts                                                               ; a7e8: 60          `        ; Return the root
+; ***************************************************************************************
+; Point zp_fp_ptr at FP TEMP4 (&047B)
 ; &a7e9 referenced 4 times by &a6c7, &a6d2, &a6de, &a83f
-.sub_ca7e9
-    lda #&7b ; '{'                                                    ; a7e9: a9 7b       .{    
-    bne ca7f7                                                         ; a7eb: d0 0a       ..    
+.point_fp_temp4
+    lda #&7b ; '{'                                                    ; a7e9: a9 7b       .{       ; TEMP4 low (&7B)
+    bne ca7f7                                                         ; a7eb: d0 0a       ..       ; ...
+; ***************************************************************************************
+; Point zp_fp_ptr at FP TEMP2 (&0471)
 ; &a7ed referenced 3 times by &9e7e, &a7cc, &aa23
-.sub_ca7ed
-    lda #&71 ; 'q'                                                    ; a7ed: a9 71       .q    
-    bne ca7f7                                                         ; a7ef: d0 06       ..    
+.point_fp_temp2
+    lda #&71 ; 'q'                                                    ; a7ed: a9 71       .q       ; TEMP2 low (&71)
+    bne ca7f7                                                         ; a7ef: d0 06       ..       ; ...
+; ***************************************************************************************
+; Point zp_fp_ptr at FP TEMP3 (&0476)
 ; &a7f1 referenced 2 times by &a8f5, &aad1
-.sub_ca7f1
-    lda #&76 ; 'v'                                                    ; a7f1: a9 76       .v    
-    bne ca7f7                                                         ; a7f3: d0 02       ..    
+.point_fp_temp3
+    lda #&76 ; 'v'                                                    ; a7f1: a9 76       .v       ; TEMP3 low (&76)
+    bne ca7f7                                                         ; a7f3: d0 02       ..       ; ...
+; ***************************************************************************************
+; Point zp_fp_ptr at FP TEMP1 (&046C)
 ; &a7f5 referenced 6 times by &9f71, &a3b2, &a860, &a8b5, &aa1a, &aa2f
-.sub_ca7f5
-    lda #&6c ; 'l'                                                    ; a7f5: a9 6c       .l    
+.point_fp_temp1
+    lda #&6c ; 'l'                                                    ; a7f5: a9 6c       .l       ; TEMP1 low (&6C)
 ; &a7f7 referenced 3 times by &a7eb, &a7ef, &a7f3
 .ca7f7
-    sta zp_fp_ptr                                                     ; a7f7: 85 4b       .K    
-    lda #4                                                            ; a7f9: a9 04       ..    
-    sta zp_fp_ptr_1                                                   ; a7fb: 85 4c       .L    
-    rts                                                               ; a7fd: 60          `     
+    sta zp_fp_ptr                                                     ; a7f7: 85 4b       .K       ; set the pointer low
+    lda #4                                                            ; a7f9: a9 04       ..       ; high &04
+    sta zp_fp_ptr_1                                                   ; a7fb: 85 4c       .L       ; ...
+    rts                                                               ; a7fd: 60          `        ; Return
 ; ***************************************************************************************
 ; LN
 ;
@@ -7482,7 +7490,7 @@ l848a = sub_c847b+15
     lda #&73 ; 's'                                                    ; a838: a9 73       .s    
     ldy #&a8                                                          ; a83a: a0 a8       ..    
     jsr sub_ca897                                                     ; a83c: 20 97 a8     ..   
-    jsr sub_ca7e9                                                     ; a83f: 20 e9 a7     ..   
+    jsr point_fp_temp4                                                ; a83f: 20 e9 a7     ..   
     jsr fwa_mul_var                                                   ; a842: 20 56 a6     V.   
     jsr fwa_mul_var                                                   ; a845: 20 56 a6     V.   
     jsr fwa_add_var                                                   ; a848: 20 00 a5     ..   
@@ -7496,7 +7504,7 @@ l848a = sub_c847b+15
     lda #&a8                                                          ; a859: a9 a8       ..    
     sta zp_fp_ptr_1                                                   ; a85b: 85 4c       .L    
     jsr fwa_mul_var                                                   ; a85d: 20 56 a6     V.   
-    jsr sub_ca7f5                                                     ; a860: 20 f5 a7     ..   
+    jsr point_fp_temp1                                                ; a860: 20 f5 a7     ..   
     jsr fwa_add_var                                                   ; a863: 20 00 a5     ..   
     lda #&ff                                                          ; a866: a9 ff       ..    
     rts                                                               ; a868: 60          `     
@@ -7524,7 +7532,7 @@ l848a = sub_c847b+15
     jsr fwa_unpack_var                                                ; a8b2: 20 b5 a3     ..   
 ; &a8b5 referenced 1 time by &a8d1
 .loop_ca8b5
-    jsr sub_ca7f5                                                     ; a8b5: 20 f5 a7     ..   
+    jsr point_fp_temp1                                                ; a8b5: 20 f5 a7     ..   
     jsr fwa_rdiv_var                                                  ; a8b8: 20 ad a6     ..   
     clc                                                               ; a8bb: 18          .     
     lda l004d                                                         ; a8bc: a5 4d       .M    
@@ -7552,29 +7560,29 @@ l848a = sub_c847b+15
 ; FWA = arcsin(FWA), result in radians. Pure routine at &A8DD.
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
-    jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..   
-    jsr fwa_sign                                                      ; a8dd: 20 da a1     ..   
-    bpl ca8ea                                                         ; a8e0: 10 08       ..    
-    lsr zp_fwa_sign                                                   ; a8e2: 46 2e       F.    
-    jsr ca8ea                                                         ; a8e4: 20 ea a8     ..   
-    jmp ca916                                                         ; a8e7: 4c 16 a9    L..   
+    jsr sub_c92fa                                                     ; a8da: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr fwa_sign                                                      ; a8dd: 20 da a1     ..      ; Sign of the argument
+    bpl ca8ea                                                         ; a8e0: 10 08       ..       ; positive: compute directly
+    lsr zp_fwa_sign                                                   ; a8e2: 46 2e       F.       ; negative: take |x|...
+    jsr ca8ea                                                         ; a8e4: 20 ea a8     ..      ; compute asn(|x|)
+    jmp ca916                                                         ; a8e7: 4c 16 a9    L..      ; ...and negate the result
 ; &a8ea referenced 2 times by &a8e0, &a8e4
 .ca8ea
-    jsr fwa_pack_temp3                                                ; a8ea: 20 81 a3     ..   
-    jsr sub_ca9b1                                                     ; a8ed: 20 b1 a9     ..   
-    jsr fwa_sign                                                      ; a8f0: 20 da a1     ..   
-    beq ca8fe                                                         ; a8f3: f0 09       ..    
-    jsr sub_ca7f1                                                     ; a8f5: 20 f1 a7     ..   
-    jsr fwa_rdiv_var                                                  ; a8f8: 20 ad a6     ..   
-    jmp ca90a                                                         ; a8fb: 4c 0a a9    L..   
+    jsr fwa_pack_temp3                                                ; a8ea: 20 81 a3     ..      ; Save x in TEMP3
+    jsr sub_ca9b1                                                     ; a8ed: 20 b1 a9     ..      ; compute sqrt(1 - x^2)
+    jsr fwa_sign                                                      ; a8f0: 20 da a1     ..      ; is it zero (x = 1)?
+    beq ca8fe                                                         ; a8f3: f0 09       ..       ; yes: result is pi/2
+    jsr point_fp_temp3                                                ; a8f5: 20 f1 a7     ..      ; point at x (TEMP3)
+    jsr fwa_rdiv_var                                                  ; a8f8: 20 ad a6     ..      ; FWA = x / sqrt(1 - x^2)
+    jmp ca90a                                                         ; a8fb: 4c 0a a9    L..      ; asn(x) = atn(that)
 ; &a8fe referenced 2 times by &a8f3, &abcb
 .ca8fe
-    jsr sub_caa55                                                     ; a8fe: 20 55 aa     U.   
-    jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..   
+    jsr sub_caa55                                                     ; a8fe: 20 55 aa     U.      ; x = 1: load pi/2
+    jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..      ; ...
 ; &a904 referenced 2 times by &a90d, &a93a
 .ca904
-    lda #&ff                                                          ; a904: a9 ff       ..    
-    rts                                                               ; a906: 60          `     
+    lda #&ff                                                          ; a904: a9 ff       ..       ; real result
+    rts                                                               ; a906: 60          `        ; Return
 ; ***************************************************************************************
 ; ATN
 ;
@@ -7710,14 +7718,14 @@ l848a = sub_c847b+15
     jsr fwa_pack_temp2                                                ; aa11: 20 7d a3     }.   
     jsr sub_caa48                                                     ; aa14: 20 48 aa     H.   
     jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.   
-    jsr sub_ca7f5                                                     ; aa1a: 20 f5 a7     ..   
+    jsr point_fp_temp1                                                ; aa1a: 20 f5 a7     ..   
     jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..   
     jsr fwa_pack_var                                                  ; aa20: 20 8d a3     ..   
-    jsr sub_ca7ed                                                     ; aa23: 20 ed a7     ..   
+    jsr point_fp_temp2                                                ; aa23: 20 ed a7     ..   
     jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..   
     jsr sub_caa4c                                                     ; aa29: 20 4c aa     L.   
     jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.   
-    jsr sub_ca7f5                                                     ; aa2f: 20 f5 a7     ..   
+    jsr point_fp_temp1                                                ; aa2f: 20 f5 a7     ..   
     jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..   
 ; &aa35 referenced 1 time by &a9fb
 .caa35
@@ -7801,7 +7809,7 @@ l848a = sub_c847b+15
     jsr sub_cab12                                                     ; aace: 20 12 ab     ..   
 ; &aad1 referenced 3 times by &9e78, &a954, &a9d0
 .caad1
-    jsr sub_ca7f1                                                     ; aad1: 20 f1 a7     ..   
+    jsr point_fp_temp3                                                ; aad1: 20 f1 a7     ..   
     jsr fwa_mul_var                                                   ; aad4: 20 56 a6     V.   
     lda #&ff                                                          ; aad7: a9 ff       ..    
     rts                                                               ; aad9: 60          `     
@@ -11832,8 +11840,8 @@ save pydis_start, pydis_end
 ;     fwa_set_one:                 6
 ;     osbget:                      6
 ;     osbput:                      6
+;     point_fp_temp1:              6
 ;     sub_c92ee:                   6
-;     sub_ca7f5:                   6
 ;     unstack_string:              6
 ;     zp_error_vec:                6
 ;     zp_error_vec_1:              6
@@ -11898,6 +11906,7 @@ save pydis_start, pydis_end
 ;     l0045:                       4
 ;     l0046:                       4
 ;     l0441:                       4
+;     point_fp_temp4:              4
 ;     read_via_ptr_general:        4
 ;     reserve_stack:               4
 ;     resint_p:                    4
@@ -11906,7 +11915,6 @@ save pydis_start, pydis_end
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
 ;     sub_c9e20:                   4
-;     sub_ca7e9:                   4
 ;     sub_ca897:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
@@ -11966,6 +11974,7 @@ save pydis_start, pydis_end
 ;     iwa_negate:                  3
 ;     l0401:                       3
 ;     parse_number:                3
+;     point_fp_temp2:              3
 ;     return_12:                   3
 ;     return_19:                   3
 ;     return_25:                   3
@@ -11979,7 +11988,6 @@ save pydis_start, pydis_end
 ;     sub_c894b:                   3
 ;     sub_c97ba:                   3
 ;     sub_c991f:                   3
-;     sub_ca7ed:                   3
 ;     sub_ca9d3:                   3
 ;     sub_cab12:                   3
 ;     sub_cb50e:                   3
@@ -12167,6 +12175,7 @@ save pydis_start, pydis_end
 ;     osfile:                      2
 ;     osfind:                      2
 ;     osrdch:                      2
+;     point_fp_temp3:              2
 ;     print_inline_string:         2
 ;     print_special_item:          2
 ;     read_input_line:             2
@@ -12209,7 +12218,6 @@ save pydis_start, pydis_end
 ;     sub_ca064:                   2
 ;     sub_ca486:                   2
 ;     sub_ca4d0:                   2
-;     sub_ca7f1:                   2
 ;     sub_caa48:                   2
 ;     sub_caa4c:                   2
 ;     sub_caa55:                   2
@@ -13945,10 +13953,6 @@ save pydis_start, pydis_end
 ;     sub_ca4c7
 ;     sub_ca4d0
 ;     sub_ca4e8
-;     sub_ca7e9
-;     sub_ca7ed
-;     sub_ca7f1
-;     sub_ca7f5
 ;     sub_ca801
 ;     sub_ca897
 ;     sub_ca9b1
