@@ -1708,6 +1708,13 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 39519,
+      "name": "fp_compare",
+      "title": "Compare FWA with a fp variable",
+      "description": "Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa bytes, returning the ordering for the relational operators.",
+      "fall_through": true
+    },
+    {
       "addr": 34967,
       "name": "parse_decimal_u16",
       "title": "Parse a 16-bit decimal number",
@@ -45769,6 +45776,7 @@
       "labels": [
         "loop_c9a39"
       ],
+      "comment_inline": "Int vs real: save the operator",
       "xref_summaries": [
         "&9a39 referenced 1 time by &9aab"
       ],
@@ -45788,6 +45796,7 @@
         234,
         189
       ],
+      "comment_inline": "unstack the integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -45801,6 +45810,7 @@
         81,
         189
       ],
+      "comment_inline": "stack the real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_real",
@@ -45814,6 +45824,7 @@
         190,
         162
       ],
+      "comment_inline": "convert the integer to FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_to_fwa",
@@ -45827,6 +45838,7 @@
         30,
         162
       ],
+      "comment_inline": "FWB = it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_copy_from_fwa",
@@ -45840,6 +45852,7 @@
         126,
         189
       ],
+      "comment_inline": "unstack the real operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_real",
@@ -45853,6 +45866,7 @@
         181,
         163
       ],
+      "comment_inline": "into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -45866,6 +45880,7 @@
         98,
         154
       ],
+      "comment_inline": "compare",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9a62",
@@ -45882,6 +45897,7 @@
       "labels": [
         "loop_c9a50"
       ],
+      "comment_inline": "Real vs real: stack the left",
       "xref_summaries": [
         "&9a50 referenced 1 time by &9aa0"
       ],
@@ -45901,6 +45917,7 @@
         66,
         156
       ],
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_add_sub",
@@ -45913,6 +45930,7 @@
         134,
         39
       ],
+      "comment_inline": "save the operator",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_var_type",
@@ -45924,6 +45942,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -45934,6 +45953,7 @@
         253,
         146
       ],
+      "comment_inline": "ensure real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fd",
@@ -45947,6 +45967,7 @@
         126,
         189
       ],
+      "comment_inline": "unstack the left operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_real",
@@ -45961,8 +45982,9 @@
         163
       ],
       "labels": [
-        "sub_c9a5f"
+        "fp_compare"
       ],
+      "comment_inline": "Unpack the operand into FWB",
       "xref_summaries": [
         "&9a5f referenced 1 time by &b78f"
       ],
@@ -45984,6 +46006,7 @@
       "labels": [
         "c9a62"
       ],
+      "comment_inline": "Restore the operator",
       "xref_summaries": [
         "&9a62 referenced 1 time by &9a4d"
       ],
@@ -46002,6 +46025,7 @@
         160,
         0
       ],
+      "comment_inline": "assume equal",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -46012,6 +46036,7 @@
         165,
         59
       ],
+      "comment_inline": "FWB sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_sign",
@@ -46024,6 +46049,7 @@
         41,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -46034,6 +46060,7 @@
         133,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -46046,6 +46073,7 @@
         165,
         46
       ],
+      "comment_inline": "FWA sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -46058,6 +46086,7 @@
         41,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -46068,6 +46097,7 @@
         197,
         59
       ],
+      "comment_inline": "signs differ?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_sign",
@@ -46080,6 +46110,7 @@
         208,
         30
       ],
+      "comment_inline": "yes: unequal",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_17",
@@ -46092,6 +46123,7 @@
         165,
         61
       ],
+      "comment_inline": "Compare exponents",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -46104,6 +46136,7 @@
         197,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwa_exp",
@@ -46116,6 +46149,7 @@
         208,
         25
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a93",
@@ -46128,6 +46162,7 @@
         165,
         62
       ],
+      "comment_inline": "Compare mantissa byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -46140,6 +46175,7 @@
         197,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwa_m1",
@@ -46152,6 +46188,7 @@
         208,
         19
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a93",
@@ -46164,6 +46201,7 @@
         165,
         63
       ],
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -46176,6 +46214,7 @@
         197,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwa_m2",
@@ -46188,6 +46227,7 @@
         208,
         13
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a93",
@@ -46200,6 +46240,7 @@
         165,
         64
       ],
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -46212,6 +46253,7 @@
         197,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwa_m3",
@@ -46224,6 +46266,7 @@
         208,
         7
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a93",
@@ -46236,6 +46279,7 @@
         165,
         65
       ],
+      "comment_inline": "byte 4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m4",
@@ -46248,6 +46292,7 @@
         197,
         52
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwa_m4",
@@ -46260,6 +46305,7 @@
         208,
         1
       ],
+      "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9a93",
@@ -53031,6 +53077,7 @@
       "labels": [
         "loop_c9e90"
       ],
+      "comment_inline": "Real?",
       "xref_summaries": [
         "&9e90 referenced 1 time by &9f07"
       ],
@@ -53046,6 +53093,7 @@
         16,
         3
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9e96",
@@ -53059,6 +53107,7 @@
         228,
         163
       ],
+      "comment_inline": "convert to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int",
@@ -53074,6 +53123,7 @@
       "labels": [
         "c9e96"
       ],
+      "comment_inline": "Expand 4 bytes into 8 nibbles",
       "xref_summaries": [
         "&9e96 referenced 1 time by &9e91"
       ],
@@ -53090,6 +53140,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -53104,6 +53155,7 @@
       "labels": [
         "loop_c9e9a"
       ],
+      "comment_inline": "Byte",
       "xref_summaries": [
         "&9e9a referenced 1 time by &9eae"
       ],
@@ -53121,6 +53173,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -53130,6 +53183,7 @@
         41,
         15
       ],
+      "comment_inline": "low nibble",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&0f"
@@ -53140,6 +53194,7 @@
         149,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -53151,6 +53206,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "high nibble",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -53159,6 +53215,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53167,6 +53224,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53175,6 +53233,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53183,6 +53242,7 @@
       "bytes": [
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53191,6 +53251,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -53200,6 +53261,7 @@
         149,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -53211,6 +53273,7 @@
       "bytes": [
         232
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -53219,6 +53282,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -53228,6 +53292,7 @@
         192,
         4
       ],
+      "comment_inline": "all four bytes?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#4"
@@ -53238,6 +53303,7 @@
         208,
         234
       ],
+      "comment_inline": "no: continue",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9e9a",
@@ -53252,6 +53318,7 @@
       "labels": [
         "loop_c9eb0"
       ],
+      "comment_inline": "Skip leading zero nibbles",
       "xref_summaries": [
         "&9eb0 referenced 1 time by &9eb5"
       ],
@@ -53267,6 +53334,7 @@
         240,
         4
       ],
+      "comment_inline": "all zero: output one zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9eb7",
@@ -53279,6 +53347,7 @@
         181,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2,x",
@@ -53291,6 +53360,7 @@
         240,
         249
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9eb0",
@@ -53306,6 +53376,7 @@
       "labels": [
         "c9eb7"
       ],
+      "comment_inline": "Next nibble",
       "xref_summaries": [
         "&9eb7 referenced 2 times by &9eb1, &9ec5"
       ],
@@ -53325,6 +53396,7 @@
         201,
         10
       ],
+      "comment_inline": "above 9?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&0a"
@@ -53335,6 +53407,7 @@
         144,
         2
       ],
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9ebf",
@@ -53347,6 +53420,7 @@
         105,
         6
       ],
+      "comment_inline": "adjust for A-F",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#6"
@@ -53360,6 +53434,7 @@
       "labels": [
         "c9ebf"
       ],
+      "comment_inline": "to ASCII",
       "xref_summaries": [
         "&9ebf referenced 1 time by &9ebb"
       ],
@@ -53377,6 +53452,7 @@
         102,
         160
       ],
+      "comment_inline": "output the digit",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -53388,6 +53464,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -53397,6 +53474,7 @@
         16,
         240
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9eb7",
@@ -53408,6 +53486,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -95060,9 +95139,9 @@
       "comment_inline": "compare the variable with LIMIT",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a5f",
+      "operand": "fp_compare",
       "target": 39519,
-      "target_label": "sub_c9a5f"
+      "target_label": "fp_compare"
     },
     {
       "addr": 46994,

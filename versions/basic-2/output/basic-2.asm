@@ -4934,51 +4934,56 @@ l848a = sub_c847b+15
     rts                                                               ; 9a38: 60          `        ; Return
 ; &9a39 referenced 1 time by &9aab
 .loop_c9a39
-    stx zp_var_type                                                   ; 9a39: 86 27       .'    
-    jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..   
-    jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.   
-    jsr int_to_fwa                                                    ; 9a41: 20 be a2     ..   
-    jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..   
-    jsr unstack_real                                                  ; 9a47: 20 7e bd     ~.   
-    jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..   
-    jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.   
+    stx zp_var_type                                                   ; 9a39: 86 27       .'       ; Int vs real: save the operator
+    jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..      ; unstack the integer
+    jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.      ; stack the real
+    jsr int_to_fwa                                                    ; 9a41: 20 be a2     ..      ; convert the integer to FWA
+    jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..      ; FWB = it
+    jsr unstack_real                                                  ; 9a47: 20 7e bd     ~.      ; unstack the real operand
+    jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..      ; into FWA
+    jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.      ; compare
 ; &9a50 referenced 1 time by &9aa0
 .loop_c9a50
-    jsr stack_real                                                    ; 9a50: 20 51 bd     Q.   
-    jsr eval_add_sub                                                  ; 9a53: 20 42 9c     B.   
-    stx zp_var_type                                                   ; 9a56: 86 27       .'    
-    tay                                                               ; 9a58: a8          .     
-    jsr sub_c92fd                                                     ; 9a59: 20 fd 92     ..   
-    jsr unstack_real                                                  ; 9a5c: 20 7e bd     ~.   
+    jsr stack_real                                                    ; 9a50: 20 51 bd     Q.      ; Real vs real: stack the left
+    jsr eval_add_sub                                                  ; 9a53: 20 42 9c     B.      ; evaluate the right operand
+    stx zp_var_type                                                   ; 9a56: 86 27       .'       ; save the operator
+    tay                                                               ; 9a58: a8          .        ; type
+    jsr sub_c92fd                                                     ; 9a59: 20 fd 92     ..      ; ensure real
+    jsr unstack_real                                                  ; 9a5c: 20 7e bd     ~.      ; unstack the left operand
+; ***************************************************************************************
+; Compare FWA with a fp variable
+;
+; Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa
+; bytes, returning the ordering for the relational operators.
 ; &9a5f referenced 1 time by &b78f
-.sub_c9a5f
-    jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.   
+.fp_compare
+    jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.      ; Unpack the operand into FWB
 ; &9a62 referenced 1 time by &9a4d
 .c9a62
-    ldx zp_var_type                                                   ; 9a62: a6 27       .'    
-    ldy #0                                                            ; 9a64: a0 00       ..    
-    lda zp_fwb_sign                                                   ; 9a66: a5 3b       .;    
-    and #&80                                                          ; 9a68: 29 80       ).    
-    sta zp_fwb_sign                                                   ; 9a6a: 85 3b       .;    
-    lda zp_fwa_sign                                                   ; 9a6c: a5 2e       ..    
-    and #&80                                                          ; 9a6e: 29 80       ).    
-    cmp zp_fwb_sign                                                   ; 9a70: c5 3b       .;    
-    bne return_17                                                     ; 9a72: d0 1e       ..    
-    lda zp_fwb_exp                                                    ; 9a74: a5 3d       .=    
-    cmp zp_fwa_exp                                                    ; 9a76: c5 30       .0    
-    bne c9a93                                                         ; 9a78: d0 19       ..    
-    lda zp_fwb_m1                                                     ; 9a7a: a5 3e       .>    
-    cmp zp_fwa_m1                                                     ; 9a7c: c5 31       .1    
-    bne c9a93                                                         ; 9a7e: d0 13       ..    
-    lda zp_fwb_m2                                                     ; 9a80: a5 3f       .?    
-    cmp zp_fwa_m2                                                     ; 9a82: c5 32       .2    
-    bne c9a93                                                         ; 9a84: d0 0d       ..    
-    lda zp_fwb_m3                                                     ; 9a86: a5 40       .@    
-    cmp zp_fwa_m3                                                     ; 9a88: c5 33       .3    
-    bne c9a93                                                         ; 9a8a: d0 07       ..    
-    lda zp_fwb_m4                                                     ; 9a8c: a5 41       .A    
-    cmp zp_fwa_m4                                                     ; 9a8e: c5 34       .4    
-    bne c9a93                                                         ; 9a90: d0 01       ..    
+    ldx zp_var_type                                                   ; 9a62: a6 27       .'       ; Restore the operator
+    ldy #0                                                            ; 9a64: a0 00       ..       ; assume equal
+    lda zp_fwb_sign                                                   ; 9a66: a5 3b       .;       ; FWB sign
+    and #&80                                                          ; 9a68: 29 80       ).       ; ...
+    sta zp_fwb_sign                                                   ; 9a6a: 85 3b       .;       ; ...
+    lda zp_fwa_sign                                                   ; 9a6c: a5 2e       ..       ; FWA sign
+    and #&80                                                          ; 9a6e: 29 80       ).       ; ...
+    cmp zp_fwb_sign                                                   ; 9a70: c5 3b       .;       ; signs differ?
+    bne return_17                                                     ; 9a72: d0 1e       ..       ; yes: unequal
+    lda zp_fwb_exp                                                    ; 9a74: a5 3d       .=       ; Compare exponents
+    cmp zp_fwa_exp                                                    ; 9a76: c5 30       .0       ; ...
+    bne c9a93                                                         ; 9a78: d0 19       ..       ; differ
+    lda zp_fwb_m1                                                     ; 9a7a: a5 3e       .>       ; Compare mantissa byte 1
+    cmp zp_fwa_m1                                                     ; 9a7c: c5 31       .1       ; ...
+    bne c9a93                                                         ; 9a7e: d0 13       ..       ; differ
+    lda zp_fwb_m2                                                     ; 9a80: a5 3f       .?       ; byte 2
+    cmp zp_fwa_m2                                                     ; 9a82: c5 32       .2       ; ...
+    bne c9a93                                                         ; 9a84: d0 0d       ..       ; differ
+    lda zp_fwb_m3                                                     ; 9a86: a5 40       .@       ; byte 3
+    cmp zp_fwa_m3                                                     ; 9a88: c5 33       .3       ; ...
+    bne c9a93                                                         ; 9a8a: d0 07       ..       ; differ
+    lda zp_fwb_m4                                                     ; 9a8c: a5 41       .A       ; byte 4
+    cmp zp_fwa_m4                                                     ; 9a8e: c5 34       .4       ; ...
+    bne c9a93                                                         ; 9a90: d0 01       ..       ; differ
 ; &9a92 referenced 1 time by &9a72
 .return_17
     rts                                                               ; 9a92: 60          `     
@@ -5728,49 +5733,49 @@ l848a = sub_c847b+15
     bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..       ; evaluate it
 ; &9e90 referenced 1 time by &9f07
 .loop_c9e90
-    tya                                                               ; 9e90: 98          .     
-    bpl c9e96                                                         ; 9e91: 10 03       ..    
-    jsr fwa_to_int                                                    ; 9e93: 20 e4 a3     ..   
+    tya                                                               ; 9e90: 98          .        ; Real?
+    bpl c9e96                                                         ; 9e91: 10 03       ..       ; no
+    jsr fwa_to_int                                                    ; 9e93: 20 e4 a3     ..      ; convert to integer
 ; &9e96 referenced 1 time by &9e91
 .c9e96
-    ldx #0                                                            ; 9e96: a2 00       ..    
-    ldy #0                                                            ; 9e98: a0 00       ..    
+    ldx #0                                                            ; 9e96: a2 00       ..       ; Expand 4 bytes into 8 nibbles
+    ldy #0                                                            ; 9e98: a0 00       ..       ; ...
 ; &9e9a referenced 1 time by &9eae
 .loop_c9e9a
-    lda zp_iwa,y                                                      ; 9e9a: b9 2a 00    .*.   
-    pha                                                               ; 9e9d: 48          H     
-    and #&0f                                                          ; 9e9e: 29 0f       ).    
-    sta zp_fwb_m2,x                                                   ; 9ea0: 95 3f       .?    
-    pla                                                               ; 9ea2: 68          h     
-    lsr a                                                             ; 9ea3: 4a          J     
-    lsr a                                                             ; 9ea4: 4a          J     
-    lsr a                                                             ; 9ea5: 4a          J     
-    lsr a                                                             ; 9ea6: 4a          J     
-    inx                                                               ; 9ea7: e8          .     
-    sta zp_fwb_m2,x                                                   ; 9ea8: 95 3f       .?    
-    inx                                                               ; 9eaa: e8          .     
-    iny                                                               ; 9eab: c8          .     
-    cpy #4                                                            ; 9eac: c0 04       ..    
-    bne loop_c9e9a                                                    ; 9eae: d0 ea       ..    
+    lda zp_iwa,y                                                      ; 9e9a: b9 2a 00    .*.      ; Byte
+    pha                                                               ; 9e9d: 48          H        ; save it
+    and #&0f                                                          ; 9e9e: 29 0f       ).       ; low nibble
+    sta zp_fwb_m2,x                                                   ; 9ea0: 95 3f       .?       ; ...
+    pla                                                               ; 9ea2: 68          h        ; high nibble
+    lsr a                                                             ; 9ea3: 4a          J        ; ...
+    lsr a                                                             ; 9ea4: 4a          J        ; ...
+    lsr a                                                             ; 9ea5: 4a          J        ; ...
+    lsr a                                                             ; 9ea6: 4a          J        ; ...
+    inx                                                               ; 9ea7: e8          .        ; ...
+    sta zp_fwb_m2,x                                                   ; 9ea8: 95 3f       .?       ; ...
+    inx                                                               ; 9eaa: e8          .        ; ...
+    iny                                                               ; 9eab: c8          .        ; ...
+    cpy #4                                                            ; 9eac: c0 04       ..       ; all four bytes?
+    bne loop_c9e9a                                                    ; 9eae: d0 ea       ..       ; no: continue
 ; &9eb0 referenced 1 time by &9eb5
 .loop_c9eb0
-    dex                                                               ; 9eb0: ca          .     
-    beq c9eb7                                                         ; 9eb1: f0 04       ..    
-    lda zp_fwb_m2,x                                                   ; 9eb3: b5 3f       .?    
-    beq loop_c9eb0                                                    ; 9eb5: f0 f9       ..    
+    dex                                                               ; 9eb0: ca          .        ; Skip leading zero nibbles
+    beq c9eb7                                                         ; 9eb1: f0 04       ..       ; all zero: output one zero
+    lda zp_fwb_m2,x                                                   ; 9eb3: b5 3f       .?       ; ...
+    beq loop_c9eb0                                                    ; 9eb5: f0 f9       ..       ; ...
 ; &9eb7 referenced 2 times by &9eb1, &9ec5
 .c9eb7
-    lda zp_fwb_m2,x                                                   ; 9eb7: b5 3f       .?    
-    cmp #&0a                                                          ; 9eb9: c9 0a       ..    
-    bcc c9ebf                                                         ; 9ebb: 90 02       ..    
-    adc #6                                                            ; 9ebd: 69 06       i.    
+    lda zp_fwb_m2,x                                                   ; 9eb7: b5 3f       .?       ; Next nibble
+    cmp #&0a                                                          ; 9eb9: c9 0a       ..       ; above 9?
+    bcc c9ebf                                                         ; 9ebb: 90 02       ..       ; no
+    adc #6                                                            ; 9ebd: 69 06       i.       ; adjust for A-F
 ; &9ebf referenced 1 time by &9ebb
 .c9ebf
-    adc #&30 ; '0'                                                    ; 9ebf: 69 30       i0    
-    jsr output_char                                                   ; 9ec1: 20 66 a0     f.   
-    dex                                                               ; 9ec4: ca          .     
-    bpl c9eb7                                                         ; 9ec5: 10 f0       ..    
-    rts                                                               ; 9ec7: 60          `     
+    adc #&30 ; '0'                                                    ; 9ebf: 69 30       i0       ; to ASCII
+    jsr output_char                                                   ; 9ec1: 20 66 a0     f.      ; output the digit
+    dex                                                               ; 9ec4: ca          .        ; next
+    bpl c9eb7                                                         ; 9ec5: 10 f0       ..       ; loop
+    rts                                                               ; 9ec7: 60          `        ; Return
 ; &9ec8 referenced 1 time by &9f12
 .loop_c9ec8
     bpl c9ed1                                                         ; 9ec8: 10 07       ..    
@@ -10352,7 +10357,7 @@ l848a = sub_c847b+15
     sta zp_fp_ptr                                                     ; b789: 85 4b       .K       ; ...
     lda #5                                                            ; b78b: a9 05       ..       ; ...
     sta zp_fp_ptr_1                                                   ; b78d: 85 4c       .L       ; ...
-    jsr sub_c9a5f                                                     ; b78f: 20 5f 9a     _.      ; compare the variable with LIMIT
+    jsr fp_compare                                                    ; b78f: 20 5f 9a     _.      ; compare the variable with LIMIT
     beq cb741                                                         ; b792: f0 ad       ..       ; at the limit: continue
     lda l04f5,x                                                       ; b794: bd f5 04    ...      ; sign of STEP...
     bmi cb79d                                                         ; b797: 30 04       0.       ; ...
@@ -12818,6 +12823,7 @@ save pydis_start, pydis_end
 ;     fn_asn:                      1
 ;     fn_ln:                       1
 ;     for_gosub_stack:             1
+;     fp_compare:                  1
 ;     fp_mantissas_add:            1
 ;     fwa_complement_half_pi:      1
 ;     fwa_round_carry:             1
@@ -13109,7 +13115,6 @@ save pydis_start, pydis_end
 ;     sub_c9807:                   1
 ;     sub_c987b:                   1
 ;     sub_c9880:                   1
-;     sub_c9a5f:                   1
 ;     sub_c9a9e:                   1
 ;     sub_ca14b:                   1
 ;     sub_ca3e7:                   1
@@ -14076,7 +14081,6 @@ save pydis_start, pydis_end
 ;     sub_c9880
 ;     sub_c9890
 ;     sub_c9923
-;     sub_c9a5f
 ;     sub_c9a9d
 ;     sub_c9a9e
 ;     sub_c9b6b
