@@ -1296,6 +1296,18 @@
       "description": "Subtract the fp variable operand from FWA (reverse subtract, then negate)."
     },
     {
+      "addr": 42118,
+      "name": "fp_split_int_frac",
+      "title": "Split FWA into integer part (&4A) and fraction (FWA)",
+      "description": "Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers."
+    },
+    {
+      "addr": 43794,
+      "name": "fwa_int_power",
+      "title": "FWA = FWA ^ n (n in A)",
+      "description": "Raise FWA to an integer power by repeated multiplication; a negative exponent reciprocates first. Used by EXP to form e^(integer part)."
+    },
+    {
       "addr": 42582,
       "name": "fwa_mul_var",
       "title": "FWA = FWA * fp var",
@@ -50872,9 +50884,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca486",
+      "operand": "fp_split_int_frac",
       "target": 42118,
-      "target_label": "sub_ca486"
+      "target_label": "fp_split_int_frac"
     },
     {
       "addr": 40520,
@@ -50935,9 +50947,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cab12",
+      "operand": "fwa_int_power",
       "target": 43794,
-      "target_label": "sub_cab12"
+      "target_label": "fwa_int_power"
     },
     {
       "addr": 40533,
@@ -51065,9 +51077,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cab12",
+      "operand": "fwa_int_power",
       "target": 43794,
-      "target_label": "sub_cab12"
+      "target_label": "fwa_int_power"
     },
     {
       "addr": 40556,
@@ -61999,8 +62011,9 @@
         48
       ],
       "labels": [
-        "sub_ca486"
+        "fp_split_int_frac"
       ],
+      "comment_inline": "Exponent of FWA",
       "xref_summaries": [
         "&a486 referenced 2 times by &9e45, &aab8"
       ],
@@ -62020,6 +62033,7 @@
         48,
         7
       ],
+      "comment_inline": "|x| >= 1: has an integer part",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "ca491",
@@ -62032,6 +62046,7 @@
         169,
         0
       ],
+      "comment_inline": "|x| < 1: integer part is zero",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -62042,6 +62057,7 @@
         133,
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -62055,6 +62071,7 @@
         218,
         161
       ],
+      "comment_inline": "return the fraction (= x)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_sign",
@@ -62071,6 +62088,7 @@
       "labels": [
         "ca491"
       ],
+      "comment_inline": "Convert to a fixed integer (fraction into FWB)",
       "xref_summaries": [
         "&a491 referenced 1 time by &a488"
       ],
@@ -62089,6 +62107,7 @@
         165,
         52
       ],
+      "comment_inline": "Low byte of the integer part...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -62101,6 +62120,7 @@
         133,
         74
       ],
+      "comment_inline": "...kept in &4A",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -62114,6 +62134,7 @@
         232,
         164
       ],
+      "comment_inline": "Bring the fractional bits back into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca4e8",
@@ -62126,6 +62147,7 @@
         169,
         128
       ],
+      "comment_inline": "Exponent for a value in [0,1)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -62136,6 +62158,7 @@
         133,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -62148,6 +62171,7 @@
         166,
         49
       ],
+      "comment_inline": "Top fraction bit set (fraction >= 0.5)?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_m1",
@@ -62160,6 +62184,7 @@
         16,
         16
       ],
+      "comment_inline": "no: fraction already in range",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca4b3",
@@ -62172,6 +62197,7 @@
         69,
         46
       ],
+      "comment_inline": "Round to nearest: flip the fraction sign",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_fwa_sign",
@@ -62184,6 +62210,7 @@
         133,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -62196,6 +62223,7 @@
         16,
         5
       ],
+      "comment_inline": "positive: round the integer part up",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca4ae",
@@ -62208,6 +62236,7 @@
         230,
         74
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004a",
@@ -62221,6 +62250,7 @@
         176,
         164
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca4b0",
@@ -62236,6 +62266,7 @@
       "labels": [
         "ca4ae"
       ],
+      "comment_inline": "negative: round the integer part down",
       "xref_summaries": [
         "&a4ae referenced 1 time by &a4a7"
       ],
@@ -62258,6 +62289,7 @@
       "labels": [
         "ca4b0"
       ],
+      "comment_inline": "Negate the fraction mantissa",
       "xref_summaries": [
         "&a4b0 referenced 1 time by &a4ab"
       ],
@@ -62280,6 +62312,7 @@
       "labels": [
         "ca4b3"
       ],
+      "comment_inline": "Normalise the fraction",
       "xref_summaries": [
         "&a4b3 referenced 1 time by &a4a1"
       ],
@@ -62301,6 +62334,7 @@
       "labels": [
         "sub_ca4b6"
       ],
+      "comment_inline": "Increment the integer-part mantissa (carry up)",
       "xref_summaries": [
         "&a4b6 referenced 1 time by &a4ca"
       ],
@@ -62319,6 +62353,7 @@
         208,
         12
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -62331,6 +62366,7 @@
         230,
         51
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m3",
@@ -62343,6 +62379,7 @@
         208,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -62355,6 +62392,7 @@
         230,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m2",
@@ -62367,6 +62405,7 @@
         208,
         4
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -62379,6 +62418,7 @@
         230,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m1",
@@ -62391,6 +62431,7 @@
         240,
         138
       ],
+      "comment_inline": "overflow: Too big",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca450",
@@ -62405,6 +62446,7 @@
       "labels": [
         "return_25"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&a4c6 referenced 3 times by &a4b8, &a4bc, &a4c0"
       ],
@@ -62426,6 +62468,7 @@
       "labels": [
         "sub_ca4c7"
       ],
+      "comment_inline": "Decrement the mantissa magnitude (negate, +1, negate)",
       "xref_summaries": [
         "&a4c7 referenced 1 time by &ac92"
       ],
@@ -62445,6 +62488,7 @@
         182,
         164
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca4b6",
@@ -62458,6 +62502,7 @@
         108,
         164
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca46c",
@@ -68152,6 +68197,7 @@
       "labels": [
         "fn_ln"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "xref_summaries": [
         "&a7fe referenced 1 time by &aba8"
       ],
@@ -68174,6 +68220,7 @@
       "labels": [
         "sub_ca801"
       ],
+      "comment_inline": "Sign of x",
       "xref_summaries": [
         "&a801 referenced 1 time by &9e75"
       ],
@@ -68192,6 +68239,7 @@
         240,
         2
       ],
+      "comment_inline": "zero: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca808",
@@ -68204,6 +68252,7 @@
         16,
         12
       ],
+      "comment_inline": "positive: compute",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca814",
@@ -68218,6 +68267,7 @@
       "labels": [
         "ca808"
       ],
+      "comment_inline": "zero or negative: Log range error",
       "xref_summaries": [
         "&a808 referenced 1 time by &a804"
       ],
@@ -68273,6 +68323,7 @@
       "labels": [
         "ca814"
       ],
+      "comment_inline": "Set FWB = -1 (to form mantissa - 1)",
       "xref_summaries": [
         "&a814 referenced 1 time by &a806"
       ],
@@ -68291,6 +68342,7 @@
         160,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&80"
@@ -68301,6 +68353,7 @@
         132,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -68313,6 +68366,7 @@
         132,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -68324,6 +68378,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -68333,6 +68388,7 @@
         132,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -68345,6 +68401,7 @@
         166,
         48
       ],
+      "comment_inline": "Binary exponent of x",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwa_exp",
@@ -68357,6 +68414,7 @@
         240,
         6
       ],
+      "comment_inline": "zero mantissa exponent?",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca82a",
@@ -68369,6 +68427,7 @@
         165,
         49
       ],
+      "comment_inline": "Mantissa top byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -68381,6 +68440,7 @@
         201,
         181
       ],
+      "comment_inline": "below sqrt(2)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&b5"
@@ -68391,6 +68451,7 @@
         144,
         2
       ],
+      "comment_inline": "yes: keep this exponent",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca82c",
@@ -68405,6 +68466,7 @@
       "labels": [
         "ca82a"
       ],
+      "comment_inline": "no: scale mantissa to [sqrt(1/2), sqrt(2)]",
       "xref_summaries": [
         "&a82a referenced 1 time by &a822"
       ],
@@ -68419,6 +68481,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...and adjust the exponent",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -68430,6 +68493,7 @@
       "labels": [
         "ca82c"
       ],
+      "comment_inline": "Save the adjusted binary exponent",
       "xref_summaries": [
         "&a82c referenced 1 time by &a828"
       ],
@@ -68444,6 +68508,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -68453,6 +68518,7 @@
         132,
         48
       ],
+      "comment_inline": "Set the mantissa exponent",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_exp",
@@ -68466,6 +68532,7 @@
         5,
         165
       ],
+      "comment_inline": "FWA = mantissa - 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_fwb",
@@ -68478,6 +68545,7 @@
         169,
         123
       ],
+      "comment_inline": "Save (m-1) in TEMP4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&7b"
@@ -68489,6 +68557,7 @@
         135,
         163
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca387",
@@ -68501,6 +68570,7 @@
         169,
         115
       ],
+      "comment_inline": "Point at the ln coefficient table: low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&73"
@@ -68511,6 +68581,7 @@
         160,
         168
       ],
+      "comment_inline": "...high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&a8"
@@ -68522,6 +68593,7 @@
         151,
         168
       ],
+      "comment_inline": "Evaluate the ln continued fraction",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fp_eval_cont_frac",
@@ -68535,6 +68607,7 @@
         233,
         167
       ],
+      "comment_inline": "Point at (m-1) in TEMP4",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_fp_temp4",
@@ -68548,6 +68621,7 @@
         86,
         166
       ],
+      "comment_inline": "Scale by (m-1)...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -68561,6 +68635,7 @@
         86,
         166
       ],
+      "comment_inline": "...and again",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -68574,6 +68649,7 @@
         0,
         165
       ],
+      "comment_inline": "Add (m-1): FWA = ln(mantissa)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -68587,6 +68663,7 @@
         133,
         163
       ],
+      "comment_inline": "Save ln(mantissa) in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -68598,6 +68675,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Recover the adjusted exponent",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -68606,6 +68684,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -68615,6 +68694,7 @@
         233,
         129
       ],
+      "comment_inline": "Binary exponent e = adjusted - &81",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&81"
@@ -68626,6 +68706,7 @@
         237,
         162
       ],
+      "comment_inline": "FWA = e",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "small_int_to_fwa",
@@ -68638,6 +68719,7 @@
         169,
         110
       ],
+      "comment_inline": "Point at the constant ln 2: low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&6e"
@@ -68648,6 +68730,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -68660,6 +68743,7 @@
         169,
         168
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a8"
@@ -68670,6 +68754,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -68683,6 +68768,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = e * ln 2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -68696,6 +68782,7 @@
         245,
         167
       ],
+      "comment_inline": "Point at ln(mantissa) in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_fp_temp1",
@@ -68709,6 +68796,7 @@
         0,
         165
       ],
+      "comment_inline": "LN(x) = e*ln2 + ln(mantissa)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -68721,6 +68809,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -68730,6 +68819,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -71511,6 +71601,7 @@
       "labels": [
         "fn_exp"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -71526,6 +71617,7 @@
       "labels": [
         "sub_caa94"
       ],
+      "comment_inline": "Exponent of x",
       "xref_summaries": [
         "&aa94 referenced 1 time by &9e7b"
       ],
@@ -71544,6 +71636,7 @@
         201,
         135
       ],
+      "comment_inline": "x small enough to compute directly?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&87"
@@ -71554,6 +71647,7 @@
         144,
         30
       ],
+      "comment_inline": "yes: compute",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "caab8",
@@ -71566,6 +71660,7 @@
         208,
         6
       ],
+      "comment_inline": "much too large: handle the overflow case",
       "type": "code",
       "mnemonic": "bne",
       "operand": "caaa2",
@@ -71578,6 +71673,7 @@
         164,
         49
       ],
+      "comment_inline": "borderline: test the mantissa",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_fwa_m1",
@@ -71590,6 +71686,7 @@
         192,
         179
       ],
+      "comment_inline": "...against the overflow threshold",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&b3"
@@ -71600,6 +71697,7 @@
         144,
         22
       ],
+      "comment_inline": "below it: still computable",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "caab8",
@@ -71615,6 +71713,7 @@
       "labels": [
         "caaa2"
       ],
+      "comment_inline": "Sign of x",
       "xref_summaries": [
         "&aaa2 referenced 1 time by &aa9a"
       ],
@@ -71633,6 +71732,7 @@
         16,
         6
       ],
+      "comment_inline": "x very negative: e^x underflows to 0",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caaac",
@@ -71646,6 +71746,7 @@
         134,
         166
       ],
+      "comment_inline": "FWA = 0",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_clear",
@@ -71658,6 +71759,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -71667,6 +71769,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -71678,6 +71781,7 @@
       "labels": [
         "caaac"
       ],
+      "comment_inline": "x very positive: Exp range error",
       "xref_summaries": [
         "&aaac referenced 1 time by &aaa4"
       ],
@@ -71733,6 +71837,7 @@
       "labels": [
         "caab8"
       ],
+      "comment_inline": "Split x into integer (&4A) and fraction",
       "xref_summaries": [
         "&aab8 referenced 2 times by &aa98, &aaa0"
       ],
@@ -71742,9 +71847,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca486",
+      "operand": "fp_split_int_frac",
       "target": 42118,
-      "target_label": "sub_ca486"
+      "target_label": "fp_split_int_frac"
     },
     {
       "addr": 43707,
@@ -71753,6 +71858,7 @@
         218,
         170
       ],
+      "comment_inline": "FWA = e^frac via the series",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_caada",
@@ -71766,6 +71872,7 @@
         129,
         163
       ],
+      "comment_inline": "Save e^frac in TEMP3",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp3",
@@ -71778,6 +71885,7 @@
         169,
         228
       ],
+      "comment_inline": "Point at the constant e: low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&e4"
@@ -71788,6 +71896,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -71800,6 +71909,7 @@
         169,
         170
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&aa"
@@ -71810,6 +71920,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -71823,6 +71934,7 @@
         181,
         163
       ],
+      "comment_inline": "FWA = e",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -71835,6 +71947,7 @@
         165,
         74
       ],
+      "comment_inline": "Integer part of x",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004a",
@@ -71848,11 +71961,12 @@
         18,
         171
       ],
+      "comment_inline": "FWA = e^int",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cab12",
+      "operand": "fwa_int_power",
       "target": 43794,
-      "target_label": "sub_cab12"
+      "target_label": "fwa_int_power"
     },
     {
       "addr": 43729,
@@ -72084,8 +72198,9 @@
         170
       ],
       "labels": [
-        "sub_cab12"
+        "fwa_int_power"
       ],
+      "comment_inline": "Exponent n",
       "xref_summaries": [
         "&ab12 referenced 3 times by &9e52, &9e69, &aace"
       ],
@@ -72103,6 +72218,7 @@
         16,
         9
       ],
+      "comment_inline": "positive?",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cab1e",
@@ -72114,6 +72230,7 @@
       "bytes": [
         202
       ],
+      "comment_inline": "negative: use |n| and reciprocate",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -72122,6 +72239,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -72131,6 +72249,7 @@
         73,
         255
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&ff"
@@ -72140,6 +72259,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "save the count",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -72150,6 +72270,7 @@
         165,
         166
       ],
+      "comment_inline": "FWA = 1 / FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_reciprocal",
@@ -72161,6 +72282,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "restore the count",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -72172,6 +72294,7 @@
       "labels": [
         "cab1e"
       ],
+      "comment_inline": "Save the count",
       "xref_summaries": [
         "&ab1e referenced 1 time by &ab13"
       ],
@@ -72188,6 +72311,7 @@
         133,
         163
       ],
+      "comment_inline": "Stash the base in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -72201,6 +72325,7 @@
         153,
         166
       ],
+      "comment_inline": "FWA = 1 (running product)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_set_one",
@@ -72215,6 +72340,7 @@
       "labels": [
         "cab25"
       ],
+      "comment_inline": "Count remaining",
       "xref_summaries": [
         "&ab25 referenced 1 time by &ab2f"
       ],
@@ -72230,6 +72356,7 @@
         240,
         10
       ],
+      "comment_inline": "zero: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_29",
@@ -72241,6 +72368,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "One multiplication fewer",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -72250,6 +72378,7 @@
         233,
         1
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#1"
@@ -72259,6 +72388,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -72269,6 +72399,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = FWA * base",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -72282,6 +72413,7 @@
         37,
         171
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "cab25",

@@ -5631,12 +5631,12 @@ l848a = sub_c847b+15
     lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0    
     cmp #&87                                                          ; 9e41: c9 87       ..    
     bcs c9e88                                                         ; 9e43: b0 43       .C    
-    jsr sub_ca486                                                     ; 9e45: 20 86 a4     ..   
+    jsr fp_split_int_frac                                             ; 9e45: 20 86 a4     ..   
     bne c9e59                                                         ; 9e48: d0 0f       ..    
     jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.   
     jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..   
     lda l004a                                                         ; 9e50: a5 4a       .J    
-    jsr sub_cab12                                                     ; 9e52: 20 12 ab     ..   
+    jsr fwa_int_power                                                 ; 9e52: 20 12 ab     ..   
     lda #&ff                                                          ; 9e55: a9 ff       ..    
     bne c9e23                                                         ; 9e57: d0 ca       ..    
 ; &9e59 referenced 1 time by &9e48
@@ -5648,7 +5648,7 @@ l848a = sub_c847b+15
     sta zp_fp_ptr_1                                                   ; 9e62: 85 4c       .L    
     jsr fwa_unpack_var                                                ; 9e64: 20 b5 a3     ..   
     lda l004a                                                         ; 9e67: a5 4a       .J    
-    jsr sub_cab12                                                     ; 9e69: 20 12 ab     ..   
+    jsr fwa_int_power                                                 ; 9e69: 20 12 ab     ..   
 ; &9e6c referenced 1 time by &9e8e
 .loop_c9e6c
     jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.   
@@ -6804,55 +6804,60 @@ l848a = sub_c847b+15
 ; &a485 referenced 1 time by &a46a
 .return_24
     rts                                                               ; a485: 60          `     
+; ***************************************************************************************
+; Split FWA into integer part (&4A) and fraction (FWA)
+;
+; Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder
+; (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers.
 ; &a486 referenced 2 times by &9e45, &aab8
-.sub_ca486
-    lda zp_fwa_exp                                                    ; a486: a5 30       .0    
-    bmi ca491                                                         ; a488: 30 07       0.    
-    lda #0                                                            ; a48a: a9 00       ..    
-    sta l004a                                                         ; a48c: 85 4a       .J    
-    jmp fwa_sign                                                      ; a48e: 4c da a1    L..   
+.fp_split_int_frac
+    lda zp_fwa_exp                                                    ; a486: a5 30       .0       ; Exponent of FWA
+    bmi ca491                                                         ; a488: 30 07       0.       ; |x| >= 1: has an integer part
+    lda #0                                                            ; a48a: a9 00       ..       ; |x| < 1: integer part is zero
+    sta l004a                                                         ; a48c: 85 4a       .J       ; ...
+    jmp fwa_sign                                                      ; a48e: 4c da a1    L..      ; return the fraction (= x)
 ; &a491 referenced 1 time by &a488
 .ca491
-    jsr fwa_to_int2                                                   ; a491: 20 fe a3     ..   
-    lda zp_fwa_m4                                                     ; a494: a5 34       .4    
-    sta l004a                                                         ; a496: 85 4a       .J    
-    jsr sub_ca4e8                                                     ; a498: 20 e8 a4     ..   
-    lda #&80                                                          ; a49b: a9 80       ..    
-    sta zp_fwa_exp                                                    ; a49d: 85 30       .0    
-    ldx zp_fwa_m1                                                     ; a49f: a6 31       .1    
-    bpl ca4b3                                                         ; a4a1: 10 10       ..    
-    eor zp_fwa_sign                                                   ; a4a3: 45 2e       E.    
-    sta zp_fwa_sign                                                   ; a4a5: 85 2e       ..    
-    bpl ca4ae                                                         ; a4a7: 10 05       ..    
-    inc l004a                                                         ; a4a9: e6 4a       .J    
-    jmp ca4b0                                                         ; a4ab: 4c b0 a4    L..   
+    jsr fwa_to_int2                                                   ; a491: 20 fe a3     ..      ; Convert to a fixed integer (fraction into FWB)
+    lda zp_fwa_m4                                                     ; a494: a5 34       .4       ; Low byte of the integer part...
+    sta l004a                                                         ; a496: 85 4a       .J       ; ...kept in &4A
+    jsr sub_ca4e8                                                     ; a498: 20 e8 a4     ..      ; Bring the fractional bits back into FWA
+    lda #&80                                                          ; a49b: a9 80       ..       ; Exponent for a value in [0,1)
+    sta zp_fwa_exp                                                    ; a49d: 85 30       .0       ; ...
+    ldx zp_fwa_m1                                                     ; a49f: a6 31       .1       ; Top fraction bit set (fraction >= 0.5)?
+    bpl ca4b3                                                         ; a4a1: 10 10       ..       ; no: fraction already in range
+    eor zp_fwa_sign                                                   ; a4a3: 45 2e       E.       ; Round to nearest: flip the fraction sign
+    sta zp_fwa_sign                                                   ; a4a5: 85 2e       ..       ; ...
+    bpl ca4ae                                                         ; a4a7: 10 05       ..       ; positive: round the integer part up
+    inc l004a                                                         ; a4a9: e6 4a       .J       ; ...
+    jmp ca4b0                                                         ; a4ab: 4c b0 a4    L..      ; ...
 ; &a4ae referenced 1 time by &a4a7
 .ca4ae
-    dec l004a                                                         ; a4ae: c6 4a       .J    
+    dec l004a                                                         ; a4ae: c6 4a       .J       ; negative: round the integer part down
 ; &a4b0 referenced 1 time by &a4ab
 .ca4b0
-    jsr ca46c                                                         ; a4b0: 20 6c a4     l.   
+    jsr ca46c                                                         ; a4b0: 20 6c a4     l.      ; Negate the fraction mantissa
 ; &a4b3 referenced 1 time by &a4a1
 .ca4b3
-    jmp fwa_normalise                                                 ; a4b3: 4c 03 a3    L..   
+    jmp fwa_normalise                                                 ; a4b3: 4c 03 a3    L..      ; Normalise the fraction
 ; &a4b6 referenced 1 time by &a4ca
 .sub_ca4b6
-    inc zp_fwa_m4                                                     ; a4b6: e6 34       .4    
-    bne return_25                                                     ; a4b8: d0 0c       ..    
-    inc zp_fwa_m3                                                     ; a4ba: e6 33       .3    
-    bne return_25                                                     ; a4bc: d0 08       ..    
-    inc zp_fwa_m2                                                     ; a4be: e6 32       .2    
-    bne return_25                                                     ; a4c0: d0 04       ..    
-    inc zp_fwa_m1                                                     ; a4c2: e6 31       .1    
-    beq ca450                                                         ; a4c4: f0 8a       ..    
+    inc zp_fwa_m4                                                     ; a4b6: e6 34       .4       ; Increment the integer-part mantissa (carry up)
+    bne return_25                                                     ; a4b8: d0 0c       ..       ; ...
+    inc zp_fwa_m3                                                     ; a4ba: e6 33       .3       ; ...
+    bne return_25                                                     ; a4bc: d0 08       ..       ; ...
+    inc zp_fwa_m2                                                     ; a4be: e6 32       .2       ; ...
+    bne return_25                                                     ; a4c0: d0 04       ..       ; ...
+    inc zp_fwa_m1                                                     ; a4c2: e6 31       .1       ; ...
+    beq ca450                                                         ; a4c4: f0 8a       ..       ; overflow: Too big
 ; &a4c6 referenced 3 times by &a4b8, &a4bc, &a4c0
 .return_25
-    rts                                                               ; a4c6: 60          `     
+    rts                                                               ; a4c6: 60          `        ; Return
 ; &a4c7 referenced 1 time by &ac92
 .sub_ca4c7
-    jsr ca46c                                                         ; a4c7: 20 6c a4     l.   
-    jsr sub_ca4b6                                                     ; a4ca: 20 b6 a4     ..   
-    jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.   
+    jsr ca46c                                                         ; a4c7: 20 6c a4     l.      ; Decrement the mantissa magnitude (negate, +1, negate)
+    jsr sub_ca4b6                                                     ; a4ca: 20 b6 a4     ..      ; ...
+    jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.      ; ...
 ; ***************************************************************************************
 ; FWA = FWA - fp var
 ;
@@ -7472,64 +7477,64 @@ l848a = sub_c847b+15
 ; FWA = natural log of FWA. Pure routine at &A801.
 ; &a7fe referenced 1 time by &aba8
 .fn_ln
-    jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..   
+    jsr sub_c92fa                                                     ; a7fe: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a801 referenced 1 time by &9e75
 .sub_ca801
-    jsr fwa_sign                                                      ; a801: 20 da a1     ..   
-    beq ca808                                                         ; a804: f0 02       ..    
-    bpl ca814                                                         ; a806: 10 0c       ..    
+    jsr fwa_sign                                                      ; a801: 20 da a1     ..      ; Sign of x
+    beq ca808                                                         ; a804: f0 02       ..       ; zero: error
+    bpl ca814                                                         ; a806: 10 0c       ..       ; positive: compute
 ; &a808 referenced 1 time by &a804
 .ca808
-    brk                                                               ; a808: 00          .     
+    brk                                                               ; a808: 00          .        ; zero or negative: Log range error
     equb &16                                                          ; a809: 16          .     
     equs "Log range"                                                  ; a80a: 4c 6f 67... Log...
     equb &00                                                          ; a813: 00          .     
 ; &a814 referenced 1 time by &a806
 .ca814
-    jsr fwb_clear                                                     ; a814: 20 53 a4     S.   
-    ldy #&80                                                          ; a817: a0 80       ..    
-    sty zp_fwb_sign                                                   ; a819: 84 3b       .;    
-    sty zp_fwb_m1                                                     ; a81b: 84 3e       .>    
-    iny                                                               ; a81d: c8          .     
-    sty zp_fwb_exp                                                    ; a81e: 84 3d       .=    
-    ldx zp_fwa_exp                                                    ; a820: a6 30       .0    
-    beq ca82a                                                         ; a822: f0 06       ..    
-    lda zp_fwa_m1                                                     ; a824: a5 31       .1    
-    cmp #&b5                                                          ; a826: c9 b5       ..    
-    bcc ca82c                                                         ; a828: 90 02       ..    
+    jsr fwb_clear                                                     ; a814: 20 53 a4     S.      ; Set FWB = -1 (to form mantissa - 1)
+    ldy #&80                                                          ; a817: a0 80       ..       ; ...
+    sty zp_fwb_sign                                                   ; a819: 84 3b       .;       ; ...
+    sty zp_fwb_m1                                                     ; a81b: 84 3e       .>       ; ...
+    iny                                                               ; a81d: c8          .        ; ...
+    sty zp_fwb_exp                                                    ; a81e: 84 3d       .=       ; ...
+    ldx zp_fwa_exp                                                    ; a820: a6 30       .0       ; Binary exponent of x
+    beq ca82a                                                         ; a822: f0 06       ..       ; zero mantissa exponent?
+    lda zp_fwa_m1                                                     ; a824: a5 31       .1       ; Mantissa top byte
+    cmp #&b5                                                          ; a826: c9 b5       ..       ; below sqrt(2)?
+    bcc ca82c                                                         ; a828: 90 02       ..       ; yes: keep this exponent
 ; &a82a referenced 1 time by &a822
 .ca82a
-    inx                                                               ; a82a: e8          .     
-    dey                                                               ; a82b: 88          .     
+    inx                                                               ; a82a: e8          .        ; no: scale mantissa to [sqrt(1/2), sqrt(2)]
+    dey                                                               ; a82b: 88          .        ; ...and adjust the exponent
 ; &a82c referenced 1 time by &a828
 .ca82c
-    txa                                                               ; a82c: 8a          .     
-    pha                                                               ; a82d: 48          H     
-    sty zp_fwa_exp                                                    ; a82e: 84 30       .0    
-    jsr fwa_add_fwb                                                   ; a830: 20 05 a5     ..   
-    lda #&7b ; '{'                                                    ; a833: a9 7b       .{    
-    jsr ca387                                                         ; a835: 20 87 a3     ..   
-    lda #&73 ; 's'                                                    ; a838: a9 73       .s    
-    ldy #&a8                                                          ; a83a: a0 a8       ..    
-    jsr fp_eval_cont_frac                                             ; a83c: 20 97 a8     ..   
-    jsr point_fp_temp4                                                ; a83f: 20 e9 a7     ..   
-    jsr fwa_mul_var                                                   ; a842: 20 56 a6     V.   
-    jsr fwa_mul_var                                                   ; a845: 20 56 a6     V.   
-    jsr fwa_add_var                                                   ; a848: 20 00 a5     ..   
-    jsr fwa_pack_temp1                                                ; a84b: 20 85 a3     ..   
-    pla                                                               ; a84e: 68          h     
-    sec                                                               ; a84f: 38          8     
-    sbc #&81                                                          ; a850: e9 81       ..    
-    jsr small_int_to_fwa                                              ; a852: 20 ed a2     ..   
-    lda #&6e ; 'n'                                                    ; a855: a9 6e       .n    
-    sta zp_fp_ptr                                                     ; a857: 85 4b       .K    
-    lda #&a8                                                          ; a859: a9 a8       ..    
-    sta zp_fp_ptr_1                                                   ; a85b: 85 4c       .L    
-    jsr fwa_mul_var                                                   ; a85d: 20 56 a6     V.   
-    jsr point_fp_temp1                                                ; a860: 20 f5 a7     ..   
-    jsr fwa_add_var                                                   ; a863: 20 00 a5     ..   
-    lda #&ff                                                          ; a866: a9 ff       ..    
-    rts                                                               ; a868: 60          `     
+    txa                                                               ; a82c: 8a          .        ; Save the adjusted binary exponent
+    pha                                                               ; a82d: 48          H        ; ...
+    sty zp_fwa_exp                                                    ; a82e: 84 30       .0       ; Set the mantissa exponent
+    jsr fwa_add_fwb                                                   ; a830: 20 05 a5     ..      ; FWA = mantissa - 1
+    lda #&7b ; '{'                                                    ; a833: a9 7b       .{       ; Save (m-1) in TEMP4
+    jsr ca387                                                         ; a835: 20 87 a3     ..      ; ...
+    lda #&73 ; 's'                                                    ; a838: a9 73       .s       ; Point at the ln coefficient table: low byte
+    ldy #&a8                                                          ; a83a: a0 a8       ..       ; ...high
+    jsr fp_eval_cont_frac                                             ; a83c: 20 97 a8     ..      ; Evaluate the ln continued fraction
+    jsr point_fp_temp4                                                ; a83f: 20 e9 a7     ..      ; Point at (m-1) in TEMP4
+    jsr fwa_mul_var                                                   ; a842: 20 56 a6     V.      ; Scale by (m-1)...
+    jsr fwa_mul_var                                                   ; a845: 20 56 a6     V.      ; ...and again
+    jsr fwa_add_var                                                   ; a848: 20 00 a5     ..      ; Add (m-1): FWA = ln(mantissa)
+    jsr fwa_pack_temp1                                                ; a84b: 20 85 a3     ..      ; Save ln(mantissa) in TEMP1
+    pla                                                               ; a84e: 68          h        ; Recover the adjusted exponent
+    sec                                                               ; a84f: 38          8        ; ...
+    sbc #&81                                                          ; a850: e9 81       ..       ; Binary exponent e = adjusted - &81
+    jsr small_int_to_fwa                                              ; a852: 20 ed a2     ..      ; FWA = e
+    lda #&6e ; 'n'                                                    ; a855: a9 6e       .n       ; Point at the constant ln 2: low byte
+    sta zp_fp_ptr                                                     ; a857: 85 4b       .K       ; ...
+    lda #&a8                                                          ; a859: a9 a8       ..       ; high byte
+    sta zp_fp_ptr_1                                                   ; a85b: 85 4c       .L       ; ...
+    jsr fwa_mul_var                                                   ; a85d: 20 56 a6     V.      ; FWA = e * ln 2
+    jsr point_fp_temp1                                                ; a860: 20 f5 a7     ..      ; Point at ln(mantissa) in TEMP1
+    jsr fwa_add_var                                                   ; a863: 20 00 a5     ..      ; LN(x) = e*ln2 + ln(mantissa)
+    lda #&ff                                                          ; a866: a9 ff       ..       ; real result
+    rts                                                               ; a868: 60          `        ; Return
     equb &7f, &5e, &5b, &d8, &aa, &80, &31, &72, &17, &f8, &06, &7a   ; a869: 7f 5e 5b... .^[...
     equb &12, &38, &a5, &0b, &88, &79, &0e, &9f, &f3, &7c, &2a, &ac   ; a875: 12 38 a5... .8....
     equb &3f, &b5, &86, &34, &01, &a2, &7a, &7f, &63, &8e, &37, &ec   ; a881: 3f b5 86... ?.....
@@ -7819,41 +7824,41 @@ l848a = sub_c847b+15
 ;
 ; FWA = e to the power FWA. Pure routine at &AA94.
 .fn_exp
-    jsr sub_c92fa                                                     ; aa91: 20 fa 92     ..   
+    jsr sub_c92fa                                                     ; aa91: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &aa94 referenced 1 time by &9e7b
 .sub_caa94
-    lda zp_fwa_exp                                                    ; aa94: a5 30       .0    
-    cmp #&87                                                          ; aa96: c9 87       ..    
-    bcc caab8                                                         ; aa98: 90 1e       ..    
-    bne caaa2                                                         ; aa9a: d0 06       ..    
-    ldy zp_fwa_m1                                                     ; aa9c: a4 31       .1    
-    cpy #&b3                                                          ; aa9e: c0 b3       ..    
-    bcc caab8                                                         ; aaa0: 90 16       ..    
+    lda zp_fwa_exp                                                    ; aa94: a5 30       .0       ; Exponent of x
+    cmp #&87                                                          ; aa96: c9 87       ..       ; x small enough to compute directly?
+    bcc caab8                                                         ; aa98: 90 1e       ..       ; yes: compute
+    bne caaa2                                                         ; aa9a: d0 06       ..       ; much too large: handle the overflow case
+    ldy zp_fwa_m1                                                     ; aa9c: a4 31       .1       ; borderline: test the mantissa
+    cpy #&b3                                                          ; aa9e: c0 b3       ..       ; ...against the overflow threshold
+    bcc caab8                                                         ; aaa0: 90 16       ..       ; below it: still computable
 ; &aaa2 referenced 1 time by &aa9a
 .caaa2
-    lda zp_fwa_sign                                                   ; aaa2: a5 2e       ..    
-    bpl caaac                                                         ; aaa4: 10 06       ..    
-    jsr fwa_clear                                                     ; aaa6: 20 86 a6     ..   
-    lda #&ff                                                          ; aaa9: a9 ff       ..    
-    rts                                                               ; aaab: 60          `     
+    lda zp_fwa_sign                                                   ; aaa2: a5 2e       ..       ; Sign of x
+    bpl caaac                                                         ; aaa4: 10 06       ..       ; x very negative: e^x underflows to 0
+    jsr fwa_clear                                                     ; aaa6: 20 86 a6     ..      ; FWA = 0
+    lda #&ff                                                          ; aaa9: a9 ff       ..       ; real result
+    rts                                                               ; aaab: 60          `        ; Return
 ; &aaac referenced 1 time by &aaa4
 .caaac
-    brk                                                               ; aaac: 00          .     
+    brk                                                               ; aaac: 00          .        ; x very positive: Exp range error
     equb &18                                                          ; aaad: 18          .     
     equs "Exp range"                                                  ; aaae: 45 78 70... Exp...
     equb &00                                                          ; aab7: 00          .     
 ; &aab8 referenced 2 times by &aa98, &aaa0
 .caab8
-    jsr sub_ca486                                                     ; aab8: 20 86 a4     ..   
-    jsr sub_caada                                                     ; aabb: 20 da aa     ..   
-    jsr fwa_pack_temp3                                                ; aabe: 20 81 a3     ..   
-    lda #&e4                                                          ; aac1: a9 e4       ..    
-    sta zp_fp_ptr                                                     ; aac3: 85 4b       .K    
-    lda #&aa                                                          ; aac5: a9 aa       ..    
-    sta zp_fp_ptr_1                                                   ; aac7: 85 4c       .L    
-    jsr fwa_unpack_var                                                ; aac9: 20 b5 a3     ..   
-    lda l004a                                                         ; aacc: a5 4a       .J    
-    jsr sub_cab12                                                     ; aace: 20 12 ab     ..   
+    jsr fp_split_int_frac                                             ; aab8: 20 86 a4     ..      ; Split x into integer (&4A) and fraction
+    jsr sub_caada                                                     ; aabb: 20 da aa     ..      ; FWA = e^frac via the series
+    jsr fwa_pack_temp3                                                ; aabe: 20 81 a3     ..      ; Save e^frac in TEMP3
+    lda #&e4                                                          ; aac1: a9 e4       ..       ; Point at the constant e: low byte
+    sta zp_fp_ptr                                                     ; aac3: 85 4b       .K       ; ...
+    lda #&aa                                                          ; aac5: a9 aa       ..       ; high byte
+    sta zp_fp_ptr_1                                                   ; aac7: 85 4c       .L       ; ...
+    jsr fwa_unpack_var                                                ; aac9: 20 b5 a3     ..      ; FWA = e
+    lda l004a                                                         ; aacc: a5 4a       .J       ; Integer part of x
+    jsr fwa_int_power                                                 ; aace: 20 12 ab     ..      ; FWA = e^int
 ; &aad1 referenced 3 times by &9e78, &a954, &a9d0
 .caad1
     jsr point_fp_temp3                                                ; aad1: 20 f1 a7     ..      ; Point at the saved argument in TEMP3
@@ -7871,30 +7876,35 @@ l848a = sub_c847b+15
     equb &80, &53, &93, &b8, &83, &20, &00, &06, &a1, &82, &00, &00   ; aaf0: 80 53 93... .S....
     equb &21, &63, &82, &c0, &00, &00, &02, &82, &80, &00, &00, &0c   ; aafc: 21 63 82... !c....
     equb &81, &00, &00, &00, &00, &81, &00, &00, &00, &00             ; ab08: 81 00 00... ......
+; ***************************************************************************************
+; FWA = FWA ^ n (n in A)
+;
+; Raise FWA to an integer power by repeated multiplication; a negative exponent
+; reciprocates first. Used by EXP to form e^(integer part).
 ; &ab12 referenced 3 times by &9e52, &9e69, &aace
-.sub_cab12
-    tax                                                               ; ab12: aa          .     
-    bpl cab1e                                                         ; ab13: 10 09       ..    
-    dex                                                               ; ab15: ca          .     
-    txa                                                               ; ab16: 8a          .     
-    eor #&ff                                                          ; ab17: 49 ff       I.    
-    pha                                                               ; ab19: 48          H     
-    jsr fwa_reciprocal                                                ; ab1a: 20 a5 a6     ..   
-    pla                                                               ; ab1d: 68          h     
+.fwa_int_power
+    tax                                                               ; ab12: aa          .        ; Exponent n
+    bpl cab1e                                                         ; ab13: 10 09       ..       ; positive?
+    dex                                                               ; ab15: ca          .        ; negative: use |n| and reciprocate
+    txa                                                               ; ab16: 8a          .        ; ...
+    eor #&ff                                                          ; ab17: 49 ff       I.       ; ...
+    pha                                                               ; ab19: 48          H        ; save the count
+    jsr fwa_reciprocal                                                ; ab1a: 20 a5 a6     ..      ; FWA = 1 / FWA
+    pla                                                               ; ab1d: 68          h        ; restore the count
 ; &ab1e referenced 1 time by &ab13
 .cab1e
-    pha                                                               ; ab1e: 48          H     
-    jsr fwa_pack_temp1                                                ; ab1f: 20 85 a3     ..   
-    jsr fwa_set_one                                                   ; ab22: 20 99 a6     ..   
+    pha                                                               ; ab1e: 48          H        ; Save the count
+    jsr fwa_pack_temp1                                                ; ab1f: 20 85 a3     ..      ; Stash the base in TEMP1
+    jsr fwa_set_one                                                   ; ab22: 20 99 a6     ..      ; FWA = 1 (running product)
 ; &ab25 referenced 1 time by &ab2f
 .cab25
-    pla                                                               ; ab25: 68          h     
-    beq return_29                                                     ; ab26: f0 0a       ..    
-    sec                                                               ; ab28: 38          8     
-    sbc #1                                                            ; ab29: e9 01       ..    
-    pha                                                               ; ab2b: 48          H     
-    jsr fwa_mul_var                                                   ; ab2c: 20 56 a6     V.   
-    jmp cab25                                                         ; ab2f: 4c 25 ab    L%.   
+    pla                                                               ; ab25: 68          h        ; Count remaining
+    beq return_29                                                     ; ab26: f0 0a       ..       ; zero: done
+    sec                                                               ; ab28: 38          8        ; One multiplication fewer
+    sbc #1                                                            ; ab29: e9 01       ..       ; ...
+    pha                                                               ; ab2b: 48          H        ; ...
+    jsr fwa_mul_var                                                   ; ab2c: 20 56 a6     V.      ; FWA = FWA * base
+    jmp cab25                                                         ; ab2f: 4c 25 ab    L%.      ; loop
 ; &ab32 referenced 1 time by &ab26
 .return_29
     rts                                                               ; ab32: 60          `     
@@ -12022,6 +12032,7 @@ save pydis_start, pydis_end
 ;     fp_divide:                   3
 ;     fwa_add_fwb:                 3
 ;     fwa_div10:                   3
+;     fwa_int_power:               3
 ;     fwb_clear:                   3
 ;     iwa_negate:                  3
 ;     l0401:                       3
@@ -12041,7 +12052,6 @@ save pydis_start, pydis_end
 ;     sub_c894b:                   3
 ;     sub_c97ba:                   3
 ;     sub_c991f:                   3
-;     sub_cab12:                   3
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
 ;     sub_cbd3a:                   3
@@ -12191,6 +12201,7 @@ save pydis_start, pydis_end
 ;     drop_stack_integer:          2
 ;     err_too_big:                 2
 ;     eval_relational:             2
+;     fp_split_int_frac:           2
 ;     fp_temp1:                    2
 ;     fwa_acc_fwb:                 2
 ;     fwa_add_fwb_raw:             2
@@ -12272,7 +12283,6 @@ save pydis_start, pydis_end
 ;     sub_c9b6b:                   2
 ;     sub_c9dce:                   2
 ;     sub_c9e1d:                   2
-;     sub_ca486:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -13990,7 +14000,6 @@ save pydis_start, pydis_end
 ;     sub_c9e20
 ;     sub_ca14b
 ;     sub_ca3e7
-;     sub_ca486
 ;     sub_ca4b6
 ;     sub_ca4c7
 ;     sub_ca4e8
@@ -13998,7 +14007,6 @@ save pydis_start, pydis_end
 ;     sub_ca9b1
 ;     sub_caa94
 ;     sub_caada
-;     sub_cab12
 ;     sub_cad8f
 ;     sub_cae02
 ;     sub_cae3a
