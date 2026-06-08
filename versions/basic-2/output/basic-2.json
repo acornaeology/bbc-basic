@@ -1708,6 +1708,13 @@
       "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
     },
     {
+      "addr": 44760,
+      "name": "int_result_a",
+      "title": "Return A as an integer result",
+      "description": "Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The common tail for functions returning a small integer.",
+      "fall_through": true
+    },
+    {
       "addr": 46350,
       "name": "print_token",
       "title": "De-tokenise and print a character or token",
@@ -26919,9 +26926,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 36718,
@@ -26968,9 +26975,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 36729,
@@ -30267,9 +30274,9 @@
       "comment_inline": "running size = 1",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 37253,
@@ -33196,9 +33203,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 37692,
@@ -39787,9 +39794,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 38651,
@@ -74017,6 +74024,7 @@
       "labels": [
         "fn_point"
       ],
+      "comment_inline": "Evaluate x",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92dd",
@@ -74030,6 +74038,7 @@
         148,
         189
       ],
+      "comment_inline": "stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -74043,6 +74052,7 @@
         174,
         138
       ],
+      "comment_inline": "Expect a comma",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_expect_comma",
@@ -74056,6 +74066,7 @@
         86,
         174
       ],
+      "comment_inline": "Evaluate y, expect )",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "cae56",
@@ -74069,6 +74080,7 @@
         240,
         146
       ],
+      "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -74081,6 +74093,7 @@
         165,
         42
       ],
+      "comment_inline": "Save y",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -74092,6 +74105,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -74101,6 +74115,7 @@
         165,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -74122,6 +74137,7 @@
         234,
         189
       ],
+      "comment_inline": "... Recover x",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -74142,6 +74158,7 @@
         133,
         45
       ],
+      "comment_inline": "into the OSWORD block ...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -74162,6 +74179,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -74174,6 +74192,7 @@
         162,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&2a"
@@ -74184,6 +74203,7 @@
         169,
         9
       ],
+      "comment_inline": "Read the pixel colour",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osword_read_pixel"
@@ -74195,7 +74215,7 @@
         241,
         255
       ],
-      "comment_inline": "Read pixel value",
+      "comment_inline": "... Read pixel value ...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osword",
@@ -74220,6 +74240,7 @@
         48,
         51
       ],
+      "comment_inline": "off-screen?",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cab9d",
@@ -74235,9 +74256,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 43885,
@@ -74286,9 +74307,9 @@
       "comment_inline": "Return the column as an integer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 43894,
@@ -74337,9 +74358,9 @@
       "comment_inline": "Return the row (Y) as an integer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 43903,
@@ -74351,7 +74372,7 @@
       "labels": [
         "loop_cab7f"
       ],
-      "comment_inline": "Test the sign of FWA",
+      "comment_inline": "Sign of the real Test the sign of FWA",
       "xref_summaries": [
         "&ab7f referenced 1 time by &ab8d"
       ],
@@ -74370,7 +74391,7 @@
         240,
         30
       ],
-      "comment_inline": "zero",
+      "comment_inline": "zero: 0 zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caba2",
@@ -74383,7 +74404,7 @@
         16,
         26
       ],
-      "comment_inline": "positive",
+      "comment_inline": "positive: 1 positive",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caba0",
@@ -74396,7 +74417,7 @@
         48,
         21
       ],
-      "comment_inline": "negative",
+      "comment_inline": "negative: -1 negative",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cab9d",
@@ -74413,6 +74434,7 @@
       "labels": [
         "fn_sgn"
       ],
+      "comment_inline": "Evaluate the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -74425,6 +74447,7 @@
         240,
         89
       ],
+      "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cabe6",
@@ -74437,6 +74460,7 @@
         48,
         240
       ],
+      "comment_inline": "real: use the FP sign",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "loop_cab7f",
@@ -74449,6 +74473,7 @@
         165,
         45
       ],
+      "comment_inline": "Integer: test for zero",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -74461,6 +74486,7 @@
         5,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -74473,6 +74499,7 @@
         5,
         43
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -74485,6 +74512,7 @@
         5,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa",
@@ -74497,6 +74525,7 @@
         240,
         12
       ],
+      "comment_inline": "zero: 0",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caba5",
@@ -74509,6 +74538,7 @@
         165,
         45
       ],
+      "comment_inline": "Sign bit",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -74521,6 +74551,7 @@
         16,
         3
       ],
+      "comment_inline": "positive: 1",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caba0",
@@ -74537,6 +74568,7 @@
       "labels": [
         "cab9d"
       ],
+      "comment_inline": "negative: -1",
       "xref_summaries": [
         "&ab9d referenced 2 times by &ab68, &ab86"
       ],
@@ -74559,6 +74591,7 @@
       "labels": [
         "caba0"
       ],
+      "comment_inline": "Result = 1",
       "xref_summaries": [
         "&aba0 referenced 2 times by &ab84, &ab9b"
       ],
@@ -74580,6 +74613,7 @@
       "labels": [
         "caba2"
       ],
+      "comment_inline": "return it",
       "xref_summaries": [
         "&aba2 referenced 1 time by &ab82"
       ],
@@ -74588,9 +74622,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 43941,
@@ -74601,6 +74635,7 @@
       "labels": [
         "caba5"
       ],
+      "comment_inline": "Result = 0 (integer)",
       "xref_summaries": [
         "&aba5 referenced 1 time by &ab97"
       ],
@@ -74616,6 +74651,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -75961,6 +75997,7 @@
       "labels": [
         "fn_int"
       ],
+      "comment_inline": "Evaluate the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -75973,6 +76010,7 @@
         240,
         30
       ],
+      "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cac9b",
@@ -75985,6 +76023,7 @@
         16,
         27
       ],
+      "comment_inline": "already integer: return it",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "return_30",
@@ -75997,6 +76036,7 @@
         165,
         46
       ],
+      "comment_inline": "Real: remember the sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -76008,6 +76048,7 @@
       "bytes": [
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "php"
     },
@@ -76018,6 +76059,7 @@
         254,
         163
       ],
+      "comment_inline": "Take the integer part",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int2",
@@ -76029,6 +76071,7 @@
       "bytes": [
         40
       ],
+      "comment_inline": "sign",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -76038,6 +76081,7 @@
         16,
         13
       ],
+      "comment_inline": "positive: no adjustment",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cac95",
@@ -76050,6 +76094,7 @@
         165,
         62
       ],
+      "comment_inline": "Negative: any fractional bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -76062,6 +76107,7 @@
         5,
         63
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m2",
@@ -76074,6 +76120,7 @@
         5,
         64
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m3",
@@ -76086,6 +76133,7 @@
         5,
         65
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m4",
@@ -76098,6 +76146,7 @@
         240,
         3
       ],
+      "comment_inline": "none: exact",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cac95",
@@ -76111,6 +76160,7 @@
         199,
         164
       ],
+      "comment_inline": "round down (floor of a negative)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca4c7",
@@ -76127,6 +76177,7 @@
       "labels": [
         "cac95"
       ],
+      "comment_inline": "Copy the integer to IWA",
       "xref_summaries": [
         "&ac95 referenced 2 times by &ac86, &ac90"
       ],
@@ -76146,6 +76197,7 @@
         169,
         64
       ],
+      "comment_inline": "integer result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&40"
@@ -76158,6 +76210,7 @@
       "labels": [
         "return_30"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&ac9a referenced 1 time by &ac7d"
       ],
@@ -76203,6 +76256,7 @@
       "labels": [
         "fn_asc"
       ],
+      "comment_inline": "Evaluate the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -76215,6 +76269,7 @@
         208,
         248
       ],
+      "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cac9b",
@@ -76227,6 +76282,7 @@
         165,
         54
       ],
+      "comment_inline": "String length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -76239,6 +76295,7 @@
         240,
         29
       ],
+      "comment_inline": "empty: -1",
       "type": "code",
       "mnemonic": "beq",
       "operand": "fn_true",
@@ -76252,6 +76309,7 @@
         0,
         6
       ],
+      "comment_inline": "First character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "string_work",
@@ -76268,6 +76326,7 @@
       "labels": [
         "loop_cacaa"
       ],
+      "comment_inline": "return it",
       "xref_summaries": [
         "&acaa referenced 1 time by &acc2"
       ],
@@ -76276,9 +76335,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 44205,
@@ -77368,9 +77427,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 44370,
@@ -79975,9 +80034,9 @@
       "comment_inline": "Return 0 as an integer",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 44750,
@@ -80012,6 +80071,7 @@
       "labels": [
         "fn_len"
       ],
+      "comment_inline": "Evaluate the string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -80024,6 +80084,7 @@
         208,
         248
       ],
+      "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_caece",
@@ -80036,6 +80097,7 @@
         165,
         54
       ],
+      "comment_inline": "Length, returned as an integer",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -80049,8 +80111,9 @@
         0
       ],
       "labels": [
-        "caed8"
+        "int_result_a"
       ],
+      "comment_inline": "High byte zero",
       "xref_summaries": [
         "&aed8 referenced 18 times by &8f6b, &8f76, &9182, &9339, &96f8, &ab6a, &ab73, &ab7c, &aba2, &acaa, &ad4f, &aecc, &aef9, &afbc, &b5a9, &b810, &bf75, &bf93"
       ],
@@ -80084,6 +80147,7 @@
         240,
         14
       ],
+      "comment_inline": "return A as the integer",
       "type": "code",
       "mnemonic": "beq",
       "operand": "iwa_from_ya",
@@ -80310,9 +80374,9 @@
       "comment_inline": "Return it as an integer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 44796,
@@ -81568,9 +81632,9 @@
       "comment_inline": "Return the key code as an integer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 44991,
@@ -82980,6 +83044,7 @@
       "labels": [
         "fn_strs"
       ],
+      "comment_inline": "Next character",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces_ptr2",
@@ -82992,6 +83057,7 @@
         160,
         255
       ],
+      "comment_inline": "assume hex",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&ff"
@@ -83002,6 +83068,7 @@
         201,
         126
       ],
+      "comment_inline": "'~' hex prefix?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&7e"
@@ -83012,6 +83079,7 @@
         240,
         4
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0a1",
@@ -83024,6 +83092,7 @@
         160,
         0
       ],
+      "comment_inline": "no: decimal",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -83034,6 +83103,7 @@
         198,
         27
       ],
+      "comment_inline": "back up",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_text_ptr2_off",
@@ -83048,6 +83118,7 @@
       "labels": [
         "cb0a1"
       ],
+      "comment_inline": "Save the hex/dec flag",
       "xref_summaries": [
         "&b0a1 referenced 1 time by &b09b"
       ],
@@ -83062,6 +83133,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -83072,6 +83144,7 @@
         236,
         173
       ],
+      "comment_inline": "Evaluate the number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_factor",
@@ -83084,6 +83157,7 @@
         240,
         23
       ],
+      "comment_inline": "string: error ...",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0bf",
@@ -83095,6 +83169,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "Restore the flag",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -83103,6 +83178,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -83112,6 +83188,7 @@
         133,
         21
       ],
+      "comment_inline": "@% formatting set?",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -83125,6 +83202,7 @@
         3,
         4
       ],
+      "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l0403",
@@ -83137,6 +83215,7 @@
         208,
         8
       ],
+      "comment_inline": "Default conversion",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb0b9",
@@ -83149,6 +83228,7 @@
         133,
         55
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -83162,6 +83242,7 @@
         249,
         158
       ],
+      "comment_inline": "string result",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9ef9",
@@ -83174,6 +83255,7 @@
         169,
         0
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -83196,6 +83278,7 @@
       "labels": [
         "cb0b9"
       ],
+      "comment_inline": "Formatted conversion (@%)",
       "xref_summaries": [
         "&b0b9 referenced 1 time by &b0af"
       ],
@@ -83214,6 +83297,7 @@
         169,
         0
       ],
+      "comment_inline": "string result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -83223,6 +83307,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -83236,6 +83321,7 @@
       "labels": [
         "cb0bf"
       ],
+      "comment_inline": "Type mismatch error",
       "xref_summaries": [
         "&b0bf referenced 2 times by &b0a6, &b0ce"
       ],
@@ -91636,9 +91722,9 @@
       "comment_inline": "Start line default 0",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 46508,
@@ -95388,9 +95474,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 47123,
@@ -107673,9 +107759,9 @@
       "comment_inline": "Return the byte as an integer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 49016,
@@ -107850,9 +107936,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caed8",
+      "operand": "int_result_a",
       "target": 44760,
-      "target_label": "caed8"
+      "target_label": "int_result_a"
     },
     {
       "addr": 49046,

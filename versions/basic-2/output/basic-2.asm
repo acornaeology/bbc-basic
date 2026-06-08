@@ -2916,11 +2916,11 @@ l848a = sub_c847b+15
 ; &8f69 referenced 2 times by &8fa3, &90ac
 .sub_c8f69
     lda #&0a                                                          ; 8f69: a9 0a       ..    
-    jsr caed8                                                         ; 8f6b: 20 d8 ae     ..   
+    jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..   
     jsr sub_c97df                                                     ; 8f6e: 20 df 97     ..   
     jsr stack_integer                                                 ; 8f71: 20 94 bd     ..   
     lda #&0a                                                          ; 8f74: a9 0a       ..    
-    jsr caed8                                                         ; 8f76: 20 d8 ae     ..   
+    jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..   
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..   
     cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,    
     bne c8f8d                                                         ; 8f7e: d0 0d       ..    
@@ -3253,7 +3253,7 @@ l848a = sub_c847b+15
     pha                                                               ; 917e: 48          H        ; ...
     lda #1                                                            ; 917f: a9 01       ..       ; Dimension count starts at 1
     pha                                                               ; 9181: 48          H        ; ...
-    jsr caed8                                                         ; 9182: 20 d8 ae     ..      ; running size = 1
+    jsr int_result_a                                                  ; 9182: 20 d8 ae     ..      ; running size = 1
 ; &9185 referenced 1 time by &91ae
 .loop_c9185
     jsr stack_integer                                                 ; 9185: 20 94 bd     ..      ; Stack the running size
@@ -3585,7 +3585,7 @@ l848a = sub_c847b+15
     bmi loop_c931b                                                    ; 9332: 30 e7       0.    
     jsr stack_integer                                                 ; 9334: 20 94 bd     ..   
     lda #0                                                            ; 9337: a9 00       ..       ; Initialise the local to zero / empty
-    jsr caed8                                                         ; 9339: 20 d8 ae     ..   
+    jsr int_result_a                                                  ; 9339: 20 d8 ae     ..   
     sta zp_var_type                                                   ; 933c: 85 27       .'    
     jsr assign_number                                                 ; 933e: 20 b4 b4     ..   
 ; &9341 referenced 1 time by &9321
@@ -4329,7 +4329,7 @@ l848a = sub_c847b+15
     cmp #4                                                            ; 96f3: c9 04       ..       ; more than a few?
     bcc c976c                                                         ; 96f5: 90 75       .u       ; no: handle the small case
     tya                                                               ; 96f7: 98          .        ; Accumulate the flattened index
-    jsr caed8                                                         ; 96f8: 20 d8 ae     ..      ; ...
+    jsr int_result_a                                                  ; 96f8: 20 d8 ae     ..      ; ...
     lda #1                                                            ; 96fb: a9 01       ..       ; one subscript so far
     sta zp_iwa_3                                                      ; 96fd: 85 2d       .-       ; ...
 ; &96ff referenced 1 time by &9742
@@ -7978,26 +7978,26 @@ l848a = sub_c847b+15
 ;
 ; Logical colour of a graphics point. POINT(x, y).
 .fn_point
-    jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..   
-    jsr stack_integer                                                 ; ab44: 20 94 bd     ..   
-    jsr skip_spaces_expect_comma                                      ; ab47: 20 ae 8a     ..   
-    jsr cae56                                                         ; ab4a: 20 56 ae     V.   
-    jsr coerce_to_integer                                             ; ab4d: 20 f0 92     ..   
-    lda zp_iwa                                                        ; ab50: a5 2a       .*    
-    pha                                                               ; ab52: 48          H     
-    lda zp_iwa_1                                                      ; ab53: a5 2b       .+    
+    jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..      ; Evaluate x
+    jsr stack_integer                                                 ; ab44: 20 94 bd     ..      ; stack it
+    jsr skip_spaces_expect_comma                                      ; ab47: 20 ae 8a     ..      ; Expect a comma
+    jsr cae56                                                         ; ab4a: 20 56 ae     V.      ; Evaluate y, expect )
+    jsr coerce_to_integer                                             ; ab4d: 20 f0 92     ..      ; coerce to integer
+    lda zp_iwa                                                        ; ab50: a5 2a       .*       ; Save y
+    pha                                                               ; ab52: 48          H        ; ...
+    lda zp_iwa_1                                                      ; ab53: a5 2b       .+       ; ...
     pha                                                               ; ab55: 48          H     
-    jsr unstack_integer                                               ; ab56: 20 ea bd     ..   
+    jsr unstack_integer                                               ; ab56: 20 ea bd     ..      ; ...  Recover x
     pla                                                               ; ab59: 68          h     
-    sta zp_iwa_3                                                      ; ab5a: 85 2d       .-    
+    sta zp_iwa_3                                                      ; ab5a: 85 2d       .-       ; into the OSWORD block  ...
     pla                                                               ; ab5c: 68          h     
-    sta zp_iwa_2                                                      ; ab5d: 85 2c       .,    
-    ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*    
-    lda #osword_read_pixel                                            ; ab61: a9 09       ..    
-    jsr osword                                                        ; ab63: 20 f1 ff     ..      ; Read pixel value
+    sta zp_iwa_2                                                      ; ab5d: 85 2c       .,       ; ...
+    ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*       ; ...
+    lda #osword_read_pixel                                            ; ab61: a9 09       ..       ; Read the pixel colour
+    jsr osword                                                        ; ab63: 20 f1 ff     ..      ; ...  Read pixel value  ...
     lda zp_fwa_sign                                                   ; ab66: a5 2e       ..    
-    bmi cab9d                                                         ; ab68: 30 33       03    
-    jmp caed8                                                         ; ab6a: 4c d8 ae    L..   
+    bmi cab9d                                                         ; ab68: 30 33       03       ; off-screen?
+    jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..   
 ; ***************************************************************************************
 ; POS
 ;
@@ -8006,7 +8006,7 @@ l848a = sub_c847b+15
     lda #osbyte_read_text_cursor_pos                                  ; ab6d: a9 86       ..       ; OSBYTE &86: read the text cursor position
     jsr osbyte                                                        ; ab6f: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
     txa                                                               ; ab72: 8a          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
-    jmp caed8                                                         ; ab73: 4c d8 ae    L..      ; Return the column as an integer
+    jmp int_result_a                                                  ; ab73: 4c d8 ae    L..      ; Return the column as an integer
 ; ***************************************************************************************
 ; VPOS
 ;
@@ -8015,41 +8015,41 @@ l848a = sub_c847b+15
     lda #osbyte_read_text_cursor_pos                                  ; ab76: a9 86       ..       ; OSBYTE &86: read the cursor position
     jsr osbyte                                                        ; ab78: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
     tya                                                               ; ab7b: 98          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
-    jmp caed8                                                         ; ab7c: 4c d8 ae    L..      ; Return the row (Y) as an integer
+    jmp int_result_a                                                  ; ab7c: 4c d8 ae    L..      ; Return the row (Y) as an integer
 ; &ab7f referenced 1 time by &ab8d
 .loop_cab7f
-    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Test the sign of FWA
-    beq caba2                                                         ; ab82: f0 1e       ..       ; zero
-    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive
-    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative
+    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Sign of the real  Test the sign of FWA
+    beq caba2                                                         ; ab82: f0 1e       ..       ; zero: 0  zero
+    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive: 1  positive
+    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative: -1  negative
 ; ***************************************************************************************
 ; SGN
 ;
 ; Sign of a number: -1, 0 or +1. SGN numeric.
 .fn_sgn
-    jsr eval_factor                                                   ; ab88: 20 ec ad     ..   
-    beq cabe6                                                         ; ab8b: f0 59       .Y    
-    bmi loop_cab7f                                                    ; ab8d: 30 f0       0.    
-    lda zp_iwa_3                                                      ; ab8f: a5 2d       .-    
-    ora zp_iwa_2                                                      ; ab91: 05 2c       .,    
-    ora zp_iwa_1                                                      ; ab93: 05 2b       .+    
-    ora zp_iwa                                                        ; ab95: 05 2a       .*    
-    beq caba5                                                         ; ab97: f0 0c       ..    
-    lda zp_iwa_3                                                      ; ab99: a5 2d       .-    
-    bpl caba0                                                         ; ab9b: 10 03       ..    
+    jsr eval_factor                                                   ; ab88: 20 ec ad     ..      ; Evaluate the argument
+    beq cabe6                                                         ; ab8b: f0 59       .Y       ; string: error
+    bmi loop_cab7f                                                    ; ab8d: 30 f0       0.       ; real: use the FP sign
+    lda zp_iwa_3                                                      ; ab8f: a5 2d       .-       ; Integer: test for zero
+    ora zp_iwa_2                                                      ; ab91: 05 2c       .,       ; ...
+    ora zp_iwa_1                                                      ; ab93: 05 2b       .+       ; ...
+    ora zp_iwa                                                        ; ab95: 05 2a       .*       ; ...
+    beq caba5                                                         ; ab97: f0 0c       ..       ; zero: 0
+    lda zp_iwa_3                                                      ; ab99: a5 2d       .-       ; Sign bit
+    bpl caba0                                                         ; ab9b: 10 03       ..       ; positive: 1
 ; &ab9d referenced 2 times by &ab68, &ab86
 .cab9d
-    jmp fn_true                                                       ; ab9d: 4c c4 ac    L..   
+    jmp fn_true                                                       ; ab9d: 4c c4 ac    L..      ; negative: -1
 ; &aba0 referenced 2 times by &ab84, &ab9b
 .caba0
-    lda #1                                                            ; aba0: a9 01       ..    
+    lda #1                                                            ; aba0: a9 01       ..       ; Result = 1
 ; &aba2 referenced 1 time by &ab82
 .caba2
-    jmp caed8                                                         ; aba2: 4c d8 ae    L..   
+    jmp int_result_a                                                  ; aba2: 4c d8 ae    L..      ; return it
 ; &aba5 referenced 1 time by &ab97
 .caba5
-    lda #&40 ; '@'                                                    ; aba5: a9 40       .@    
-    rts                                                               ; aba7: 60          `     
+    lda #&40 ; '@'                                                    ; aba5: a9 40       .@       ; Result = 0 (integer)
+    rts                                                               ; aba7: 60          `        ; Return
 ; ***************************************************************************************
 ; LOG
 ;
@@ -8222,27 +8222,27 @@ l848a = sub_c847b+15
 ;
 ; Integer part (floor) of a number. INT numeric.
 .fn_int
-    jsr eval_factor                                                   ; ac78: 20 ec ad     ..   
-    beq cac9b                                                         ; ac7b: f0 1e       ..    
-    bpl return_30                                                     ; ac7d: 10 1b       ..    
-    lda zp_fwa_sign                                                   ; ac7f: a5 2e       ..    
-    php                                                               ; ac81: 08          .     
-    jsr fwa_to_int2                                                   ; ac82: 20 fe a3     ..   
-    plp                                                               ; ac85: 28          (     
-    bpl cac95                                                         ; ac86: 10 0d       ..    
-    lda zp_fwb_m1                                                     ; ac88: a5 3e       .>    
-    ora zp_fwb_m2                                                     ; ac8a: 05 3f       .?    
-    ora zp_fwb_m3                                                     ; ac8c: 05 40       .@    
-    ora zp_fwb_m4                                                     ; ac8e: 05 41       .A    
-    beq cac95                                                         ; ac90: f0 03       ..    
-    jsr sub_ca4c7                                                     ; ac92: 20 c7 a4     ..   
+    jsr eval_factor                                                   ; ac78: 20 ec ad     ..      ; Evaluate the argument
+    beq cac9b                                                         ; ac7b: f0 1e       ..       ; string: error
+    bpl return_30                                                     ; ac7d: 10 1b       ..       ; already integer: return it
+    lda zp_fwa_sign                                                   ; ac7f: a5 2e       ..       ; Real: remember the sign
+    php                                                               ; ac81: 08          .        ; ...
+    jsr fwa_to_int2                                                   ; ac82: 20 fe a3     ..      ; Take the integer part
+    plp                                                               ; ac85: 28          (        ; sign
+    bpl cac95                                                         ; ac86: 10 0d       ..       ; positive: no adjustment
+    lda zp_fwb_m1                                                     ; ac88: a5 3e       .>       ; Negative: any fractional bits?
+    ora zp_fwb_m2                                                     ; ac8a: 05 3f       .?       ; ...
+    ora zp_fwb_m3                                                     ; ac8c: 05 40       .@       ; ...
+    ora zp_fwb_m4                                                     ; ac8e: 05 41       .A       ; ...
+    beq cac95                                                         ; ac90: f0 03       ..       ; none: exact
+    jsr sub_ca4c7                                                     ; ac92: 20 c7 a4     ..      ; round down (floor of a negative)
 ; &ac95 referenced 2 times by &ac86, &ac90
 .cac95
-    jsr sub_ca3e7                                                     ; ac95: 20 e7 a3     ..   
-    lda #&40 ; '@'                                                    ; ac98: a9 40       .@    
+    jsr sub_ca3e7                                                     ; ac95: 20 e7 a3     ..      ; Copy the integer to IWA
+    lda #&40 ; '@'                                                    ; ac98: a9 40       .@       ; integer result
 ; &ac9a referenced 1 time by &ac7d
 .return_30
-    rts                                                               ; ac9a: 60          `     
+    rts                                                               ; ac9a: 60          `        ; Return
 ; &ac9b referenced 5 times by &ac32, &ac7b, &aca1, &ace5, &acf3
 .cac9b
     jmp err_type_mismatch                                             ; ac9b: 4c 0e 8c    L..   
@@ -8251,14 +8251,14 @@ l848a = sub_c847b+15
 ;
 ; ASCII code of the first character of a string, or -1 if empty. ASC string.
 .fn_asc
-    jsr eval_factor                                                   ; ac9e: 20 ec ad     ..   
-    bne cac9b                                                         ; aca1: d0 f8       ..    
-    lda zp_strbuf_len                                                 ; aca3: a5 36       .6    
-    beq fn_true                                                       ; aca5: f0 1d       ..    
-    lda string_work                                                   ; aca7: ad 00 06    ...   
+    jsr eval_factor                                                   ; ac9e: 20 ec ad     ..      ; Evaluate the string
+    bne cac9b                                                         ; aca1: d0 f8       ..       ; not a string: error
+    lda zp_strbuf_len                                                 ; aca3: a5 36       .6       ; String length
+    beq fn_true                                                       ; aca5: f0 1d       ..       ; empty: -1
+    lda string_work                                                   ; aca7: ad 00 06    ...      ; First character
 ; &acaa referenced 1 time by &acc2
 .loop_cacaa
-    jmp caed8                                                         ; acaa: 4c d8 ae    L..   
+    jmp int_result_a                                                  ; acaa: 4c d8 ae    L..      ; return it
 ; ***************************************************************************************
 ; INKEY
 ;
@@ -8383,7 +8383,7 @@ l848a = sub_c847b+15
     lda zp_iwa                                                        ; ad4d: a5 2a       .*       ; Match: result is the position
 ; &ad4f referenced 1 time by &ad57
 .loop_cad4f
-    jmp caed8                                                         ; ad4f: 4c d8 ae    L..      ; return it as an integer
+    jmp int_result_a                                                  ; ad4f: 4c d8 ae    L..      ; return it as an integer
 ; &ad52 referenced 2 times by &ad2f, &ad33
 .cad52
     jsr cbddc                                                         ; ad52: 20 dc bd     ..      ; Not found: drop the stacked string
@@ -8702,7 +8702,7 @@ l848a = sub_c847b+15
 ; The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive.
 .fn_false
     lda #0                                                            ; aeca: a9 00       ..       ; FALSE is 0
-    beq caed8                                                         ; aecc: f0 0a       ..       ; Return 0 as an integer
+    beq int_result_a                                                  ; aecc: f0 0a       ..       ; Return 0 as an integer
 ; &aece referenced 1 time by &aed4
 .loop_caece
     jmp err_type_mismatch                                             ; aece: 4c 0e 8c    L..      ; String operand here is a Type mismatch
@@ -8711,13 +8711,18 @@ l848a = sub_c847b+15
 ;
 ; Length of a string. LEN string.
 .fn_len
-    jsr eval_factor                                                   ; aed1: 20 ec ad     ..   
-    bne loop_caece                                                    ; aed4: d0 f8       ..    
-    lda zp_strbuf_len                                                 ; aed6: a5 36       .6    
+    jsr eval_factor                                                   ; aed1: 20 ec ad     ..      ; Evaluate the string
+    bne loop_caece                                                    ; aed4: d0 f8       ..       ; not a string: error
+    lda zp_strbuf_len                                                 ; aed6: a5 36       .6       ; Length, returned as an integer
+; ***************************************************************************************
+; Return A as an integer result
+;
+; Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The
+; common tail for functions returning a small integer.
 ; &aed8 referenced 18 times by &8f6b, &8f76, &9182, &9339, &96f8, &ab6a, &ab73, &ab7c, &aba2, &acaa, &ad4f, &aecc, &aef9, &afbc, &b5a9, &b810, &bf75, &bf93
-.caed8
-    ldy #0                                                            ; aed8: a0 00       ..    
-    beq iwa_from_ya                                                   ; aeda: f0 0e       ..    
+.int_result_a
+    ldy #0                                                            ; aed8: a0 00       ..       ; High byte zero
+    beq iwa_from_ya                                                   ; aeda: f0 0e       ..       ; return A as the integer
 ; ***************************************************************************************
 ; TO
 ;
@@ -8757,7 +8762,7 @@ l848a = sub_c847b+15
 ; Characters printed since the last newline. COUNT.
 .fn_count
     lda zp_count                                                      ; aef7: a5 1e       ..       ; COUNT: characters printed since the last newline
-    jmp caed8                                                         ; aef9: 4c d8 ae    L..      ; Return it as an integer
+    jmp int_result_a                                                  ; aef9: 4c d8 ae    L..      ; Return it as an integer
 ; ***************************************************************************************
 ; =LOMEM
 ;
@@ -8950,7 +8955,7 @@ l848a = sub_c847b+15
 ; Wait for a key and return its ASCII code. GET.
 .fn_get
     jsr osrdch                                                        ; afb9: 20 e0 ff     ..      ; X=ASCII code typed (positive timeout) or internal key number EOR 128 (negative scan) / Y=0 if a key was pressed, Y=&FF on time-out, Y=&1B on Escape
-    jmp caed8                                                         ; afbc: 4c d8 ae    L..      ; Return the key code as an integer
+    jmp int_result_a                                                  ; afbc: 4c d8 ae    L..      ; Return the key code as an integer
 ; ***************************************************************************************
 ; GET$
 ;
@@ -9109,35 +9114,35 @@ l848a = sub_c847b+15
 ;
 ; String form of a number (STR$~ for hex). STR$[~] numeric.
 .fn_strs
-    jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..   
-    ldy #&ff                                                          ; b097: a0 ff       ..    
-    cmp #&7e ; '~'                                                    ; b099: c9 7e       .~    
-    beq cb0a1                                                         ; b09b: f0 04       ..    
-    ldy #0                                                            ; b09d: a0 00       ..    
-    dec zp_text_ptr2_off                                              ; b09f: c6 1b       ..    
+    jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..      ; Next character
+    ldy #&ff                                                          ; b097: a0 ff       ..       ; assume hex
+    cmp #&7e ; '~'                                                    ; b099: c9 7e       .~       ; '~' hex prefix?
+    beq cb0a1                                                         ; b09b: f0 04       ..       ; yes
+    ldy #0                                                            ; b09d: a0 00       ..       ; no: decimal
+    dec zp_text_ptr2_off                                              ; b09f: c6 1b       ..       ; back up
 ; &b0a1 referenced 1 time by &b09b
 .cb0a1
-    tya                                                               ; b0a1: 98          .     
-    pha                                                               ; b0a2: 48          H     
-    jsr eval_factor                                                   ; b0a3: 20 ec ad     ..   
-    beq cb0bf                                                         ; b0a6: f0 17       ..    
-    tay                                                               ; b0a8: a8          .     
-    pla                                                               ; b0a9: 68          h     
-    sta zp_print_flag                                                 ; b0aa: 85 15       ..    
-    lda l0403                                                         ; b0ac: ad 03 04    ...   
-    bne cb0b9                                                         ; b0af: d0 08       ..    
-    sta zp_general                                                    ; b0b1: 85 37       .7    
-    jsr c9ef9                                                         ; b0b3: 20 f9 9e     ..   
-    lda #0                                                            ; b0b6: a9 00       ..    
+    tya                                                               ; b0a1: 98          .        ; Save the hex/dec flag
+    pha                                                               ; b0a2: 48          H        ; ...
+    jsr eval_factor                                                   ; b0a3: 20 ec ad     ..      ; Evaluate the number
+    beq cb0bf                                                         ; b0a6: f0 17       ..       ; string: error  ...
+    tay                                                               ; b0a8: a8          .        ; Restore the flag
+    pla                                                               ; b0a9: 68          h        ; ...
+    sta zp_print_flag                                                 ; b0aa: 85 15       ..       ; @% formatting set?
+    lda l0403                                                         ; b0ac: ad 03 04    ...      ; yes: use it
+    bne cb0b9                                                         ; b0af: d0 08       ..       ; Default conversion
+    sta zp_general                                                    ; b0b1: 85 37       .7       ; ...
+    jsr c9ef9                                                         ; b0b3: 20 f9 9e     ..      ; string result
+    lda #0                                                            ; b0b6: a9 00       ..       ; Return
     rts                                                               ; b0b8: 60          `     
 ; &b0b9 referenced 1 time by &b0af
 .cb0b9
-    jsr number_to_ascii                                               ; b0b9: 20 df 9e     ..   
-    lda #0                                                            ; b0bc: a9 00       ..    
-    rts                                                               ; b0be: 60          `     
+    jsr number_to_ascii                                               ; b0b9: 20 df 9e     ..      ; Formatted conversion (@%)
+    lda #0                                                            ; b0bc: a9 00       ..       ; string result
+    rts                                                               ; b0be: 60          `        ; Return
 ; &b0bf referenced 2 times by &b0a6, &b0ce
 .cb0bf
-    jmp err_type_mismatch                                             ; b0bf: 4c 0e 8c    L..   
+    jmp err_type_mismatch                                             ; b0bf: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; STRING$
 ;
@@ -10059,7 +10064,7 @@ l848a = sub_c847b+15
     lda #0                                                            ; b5a3: a9 00       ..       ; Clear the indent levels
     sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;       ; ...
     sta zp_fwb_ovf                                                    ; b5a7: 85 3c       .<       ; ...
-    jsr caed8                                                         ; b5a9: 20 d8 ae     ..      ; Start line default 0
+    jsr int_result_a                                                  ; b5a9: 20 d8 ae     ..      ; Start line default 0
     jsr sub_c97df                                                     ; b5ac: 20 df 97     ..      ; Embedded start line number?
     php                                                               ; b5af: 08          .        ; remember whether one was given
     jsr stack_integer                                                 ; b5b0: 20 94 bd     ..      ; Stack the start line
@@ -10407,7 +10412,7 @@ l848a = sub_c847b+15
     lda zp_iwa_3                                                      ; b809: a5 2d       .-       ; ...
     sta l050b,y                                                       ; b80b: 99 0b 05    ...      ; ...
     lda #1                                                            ; b80e: a9 01       ..       ; Default STEP = 1
-    jsr caed8                                                         ; b810: 20 d8 ae     ..      ; ...
+    jsr int_result_a                                                  ; b810: 20 d8 ae     ..      ; ...
     jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..      ; Next character
     cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)  STEP token?
     bne cb81f                                                         ; b818: d0 05       ..       ; no: use the default
@@ -11757,7 +11762,7 @@ l848a = sub_c847b+15
 .fn_bget
     jsr eval_channel                                                  ; bf6f: 20 b5 bf     ..      ; Evaluate the #handle
     jsr osbget                                                        ; bf72: 20 d7 ff     ..      ; OSBGET: read a byte from the channel
-    jmp caed8                                                         ; bf75: 4c d8 ae    L..      ; Return the byte as an integer
+    jmp int_result_a                                                  ; bf75: 4c d8 ae    L..      ; Return the byte as an integer
 ; ***************************************************************************************
 ; OPENIN
 ;
@@ -11788,7 +11793,7 @@ l848a = sub_c847b+15
     ldy #6                                                            ; bf8d: a0 06       ..    
     pla                                                               ; bf8f: 68          h     
     jsr osfind                                                        ; bf90: 20 ce ff     ..   
-    jmp caed8                                                         ; bf93: 4c d8 ae    L..   
+    jmp int_result_a                                                  ; bf93: 4c d8 ae    L..   
 ; &bf96 referenced 1 time by &bf86
 .cbf96
     jmp err_type_mismatch                                             ; bf96: 4c 0e 8c    L..   
@@ -11919,8 +11924,8 @@ save pydis_start, pydis_end
 ;     l004a:                      20
 ;     zp_fwa_ovf:                 20
 ;     zp_vartop_1:                20
-;     caed8:                      18
 ;     err_type_mismatch:          18
+;     int_result_a:               18
 ;     l004e:                      18
 ;     fwa_sign:                   17
 ;     zp_fwb_rnd:                 17
@@ -13597,7 +13602,6 @@ save pydis_start, pydis_end
 ;     cae8d
 ;     caea2
 ;     caeaa
-;     caed8
 ;     cafc2
 ;     cafeb
 ;     cb023

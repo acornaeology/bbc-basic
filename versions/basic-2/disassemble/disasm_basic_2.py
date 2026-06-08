@@ -1827,6 +1827,11 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '&2C (4=integer, 5=real, &80=$ indirection, '
                          '&81=byte/word indirection or array element). '
                          'Returns A=0, SEC when the name is undefined.')
+d.subroutine(0xaed8, 'int_result_a',
+             title='Return A as an integer result',
+             description='Set the result to the unsigned byte in A (high '
+                         'bytes zero) and mark it integer. The common tail '
+                         'for functions returning a small integer.')
 d.subroutine(0xb50e, 'print_token',
              title='De-tokenise and print a character or token',
              description='Print A directly if below &80, otherwise look the '
@@ -6699,6 +6704,109 @@ d.comment(0xb592, 'coerce to a byte', align=Align.INLINE)
 d.comment(0xb595, 'Store the LISTO flag', align=Align.INLINE)
 d.comment(0xb597, '...', align=Align.INLINE)
 d.comment(0xb599, 'next statement', align=Align.INLINE)
+
+# int_result_a (&AED8).
+d.comment(0xaed8, 'High byte zero', align=Align.INLINE)
+d.comment(0xaeda, 'return A as the integer', align=Align.INLINE)
+
+# fn_point (&AB41): POINT(x, y) - read a pixel colour.
+d.comment(0xab41, 'Evaluate x', align=Align.INLINE)
+d.comment(0xab44, 'stack it', align=Align.INLINE)
+d.comment(0xab47, 'Expect a comma', align=Align.INLINE)
+d.comment(0xab4a, 'Evaluate y, expect )', align=Align.INLINE)
+d.comment(0xab4d, 'coerce to integer', align=Align.INLINE)
+d.comment(0xab50, 'Save y', align=Align.INLINE)
+d.comment(0xab52, '...', align=Align.INLINE)
+d.comment(0xab54, '...', align=Align.INLINE)
+d.comment(0xab56, '...', align=Align.INLINE)
+d.comment(0xab57, 'Recover x', align=Align.INLINE)
+d.comment(0xab5a, 'into the OSWORD block', align=Align.INLINE)
+d.comment(0xab5b, '...', align=Align.INLINE)
+d.comment(0xab5d, '...', align=Align.INLINE)
+d.comment(0xab5f, '...', align=Align.INLINE)
+d.comment(0xab61, 'Read the pixel colour', align=Align.INLINE)
+d.comment(0xab63, '...', align=Align.INLINE)
+d.comment(0xab65, '...', align=Align.INLINE)
+d.comment(0xab68, 'off-screen?', align=Align.INLINE)
+
+# Real SGN path (&AB7F).
+d.comment(0xab7f, 'Sign of the real', align=Align.INLINE)
+d.comment(0xab82, 'zero: 0', align=Align.INLINE)
+d.comment(0xab84, 'positive: 1', align=Align.INLINE)
+d.comment(0xab86, 'negative: -1', align=Align.INLINE)
+# fn_sgn (&AB88): SGN(x).
+d.comment(0xab88, 'Evaluate the argument', align=Align.INLINE)
+d.comment(0xab8b, 'string: error', align=Align.INLINE)
+d.comment(0xab8d, 'real: use the FP sign', align=Align.INLINE)
+d.comment(0xab8f, 'Integer: test for zero', align=Align.INLINE)
+d.comment(0xab91, '...', align=Align.INLINE)
+d.comment(0xab93, '...', align=Align.INLINE)
+d.comment(0xab95, '...', align=Align.INLINE)
+d.comment(0xab97, 'zero: 0', align=Align.INLINE)
+d.comment(0xab99, 'Sign bit', align=Align.INLINE)
+d.comment(0xab9b, 'positive: 1', align=Align.INLINE)
+d.comment(0xab9d, 'negative: -1', align=Align.INLINE)
+d.comment(0xaba0, 'Result = 1', align=Align.INLINE)
+d.comment(0xaba2, 'return it', align=Align.INLINE)
+d.comment(0xaba5, 'Result = 0 (integer)', align=Align.INLINE)
+d.comment(0xaba7, 'Return', align=Align.INLINE)
+
+# fn_int (&AC78): INT(x) - floor to integer.
+d.comment(0xac78, 'Evaluate the argument', align=Align.INLINE)
+d.comment(0xac7b, 'string: error', align=Align.INLINE)
+d.comment(0xac7d, 'already integer: return it', align=Align.INLINE)
+d.comment(0xac7f, 'Real: remember the sign', align=Align.INLINE)
+d.comment(0xac81, '...', align=Align.INLINE)
+d.comment(0xac82, 'Take the integer part', align=Align.INLINE)
+d.comment(0xac85, 'sign', align=Align.INLINE)
+d.comment(0xac86, 'positive: no adjustment', align=Align.INLINE)
+d.comment(0xac88, 'Negative: any fractional bits?', align=Align.INLINE)
+d.comment(0xac8a, '...', align=Align.INLINE)
+d.comment(0xac8c, '...', align=Align.INLINE)
+d.comment(0xac8e, '...', align=Align.INLINE)
+d.comment(0xac90, 'none: exact', align=Align.INLINE)
+d.comment(0xac92, 'round down (floor of a negative)', align=Align.INLINE)
+d.comment(0xac95, 'Copy the integer to IWA', align=Align.INLINE)
+d.comment(0xac98, 'integer result', align=Align.INLINE)
+d.comment(0xac9a, 'Return', align=Align.INLINE)
+
+# fn_asc (&AC9E): ASC(s$).
+d.comment(0xac9e, 'Evaluate the string', align=Align.INLINE)
+d.comment(0xaca1, 'not a string: error', align=Align.INLINE)
+d.comment(0xaca3, 'String length', align=Align.INLINE)
+d.comment(0xaca5, 'empty: -1', align=Align.INLINE)
+d.comment(0xaca7, 'First character', align=Align.INLINE)
+d.comment(0xacaa, 'return it', align=Align.INLINE)
+
+# fn_len (&AED1): LEN(s$).
+d.comment(0xaed1, 'Evaluate the string', align=Align.INLINE)
+d.comment(0xaed4, 'not a string: error', align=Align.INLINE)
+d.comment(0xaed6, 'Length, returned as an integer', align=Align.INLINE)
+
+# fn_strs (&B094): STR$(x) and STR$~(x).
+d.comment(0xb094, 'Next character', align=Align.INLINE)
+d.comment(0xb097, 'assume hex', align=Align.INLINE)
+d.comment(0xb099, "'~' hex prefix?", align=Align.INLINE)
+d.comment(0xb09b, 'yes', align=Align.INLINE)
+d.comment(0xb09d, 'no: decimal', align=Align.INLINE)
+d.comment(0xb09f, 'back up', align=Align.INLINE)
+d.comment(0xb0a1, 'Save the hex/dec flag', align=Align.INLINE)
+d.comment(0xb0a2, '...', align=Align.INLINE)
+d.comment(0xb0a3, 'Evaluate the number', align=Align.INLINE)
+d.comment(0xb0a6, 'string: error', align=Align.INLINE)
+d.comment(0xb0a7, '...', align=Align.INLINE)
+d.comment(0xb0a8, 'Restore the flag', align=Align.INLINE)
+d.comment(0xb0a9, '...', align=Align.INLINE)
+d.comment(0xb0ab, '@% formatting set?', align=Align.INLINE)
+d.comment(0xb0ae, 'yes: use it', align=Align.INLINE)
+d.comment(0xb0b0, 'Default conversion', align=Align.INLINE)
+d.comment(0xb0b2, '...', align=Align.INLINE)
+d.comment(0xb0b5, 'string result', align=Align.INLINE)
+d.comment(0xb0b7, 'Return', align=Align.INLINE)
+d.comment(0xb0b9, 'Formatted conversion (@%)', align=Align.INLINE)
+d.comment(0xb0bc, 'string result', align=Align.INLINE)
+d.comment(0xb0be, 'Return', align=Align.INLINE)
+d.comment(0xb0bf, 'Type mismatch error', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
 # stmt_input (&BA44): the INPUT statement.
