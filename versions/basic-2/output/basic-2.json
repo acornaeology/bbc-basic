@@ -21291,6 +21291,7 @@
       "labels": [
         "assign_string"
       ],
+      "comment_inline": "Unstack the variable descriptor address",
       "xref_summaries": [
         "&8c1e referenced 3 times by &8bf5, &ba13, &bb3d"
       ],
@@ -21314,6 +21315,7 @@
       "labels": [
         "sub_c8c21"
       ],
+      "comment_inline": "Variable type",
       "xref_summaries": [
         "&8c21 referenced 2 times by &b300, &bae0"
       ],
@@ -21333,7 +21335,7 @@
         201,
         128
       ],
-      "comment_inline": "An absolute $-string address?",
+      "comment_inline": "An absolute $-string address? $addr indirection?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -21344,6 +21346,7 @@
         240,
         123
       ],
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8ca2",
@@ -21356,6 +21359,7 @@
         160,
         2
       ],
+      "comment_inline": "Bytes currently allocated",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#2"
@@ -21366,6 +21370,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -21378,7 +21383,7 @@
         197,
         54
       ],
-      "comment_inline": "Does the new string fit the existing allocation?",
+      "comment_inline": "Does the new string fit the existing allocation? enough for the new string?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -21391,6 +21396,7 @@
         176,
         85
       ],
+      "comment_inline": "yes: reuse the allocation",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c8c84",
@@ -21403,7 +21409,7 @@
         165,
         2
       ],
-      "comment_inline": "Otherwise allocate space from the heap",
+      "comment_inline": "Otherwise allocate space from the heap Tentative new address = heap top",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -21416,6 +21422,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -21428,6 +21435,7 @@
         165,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1",
@@ -21440,6 +21448,7 @@
         133,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -21452,6 +21461,7 @@
         165,
         54
       ],
+      "comment_inline": "Round the size up (min 8, granularity 8)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -21464,6 +21474,7 @@
         201,
         8
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#8"
@@ -21474,6 +21485,7 @@
         144,
         6
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8c43",
@@ -21486,6 +21498,7 @@
         105,
         7
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#7"
@@ -21496,6 +21509,7 @@
         144,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8c43",
@@ -21508,6 +21522,7 @@
         169,
         255
       ],
+      "comment_inline": "cap at 255",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -21520,6 +21535,7 @@
       "labels": [
         "c8c43"
       ],
+      "comment_inline": "...",
       "xref_summaries": [
         "&8c43 referenced 2 times by &8c3b, &8c3f"
       ],
@@ -21535,6 +21551,7 @@
       "bytes": [
         72
       ],
+      "comment_inline": "Save the new allocation size",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -21543,6 +21560,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -21552,6 +21570,7 @@
         177,
         42
       ],
+      "comment_inline": "Is the existing block at the heap top?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -21564,6 +21583,7 @@
         160,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -21574,6 +21594,7 @@
         113,
         42
       ],
+      "comment_inline": "(data address + allocated == top?)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "(zp_iwa),y",
@@ -21586,6 +21607,7 @@
         69,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_vartop",
@@ -21598,6 +21620,7 @@
         208,
         15
       ],
+      "comment_inline": "no: allocate fresh space",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8c5f",
@@ -21609,6 +21632,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -21618,6 +21642,7 @@
         113,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "(zp_iwa),y",
@@ -21630,6 +21655,7 @@
         69,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_vartop_1",
@@ -21642,6 +21668,7 @@
         208,
         8
       ],
+      "comment_inline": "no: allocate fresh space",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8c5f",
@@ -21654,6 +21681,7 @@
         133,
         45
       ],
+      "comment_inline": "yes: extend in place from this block",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -21665,6 +21693,7 @@
       "bytes": [
         138
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -21673,6 +21702,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -21681,6 +21711,7 @@
       "bytes": [
         56
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -21690,6 +21721,7 @@
         241,
         42
       ],
+      "comment_inline": "reclaim the old allocation",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "(zp_iwa),y",
@@ -21701,6 +21733,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -21712,6 +21745,7 @@
       "labels": [
         "c8c5f"
       ],
+      "comment_inline": "New heap top = top + allocation",
       "xref_summaries": [
         "&8c5f referenced 2 times by &8c4e, &8c55"
       ],
@@ -21727,6 +21761,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -21736,6 +21771,7 @@
         101,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop",
@@ -21747,6 +21783,7 @@
       "bytes": [
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -21756,6 +21793,7 @@
         165,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1",
@@ -21768,6 +21806,7 @@
         105,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -21778,6 +21817,7 @@
         196,
         4
       ],
+      "comment_inline": "collides with the stack?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_stack_ptr",
@@ -21789,6 +21829,7 @@
       "bytes": [
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -21798,6 +21839,7 @@
         229,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_stack_ptr_1",
@@ -21810,6 +21852,7 @@
         176,
         72
       ],
+      "comment_inline": "yes: No room",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "err_no_room",
@@ -21822,6 +21865,7 @@
         132,
         2
       ],
+      "comment_inline": "Commit the new heap top",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_vartop",
@@ -21834,6 +21878,7 @@
         134,
         3
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_vartop_1",
@@ -21845,6 +21890,7 @@
       "bytes": [
         104
       ],
+      "comment_inline": "Store the new allocation size",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -21854,6 +21900,7 @@
         160,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#2"
@@ -21864,6 +21911,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -21875,6 +21923,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Store the new data address",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -21884,6 +21933,7 @@
         165,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -21896,6 +21946,7 @@
         240,
         7
       ],
+      "comment_inline": "extended in place: keep the address",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8c84",
@@ -21908,6 +21959,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -21919,6 +21971,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -21928,6 +21981,7 @@
         165,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -21940,6 +21994,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -21955,6 +22010,7 @@
       "labels": [
         "c8c84"
       ],
+      "comment_inline": "Store the current length",
       "xref_summaries": [
         "&8c84 referenced 2 times by &8c2d, &8c7b"
       ],
@@ -21972,6 +22028,7 @@
         165,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -21984,6 +22041,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -21996,6 +22054,7 @@
         240,
         21
       ],
+      "comment_inline": "empty string: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "return_5",
@@ -22007,6 +22066,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "Fetch the data address",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22015,6 +22075,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22024,6 +22085,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -22036,6 +22098,7 @@
         133,
         45
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -22047,6 +22110,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22056,6 +22120,7 @@
         177,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -22068,6 +22133,7 @@
         133,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -22084,6 +22150,7 @@
       "labels": [
         "loop_c8c97"
       ],
+      "comment_inline": "Copy the string buffer to the storage",
       "xref_summaries": [
         "&8c97 referenced 1 time by &8c9f"
       ],
@@ -22102,6 +22169,7 @@
         145,
         44
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa_2),y",
@@ -22113,6 +22181,7 @@
       "bytes": [
         200
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22122,6 +22191,7 @@
         196,
         54
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_strbuf_len",
@@ -22134,6 +22204,7 @@
         208,
         246
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8c97",
@@ -22148,6 +22219,7 @@
       "labels": [
         "return_5"
       ],
+      "comment_inline": "Return",
       "xref_summaries": [
         "&8ca1 referenced 1 time by &8c8a"
       ],
@@ -22167,6 +22239,7 @@
       "labels": [
         "c8ca2"
       ],
+      "comment_inline": "$addr: prepare the destination",
       "xref_summaries": [
         "&8ca2 referenced 1 time by &8c25"
       ],
@@ -22185,6 +22258,7 @@
         192,
         0
       ],
+      "comment_inline": "empty string?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#0"
@@ -22195,6 +22269,7 @@
         240,
         11
       ],
+      "comment_inline": "yes: just the terminator",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8cb4",
@@ -22211,6 +22286,7 @@
       "labels": [
         "loop_c8ca9"
       ],
+      "comment_inline": "Copy the string to the address",
       "xref_summaries": [
         "&8ca9 referenced 1 time by &8caf"
       ],
@@ -22229,6 +22305,7 @@
         145,
         42
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22240,6 +22317,7 @@
       "bytes": [
         136
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22249,6 +22327,7 @@
         208,
         248
       ],
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8ca9",
@@ -22262,6 +22341,7 @@
         0,
         6
       ],
+      "comment_inline": "First character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "string_work",
@@ -22277,6 +22357,7 @@
       "labels": [
         "c8cb4"
       ],
+      "comment_inline": "Store it (with the CR terminator following)",
       "xref_summaries": [
         "&8cb4 referenced 1 time by &8ca7"
       ],
@@ -22294,6 +22375,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -22305,6 +22387,7 @@
       "labels": [
         "err_no_room"
       ],
+      "comment_inline": "No room error",
       "xref_summaries": [
         "&8cb7 referenced 3 times by &8c6d, &9553, &be41"
       ],

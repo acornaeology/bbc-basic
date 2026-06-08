@@ -2334,112 +2334,112 @@ l848a = sub_c847b+15
 ; fresh space from the heap.
 ; &8c1e referenced 3 times by &8bf5, &ba13, &bb3d
 .assign_string
-    jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..   
+    jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..      ; Unstack the variable descriptor address
 ; &8c21 referenced 2 times by &b300, &bae0
 .sub_c8c21
-    lda zp_iwa_2                                                      ; 8c21: a5 2c       .,    
-    cmp #&80                                                          ; 8c23: c9 80       ..       ; An absolute $-string address?
-    beq c8ca2                                                         ; 8c25: f0 7b       .{    
-    ldy #2                                                            ; 8c27: a0 02       ..    
-    lda (zp_iwa),y                                                    ; 8c29: b1 2a       .*    
-    cmp zp_strbuf_len                                                 ; 8c2b: c5 36       .6       ; Does the new string fit the existing allocation?
-    bcs c8c84                                                         ; 8c2d: b0 55       .U    
-    lda zp_vartop                                                     ; 8c2f: a5 02       ..       ; Otherwise allocate space from the heap
-    sta zp_iwa_2                                                      ; 8c31: 85 2c       .,    
-    lda zp_vartop_1                                                   ; 8c33: a5 03       ..    
-    sta zp_iwa_3                                                      ; 8c35: 85 2d       .-    
-    lda zp_strbuf_len                                                 ; 8c37: a5 36       .6    
-    cmp #8                                                            ; 8c39: c9 08       ..    
-    bcc c8c43                                                         ; 8c3b: 90 06       ..    
-    adc #7                                                            ; 8c3d: 69 07       i.    
-    bcc c8c43                                                         ; 8c3f: 90 02       ..    
-    lda #&ff                                                          ; 8c41: a9 ff       ..    
+    lda zp_iwa_2                                                      ; 8c21: a5 2c       .,       ; Variable type
+    cmp #&80                                                          ; 8c23: c9 80       ..       ; An absolute $-string address?  $addr indirection?
+    beq c8ca2                                                         ; 8c25: f0 7b       .{       ; yes
+    ldy #2                                                            ; 8c27: a0 02       ..       ; Bytes currently allocated
+    lda (zp_iwa),y                                                    ; 8c29: b1 2a       .*       ; ...
+    cmp zp_strbuf_len                                                 ; 8c2b: c5 36       .6       ; Does the new string fit the existing allocation?  enough for the new string?
+    bcs c8c84                                                         ; 8c2d: b0 55       .U       ; yes: reuse the allocation
+    lda zp_vartop                                                     ; 8c2f: a5 02       ..       ; Otherwise allocate space from the heap  Tentative new address = heap top
+    sta zp_iwa_2                                                      ; 8c31: 85 2c       .,       ; ...
+    lda zp_vartop_1                                                   ; 8c33: a5 03       ..       ; ...
+    sta zp_iwa_3                                                      ; 8c35: 85 2d       .-       ; ...
+    lda zp_strbuf_len                                                 ; 8c37: a5 36       .6       ; Round the size up (min 8, granularity 8)
+    cmp #8                                                            ; 8c39: c9 08       ..       ; ...
+    bcc c8c43                                                         ; 8c3b: 90 06       ..       ; ...
+    adc #7                                                            ; 8c3d: 69 07       i.       ; ...
+    bcc c8c43                                                         ; 8c3f: 90 02       ..       ; ...
+    lda #&ff                                                          ; 8c41: a9 ff       ..       ; cap at 255
 ; &8c43 referenced 2 times by &8c3b, &8c3f
 .c8c43
-    clc                                                               ; 8c43: 18          .     
-    pha                                                               ; 8c44: 48          H     
-    tax                                                               ; 8c45: aa          .     
-    lda (zp_iwa),y                                                    ; 8c46: b1 2a       .*    
-    ldy #0                                                            ; 8c48: a0 00       ..    
-    adc (zp_iwa),y                                                    ; 8c4a: 71 2a       q*    
-    eor zp_vartop                                                     ; 8c4c: 45 02       E.    
-    bne c8c5f                                                         ; 8c4e: d0 0f       ..    
-    iny                                                               ; 8c50: c8          .     
-    adc (zp_iwa),y                                                    ; 8c51: 71 2a       q*    
-    eor zp_vartop_1                                                   ; 8c53: 45 03       E.    
-    bne c8c5f                                                         ; 8c55: d0 08       ..    
-    sta zp_iwa_3                                                      ; 8c57: 85 2d       .-    
-    txa                                                               ; 8c59: 8a          .     
-    iny                                                               ; 8c5a: c8          .     
-    sec                                                               ; 8c5b: 38          8     
-    sbc (zp_iwa),y                                                    ; 8c5c: f1 2a       .*    
-    tax                                                               ; 8c5e: aa          .     
+    clc                                                               ; 8c43: 18          .        ; ...
+    pha                                                               ; 8c44: 48          H        ; Save the new allocation size
+    tax                                                               ; 8c45: aa          .        ; ...
+    lda (zp_iwa),y                                                    ; 8c46: b1 2a       .*       ; Is the existing block at the heap top?
+    ldy #0                                                            ; 8c48: a0 00       ..       ; ...
+    adc (zp_iwa),y                                                    ; 8c4a: 71 2a       q*       ; (data address + allocated == top?)
+    eor zp_vartop                                                     ; 8c4c: 45 02       E.       ; ...
+    bne c8c5f                                                         ; 8c4e: d0 0f       ..       ; no: allocate fresh space
+    iny                                                               ; 8c50: c8          .        ; ...
+    adc (zp_iwa),y                                                    ; 8c51: 71 2a       q*       ; ...
+    eor zp_vartop_1                                                   ; 8c53: 45 03       E.       ; ...
+    bne c8c5f                                                         ; 8c55: d0 08       ..       ; no: allocate fresh space
+    sta zp_iwa_3                                                      ; 8c57: 85 2d       .-       ; yes: extend in place from this block
+    txa                                                               ; 8c59: 8a          .        ; ...
+    iny                                                               ; 8c5a: c8          .        ; ...
+    sec                                                               ; 8c5b: 38          8        ; ...
+    sbc (zp_iwa),y                                                    ; 8c5c: f1 2a       .*       ; reclaim the old allocation
+    tax                                                               ; 8c5e: aa          .        ; ...
 ; &8c5f referenced 2 times by &8c4e, &8c55
 .c8c5f
-    txa                                                               ; 8c5f: 8a          .     
-    clc                                                               ; 8c60: 18          .     
-    adc zp_vartop                                                     ; 8c61: 65 02       e.    
-    tay                                                               ; 8c63: a8          .     
-    lda zp_vartop_1                                                   ; 8c64: a5 03       ..    
-    adc #0                                                            ; 8c66: 69 00       i.    
-    cpy zp_stack_ptr                                                  ; 8c68: c4 04       ..    
-    tax                                                               ; 8c6a: aa          .     
-    sbc zp_stack_ptr_1                                                ; 8c6b: e5 05       ..    
-    bcs err_no_room                                                   ; 8c6d: b0 48       .H    
-    sty zp_vartop                                                     ; 8c6f: 84 02       ..    
-    stx zp_vartop_1                                                   ; 8c71: 86 03       ..    
-    pla                                                               ; 8c73: 68          h     
-    ldy #2                                                            ; 8c74: a0 02       ..    
-    sta (zp_iwa),y                                                    ; 8c76: 91 2a       .*    
-    dey                                                               ; 8c78: 88          .     
-    lda zp_iwa_3                                                      ; 8c79: a5 2d       .-    
-    beq c8c84                                                         ; 8c7b: f0 07       ..    
-    sta (zp_iwa),y                                                    ; 8c7d: 91 2a       .*    
-    dey                                                               ; 8c7f: 88          .     
-    lda zp_iwa_2                                                      ; 8c80: a5 2c       .,    
-    sta (zp_iwa),y                                                    ; 8c82: 91 2a       .*    
+    txa                                                               ; 8c5f: 8a          .        ; New heap top = top + allocation
+    clc                                                               ; 8c60: 18          .        ; ...
+    adc zp_vartop                                                     ; 8c61: 65 02       e.       ; ...
+    tay                                                               ; 8c63: a8          .        ; ...
+    lda zp_vartop_1                                                   ; 8c64: a5 03       ..       ; ...
+    adc #0                                                            ; 8c66: 69 00       i.       ; ...
+    cpy zp_stack_ptr                                                  ; 8c68: c4 04       ..       ; collides with the stack?
+    tax                                                               ; 8c6a: aa          .        ; ...
+    sbc zp_stack_ptr_1                                                ; 8c6b: e5 05       ..       ; ...
+    bcs err_no_room                                                   ; 8c6d: b0 48       .H       ; yes: No room
+    sty zp_vartop                                                     ; 8c6f: 84 02       ..       ; Commit the new heap top
+    stx zp_vartop_1                                                   ; 8c71: 86 03       ..       ; ...
+    pla                                                               ; 8c73: 68          h        ; Store the new allocation size
+    ldy #2                                                            ; 8c74: a0 02       ..       ; ...
+    sta (zp_iwa),y                                                    ; 8c76: 91 2a       .*       ; ...
+    dey                                                               ; 8c78: 88          .        ; Store the new data address
+    lda zp_iwa_3                                                      ; 8c79: a5 2d       .-       ; ...
+    beq c8c84                                                         ; 8c7b: f0 07       ..       ; extended in place: keep the address
+    sta (zp_iwa),y                                                    ; 8c7d: 91 2a       .*       ; ...
+    dey                                                               ; 8c7f: 88          .        ; ...
+    lda zp_iwa_2                                                      ; 8c80: a5 2c       .,       ; ...
+    sta (zp_iwa),y                                                    ; 8c82: 91 2a       .*       ; ...
 ; &8c84 referenced 2 times by &8c2d, &8c7b
 .c8c84
-    ldy #3                                                            ; 8c84: a0 03       ..    
-    lda zp_strbuf_len                                                 ; 8c86: a5 36       .6    
-    sta (zp_iwa),y                                                    ; 8c88: 91 2a       .*    
-    beq return_5                                                      ; 8c8a: f0 15       ..    
-    dey                                                               ; 8c8c: 88          .     
-    dey                                                               ; 8c8d: 88          .     
-    lda (zp_iwa),y                                                    ; 8c8e: b1 2a       .*    
-    sta zp_iwa_3                                                      ; 8c90: 85 2d       .-    
-    dey                                                               ; 8c92: 88          .     
-    lda (zp_iwa),y                                                    ; 8c93: b1 2a       .*    
-    sta zp_iwa_2                                                      ; 8c95: 85 2c       .,    
+    ldy #3                                                            ; 8c84: a0 03       ..       ; Store the current length
+    lda zp_strbuf_len                                                 ; 8c86: a5 36       .6       ; ...
+    sta (zp_iwa),y                                                    ; 8c88: 91 2a       .*       ; ...
+    beq return_5                                                      ; 8c8a: f0 15       ..       ; empty string: done
+    dey                                                               ; 8c8c: 88          .        ; Fetch the data address
+    dey                                                               ; 8c8d: 88          .        ; ...
+    lda (zp_iwa),y                                                    ; 8c8e: b1 2a       .*       ; ...
+    sta zp_iwa_3                                                      ; 8c90: 85 2d       .-       ; ...
+    dey                                                               ; 8c92: 88          .        ; ...
+    lda (zp_iwa),y                                                    ; 8c93: b1 2a       .*       ; ...
+    sta zp_iwa_2                                                      ; 8c95: 85 2c       .,       ; ...
 ; &8c97 referenced 1 time by &8c9f
 .loop_c8c97
-    lda string_work,y                                                 ; 8c97: b9 00 06    ...   
-    sta (zp_iwa_2),y                                                  ; 8c9a: 91 2c       .,    
-    iny                                                               ; 8c9c: c8          .     
-    cpy zp_strbuf_len                                                 ; 8c9d: c4 36       .6    
-    bne loop_c8c97                                                    ; 8c9f: d0 f6       ..    
+    lda string_work,y                                                 ; 8c97: b9 00 06    ...      ; Copy the string buffer to the storage
+    sta (zp_iwa_2),y                                                  ; 8c9a: 91 2c       .,       ; ...
+    iny                                                               ; 8c9c: c8          .        ; ...
+    cpy zp_strbuf_len                                                 ; 8c9d: c4 36       .6       ; ...
+    bne loop_c8c97                                                    ; 8c9f: d0 f6       ..       ; loop
 ; &8ca1 referenced 1 time by &8c8a
 .return_5
-    rts                                                               ; 8ca1: 60          `     
+    rts                                                               ; 8ca1: 60          `        ; Return
 ; &8ca2 referenced 1 time by &8c25
 .c8ca2
-    jsr sub_cbeba                                                     ; 8ca2: 20 ba be     ..   
-    cpy #0                                                            ; 8ca5: c0 00       ..    
-    beq c8cb4                                                         ; 8ca7: f0 0b       ..    
+    jsr sub_cbeba                                                     ; 8ca2: 20 ba be     ..      ; $addr: prepare the destination
+    cpy #0                                                            ; 8ca5: c0 00       ..       ; empty string?
+    beq c8cb4                                                         ; 8ca7: f0 0b       ..       ; yes: just the terminator
 ; &8ca9 referenced 1 time by &8caf
 .loop_c8ca9
-    lda string_work,y                                                 ; 8ca9: b9 00 06    ...   
-    sta (zp_iwa),y                                                    ; 8cac: 91 2a       .*    
-    dey                                                               ; 8cae: 88          .     
-    bne loop_c8ca9                                                    ; 8caf: d0 f8       ..    
-    lda string_work                                                   ; 8cb1: ad 00 06    ...   
+    lda string_work,y                                                 ; 8ca9: b9 00 06    ...      ; Copy the string to the address
+    sta (zp_iwa),y                                                    ; 8cac: 91 2a       .*       ; ...
+    dey                                                               ; 8cae: 88          .        ; ...
+    bne loop_c8ca9                                                    ; 8caf: d0 f8       ..       ; loop
+    lda string_work                                                   ; 8cb1: ad 00 06    ...      ; First character
 ; &8cb4 referenced 1 time by &8ca7
 .c8cb4
-    sta (zp_iwa),y                                                    ; 8cb4: 91 2a       .*    
-    rts                                                               ; 8cb6: 60          `     
+    sta (zp_iwa),y                                                    ; 8cb4: 91 2a       .*       ; Store it (with the CR terminator following)
+    rts                                                               ; 8cb6: 60          `        ; Return
 ; &8cb7 referenced 3 times by &8c6d, &9553, &be41
 .err_no_room
-    brk                                                               ; 8cb7: 00          .     
+    brk                                                               ; 8cb7: 00          .        ; No room error
     equb &00                                                          ; 8cb8: 00          .     
     equs "No room"                                                    ; 8cb9: 4e 6f 20... No ...
     equb &00                                                          ; 8cc0: 00          .     
