@@ -301,7 +301,8 @@
       "addr": 43271,
       "name": "fn_atn",
       "title": "ATN",
-      "description": "FWA = arctan(FWA), result in radians. Pure routine at &A90A."
+      "description": "FWA = arctan(FWA), result in radians. Pure routine at &A90A.",
+      "fall_through": true
     },
     {
       "addr": 49007,
@@ -1372,6 +1373,40 @@
       "name": "fwb_unpack_var",
       "title": "Unpack a fp variable into FWB",
       "description": "Unpack the fp variable at (&4B/&4C) into FWB."
+    },
+    {
+      "addr": 43159,
+      "name": "fp_eval_cont_frac",
+      "title": "Evaluate a continued-fraction approximation",
+      "description": "X,Y point at a coefficient table: a count byte followed by that many five-byte fp coefficients. The argument is held in TEMP1; the routine folds the table from the top, alternating FWA = arg / FWA and FWA = FWA + next coefficient, to evaluate the continued fraction used by the trig kernels."
+    },
+    {
+      "addr": 43303,
+      "name": "fwa_complement_half_pi",
+      "title": "FWA = pi/2 - FWA",
+      "description": "Subtract FWA from pi/2 using the two-part constant at &AA59/&AA5E for extra precision, then negate. Used for ACS (pi/2 - ASN) and the large-argument arctan identity atn(x) = pi/2 - atn(1/x)."
+    },
+    {
+      "addr": 43592,
+      "name": "point_half_pi_hi",
+      "title": "Point the fp pointer at the high part of pi/2 (&AA59)",
+      "fall_through": true
+    },
+    {
+      "addr": 43596,
+      "name": "point_half_pi_lo",
+      "title": "Point the fp pointer at the low part of pi/2 (&AA5E)"
+    },
+    {
+      "addr": 43605,
+      "name": "point_const_half_pi",
+      "title": "Point the fp pointer at the pi/2 constant (&AA63)"
+    },
+    {
+      "addr": 43475,
+      "name": "sin_cos_reduce",
+      "title": "Range-reduce the SIN/COS argument",
+      "description": "Divide the argument by pi/2 to find the quadrant (stored in &4A) and Cody-Waite reduce to the principal range using the two-part pi/2 constant, leaving the reduced angle in FWA for the series."
     },
     {
       "addr": 44084,
@@ -65789,9 +65824,9 @@
       "comment_inline": "Compute the trig kernel",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca9d3",
+      "operand": "sin_cos_reduce",
       "target": 43475,
-      "target_label": "sub_ca9d3"
+      "target_label": "sin_cos_reduce"
     },
     {
       "addr": 42692,
@@ -68305,9 +68340,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca897",
+      "operand": "fp_eval_cont_frac",
       "target": 43159,
-      "target_label": "sub_ca897"
+      "target_label": "fp_eval_cont_frac"
     },
     {
       "addr": 43071,
@@ -68621,8 +68656,9 @@
         77
       ],
       "labels": [
-        "sub_ca897"
+        "fp_eval_cont_frac"
       ],
+      "comment_inline": "Save the coefficient table pointer (low)",
       "xref_summaries": [
         "&a897 referenced 4 times by &a83c, &a951, &a9cd, &aade"
       ],
@@ -68644,6 +68680,7 @@
         132,
         78
       ],
+      "comment_inline": "...and high",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l004e",
@@ -68657,6 +68694,7 @@
         133,
         163
       ],
+      "comment_inline": "Stash the argument in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -68669,6 +68707,7 @@
         160,
         0
       ],
+      "comment_inline": "First table byte is the coefficient count",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -68679,6 +68718,7 @@
         177,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l004d),y",
@@ -68691,6 +68731,7 @@
         133,
         72
       ],
+      "comment_inline": "use it as the loop counter",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_dp_flag",
@@ -68703,6 +68744,7 @@
         230,
         77
       ],
+      "comment_inline": "Advance past the count byte to coefficient 0",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004d",
@@ -68715,6 +68757,7 @@
         208,
         2
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca8aa",
@@ -68727,6 +68770,7 @@
         230,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004e",
@@ -68742,6 +68786,7 @@
       "labels": [
         "ca8aa"
       ],
+      "comment_inline": "Point the fp pointer at the first coefficient",
       "xref_summaries": [
         "&a8aa referenced 1 time by &a8a6"
       ],
@@ -68760,6 +68805,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -68772,6 +68818,7 @@
         165,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -68784,6 +68831,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -68797,6 +68845,7 @@
         181,
         163
       ],
+      "comment_inline": "FWA = coefficient 0",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -68813,6 +68862,7 @@
       "labels": [
         "loop_ca8b5"
       ],
+      "comment_inline": "Point at the argument in TEMP1",
       "xref_summaries": [
         "&a8b5 referenced 1 time by &a8d1"
       ],
@@ -68832,6 +68882,7 @@
         173,
         166
       ],
+      "comment_inline": "FWA = arg / FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_rdiv_var",
@@ -68843,6 +68894,7 @@
       "bytes": [
         24
       ],
+      "comment_inline": "Advance the pointer to the next coefficient",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -68852,6 +68904,7 @@
         165,
         77
       ],
+      "comment_inline": "...(five bytes per coefficient)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004d",
@@ -68864,6 +68917,7 @@
         105,
         5
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#5"
@@ -68874,6 +68928,7 @@
         133,
         77
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -68886,6 +68941,7 @@
         133,
         75
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -68898,6 +68954,7 @@
         165,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -68910,6 +68967,7 @@
         105,
         0
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -68920,6 +68978,7 @@
         133,
         78
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -68932,6 +68991,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -68945,6 +69005,7 @@
         0,
         165
       ],
+      "comment_inline": "FWA = FWA + next coefficient",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -68957,6 +69018,7 @@
         198,
         72
       ],
+      "comment_inline": "One coefficient done",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_dp_flag",
@@ -68969,6 +69031,7 @@
         208,
         226
       ],
+      "comment_inline": "loop until the table is exhausted",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_ca8b5",
@@ -68980,6 +69043,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return the continued-fraction value",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -68993,6 +69057,7 @@
       "labels": [
         "fn_acs"
       ],
+      "comment_inline": "Compute asn(x)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fn_asn",
@@ -69006,11 +69071,12 @@
         39,
         169
       ],
+      "comment_inline": "Result = pi/2 - asn(x)",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca927",
+      "operand": "fwa_complement_half_pi",
       "target": 43303,
-      "target_label": "ca927"
+      "target_label": "fwa_complement_half_pi"
     },
     {
       "addr": 43226,
@@ -69230,9 +69296,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa55",
+      "operand": "point_const_half_pi",
       "target": 43605,
-      "target_label": "sub_caa55"
+      "target_label": "point_const_half_pi"
     },
     {
       "addr": 43265,
@@ -69288,6 +69354,7 @@
       "labels": [
         "fn_atn"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -69304,6 +69371,7 @@
       "labels": [
         "ca90a"
       ],
+      "comment_inline": "Sign of the argument",
       "xref_summaries": [
         "&a90a referenced 1 time by &a8fb"
       ],
@@ -69322,6 +69390,7 @@
         240,
         245
       ],
+      "comment_inline": "zero: atn(0) = 0, return it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca904",
@@ -69334,6 +69403,7 @@
         16,
         10
       ],
+      "comment_inline": "positive: compute directly",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca91b",
@@ -69346,6 +69416,7 @@
         70,
         46
       ],
+      "comment_inline": "negative: clear the sign to take |x|",
       "type": "code",
       "mnemonic": "lsr",
       "operand": "zp_fwa_sign",
@@ -69359,6 +69430,7 @@
         27,
         169
       ],
+      "comment_inline": "compute atn(|x|)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca91b",
@@ -69374,6 +69446,7 @@
       "labels": [
         "ca916"
       ],
+      "comment_inline": "set the result sign negative",
       "xref_summaries": [
         "&a916 referenced 1 time by &a8e7"
       ],
@@ -69390,6 +69463,7 @@
         133,
         46
       ],
+      "comment_inline": "...so atn(-x) = -atn(x)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -69401,6 +69475,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -69413,6 +69488,7 @@
       "labels": [
         "ca91b"
       ],
+      "comment_inline": "Exponent of |x|",
       "xref_summaries": [
         "&a91b referenced 2 times by &a90f, &a913"
       ],
@@ -69432,6 +69508,7 @@
         201,
         129
       ],
+      "comment_inline": "|x| < 1?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&81"
@@ -69442,6 +69519,7 @@
         144,
         21
       ],
+      "comment_inline": "yes: evaluate the series directly",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca936",
@@ -69455,6 +69533,7 @@
         165,
         166
       ],
+      "comment_inline": "|x| >= 1: FWA = 1 / x",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_reciprocal",
@@ -69468,6 +69547,7 @@
         54,
         169
       ],
+      "comment_inline": "atn(1/x) via the series",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca936",
@@ -69482,8 +69562,9 @@
         170
       ],
       "labels": [
-        "ca927"
+        "fwa_complement_half_pi"
       ],
+      "comment_inline": "atn(x) = pi/2 - atn(1/x)",
       "xref_summaries": [
         "&a927 referenced 1 time by &a8d7"
       ],
@@ -69492,9 +69573,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa48",
+      "operand": "point_half_pi_hi",
       "target": 43592,
-      "target_label": "sub_caa48"
+      "target_label": "point_half_pi_hi"
     },
     {
       "addr": 43306,
@@ -69503,6 +69584,7 @@
         0,
         165
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -69516,11 +69598,12 @@
         76,
         170
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa4c",
+      "operand": "point_half_pi_lo",
       "target": 43596,
-      "target_label": "sub_caa4c"
+      "target_label": "point_half_pi_lo"
     },
     {
       "addr": 43312,
@@ -69529,6 +69612,7 @@
         0,
         165
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -69542,6 +69626,7 @@
         126,
         173
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_negate",
@@ -69557,6 +69642,7 @@
       "labels": [
         "ca936"
       ],
+      "comment_inline": "Exponent of the (reduced) argument",
       "xref_summaries": [
         "&a936 referenced 2 times by &a91f, &a924"
       ],
@@ -69576,6 +69662,7 @@
         201,
         115
       ],
+      "comment_inline": "very small (|x| < 2^-13)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&73"
@@ -69586,6 +69673,7 @@
         144,
         200
       ],
+      "comment_inline": "yes: atn(x) = x to working precision",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca904",
@@ -69599,6 +69687,7 @@
         129,
         163
       ],
+      "comment_inline": "Save the argument x in TEMP3",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp3",
@@ -69612,6 +69701,7 @@
         83,
         164
       ],
+      "comment_inline": "Set FWB = 1...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_clear",
@@ -69624,6 +69714,7 @@
         169,
         128
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -69634,6 +69725,7 @@
         133,
         61
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -69646,6 +69738,7 @@
         133,
         62
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -69658,6 +69751,7 @@
         133,
         59
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -69671,6 +69765,7 @@
         5,
         165
       ],
+      "comment_inline": "Add it to the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_fwb",
@@ -69683,6 +69778,7 @@
         169,
         90
       ],
+      "comment_inline": "Evaluate the arctan continued fraction",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&5a"
@@ -69693,6 +69789,7 @@
         160,
         169
       ],
+      "comment_inline": "(coefficients at &A95A)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&a9"
@@ -69704,11 +69801,12 @@
         151,
         168
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca897",
+      "operand": "fp_eval_cont_frac",
       "target": 43159,
-      "target_label": "sub_ca897"
+      "target_label": "fp_eval_cont_frac"
     },
     {
       "addr": 43348,
@@ -69717,6 +69815,7 @@
         209,
         170
       ],
+      "comment_inline": "Scale by x (in TEMP3): atn(x) = x * P",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "caad1",
@@ -69729,6 +69828,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -69738,6 +69838,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -69893,9 +69994,9 @@
       "comment_inline": "Compute the SIN/COS kernel",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca9d3",
+      "operand": "sin_cos_reduce",
       "target": 43475,
-      "target_label": "sub_ca9d3"
+      "target_label": "sin_cos_reduce"
     },
     {
       "addr": 43411,
@@ -69934,6 +70035,7 @@
       "labels": [
         "fn_sin"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -69947,11 +70049,12 @@
         211,
         169
       ],
+      "comment_inline": "Range-reduce: leaves the angle in FWA, quadrant in &4A",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca9d3",
+      "operand": "sin_cos_reduce",
       "target": 43475,
-      "target_label": "sub_ca9d3"
+      "target_label": "sin_cos_reduce"
     },
     {
       "addr": 43422,
@@ -69962,6 +70065,7 @@
       "labels": [
         "ca99e"
       ],
+      "comment_inline": "Quadrant",
       "xref_summaries": [
         "&a99e referenced 3 times by &a6cf, &a6db, &a995"
       ],
@@ -69982,6 +70086,7 @@
         41,
         2
       ],
+      "comment_inline": "second or third quadrant (result negative)?",
       "type": "code",
       "mnemonic": "and",
       "operand": "#2"
@@ -69992,6 +70097,7 @@
         240,
         6
       ],
+      "comment_inline": "no: compute and return directly",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca9aa",
@@ -70005,6 +70111,7 @@
         170,
         169
       ],
+      "comment_inline": "compute the magnitude...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca9aa",
@@ -70018,6 +70125,7 @@
         126,
         173
       ],
+      "comment_inline": "...then negate it",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_negate",
@@ -70033,6 +70141,7 @@
       "labels": [
         "ca9aa"
       ],
+      "comment_inline": "Odd quadrant (use cosine instead of sine)?",
       "xref_summaries": [
         "&a9aa referenced 2 times by &a9a2, &a9a4"
       ],
@@ -70052,6 +70161,7 @@
         144,
         21
       ],
+      "comment_inline": "even: evaluate the sine series",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "ca9c3",
@@ -70065,6 +70175,7 @@
         195,
         169
       ],
+      "comment_inline": "odd: evaluate the sine series...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca9c3",
@@ -70081,6 +70192,7 @@
       "labels": [
         "sub_ca9b1"
       ],
+      "comment_inline": "Save sin into TEMP1",
       "xref_summaries": [
         "&a9b1 referenced 1 time by &a8ed"
       ],
@@ -70100,6 +70212,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = sin^2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -70113,6 +70226,7 @@
         141,
         163
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -70126,6 +70240,7 @@
         153,
         166
       ],
+      "comment_inline": "FWA = 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_set_one",
@@ -70139,6 +70254,7 @@
         208,
         164
       ],
+      "comment_inline": "FWA = 1 - sin^2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca4d0",
@@ -70152,6 +70268,7 @@
         183,
         167
       ],
+      "comment_inline": "cos = sqrt(1 - sin^2)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca7b7",
@@ -70168,6 +70285,7 @@
       "labels": [
         "ca9c3"
       ],
+      "comment_inline": "Save the reduced angle r in TEMP3",
       "xref_summaries": [
         "&a9c3 referenced 2 times by &a9ac, &a9ae"
       ],
@@ -70188,6 +70306,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = r^2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -70200,6 +70319,7 @@
         169,
         114
       ],
+      "comment_inline": "Point at the sine coefficient table: low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&72"
@@ -70210,6 +70330,7 @@
         160,
         170
       ],
+      "comment_inline": "...high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&aa"
@@ -70221,11 +70342,12 @@
         151,
         168
       ],
+      "comment_inline": "Evaluate the sine continued fraction in r^2",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca897",
+      "operand": "fp_eval_cont_frac",
       "target": 43159,
-      "target_label": "sub_ca897"
+      "target_label": "fp_eval_cont_frac"
     },
     {
       "addr": 43472,
@@ -70234,6 +70356,7 @@
         209,
         170
       ],
+      "comment_inline": "Scale by r (in TEMP3): sin(r) = r * P",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "caad1",
@@ -70247,8 +70370,9 @@
         48
       ],
       "labels": [
-        "sub_ca9d3"
+        "sin_cos_reduce"
       ],
+      "comment_inline": "Exponent of the argument",
       "xref_summaries": [
         "&a9d3 referenced 3 times by &a6c1, &a990, &a99b"
       ],
@@ -70269,6 +70393,7 @@
         201,
         152
       ],
+      "comment_inline": "too large to reduce accurately?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&98"
@@ -70279,6 +70404,7 @@
         176,
         95
       ],
+      "comment_inline": "yes: report the error",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "caa38",
@@ -70292,6 +70418,7 @@
         133,
         163
       ],
+      "comment_inline": "Save the argument in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -70305,11 +70432,12 @@
         85,
         170
       ],
+      "comment_inline": "Point at pi/2...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa55",
+      "operand": "point_const_half_pi",
       "target": 43605,
-      "target_label": "sub_caa55"
+      "target_label": "point_const_half_pi"
     },
     {
       "addr": 43487,
@@ -70318,6 +70446,7 @@
         78,
         163
       ],
+      "comment_inline": "...and unpack it into FWB",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwb_unpack_var",
@@ -70330,6 +70459,7 @@
         165,
         46
       ],
+      "comment_inline": "Take the argument sign...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_sign",
@@ -70342,6 +70472,7 @@
         133,
         59
       ],
+      "comment_inline": "...for FWB",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -70354,6 +70485,7 @@
         198,
         61
       ],
+      "comment_inline": "Halve FWB to +/- pi/4 (rounding bias)",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_fwb_exp",
@@ -70367,6 +70499,7 @@
         5,
         165
       ],
+      "comment_inline": "FWA = argument +/- pi/4",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_fwb",
@@ -70380,6 +70513,7 @@
         231,
         166
       ],
+      "comment_inline": "FWA = that / (pi/2): integer part is the quadrant",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fp_divide",
@@ -70393,6 +70527,7 @@
         254,
         163
       ],
+      "comment_inline": "Take the integer part",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_to_int2",
@@ -70405,6 +70540,7 @@
         165,
         52
       ],
+      "comment_inline": "Low byte of the quadrant count",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -70417,6 +70553,7 @@
         133,
         74
       ],
+      "comment_inline": "save it in &4A",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -70429,6 +70566,7 @@
         5,
         51
       ],
+      "comment_inline": "Is the whole quadrant count zero?",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -70441,6 +70579,7 @@
         5,
         50
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -70453,6 +70592,7 @@
         5,
         49
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m1",
@@ -70465,6 +70605,7 @@
         240,
         56
       ],
+      "comment_inline": "yes: argument already in range, use it as is",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caa35",
@@ -70477,6 +70618,7 @@
         169,
         160
       ],
+      "comment_inline": "Rebuild the quadrant count as a real: exponent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a0"
@@ -70487,6 +70629,7 @@
         133,
         48
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -70499,6 +70642,7 @@
         160,
         0
       ],
+      "comment_inline": "clear the rounding byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -70509,6 +70653,7 @@
         132,
         53
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_rnd",
@@ -70521,6 +70666,7 @@
         165,
         49
       ],
+      "comment_inline": "Sign of the count",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -70533,6 +70679,7 @@
         133,
         46
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -70545,6 +70692,7 @@
         16,
         3
       ],
+      "comment_inline": "positive: skip",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caa0e",
@@ -70558,6 +70706,7 @@
         108,
         164
       ],
+      "comment_inline": "negative: negate the mantissa",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca46c",
@@ -70574,6 +70723,7 @@
       "labels": [
         "caa0e"
       ],
+      "comment_inline": "Normalise the quadrant count",
       "xref_summaries": [
         "&aa0e referenced 1 time by &aa09"
       ],
@@ -70593,6 +70743,7 @@
         125,
         163
       ],
+      "comment_inline": "Save it in TEMP2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp2",
@@ -70606,11 +70757,12 @@
         72,
         170
       ],
+      "comment_inline": "Cody-Waite reduce: FWA = count * (pi/2 high part)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa48",
+      "operand": "point_half_pi_hi",
       "target": 43592,
-      "target_label": "sub_caa48"
+      "target_label": "point_half_pi_hi"
     },
     {
       "addr": 43543,
@@ -70619,6 +70771,7 @@
         86,
         166
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -70632,6 +70785,7 @@
         245,
         167
       ],
+      "comment_inline": "FWA = argument - count*(pi/2 high)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_fp_temp1",
@@ -70645,6 +70799,7 @@
         0,
         165
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -70658,6 +70813,7 @@
         141,
         163
       ],
+      "comment_inline": "Save the partial reduction in TEMP1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -70671,6 +70827,7 @@
         237,
         167
       ],
+      "comment_inline": "Reload the quadrant count",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_fp_temp2",
@@ -70684,6 +70841,7 @@
         181,
         163
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -70697,11 +70855,12 @@
         76,
         170
       ],
+      "comment_inline": "FWA = count * (pi/2 low part)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa4c",
+      "operand": "point_half_pi_lo",
       "target": 43596,
-      "target_label": "sub_caa4c"
+      "target_label": "point_half_pi_lo"
     },
     {
       "addr": 43564,
@@ -70710,6 +70869,7 @@
         86,
         166
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -70723,6 +70883,7 @@
         245,
         167
       ],
+      "comment_inline": "Subtract the low part too: FWA = reduced angle",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_fp_temp1",
@@ -70736,6 +70897,7 @@
         0,
         165
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_add_var",
@@ -70752,6 +70914,7 @@
       "labels": [
         "caa35"
       ],
+      "comment_inline": "Argument in range: reduced angle is the argument",
       "xref_summaries": [
         "&aa35 referenced 1 time by &a9fb"
       ],
@@ -70772,6 +70935,7 @@
       "labels": [
         "caa38"
       ],
+      "comment_inline": "Argument too large: error",
       "xref_summaries": [
         "&aa38 referenced 1 time by &a9d7"
       ],
@@ -70828,8 +70992,9 @@
         89
       ],
       "labels": [
-        "sub_caa48"
+        "point_half_pi_hi"
       ],
+      "comment_inline": "High part of pi/2: low byte",
       "xref_summaries": [
         "&aa48 referenced 2 times by &a927, &aa14"
       ],
@@ -70847,6 +71012,7 @@
         208,
         2
       ],
+      "comment_inline": "...(shared tail)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "caa4e",
@@ -70860,8 +71026,9 @@
         94
       ],
       "labels": [
-        "sub_caa4c"
+        "point_half_pi_lo"
       ],
+      "comment_inline": "Low part of pi/2: low byte",
       "xref_summaries": [
         "&aa4c referenced 2 times by &a92d, &aa29"
       ],
@@ -70882,6 +71049,7 @@
       "labels": [
         "caa4e"
       ],
+      "comment_inline": "Set the fp pointer low",
       "xref_summaries": [
         "&aa4e referenced 2 times by &aa4a, &aa57"
       ],
@@ -70901,6 +71069,7 @@
         169,
         170
       ],
+      "comment_inline": "high &AA",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&aa"
@@ -70911,6 +71080,7 @@
         133,
         76
       ],
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -70922,6 +71092,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -70932,8 +71103,9 @@
         99
       ],
       "labels": [
-        "sub_caa55"
+        "point_const_half_pi"
       ],
+      "comment_inline": "pi/2 constant: low byte",
       "xref_summaries": [
         "&aa55 referenced 2 times by &a8fe, &a9dc"
       ],
@@ -70951,6 +71123,7 @@
         208,
         245
       ],
+      "comment_inline": "...(shared tail)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "caa4e",
@@ -71507,6 +71680,7 @@
       "labels": [
         "caad1"
       ],
+      "comment_inline": "Point at the saved argument in TEMP3",
       "xref_summaries": [
         "&aad1 referenced 3 times by &9e78, &a954, &a9d0"
       ],
@@ -71528,6 +71702,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = series * argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -71540,6 +71715,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -71549,6 +71725,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -71561,6 +71738,7 @@
       "labels": [
         "sub_caada"
       ],
+      "comment_inline": "Point at the coefficient table: low byte",
       "xref_summaries": [
         "&aada referenced 1 time by &aabb"
       ],
@@ -71577,6 +71755,7 @@
         160,
         170
       ],
+      "comment_inline": "...high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&aa"
@@ -71588,11 +71767,12 @@
         151,
         168
       ],
+      "comment_inline": "Evaluate the continued fraction",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca897",
+      "operand": "fp_eval_cont_frac",
       "target": 43159,
-      "target_label": "sub_ca897"
+      "target_label": "fp_eval_cont_frac"
     },
     {
       "addr": 43745,
@@ -71600,6 +71780,7 @@
         169,
         255
       ],
+      "comment_inline": "real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -71609,6 +71790,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -72687,6 +72869,7 @@
       "labels": [
         "fn_rad"
       ],
+      "comment_inline": "Evaluate the argument as a real",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c92fa",
@@ -72699,6 +72882,7 @@
         160,
         104
       ],
+      "comment_inline": "Point at the constant pi/180: low byte",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&68"
@@ -72709,6 +72893,7 @@
         169,
         170
       ],
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&aa"
@@ -72722,6 +72907,7 @@
       "labels": [
         "cabb8"
       ],
+      "comment_inline": "Set the fp pointer low",
       "xref_summaries": [
         "&abb8 referenced 2 times by &abaf, &abc9"
       ],
@@ -72741,6 +72927,7 @@
         133,
         76
       ],
+      "comment_inline": "...and high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -72754,6 +72941,7 @@
         86,
         166
       ],
+      "comment_inline": "FWA = x * pi/180",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -72766,6 +72954,7 @@
         169,
         255
       ],
+      "comment_inline": "Flag a non-zero real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -72775,6 +72964,7 @@
       "bytes": [
         96
       ],
+      "comment_inline": "Return",
       "type": "code",
       "mnemonic": "rts"
     },

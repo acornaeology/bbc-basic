@@ -951,6 +951,33 @@ d.subroutine(0xa21e, 'fwb_copy_from_fwa', title='FWB = FWA',
 d.subroutine(0xa34e, 'fwb_unpack_var', title='Unpack a fp variable into FWB',
              description='Unpack the fp variable at (&4B/&4C) into FWB.')
 
+# Transcendental helpers (shared by ATN/ASN/ACS/SIN/COS).
+d.subroutine(0xa897, 'fp_eval_cont_frac',
+             title='Evaluate a continued-fraction approximation',
+             description='X,Y point at a coefficient table: a count byte '
+                         'followed by that many five-byte fp coefficients. '
+                         'The argument is held in TEMP1; the routine folds '
+                         'the table from the top, alternating FWA = arg / FWA '
+                         'and FWA = FWA + next coefficient, to evaluate the '
+                         'continued fraction used by the trig kernels.')
+d.subroutine(0xa927, 'fwa_complement_half_pi', title='FWA = pi/2 - FWA',
+             description='Subtract FWA from pi/2 using the two-part constant '
+                         'at &AA59/&AA5E for extra precision, then negate. '
+                         'Used for ACS (pi/2 - ASN) and the large-argument '
+                         'arctan identity atn(x) = pi/2 - atn(1/x).')
+d.subroutine(0xaa48, 'point_half_pi_hi',
+             title='Point the fp pointer at the high part of pi/2 (&AA59)')
+d.subroutine(0xaa4c, 'point_half_pi_lo',
+             title='Point the fp pointer at the low part of pi/2 (&AA5E)')
+d.subroutine(0xaa55, 'point_const_half_pi',
+             title='Point the fp pointer at the pi/2 constant (&AA63)')
+d.subroutine(0xa9d3, 'sin_cos_reduce',
+             title='Range-reduce the SIN/COS argument',
+             description='Divide the argument by pi/2 to find the quadrant '
+                         '(stored in &4A) and Cody-Waite reduce to the '
+                         'principal range using the two-part pi/2 constant, '
+                         'leaving the reduced angle in FWA for the series.')
+
 # ----------------------------------------------------------------------
 # Conversions (Pharo ch. 4). The interpreter converts between ASCII (in
 # the string work area, SWA, &0600; length in zp_strbuf_len, &36), the
@@ -3529,6 +3556,189 @@ d.comment(0xa8fe, 'x = 1: load pi/2', align=Align.INLINE)
 d.comment(0xa901, '...', align=Align.INLINE)
 d.comment(0xa904, 'real result', align=Align.INLINE)
 d.comment(0xa906, 'Return', align=Align.INLINE)
+
+# fp_eval_cont_frac (&A897): evaluate the trig continued fraction.
+d.comment(0xa897, 'Save the coefficient table pointer (low)', align=Align.INLINE)
+d.comment(0xa899, '...and high', align=Align.INLINE)
+d.comment(0xa89b, 'Stash the argument in TEMP1', align=Align.INLINE)
+d.comment(0xa89e, 'First table byte is the coefficient count', align=Align.INLINE)
+d.comment(0xa8a0, '...', align=Align.INLINE)
+d.comment(0xa8a2, 'use it as the loop counter', align=Align.INLINE)
+d.comment(0xa8a4, 'Advance past the count byte to coefficient 0', align=Align.INLINE)
+d.comment(0xa8a6, '...', align=Align.INLINE)
+d.comment(0xa8a8, '...', align=Align.INLINE)
+d.comment(0xa8aa, 'Point the fp pointer at the first coefficient', align=Align.INLINE)
+d.comment(0xa8ac, '...', align=Align.INLINE)
+d.comment(0xa8ae, '...', align=Align.INLINE)
+d.comment(0xa8b0, '...', align=Align.INLINE)
+d.comment(0xa8b2, 'FWA = coefficient 0', align=Align.INLINE)
+d.comment(0xa8b5, 'Point at the argument in TEMP1', align=Align.INLINE)
+d.comment(0xa8b8, 'FWA = arg / FWA', align=Align.INLINE)
+d.comment(0xa8bb, 'Advance the pointer to the next coefficient', align=Align.INLINE)
+d.comment(0xa8bc, '...(five bytes per coefficient)', align=Align.INLINE)
+d.comment(0xa8be, '...', align=Align.INLINE)
+d.comment(0xa8c0, '...', align=Align.INLINE)
+d.comment(0xa8c2, '...', align=Align.INLINE)
+d.comment(0xa8c4, '...', align=Align.INLINE)
+d.comment(0xa8c6, '...', align=Align.INLINE)
+d.comment(0xa8c8, '...', align=Align.INLINE)
+d.comment(0xa8ca, '...', align=Align.INLINE)
+d.comment(0xa8cc, 'FWA = FWA + next coefficient', align=Align.INLINE)
+d.comment(0xa8cf, 'One coefficient done', align=Align.INLINE)
+d.comment(0xa8d1, 'loop until the table is exhausted', align=Align.INLINE)
+d.comment(0xa8d3, 'Return the continued-fraction value', align=Align.INLINE)
+
+# fn_acs (&A8D4): ACS(x) = pi/2 - ASN(x).
+d.comment(0xa8d4, 'Compute asn(x)', align=Align.INLINE)
+d.comment(0xa8d7, 'Result = pi/2 - asn(x)', align=Align.INLINE)
+
+# fn_atn (&A907): ATN = arctan, result in radians.
+d.comment(0xa907, 'Evaluate the argument as a real', align=Align.INLINE)
+d.comment(0xa90a, 'Sign of the argument', align=Align.INLINE)
+d.comment(0xa90d, 'zero: atn(0) = 0, return it', align=Align.INLINE)
+d.comment(0xa90f, 'positive: compute directly', align=Align.INLINE)
+d.comment(0xa911, 'negative: clear the sign to take |x|', align=Align.INLINE)
+d.comment(0xa913, 'compute atn(|x|)', align=Align.INLINE)
+d.comment(0xa916, 'set the result sign negative', align=Align.INLINE)
+d.comment(0xa918, '...so atn(-x) = -atn(x)', align=Align.INLINE)
+d.comment(0xa91a, 'Return', align=Align.INLINE)
+d.comment(0xa91b, 'Exponent of |x|', align=Align.INLINE)
+d.comment(0xa91d, '|x| < 1?', align=Align.INLINE)
+d.comment(0xa91f, 'yes: evaluate the series directly', align=Align.INLINE)
+d.comment(0xa921, '|x| >= 1: FWA = 1 / x', align=Align.INLINE)
+d.comment(0xa924, 'atn(1/x) via the series', align=Align.INLINE)
+d.comment(0xa927, 'atn(x) = pi/2 - atn(1/x)', align=Align.INLINE)
+d.comment(0xa92a, '...', align=Align.INLINE)
+d.comment(0xa92d, '...', align=Align.INLINE)
+d.comment(0xa930, '...', align=Align.INLINE)
+d.comment(0xa933, '...', align=Align.INLINE)
+d.comment(0xa936, 'Exponent of the (reduced) argument', align=Align.INLINE)
+d.comment(0xa938, 'very small (|x| < 2^-13)?', align=Align.INLINE)
+d.comment(0xa93a, 'yes: atn(x) = x to working precision', align=Align.INLINE)
+d.comment(0xa93c, 'Save the argument x in TEMP3', align=Align.INLINE)
+d.comment(0xa93f, 'Set FWB = 1...', align=Align.INLINE)
+d.comment(0xa942, '...', align=Align.INLINE)
+d.comment(0xa944, '...', align=Align.INLINE)
+d.comment(0xa946, '...', align=Align.INLINE)
+d.comment(0xa948, '...', align=Align.INLINE)
+d.comment(0xa94a, 'Add it to the argument', align=Align.INLINE)
+d.comment(0xa94d, 'Evaluate the arctan continued fraction', align=Align.INLINE)
+d.comment(0xa94f, '(coefficients at &A95A)', align=Align.INLINE)
+d.comment(0xa951, '...', align=Align.INLINE)
+d.comment(0xa954, 'Scale by x (in TEMP3): atn(x) = x * P', align=Align.INLINE)
+d.comment(0xa957, 'real result', align=Align.INLINE)
+d.comment(0xa959, 'Return', align=Align.INLINE)
+
+# Constant loaders for the two-part pi/2 and the rounded pi/2.
+d.comment(0xaa48, 'High part of pi/2: low byte', align=Align.INLINE)
+d.comment(0xaa4a, '...(shared tail)', align=Align.INLINE)
+d.comment(0xaa4c, 'Low part of pi/2: low byte', align=Align.INLINE)
+d.comment(0xaa4e, 'Set the fp pointer low', align=Align.INLINE)
+d.comment(0xaa50, 'high &AA', align=Align.INLINE)
+d.comment(0xaa52, '...', align=Align.INLINE)
+d.comment(0xaa54, 'Return', align=Align.INLINE)
+d.comment(0xaa55, 'pi/2 constant: low byte', align=Align.INLINE)
+d.comment(0xaa57, '...(shared tail)', align=Align.INLINE)
+
+# fn_rad (&ABB1): RAD(x) = x * pi/180 (degrees -> radians).
+d.comment(0xabb1, 'Evaluate the argument as a real', align=Align.INLINE)
+d.comment(0xabb4, 'Point at the constant pi/180: low byte', align=Align.INLINE)
+d.comment(0xabb6, 'high byte', align=Align.INLINE)
+d.comment(0xabb8, 'Set the fp pointer low', align=Align.INLINE)
+d.comment(0xabba, '...and high', align=Align.INLINE)
+d.comment(0xabbc, 'FWA = x * pi/180', align=Align.INLINE)
+d.comment(0xabbf, 'Flag a non-zero real result', align=Align.INLINE)
+d.comment(0xabc1, 'Return', align=Align.INLINE)
+
+# fn_sin (&A998) and the shared SIN/COS body.
+d.comment(0xa998, 'Evaluate the argument as a real', align=Align.INLINE)
+d.comment(0xa99b, 'Range-reduce: leaves the angle in FWA, quadrant in &4A',
+          align=Align.INLINE)
+d.comment(0xa99e, 'Quadrant', align=Align.INLINE)
+d.comment(0xa9a0, 'second or third quadrant (result negative)?',
+          align=Align.INLINE)
+d.comment(0xa9a2, 'no: compute and return directly', align=Align.INLINE)
+d.comment(0xa9a4, 'compute the magnitude...', align=Align.INLINE)
+d.comment(0xa9a7, '...then negate it', align=Align.INLINE)
+d.comment(0xa9aa, 'Odd quadrant (use cosine instead of sine)?',
+          align=Align.INLINE)
+d.comment(0xa9ac, 'even: evaluate the sine series', align=Align.INLINE)
+d.comment(0xa9ae, 'odd: evaluate the sine series...', align=Align.INLINE)
+d.comment(0xa9b1, 'Save sin into TEMP1', align=Align.INLINE)
+d.comment(0xa9b4, 'FWA = sin^2', align=Align.INLINE)
+d.comment(0xa9b7, '...', align=Align.INLINE)
+d.comment(0xa9ba, 'FWA = 1', align=Align.INLINE)
+d.comment(0xa9bd, 'FWA = 1 - sin^2', align=Align.INLINE)
+d.comment(0xa9c0, 'cos = sqrt(1 - sin^2)', align=Align.INLINE)
+d.comment(0xa9c3, 'Save the reduced angle r in TEMP3', align=Align.INLINE)
+d.comment(0xa9c6, 'FWA = r^2', align=Align.INLINE)
+d.comment(0xa9c9, 'Point at the sine coefficient table: low byte',
+          align=Align.INLINE)
+d.comment(0xa9cb, '...high', align=Align.INLINE)
+d.comment(0xa9cd, 'Evaluate the sine continued fraction in r^2',
+          align=Align.INLINE)
+d.comment(0xa9d0, 'Scale by r (in TEMP3): sin(r) = r * P', align=Align.INLINE)
+
+# sin_cos_reduce (&A9D3): argument reduction for SIN/COS.
+d.comment(0xa9d3, 'Exponent of the argument', align=Align.INLINE)
+d.comment(0xa9d5, 'too large to reduce accurately?', align=Align.INLINE)
+d.comment(0xa9d7, 'yes: report the error', align=Align.INLINE)
+d.comment(0xa9d9, 'Save the argument in TEMP1', align=Align.INLINE)
+d.comment(0xa9dc, 'Point at pi/2...', align=Align.INLINE)
+d.comment(0xa9df, '...and unpack it into FWB', align=Align.INLINE)
+d.comment(0xa9e2, 'Take the argument sign...', align=Align.INLINE)
+d.comment(0xa9e4, '...for FWB', align=Align.INLINE)
+d.comment(0xa9e6, 'Halve FWB to +/- pi/4 (rounding bias)', align=Align.INLINE)
+d.comment(0xa9e8, 'FWA = argument +/- pi/4', align=Align.INLINE)
+d.comment(0xa9eb, 'FWA = that / (pi/2): integer part is the quadrant',
+          align=Align.INLINE)
+d.comment(0xa9ee, 'Take the integer part', align=Align.INLINE)
+d.comment(0xa9f1, 'Low byte of the quadrant count', align=Align.INLINE)
+d.comment(0xa9f3, 'save it in &4A', align=Align.INLINE)
+d.comment(0xa9f5, 'Is the whole quadrant count zero?', align=Align.INLINE)
+d.comment(0xa9f7, '...', align=Align.INLINE)
+d.comment(0xa9f9, '...', align=Align.INLINE)
+d.comment(0xa9fb, 'yes: argument already in range, use it as is',
+          align=Align.INLINE)
+d.comment(0xa9fd, 'Rebuild the quadrant count as a real: exponent',
+          align=Align.INLINE)
+d.comment(0xa9ff, '...', align=Align.INLINE)
+d.comment(0xaa01, 'clear the rounding byte', align=Align.INLINE)
+d.comment(0xaa03, '...', align=Align.INLINE)
+d.comment(0xaa05, 'Sign of the count', align=Align.INLINE)
+d.comment(0xaa07, '...', align=Align.INLINE)
+d.comment(0xaa09, 'positive: skip', align=Align.INLINE)
+d.comment(0xaa0b, 'negative: negate the mantissa', align=Align.INLINE)
+d.comment(0xaa0e, 'Normalise the quadrant count', align=Align.INLINE)
+d.comment(0xaa11, 'Save it in TEMP2', align=Align.INLINE)
+d.comment(0xaa14, 'Cody-Waite reduce: FWA = count * (pi/2 high part)',
+          align=Align.INLINE)
+d.comment(0xaa17, '...', align=Align.INLINE)
+d.comment(0xaa1a, 'FWA = argument - count*(pi/2 high)', align=Align.INLINE)
+d.comment(0xaa1d, '...', align=Align.INLINE)
+d.comment(0xaa20, 'Save the partial reduction in TEMP1', align=Align.INLINE)
+d.comment(0xaa23, 'Reload the quadrant count', align=Align.INLINE)
+d.comment(0xaa26, '...', align=Align.INLINE)
+d.comment(0xaa29, 'FWA = count * (pi/2 low part)', align=Align.INLINE)
+d.comment(0xaa2c, '...', align=Align.INLINE)
+d.comment(0xaa2f, 'Subtract the low part too: FWA = reduced angle',
+          align=Align.INLINE)
+d.comment(0xaa32, '...', align=Align.INLINE)
+d.comment(0xaa35, 'Argument in range: reduced angle is the argument',
+          align=Align.INLINE)
+d.comment(0xaa38, 'Argument too large: error', align=Align.INLINE)
+
+# caad1: shared finish - scale the series result by the saved argument.
+d.comment(0xaad1, 'Point at the saved argument in TEMP3', align=Align.INLINE)
+d.comment(0xaad4, 'FWA = series * argument', align=Align.INLINE)
+d.comment(0xaad7, 'real result', align=Align.INLINE)
+d.comment(0xaad9, 'Return', align=Align.INLINE)
+d.comment(0xaada, 'Point at the coefficient table: low byte',
+          align=Align.INLINE)
+d.comment(0xaadc, '...high', align=Align.INLINE)
+d.comment(0xaade, 'Evaluate the continued fraction', align=Align.INLINE)
+d.comment(0xaae1, 'real result', align=Align.INLINE)
+d.comment(0xaae3, 'Return', align=Align.INLINE)
 
 # eval_mul_div (&9DD1): Level 3 - * / DIV MOD
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)

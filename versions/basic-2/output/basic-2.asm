@@ -7248,7 +7248,7 @@ l848a = sub_c847b+15
 ; FWA = tan(FWA), argument in radians. Pure routine at &A6C1.
 .fn_tan
     jsr sub_c92fa                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
-    jsr sub_ca9d3                                                     ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
+    jsr sin_cos_reduce                                                ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
     lda l004a                                                         ; a6c4: a5 4a       .J       ; save the quadrant
     pha                                                               ; a6c6: 48          H        ; ...
     jsr point_fp_temp4                                                ; a6c7: 20 e9 a7     ..      ; save the first result (cos) in TEMP4
@@ -7507,7 +7507,7 @@ l848a = sub_c847b+15
     jsr ca387                                                         ; a835: 20 87 a3     ..   
     lda #&73 ; 's'                                                    ; a838: a9 73       .s    
     ldy #&a8                                                          ; a83a: a0 a8       ..    
-    jsr sub_ca897                                                     ; a83c: 20 97 a8     ..   
+    jsr fp_eval_cont_frac                                             ; a83c: 20 97 a8     ..   
     jsr point_fp_temp4                                                ; a83f: 20 e9 a7     ..   
     jsr fwa_mul_var                                                   ; a842: 20 56 a6     V.   
     jsr fwa_mul_var                                                   ; a845: 20 56 a6     V.   
@@ -7530,48 +7530,55 @@ l848a = sub_c847b+15
     equb &12, &38, &a5, &0b, &88, &79, &0e, &9f, &f3, &7c, &2a, &ac   ; a875: 12 38 a5... .8....
     equb &3f, &b5, &86, &34, &01, &a2, &7a, &7f, &63, &8e, &37, &ec   ; a881: 3f b5 86... ?.....
     equb &82, &3f, &ff, &ff, &c1, &7f, &ff, &ff, &ff, &ff             ; a88d: 82 3f ff... .?....
+; ***************************************************************************************
+; Evaluate a continued-fraction approximation
+;
+; X,Y point at a coefficient table: a count byte followed by that many five-byte fp
+; coefficients. The argument is held in TEMP1; the routine folds the table from the top,
+; alternating FWA = arg / FWA and FWA = FWA + next coefficient, to evaluate the continued
+; fraction used by the trig kernels.
 ; &a897 referenced 4 times by &a83c, &a951, &a9cd, &aade
-.sub_ca897
-    sta l004d                                                         ; a897: 85 4d       .M    
-    sty l004e                                                         ; a899: 84 4e       .N    
-    jsr fwa_pack_temp1                                                ; a89b: 20 85 a3     ..   
-    ldy #0                                                            ; a89e: a0 00       ..    
-    lda (l004d),y                                                     ; a8a0: b1 4d       .M    
-    sta zp_dp_flag                                                    ; a8a2: 85 48       .H    
-    inc l004d                                                         ; a8a4: e6 4d       .M    
-    bne ca8aa                                                         ; a8a6: d0 02       ..    
-    inc l004e                                                         ; a8a8: e6 4e       .N    
+.fp_eval_cont_frac
+    sta l004d                                                         ; a897: 85 4d       .M       ; Save the coefficient table pointer (low)
+    sty l004e                                                         ; a899: 84 4e       .N       ; ...and high
+    jsr fwa_pack_temp1                                                ; a89b: 20 85 a3     ..      ; Stash the argument in TEMP1
+    ldy #0                                                            ; a89e: a0 00       ..       ; First table byte is the coefficient count
+    lda (l004d),y                                                     ; a8a0: b1 4d       .M       ; ...
+    sta zp_dp_flag                                                    ; a8a2: 85 48       .H       ; use it as the loop counter
+    inc l004d                                                         ; a8a4: e6 4d       .M       ; Advance past the count byte to coefficient 0
+    bne ca8aa                                                         ; a8a6: d0 02       ..       ; ...
+    inc l004e                                                         ; a8a8: e6 4e       .N       ; ...
 ; &a8aa referenced 1 time by &a8a6
 .ca8aa
-    lda l004d                                                         ; a8aa: a5 4d       .M    
-    sta zp_fp_ptr                                                     ; a8ac: 85 4b       .K    
-    lda l004e                                                         ; a8ae: a5 4e       .N    
-    sta zp_fp_ptr_1                                                   ; a8b0: 85 4c       .L    
-    jsr fwa_unpack_var                                                ; a8b2: 20 b5 a3     ..   
+    lda l004d                                                         ; a8aa: a5 4d       .M       ; Point the fp pointer at the first coefficient
+    sta zp_fp_ptr                                                     ; a8ac: 85 4b       .K       ; ...
+    lda l004e                                                         ; a8ae: a5 4e       .N       ; ...
+    sta zp_fp_ptr_1                                                   ; a8b0: 85 4c       .L       ; ...
+    jsr fwa_unpack_var                                                ; a8b2: 20 b5 a3     ..      ; FWA = coefficient 0
 ; &a8b5 referenced 1 time by &a8d1
 .loop_ca8b5
-    jsr point_fp_temp1                                                ; a8b5: 20 f5 a7     ..   
-    jsr fwa_rdiv_var                                                  ; a8b8: 20 ad a6     ..   
-    clc                                                               ; a8bb: 18          .     
-    lda l004d                                                         ; a8bc: a5 4d       .M    
-    adc #5                                                            ; a8be: 69 05       i.    
-    sta l004d                                                         ; a8c0: 85 4d       .M    
-    sta zp_fp_ptr                                                     ; a8c2: 85 4b       .K    
-    lda l004e                                                         ; a8c4: a5 4e       .N    
-    adc #0                                                            ; a8c6: 69 00       i.    
-    sta l004e                                                         ; a8c8: 85 4e       .N    
-    sta zp_fp_ptr_1                                                   ; a8ca: 85 4c       .L    
-    jsr fwa_add_var                                                   ; a8cc: 20 00 a5     ..   
-    dec zp_dp_flag                                                    ; a8cf: c6 48       .H    
-    bne loop_ca8b5                                                    ; a8d1: d0 e2       ..    
-    rts                                                               ; a8d3: 60          `     
+    jsr point_fp_temp1                                                ; a8b5: 20 f5 a7     ..      ; Point at the argument in TEMP1
+    jsr fwa_rdiv_var                                                  ; a8b8: 20 ad a6     ..      ; FWA = arg / FWA
+    clc                                                               ; a8bb: 18          .        ; Advance the pointer to the next coefficient
+    lda l004d                                                         ; a8bc: a5 4d       .M       ; ...(five bytes per coefficient)
+    adc #5                                                            ; a8be: 69 05       i.       ; ...
+    sta l004d                                                         ; a8c0: 85 4d       .M       ; ...
+    sta zp_fp_ptr                                                     ; a8c2: 85 4b       .K       ; ...
+    lda l004e                                                         ; a8c4: a5 4e       .N       ; ...
+    adc #0                                                            ; a8c6: 69 00       i.       ; ...
+    sta l004e                                                         ; a8c8: 85 4e       .N       ; ...
+    sta zp_fp_ptr_1                                                   ; a8ca: 85 4c       .L       ; ...
+    jsr fwa_add_var                                                   ; a8cc: 20 00 a5     ..      ; FWA = FWA + next coefficient
+    dec zp_dp_flag                                                    ; a8cf: c6 48       .H       ; One coefficient done
+    bne loop_ca8b5                                                    ; a8d1: d0 e2       ..       ; loop until the table is exhausted
+    rts                                                               ; a8d3: 60          `        ; Return the continued-fraction value
 ; ***************************************************************************************
 ; ACS
 ;
 ; FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927.
 .fn_acs
-    jsr fn_asn                                                        ; a8d4: 20 da a8     ..   
-    jmp ca927                                                         ; a8d7: 4c 27 a9    L'.   
+    jsr fn_asn                                                        ; a8d4: 20 da a8     ..      ; Compute asn(x)
+    jmp fwa_complement_half_pi                                        ; a8d7: 4c 27 a9    L'.      ; Result = pi/2 - asn(x)
 ; ***************************************************************************************
 ; ASN
 ;
@@ -7595,7 +7602,7 @@ l848a = sub_c847b+15
     jmp ca90a                                                         ; a8fb: 4c 0a a9    L..      ; asn(x) = atn(that)
 ; &a8fe referenced 2 times by &a8f3, &abcb
 .ca8fe
-    jsr sub_caa55                                                     ; a8fe: 20 55 aa     U.      ; x = 1: load pi/2
+    jsr point_const_half_pi                                           ; a8fe: 20 55 aa     U.      ; x = 1: load pi/2
     jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..      ; ...
 ; &a904 referenced 2 times by &a90d, &a93a
 .ca904
@@ -7606,51 +7613,57 @@ l848a = sub_c847b+15
 ;
 ; FWA = arctan(FWA), result in radians. Pure routine at &A90A.
 .fn_atn
-    jsr sub_c92fa                                                     ; a907: 20 fa 92     ..   
+    jsr sub_c92fa                                                     ; a907: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a90a referenced 1 time by &a8fb
 .ca90a
-    jsr fwa_sign                                                      ; a90a: 20 da a1     ..   
-    beq ca904                                                         ; a90d: f0 f5       ..    
-    bpl ca91b                                                         ; a90f: 10 0a       ..    
-    lsr zp_fwa_sign                                                   ; a911: 46 2e       F.    
-    jsr ca91b                                                         ; a913: 20 1b a9     ..   
+    jsr fwa_sign                                                      ; a90a: 20 da a1     ..      ; Sign of the argument
+    beq ca904                                                         ; a90d: f0 f5       ..       ; zero: atn(0) = 0, return it
+    bpl ca91b                                                         ; a90f: 10 0a       ..       ; positive: compute directly
+    lsr zp_fwa_sign                                                   ; a911: 46 2e       F.       ; negative: clear the sign to take |x|
+    jsr ca91b                                                         ; a913: 20 1b a9     ..      ; compute atn(|x|)
 ; &a916 referenced 1 time by &a8e7
 .ca916
-    lda #&80                                                          ; a916: a9 80       ..    
-    sta zp_fwa_sign                                                   ; a918: 85 2e       ..    
-    rts                                                               ; a91a: 60          `     
+    lda #&80                                                          ; a916: a9 80       ..       ; set the result sign negative
+    sta zp_fwa_sign                                                   ; a918: 85 2e       ..       ; ...so atn(-x) = -atn(x)
+    rts                                                               ; a91a: 60          `        ; Return
 ; &a91b referenced 2 times by &a90f, &a913
 .ca91b
-    lda zp_fwa_exp                                                    ; a91b: a5 30       .0    
-    cmp #&81                                                          ; a91d: c9 81       ..    
-    bcc ca936                                                         ; a91f: 90 15       ..    
-    jsr fwa_reciprocal                                                ; a921: 20 a5 a6     ..   
-    jsr ca936                                                         ; a924: 20 36 a9     6.   
+    lda zp_fwa_exp                                                    ; a91b: a5 30       .0       ; Exponent of |x|
+    cmp #&81                                                          ; a91d: c9 81       ..       ; |x| < 1?
+    bcc ca936                                                         ; a91f: 90 15       ..       ; yes: evaluate the series directly
+    jsr fwa_reciprocal                                                ; a921: 20 a5 a6     ..      ; |x| >= 1: FWA = 1 / x
+    jsr ca936                                                         ; a924: 20 36 a9     6.      ; atn(1/x) via the series
+; ***************************************************************************************
+; FWA = pi/2 - FWA
+;
+; Subtract FWA from pi/2 using the two-part constant at &AA59/&AA5E for extra precision,
+; then negate. Used for ACS (pi/2 - ASN) and the large-argument arctan identity atn(x) =
+; pi/2 - atn(1/x).
 ; &a927 referenced 1 time by &a8d7
-.ca927
-    jsr sub_caa48                                                     ; a927: 20 48 aa     H.   
-    jsr fwa_add_var                                                   ; a92a: 20 00 a5     ..   
-    jsr sub_caa4c                                                     ; a92d: 20 4c aa     L.   
-    jsr fwa_add_var                                                   ; a930: 20 00 a5     ..   
-    jmp fwa_negate                                                    ; a933: 4c 7e ad    L~.   
+.fwa_complement_half_pi
+    jsr point_half_pi_hi                                              ; a927: 20 48 aa     H.      ; atn(x) = pi/2 - atn(1/x)
+    jsr fwa_add_var                                                   ; a92a: 20 00 a5     ..      ; ...
+    jsr point_half_pi_lo                                              ; a92d: 20 4c aa     L.      ; ...
+    jsr fwa_add_var                                                   ; a930: 20 00 a5     ..      ; ...
+    jmp fwa_negate                                                    ; a933: 4c 7e ad    L~.      ; ...
 ; &a936 referenced 2 times by &a91f, &a924
 .ca936
-    lda zp_fwa_exp                                                    ; a936: a5 30       .0    
-    cmp #&73 ; 's'                                                    ; a938: c9 73       .s    
-    bcc ca904                                                         ; a93a: 90 c8       ..    
-    jsr fwa_pack_temp3                                                ; a93c: 20 81 a3     ..   
-    jsr fwb_clear                                                     ; a93f: 20 53 a4     S.   
-    lda #&80                                                          ; a942: a9 80       ..    
-    sta zp_fwb_exp                                                    ; a944: 85 3d       .=    
-    sta zp_fwb_m1                                                     ; a946: 85 3e       .>    
-    sta zp_fwb_sign                                                   ; a948: 85 3b       .;    
-    jsr fwa_add_fwb                                                   ; a94a: 20 05 a5     ..   
-    lda #&5a ; 'Z'                                                    ; a94d: a9 5a       .Z    
-    ldy #&a9                                                          ; a94f: a0 a9       ..    
-    jsr sub_ca897                                                     ; a951: 20 97 a8     ..   
-    jsr caad1                                                         ; a954: 20 d1 aa     ..   
-    lda #&ff                                                          ; a957: a9 ff       ..    
-    rts                                                               ; a959: 60          `     
+    lda zp_fwa_exp                                                    ; a936: a5 30       .0       ; Exponent of the (reduced) argument
+    cmp #&73 ; 's'                                                    ; a938: c9 73       .s       ; very small (|x| < 2^-13)?
+    bcc ca904                                                         ; a93a: 90 c8       ..       ; yes: atn(x) = x to working precision
+    jsr fwa_pack_temp3                                                ; a93c: 20 81 a3     ..      ; Save the argument x in TEMP3
+    jsr fwb_clear                                                     ; a93f: 20 53 a4     S.      ; Set FWB = 1...
+    lda #&80                                                          ; a942: a9 80       ..       ; ...
+    sta zp_fwb_exp                                                    ; a944: 85 3d       .=       ; ...
+    sta zp_fwb_m1                                                     ; a946: 85 3e       .>       ; ...
+    sta zp_fwb_sign                                                   ; a948: 85 3b       .;       ; ...
+    jsr fwa_add_fwb                                                   ; a94a: 20 05 a5     ..      ; Add it to the argument
+    lda #&5a ; 'Z'                                                    ; a94d: a9 5a       .Z       ; Evaluate the arctan continued fraction
+    ldy #&a9                                                          ; a94f: a0 a9       ..       ; (coefficients at &A95A)
+    jsr fp_eval_cont_frac                                             ; a951: 20 97 a8     ..      ; ...
+    jsr caad1                                                         ; a954: 20 d1 aa     ..      ; Scale by x (in TEMP3): atn(x) = x * P
+    lda #&ff                                                          ; a957: a9 ff       ..       ; real result
+    rts                                                               ; a959: 60          `        ; Return
     equb &09, &85, &a3, &59, &e8, &67, &80, &1c, &9d, &07, &36, &80   ; a95a: 09 85 a3... ......
     equb &57, &bb, &78, &df, &80, &ca, &9a, &0e, &83, &84, &8c, &bb   ; a966: 57 bb 78... W.x...
     equb &ca, &6e, &81, &95, &96, &06, &de, &81, &0a, &c7, &6c, &52   ; a972: ca 6e 81... .n....
@@ -7664,7 +7677,7 @@ l848a = sub_c847b+15
 ; FWA = cos(FWA), argument in radians. Pure routine at &A990.
 .fn_cos
     jsr sub_c92fa                                                     ; a98d: 20 fa 92     ..      ; Evaluate the argument as a real
-    jsr sub_ca9d3                                                     ; a990: 20 d3 a9     ..      ; Compute the SIN/COS kernel
+    jsr sin_cos_reduce                                                ; a990: 20 d3 a9     ..      ; Compute the SIN/COS kernel
     inc l004a                                                         ; a993: e6 4a       .J       ; Shift the quadrant: cos x = sin(x + pi/2)
     jmp ca99e                                                         ; a995: 4c 9e a9    L..      ; Finish (shared with SIN)
 ; ***************************************************************************************
@@ -7672,105 +7685,117 @@ l848a = sub_c847b+15
 ;
 ; FWA = sin(FWA), argument in radians. Pure routine at &A99B.
 .fn_sin
-    jsr sub_c92fa                                                     ; a998: 20 fa 92     ..   
-    jsr sub_ca9d3                                                     ; a99b: 20 d3 a9     ..   
+    jsr sub_c92fa                                                     ; a998: 20 fa 92     ..      ; Evaluate the argument as a real
+    jsr sin_cos_reduce                                                ; a99b: 20 d3 a9     ..      ; Range-reduce: leaves the angle in FWA, quadrant in &4A
 ; &a99e referenced 3 times by &a6cf, &a6db, &a995
 .ca99e
-    lda l004a                                                         ; a99e: a5 4a       .J    
-    and #2                                                            ; a9a0: 29 02       ).    
-    beq ca9aa                                                         ; a9a2: f0 06       ..    
-    jsr ca9aa                                                         ; a9a4: 20 aa a9     ..   
-    jmp fwa_negate                                                    ; a9a7: 4c 7e ad    L~.   
+    lda l004a                                                         ; a99e: a5 4a       .J       ; Quadrant
+    and #2                                                            ; a9a0: 29 02       ).       ; second or third quadrant (result negative)?
+    beq ca9aa                                                         ; a9a2: f0 06       ..       ; no: compute and return directly
+    jsr ca9aa                                                         ; a9a4: 20 aa a9     ..      ; compute the magnitude...
+    jmp fwa_negate                                                    ; a9a7: 4c 7e ad    L~.      ; ...then negate it
 ; &a9aa referenced 2 times by &a9a2, &a9a4
 .ca9aa
-    lsr l004a                                                         ; a9aa: 46 4a       FJ    
-    bcc ca9c3                                                         ; a9ac: 90 15       ..    
-    jsr ca9c3                                                         ; a9ae: 20 c3 a9     ..   
+    lsr l004a                                                         ; a9aa: 46 4a       FJ       ; Odd quadrant (use cosine instead of sine)?
+    bcc ca9c3                                                         ; a9ac: 90 15       ..       ; even: evaluate the sine series
+    jsr ca9c3                                                         ; a9ae: 20 c3 a9     ..      ; odd: evaluate the sine series...
 ; &a9b1 referenced 1 time by &a8ed
 .sub_ca9b1
-    jsr fwa_pack_temp1                                                ; a9b1: 20 85 a3     ..   
-    jsr fwa_mul_var                                                   ; a9b4: 20 56 a6     V.   
-    jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..   
-    jsr fwa_set_one                                                   ; a9ba: 20 99 a6     ..   
-    jsr sub_ca4d0                                                     ; a9bd: 20 d0 a4     ..   
-    jmp ca7b7                                                         ; a9c0: 4c b7 a7    L..   
+    jsr fwa_pack_temp1                                                ; a9b1: 20 85 a3     ..      ; Save sin into TEMP1
+    jsr fwa_mul_var                                                   ; a9b4: 20 56 a6     V.      ; FWA = sin^2
+    jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..      ; ...
+    jsr fwa_set_one                                                   ; a9ba: 20 99 a6     ..      ; FWA = 1
+    jsr sub_ca4d0                                                     ; a9bd: 20 d0 a4     ..      ; FWA = 1 - sin^2
+    jmp ca7b7                                                         ; a9c0: 4c b7 a7    L..      ; cos = sqrt(1 - sin^2)
 ; &a9c3 referenced 2 times by &a9ac, &a9ae
 .ca9c3
-    jsr fwa_pack_temp3                                                ; a9c3: 20 81 a3     ..   
-    jsr fwa_mul_var                                                   ; a9c6: 20 56 a6     V.   
-    lda #&72 ; 'r'                                                    ; a9c9: a9 72       .r    
-    ldy #&aa                                                          ; a9cb: a0 aa       ..    
-    jsr sub_ca897                                                     ; a9cd: 20 97 a8     ..   
-    jmp caad1                                                         ; a9d0: 4c d1 aa    L..   
+    jsr fwa_pack_temp3                                                ; a9c3: 20 81 a3     ..      ; Save the reduced angle r in TEMP3
+    jsr fwa_mul_var                                                   ; a9c6: 20 56 a6     V.      ; FWA = r^2
+    lda #&72 ; 'r'                                                    ; a9c9: a9 72       .r       ; Point at the sine coefficient table: low byte
+    ldy #&aa                                                          ; a9cb: a0 aa       ..       ; ...high
+    jsr fp_eval_cont_frac                                             ; a9cd: 20 97 a8     ..      ; Evaluate the sine continued fraction in r^2
+    jmp caad1                                                         ; a9d0: 4c d1 aa    L..      ; Scale by r (in TEMP3): sin(r) = r * P
+; ***************************************************************************************
+; Range-reduce the SIN/COS argument
+;
+; Divide the argument by pi/2 to find the quadrant (stored in &4A) and Cody-Waite reduce
+; to the principal range using the two-part pi/2 constant, leaving the reduced angle in
+; FWA for the series.
 ; &a9d3 referenced 3 times by &a6c1, &a990, &a99b
-.sub_ca9d3
-    lda zp_fwa_exp                                                    ; a9d3: a5 30       .0    
-    cmp #&98                                                          ; a9d5: c9 98       ..    
-    bcs caa38                                                         ; a9d7: b0 5f       ._    
-    jsr fwa_pack_temp1                                                ; a9d9: 20 85 a3     ..   
-    jsr sub_caa55                                                     ; a9dc: 20 55 aa     U.   
-    jsr fwb_unpack_var                                                ; a9df: 20 4e a3     N.   
-    lda zp_fwa_sign                                                   ; a9e2: a5 2e       ..    
-    sta zp_fwb_sign                                                   ; a9e4: 85 3b       .;    
-    dec zp_fwb_exp                                                    ; a9e6: c6 3d       .=    
-    jsr fwa_add_fwb                                                   ; a9e8: 20 05 a5     ..   
-    jsr fp_divide                                                     ; a9eb: 20 e7 a6     ..   
-    jsr fwa_to_int2                                                   ; a9ee: 20 fe a3     ..   
-    lda zp_fwa_m4                                                     ; a9f1: a5 34       .4    
-    sta l004a                                                         ; a9f3: 85 4a       .J    
-    ora zp_fwa_m3                                                     ; a9f5: 05 33       .3    
-    ora zp_fwa_m2                                                     ; a9f7: 05 32       .2    
-    ora zp_fwa_m1                                                     ; a9f9: 05 31       .1    
-    beq caa35                                                         ; a9fb: f0 38       .8    
-    lda #&a0                                                          ; a9fd: a9 a0       ..    
-    sta zp_fwa_exp                                                    ; a9ff: 85 30       .0    
-    ldy #0                                                            ; aa01: a0 00       ..    
-    sty zp_fwa_rnd                                                    ; aa03: 84 35       .5    
-    lda zp_fwa_m1                                                     ; aa05: a5 31       .1    
-    sta zp_fwa_sign                                                   ; aa07: 85 2e       ..    
-    bpl caa0e                                                         ; aa09: 10 03       ..    
-    jsr ca46c                                                         ; aa0b: 20 6c a4     l.   
+.sin_cos_reduce
+    lda zp_fwa_exp                                                    ; a9d3: a5 30       .0       ; Exponent of the argument
+    cmp #&98                                                          ; a9d5: c9 98       ..       ; too large to reduce accurately?
+    bcs caa38                                                         ; a9d7: b0 5f       ._       ; yes: report the error
+    jsr fwa_pack_temp1                                                ; a9d9: 20 85 a3     ..      ; Save the argument in TEMP1
+    jsr point_const_half_pi                                           ; a9dc: 20 55 aa     U.      ; Point at pi/2...
+    jsr fwb_unpack_var                                                ; a9df: 20 4e a3     N.      ; ...and unpack it into FWB
+    lda zp_fwa_sign                                                   ; a9e2: a5 2e       ..       ; Take the argument sign...
+    sta zp_fwb_sign                                                   ; a9e4: 85 3b       .;       ; ...for FWB
+    dec zp_fwb_exp                                                    ; a9e6: c6 3d       .=       ; Halve FWB to +/- pi/4 (rounding bias)
+    jsr fwa_add_fwb                                                   ; a9e8: 20 05 a5     ..      ; FWA = argument +/- pi/4
+    jsr fp_divide                                                     ; a9eb: 20 e7 a6     ..      ; FWA = that / (pi/2): integer part is the quadrant
+    jsr fwa_to_int2                                                   ; a9ee: 20 fe a3     ..      ; Take the integer part
+    lda zp_fwa_m4                                                     ; a9f1: a5 34       .4       ; Low byte of the quadrant count
+    sta l004a                                                         ; a9f3: 85 4a       .J       ; save it in &4A
+    ora zp_fwa_m3                                                     ; a9f5: 05 33       .3       ; Is the whole quadrant count zero?
+    ora zp_fwa_m2                                                     ; a9f7: 05 32       .2       ; ...
+    ora zp_fwa_m1                                                     ; a9f9: 05 31       .1       ; ...
+    beq caa35                                                         ; a9fb: f0 38       .8       ; yes: argument already in range, use it as is
+    lda #&a0                                                          ; a9fd: a9 a0       ..       ; Rebuild the quadrant count as a real: exponent
+    sta zp_fwa_exp                                                    ; a9ff: 85 30       .0       ; ...
+    ldy #0                                                            ; aa01: a0 00       ..       ; clear the rounding byte
+    sty zp_fwa_rnd                                                    ; aa03: 84 35       .5       ; ...
+    lda zp_fwa_m1                                                     ; aa05: a5 31       .1       ; Sign of the count
+    sta zp_fwa_sign                                                   ; aa07: 85 2e       ..       ; ...
+    bpl caa0e                                                         ; aa09: 10 03       ..       ; positive: skip
+    jsr ca46c                                                         ; aa0b: 20 6c a4     l.      ; negative: negate the mantissa
 ; &aa0e referenced 1 time by &aa09
 .caa0e
-    jsr fwa_normalise                                                 ; aa0e: 20 03 a3     ..   
-    jsr fwa_pack_temp2                                                ; aa11: 20 7d a3     }.   
-    jsr sub_caa48                                                     ; aa14: 20 48 aa     H.   
-    jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.   
-    jsr point_fp_temp1                                                ; aa1a: 20 f5 a7     ..   
-    jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..   
-    jsr fwa_pack_var                                                  ; aa20: 20 8d a3     ..   
-    jsr point_fp_temp2                                                ; aa23: 20 ed a7     ..   
-    jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..   
-    jsr sub_caa4c                                                     ; aa29: 20 4c aa     L.   
-    jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.   
-    jsr point_fp_temp1                                                ; aa2f: 20 f5 a7     ..   
-    jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..   
+    jsr fwa_normalise                                                 ; aa0e: 20 03 a3     ..      ; Normalise the quadrant count
+    jsr fwa_pack_temp2                                                ; aa11: 20 7d a3     }.      ; Save it in TEMP2
+    jsr point_half_pi_hi                                              ; aa14: 20 48 aa     H.      ; Cody-Waite reduce: FWA = count * (pi/2 high part)
+    jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.      ; ...
+    jsr point_fp_temp1                                                ; aa1a: 20 f5 a7     ..      ; FWA = argument - count*(pi/2 high)
+    jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..      ; ...
+    jsr fwa_pack_var                                                  ; aa20: 20 8d a3     ..      ; Save the partial reduction in TEMP1
+    jsr point_fp_temp2                                                ; aa23: 20 ed a7     ..      ; Reload the quadrant count
+    jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..      ; ...
+    jsr point_half_pi_lo                                              ; aa29: 20 4c aa     L.      ; FWA = count * (pi/2 low part)
+    jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.      ; ...
+    jsr point_fp_temp1                                                ; aa2f: 20 f5 a7     ..      ; Subtract the low part too: FWA = reduced angle
+    jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..      ; ...
 ; &aa35 referenced 1 time by &a9fb
 .caa35
-    jmp fwa_unpack_temp1                                              ; aa35: 4c b2 a3    L..   
+    jmp fwa_unpack_temp1                                              ; aa35: 4c b2 a3    L..      ; Argument in range: reduced angle is the argument
 ; &aa38 referenced 1 time by &a9d7
 .caa38
-    brk                                                               ; aa38: 00          .     
+    brk                                                               ; aa38: 00          .        ; Argument too large: error
     equb &17                                                          ; aa39: 17          .     
     equs "Accuracy lost"                                              ; aa3a: 41 63 63... Acc...
     equb &00                                                          ; aa47: 00          .     
+; ***************************************************************************************
+; Point the fp pointer at the high part of pi/2 (&AA59)
 ; &aa48 referenced 2 times by &a927, &aa14
-.sub_caa48
-    lda #&59 ; 'Y'                                                    ; aa48: a9 59       .Y    
-    bne caa4e                                                         ; aa4a: d0 02       ..    
+.point_half_pi_hi
+    lda #&59 ; 'Y'                                                    ; aa48: a9 59       .Y       ; High part of pi/2: low byte
+    bne caa4e                                                         ; aa4a: d0 02       ..       ; ...(shared tail)
+; ***************************************************************************************
+; Point the fp pointer at the low part of pi/2 (&AA5E)
 ; &aa4c referenced 2 times by &a92d, &aa29
-.sub_caa4c
-    lda #&5e ; '^'                                                    ; aa4c: a9 5e       .^    
+.point_half_pi_lo
+    lda #&5e ; '^'                                                    ; aa4c: a9 5e       .^       ; Low part of pi/2: low byte
 ; &aa4e referenced 2 times by &aa4a, &aa57
 .caa4e
-    sta zp_fp_ptr                                                     ; aa4e: 85 4b       .K    
-    lda #&aa                                                          ; aa50: a9 aa       ..    
-    sta zp_fp_ptr_1                                                   ; aa52: 85 4c       .L    
-    rts                                                               ; aa54: 60          `     
+    sta zp_fp_ptr                                                     ; aa4e: 85 4b       .K       ; Set the fp pointer low
+    lda #&aa                                                          ; aa50: a9 aa       ..       ; high &AA
+    sta zp_fp_ptr_1                                                   ; aa52: 85 4c       .L       ; ...
+    rts                                                               ; aa54: 60          `        ; Return
+; ***************************************************************************************
+; Point the fp pointer at the pi/2 constant (&AA63)
 ; &aa55 referenced 2 times by &a8fe, &a9dc
-.sub_caa55
-    lda #&63 ; 'c'                                                    ; aa55: a9 63       .c    
-    bne caa4e                                                         ; aa57: d0 f5       ..    
+.point_const_half_pi
+    lda #&63 ; 'c'                                                    ; aa55: a9 63       .c       ; pi/2 constant: low byte
+    bne caa4e                                                         ; aa57: d0 f5       ..       ; ...(shared tail)
     sta (l00c9,x)                                                     ; aa59: 81 c9       ..    
     bpl caa5d                                                         ; aa5b: 10 00       ..    
 ; &aa5d referenced 1 time by &aa5b
@@ -7827,17 +7852,17 @@ l848a = sub_c847b+15
     jsr sub_cab12                                                     ; aace: 20 12 ab     ..   
 ; &aad1 referenced 3 times by &9e78, &a954, &a9d0
 .caad1
-    jsr point_fp_temp3                                                ; aad1: 20 f1 a7     ..   
-    jsr fwa_mul_var                                                   ; aad4: 20 56 a6     V.   
-    lda #&ff                                                          ; aad7: a9 ff       ..    
-    rts                                                               ; aad9: 60          `     
+    jsr point_fp_temp3                                                ; aad1: 20 f1 a7     ..      ; Point at the saved argument in TEMP3
+    jsr fwa_mul_var                                                   ; aad4: 20 56 a6     V.      ; FWA = series * argument
+    lda #&ff                                                          ; aad7: a9 ff       ..       ; real result
+    rts                                                               ; aad9: 60          `        ; Return
 ; &aada referenced 1 time by &aabb
 .sub_caada
-    lda #&e9                                                          ; aada: a9 e9       ..    
-    ldy #&aa                                                          ; aadc: a0 aa       ..    
-    jsr sub_ca897                                                     ; aade: 20 97 a8     ..   
-    lda #&ff                                                          ; aae1: a9 ff       ..    
-    rts                                                               ; aae3: 60          `     
+    lda #&e9                                                          ; aada: a9 e9       ..       ; Point at the coefficient table: low byte
+    ldy #&aa                                                          ; aadc: a0 aa       ..       ; ...high
+    jsr fp_eval_cont_frac                                             ; aade: 20 97 a8     ..      ; Evaluate the continued fraction
+    lda #&ff                                                          ; aae1: a9 ff       ..       ; real result
+    rts                                                               ; aae3: 60          `        ; Return
     equb &82, &2d, &f8, &54, &58, &07, &83, &e0, &20, &86, &5b, &82   ; aae4: 82 2d f8... .-....
     equb &80, &53, &93, &b8, &83, &20, &00, &06, &a1, &82, &00, &00   ; aaf0: 80 53 93... .S....
     equb &21, &63, &82, &c0, &00, &00, &02, &82, &80, &00, &00, &0c   ; aafc: 21 63 82... !c....
@@ -7971,16 +7996,16 @@ l848a = sub_c847b+15
 ;
 ; FWA = FWA degrees expressed in radians. Pure routine at &ABB4.
 .fn_rad
-    jsr sub_c92fa                                                     ; abb1: 20 fa 92     ..   
-    ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h    
-    lda #&aa                                                          ; abb6: a9 aa       ..    
+    jsr sub_c92fa                                                     ; abb1: 20 fa 92     ..      ; Evaluate the argument as a real
+    ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h       ; Point at the constant pi/180: low byte
+    lda #&aa                                                          ; abb6: a9 aa       ..       ; high byte
 ; &abb8 referenced 2 times by &abaf, &abc9
 .cabb8
-    sty zp_fp_ptr                                                     ; abb8: 84 4b       .K    
-    sta zp_fp_ptr_1                                                   ; abba: 85 4c       .L    
-    jsr fwa_mul_var                                                   ; abbc: 20 56 a6     V.   
-    lda #&ff                                                          ; abbf: a9 ff       ..    
-    rts                                                               ; abc1: 60          `     
+    sty zp_fp_ptr                                                     ; abb8: 84 4b       .K       ; Set the fp pointer low
+    sta zp_fp_ptr_1                                                   ; abba: 85 4c       .L       ; ...and high
+    jsr fwa_mul_var                                                   ; abbc: 20 56 a6     V.      ; FWA = x * pi/180
+    lda #&ff                                                          ; abbf: a9 ff       ..       ; Flag a non-zero real result
+    rts                                                               ; abc1: 60          `        ; Return
 ; ***************************************************************************************
 ; DEG
 ;
@@ -11922,6 +11947,7 @@ save pydis_start, pydis_end
 ;     eval_after_eq:               4
 ;     find_line_target:            4
 ;     find_variable:               4
+;     fp_eval_cont_frac:           4
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
 ;     iwa_abs:                     4
@@ -11938,7 +11964,6 @@ save pydis_start, pydis_end
 ;     sub_c92eb:                   4
 ;     sub_c9456:                   4
 ;     sub_c9e20:                   4
-;     sub_ca897:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
 ;     zp_data_ptr_1:               4
@@ -12005,13 +12030,13 @@ save pydis_start, pydis_end
 ;     return_36:                   3
 ;     return_39:                   3
 ;     return_8:                    3
+;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
 ;     sub_c882f:                   3
 ;     sub_c8832:                   3
 ;     sub_c894b:                   3
 ;     sub_c97ba:                   3
 ;     sub_c991f:                   3
-;     sub_ca9d3:                   3
 ;     sub_cab12:                   3
 ;     sub_cb50e:                   3
 ;     sub_cb577:                   3
@@ -12199,7 +12224,10 @@ save pydis_start, pydis_end
 ;     osfind:                      2
 ;     osrdch:                      2
 ;     output_digit:                2
+;     point_const_half_pi:         2
 ;     point_fp_temp3:              2
+;     point_half_pi_hi:            2
+;     point_half_pi_lo:            2
 ;     print_inline_string:         2
 ;     print_special_item:          2
 ;     read_input_line:             2
@@ -12241,9 +12269,6 @@ save pydis_start, pydis_end
 ;     sub_c9e1d:                   2
 ;     sub_ca486:                   2
 ;     sub_ca4d0:                   2
-;     sub_caa48:                   2
-;     sub_caa4c:                   2
-;     sub_caa55:                   2
 ;     sub_cb4b1:                   2
 ;     sub_cb545:                   2
 ;     sub_cb562:                   2
@@ -12530,7 +12555,6 @@ save pydis_start, pydis_end
 ;     ca8aa:                       1
 ;     ca90a:                       1
 ;     ca916:                       1
-;     ca927:                       1
 ;     caa0e:                       1
 ;     caa35:                       1
 ;     caa38:                       1
@@ -12681,6 +12705,7 @@ save pydis_start, pydis_end
 ;     fn_ln:                       1
 ;     for_gosub_stack:             1
 ;     fp_mantissas_add:            1
+;     fwa_complement_half_pi:      1
 ;     fwa_round_carry:             1
 ;     fwa_swap_var:                1
 ;     iwa_div:                     1
@@ -13412,7 +13437,6 @@ save pydis_start, pydis_end
 ;     ca90a
 ;     ca916
 ;     ca91b
-;     ca927
 ;     ca936
 ;     ca99e
 ;     ca9aa
@@ -13968,12 +13992,7 @@ save pydis_start, pydis_end
 ;     sub_ca4d0
 ;     sub_ca4e8
 ;     sub_ca801
-;     sub_ca897
 ;     sub_ca9b1
-;     sub_ca9d3
-;     sub_caa48
-;     sub_caa4c
-;     sub_caa55
 ;     sub_caa94
 ;     sub_caada
 ;     sub_cab12
