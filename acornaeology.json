@@ -10,6 +10,12 @@
             "url": "docs/analysis/basic-2/control-flow-stacks.md",
             "icon": "doc",
             "note": "How BBC BASIC II spreads its control flow across five separate stacks — the 6502 hardware stack, the BASIC value stack, and the FOR/REPEAT/GOSUB arrays in page 5. A PROC/FN call saves the first two but not the loop stacks, which is why ENDPROC (or GOTO) out of an open loop leaks its frame: harmless once at the prompt, but a source of Too many FORs/REPEATs and enclosing-loop corruption otherwise. Covers the legitimate idioms and the version-II ROM addresses."
+        },
+        {
+            "label": "The 5-byte float format and the precision of BASIC's constants (BASIC II)",
+            "url": "docs/analysis/basic-2/floating-point-constants-and-precision.md",
+            "icon": "doc",
+            "note": "A close reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants. The 32-bit significand gives ~9.6 decimal digits, so the e at &AAE4 is really 2918732888/2^30 — right to 9 figures, then truncated one ULP low. A survey of the named scalars shows the last-bit rounding isn't even consistent (e and pi/180 truncated, ln 2 rounded, log10 e a ULP high), which is why the disassembly shows the full decoded value rather than a misleading rounded one. Ends on the two-part Cody-Waite pi/2, Acorn's own workaround for the precision limit."
         }
     ],
     "references": [
