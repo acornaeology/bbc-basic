@@ -4,7 +4,7 @@
 
 Tucked into the maths section of the ROM is a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Disassembling them raised a small but stubborn question: when the ROM says it holds *e*, does it?
 
-It does not. It holds a 32-bit approximation that matches *e* in every bit the format can store but is still, in the last bit, demonstrably *not e*. A close look at the whole pool shows something more: the rounding of that last bit isn't even consistent from one constant to the next. This article works through the format in the base the machine actually uses, the evidence, and why the disassembly shows the full decoded value rather than a tidy rounded one.
+Not exactly — but no finite representation could. *e* is irrational, so no 32-bit fraction equals it; the most any such format can do is store the *nearest representable* value, and that, not exactness, is the fair yardstick. The sharper question is whether the ROM holds *that* nearest value — and for *e* it does not. It stores the neighbouring value one step further out, because the last bit was rounded the wrong way. A look across the whole pool shows that's not a one-off: several of the constants miss the nearest representable, with no consistent rounding rule between them. This article works through the format in the base the machine actually uses, the evidence, and why the disassembly shows the full decoded value rather than a tidy rounded one.
 
 
 ## The 5-byte format
@@ -60,7 +60,7 @@ For the human reader, in decimal:
 | true *e* | `2.718281828459045` |
 | difference | `5.92 × 10⁻¹⁰`  (≈ `0.64` ULP) |
 
-One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`, so the shortfall of `0.64` ULP is exactly the size of error you get from reducing an irrational number to 32 significand bits. The bytes are not *e*; they are the rational `ADF85458 / 2³⁰`.
+One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The point isn't that the bytes aren't *e* — no 32-bit value is — but that they aren't even the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better value was available in the same five bytes; rounding down missed it. (The stored bytes are the exact rational `ADF85458 / 2³⁰`.)
 
 
 ## Not a uniform policy
@@ -82,7 +82,7 @@ Read the last two columns together. Where the dropped continuation is far from `
 - **ln 2 is correctly rounded** — its true significand is `…F7.D1C…`, and the `.D` *did* carry `F7` up to `F8`;
 - **log₁₀*e* sits one ULP *above* the correctly-rounded value** (`DE5BD8AA` where nearest is `DE5BD8A9`). It is *high*, so it cannot be a truncation at all.
 
-So the pool was not produced by one clean rule. Every constant is within a single ULP of the truth — as good as a 32-bit significand gets — but whoever generated the table did not apply a uniform round-to-nearest discipline. (log₁₀*e* coming out a ULP high is consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected.) The honest summary is: **each value is right to within ±1 ULP of the best 32-bit approximation, and the last bit is idiosyncratic.**
+So the pool was not produced by one clean rule. Every constant is within a single ULP of the truth, but only some of them are the *nearest* value the format offers — the best it can do. The others (*e*, π/180, log₁₀*e*) sit on the neighbouring value, a ULP further out than necessary, because the last bit wasn't rounded to nearest. (log₁₀*e* coming out a ULP high is consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected.) The honest summary is: **every value is within ±1 ULP of the truth, but whether it is the *best available* value — the correctly-rounded one — is hit-or-miss.**
 
 
 ## Why the disassembly shows the full value
@@ -93,7 +93,7 @@ This is precisely why the typed-data annotation emits the whole decoded figure a
     equb &82, &2d, &f8, &54, &58    ; bbc_float5 = 2.718281827867031  e
 ```
 
-Printed as `2.718281828`, the constant would read as exact *e* and hide the truncation entirely. Anyone reasoning about the ROM — or wondering why BASIC's `EXP`, `LN` or `DEG`/`RAD` disagree with a pocket calculator in the last digits — would be misled into thinking the inputs were perfect and the routines lossy. They aren't: the *constants themselves* are already a ULP off, before a single multiply happens. The full repr makes the stored reality visible; the comment after it (`e`) names the *intent* without claiming the bytes achieve it.
+Printed as `2.718281828`, the constant would read as exact *e* and hide both facts at once — that it is a finite approximation, and that it isn't even the closest one the format allows. Anyone wondering why BASIC's `EXP`, `LN` or `DEG`/`RAD` disagree with a pocket calculator in the last digits is owed the value actually stored, not a flattering round of it: the *constants themselves* carry up to a ULP of error before a single multiply happens. The full repr makes the stored reality visible; the comment after it (`e`) names the *intent* without claiming the bytes achieve it.
 
 
 ## Working past the limit: the two-part π/2
@@ -108,7 +108,7 @@ Their sum is `−π/2` to about fourteen digits — far past what a single 32-bi
 
 ## In the disassembly
 
-All 39 packed constants in the pool — the named scalars, the `1.0`/`−0.5` terms, and every coefficient of the ATN/SIN/EXP/LN continued-fraction tables — are marked with the `bbc_float5` typed-data type (dasmos 1.10.0). The five raw bytes are still emitted, so the image reassembles byte-identical, while the decoded value rides along as an annotation (and as a structured `decoded` field in the JSON). That is what makes a claim like "the *e* in the ROM is `ADF85458 / 2³⁰`, not *e*" something you can read straight off the listing rather than having to work out by hand.
+All 39 packed constants in the pool — the named scalars, the `1.0`/`−0.5` terms, and every coefficient of the ATN/SIN/EXP/LN continued-fraction tables — are marked with the `bbc_float5` typed-data type (dasmos 1.10.0). The five raw bytes are still emitted, so the image reassembles byte-identical, while the decoded value rides along as an annotation (and as a structured `decoded` field in the JSON). That is what makes a claim like "the *e* in the ROM is the rational `ADF85458 / 2³⁰` — a ULP short of the nearest value the format could hold" something you can read straight off the listing rather than having to work out by hand.
 
 
 ## Cross-references
