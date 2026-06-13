@@ -54,11 +54,11 @@ The ROM keeps all eight stored hexits of *e* exactly and simply **drops the cont
 
 For the human reader, in decimal:
 
-| | value |
-|---|---|
-| ROM constant at `&AAE4` (= `ADF85458 / 2³⁰`) | `2.718281827867031` |
-| true *e* | `2.718281828459045` |
-| difference | `5.92 × 10⁻¹⁰`  (≈ `0.64` ULP) |
+|                                              | value                          |
+|----------------------------------------------|--------------------------------|
+| ROM constant at `&AAE4` (= `ADF85458 / 2³⁰`) | `2.718281827867031`            |
+| true *e*                                     | `2.718281828459045`            |
+| difference                                   | `5.92 × 10⁻¹⁰`  (≈ `0.64` ULP) |
 
 One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The point isn't that the bytes aren't *e* — no 32-bit value is — but that they aren't even the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better *binary* value was available in the same five bytes, and rounding down passed it over — which looks like a slip until you ask what the bytes *print as*. (They are the exact rational `ADF85458 / 2³⁰`.)
 
@@ -86,14 +86,14 @@ The likeliest mechanism is the dullest one: the constants were written down as d
 
 Does that decimal loyalty explain the *whole* pool? Not quite. Restoring each named scalar's significand and comparing it with the true value carried past 32 bits:
 
-| constant | addr | exp | ROM significand | true significand (hex) | nearest 32-bit | ROM − nearest |
-|---|---|---|---|---|---|---|
-| *e* | `&AAE4` | 130 | `ADF85458` | `ADF85458.A2B…` | `ADF85459` | **−1 ULP** (truncated) |
-| π/2 | `&AA63` | 129 | `C90FDAA2` | `C90FDAA2.216…` | `C90FDAA2` | 0 |
-| ln 2 | `&A86E` | 128 | `B17217F8` | `B17217F7.D1C…` | `B17217F8` | 0 (rounded up) |
-| log₁₀*e* | `&A869` | 127 | `DE5BD8AA` | `DE5BD8A9.372…` | `DE5BD8A9` | **+1 ULP** |
-| π/180 | `&AA68` | 123 | `8EFA3512` | `8EFA3512.94E…` | `8EFA3513` | **−1 ULP** (truncated) |
-| 180/π | `&AA6D` | 134 | `E52EE0D3` | `E52EE0D3.1E0…` | `E52EE0D3` | 0 |
+| constant | addr    | exp | ROM significand | true significand (hex) | nearest 32-bit | ROM − nearest          |
+|----------|---------|-----|-----------------|------------------------|----------------|------------------------|
+| *e*      | `&AAE4` | 130 | `ADF85458`      | `ADF85458.A2B…`        | `ADF85459`     | **−1 ULP** (truncated) |
+| π/2      | `&AA63` | 129 | `C90FDAA2`      | `C90FDAA2.216…`        | `C90FDAA2`     | 0                      |
+| ln 2     | `&A86E` | 128 | `B17217F8`      | `B17217F7.D1C…`        | `B17217F8`     | 0 (rounded up)         |
+| log₁₀*e* | `&A869` | 127 | `DE5BD8AA`      | `DE5BD8A9.372…`        | `DE5BD8A9`     | **+1 ULP**             |
+| π/180    | `&AA68` | 123 | `8EFA3512`      | `8EFA3512.94E…`        | `8EFA3513`     | **−1 ULP** (truncated) |
+| 180/π    | `&AA6D` | 134 | `E52EE0D3`      | `E52EE0D3.1E0…`        | `E52EE0D3`     | 0                      |
 
 Read the last two columns together. Where the dropped continuation is far from `.8`, truncation and round-to-nearest land on the same hexit and the ROM is correct either way (π/2, 180/π). Where they differ, the behaviour is mixed:
 
@@ -102,6 +102,21 @@ Read the last two columns together. Where the dropped continuation is far from `
 - **log₁₀*e* sits one ULP *above* the correctly-rounded value** (`DE5BD8AA` where nearest is `DE5BD8A9`). It is *high*, so it cannot be a truncation at all.
 
 So decimal fidelity explains *e* — and is consistent with π/180, whose truncation is decimally harmless (both neighbours print the same ten figures) — but it does not govern the whole pool. ln 2, π/2 and 180/π simply happen to be the nearest value in both bases at once. log₁₀*e*, though, is the odd one out: a ULP high in binary *and* wrong in its tenth decimal figure (`0.4342944820` against the true `0.4342944819`), worse in both bases than the value next door. That's the signature of a *computed* constant rather than a typed one — consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected. The honest summary: **most of the constants are faithful to a decimal, a couple are the nearest representable outright, and at least one is simply a little off — no single discipline, but no carelessness either.**
+
+
+## A constant the interpreter can beat
+
+The log₁₀*e* outlier is something you can watch happen. BBC BASIC effectively carries log₁₀*e* twice over: `LOG` reaches for the stored `&A869` constant (`LOG(x) = LN(x) × log₁₀e`), while `1/LN(10)` derives the same quantity afresh from the `ln 10` series, never touching the table.
+
+The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, which is `0.4342944820` to ten figures and `0.79` ULP high. (BASIC II has no float-indirection operator to read those ROM bytes back as a real, but the value reconstructs exactly as `significand / 2³³` — `PRINT 1865280597/(2^32)` echoes `0.4342944820`.) The freshly-computed one:
+
+```
+>@%=&A0A
+>PRINT 1/LN(10)
+0.4342944819
+```
+
+— the correctly-rounded figure. So the interpreter computes a *more accurate* log₁₀*e* than the one baked into its own ROM, and then ships the inferior value in `LOG`, the one function whose entire job is base-10 logarithms. The likeliest history is the one the survey pointed to: the constant was precomputed once — `1 / ln 10` from an `ln 10` a hair too low, rounded the wrong way — and never revisited, while the runtime series simply happens to be good enough that one-over-it lands on the right bit.
 
 
 ## Why the disassembly shows the full value
