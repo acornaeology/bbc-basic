@@ -745,7 +745,7 @@
       "addr": 37718,
       "name": "stmt_endproc",
       "title": "ENDPROC",
-      "description": "Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC."
+      "description": "Return from a procedure, restoring LOCAL values, the caller's text pointer and the saved 6502/value stacks. It does NOT tidy the FOR/REPEAT/GOSUB stacks, so ENDPROC from inside a loop leaks that loop's frame. ENDPROC."
     },
     {
       "addr": 46194,
@@ -1639,7 +1639,7 @@
       "addr": 45463,
       "name": "call_proc_fn",
       "title": "Enter a PROC or FN",
-      "description": "The procedure/function call mechanism. First copies the live\n6502 hardware stack onto the BASIC value stack and resets the\nhardware stack -- this is how BBC BASIC lets PROCs and FNs nest far\nbeyond the 256-byte 6502 stack. Then pushes the call context (the\nPROC/FN token and the caller's text pointers), locates the named\ndefinition, binds any parameters, and transfers control to the body.\nENDPROC / =expr unwind this frame.\n",
+      "description": "The procedure/function call mechanism. First copies the live\n6502 hardware stack onto the BASIC value stack and resets the\nhardware stack -- this is how BBC BASIC lets PROCs and FNs nest far\nbeyond the 256-byte 6502 stack. Then pushes the call context (the\nPROC/FN token and the caller's text pointers), locates the named\ndefinition, binds any parameters, and transfers control to the body.\nENDPROC / =expr unwind this frame.\n\nNote what is NOT saved: only the 6502 hardware stack and the BASIC\nvalue stack are preserved across the call. The FOR, REPEAT and GOSUB\nstacks (page 5, counters &24/&25/&26) are global and untouched. So a\nloop opened inside the body and left via an early ENDPROC (or GOTO)\nleaks its frame -- the counter is never decremented. See stmt_endproc\n(&9356) and the page-5 control-flow stacks at &0500.\n",
       "on_entry": {
         "A": "PROC token &F2 or FN token &A4"
       }
@@ -2264,7 +2264,7 @@
     "l04fc": 1276,
     "l04fe": 1278,
     "l04ff": 1279,
-    "for_gosub_stack": 1280,
+    "for_stack": 1280,
     "l0501": 1281,
     "l0502": 1282,
     "l0503": 1283,
@@ -2278,13 +2278,13 @@
     "l050d": 1293,
     "l050e": 1294,
     "l05a3": 1443,
-    "l05a4": 1444,
+    "repeat_stack": 1444,
     "l05b7": 1463,
-    "l05b8": 1464,
+    "repeat_stack_hi": 1464,
     "l05cb": 1483,
-    "l05cc": 1484,
+    "gosub_stack": 1484,
     "l05e5": 1509,
-    "l05e6": 1510,
+    "gosub_stack_hi": 1510,
     "l05ff": 1535,
     "string_work": 1536,
     "l06ff": 1791,
@@ -96285,9 +96285,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "for_gosub_stack,y",
+      "operand": "for_stack,y",
       "target": 1280,
-      "target_label": "for_gosub_stack"
+      "target_label": "for_stack"
     },
     {
       "addr": 47071,
@@ -97362,9 +97362,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05cc,y",
+      "operand": "gosub_stack,y",
       "target": 1484,
-      "target_label": "l05cc"
+      "target_label": "gosub_stack"
     },
     {
       "addr": 47257,
@@ -97389,9 +97389,9 @@
       "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05e6,y",
+      "operand": "gosub_stack_hi,y",
       "target": 1510,
-      "target_label": "l05e6"
+      "target_label": "gosub_stack_hi"
     },
     {
       "addr": 47262,
@@ -102775,9 +102775,9 @@
       "comment_inline": "Store the loop position: low",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05a4,x",
+      "operand": "repeat_stack,x",
       "target": 1444,
-      "target_label": "l05a4"
+      "target_label": "repeat_stack"
     },
     {
       "addr": 48114,
@@ -102802,9 +102802,9 @@
       "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05b8,x",
+      "operand": "repeat_stack_hi,x",
       "target": 1464,
-      "target_label": "l05b8"
+      "target_label": "repeat_stack_hi"
     },
     {
       "addr": 48119,

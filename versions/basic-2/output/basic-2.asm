@@ -269,7 +269,7 @@ l04fe            = &04fe
 ; &04fe referenced 1 time by &b741
 l04ff            = &04ff
 ; &04ff referenced 1 time by &b744
-for_gosub_stack  = &0500
+for_stack        = &0500
 ; &0500 referenced 1 time by &b7dc
 l0501            = &0501
 ; &0501 referenced 1 time by &b7e1
@@ -297,19 +297,19 @@ l050e            = &050e
 ; &050e referenced 1 time by &b843
 l05a3            = &05a3
 ; &05a3 referenced 1 time by &bbcd
-l05a4            = &05a4
+repeat_stack     = &05a4
 ; &05a4 referenced 1 time by &bbef
 l05b7            = &05b7
 ; &05b7 referenced 1 time by &bbd0
-l05b8            = &05b8
+repeat_stack_hi  = &05b8
 ; &05b8 referenced 1 time by &bbf4
 l05cb            = &05cb
 ; &05cb referenced 1 time by &b8bf
-l05cc            = &05cc
+gosub_stack      = &05cc
 ; &05cc referenced 1 time by &b896
 l05e5            = &05e5
 ; &05e5 referenced 1 time by &b8c2
-l05e6            = &05e6
+gosub_stack_hi   = &05e6
 ; &05e6 referenced 1 time by &b89b
 l05ff            = &05ff
 ; &05ff referenced 8 times by &8d6c, &9b0a, &9c2d, &9c30, &abf4, &ba0d, &bdbe, &bdd6
@@ -3634,7 +3634,9 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; ENDPROC
 ;
-; Return from a procedure, restoring LOCAL values and the caller's text pointer. ENDPROC.
+; Return from a procedure, restoring LOCAL values, the caller's text pointer and the
+; saved 6502/value stacks. It does NOT tidy the FOR/REPEAT/GOSUB stacks, so ENDPROC from
+; inside a loop leaks that loop's frame. ENDPROC.
 .stmt_endproc
     tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
     cpx #&fc                                                          ; 9357: e0 fc       ..       ; ...
@@ -9353,6 +9355,12 @@ l848a = sub_c847b+15
 ; PROC/FN token and the caller's text pointers), locates the named definition, binds any
 ; parameters, and transfers control to the body. ENDPROC / =expr unwind this frame.
 ;
+; Note what is NOT saved: only the 6502 hardware stack and the BASIC value stack are
+; preserved across the call. The FOR, REPEAT and GOSUB stacks (page 5, counters
+; &24/&25/&26) are global and untouched. So a loop opened inside the body and left via an
+; early ENDPROC (or GOTO) leaks its frame -- the counter is never decremented. See
+; stmt_endproc (&9356) and the page-5 control-flow stacks at &0500.
+;
 ; On Entry:
 ;     A: PROC token &F2 or FN token &A4
 ; &b197 referenced 1 time by &9312
@@ -10443,7 +10451,7 @@ l848a = sub_c847b+15
     cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)  too many nested FORs?
     bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..       ; yes: error
     lda zp_general                                                    ; b7da: a5 37       .7       ; Save the control-variable pointer in the frame  Store the variable pointer in the frame (+0)
-    sta for_gosub_stack,y                                             ; b7dc: 99 00 05    ...      ; ...
+    sta for_stack,y                                                   ; b7dc: 99 00 05    ...      ; ...
     lda zp_general_1                                                  ; b7df: a5 38       .8       ; ...
     sta l0501,y                                                       ; b7e1: 99 01 05    ...      ; ...
     lda zp_fileblk                                                    ; b7e4: a5 39       .9       ; ...and its type (+2)
@@ -10538,9 +10546,9 @@ l848a = sub_c847b+15
     cpy #&1a                                                          ; b890: c0 1a       ..       ; At most 26 nested GOSUBs
     bcs err_too_many_gosubs                                           ; b892: b0 0e       ..       ; too many: error
     lda zp_text_ptr                                                   ; b894: a5 0b       ..       ; Push the return position (text pointer)
-    sta l05cc,y                                                       ; b896: 99 cc 05    ...      ; ...
+    sta gosub_stack,y                                                 ; b896: 99 cc 05    ...      ; ...
     lda zp_text_ptr_1                                                 ; b899: a5 0c       ..       ; return position high byte
-    sta l05e6,y                                                       ; b89b: 99 e6 05    ...      ; ...
+    sta gosub_stack_hi,y                                              ; b89b: 99 e6 05    ...      ; ...
     inc zp_gosub_level                                                ; b89e: e6 25       .%       ; one more nesting level
     bcc cb8d2                                                         ; b8a0: 90 30       .0       ; jump to the line
 ; &b8a2 referenced 1 time by &b892
@@ -11098,9 +11106,9 @@ l848a = sub_c847b+15
     bcs err_too_many_repeats                                          ; bbe8: b0 ec       ..       ; Too many nested REPEATs
     jsr c986d                                                         ; bbea: 20 6d 98     m.      ; Point PtrA at the loop start
     lda zp_text_ptr                                                   ; bbed: a5 0b       ..       ; Push the loop-start position
-    sta l05a4,x                                                       ; bbef: 9d a4 05    ...      ; Store the loop position: low
+    sta repeat_stack,x                                                ; bbef: 9d a4 05    ...      ; Store the loop position: low
     lda zp_text_ptr_1                                                 ; bbf2: a5 0c       ..       ; high
-    sta l05b8,x                                                       ; bbf4: 9d b8 05    ...      ; (store)
+    sta repeat_stack_hi,x                                             ; bbf4: 9d b8 05    ...      ; (store)
     inc zp_repeat_level                                               ; bbf7: e6 24       .$       ; One more REPEAT outstanding
     jmp c8ba3                                                         ; bbf9: 4c a3 8b    L..      ; Continue execution
 ; &bbfc referenced 1 time by &baa2
@@ -12867,12 +12875,14 @@ save pydis_start, pydis_end
 ;     find_proc_fn:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
-;     for_gosub_stack:             1
+;     for_stack:                   1
 ;     fp_compare:                  1
 ;     fp_mantissas_add:            1
 ;     fwa_complement_half_pi:      1
 ;     fwa_round_carry:             1
 ;     fwa_swap_var:                1
+;     gosub_stack:                 1
+;     gosub_stack_hi:              1
 ;     iwa_div:                     1
 ;     iwa_mod:                     1
 ;     iwa_store_var:               1
@@ -12901,13 +12911,9 @@ save pydis_start, pydis_end
 ;     l050d:                       1
 ;     l050e:                       1
 ;     l05a3:                       1
-;     l05a4:                       1
 ;     l05b7:                       1
-;     l05b8:                       1
 ;     l05cb:                       1
-;     l05cc:                       1
 ;     l05e5:                       1
-;     l05e6:                       1
 ;     l3185:                       1
 ;     l82df:                       1
 ;     l8351:                       1
@@ -13112,6 +13118,8 @@ save pydis_start, pydis_end
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
 ;     print_hex_digit:             1
+;     repeat_stack:                1
+;     repeat_stack_hi:             1
 ;     resint_a:                    1
 ;     resint_c:                    1
 ;     resint_x:                    1
@@ -13843,13 +13851,9 @@ save pydis_start, pydis_end
 ;     l050d
 ;     l050e
 ;     l05a3
-;     l05a4
 ;     l05b7
-;     l05b8
 ;     l05cb
-;     l05cc
 ;     l05e5
-;     l05e6
 ;     l05ff
 ;     l06ff
 ;     l3185

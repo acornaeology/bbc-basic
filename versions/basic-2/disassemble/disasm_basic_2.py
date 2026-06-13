@@ -227,9 +227,9 @@ d.label(0x001f, 'zp_listo')           # LISTO flag
 d.label(0x0020, 'zp_trace_flag')      # &00 = trace off, &FF = trace on
 d.label(0x0021, 'zp_trace_max')       # Maximum TRACE line number
 d.label(0x0023, 'zp_width')           # WIDTH setting
-d.label(0x0024, 'zp_repeat_level')    # Nested REPEATs outstanding
-d.label(0x0025, 'zp_gosub_level')     # Nested GOSUBs outstanding
-d.label(0x0026, 'zp_for_level')       # 15 * nested FOR loops outstanding
+d.label(0x0024, 'zp_repeat_level')    # REPEAT stack depth; not saved by PROC
+d.label(0x0025, 'zp_gosub_level')     # GOSUB stack depth; not saved by PROC
+d.label(0x0026, 'zp_for_level')       # FOR stack depth (x15); not saved by PROC
 d.label(0x0027, 'zp_var_type')        # Type of the value just fetched
 d.label(0x0028, 'zp_opt_flag')        # bit0 list, bit1 errors, bit2 reloc
 d.label(0x0029, 'zp_asm_opcode')      # Assembler: opcode byte
@@ -279,7 +279,19 @@ for _i, _name in enumerate('abcdefghijklmnopqrstuvwxyz'):
 for _i in range(1, 5):
     d.label(0x046c + 5 * (_i - 1), f'fp_temp{_i}')  # FP TEMP1..TEMP4
 d.label(0x0480, 'var_ptr_table')      # Variable lookup table (by initial)
-d.label(0x0500, 'for_gosub_stack')    # FOR/REPEAT/GOSUB stack
+# Control-flow stacks (page 5). Three independent LIFO arrays, one per
+# loop construct, each indexed by its own zero-page level counter:
+#   for_stack    &0500  15-byte frames, counter zp_for_level    (&26)
+#   repeat_stack &05A4   2-byte frames, counter zp_repeat_level (&24)
+#   gosub_stack  &05CC   2-byte frames, counter zp_gosub_level  (&25)
+# These are distinct from the 6502 hardware stack and the BASIC value
+# stack, and -- unlike those two -- are NOT saved/restored across a
+# PROC/FN call. See call_proc_fn (&B197).
+d.label(0x0500, 'for_stack')          # FOR stack (&0500-&0595, 10 frames)
+d.label(0x05a4, 'repeat_stack')       # REPEAT loop-start ptrs (low bytes)
+d.label(0x05b8, 'repeat_stack_hi')    # REPEAT loop-start ptrs (high bytes)
+d.label(0x05cc, 'gosub_stack')        # GOSUB return ptrs (low bytes)
+d.label(0x05e6, 'gosub_stack_hi')     # GOSUB return ptrs (high bytes)
 d.label(0x0600, 'string_work')        # String work area / CALL block
 d.label(0x0700, 'line_input_buf')     # Line input buffer
 
@@ -496,7 +508,10 @@ HANDLER_INFO = {
     'stmt_end': ('END', 'End the program and return to the immediate '
                         'prompt. END.'),
     'stmt_endproc': ('ENDPROC', 'Return from a procedure, restoring LOCAL '
-                                'values and the caller\'s text pointer. '
+                                'values, the caller\'s text pointer and the '
+                                'saved 6502/value stacks. It does NOT tidy the '
+                                'FOR/REPEAT/GOSUB stacks, so ENDPROC from '
+                                'inside a loop leaks that loop\'s frame. '
                                 'ENDPROC.'),
     'stmt_envelope': ('ENVELOPE', 'Define a pitch/amplitude envelope for '
                                   'SOUND. ENVELOPE n,t,... (14 parameters).'),
@@ -1654,6 +1669,13 @@ beyond the 256-byte 6502 stack. Then pushes the call context (the
 PROC/FN token and the caller's text pointers), locates the named
 definition, binds any parameters, and transfers control to the body.
 ENDPROC / =expr unwind this frame.
+
+Note what is NOT saved: only the 6502 hardware stack and the BASIC
+value stack are preserved across the call. The FOR, REPEAT and GOSUB
+stacks (page 5, counters &24/&25/&26) are global and untouched. So a
+loop opened inside the body and left via an early ENDPROC (or GOTO)
+leaks its frame -- the counter is never decremented. See stmt_endproc
+(&9356) and the page-5 control-flow stacks at &0500.
 """,
     on_entry={'A': 'PROC token &F2 or FN token &A4'},
 )
