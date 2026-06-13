@@ -108,15 +108,19 @@ So decimal fidelity explains *e* — and is consistent with π/180, whose trunca
 
 The log₁₀*e* outlier is something you can watch happen. BBC BASIC effectively carries log₁₀*e* twice over: `LOG` reaches for the stored `&A869` constant (`LOG(x) = LN(x) × log₁₀e`), while `1/LN(10)` derives the same quantity afresh from the `ln 10` series, never touching the table.
 
-The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, which is `0.4342944820` to ten figures and `0.79` ULP high. (BASIC II has no float-indirection operator to read those ROM bytes back as a real, but the value reconstructs exactly as `significand / 2³³` — `PRINT 1865280597/(2^32)` echoes `0.4342944820`.) The freshly-computed one:
+The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, i.e. `0.4342944820` at ten figures and `0.79` ULP high. BASIC II has no float-indirection operator to read those ROM bytes back as a real, but the value reconstructs exactly as the significand over a power of two. On a real machine, with ten figures selected:
 
 ```
 >@%=&A0A
+>PRINT 1865280597/(2^32)
+0.434294482
 >PRINT 1/LN(10)
 0.4342944819
 ```
 
-— the correctly-rounded figure. So the interpreter computes a *more accurate* log₁₀*e* than the one baked into its own ROM, and then ships the inferior value in `LOG`, the one function whose entire job is base-10 logarithms. The likeliest history is the one the survey pointed to: the constant was precomputed once — `1 / ln 10` from an `ln 10` a hair too low, rounded the wrong way — and never revisited, while the runtime series simply happens to be good enough that one-over-it lands on the right bit.
+The first line is the stored `&A869` constant, rebuilt arithmetically as `3730561194 / 2³³` (halved to `1865280597 / 2³²` to keep the literal representable) — and general format trims its trailing zero, so `0.4342944820` shows as `0.434294482`. The second is log₁₀*e* recomputed from the `ln 10` series. They diverge at the tenth figure: the stored value rounds *up* to `…820`, the computed one lands on the correct `…819`.
+
+So the interpreter computes a *more accurate* log₁₀*e* than the one baked into its own ROM, and then ships the inferior value in `LOG`, the one function whose entire job is base-10 logarithms. The likeliest history is the one the survey pointed to: the constant was precomputed once — `1 / ln 10` from an `ln 10` a hair too low, rounded the wrong way — and never revisited, while the runtime series simply happens to be good enough that one-over-it lands on the right bit.
 
 
 ## Why the disassembly shows the full value
