@@ -15,7 +15,7 @@
             "label": "The 5-byte float format and the precision of BASIC's constants (BASIC II)",
             "url": "docs/analysis/basic-2/floating-point-constants-and-precision.md",
             "icon": "doc",
-            "note": "A close reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants. The 32-bit significand gives ~9.6 decimal digits, so the e at &AAE4 is really 2918732888/2^30 — right to 9 figures, then truncated one ULP low. A survey of the named scalars shows the last-bit rounding isn't even consistent (e and pi/180 truncated, ln 2 rounded, log10 e a ULP high), which is why the disassembly shows the full decoded value rather than a misleading rounded one. Ends on the two-part Cody-Waite pi/2, Acorn's own workaround for the precision limit."
+            "note": "A close reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants. The significand is 32 bits — eight hexadecimal digits — so the e at &AAE4 is really the rational ADF85458/2^30: every stored hexit of e, then truncated one unit-in-the-last-place low (round-to-nearest would be ADF85459). A survey of the named scalars shows the last-bit rounding isn't even consistent (e and pi/180 truncated, ln 2 rounded, log10 e a ULP high), which is why the disassembly shows the full decoded value rather than a misleading rounded one. Ends on the two-part Cody-Waite pi/2, Acorn's own workaround for the precision limit."
         }
     ],
     "references": [
