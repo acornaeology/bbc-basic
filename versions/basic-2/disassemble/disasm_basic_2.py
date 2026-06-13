@@ -52,11 +52,56 @@ d.use_environment('acorn_model_b_hardware')
 d.use_environment(
     'acorn_sideways_rom', language_entry='code', service_entry='none',
 )
+# Language-specific data types: registers the packed 5-byte
+# floating-point type "bbc_float5" used for the REAL constant pool.
+d.use_environment('bbc_basic_6502')
 
 # Code entry points. The language entry (&8000) and language_startup
 # (&8023, the BEQ target) are reached by the trace from the env-seeded
 # language entry, so they need no explicit entry() here.
 d.entry(0xb402)  # BASIC error handler, installed into BRKV at startup
+
+# ----------------------------------------------------------------------
+# Floating-point constant pool. BASIC's REAL constants are packed
+# 5-byte floats (excess-128 exponent, sign in the mantissa MSB). Type
+# each one with the bbc_float5 data type: the raw bytes are emitted for
+# byte-faithful reassembly, with the decoded value surfaced as an
+# annotation. override=True reclaims bytes the tracer/auto-detector
+# classified as code or string. The continued-fraction coefficient
+# tables are a count byte then that many 5-byte coefficients, with one
+# trailing constant before the next routine.
+# ----------------------------------------------------------------------
+def _fp_coeff_table(count_addr, count, name, trailing_comment):
+    """Type a continued-fraction table: count byte, count x bbc_float5,
+    then one trailing constant before the next routine."""
+    d.byte(count_addr, 1, override=True)            # coefficient count
+    for _i in range(count):
+        d.typed_data(count_addr + 1 + 5 * _i, 'bbc_float5',
+                     comment=f'{name} c{_i}', override=True)
+    d.typed_data(count_addr + 1 + 5 * count, 'bbc_float5',
+                 comment=trailing_comment, override=True)
+
+
+# LN: log10(e) and ln 2 scalars, then the LN continued-fraction table.
+d.typed_data(0xa869, 'bbc_float5', comment='log10(e) = 1/ln(10)', override=True)
+d.typed_data(0xa86e, 'bbc_float5', comment='ln 2', override=True)
+_fp_coeff_table(0xa873, 6, 'ln', '-0.5')
+# ATN continued-fraction table.
+_fp_coeff_table(0xa95a, 9, 'atn', None)   # trailing constant 0.92730
+# The two-part pi/2, pi/2, and the RAD/DEG conversion factors, then SIN.
+d.typed_data(0xaa59, 'bbc_float5', comment='pi/2, high part (Cody-Waite)',
+             override=True)
+d.typed_data(0xaa5e, 'bbc_float5', comment='pi/2, low part (Cody-Waite)',
+             override=True)
+d.typed_data(0xaa63, 'bbc_float5', comment='pi/2', override=True)
+d.typed_data(0xaa68, 'bbc_float5', comment='pi/180 (degrees -> radians, RAD)',
+             override=True)
+d.typed_data(0xaa6d, 'bbc_float5', comment='180/pi (radians -> degrees, DEG)',
+             override=True)
+_fp_coeff_table(0xaa72, 5, 'sin', '1.0')
+# e, then the EXP continued-fraction table.
+d.typed_data(0xaae4, 'bbc_float5', comment='e', override=True)
+_fp_coeff_table(0xaae9, 7, 'exp', '1.0')
 
 # ----------------------------------------------------------------------
 # Language entry and startup.
@@ -7929,11 +7974,6 @@ d.comment(0xbff0, 'print it', align=Align.INLINE)
 d.comment(0xbff3, 'next', align=Align.INLINE)
 d.comment(0xbff4, 'loop', align=Align.INLINE)
 d.comment(0xbff6, 'next statement', align=Align.INLINE)
-
-# FP constant data (high part of pi/2) mis-traced as code.
-d.comment(0xaa59, 'pi/2 high part: constant byte', align=Align.INLINE)
-d.comment(0xaa5b, '...', align=Align.INLINE)
-d.comment(0xaa5d, '...', align=Align.INLINE)
 
 # fn_point continuation gaps.
 d.comment(0xab55, '...', align=Align.INLINE)
