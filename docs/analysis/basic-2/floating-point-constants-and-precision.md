@@ -4,7 +4,7 @@
 
 Tucked into the maths section of the ROM is a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Disassembling them raised a small but stubborn question: when the ROM says it holds *e*, does it?
 
-Not exactly — but no finite representation could. *e* is irrational, so no 32-bit fraction equals it; the most any such format can do is store the *nearest representable* value, and that, not exactness, is the fair yardstick. The sharper question is whether the ROM holds *that* nearest value — and for *e* it does not. It stores the neighbouring value one step further out, because the last bit was rounded the wrong way. A look across the whole pool shows that's not a one-off: several of the constants miss the nearest representable, with no consistent rounding rule between them. This article works through the format in the base the machine actually uses, the evidence, and why the disassembly shows the full decoded value rather than a tidy rounded one.
+Not exactly — but no finite representation could. *e* is irrational, so no 32-bit fraction equals it; the most any such format can do is store the *nearest representable* value, and that, not exactness, is the fair yardstick. The sharper question is whether the ROM holds *that* nearest value — and for *e* it does not. It stores the neighbouring value one step further out — and, as we'll see, not by accident: for *e* that value is the one that prints *correctly in decimal*. A look across the whole pool shows neither tidy nearest-rounding nor any single rule, but no carelessness either. This article works through the format in the base the machine actually uses, the evidence, and why the disassembly shows the full decoded value rather than a tidy rounded one.
 
 
 ## The 5-byte format
@@ -60,12 +60,31 @@ For the human reader, in decimal:
 | true *e* | `2.718281828459045` |
 | difference | `5.92 × 10⁻¹⁰`  (≈ `0.64` ULP) |
 
-One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The point isn't that the bytes aren't *e* — no 32-bit value is — but that they aren't even the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better value was available in the same five bytes; rounding down missed it. (The stored bytes are the exact rational `ADF85458 / 2³⁰`.)
+One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The point isn't that the bytes aren't *e* — no 32-bit value is — but that they aren't even the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better *binary* value was available in the same five bytes, and rounding down passed it over — which looks like a slip until you ask what the bytes *print as*. (They are the exact rational `ADF85458 / 2³⁰`.)
+
+
+## Why round down? Decimal fidelity
+
+The truncation looks like a slip only until you ask what the stored value *prints as*. BBC BASIC shows reals to ten significant figures, and to ten figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
+
+A real BBC Micro bears it out — `@% = &A0A` selects ten significant figures:
+
+```
+>@%=&A0A
+>PRINT EXP(1)
+2.718281828
+>PRINT PI
+3.141592653
+```
+
+`EXP(1)` evaluates to `e⁰ × e¹` with both factors exact, so it returns the raw `&AAE4` constant — and it reads `2.718281828`, not the `2.718281829` the binary-nearest value would have given. (`PRINT PI` showing `3.141592653` confirms the ten-figure display is live and rounding to nearest; that it lands one digit below true π is just the format running out of precision at the tenth figure — a separate effect.)
+
+The likeliest mechanism is the dullest one: the constants were written down as decimals, to whatever length the source table carried, and an assembler converted them. The stored binary is then the nearest representable to *the decimal Acorn wrote*, not to the true irrational — and the two diverge exactly when the decimal's last digit and the binary's last bit disagree. The value isn't careless; it's loyal to its decimal.
 
 
 ## Not a uniform policy
 
-The obvious next hypothesis — "these tables were all truncated" — turns out to be wrong. Restoring each named scalar's significand and comparing it with the true value carried past 32 bits:
+Does that decimal loyalty explain the *whole* pool? Not quite. Restoring each named scalar's significand and comparing it with the true value carried past 32 bits:
 
 | constant | addr | exp | ROM significand | true significand (hex) | nearest 32-bit | ROM − nearest |
 |---|---|---|---|---|---|---|
@@ -82,7 +101,7 @@ Read the last two columns together. Where the dropped continuation is far from `
 - **ln 2 is correctly rounded** — its true significand is `…F7.D1C…`, and the `.D` *did* carry `F7` up to `F8`;
 - **log₁₀*e* sits one ULP *above* the correctly-rounded value** (`DE5BD8AA` where nearest is `DE5BD8A9`). It is *high*, so it cannot be a truncation at all.
 
-So the pool was not produced by one clean rule. Every constant is within a single ULP of the truth, but only some of them are the *nearest* value the format offers — the best it can do. The others (*e*, π/180, log₁₀*e*) sit on the neighbouring value, a ULP further out than necessary, because the last bit wasn't rounded to nearest. (log₁₀*e* coming out a ULP high is consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected.) The honest summary is: **every value is within ±1 ULP of the truth, but whether it is the *best available* value — the correctly-rounded one — is hit-or-miss.**
+So decimal fidelity explains *e* — and is consistent with π/180, whose truncation is decimally harmless (both neighbours print the same ten figures) — but it does not govern the whole pool. ln 2, π/2 and 180/π simply happen to be the nearest value in both bases at once. log₁₀*e*, though, is the odd one out: a ULP high in binary *and* wrong in its tenth decimal figure (`0.4342944820` against the true `0.4342944819`), worse in both bases than the value next door. That's the signature of a *computed* constant rather than a typed one — consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected. The honest summary: **most of the constants are faithful to a decimal, a couple are the nearest representable outright, and at least one is simply a little off — no single discipline, but no carelessness either.**
 
 
 ## Why the disassembly shows the full value
