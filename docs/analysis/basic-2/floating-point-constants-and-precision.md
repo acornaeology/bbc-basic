@@ -1,6 +1,6 @@
 # The constant that isn't quite *e*: BBC BASIC's 5-byte floats and the precision of its constant pool
 
-> **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for stored REAL constants. The format and the byte-level figures are specific to this version (BASIC IV is the same format at relocated addresses; BASIC V on ARM uses IEEE doubles). Addresses are version II.
+> **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for stored REAL constants. The format, the addresses, and the byte-level figures are all specific to this version.
 
 Tucked into the maths section of the ROM is a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Disassembling them raised a small but stubborn question: when the ROM says it holds *e*, does it?
 
