@@ -21823,7 +21823,7 @@
         201,
         128
       ],
-      "comment_inline": "An absolute $-string address? $addr indirection?",
+      "comment_inline": "An absolute $-string address?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&80"
@@ -21871,7 +21871,7 @@
         197,
         54
       ],
-      "comment_inline": "Does the new string fit the existing allocation? enough for the new string?",
+      "comment_inline": "Does the new string fit the existing allocation?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -21897,7 +21897,7 @@
         165,
         2
       ],
-      "comment_inline": "Otherwise allocate space from the heap Tentative new address = heap top",
+      "comment_inline": "Tentative new address = heap top",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -24539,7 +24539,7 @@
       "labels": [
         "loop_c8da6"
       ],
-      "comment_inline": "Comma: pad with spaces to the next @% field Comma: field width from @%",
+      "comment_inline": "Comma: pad with spaces to the next @% field",
       "xref_summaries": [
         "&8da6 referenced 1 time by &8dd8"
       ],
@@ -24708,7 +24708,7 @@
         0,
         4
       ],
-      "comment_inline": "Take the field width from @% (&0400) Field width from @%",
+      "comment_inline": "Take the field width from @% (&0400)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "resint_at",
@@ -24737,7 +24737,7 @@
       "labels": [
         "loop_c8dc1"
       ],
-      "comment_inline": "A tilde \"~\" switches to hexadecimal Set the hex/dec flag from carry",
+      "comment_inline": "Set the hex/dec flag (~ selects hex)",
       "xref_summaries": [
         "&8dc1 referenced 1 time by &8dd4"
       ],
@@ -24886,7 +24886,7 @@
         201,
         44
       ],
-      "comment_inline": "Comma: advance to the next print field ',' next field?",
+      "comment_inline": "Comma: advance to the next print field",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -24910,7 +24910,7 @@
         201,
         59
       ],
-      "comment_inline": "Semicolon: print the next item with no gap ';' no gap?",
+      "comment_inline": "Semicolon: print the next item with no gap",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3b"
@@ -24935,7 +24935,7 @@
         112,
         142
       ],
-      "comment_inline": "Handle the ' TAB and SPC print items TAB/SPC/' token?",
+      "comment_inline": "Handle the ' TAB and SPC print items",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_special_item",
@@ -25019,7 +25019,7 @@
         41,
         155
       ],
-      "comment_inline": "Evaluate the expression to print Evaluate the print item",
+      "comment_inline": "Evaluate the expression to print",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_or_eor",
@@ -25111,7 +25111,7 @@
         240,
         19
       ],
-      "comment_inline": "A string value: print it directly yes: print it",
+      "comment_inline": "A string value: print it directly",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e0e",
@@ -25125,7 +25125,7 @@
         223,
         158
       ],
-      "comment_inline": "A number: convert to an ASCII string Number: convert to a string",
+      "comment_inline": "A number: convert to an ASCII string",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "number_to_ascii",
@@ -25138,7 +25138,7 @@
         165,
         20
       ],
-      "comment_inline": "and right-justify it within the field width Field width",
+      "comment_inline": "and right-justify it within the field width",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_bytes",
@@ -31923,7 +31923,7 @@
       "labels": [
         "iwa_inc"
       ],
-      "comment_inline": "Increment IWA: byte 0 byte 0",
+      "comment_inline": "Increment IWA: byte 0",
       "xref_summaries": [
         "&9222 referenced 4 times by &8f59, &90ee, &9195, &af39"
       ],
@@ -31945,7 +31945,7 @@
         208,
         10
       ],
-      "comment_inline": "No carry: done no carry: done",
+      "comment_inline": "No carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -31958,7 +31958,7 @@
         230,
         43
       ],
-      "comment_inline": "Carry into byte 1 byte 1",
+      "comment_inline": "Carry into byte 1",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -31971,7 +31971,7 @@
         208,
         6
       ],
-      "comment_inline": "done no carry: done",
+      "comment_inline": "no carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -31984,7 +31984,7 @@
         230,
         44
       ],
-      "comment_inline": "byte 2 byte 2",
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_2",
@@ -31997,7 +31997,7 @@
         208,
         2
       ],
-      "comment_inline": "done no carry: done",
+      "comment_inline": "no carry: done",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_8",
@@ -32010,7 +32010,7 @@
         230,
         45
       ],
-      "comment_inline": "byte 3 byte 3",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_3",
@@ -32025,7 +32025,7 @@
       "labels": [
         "return_8"
       ],
-      "comment_inline": "IWA incremented Return",
+      "comment_inline": "Return",
       "xref_summaries": [
         "&9230 referenced 3 times by &9224, &9228, &922c"
       ],
@@ -37852,7 +37852,7 @@
       "labels": [
         "c957f"
       ],
-      "comment_inline": "Zero the value bytes of the new variable Clear the new variable value bytes",
+      "comment_inline": "Zero the value bytes of the new variable",
       "xref_summaries": [
         "&957f referenced 2 times by &9590, &9593"
       ],
@@ -47978,7 +47978,7 @@
       "labels": [
         "eval_or_eor"
       ],
-      "comment_inline": "Evaluate the higher-precedence (AND) operand first Evaluate an AND operand",
+      "comment_inline": "Evaluate the higher-precedence (AND) operand first",
       "xref_summaries": [
         "&9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d"
       ],
@@ -48015,7 +48015,7 @@
       "labels": [
         "loop_c9b2c"
       ],
-      "comment_inline": "Is the next operator OR or EOR at this level? OR token?",
+      "comment_inline": "Is the next operator OR or EOR at this level?",
       "xref_summaries": [
         "&9b2c referenced 1 time by &9b53"
       ],
@@ -48117,7 +48117,7 @@
       "labels": [
         "c9b3a"
       ],
-      "comment_inline": "OR: stack the left operand, evaluate the right OR: stack the left operand, evaluate the right",
+      "comment_inline": "OR: stack the left operand, evaluate the right",
       "xref_summaries": [
         "&9b3a referenced 1 time by &9b2e"
       ],
@@ -48173,7 +48173,7 @@
       "labels": [
         "loop_c9b43"
       ],
-      "comment_inline": "Combine the two integers with OR stacked byte",
+      "comment_inline": "stacked byte",
       "xref_summaries": [
         "&9b43 referenced 1 time by &9b4c"
       ],
@@ -48276,7 +48276,7 @@
         208,
         215
       ],
-      "comment_inline": "Loop to handle any further OR / EOR loop for further OR/EOR",
+      "comment_inline": "Loop to handle any further OR / EOR",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9b2c",
@@ -48504,7 +48504,7 @@
       "labels": [
         "loop_c9b75"
       ],
-      "comment_inline": "Apply AND only if the next operator is AND AND token?",
+      "comment_inline": "Apply AND only if the next operator is AND",
       "xref_summaries": [
         "&9b75 referenced 1 time by &9b9a"
       ],
@@ -51824,7 +51824,7 @@
       "labels": [
         "iwa_mul"
       ],
-      "comment_inline": "Save the sign of the first operand Save the right operand sign",
+      "comment_inline": "Save the right operand sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -51836,7 +51836,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -51847,7 +51847,7 @@
         113,
         173
       ],
-      "comment_inline": "make it positive take |right|",
+      "comment_inline": "take |right|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -51860,7 +51860,7 @@
         162,
         57
       ],
-      "comment_inline": "save it (via &39) stash it via &39",
+      "comment_inline": "save it (via &39)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&39"
@@ -51872,7 +51872,7 @@
         68,
         190
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -51886,7 +51886,7 @@
         234,
         189
       ],
-      "comment_inline": "pop the second operand unstack the left operand",
+      "comment_inline": "unstack the left operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -51898,7 +51898,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "recover the first sign product sign = left XOR right",
+      "comment_inline": "recover the right operand sign",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -51908,7 +51908,7 @@
         69,
         45
       ],
-      "comment_inline": "product sign = sign XOR sign ...",
+      "comment_inline": "product sign = sign XOR sign",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_iwa_3",
@@ -51921,7 +51921,7 @@
         133,
         55
       ],
-      "comment_inline": "(save it) ...",
+      "comment_inline": "(save it)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -51935,7 +51935,7 @@
         113,
         173
       ],
-      "comment_inline": "make the second positive take |left|",
+      "comment_inline": "take |left|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -51948,7 +51948,7 @@
         160,
         0
       ],
-      "comment_inline": "Clear the running product: Clear the product accumulator",
+      "comment_inline": "Clear the running product:",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -51959,7 +51959,7 @@
         162,
         0
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#0"
@@ -51970,7 +51970,7 @@
         132,
         63
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -51983,7 +51983,7 @@
         132,
         64
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -51999,7 +51999,7 @@
       "labels": [
         "loop_c9d8b"
       ],
-      "comment_inline": "Shift the multiplier right: next bit Shift the multiplier right",
+      "comment_inline": "Shift the multiplier right: next bit",
       "xref_summaries": [
         "&9d8b referenced 1 time by &9db2"
       ],
@@ -52018,7 +52018,7 @@
         102,
         57
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fileblk",
@@ -52031,7 +52031,7 @@
         144,
         21
       ],
-      "comment_inline": "bit clear: skip the add bit clear: skip the add",
+      "comment_inline": "bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9da6",
@@ -52043,7 +52043,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "bit set: add the multiplicand Add the multiplicand to the product",
+      "comment_inline": "bit set: add the multiplicand",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -52052,7 +52052,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "byte 0 ...",
+      "comment_inline": "byte 0",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -52062,7 +52062,7 @@
         101,
         42
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -52074,7 +52074,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -52083,7 +52083,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "byte 1 ...",
+      "comment_inline": "byte 1",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -52093,7 +52093,7 @@
         101,
         43
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -52105,7 +52105,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -52115,7 +52115,7 @@
         165,
         63
       ],
-      "comment_inline": "byte 2 ...",
+      "comment_inline": "byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -52128,7 +52128,7 @@
         101,
         44
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_2",
@@ -52141,7 +52141,7 @@
         133,
         63
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -52154,7 +52154,7 @@
         165,
         64
       ],
-      "comment_inline": "byte 3 ...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -52167,7 +52167,7 @@
         101,
         45
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_3",
@@ -52180,7 +52180,7 @@
         133,
         64
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -52196,7 +52196,7 @@
       "labels": [
         "c9da6"
       ],
-      "comment_inline": "Double the multiplicand: Shift the multiplicand left",
+      "comment_inline": "Shift the multiplicand left",
       "xref_summaries": [
         "&9da6 referenced 1 time by &9d8f"
       ],
@@ -52215,7 +52215,7 @@
         38,
         43
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -52228,7 +52228,7 @@
         38,
         44
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_2",
@@ -52241,7 +52241,7 @@
         38,
         45
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -52254,7 +52254,7 @@
         165,
         57
       ],
-      "comment_inline": "more multiplier bits? multiplier exhausted?",
+      "comment_inline": "more multiplier bits?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
@@ -52267,7 +52267,7 @@
         5,
         58
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "ora",
       "operand": "l003a",
@@ -52280,7 +52280,7 @@
         208,
         215
       ],
-      "comment_inline": "loop no: continue",
+      "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c9d8b",
@@ -52293,7 +52293,7 @@
         132,
         61
       ],
-      "comment_inline": "store the product (low 2 bytes) Store the high product bytes",
+      "comment_inline": "store the product (low 2 bytes)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -52306,7 +52306,7 @@
         134,
         62
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m1",
@@ -52319,7 +52319,7 @@
         165,
         55
       ],
-      "comment_inline": "product sign Product sign",
+      "comment_inline": "product sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -52331,7 +52331,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "type": "code",
       "mnemonic": "php"
     },
@@ -52344,7 +52344,7 @@
       "labels": [
         "c9dbb"
       ],
-      "comment_inline": "load the product into IWA Load the product into IWA",
+      "comment_inline": "load the product into IWA",
       "xref_summaries": [
         "&9dbb referenced 1 time by &9e07"
       ],
@@ -52365,7 +52365,7 @@
       "labels": [
         "c9dbd"
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "...",
       "xref_summaries": [
         "&9dbd referenced 1 time by &9e1a"
       ],
@@ -52383,7 +52383,7 @@
       "bytes": [
         40
       ],
-      "comment_inline": "... Apply the sign",
+      "comment_inline": "Apply the sign",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -52393,7 +52393,7 @@
         16,
         3
       ],
-      "comment_inline": "positive: done positive",
+      "comment_inline": "positive: done",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9dc6",
@@ -52407,7 +52407,7 @@
         147,
         173
       ],
-      "comment_inline": "negative: negate the product negative: negate the product",
+      "comment_inline": "negative: negate the product",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_negate",
@@ -52423,7 +52423,7 @@
       "labels": [
         "c9dc6"
       ],
-      "comment_inline": "restore the operator restore the operator",
+      "comment_inline": "restore the operator",
       "xref_summaries": [
         "&9dc6 referenced 1 time by &9dc1"
       ],
@@ -52443,7 +52443,7 @@
         212,
         157
       ],
-      "comment_inline": "loop for more operators loop for further * / DIV MOD",
+      "comment_inline": "loop for further * / DIV MOD",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9dd4",
@@ -52460,7 +52460,7 @@
       "labels": [
         "loop_c9dcb"
       ],
-      "comment_inline": "bounce back to the multiply code overflow: floating-point multiply",
+      "comment_inline": "bounce back to the multiply code",
       "xref_summaries": [
         "&9dcb referenced 1 time by &9dd6"
       ],
@@ -52809,7 +52809,7 @@
       "labels": [
         "iwa_mod"
       ],
-      "comment_inline": "Ensure the current value is an integer MOD: divide",
+      "comment_inline": "MOD: divide",
       "xref_summaries": [
         "&9e01 referenced 1 time by &9dde"
       ],
@@ -52828,7 +52828,7 @@
         165,
         56
       ],
-      "comment_inline": "Carry the operand sign into the core remainder takes the dividend sign",
+      "comment_inline": "remainder takes the dividend sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -52840,7 +52840,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "Flag MOD (vs DIV) for the shared core ...",
+      "comment_inline": "save the sign",
       "type": "code",
       "mnemonic": "php"
     },
@@ -52851,7 +52851,7 @@
         187,
         157
       ],
-      "comment_inline": "Compute the remainder (shared DIV/MOD core) load the remainder (&3D-&40) and apply the sign",
+      "comment_inline": "load the remainder (&3D-&40) and apply the sign",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "c9dbb",
@@ -75821,7 +75821,7 @@
       "labels": [
         "loop_cab7f"
       ],
-      "comment_inline": "Sign of the real Test the sign of FWA",
+      "comment_inline": "Sign of the real",
       "xref_summaries": [
         "&ab7f referenced 1 time by &ab8d"
       ],
@@ -75840,7 +75840,7 @@
         240,
         30
       ],
-      "comment_inline": "zero: 0 zero",
+      "comment_inline": "zero: 0",
       "type": "code",
       "mnemonic": "beq",
       "operand": "caba2",
@@ -75853,7 +75853,7 @@
         16,
         26
       ],
-      "comment_inline": "positive: 1 positive",
+      "comment_inline": "positive: 1",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "caba0",
@@ -75866,7 +75866,7 @@
         48,
         21
       ],
-      "comment_inline": "negative: -1 negative",
+      "comment_inline": "negative: -1",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cab9d",
@@ -96610,7 +96610,7 @@
       "labels": [
         "stmt_for"
       ],
-      "comment_inline": "Parse the control variable (numvar =) Parse the loop variable",
+      "comment_inline": "Parse the control variable (numvar =)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -96650,7 +96650,7 @@
         148,
         189
       ],
-      "comment_inline": "Evaluate and assign the initial value Stack the variable pointer",
+      "comment_inline": "Stack the variable pointer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -96691,7 +96691,7 @@
         164,
         38
       ],
-      "comment_inline": "Index the FOR stack by nesting level FOR level",
+      "comment_inline": "Index the FOR stack by nesting level",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_for_level",
@@ -96704,7 +96704,7 @@
         192,
         150
       ],
-      "comment_inline": "At most 10 nested FOR loops (10 * 15) too many nested FORs?",
+      "comment_inline": "At most 10 nested FOR loops (10 * 15)",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#&96"
@@ -96728,7 +96728,7 @@
         165,
         55
       ],
-      "comment_inline": "Save the control-variable pointer in the frame Store the variable pointer in the frame (+0)",
+      "comment_inline": "Store the variable pointer in the frame (+0)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general",
@@ -96832,7 +96832,7 @@
         201,
         184
       ],
-      "comment_inline": "Require the TO keyword TO token?",
+      "comment_inline": "Require the TO keyword",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&b8"
@@ -96907,7 +96907,7 @@
         165,
         42
       ],
-      "comment_inline": "Save the loop limit in the frame Store the limit in the frame (+8)",
+      "comment_inline": "Store the limit in the frame (+8)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -97054,7 +97054,7 @@
         201,
         136
       ],
-      "comment_inline": "Optional STEP (otherwise step defaults to 1) STEP token?",
+      "comment_inline": "Optional STEP (otherwise step defaults to 1)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&88"

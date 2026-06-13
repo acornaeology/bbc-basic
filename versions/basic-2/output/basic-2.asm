@@ -2358,13 +2358,13 @@ l848a = sub_c847b+15
 ; &8c21 referenced 2 times by &b300, &bae0
 .sub_c8c21
     lda zp_iwa_2                                                      ; 8c21: a5 2c       .,       ; Variable type
-    cmp #&80                                                          ; 8c23: c9 80       ..       ; An absolute $-string address?  $addr indirection?
+    cmp #&80                                                          ; 8c23: c9 80       ..       ; An absolute $-string address?
     beq c8ca2                                                         ; 8c25: f0 7b       .{       ; yes
     ldy #2                                                            ; 8c27: a0 02       ..       ; Bytes currently allocated
     lda (zp_iwa),y                                                    ; 8c29: b1 2a       .*       ; ...
-    cmp zp_strbuf_len                                                 ; 8c2b: c5 36       .6       ; Does the new string fit the existing allocation?  enough for the new string?
+    cmp zp_strbuf_len                                                 ; 8c2b: c5 36       .6       ; Does the new string fit the existing allocation?
     bcs c8c84                                                         ; 8c2d: b0 55       .U       ; yes: reuse the allocation
-    lda zp_vartop                                                     ; 8c2f: a5 02       ..       ; Otherwise allocate space from the heap  Tentative new address = heap top
+    lda zp_vartop                                                     ; 8c2f: a5 02       ..       ; Tentative new address = heap top
     sta zp_iwa_2                                                      ; 8c31: 85 2c       .,       ; ...
     lda zp_vartop_1                                                   ; 8c33: a5 03       ..       ; ...
     sta zp_iwa_3                                                      ; 8c35: 85 2d       .-       ; ...
@@ -2636,7 +2636,7 @@ l848a = sub_c847b+15
     jmp c8dbb                                                         ; 8da3: 4c bb 8d    L..      ; enter the print loop
 ; &8da6 referenced 1 time by &8dd8
 .loop_c8da6
-    lda resint_at                                                     ; 8da6: ad 00 04    ...      ; Comma: pad with spaces to the next @% field  Comma: field width from @%
+    lda resint_at                                                     ; 8da6: ad 00 04    ...      ; Comma: pad with spaces to the next @% field
     beq c8dbb                                                         ; 8da9: f0 10       ..       ; zero: no padding
     lda zp_count                                                      ; 8dab: a5 1e       ..       ; Current column (COUNT)
 ; &8dad referenced 1 time by &8db2
@@ -2653,11 +2653,11 @@ l848a = sub_c847b+15
 ; &8dbb referenced 3 times by &8da3, &8da9, &8dad
 .c8dbb
     clc                                                               ; 8dbb: 18          .        ; Prepare for decimal
-    lda resint_at                                                     ; 8dbc: ad 00 04    ...      ; Take the field width from @% (&0400)  Field width from @%
+    lda resint_at                                                     ; 8dbc: ad 00 04    ...      ; Take the field width from @% (&0400)
     sta zp_print_bytes                                                ; 8dbf: 85 14       ..       ; ...
 ; &8dc1 referenced 1 time by &8dd4
 .loop_c8dc1
-    ror zp_print_flag                                                 ; 8dc1: 66 15       f.       ; A tilde "~" switches to hexadecimal  Set the hex/dec flag from carry
+    ror zp_print_flag                                                 ; 8dc1: 66 15       f.       ; Set the hex/dec flag (~ selects hex)
 ; &8dc3 referenced 3 times by &8de1, &8e10, &8e1f
 .c8dc3
     jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..      ; Next non-space character
@@ -2671,18 +2671,18 @@ l848a = sub_c847b+15
 .c8dd2
     cmp #&7e ; '~'                                                    ; 8dd2: c9 7e       .~       ; '~' hex mode?
     beq loop_c8dc1                                                    ; 8dd4: f0 eb       ..       ; yes: set the flag
-    cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field  ',' next field?
+    cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
     beq loop_c8da6                                                    ; 8dd8: f0 cc       ..       ; yes
-    cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap  ';' no gap?
+    cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
     beq loop_c8d83                                                    ; 8ddc: f0 a5       ..       ; yes
-    jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items  TAB/SPC/' token?
+    jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
     bcc c8dc3                                                         ; 8de1: 90 e0       ..       ; handled: next item
     lda zp_print_bytes                                                ; 8de3: a5 14       ..       ; Save the field width...
     pha                                                               ; 8de5: 48          H        ; ...
     lda zp_print_flag                                                 ; 8de6: a5 15       ..       ; ...and flags (the evaluator may PRINT)
     pha                                                               ; 8de8: 48          H        ; ...
     dec zp_text_ptr2_off                                              ; 8de9: c6 1b       ..       ; Back up to the item
-    jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).      ; Evaluate the expression to print  Evaluate the print item
+    jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).      ; Evaluate the expression to print
     pla                                                               ; 8dee: 68          h        ; Restore the flags...
     sta zp_print_flag                                                 ; 8def: 85 15       ..       ; ...
     pla                                                               ; 8df1: 68          h        ; ...and the field width
@@ -2690,9 +2690,9 @@ l848a = sub_c847b+15
     lda zp_text_ptr2_off                                              ; 8df4: a5 1b       ..       ; Update the program pointer
     sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..       ; ...
     tya                                                               ; 8df8: 98          .        ; String item?
-    beq c8e0e                                                         ; 8df9: f0 13       ..       ; A string value: print it directly  yes: print it
-    jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..      ; A number: convert to an ASCII string  Number: convert to a string
-    lda zp_print_bytes                                                ; 8dfe: a5 14       ..       ; and right-justify it within the field width  Field width
+    beq c8e0e                                                         ; 8df9: f0 13       ..       ; A string value: print it directly
+    jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..      ; A number: convert to an ASCII string
+    lda zp_print_bytes                                                ; 8dfe: a5 14       ..       ; and right-justify it within the field width
     sec                                                               ; 8e00: 38          8        ; minus the string length
     sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6       ; ...
     bcc c8e0e                                                         ; 8e03: 90 09       ..       ; longer than the field: print as is
@@ -3375,16 +3375,16 @@ l848a = sub_c847b+15
 ; IWA = IWA + 1, carrying through all four bytes.
 ; &9222 referenced 4 times by &8f59, &90ee, &9195, &af39
 .iwa_inc
-    inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0  byte 0
-    bne return_8                                                      ; 9224: d0 0a       ..       ; No carry: done  no carry: done
-    inc zp_iwa_1                                                      ; 9226: e6 2b       .+       ; Carry into byte 1  byte 1
-    bne return_8                                                      ; 9228: d0 06       ..       ; done  no carry: done
-    inc zp_iwa_2                                                      ; 922a: e6 2c       .,       ; byte 2  byte 2
-    bne return_8                                                      ; 922c: d0 02       ..       ; done  no carry: done
-    inc zp_iwa_3                                                      ; 922e: e6 2d       .-       ; byte 3  byte 3
+    inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0
+    bne return_8                                                      ; 9224: d0 0a       ..       ; No carry: done
+    inc zp_iwa_1                                                      ; 9226: e6 2b       .+       ; Carry into byte 1
+    bne return_8                                                      ; 9228: d0 06       ..       ; no carry: done
+    inc zp_iwa_2                                                      ; 922a: e6 2c       .,       ; byte 2
+    bne return_8                                                      ; 922c: d0 02       ..       ; no carry: done
+    inc zp_iwa_3                                                      ; 922e: e6 2d       .-       ; byte 3
 ; &9230 referenced 3 times by &9224, &9228, &922c
 .return_8
-    rts                                                               ; 9230: 60          `        ; IWA incremented  Return
+    rts                                                               ; 9230: 60          `        ; Return
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
     ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?       ; Unstack the multiplier (into &3F area)
@@ -4070,7 +4070,7 @@ l848a = sub_c847b+15
     rts                                                               ; 957e: 60          `        ; Return
 ; &957f referenced 2 times by &9590, &9593
 .c957f
-    jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable  Clear the new variable value bytes
+    jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable
 ; ***************************************************************************************
 ; Parse an assignment target variable
 ;
@@ -5154,10 +5154,10 @@ l848a = sub_c847b+15
 ; Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.
 ; &9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d
 .eval_or_eor
-    jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first  Evaluate an AND operand
+    jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first
 ; &9b2c referenced 1 time by &9b53
 .loop_c9b2c
-    cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?  OR token?
+    cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?
     beq c9b3a                                                         ; 9b2e: f0 0a       ..       ; yes
     cpx #&82                                                          ; 9b30: e0 82       ..       ; EOR token?
     beq c9b55                                                         ; 9b32: f0 21       .!       ; yes
@@ -5167,13 +5167,13 @@ l848a = sub_c847b+15
     rts                                                               ; 9b39: 60          `        ; Return
 ; &9b3a referenced 1 time by &9b2e
 .c9b3a
-    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right  OR: stack the left operand, evaluate the right
+    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
     tay                                                               ; 9b3d: a8          .        ; ensure the right operand is integer
     jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..      ; ...
     ldy #3                                                            ; 9b41: a0 03       ..       ; Four bytes
 ; &9b43 referenced 1 time by &9b4c
 .loop_c9b43
-    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; Combine the two integers with OR  stacked byte
+    lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; stacked byte
     ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.      ; OR with IWA
     sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b4b: 88          .        ; next byte
@@ -5182,7 +5182,7 @@ l848a = sub_c847b+15
 .loop_c9b4e
     jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..      ; Drop the stacked operand
     lda #&40 ; '@'                                                    ; 9b51: a9 40       .@       ; Result type = integer
-    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR  loop for further OR/EOR
+    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
 ; &9b55 referenced 1 time by &9b32
 .c9b55
     jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.      ; EOR: stack the left operand, evaluate the right
@@ -5211,7 +5211,7 @@ l848a = sub_c847b+15
     jsr eval_relational                                               ; 9b72: 20 9c 9b     ..      ; Evaluate a relational operand
 ; &9b75 referenced 1 time by &9b9a
 .loop_c9b75
-    cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND  AND token?
+    cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND
     beq c9b7a                                                         ; 9b77: f0 01       ..       ; yes
     rts                                                               ; 9b79: 60          `        ; no: return
 ; &9b7a referenced 1 time by &9b77
@@ -5570,67 +5570,67 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     ZP_IWA: the product
 .iwa_mul
-    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the sign of the first operand  Save the right operand sign
-    pha                                                               ; 9d6f: 48          H        ; ...  ...
-    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; make it positive  take |right|
-    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)  stash it via &39
-    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...  ...
-    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; pop the second operand  unstack the left operand
-    pla                                                               ; 9d7b: 68          h        ; recover the first sign  product sign = left XOR right
-    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign  ...
-    sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)  ...
-    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; make the second positive  take |left|
-    ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:  Clear the product accumulator
-    ldx #0                                                            ; 9d85: a2 00       ..       ; ...  ...
-    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...  ...
-    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...  ...
+    lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the right operand sign
+    pha                                                               ; 9d6f: 48          H        ; ...
+    jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; take |right|
+    ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)
+    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...
+    jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; unstack the left operand
+    pla                                                               ; 9d7b: 68          h        ; recover the right operand sign
+    eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign
+    sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)
+    jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; take |left|
+    ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:
+    ldx #0                                                            ; 9d85: a2 00       ..       ; ...
+    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...
+    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...
 ; &9d8b referenced 1 time by &9db2
 .loop_c9d8b
-    lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit  Shift the multiplier right
-    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...  ...
-    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add  bit clear: skip the add
-    clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand  Add the multiplicand to the product
-    tya                                                               ; 9d92: 98          .        ; byte 0  ...
-    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...  ...
-    tay                                                               ; 9d95: a8          .        ; ...  ...
-    txa                                                               ; 9d96: 8a          .        ; byte 1  ...
-    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...  ...
-    tax                                                               ; 9d99: aa          .        ; ...  ...
-    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2  ...
-    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...  ...
-    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...  ...
-    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3  ...
-    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...  ...
-    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...  ...
+    lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit
+    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...
+    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add
+    clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand
+    tya                                                               ; 9d92: 98          .        ; byte 0
+    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...
+    tay                                                               ; 9d95: a8          .        ; ...
+    txa                                                               ; 9d96: 8a          .        ; byte 1
+    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...
+    tax                                                               ; 9d99: aa          .        ; ...
+    lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2
+    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...
+    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...
+    lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3
+    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...
+    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...
 ; &9da6 referenced 1 time by &9d8f
 .c9da6
-    asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Double the multiplicand:  Shift the multiplicand left
-    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...  ...
-    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...  ...
-    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...  ...
-    lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?  multiplier exhausted?
-    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...  ...
-    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop  no: continue
-    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)  Store the high product bytes
-    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...  ...
-    lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign  Product sign
-    php                                                               ; 9dba: 08          .        ; ...  ...
+    asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Shift the multiplicand left
+    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...
+    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...
+    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...
+    lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?
+    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...
+    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop
+    sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)
+    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...
+    lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign
+    php                                                               ; 9dba: 08          .        ; ...
 ; &9dbb referenced 1 time by &9e07
 .c9dbb
-    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA  Load the product into IWA
+    ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA
 ; &9dbd referenced 1 time by &9e1a
 .c9dbd
-    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...  ...
-    plp                                                               ; 9dc0: 28          (        ; ...  Apply the sign
-    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done  positive
-    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product  negative: negate the product
+    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...
+    plp                                                               ; 9dc0: 28          (        ; Apply the sign
+    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done
+    jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product
 ; &9dc6 referenced 1 time by &9dc1
 .c9dc6
-    ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator  restore the operator
-    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for more operators  loop for further * / DIV MOD
+    ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator
+    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for further * / DIV MOD
 ; &9dcb referenced 1 time by &9dd6
 .loop_c9dcb
-    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code  overflow: floating-point multiply
+    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
 ; &9dce referenced 2 times by &9c53, &9cba
 .sub_c9dce
     jsr stack_integer                                                 ; 9dce: 20 94 bd     ..      ; stack the operand, then multiply
@@ -5678,10 +5678,10 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the remainder
 ; &9e01 referenced 1 time by &9dde
 .iwa_mod
-    jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; Ensure the current value is an integer  MOD: divide
-    lda zp_general_1                                                  ; 9e04: a5 38       .8       ; Carry the operand sign into the core  remainder takes the dividend sign
-    php                                                               ; 9e06: 08          .        ; Flag MOD (vs DIV) for the shared core  ...
-    jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; Compute the remainder (shared DIV/MOD core)  load the remainder (&3D-&40) and apply the sign
+    jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; MOD: divide
+    lda zp_general_1                                                  ; 9e04: a5 38       .8       ; remainder takes the dividend sign
+    php                                                               ; 9e06: 08          .        ; save the sign
+    jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; load the remainder (&3D-&40) and apply the sign
 ; ***************************************************************************************
 ; Integer divide
 ;
@@ -8085,10 +8085,10 @@ l848a = sub_c847b+15
     jmp int_result_a                                                  ; ab7c: 4c d8 ae    L..      ; Return the row (Y) as an integer
 ; &ab7f referenced 1 time by &ab8d
 .loop_cab7f
-    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Sign of the real  Test the sign of FWA
-    beq caba2                                                         ; ab82: f0 1e       ..       ; zero: 0  zero
-    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive: 1  positive
-    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative: -1  negative
+    jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Sign of the real
+    beq caba2                                                         ; ab82: f0 1e       ..       ; zero: 0
+    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive: 1
+    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative: -1
 ; ***************************************************************************************
 ; SGN
 ;
@@ -10453,16 +10453,16 @@ l848a = sub_c847b+15
 ; Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO
 ; limit [STEP step].
 .stmt_for
-    jsr parse_lvalue                                                  ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)  Parse the loop variable
+    jsr parse_lvalue                                                  ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)
     beq cb7a4                                                         ; b7c7: f0 db       ..       ; not a variable: error
     bcs cb7a4                                                         ; b7c9: b0 d9       ..       ; indirection: error
-    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Evaluate and assign the initial value  Stack the variable pointer
+    jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Stack the variable pointer
     jsr expect_eq                                                     ; b7ce: 20 41 98     A.      ; Expect "="
     jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..      ; Assign the initial value
-    ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level  FOR level
-    cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)  too many nested FORs?
+    ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level
+    cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)
     bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..       ; yes: error
-    lda zp_general                                                    ; b7da: a5 37       .7       ; Save the control-variable pointer in the frame  Store the variable pointer in the frame (+0)
+    lda zp_general                                                    ; b7da: a5 37       .7       ; Store the variable pointer in the frame (+0)
     sta for_stack,y                                                   ; b7dc: 99 00 05    ...      ; ...
     lda zp_general_1                                                  ; b7df: a5 38       .8       ; ...
     sta l0501,y                                                       ; b7e1: 99 01 05    ...      ; ...
@@ -10470,13 +10470,13 @@ l848a = sub_c847b+15
     sta l0502,y                                                       ; b7e6: 99 02 05    ...      ; ...
     tax                                                               ; b7e9: aa          .        ; keep the type
     jsr skip_spaces_ptr2                                              ; b7ea: 20 8c 8a     ..      ; Next character
-    cmp #&b8                                                          ; b7ed: c9 b8       ..       ; Require the TO keyword  TO token?
+    cmp #&b8                                                          ; b7ed: c9 b8       ..       ; Require the TO keyword
     bne loop_cb7bd                                                    ; b7ef: d0 cc       ..       ; no: No TO error
     cpx #5                                                            ; b7f1: e0 05       ..       ; real loop variable?
     beq cb84f                                                         ; b7f3: f0 5a       .Z       ; yes: real FOR loop
     jsr sub_c92dd                                                     ; b7f5: 20 dd 92     ..      ; Integer: evaluate the limit
     ldy zp_for_level                                                  ; b7f8: a4 26       .&       ; FOR level
-    lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Save the loop limit in the frame  Store the limit in the frame (+8)
+    lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Store the limit in the frame (+8)
     sta l0508,y                                                       ; b7fc: 99 08 05    ...      ; ...
     lda zp_iwa_1                                                      ; b7ff: a5 2b       .+       ; ...
     sta l0509,y                                                       ; b801: 99 09 05    ...      ; ...
@@ -10487,7 +10487,7 @@ l848a = sub_c847b+15
     lda #1                                                            ; b80e: a9 01       ..       ; Default STEP = 1
     jsr int_result_a                                                  ; b810: 20 d8 ae     ..      ; ...
     jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..      ; Next character
-    cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)  STEP token?
+    cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)
     bne cb81f                                                         ; b818: d0 05       ..       ; no: use the default
     jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..      ; Evaluate the step
     ldy zp_text_ptr2_off                                              ; b81d: a4 1b       ..       ; ...
