@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 381 of 7,129 placeholders left (5.3 %);
+**STATUS: in progress — 364 of 7,129 placeholders left (5.1 %);
 depths 0–5 complete, depth 6 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,8 +27,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 6 next: `stmt_renumber` (17), then `stmt_mode` (15),
-`stmt_save` (13), `parse_lvalue` (5), and the rest of depths 6–8.
+Depth 6 next: `stmt_mode` (15), then `stmt_save` (13),
+`parse_lvalue` (5), `stmt_data` (4), and the rest of depths 6–8.
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
 unstack_value_to_var, iwa_divide, check_end_of_statement, iwa_test_var,
 stmt_print, asm_opcode_add4, iwa_add, fn_eval, iwa_rsub, fn_instr,
@@ -252,4 +252,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5 complete | fn_sqr, fn_int, fn_tan, fn_sgn, fn_strs, stmt_gcol, fn_exp, stmt_time, stmt_vdu, fn_asn, fn_sin, stmt_width, stmt_listo, check_program, fn_openup | 29 | 515 |
 | 2026-06-14 | depth 6: delete_program_line | delete_program_line + sub_cbc8d insert (gap close shift-down, HIMEM check, shift-up, line-header write, body copy) | 58 | 457 |
 | 2026-06-14 | depth 6: stmt_next | stmt_next (NEXT: 15-byte FOR-frame match/walk, integer add-STEP/compare-LIMIT, loop-back vs exit, float STEP/LIMIT path) | 41 | 416 |
-| 2026-06-14 | depth 6: stmt_list | stmt_list (LIST: range parse/defaults, line walk + end test, LISTO indent, de-tokenise with quote tracking, embedded line-number decode) | 35 | 381 | — |
+| 2026-06-14 | depth 6: stmt_list | stmt_list (LIST: range parse/defaults, line walk + end test, LISTO indent, de-tokenise with quote tracking, embedded line-number decode) | 35 | 381 |
+| 2026-06-14 | depth 6: stmt_renumber | stmt_renumber (RENUMBER 3 passes: record old numbers in heap table, write new numbers+step, rewrite &8D references) | 17 | 364 | — |
