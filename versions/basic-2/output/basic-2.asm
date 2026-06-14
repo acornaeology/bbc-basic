@@ -8535,7 +8535,7 @@ oscli            = &fff7
     beq fp_div_zero                                                   ; a6b0: f0 09       ..       ; yes: Division by zero
     jsr fwb_copy_from_fwa                                             ; a6b2: 20 1e a2     ..      ; FWB = FWA (the divisor)
     jsr fwa_unpack_var                                                ; a6b5: 20 b5 a3     ..      ; FWA = the fp variable (the dividend)
-    bne ca6f1                                                         ; a6b8: d0 37       .7       ; non-zero: do the division
+    bne div_signs                                                     ; a6b8: d0 37       .7       ; non-zero: do the division
     rts                                                               ; a6ba: 60          `        ; dividend zero: result is zero
 ; &a6bb referenced 2 times by &a6b0, &a6ef
 .fp_div_zero
@@ -8595,45 +8595,45 @@ oscli            = &fff7
     jsr fwb_unpack_var                                                ; a6ec: 20 4e a3     N.      ; unpack the divisor into FWB
     beq fp_div_zero                                                   ; a6ef: f0 ca       ..       ; divisor zero: Division by zero
 ; &a6f1 referenced 1 time by &a6b8
-.ca6f1
+.div_signs
     lda zp_fwa_sign                                                   ; a6f1: a5 2e       ..       ; result sign = sign XOR sign
     eor zp_fwb_sign                                                   ; a6f3: 45 3b       E;       ; XOR the divisor sign
     sta zp_fwa_sign                                                   ; a6f5: 85 2e       ..       ; (store)
     sec                                                               ; a6f7: 38          8        ; result exponent = dividend - divisor:
     lda zp_fwa_exp                                                    ; a6f8: a5 30       .0       ; dividend exp...
     sbc zp_fwb_exp                                                    ; a6fa: e5 3d       .=       ; minus divisor exp
-    bcs ca701                                                         ; a6fc: b0 03       ..       ; no borrow
+    bcs div_rebias                                                    ; a6fc: b0 03       ..       ; no borrow
     dec zp_fwa_ovf                                                    ; a6fe: c6 2f       ./       ; borrow into overflow
     sec                                                               ; a700: 38          8        ; (set carry again)
 ; &a701 referenced 1 time by &a6fc
-.ca701
+.div_rebias
     adc #&80                                                          ; a701: 69 80       i.       ; re-bias the exponent
     sta zp_fwa_exp                                                    ; a703: 85 30       .0       ; (store)
-    bcc ca70a                                                         ; a705: 90 03       ..       ; no carry
+    bcc div_quotient                                                  ; a705: 90 03       ..       ; no carry
     inc zp_fwa_ovf                                                    ; a707: e6 2f       ./       ; carry into overflow
     clc                                                               ; a709: 18          .        ; (clear carry)
 ; &a70a referenced 1 time by &a705
-.ca70a
+.div_quotient
     ldx #&20 ; ' '                                                    ; a70a: a2 20       .        ; 32 quotient bits (restoring long division):
 ; &a70c referenced 1 time by &a750
-.loop_ca70c
-    bcs ca726                                                         ; a70c: b0 18       ..       ; remainder >= divisor?
+.div_cmp1
+    bcs div_sub1                                                      ; a70c: b0 18       ..       ; remainder >= divisor?
     lda zp_fwa_m1                                                     ; a70e: a5 31       .1       ; compare FWA (remainder) with FWB (divisor):
     cmp zp_fwb_m1                                                     ; a710: c5 3e       .>       ; vs divisor m1,
-    bne ca724                                                         ; a712: d0 10       ..       ; differ: decided
+    bne div_bit0_1                                                    ; a712: d0 10       ..       ; differ: decided
     lda zp_fwa_m2                                                     ; a714: a5 32       .2       ; else m2...
     cmp zp_fwb_m2                                                     ; a716: c5 3f       .?       ; vs m2,
-    bne ca724                                                         ; a718: d0 0a       ..       ; differ: decided
+    bne div_bit0_1                                                    ; a718: d0 0a       ..       ; differ: decided
     lda zp_fwa_m3                                                     ; a71a: a5 33       .3       ; else m3...
     cmp zp_fwb_m3                                                     ; a71c: c5 40       .@       ; vs m3,
-    bne ca724                                                         ; a71e: d0 04       ..       ; differ: decided
+    bne div_bit0_1                                                    ; a71e: d0 04       ..       ; differ: decided
     lda zp_fwa_m4                                                     ; a720: a5 34       .4       ; else m4...
     cmp zp_fwb_m4                                                     ; a722: c5 41       .A       ; vs m4
 ; &a724 referenced 3 times by &a712, &a718, &a71e
-.ca724
-    bcc ca73f                                                         ; a724: 90 19       ..       ; less: quotient bit 0
+.div_bit0_1
+    bcc div_shift1                                                    ; a724: 90 19       ..       ; less: quotient bit 0
 ; &a726 referenced 1 time by &a70c
-.ca726
+.div_sub1
     lda zp_fwa_m4                                                     ; a726: a5 34       .4       ; subtract the divisor from the remainder:
     sbc zp_fwb_m4                                                     ; a728: e5 41       .A       ; - divisor m4,
     sta zp_fwa_m4                                                     ; a72a: 85 34       .4       ; (store)
@@ -8648,7 +8648,7 @@ oscli            = &fff7
     sta zp_fwa_m1                                                     ; a73c: 85 31       .1       ; (store)
     sec                                                               ; a73e: 38          8        ; quotient bit 1
 ; &a73f referenced 1 time by &a724
-.ca73f
+.div_shift1
     rol l0046                                                         ; a73f: 26 46       &F       ; shift the quotient left, bring in the bit:
     rol l0045                                                         ; a741: 26 45       &E       ; through &45,
     rol l0044                                                         ; a743: 26 44       &D       ; &44,
@@ -8658,27 +8658,27 @@ oscli            = &fff7
     rol zp_fwa_m2                                                     ; a74b: 26 32       &2       ; m2,
     rol zp_fwa_m1                                                     ; a74d: 26 31       &1       ; m1
     dex                                                               ; a74f: ca          .        ; count
-    bne loop_ca70c                                                    ; a750: d0 ba       ..       ; loop 32 times
+    bne div_cmp1                                                      ; a750: d0 ba       ..       ; loop 32 times
     ldx #7                                                            ; a752: a2 07       ..       ; 7 guard bits:
 ; &a754 referenced 1 time by &a792
-.loop_ca754
-    bcs ca76e                                                         ; a754: b0 18       ..       ; remainder >= divisor?
+.div_cmp2
+    bcs div_sub2                                                      ; a754: b0 18       ..       ; remainder >= divisor?
     lda zp_fwa_m1                                                     ; a756: a5 31       .1       ; compare remainder vs divisor: m1...
     cmp zp_fwb_m1                                                     ; a758: c5 3e       .>       ; vs m1,
-    bne ca76c                                                         ; a75a: d0 10       ..       ; differ: decided
+    bne div_bit0_2                                                    ; a75a: d0 10       ..       ; differ: decided
     lda zp_fwa_m2                                                     ; a75c: a5 32       .2       ; else m2...
     cmp zp_fwb_m2                                                     ; a75e: c5 3f       .?       ; vs m2,
-    bne ca76c                                                         ; a760: d0 0a       ..       ; differ: decided
+    bne div_bit0_2                                                    ; a760: d0 0a       ..       ; differ: decided
     lda zp_fwa_m3                                                     ; a762: a5 33       .3       ; else m3...
     cmp zp_fwb_m3                                                     ; a764: c5 40       .@       ; vs m3,
-    bne ca76c                                                         ; a766: d0 04       ..       ; differ: decided
+    bne div_bit0_2                                                    ; a766: d0 04       ..       ; differ: decided
     lda zp_fwa_m4                                                     ; a768: a5 34       .4       ; else m4...
     cmp zp_fwb_m4                                                     ; a76a: c5 41       .A       ; vs m4
 ; &a76c referenced 3 times by &a75a, &a760, &a766
-.ca76c
-    bcc ca787                                                         ; a76c: 90 19       ..       ; less: bit 0
+.div_bit0_2
+    bcc div_shift2                                                    ; a76c: 90 19       ..       ; less: bit 0
 ; &a76e referenced 1 time by &a754
-.ca76e
+.div_sub2
     lda zp_fwa_m4                                                     ; a76e: a5 34       .4       ; subtract:
     sbc zp_fwb_m4                                                     ; a770: e5 41       .A       ; - divisor m4,
     sta zp_fwa_m4                                                     ; a772: 85 34       .4       ; (store)
@@ -8693,14 +8693,14 @@ oscli            = &fff7
     sta zp_fwa_m1                                                     ; a784: 85 31       .1       ; (store)
     sec                                                               ; a786: 38          8        ; guard bit 1
 ; &a787 referenced 1 time by &a76c
-.ca787
+.div_shift2
     rol zp_fwa_rnd                                                    ; a787: 26 35       &5       ; shift in the guard bit
     asl zp_fwa_m4                                                     ; a789: 06 34       .4       ; shift the remainder:
     rol zp_fwa_m3                                                     ; a78b: 26 33       &3       ; m3,
     rol zp_fwa_m2                                                     ; a78d: 26 32       &2       ; m2,
     rol zp_fwa_m1                                                     ; a78f: 26 31       &1       ; m1
     dex                                                               ; a791: ca          .        ; count
-    bne loop_ca754                                                    ; a792: d0 c0       ..       ; loop
+    bne div_cmp2                                                      ; a792: d0 c0       ..       ; loop
     asl zp_fwa_rnd                                                    ; a794: 06 35       .5       ; final guard bit
     lda l0046                                                         ; a796: a5 46       .F       ; move the quotient into the FWA mantissa:
     sta zp_fwa_m4                                                     ; a798: 85 34       .4       ; -> m4,
@@ -8712,7 +8712,7 @@ oscli            = &fff7
     sta zp_fwa_m1                                                     ; a7a4: 85 31       .1       ; -> m1
     jmp mulf_normalise                                                ; a7a6: 4c 59 a6    LY.      ; normalise and round
 ; &a7a9 referenced 1 time by &a7bc
-.loop_ca7a9
+.sqr_neg_error
     brk                                                               ; a7a9: 00          .        ; SQR of a negative: error block
     equb &15                                                          ; a7aa: 15          .     
     equs "-ve root"                                                   ; a7ab: 2d 76 65... -ve...
@@ -8737,7 +8737,7 @@ oscli            = &fff7
 .ca7b7
     jsr fwa_sign                                                      ; a7b7: 20 da a1     ..      ; Sign of the argument
     beq ca7e6                                                         ; a7ba: f0 2a       .*       ; zero: the root is zero
-    bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.       ; negative: -ve root error
+    bmi sqr_neg_error                                                 ; a7bc: 30 eb       0.       ; negative: -ve root error
     jsr fwa_pack_temp1                                                ; a7be: 20 85 a3     ..      ; Save the argument in TEMP1
     lda zp_fwa_exp                                                    ; a7c1: a5 30       .0       ; Initial guess: halve the exponent
     lsr a                                                             ; a7c3: 4a          J        ; halve the exponent
@@ -14574,8 +14574,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:                 3
 ;     assign_string:                 3
 ;     c8858:                         3
-;     ca724:                         3
-;     ca76c:                         3
 ;     ca7f7:                         3
 ;     ca99e:                         3
 ;     caad1:                         3
@@ -14591,6 +14589,8 @@ save pydis_start, pydis_end
 ;     create_variable:               3
 ;     dim_clear_loop:                3
 ;     dim_no_room:                   3
+;     div_bit0_1:                    3
+;     div_bit0_2:                    3
 ;     err_no_room:                   3
 ;     eval_channel:                  3
 ;     eval_mul_div:                  3
@@ -14963,13 +14963,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     ca6f1:                         1
-;     ca701:                         1
-;     ca70a:                         1
-;     ca726:                         1
-;     ca73f:                         1
-;     ca76e:                         1
-;     ca787:                         1
 ;     ca7b7:                         1
 ;     ca7e6:                         1
 ;     ca808:                         1
@@ -15147,6 +15140,15 @@ save pydis_start, pydis_end
 ;     dim_next_array:                1
 ;     dim_no_room_jmp:               1
 ;     div10_step:                    1
+;     div_cmp1:                      1
+;     div_cmp2:                      1
+;     div_quotient:                  1
+;     div_rebias:                    1
+;     div_shift1:                    1
+;     div_shift2:                    1
+;     div_signs:                     1
+;     div_sub1:                      1
+;     div_sub2:                      1
 ;     do_add:                        1
 ;     do_and:                        1
 ;     do_divide:                     1
@@ -15277,9 +15279,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_ca70c:                    1
-;     loop_ca754:                    1
-;     loop_ca7a9:                    1
 ;     loop_ca7cf:                    1
 ;     loop_ca8b5:                    1
 ;     loop_cab7f:                    1
@@ -15537,6 +15536,7 @@ save pydis_start, pydis_end
 ;     sif_round_down:                1
 ;     sign_force_zero:               1
 ;     small_int_to_fwa:              1
+;     sqr_neg_error:                 1
 ;     start_new_program:             1
 ;     step_past_line_header:         1
 ;     stmt_dim:                      1
@@ -15618,15 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     ca6f1
-;     ca701
-;     ca70a
-;     ca724
-;     ca726
-;     ca73f
-;     ca76c
-;     ca76e
-;     ca787
 ;     ca7b7
 ;     ca7e6
 ;     ca7f7
@@ -15892,9 +15883,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_ca70c
-;     loop_ca754
-;     loop_ca7a9
 ;     loop_ca7cf
 ;     loop_ca8b5
 ;     loop_cab7f

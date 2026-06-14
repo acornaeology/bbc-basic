@@ -70774,9 +70774,9 @@
       "comment_inline": "non-zero: do the division",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca6f1",
+      "operand": "div_signs",
       "target": 42737,
-      "target_label": "ca6f1"
+      "target_label": "div_signs"
     },
     {
       "addr": 42682,
@@ -71103,7 +71103,7 @@
         46
       ],
       "labels": [
-        "ca6f1"
+        "div_signs"
       ],
       "comment_inline": "result sign = sign XOR sign",
       "xref_summaries": [
@@ -71188,9 +71188,9 @@
       "comment_inline": "no borrow",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca701",
+      "operand": "div_rebias",
       "target": 42753,
-      "target_label": "ca701"
+      "target_label": "div_rebias"
     },
     {
       "addr": 42750,
@@ -71221,7 +71221,7 @@
         128
       ],
       "labels": [
-        "ca701"
+        "div_rebias"
       ],
       "comment_inline": "re-bias the exponent",
       "xref_summaries": [
@@ -71256,9 +71256,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca70a",
+      "operand": "div_quotient",
       "target": 42762,
-      "target_label": "ca70a"
+      "target_label": "div_quotient"
     },
     {
       "addr": 42759,
@@ -71289,7 +71289,7 @@
         32
       ],
       "labels": [
-        "ca70a"
+        "div_quotient"
       ],
       "comment_inline": "32 quotient bits (restoring long division):",
       "xref_summaries": [
@@ -71309,7 +71309,7 @@
         24
       ],
       "labels": [
-        "loop_ca70c"
+        "div_cmp1"
       ],
       "comment_inline": "remainder >= divisor?",
       "xref_summaries": [
@@ -71320,9 +71320,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca726",
+      "operand": "div_sub1",
       "target": 42790,
-      "target_label": "ca726"
+      "target_label": "div_sub1"
     },
     {
       "addr": 42766,
@@ -71359,9 +71359,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca724",
+      "operand": "div_bit0_1",
       "target": 42788,
-      "target_label": "ca724"
+      "target_label": "div_bit0_1"
     },
     {
       "addr": 42772,
@@ -71398,9 +71398,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca724",
+      "operand": "div_bit0_1",
       "target": 42788,
-      "target_label": "ca724"
+      "target_label": "div_bit0_1"
     },
     {
       "addr": 42778,
@@ -71437,9 +71437,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca724",
+      "operand": "div_bit0_1",
       "target": 42788,
-      "target_label": "ca724"
+      "target_label": "div_bit0_1"
     },
     {
       "addr": 42784,
@@ -71474,7 +71474,7 @@
         25
       ],
       "labels": [
-        "ca724"
+        "div_bit0_1"
       ],
       "comment_inline": "less: quotient bit 0",
       "xref_summaries": [
@@ -71487,9 +71487,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca73f",
+      "operand": "div_shift1",
       "target": 42815,
-      "target_label": "ca73f"
+      "target_label": "div_shift1"
     },
     {
       "addr": 42790,
@@ -71498,7 +71498,7 @@
         52
       ],
       "labels": [
-        "ca726"
+        "div_sub1"
       ],
       "comment_inline": "subtract the divisor from the remainder:",
       "xref_summaries": [
@@ -71672,7 +71672,7 @@
         70
       ],
       "labels": [
-        "ca73f"
+        "div_shift1"
       ],
       "comment_inline": "shift the quotient left, bring in the bit:",
       "xref_summaries": [
@@ -71796,9 +71796,9 @@
       "comment_inline": "loop 32 times",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca70c",
+      "operand": "div_cmp1",
       "target": 42764,
-      "target_label": "loop_ca70c"
+      "target_label": "div_cmp1"
     },
     {
       "addr": 42834,
@@ -71818,7 +71818,7 @@
         24
       ],
       "labels": [
-        "loop_ca754"
+        "div_cmp2"
       ],
       "comment_inline": "remainder >= divisor?",
       "xref_summaries": [
@@ -71829,9 +71829,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca76e",
+      "operand": "div_sub2",
       "target": 42862,
-      "target_label": "ca76e"
+      "target_label": "div_sub2"
     },
     {
       "addr": 42838,
@@ -71868,9 +71868,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca76c",
+      "operand": "div_bit0_2",
       "target": 42860,
-      "target_label": "ca76c"
+      "target_label": "div_bit0_2"
     },
     {
       "addr": 42844,
@@ -71907,9 +71907,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca76c",
+      "operand": "div_bit0_2",
       "target": 42860,
-      "target_label": "ca76c"
+      "target_label": "div_bit0_2"
     },
     {
       "addr": 42850,
@@ -71946,9 +71946,9 @@
       "comment_inline": "differ: decided",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca76c",
+      "operand": "div_bit0_2",
       "target": 42860,
-      "target_label": "ca76c"
+      "target_label": "div_bit0_2"
     },
     {
       "addr": 42856,
@@ -71983,7 +71983,7 @@
         25
       ],
       "labels": [
-        "ca76c"
+        "div_bit0_2"
       ],
       "comment_inline": "less: bit 0",
       "xref_summaries": [
@@ -71996,9 +71996,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca787",
+      "operand": "div_shift2",
       "target": 42887,
-      "target_label": "ca787"
+      "target_label": "div_shift2"
     },
     {
       "addr": 42862,
@@ -72007,7 +72007,7 @@
         52
       ],
       "labels": [
-        "ca76e"
+        "div_sub2"
       ],
       "comment_inline": "subtract:",
       "xref_summaries": [
@@ -72181,7 +72181,7 @@
         53
       ],
       "labels": [
-        "ca787"
+        "div_shift2"
       ],
       "comment_inline": "shift in the guard bit",
       "xref_summaries": [
@@ -72266,9 +72266,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca754",
+      "operand": "div_cmp2",
       "target": 42836,
-      "target_label": "loop_ca754"
+      "target_label": "div_cmp2"
     },
     {
       "addr": 42900,
@@ -72407,7 +72407,7 @@
         0
       ],
       "labels": [
-        "loop_ca7a9"
+        "sqr_neg_error"
       ],
       "comment_inline": "SQR of a negative: error block",
       "xref_summaries": [
@@ -72516,9 +72516,9 @@
       "comment_inline": "negative: -ve root error",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_ca7a9",
+      "operand": "sqr_neg_error",
       "target": 42921,
-      "target_label": "loop_ca7a9"
+      "target_label": "sqr_neg_error"
     },
     {
       "addr": 42942,
