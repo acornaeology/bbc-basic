@@ -1616,7 +1616,7 @@ l848a = sub_c847b+15
 ; &889d referenced 2 times by &88ce, &88d2
 .c889d
     iny                                                               ; 889d: c8          .        ; Next character
-    lda (zp_general),y                                                ; 889e: b1 37       .7       ; ...
+    lda (zp_general),y                                                ; 889e: b1 37       .7       ; read it
     cmp #&3a ; ':'                                                    ; 88a0: c9 3a       .:       ; above 9?
     bcs c88da                                                         ; 88a2: b0 36       .6       ; not a digit: done
     cmp #&30 ; '0'                                                    ; 88a4: c9 30       .0       ; below 0?
@@ -1626,25 +1626,25 @@ l848a = sub_c847b+15
     ldx zp_fwb_m1                                                     ; 88ab: a6 3e       .>       ; value high
     lda zp_fwb_exp                                                    ; 88ad: a5 3d       .=       ; value low
     asl a                                                             ; 88af: 0a          .        ; value * 2
-    rol zp_fwb_m1                                                     ; 88b0: 26 3e       &>       ; ...
+    rol zp_fwb_m1                                                     ; 88b0: 26 3e       &>       ; into the high byte
     bmi c88d5                                                         ; 88b2: 30 21       0!       ; overflow
     asl a                                                             ; 88b4: 0a          .        ; value * 4
-    rol zp_fwb_m1                                                     ; 88b5: 26 3e       &>       ; ...
+    rol zp_fwb_m1                                                     ; 88b5: 26 3e       &>       ; into the high byte
     bmi c88d5                                                         ; 88b7: 30 1c       0.       ; overflow
     adc zp_fwb_exp                                                    ; 88b9: 65 3d       e=       ; - value = value * 5
-    sta zp_fwb_exp                                                    ; 88bb: 85 3d       .=       ; ...
-    txa                                                               ; 88bd: 8a          .        ; ...
-    adc zp_fwb_m1                                                     ; 88be: 65 3e       e>       ; ...
+    sta zp_fwb_exp                                                    ; 88bb: 85 3d       .=       ; store the low byte
+    txa                                                               ; 88bd: 8a          .        ; now the high byte:
+    adc zp_fwb_m1                                                     ; 88be: 65 3e       e>       ; - the x4 high byte (= x5)
     asl zp_fwb_exp                                                    ; 88c0: 06 3d       .=       ; - 2 = value * 10
-    rol a                                                             ; 88c2: 2a          *        ; ...
+    rol a                                                             ; 88c2: 2a          *        ; into the high byte
     bmi c88d5                                                         ; 88c3: 30 10       0.       ; overflow
     bcs c88d5                                                         ; 88c5: b0 0e       ..       ; overflow
     sta zp_fwb_m1                                                     ; 88c7: 85 3e       .>       ; store the high byte
     pla                                                               ; 88c9: 68          h        ; Add the digit
-    adc zp_fwb_exp                                                    ; 88ca: 65 3d       e=       ; ...
-    sta zp_fwb_exp                                                    ; 88cc: 85 3d       .=       ; ...
+    adc zp_fwb_exp                                                    ; 88ca: 65 3d       e=       ; add the digit to the low byte,
+    sta zp_fwb_exp                                                    ; 88cc: 85 3d       .=       ; store it
     bcc c889d                                                         ; 88ce: 90 cd       ..       ; next digit
-    inc zp_fwb_m1                                                     ; 88d0: e6 3e       .>       ; ...
+    inc zp_fwb_m1                                                     ; 88d0: e6 3e       .>       ; carry into the high byte
     bpl c889d                                                         ; 88d2: 10 c9       ..       ; next digit
     pha                                                               ; 88d4: 48          H        ; overflow marker
 ; &88d5 referenced 4 times by &88b2, &88b7, &88c3, &88c5
@@ -4518,22 +4518,22 @@ l848a = sub_c847b+15
 ; &97eb referenced 2 times by &903d, &b659
 .decode_line_number
     iny                                                               ; 97eb: c8          .        ; Control byte
-    lda (zp_text_ptr),y                                               ; 97ec: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 97ec: b1 0b       ..       ; read the packed top-bits byte
     asl a                                                             ; 97ee: 0a          .        ; recover the top bits
-    asl a                                                             ; 97ef: 0a          .        ; ...
-    tax                                                               ; 97f0: aa          .        ; ...
+    asl a                                                             ; 97ef: 0a          .        ; (shifted left by two)
+    tax                                                               ; 97f0: aa          .        ; keep a copy for the high byte
     and #&c0                                                          ; 97f1: 29 c0       ).       ; low byte top bits
-    iny                                                               ; 97f3: c8          .        ; ...
+    iny                                                               ; 97f3: c8          .        ; next encoded byte
     eor (zp_text_ptr),y                                               ; 97f4: 51 0b       Q.       ; XOR the encoded low byte
     sta zp_iwa                                                        ; 97f6: 85 2a       .*       ; line number low
     txa                                                               ; 97f8: 8a          .        ; high byte top bits
-    asl a                                                             ; 97f9: 0a          .        ; ...
-    asl a                                                             ; 97fa: 0a          .        ; ...
-    iny                                                               ; 97fb: c8          .        ; ...
+    asl a                                                             ; 97f9: 0a          .        ; shift the high byte top bits into place,
+    asl a                                                             ; 97fa: 0a          .        ; (two places)
+    iny                                                               ; 97fb: c8          .        ; next encoded byte
     eor (zp_text_ptr),y                                               ; 97fc: 51 0b       Q.       ; XOR the encoded high byte
     sta zp_iwa_1                                                      ; 97fe: 85 2b       .+       ; line number high
     iny                                                               ; 9800: c8          .        ; step past the 3 bytes
-    sty zp_text_ptr_off                                               ; 9801: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 9801: 84 0a       ..       ; save the advanced text offset
     sec                                                               ; 9803: 38          8        ; carry set: found
     rts                                                               ; 9804: 60          `        ; Return
 ; &9805 referenced 1 time by &97e9
@@ -6278,7 +6278,7 @@ l848a = sub_c847b+15
 ; &a140 referenced 1 time by &a0e1
 .parse_exponent
     iny                                                               ; a140: c8          .        ; Scan exponent: next character
-    lda (zp_text_ptr2),y                                              ; a141: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; a141: b1 19       ..       ; read it
     cmp #&2d ; '-'                                                    ; a143: c9 2d       .-       ; '-'?
     beq loop_ca139                                                    ; a145: f0 f2       ..       ; yes: negative exponent
     cmp #&2b ; '+'                                                    ; a147: c9 2b       .+       ; '+'?
@@ -6286,7 +6286,7 @@ l848a = sub_c847b+15
 ; &a14b referenced 1 time by &a139
 .sub_ca14b
     iny                                                               ; a14b: c8          .        ; skip the sign
-    lda (zp_text_ptr2),y                                              ; a14c: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; a14c: b1 19       ..       ; read the digit after the sign
 ; &a14e referenced 1 time by &a149
 .ca14e
     cmp #&3a ; ':'                                                    ; a14e: c9 3a       .:       ; a digit?
@@ -6295,29 +6295,29 @@ l848a = sub_c847b+15
     bcc ca174                                                         ; a154: 90 1e       ..       ; not a digit: exponent = 0
     sta l004a                                                         ; a156: 85 4a       .J       ; store the first exponent digit
     iny                                                               ; a158: c8          .        ; second digit?
-    lda (zp_text_ptr2),y                                              ; a159: b1 19       ..       ; ...
-    cmp #&3a ; ':'                                                    ; a15b: c9 3a       .:       ; ...
+    lda (zp_text_ptr2),y                                              ; a159: b1 19       ..       ; read it
+    cmp #&3a ; ':'                                                    ; a15b: c9 3a       .:       ; above 9?
     bcs ca170                                                         ; a15d: b0 11       ..       ; one digit only
     sbc #&2f ; '/'                                                    ; a15f: e9 2f       ./       ; convert
     bcc ca170                                                         ; a161: 90 0d       ..       ; not a digit
     iny                                                               ; a163: c8          .        ; two digits: exp = d1*10 + d2
-    sta zp_fp_temp                                                    ; a164: 85 43       .C       ; ...
-    lda l004a                                                         ; a166: a5 4a       .J       ; ...
+    sta zp_fp_temp                                                    ; a164: 85 43       .C       ; save d2
+    lda l004a                                                         ; a166: a5 4a       .J       ; d1
     asl a                                                             ; a168: 0a          .        ; d1 * 10...
-    asl a                                                             ; a169: 0a          .        ; ...
-    adc l004a                                                         ; a16a: 65 4a       eJ       ; ...
-    asl a                                                             ; a16c: 0a          .        ; ...
+    asl a                                                             ; a169: 0a          .        ; (d1 * 4)
+    adc l004a                                                         ; a16a: 65 4a       eJ       ; - d1 (now * 5)
+    asl a                                                             ; a16c: 0a          .        ; - 2 (now * 10)
     adc zp_fp_temp                                                    ; a16d: 65 43       eC       ; - d2
     rts                                                               ; a16f: 60          `        ; Return the exponent
 ; &a170 referenced 2 times by &a15d, &a161
 .ca170
     lda l004a                                                         ; a170: a5 4a       .J       ; 1-digit exponent
-    clc                                                               ; a172: 18          .        ; ...
+    clc                                                               ; a172: 18          .        ; carry clear for the caller ADC
     rts                                                               ; a173: 60          `        ; Return
 ; &a174 referenced 2 times by &a150, &a154
 .ca174
     lda #0                                                            ; a174: a9 00       ..       ; no exponent: 0
-    clc                                                               ; a176: 18          .        ; ...
+    clc                                                               ; a176: 18          .        ; carry clear for the caller ADC
     rts                                                               ; a177: 60          `        ; Return
 ; ***************************************************************************************
 ; Add FWB into FWA

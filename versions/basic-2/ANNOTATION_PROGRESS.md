@@ -59,6 +59,8 @@ Two sanctioned idioms — never leave a continuation as `...`:
   its byte** so the line reads as a sentence across the chain —
   `carrying up through m4, / m3, / m2, / m1 (mantissa now x2)`. Mirrors
   the existing `fwa_sign` style (`(mantissa byte 2)`).
+  **Decided 2026-06-14: use the sentence style for these chains** (not a
+  bare byte name and not `(continued)`) — the richest reading.
 
 ## Reference works (consult before guessing)
 
@@ -107,3 +109,4 @@ placeholders goes first.
 |------|-------|----------|--------------------|-----------|--------|
 | 2026-06-14 | start | — | — | 1806 | — |
 | 2026-06-14 | pilot | mant_mul10, fn_rights (RIGHT$), +2 chain fixes | 32 | 1774 | — |
+| 2026-06-14 | leaves: number parsing | parse_decimal_u16, decode_line_number, parse_exponent | 29 | 1745 | — |

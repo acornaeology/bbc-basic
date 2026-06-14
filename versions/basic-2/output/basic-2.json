@@ -15504,7 +15504,7 @@
         177,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -15620,7 +15620,7 @@
         38,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the high byte",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m1",
@@ -15655,7 +15655,7 @@
         38,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the high byte",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m1",
@@ -15694,7 +15694,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the low byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -15706,7 +15706,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "now the high byte:",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -15716,7 +15716,7 @@
         101,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ the x4 high byte (= x5)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m1",
@@ -15741,7 +15741,7 @@
       "bytes": [
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the high byte",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -15799,7 +15799,7 @@
         101,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "add the digit to the low byte,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_exp",
@@ -15812,7 +15812,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -15838,7 +15838,7 @@
         230,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m1",
@@ -42179,7 +42179,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the packed top-bits byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -42200,7 +42200,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(shifted left by two)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -42209,7 +42209,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep a copy for the high byte",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -42229,7 +42229,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next encoded byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42273,7 +42273,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the high byte top bits into place,",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -42282,7 +42282,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(two places)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -42291,7 +42291,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next encoded byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -42336,7 +42336,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the advanced text offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -58517,7 +58517,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -58596,7 +58596,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the digit after the sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -58688,7 +58688,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -58701,7 +58701,7 @@
         201,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "above 9?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -58758,7 +58758,7 @@
         133,
         67
       ],
-      "comment_inline": "...",
+      "comment_inline": "save d2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_temp",
@@ -58771,7 +58771,7 @@
         165,
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "d1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004a",
@@ -58792,7 +58792,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(d1 * 4)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -58802,7 +58802,7 @@
         101,
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ d1 (now * 5)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "l004a",
@@ -58814,7 +58814,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "* 2 (now * 10)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -58868,7 +58868,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear for the caller ADC",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -58907,7 +58907,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear for the caller ADC",
       "type": "code",
       "mnemonic": "clc"
     },
