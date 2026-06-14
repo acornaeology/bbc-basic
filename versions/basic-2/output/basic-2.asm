@@ -5407,8 +5407,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Compare FWA with a fp variable
 ;
-; Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa
-; bytes, returning the ordering for the relational operators.
+; Unpack the packed real operand into FWB and compare it with FWA by sign, exponent and
+; mantissa, returning the ordering for the relational operators.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the left operand
+;     (ZP_FP_PTR) (&4B/&4C): the packed real right operand
+;
+; On Exit:
+;     Z: set if the values are equal
+;     C: the sign-corrected ordering when they differ
+;     A: nonzero when they differ
 ; &9a5f referenced 1 time by &b78f
 .fp_compare
     jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.      ; Unpack the operand into FWB
@@ -7436,7 +7445,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Convert the FP accumulator to an integer
 ;
-; Convert FWA to a 4-byte integer in IWA (variant 1).
+; Convert FWA to a 4-byte integer in IWA by denormalising (fwa_to_int2) and copying the
+; mantissa into IWA. Truncates toward zero.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the real to convert
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer part of FWA
+;     ZP_FWB (&3B-&42): corrupted (holds the fraction)
 ; &a3e4 referenced 5 times by &92f4, &98c9, &9e93, &af36, &b4c3
 .fwa_to_int
     jsr fwa_to_int2                                                   ; a3e4: 20 fe a3     ..      ; Denormalise FWA to a fixed integer
@@ -7456,9 +7473,18 @@ l848a = sub_c847b+15
     jsr fwb_copy_from_fwa                                             ; a3f8: 20 1e a2     ..      ; |x| < 1: FWB = FWA
     jmp fwa_clear                                                     ; a3fb: 4c 86 a6    L..      ; integer is zero
 ; ***************************************************************************************
-; Convert the FP accumulator to an integer (variant 2)
+; Denormalise FWA to a fixed-point integer
 ;
-; Convert FWA to a 4-byte integer in IWA (variant 2).
+; Shift the FWA mantissa so it represents the integer part at a fixed scale (exponent
+; &A0), pushing the fractional bits out into FWB. The shared core of fwa_to_int and
+; fp_split_int_frac; the caller reads the integer from the mantissa.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the real to convert
+;
+; On Exit:
+;     ZP_FWA (&31-&34): the integer part in the mantissa
+;     ZP_FWB (&3B-&42): the fractional bits shifted out
 ; &a3fe referenced 4 times by &a3e4, &a491, &a9ee, &ac82
 .fwa_to_int2
     lda zp_fwa_exp                                                    ; a3fe: a5 30       .0       ; Exponent of FWA
@@ -7560,6 +7586,14 @@ l848a = sub_c847b+15
 ;
 ; Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder
 ; (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to split
+;
+; On Exit:
+;     (&4A): the integer part (low byte)
+;     ZP_FWA (&2E-&35): the signed fraction in [-0.5, 0.5]
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a486 referenced 2 times by &9e45, &aab8
 .fp_split_int_frac
     lda zp_fwa_exp                                                    ; a486: a5 30       .0       ; Exponent of FWA
@@ -7620,7 +7654,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Swap FWA and a fp variable
 ;
-; Exchange the FP accumulator with the fp variable operand.
+; Exchange FWA with the packed real at zp_fp_ptr: unpack the operand into FWB, pack FWA
+; into the variable, then copy FWB into FWA.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the accumulator value
+;     (ZP_FP_PTR) (&4B/&4C): the packed real variable
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the former variable value
+;     (ZP_FP_PTR): the former FWA value
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a4d6 referenced 1 time by &a6d5
 .fwa_swap_var
     jsr fwb_unpack_var                                                ; a4d6: 20 4e a3     N.      ; FWB = the fp variable
@@ -7662,14 +7706,31 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = fp var - FWA
 ;
-; Reverse subtract: operand minus FWA (normalised, rounded).
+; Reverse subtract: negate FWA then add the packed real operand, giving operand - FWA
+; (normalised, rounded).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the subtrahend
+;     (ZP_FP_PTR) (&4B/&4C): the packed real operand
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): operand - FWA
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a4fd referenced 2 times by &9cf4, &a4d0
 .fwa_rsub_var
     jsr fwa_negate                                                    ; a4fd: 20 7e ad     ~.      ; Negate FWA, then add the variable: var - FWA
 ; ***************************************************************************************
 ; FWA = FWA + fp var
 ;
-; Add the fp variable operand to FWA (normalised, rounded).
+; Unpack the packed real operand into FWB and add it to FWA (normalised, rounded).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the augend
+;     (ZP_FP_PTR) (&4B/&4C): the packed real operand
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the sum
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a500 referenced 10 times by &9c9e, &a7dd, &a848, &a863, &a8cc, &a92a, &a930, &aa1d, &aa32, &b774
 .fwa_add_var
     jsr fwb_unpack_var                                                ; a500: 20 4e a3     N.      ; FWB = the fp variable
@@ -7677,7 +7738,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA + FWB
 ;
-; Add FWB to FWA (normalised, rounded).
+; Add FWB to FWA (fwa_add_fwb_raw then fwa_round), normalised and rounded.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the augend
+;     ZP_FWB (&3B-&42): the addend
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the rounded sum
 ; &a505 referenced 3 times by &a830, &a94a, &a9e8
 .fwa_add_fwb
     jsr fwa_add_fwb_raw                                               ; a505: 20 0b a5     ..      ; FWA = FWA + FWB (raw)
@@ -7685,7 +7753,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA + FWB (unrounded)
 ;
-; Add FWB to FWA, normalised but not rounded.
+; Add FWB to FWA: align the smaller operand to the larger exponent, add the mantissas and
+; normalise. Left unrounded (the caller rounds). Operands differing by >= 37 bits leave
+; FWA unchanged.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the augend
+;     ZP_FWB (&3B-&42): the addend
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the sum, normalised but unrounded
 ; &a50b referenced 2 times by &9f7b, &a505
 .fwa_add_fwb_raw
     jsr fwa_sign                                                      ; a50b: 20 da a1     ..      ; Is FWA zero?
@@ -7857,7 +7934,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA * fp var (raw)
 ;
-; Multiply FWA by the operand, unnormalised and unrounded.
+; Multiply FWA by the packed real operand (sign XOR, exponents added, mantissas
+; multiplied by shift-and-add). A zero operand gives zero. Left unnormalised and
+; unrounded (the caller finishes).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the multiplicand
+;     (ZP_FP_PTR) (&4B/&4C): the packed real multiplier
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the product, unnormalised
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a606 referenced 2 times by &a656, &af30
 .fwa_mul_var_raw
     jsr fwa_sign                                                      ; a606: 20 da a1     ..      ; Is FWA zero?
@@ -7916,7 +8003,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA * fp var
 ;
-; Multiply FWA by the fp variable operand (normalised, rounded).
+; Multiply FWA by the packed real operand (fwa_mul_var_raw then normalise and round).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the multiplicand
+;     (ZP_FP_PTR) (&4B/&4C): the packed real multiplier
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the product, normalised and rounded
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a656 referenced 12 times by &9d2f, &9e81, &a842, &a845, &a85d, &a9b4, &a9c6, &aa17, &aa2c, &aad4, &ab2c, &abbc
 .fwa_mul_var
     jsr fwa_mul_var_raw                                               ; a656: 20 06 a6     ..      ; FWA = FWA * fp var (raw)
@@ -7926,7 +8021,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Round FWA
 ;
-; Round the floating-point accumulator.
+; Round FWA to the mantissa LSB using the rounding byte: round to nearest, ties handled
+; by the LSB. A carry out of the top renormalises and can raise Too big.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to round (rnd byte holds the bits below the LSB)
+;
+; On Exit:
+;     ZP_FWA (&2E-&34): the rounded value
+;     BRK: Too big on overflow
 ; &a65c referenced 2 times by &a118, &a508
 .fwa_round
     lda zp_fwa_rnd                                                    ; a65c: a5 35       .5       ; The rounding byte holds the bits below the LSB
@@ -7981,7 +8084,11 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = 1
 ;
-; Set the floating-point accumulator to 1.
+; Set the floating-point accumulator to 1.0 (mantissa MSB &80, exponent &81).
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): 1.0
+;     A: nonzero (flags a real result)
 ; &a699 referenced 6 times by &9e8b, &9f20, &a6a8, &a9ba, &ab22, &b863
 .fwa_set_one
     jsr fwa_clear                                                     ; a699: 20 86 a6     ..      ; Start from 0.0
@@ -8003,7 +8110,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = fp var / FWA
 ;
-; Reverse divide: operand divided by FWA (normalised, rounded).
+; Reverse divide: copy FWA (the divisor) into FWB, unpack the packed real operand (the
+; dividend) into FWA, then divide, giving operand / FWA. Raises Division by zero if FWA
+; is zero.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the divisor
+;     (ZP_FP_PTR) (&4B/&4C): the packed real dividend
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): operand / FWA
+;     BRK: Division by zero if FWA was zero
 ; &a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8
 .fwa_rdiv_var
     jsr fwa_sign                                                      ; a6ad: 20 da a1     ..      ; Is FWA (the divisor) zero?
@@ -8050,8 +8167,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA / divisor (restoring long division)
 ;
-; Floating-point divide: 32 quotient bits plus guard bits by repeated
-; compare/subtract/shift; the quotient builds in &43-&46.
+; Floating-point divide of FWA by the packed real divisor: sign XOR, exponents
+; subtracted, then 32 quotient bits plus guard bits by restoring long division
+; (compare/subtract/shift). Raises Division by zero on a zero divisor; a zero dividend
+; gives zero.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the dividend
+;     (ZP_FP_PTR) (&4B/&4C): the packed real divisor
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the quotient
+;     ZP_FWB (&3B-&42): corrupted (scratch)
+;     BRK: Division by zero on a zero divisor
 ; &a6e7 referenced 3 times by &a6ab, &a6e1, &a9eb
 .fp_divide
     jsr fwa_sign                                                      ; a6e7: 20 da a1     ..      ; Is the dividend (FWA) zero?
@@ -9500,7 +9628,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = -FWA
 ;
-; Negate the floating-point accumulator.
+; Negate FWA by flipping the sign bit (a zero value is left unchanged).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to negate
+;
+; On Exit:
+;     ZP_FWA_SIGN (&2E): sign bit toggled (unless zero)
+;     A: real type marker (&FF)
 ; &ad7e referenced 5 times by &a4d3, &a4fd, &a933, &a9a7, &ad91
 .fwa_negate
     jsr fwa_sign                                                      ; ad7e: 20 da a1     ..      ; Is FWA zero?

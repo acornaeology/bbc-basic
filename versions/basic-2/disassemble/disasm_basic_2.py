@@ -3978,9 +3978,14 @@ d.comment(0x9a59, 'ensure real', align=Align.INLINE)
 d.comment(0x9a5c, 'unstack the left operand', align=Align.INLINE)
 d.subroutine(0x9a5f, 'fp_compare',
              title='Compare FWA with a fp variable',
-             description='Unpack the operand into FWB and compare it with FWA '
-                         'by sign, exponent and mantissa bytes, returning the '
-                         'ordering for the relational operators.')
+             description='Unpack the packed real operand into FWB and compare it '
+                         'with FWA by sign, exponent and mantissa, returning the '
+                         'ordering for the relational operators.',
+             on_entry={'zp_fwa (&2E-&35)': 'the left operand',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real right operand'},
+             on_exit={'Z': 'set if the values are equal',
+                      'C': 'the sign-corrected ordering when they differ',
+                      'A': 'nonzero when they differ'})
 d.comment(0x9a5f, 'Unpack the operand into FWB', align=Align.INLINE)
 d.comment(0x9a62, 'Restore the operator', align=Align.INLINE)
 d.comment(0x9a64, 'assume equal', align=Align.INLINE)
@@ -5664,7 +5669,12 @@ d.comment(0xa3e3, 'FWA now holds the unpacked value', align=Align.INLINE)
 d.subroutine(
     0xa3e4, 'fwa_to_int',
     title='Convert the FP accumulator to an integer',
-    description='Convert FWA to a 4-byte integer in IWA (variant 1).',
+    description='Convert FWA to a 4-byte integer in IWA by denormalising '
+                '(fwa_to_int2) and copying the mantissa into IWA. Truncates '
+                'toward zero.',
+    on_entry={'zp_fwa (&2E-&35)': 'the real to convert'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer part of FWA',
+             'zp_fwb (&3B-&42)': 'corrupted (holds the fraction)'},
 )
 # fwa_to_int (&A3E4): convert FWA real to the integer accumulator.
 d.comment(0xa3e4, 'Denormalise FWA to a fixed integer', align=Align.INLINE)
@@ -5682,8 +5692,14 @@ d.comment(0xa3fb, 'integer is zero', align=Align.INLINE)
 
 d.subroutine(
     0xa3fe, 'fwa_to_int2',
-    title='Convert the FP accumulator to an integer (variant 2)',
-    description='Convert FWA to a 4-byte integer in IWA (variant 2).',
+    title='Denormalise FWA to a fixed-point integer',
+    description='Shift the FWA mantissa so it represents the integer part at a '
+                'fixed scale (exponent &A0), pushing the fractional bits out into '
+                'FWB. The shared core of fwa_to_int and fp_split_int_frac; the '
+                'caller reads the integer from the mantissa.',
+    on_entry={'zp_fwa (&2E-&35)': 'the real to convert'},
+    on_exit={'zp_fwa (&31-&34)': 'the integer part in the mantissa',
+             'zp_fwb (&3B-&42)': 'the fractional bits shifted out'},
 )
 # fwa_to_int2 (&A3FE): FWA float -> 64-bit fixed integer (FWA:FWB).
 # Denormalises the mantissa to exponent &A0 (an exact integer), the low
@@ -5772,7 +5788,11 @@ d.subroutine(0xa486, 'fp_split_int_frac',
              description='Round FWA to the nearest integer, leaving that '
                          'integer in &4A and the signed remainder (in '
                          '[-0.5, 0.5]) in FWA. Used by EXP to separate the '
-                         'integer and fractional powers.')
+                         'integer and fractional powers.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to split'},
+             on_exit={'(&4A)': 'the integer part (low byte)',
+                      'zp_fwa (&2E-&35)': 'the signed fraction in [-0.5, 0.5]',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fp_split_int_frac (&A486): integer part -> &4A, fraction -> FWA.
 d.comment(0xa486, 'Exponent of FWA', align=Align.INLINE)
 d.comment(0xa488, '|x| >= 1: has an integer part', align=Align.INLINE)
@@ -5819,7 +5839,14 @@ d.comment(0xa4d0, 'operand - FWA...', align=Align.INLINE)
 d.comment(0xa4d3, '...then negate to give FWA - operand', align=Align.INLINE)
 
 d.subroutine(0xa4d6, 'fwa_swap_var', title='Swap FWA and a fp variable',
-             description='Exchange the FP accumulator with the fp variable operand.')
+             description='Exchange FWA with the packed real at zp_fp_ptr: unpack '
+                         'the operand into FWB, pack FWA into the variable, then '
+                         'copy FWB into FWA.',
+             on_entry={'zp_fwa (&2E-&35)': 'the accumulator value',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real variable'},
+             on_exit={'zp_fwa (&2E-&35)': 'the former variable value',
+                      '(zp_fp_ptr)': 'the former FWA value',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_swap_var (&A4D6): exchange FWA with the fp variable
 d.comment(0xa4d6, 'FWB = the fp variable', align=Align.INLINE)
 d.comment(0xa4d9, 'Store FWA into the variable; FWA = old variable', align=Align.INLINE)
@@ -5847,21 +5874,41 @@ d.comment(0xa4fa, '...into FWA', align=Align.INLINE)
 d.comment(0xa4fc, 'FWA is now a copy of FWB', align=Align.INLINE)
 
 d.subroutine(0xa4fd, 'fwa_rsub_var', title='FWA = fp var - FWA',
-             description='Reverse subtract: operand minus FWA (normalised, rounded).')
+             description='Reverse subtract: negate FWA then add the packed real '
+                         'operand, giving operand - FWA (normalised, rounded).',
+             on_entry={'zp_fwa (&2E-&35)': 'the subtrahend',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real operand'},
+             on_exit={'zp_fwa (&2E-&35)': 'operand - FWA',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_rsub_var / fwa_add_fwb / fwa_mul_var / fwa_reciprocal (wrappers)
 d.comment(0xa4fd, 'Negate FWA, then add the variable: var - FWA', align=Align.INLINE)
 # Add / subtract.
 d.subroutine(0xa500, 'fwa_add_var', title='FWA = FWA + fp var',
-             description='Add the fp variable operand to FWA (normalised, rounded).')
+             description='Unpack the packed real operand into FWB and add it to '
+                         'FWA (normalised, rounded).',
+             on_entry={'zp_fwa (&2E-&35)': 'the augend',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real operand'},
+             on_exit={'zp_fwa (&2E-&35)': 'the sum',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_add_var (&A500): FWA = FWA + fp variable
 d.comment(0xa500, 'FWB = the fp variable', align=Align.INLINE)
 d.comment(0xa503, 'Adding zero leaves FWA unchanged', align=Align.INLINE)
 d.subroutine(0xa505, 'fwa_add_fwb', title='FWA = FWA + FWB',
-             description='Add FWB to FWA (normalised, rounded).')
+             description='Add FWB to FWA (fwa_add_fwb_raw then fwa_round), '
+                         'normalised and rounded.',
+             on_entry={'zp_fwa (&2E-&35)': 'the augend',
+                       'zp_fwb (&3B-&42)': 'the addend'},
+             on_exit={'zp_fwa (&2E-&35)': 'the rounded sum'})
 d.comment(0xa505, 'FWA = FWA + FWB (raw)', align=Align.INLINE)
 d.comment(0xa508, 'then round', align=Align.INLINE)
 d.subroutine(0xa50b, 'fwa_add_fwb_raw', title='FWA = FWA + FWB (unrounded)',
-             description='Add FWB to FWA, normalised but not rounded.')
+             description='Add FWB to FWA: align the smaller operand to the '
+                         'larger exponent, add the mantissas and normalise. Left '
+                         'unrounded (the caller rounds). Operands differing by '
+                         '>= 37 bits leave FWA unchanged.',
+             on_entry={'zp_fwa (&2E-&35)': 'the augend',
+                       'zp_fwb (&3B-&42)': 'the addend'},
+             on_exit={'zp_fwa (&2E-&35)': 'the sum, normalised but unrounded'})
 d.comment(0xa50b, 'Is FWA zero?', align=Align.INLINE)
 d.comment(0xa50e, 'FWA is zero: the sum is simply FWB', align=Align.INLINE)
 # fwa_add_fwb_raw (&A50B) remaining: alignment shifts and add/subtract
@@ -6016,7 +6063,14 @@ d.comment(0xa5ff, 'Shift the comparison result, then normalise', align=Align.INL
 d.comment(0xa602, 'normalise the difference', align=Align.INLINE)
 d.comment(0xa605, 'Return', align=Align.INLINE)
 d.subroutine(0xa606, 'fwa_mul_var_raw', title='FWA = FWA * fp var (raw)',
-             description='Multiply FWA by the operand, unnormalised and unrounded.')
+             description='Multiply FWA by the packed real operand (sign XOR, '
+                         'exponents added, mantissas multiplied by shift-and-add). '
+                         'A zero operand gives zero. Left unnormalised and '
+                         'unrounded (the caller finishes).',
+             on_entry={'zp_fwa (&2E-&35)': 'the multiplicand',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real multiplier'},
+             on_exit={'zp_fwa (&2E-&35)': 'the product, unnormalised',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_mul_var_raw (&A606): FWA = FWA * fp variable (shift-and-add)
 d.comment(0xa606, 'Is FWA zero?', align=Align.INLINE)
 d.comment(0xa609, 'zero: the product is zero', align=Align.INLINE)
@@ -6062,11 +6116,22 @@ d.comment(0xa655, 'Return the product', align=Align.INLINE)
 
 # Multiply / divide.
 d.subroutine(0xa656, 'fwa_mul_var', title='FWA = FWA * fp var',
-             description='Multiply FWA by the fp variable operand (normalised, rounded).')
+             description='Multiply FWA by the packed real operand '
+                         '(fwa_mul_var_raw then normalise and round).',
+             on_entry={'zp_fwa (&2E-&35)': 'the multiplicand',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real multiplier'},
+             on_exit={'zp_fwa (&2E-&35)': 'the product, normalised and rounded',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 d.comment(0xa656, 'FWA = FWA * fp var (raw)', align=Align.INLINE)
 d.comment(0xa659, 'normalise (round below)', align=Align.INLINE)
 d.subroutine(0xa65c, 'fwa_round', title='Round FWA',
-             description='Round the floating-point accumulator.')
+             description='Round FWA to the mantissa LSB using the rounding byte: '
+                         'round to nearest, ties handled by the LSB. A carry out '
+                         'of the top renormalises and can raise Too big.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to round (rnd byte holds '
+                                           'the bits below the LSB)'},
+             on_exit={'zp_fwa (&2E-&34)': 'the rounded value',
+                      'BRK': 'Too big on overflow'})
 # --- fwa_round: round FWA using the rounding byte ---------------------
 d.comment(0xa65c, 'The rounding byte holds the bits below the LSB',
           align=Align.INLINE)
@@ -6114,7 +6179,10 @@ d.comment(0xa696, 'Clear the rounding byte', align=Align.INLINE)
 d.comment(0xa698, 'FWA now holds 0.0', align=Align.INLINE)
 
 d.subroutine(0xa699, 'fwa_set_one', title='FWA = 1',
-             description='Set the floating-point accumulator to 1.')
+             description='Set the floating-point accumulator to 1.0 (mantissa MSB '
+                         '&80, exponent &81).',
+             on_exit={'zp_fwa (&2E-&35)': '1.0',
+                      'A': 'nonzero (flags a real result)'})
 # fwa_set_one (&A699): FWA = 1.0
 d.comment(0xa699, 'Start from 0.0', align=Align.INLINE)
 d.comment(0xa69c, 'Mantissa MSB &80 is the implied leading 1', align=Align.INLINE)
@@ -6131,7 +6199,14 @@ d.comment(0xa6a8, 'FWA = 1', align=Align.INLINE)
 d.comment(0xa6ab, 'divide 1 by the saved value', align=Align.INLINE)
 
 d.subroutine(0xa6ad, 'fwa_rdiv_var', title='FWA = fp var / FWA',
-             description='Reverse divide: operand divided by FWA (normalised, rounded).')
+             description='Reverse divide: copy FWA (the divisor) into FWB, unpack '
+                         'the packed real operand (the dividend) into FWA, then '
+                         'divide, giving operand / FWA. Raises Division by zero '
+                         'if FWA is zero.',
+             on_entry={'zp_fwa (&2E-&35)': 'the divisor',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real dividend'},
+             on_exit={'zp_fwa (&2E-&35)': 'operand / FWA',
+                      'BRK': 'Division by zero if FWA was zero'})
 # fwa_rdiv_var (&A6AD): FWA = fp var / FWA
 d.comment(0xa6ad, 'Is FWA (the divisor) zero?', align=Align.INLINE)
 d.comment(0xa6b0, 'yes: Division by zero', align=Align.INLINE)
@@ -6159,7 +6234,16 @@ d.comment(0xa6e1, 'TAN = sin / cos', align=Align.INLINE)
 d.comment(0xa6e4, 'real result', align=Align.INLINE)
 d.comment(0xa6e6, 'Return TAN', align=Align.INLINE)
 d.subroutine(0xa6e7, 'fp_divide', title='FWA = FWA / divisor (restoring long division)',
-             description='Floating-point divide: 32 quotient bits plus guard bits by repeated compare/subtract/shift; the quotient builds in &43-&46.')
+             description='Floating-point divide of FWA by the packed real '
+                         'divisor: sign XOR, exponents subtracted, then 32 '
+                         'quotient bits plus guard bits by restoring long '
+                         'division (compare/subtract/shift). Raises Division by '
+                         'zero on a zero divisor; a zero dividend gives zero.',
+             on_entry={'zp_fwa (&2E-&35)': 'the dividend',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real divisor'},
+             on_exit={'zp_fwa (&2E-&35)': 'the quotient',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)',
+                      'BRK': 'Division by zero on a zero divisor'})
 
 # fp_divide (&A6E7)
 d.comment(0xa6e7, 'Is the dividend (FWA) zero?', align=Align.INLINE)
@@ -7002,7 +7086,11 @@ d.comment(0xad77, 'ABS of a real: get the sign', align=Align.INLINE)
 d.comment(0xad7a, 'positive/zero: done', align=Align.INLINE)
 d.comment(0xad7c, 'negative: clear the sign', align=Align.INLINE)
 d.subroutine(0xad7e, 'fwa_negate', title='FWA = -FWA',
-             description='Negate the floating-point accumulator.')
+             description='Negate FWA by flipping the sign bit (a zero value is '
+                         'left unchanged).',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to negate'},
+             on_exit={'zp_fwa_sign (&2E)': 'sign bit toggled (unless zero)',
+                      'A': 'real type marker (&FF)'})
 # fwa_negate (&AD7E): FWA = -FWA
 d.comment(0xad7e, 'Is FWA zero?', align=Align.INLINE)
 d.comment(0xad81, 'zero: nothing to negate', align=Align.INLINE)

@@ -2366,7 +2366,16 @@
       "addr": 39519,
       "name": "fp_compare",
       "title": "Compare FWA with a fp variable",
-      "description": "Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa bytes, returning the ordering for the relational operators.",
+      "description": "Unpack the packed real operand into FWB and compare it with FWA by sign, exponent and mantissa, returning the ordering for the relational operators.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the left operand",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real right operand"
+      },
+      "on_exit": {
+        "Z": "set if the values are equal",
+        "C": "the sign-corrected ordering when they differ",
+        "A": "nonzero when they differ"
+      },
       "fall_through": true
     },
     {
@@ -2865,13 +2874,27 @@
       "addr": 41956,
       "name": "fwa_to_int",
       "title": "Convert the FP accumulator to an integer",
-      "description": "Convert FWA to a 4-byte integer in IWA (variant 1)."
+      "description": "Convert FWA to a 4-byte integer in IWA by denormalising (fwa_to_int2) and copying the mantissa into IWA. Truncates toward zero.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the real to convert"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer part of FWA",
+        "zp_fwb (&3B-&42)": "corrupted (holds the fraction)"
+      }
     },
     {
       "addr": 41982,
       "name": "fwa_to_int2",
-      "title": "Convert the FP accumulator to an integer (variant 2)",
-      "description": "Convert FWA to a 4-byte integer in IWA (variant 2)."
+      "title": "Denormalise FWA to a fixed-point integer",
+      "description": "Shift the FWA mantissa so it represents the integer part at a fixed scale (exponent &A0), pushing the fractional bits out into FWB. The shared core of fwa_to_int and fp_split_int_frac; the caller reads the integer from the mantissa.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the real to convert"
+      },
+      "on_exit": {
+        "zp_fwa (&31-&34)": "the integer part in the mantissa",
+        "zp_fwb (&3B-&42)": "the fractional bits shifted out"
+      }
     },
     {
       "addr": 42067,
@@ -2889,7 +2912,15 @@
       "addr": 42118,
       "name": "fp_split_int_frac",
       "title": "Split FWA into integer part (&4A) and fraction (FWA)",
-      "description": "Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers."
+      "description": "Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to split"
+      },
+      "on_exit": {
+        "(&4A)": "the integer part (low byte)",
+        "zp_fwa (&2E-&35)": "the signed fraction in [-0.5, 0.5]",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      }
     },
     {
       "addr": 42192,
@@ -2901,7 +2932,16 @@
       "addr": 42198,
       "name": "fwa_swap_var",
       "title": "Swap FWA and a fp variable",
-      "description": "Exchange the FP accumulator with the fp variable operand.",
+      "description": "Exchange FWA with the packed real at zp_fp_ptr: unpack the operand into FWB, pack FWA into the variable, then copy FWB into FWA.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the accumulator value",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real variable"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the former variable value",
+        "(zp_fp_ptr)": "the former FWA value",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
       "fall_through": true
     },
     {
@@ -2921,27 +2961,57 @@
       "addr": 42237,
       "name": "fwa_rsub_var",
       "title": "FWA = fp var - FWA",
-      "description": "Reverse subtract: operand minus FWA (normalised, rounded).",
+      "description": "Reverse subtract: negate FWA then add the packed real operand, giving operand - FWA (normalised, rounded).",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the subtrahend",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real operand"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "operand - FWA",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
       "fall_through": true
     },
     {
       "addr": 42240,
       "name": "fwa_add_var",
       "title": "FWA = FWA + fp var",
-      "description": "Add the fp variable operand to FWA (normalised, rounded).",
+      "description": "Unpack the packed real operand into FWB and add it to FWA (normalised, rounded).",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the augend",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real operand"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the sum",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
       "fall_through": true
     },
     {
       "addr": 42245,
       "name": "fwa_add_fwb",
       "title": "FWA = FWA + FWB",
-      "description": "Add FWB to FWA (normalised, rounded)."
+      "description": "Add FWB to FWA (fwa_add_fwb_raw then fwa_round), normalised and rounded.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the augend",
+        "zp_fwb (&3B-&42)": "the addend"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the rounded sum"
+      }
     },
     {
       "addr": 42251,
       "name": "fwa_add_fwb_raw",
       "title": "FWA = FWA + FWB (unrounded)",
-      "description": "Add FWB to FWA, normalised but not rounded.",
+      "description": "Add FWB to FWA: align the smaller operand to the larger exponent, add the mantissas and normalise. Left unrounded (the caller rounds). Operands differing by >= 37 bits leave FWA unchanged.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the augend",
+        "zp_fwb (&3B-&42)": "the addend"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the sum, normalised but unrounded"
+      },
       "fall_through": true
     },
     {
@@ -2954,20 +3024,43 @@
       "addr": 42502,
       "name": "fwa_mul_var_raw",
       "title": "FWA = FWA * fp var (raw)",
-      "description": "Multiply FWA by the operand, unnormalised and unrounded."
+      "description": "Multiply FWA by the packed real operand (sign XOR, exponents added, mantissas multiplied by shift-and-add). A zero operand gives zero. Left unnormalised and unrounded (the caller finishes).",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the multiplicand",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real multiplier"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the product, unnormalised",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      }
     },
     {
       "addr": 42582,
       "name": "fwa_mul_var",
       "title": "FWA = FWA * fp var",
-      "description": "Multiply FWA by the fp variable operand (normalised, rounded).",
+      "description": "Multiply FWA by the packed real operand (fwa_mul_var_raw then normalise and round).",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the multiplicand",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real multiplier"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the product, normalised and rounded",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
       "fall_through": true
     },
     {
       "addr": 42588,
       "name": "fwa_round",
       "title": "Round FWA",
-      "description": "Round the floating-point accumulator.",
+      "description": "Round FWA to the mantissa LSB using the rounding byte: round to nearest, ties handled by the LSB. A carry out of the top renormalises and can raise Too big.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to round (rnd byte holds the bits below the LSB)"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&34)": "the rounded value",
+        "BRK": "Too big on overflow"
+      },
       "fall_through": true
     },
     {
@@ -2986,7 +3079,11 @@
       "addr": 42649,
       "name": "fwa_set_one",
       "title": "FWA = 1",
-      "description": "Set the floating-point accumulator to 1."
+      "description": "Set the floating-point accumulator to 1.0 (mantissa MSB &80, exponent &81).",
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "1.0",
+        "A": "nonzero (flags a real result)"
+      }
     },
     {
       "addr": 42661,
@@ -2999,13 +3096,30 @@
       "addr": 42669,
       "name": "fwa_rdiv_var",
       "title": "FWA = fp var / FWA",
-      "description": "Reverse divide: operand divided by FWA (normalised, rounded)."
+      "description": "Reverse divide: copy FWA (the divisor) into FWB, unpack the packed real operand (the dividend) into FWA, then divide, giving operand / FWA. Raises Division by zero if FWA is zero.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the divisor",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real dividend"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "operand / FWA",
+        "BRK": "Division by zero if FWA was zero"
+      }
     },
     {
       "addr": 42727,
       "name": "fp_divide",
       "title": "FWA = FWA / divisor (restoring long division)",
-      "description": "Floating-point divide: 32 quotient bits plus guard bits by repeated compare/subtract/shift; the quotient builds in &43-&46."
+      "description": "Floating-point divide of FWA by the packed real divisor: sign XOR, exponents subtracted, then 32 quotient bits plus guard bits by restoring long division (compare/subtract/shift). Raises Division by zero on a zero divisor; a zero dividend gives zero.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the dividend",
+        "(zp_fp_ptr) (&4B/&4C)": "the packed real divisor"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the quotient",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)",
+        "BRK": "Division by zero on a zero divisor"
+      }
     },
     {
       "addr": 42985,
@@ -3145,7 +3259,14 @@
       "addr": 44414,
       "name": "fwa_negate",
       "title": "FWA = -FWA",
-      "description": "Negate the floating-point accumulator.",
+      "description": "Negate FWA by flipping the sign bit (a zero value is left unchanged).",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to negate"
+      },
+      "on_exit": {
+        "zp_fwa_sign (&2E)": "sign bit toggled (unless zero)",
+        "A": "real type marker (&FF)"
+      },
       "fall_through": true
     },
     {
