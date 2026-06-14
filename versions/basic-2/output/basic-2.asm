@@ -1118,7 +1118,7 @@ l848a = sub_c847b+15
     ldx #3                                                            ; 85ba: a2 03       ..       ; Three characters
     jsr skip_spaces                                                   ; 85bc: 20 97 8a     ..      ; Skip spaces
     ldy #0                                                            ; 85bf: a0 00       ..       ; Clear the compacted value
-    sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=       ; ...
+    sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=       ; low byte (&3D)
     cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:       ; ':' end of statement?
     beq c862b                                                         ; 85c5: f0 64       .d       ; yes: no instruction
     cmp #&0d                                                          ; 85c7: c9 0d       ..       ; end of line?
@@ -1131,22 +1131,22 @@ l848a = sub_c847b+15
 ; &85d5 referenced 1 time by &85ef
 .loop_c85d5
     ldy zp_text_ptr_off                                               ; 85d5: a4 0a       ..       ; Next character
-    inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..       ; ...
-    lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..       ; ...
+    inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..       ; advance the offset,
+    lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..       ; read it
     bmi c8607                                                         ; 85db: 30 2a       0*       ; token: tokenised AND/EOR/OR
     cmp #&20 ; ' '                                                    ; 85dd: c9 20       .        ; space?
     beq c85f1                                                         ; 85df: f0 10       ..       ; skip it
     ldy #5                                                            ; 85e1: a0 05       ..       ; Compact the character (5 bits)
-    asl a                                                             ; 85e3: 0a          .        ; ...
-    asl a                                                             ; 85e4: 0a          .        ; ...
-    asl a                                                             ; 85e5: 0a          .        ; ...
+    asl a                                                             ; 85e3: 0a          .        ; shift the char up by 3,
+    asl a                                                             ; 85e4: 0a          .        ; (continued)
+    asl a                                                             ; 85e5: 0a          .        ; (continued)
 ; &85e6 referenced 1 time by &85ec
 .loop_c85e6
     asl a                                                             ; 85e6: 0a          .        ; shift into the value
-    rol zp_fwb_exp                                                    ; 85e7: 26 3d       &=       ; ...
-    rol zp_fwb_m1                                                     ; 85e9: 26 3e       &>       ; ...
-    dey                                                               ; 85eb: 88          .        ; ...
-    bne loop_c85e6                                                    ; 85ec: d0 f8       ..       ; ...
+    rol zp_fwb_exp                                                    ; 85e7: 26 3d       &=       ; carry into &3D,
+    rol zp_fwb_m1                                                     ; 85e9: 26 3e       &>       ; and &3E,
+    dey                                                               ; 85eb: 88          .        ; next bit,
+    bne loop_c85e6                                                    ; 85ec: d0 f8       ..       ; all 5 bits
     dex                                                               ; 85ee: ca          .        ; next character
     bne loop_c85d5                                                    ; 85ef: d0 e4       ..       ; loop for three
 ; &85f1 referenced 1 time by &85df
@@ -1158,7 +1158,7 @@ l848a = sub_c847b+15
     cmp l8450,x                                                       ; 85f5: dd 50 84    .P.      ; Compare the low half
     bne c8601                                                         ; 85f8: d0 07       ..       ; no match: next entry
     ldy l848a,x                                                       ; 85fa: bc 8a 84    ...      ; High half
-    cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; ...
+    cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; match the high half?
     beq c8620                                                         ; 85ff: f0 1f       ..       ; matched
 ; &8601 referenced 1 time by &85f8
 .c8601
@@ -1179,8 +1179,8 @@ l848a = sub_c847b+15
     cmp #&84                                                          ; 8613: c9 84       ..       ; tokenised OR?
     bne c8604                                                         ; 8615: d0 ed       ..       ; no: Mistake
     inc zp_text_ptr_off                                               ; 8617: e6 0a       ..       ; step past, expect 'A'
-    iny                                                               ; 8619: c8          .        ; ...
-    lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..       ; ...
+    iny                                                               ; 8619: c8          .        ; advance,
+    lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..       ; read the next character
     cmp #&41 ; 'A'                                                    ; 861c: c9 41       .A       ; 'A'?
     bne c8604                                                         ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
@@ -1193,19 +1193,19 @@ l848a = sub_c847b+15
 ; &862b referenced 7 times by &85c5, &85c9, &85cd, &86aa, &879c, &881e, &8864
 .c862b
     lda resint_p                                                      ; 862b: ad 40 04    .@.      ; P% low -> destination
-    sta zp_general                                                    ; 862e: 85 37       .7       ; ...
+    sta zp_general                                                    ; 862e: 85 37       .7       ; to &37
     sty zp_fileblk                                                    ; 8630: 84 39       .9       ; Save the byte count
     ldx zp_opt_flag                                                   ; 8632: a6 28       .(       ; OPT setting
     cpx #4                                                            ; 8634: e0 04       ..       ; offset assembly (OPT >= 4)?
     ldx l0441                                                         ; 8636: ae 41 04    .A.      ; P% high
-    stx zp_general_1                                                  ; 8639: 86 38       .8       ; ...
+    stx zp_general_1                                                  ; 8639: 86 38       .8       ; to &38
     bcc c8643                                                         ; 863b: 90 06       ..       ; no offset: assemble at P%
     lda resint_o                                                      ; 863d: ad 3c 04    .<.      ; offset: assemble at O% instead
-    ldx l043d                                                         ; 8640: ae 3d 04    .=.      ; ...
+    ldx l043d                                                         ; 8640: ae 3d 04    .=.      ; O% high
 ; &8643 referenced 1 time by &863b
 .c8643
     sta l003a                                                         ; 8643: 85 3a       .:       ; Store the destination pointer
-    stx zp_fwb_sign                                                   ; 8645: 86 3b       .;       ; ...
+    stx zp_fwb_sign                                                   ; 8645: 86 3b       .;       ; high byte (&3B)
     tya                                                               ; 8647: 98          .        ; Any bytes to store?
     beq return_1                                                      ; 8648: f0 28       .(       ; none: done
     bpl c8650                                                         ; 864a: 10 04       ..       ; positive count: store opcode bytes
@@ -1222,14 +1222,14 @@ l848a = sub_c847b+15
 .c865b
     sta (l003a),y                                                     ; 865b: 91 3a       .:       ; Store the byte at the destination
     inc resint_p                                                      ; 865d: ee 40 04    .@.      ; Advance P%
-    bne c8665                                                         ; 8660: d0 03       ..       ; ...
-    inc l0441                                                         ; 8662: ee 41 04    .A.      ; ...
+    bne c8665                                                         ; 8660: d0 03       ..       ; no carry,
+    inc l0441                                                         ; 8662: ee 41 04    .A.      ; carry into P% high
 ; &8665 referenced 1 time by &8660
 .c8665
     bcc c866f                                                         ; 8665: 90 08       ..       ; offset assembly?
     inc resint_o                                                      ; 8667: ee 3c 04    .<.      ; yes: advance O% too
-    bne c866f                                                         ; 866a: d0 03       ..       ; ...
-    inc l043d                                                         ; 866c: ee 3d 04    .=.      ; ...
+    bne c866f                                                         ; 866a: d0 03       ..       ; no carry,
+    inc l043d                                                         ; 866c: ee 3d 04    .=.      ; carry into O% high
 ; &866f referenced 2 times by &8665, &866a
 .c866f
     tya                                                               ; 866f: 98          .        ; More bytes?
@@ -1243,21 +1243,21 @@ l848a = sub_c847b+15
     bcs c86b7                                                         ; 8675: b0 40       .@       ; yes: other operand forms
     jsr eval_expr_to_integer                                          ; 8677: 20 21 88     !.      ; Evaluate the target address
     clc                                                               ; 867a: 18          .        ; Offset = target - (P% + 2)
-    lda zp_iwa                                                        ; 867b: a5 2a       .*       ; ...
-    sbc resint_p                                                      ; 867d: ed 40 04    .@.      ; ...
-    tay                                                               ; 8680: a8          .        ; ...
-    lda zp_iwa_1                                                      ; 8681: a5 2b       .+       ; ...
-    sbc l0441                                                         ; 8683: ed 41 04    .A.      ; ...
-    cpy #1                                                            ; 8686: c0 01       ..       ; ...
-    dey                                                               ; 8688: 88          .        ; ...
-    sbc #0                                                            ; 8689: e9 00       ..       ; ...
+    lda zp_iwa                                                        ; 867b: a5 2a       .*       ; target low,
+    sbc resint_p                                                      ; 867d: ed 40 04    .@.      ; minus P% low (- 1),
+    tay                                                               ; 8680: a8          .        ; offset low in Y,
+    lda zp_iwa_1                                                      ; 8681: a5 2b       .+       ; target high,
+    sbc l0441                                                         ; 8683: ed 41 04    .A.      ; minus P% high,
+    cpy #1                                                            ; 8686: c0 01       ..       ; offset >= 1?,
+    dey                                                               ; 8688: 88          .        ; offset - 1 (for PC+2),
+    sbc #0                                                            ; 8689: e9 00       ..       ; borrow into the high byte
     beq c86b2                                                         ; 868b: f0 25       .%       ; in forward range?
     cmp #&ff                                                          ; 868d: c9 ff       ..       ; in backward range?
-    beq c86ad                                                         ; 868f: f0 1c       ..       ; ...
+    beq c86ad                                                         ; 868f: f0 1c       ..       ; high byte &FF: in range
 ; &8691 referenced 2 times by &86b0, &86b5
 .c8691
     lda zp_opt_flag                                                   ; 8691: a5 28       .(       ; OPT setting  errors enabled?
-    lsr a                                                             ; 8693: 4a          J        ; ...
+    lsr a                                                             ; 8693: 4a          J        ; OPT bit 0 (errors enabled)?
     beq c86a5                                                         ; 8694: f0 0f       ..       ; no: ignore the range error
     brk                                                               ; 8696: 00          .        ; Out of range error
     equb &01                                                          ; 8697: 01          .     
@@ -1430,7 +1430,7 @@ l848a = sub_c847b+15
 ; &879f referenced 1 time by &8793
 .c879f
     jsr asm_opcode_add16                                              ; 879f: 20 2c 88     ,.      ; Indirect: adjust the opcode
-    jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; ...
+    jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; (continued)
     jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.      ; evaluate the address
     jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)       ; ')' to close?
@@ -1441,7 +1441,7 @@ l848a = sub_c847b+15
     cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9       ; index &39+ : EQU directives
     bcs c8813                                                         ; 87b4: b0 5d       .]       ; yes
     lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic  ...
-    eor #1                                                            ; 87b8: 49 01       I.       ; ...
+    eor #1                                                            ; 87b8: 49 01       I.       ; toggle bit 0
     and #&1f                                                          ; 87ba: 29 1f       ).       ; save it  index &37+ (two-register form)?
     pha                                                               ; 87bc: 48          H        ; Save the register
     cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7       ; yes
@@ -1456,7 +1456,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..       ; Back up a character
     jsr eval_expr_to_integer                                          ; 87ce: 20 21 88     !.      ; Evaluate the address
     pla                                                               ; 87d1: 68          h        ; recover the register letter
-    sta zp_general                                                    ; 87d2: 85 37       .7       ; ...
+    sta zp_general                                                    ; 87d2: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..      ; ',' index register?
     cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,       ; yes
     beq c87de                                                         ; 87d9: f0 03       ..       ; no: assemble as absolute
@@ -1476,11 +1476,11 @@ l848a = sub_c847b+15
 .c87f0
     jsr eval_expr_to_integer                                          ; 87f0: 20 21 88     !.      ; Evaluate the address
     pla                                                               ; 87f3: 68          h        ; recover the register letter
-    sta zp_general                                                    ; 87f4: 85 37       .7       ; ...
+    sta zp_general                                                    ; 87f4: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..      ; ',' index register?
     cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,       ; no: single operand
     bne c8810                                                         ; 87fb: d0 13       ..       ; Index register letter
-    jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..      ; ...
+    jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..      ; read the index register letter
     and #&1f                                                          ; 8800: 29 1f       ).       ; matches?
     cmp zp_general                                                    ; 8802: c5 37       .7       ; no: Index error
     bne c87ed                                                         ; 8804: d0 e7       ..       ; adjust the opcode for indexed mode

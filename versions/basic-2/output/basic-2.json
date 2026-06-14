@@ -10630,7 +10630,7 @@
         132,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte (&3D)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -10774,7 +10774,7 @@
         230,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the offset,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -10787,7 +10787,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -10847,7 +10847,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the char up by 3,",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -10856,7 +10856,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -10865,7 +10865,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -10893,7 +10893,7 @@
         38,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into &3D,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_exp",
@@ -10906,7 +10906,7 @@
         38,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "and &3E,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m1",
@@ -10918,7 +10918,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "next bit,",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -10928,7 +10928,7 @@
         208,
         248
       ],
-      "comment_inline": "...",
+      "comment_inline": "all 5 bits",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c85e6",
@@ -11046,7 +11046,7 @@
         196,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "match the high half?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_fwb_m1",
@@ -11251,7 +11251,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -11261,7 +11261,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the next character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -11400,7 +11400,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &37",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -11464,7 +11464,7 @@
         134,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &38",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general_1",
@@ -11505,7 +11505,7 @@
         61,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "O% high",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "l043d",
@@ -11540,7 +11540,7 @@
         134,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte (&3B)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -11723,7 +11723,7 @@
         208,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8665",
@@ -11737,7 +11737,7 @@
         65,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into P% high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l0441",
@@ -11786,7 +11786,7 @@
         208,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c866f",
@@ -11800,7 +11800,7 @@
         61,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into O% high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l043d",
@@ -11920,7 +11920,7 @@
         165,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "target low,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -11934,7 +11934,7 @@
         64,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus P% low (- 1),",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "resint_p",
@@ -11946,7 +11946,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset low in Y,",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -11956,7 +11956,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "target high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -11970,7 +11970,7 @@
         65,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus P% high,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l0441",
@@ -11983,7 +11983,7 @@
         192,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset >= 1?,",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "#1"
@@ -11993,7 +11993,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset - 1 (for PC+2),",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -12003,7 +12003,7 @@
         233,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "borrow into the high byte",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -12038,7 +12038,7 @@
         240,
         28
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &FF: in range",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c86ad",
@@ -12073,7 +12073,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "OPT bit 0 (errors enabled)?",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -13806,7 +13806,7 @@
         44,
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "asm_opcode_add16",
@@ -13931,7 +13931,7 @@
         73,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "toggle bit 0",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#1"
@@ -14092,7 +14092,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "into &37",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -14301,7 +14301,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "into &37",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -14353,7 +14353,7 @@
         151,
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the index register letter",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "skip_spaces",
