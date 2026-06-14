@@ -77041,7 +77041,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "the zero byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -77053,7 +77053,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it past the digits",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -77078,7 +77078,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push the low byte",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -77088,7 +77088,7 @@
         165,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -77100,7 +77100,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -77110,7 +77110,7 @@
         165,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "and the offset",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -77122,7 +77122,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -77143,7 +77143,7 @@
         133,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -77167,7 +77167,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the low byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -77191,7 +77191,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the high byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
