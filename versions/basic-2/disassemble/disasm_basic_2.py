@@ -1178,7 +1178,11 @@ d.subroutine(0x88f5, 'encode_line_number',
              description='Pack the line number in &3D/&3E into the BBC '
                          'three-byte GOTO encoding (a control byte holding '
                          'the scrambled top bits, then low|&40 and high|&40) '
-                         'so the bytes never collide with tokens.')
+                         'so the bytes never collide with tokens.',
+             on_entry={'zp_fwb_exp (&3D/&3E)': 'the 16-bit line number',
+                       'zp_general (&37/&38)': 'the destination text pointer',
+                       'Y': 'offset of the last of the three bytes'},
+             on_exit={'(zp_general)': 'the three encoded bytes (after the &8D token)'})
 d.comment(0x88f5, 'Byte 2 = line-number high | &40', align=Align.INLINE)
 d.comment(0x88f7, '| &40 (lift out of token range)', align=Align.INLINE)
 d.comment(0x88f9, 'store byte 2', align=Align.INLINE)
@@ -5832,8 +5836,12 @@ d.comment(0xa4ca, 'add one to the magnitude', align=Align.INLINE)
 d.comment(0xa4cd, 'negate back', align=Align.INLINE)
 
 d.subroutine(0xa4d0, 'fwa_sub_var', title='FWA = FWA - fp var',
-             description='Subtract the fp variable operand from FWA '
-                         '(reverse subtract, then negate).')
+             description='Subtract the packed real operand from FWA: compute '
+                         'operand - FWA (fwa_rsub_var) then negate the result.',
+             on_entry={'zp_fwa (&2E-&35)': 'the minuend',
+                       '(zp_fp_ptr) (&4B/&4C)': 'the packed real subtrahend'},
+             on_exit={'zp_fwa (&2E-&35)': 'FWA - operand',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_sub_var (&A4D0): FWA = FWA - operand.
 d.comment(0xa4d0, 'operand - FWA...', align=Align.INLINE)
 d.comment(0xa4d3, '...then negate to give FWA - operand', align=Align.INLINE)
@@ -6193,7 +6201,13 @@ d.comment(0xa6a3, 'Return non-zero (A = exponent) to flag a real', align=Align.I
 d.comment(0xa6a4, 'FWA now holds 1.0', align=Align.INLINE)
 
 d.subroutine(0xa6a5, 'fwa_reciprocal', title='FWA = 1 / FWA',
-             description='Reciprocal of the FP accumulator (normalised, rounded).')
+             description='Reciprocal: save FWA in TEMP1, set FWA = 1, then divide '
+                         'by the saved value (normalised, rounded). Raises '
+                         'Division by zero if FWA was zero.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to invert'},
+             on_exit={'zp_fwa (&2E-&35)': '1 / FWA',
+                      '(&046C)': 'corrupted (TEMP1 scratch)',
+                      'BRK': 'Division by zero if FWA was zero'})
 d.comment(0xa6a5, 'Save FWA (the divisor) in TEMP1', align=Align.INLINE)
 d.comment(0xa6a8, 'FWA = 1', align=Align.INLINE)
 d.comment(0xa6ab, 'divide 1 by the saved value', align=Align.INLINE)
@@ -7371,6 +7385,9 @@ d.subroutine(
 operand (unstack_real), multiply (fwa_mul_var_raw), convert to an
 integer (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.
 """,
+    on_entry={'zp_iwa (&2A-&2D)': 'the upper bound X (>= 2)'},
+    on_exit={'zp_iwa (&2A-&2D)': 'a random integer in 1..X',
+             'zp_fwa / zp_fwb': 'corrupted (scratch)'},
 )
 # rnd_range (&AF24): 1 + INT(RND(1) * X)
 d.comment(0xaf24, 'FWA = X', align=Align.INLINE)
@@ -7391,6 +7408,10 @@ d.subroutine(
 set &11 to &40. Only bit 0 of &11 is part of the LFSR, so the
 overflow bit becomes 0. Returns the argument as an integer.
 """,
+    on_entry={'zp_iwa (&2A-&2D)': 'the seed value'},
+    on_exit={'zp_rnd_seed (&0D-&11)': 'reseeded from IWA',
+             'zp_iwa': 'unchanged (the returned value)',
+             'A': 'integer type marker (&40)'},
 )
 # rnd_seed (&AF3F): RND(-X)
 d.comment(0xaf3f, 'Point at the state bytes (&0D)', align=Align.INLINE)
@@ -7412,6 +7433,10 @@ d.subroutine(
 32-bit state (&0D-&10) into IWA as a signed integer, returning the
 integer type (&40). The result spans the full signed 32-bit range.
 """,
+    on_entry={'zp_rnd_seed (&0D-&11)': 'the current generator state'},
+    on_exit={'zp_rnd_seed': 'advanced one step',
+             'zp_iwa (&2A-&2D)': 'the random 32-bit integer',
+             'A': 'integer type marker (&40)'},
 )
 # rnd_integer (&AF51): bare RND
 d.comment(0xaf51, 'Advance the generator', align=Align.INLINE)
@@ -7447,6 +7472,10 @@ d.subroutine(
 build the fraction. The value is the byte-reversed 32-bit state
 divided by 2^32: a real in [0, 1).
 """,
+    on_entry={'zp_rnd_seed (&0D-&11)': 'the current generator state'},
+    on_exit={'zp_rnd_seed': 'advanced one step',
+             'zp_fwa (&2E-&35)': 'a normalised real in [0, 1)',
+             'A': 'real type marker (&FF)'},
 )
 # rnd_fraction (&AF69) -> rnd_repeat (&AF6C): build the [0,1) fraction
 d.comment(0xaf69, 'Advance the generator, then build the fraction',
@@ -8084,7 +8113,14 @@ d.comment(0xb348, '(store last)', align=Align.INLINE)
 d.comment(0xb34a, 'byte 1 from X', align=Align.INLINE)
 d.comment(0xb34c, 'integer type', align=Align.INLINE)
 d.comment(0xb34e, 'Return the integer', align=Align.INLINE)
-d.subroutine(0xb34f, 'load_byte_var', title='Load a byte variable into IWA')
+d.subroutine(0xb34f, 'load_byte_var', title='Load a byte variable into IWA',
+             description='Read the byte addressed by zp_iwa and return it as an '
+                         'unsigned integer in IWA (via iwa_from_ya). Part of the '
+                         'typed variable loader.',
+             on_entry={'(zp_iwa) (&2A/&2B)': 'a pointer to the byte variable',
+                       'Y': 'offset of the byte (0)'},
+             on_exit={'zp_iwa (&2A-&2D)': 'the byte, zero-extended',
+                      'A': 'integer type marker (&40)'})
 d.comment(0xb34f, 'Read the byte', align=Align.INLINE)
 d.comment(0xb351, 'return as an integer', align=Align.INLINE)
 d.subroutine(0xb354, 'load_real_var', title='Load a real variable into FWA',
@@ -8442,7 +8478,12 @@ d.comment(0xb53f, 'next', align=Align.INLINE)
 d.comment(0xb540, 'loop', align=Align.INLINE)
 d.comment(0xb542, 'Restore Y', align=Align.INLINE)
 d.comment(0xb544, 'Return', align=Align.INLINE)
-d.subroutine(0xb545, 'print_hex_byte', title='Print A as two hex digits')
+d.subroutine(0xb545, 'print_hex_byte', title='Print A as two hex digits',
+             description='Print the byte in A as two hex digits (high nibble '
+                         'then low) via print_hex_digit / print_char.',
+             on_entry={'A': 'the byte to print'},
+             on_exit={'zp_count (&1E)': 'the print column, advanced',
+                      'A': 'corrupted', 'X': 'corrupted', 'Y': 'corrupted'})
 # print_hex_byte (&B545).
 d.comment(0xb545, 'Save the byte', align=Align.INLINE)
 d.comment(0xb546, 'High nibble', align=Align.INLINE)
@@ -9523,8 +9564,10 @@ d.subroutine(
     0xbd51, 'stack_real',
     title='Push the floating-point accumulator onto the BASIC stack',
     description="""Reserve five bytes on the BASIC stack and copy the packed
-floating-point accumulator onto it.
+floating-point accumulator onto it. Errors if the stack meets the heap.
 """,
+    on_entry={'zp_fwa (&2E-&35)': 'the real to push'},
+    on_exit={'zp_stack_ptr (&04/&05)': 'lowered by 5 (real pushed)'},
 )
 # stack_real (&BD51): push the packed 5-byte FWA
 d.comment(0xbd51, 'From the stack top...', align=Align.INLINE)
@@ -9625,8 +9668,12 @@ d.subroutine(
     0xbdb2, 'stack_string',
     title='Push the current string onto the BASIC stack',
     description="""Copy the string from the string buffer (length zp_strbuf_len,
-&36; text at &0600) onto the BASIC stack, length last.
+&36; text at &0600) onto the BASIC stack, length last. Errors if the
+stack meets the heap.
 """,
+    on_entry={'string_work (&0600)': 'the string characters',
+              'zp_strbuf_len (&36)': 'the string length'},
+    on_exit={'zp_stack_ptr (&04/&05)': 'lowered by length+1 (string pushed)'},
 )
 # stack_string (&BDB2) / unstack_string (&BDCB)
 d.comment(0xbdb2, 'From the stack top...', align=Align.INLINE)

@@ -1687,6 +1687,14 @@ l848a = sub_c847b+15
 ; Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte
 ; holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide
 ; with tokens.
+;
+; On Entry:
+;     ZP_FWB_EXP (&3D/&3E): the 16-bit line number
+;     ZP_GENERAL (&37/&38): the destination text pointer
+;     Y: offset of the last of the three bytes
+;
+; On Exit:
+;     (ZP_GENERAL): the three encoded bytes (after the &8D token)
 ; &88f5 referenced 1 time by &906a
 .encode_line_number
     lda zp_fwb_m1                                                     ; 88f5: a5 3e       .>       ; Byte 2 = line-number high | &40
@@ -7646,7 +7654,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA - fp var
 ;
-; Subtract the fp variable operand from FWA (reverse subtract, then negate).
+; Subtract the packed real operand from FWA: compute operand - FWA (fwa_rsub_var) then
+; negate the result.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the minuend
+;     (ZP_FP_PTR) (&4B/&4C): the packed real subtrahend
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): FWA - operand
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a4d0 referenced 2 times by &9d08, &a9bd
 .fwa_sub_var
     jsr fwa_rsub_var                                                  ; a4d0: 20 fd a4     ..      ; operand - FWA...
@@ -8101,7 +8118,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = 1 / FWA
 ;
-; Reciprocal of the FP accumulator (normalised, rounded).
+; Reciprocal: save FWA in TEMP1, set FWA = 1, then divide by the saved value (normalised,
+; rounded). Raises Division by zero if FWA was zero.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to invert
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): 1 / FWA
+;     (&046C): corrupted (TEMP1 scratch)
+;     BRK: Division by zero if FWA was zero
 ; &a6a5 referenced 2 times by &a921, &ab1a
 .fwa_reciprocal
     jsr fwa_pack_temp1                                                ; a6a5: 20 85 a3     ..      ; Save FWA (the divisor) in TEMP1
@@ -10090,6 +10116,13 @@ l848a = sub_c847b+15
 ; Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X (stack_real), take a fraction
 ; (rnd_fraction), pop X back into the operand (unstack_real), multiply (fwa_mul_var_raw),
 ; convert to an integer (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the upper bound X (>= 2)
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): a random integer in 1..X
+;     ZP_FWA / ZP_FWB: corrupted (scratch)
 ; &af24 referenced 1 time by &af1a
 .rnd_range
     jsr int_to_fwa                                                    ; af24: 20 be a2     ..      ; FWA = X
@@ -10108,6 +10141,14 @@ l848a = sub_c847b+15
 ; Store the integer argument into the 32-bit state (&0D-&10) and set &11 to &40. Only bit
 ; 0 of &11 is part of the LFSR, so the overflow bit becomes 0. Returns the argument as an
 ; integer.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the seed value
+;
+; On Exit:
+;     ZP_RND_SEED (&0D-&11): reseeded from IWA
+;     ZP_IWA: unchanged (the returned value)
+;     A: integer type marker (&40)
 ; &af3f referenced 1 time by &af14
 .rnd_seed
     ldx #&0d                                                          ; af3f: a2 0d       ..       ; Point at the state bytes (&0D)
@@ -10140,6 +10181,14 @@ l848a = sub_c847b+15
 ; Bare RND. Advance the generator (rnd_step) then read the 32-bit state (&0D-&10) into
 ; IWA as a signed integer, returning the integer type (&40). The result spans the full
 ; signed 32-bit range.
+;
+; On Entry:
+;     ZP_RND_SEED (&0D-&11): the current generator state
+;
+; On Exit:
+;     ZP_RND_SEED: advanced one step
+;     ZP_IWA (&2A-&2D): the random 32-bit integer
+;     A: integer type marker (&40)
 .rnd_integer
     jsr rnd_step                                                      ; af51: 20 87 af     ..      ; Advance the generator
     ldx #&0d                                                          ; af54: a2 0d       ..       ; Point at the state (&0D), then copy it to IWA
@@ -10174,6 +10223,14 @@ l848a = sub_c847b+15
 ;
 ; Advance the generator (rnd_step) then fall into rnd_repeat to build the fraction. The
 ; value is the byte-reversed 32-bit state divided by 2^32: a real in [0, 1).
+;
+; On Entry:
+;     ZP_RND_SEED (&0D-&11): the current generator state
+;
+; On Exit:
+;     ZP_RND_SEED: advanced one step
+;     ZP_FWA (&2E-&35): a normalised real in [0, 1)
+;     A: real type marker (&FF)
 ; &af69 referenced 2 times by &af22, &af2a
 .rnd_fraction
     jsr rnd_step                                                      ; af69: 20 87 af     ..      ; Advance the generator, then build the fraction
@@ -11053,6 +11110,17 @@ l848a = sub_c847b+15
     rts                                                               ; b34e: 60          `        ; Return the integer
 ; ***************************************************************************************
 ; Load a byte variable into IWA
+;
+; Read the byte addressed by zp_iwa and return it as an unsigned integer in IWA (via
+; iwa_from_ya). Part of the typed variable loader.
+;
+; On Entry:
+;     (ZP_IWA) (&2A/&2B): a pointer to the byte variable
+;     Y: offset of the byte (0)
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the byte, zero-extended
+;     A: integer type marker (&40)
 ; &b34f referenced 1 time by &b330
 .load_byte_var
     lda (zp_iwa),y                                                    ; b34f: b1 2a       .*       ; Read the byte
@@ -11478,6 +11546,18 @@ l848a = sub_c847b+15
     rts                                                               ; b544: 60          `        ; Return
 ; ***************************************************************************************
 ; Print A as two hex digits
+;
+; Print the byte in A as two hex digits (high nibble then low) via print_hex_digit /
+; print_char.
+;
+; On Entry:
+;     A: the byte to print
+;
+; On Exit:
+;     ZP_COUNT (&1E): the print column, advanced
+;     A: corrupted
+;     X: corrupted
+;     Y: corrupted
 ; &b545 referenced 2 times by &8526, &b562
 .print_hex_byte
     pha                                                               ; b545: 48          H        ; Save the byte
@@ -12948,7 +13028,13 @@ l848a = sub_c847b+15
 ; Push the floating-point accumulator onto the BASIC stack
 ;
 ; Reserve five bytes on the BASIC stack and copy the packed floating-point accumulator
-; onto it.
+; onto it. Errors if the stack meets the heap.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the real to push
+;
+; On Exit:
+;     ZP_STACK_PTR (&04/&05): lowered by 5 (real pushed)
 ; &bd51 referenced 12 times by &9a3e, &9a50, &9c8b, &9cac, &9ce1, &9cff, &9d14, &9d20, &9de9, &9e39, &af27, &bd92
 .stack_real
     lda zp_stack_ptr                                                  ; bd51: a5 04       ..       ; From the stack top...
@@ -13053,7 +13139,14 @@ l848a = sub_c847b+15
 ; Push the current string onto the BASIC stack
 ;
 ; Copy the string from the string buffer (length zp_strbuf_len, &36; text at &0600) onto
-; the BASIC stack, length last.
+; the BASIC stack, length last. Errors if the stack meets the heap.
+;
+; On Entry:
+;     STRING_WORK (&0600): the string characters
+;     ZP_STRBUF_LEN (&36): the string length
+;
+; On Exit:
+;     ZP_STACK_PTR (&04/&05): lowered by length+1 (string pushed)
 ; &bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90
 .stack_string
     clc                                                               ; bdb2: 18          .        ; From the stack top...
