@@ -2232,8 +2232,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Clear program and enter the immediate loop
 ;
-; Entered from language_startup. Sets up an empty program (as the NEW command does) and
-; falls through into the immediate loop.
+; Entered from language_startup. Sets up an empty program (a CR and an &FF end marker at
+; PAGE, TOP = PAGE+2), clears variables/heap/stack, and falls through into the immediate
+; loop. Does not return.
+;
+; On Entry:
+;     ZP_PAGE (&18): PAGE, the start of program memory
+;
+; On Exit:
+;     CONTROL: falls into immediate_loop (does not return)
 ; &8add referenced 1 time by &806e
 .start_new_program
     lda #&0d                                                          ; 8add: a9 0d       ..       ; Empty program is a single CR...
@@ -2254,9 +2261,12 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Immediate ("> ") loop
 ;
-; Print the prompt, read a line into the input buffer, and tokenise it. A line that
-; begins with a line number is inserted into the program; otherwise it is executed
-; immediately.
+; Print the prompt, read a line into the input buffer (PtrA = &0700), and tokenise it. A
+; line that begins with a line number is inserted into the program; otherwise it is
+; executed immediately. The top-level loop - does not return.
+;
+; On Exit:
+;     CONTROL: loops forever reading and running immediate lines
 ; &8af6 referenced 7 times by &859c, &8ace, &8b41, &98bc, &b599, &b61a, &beaf
 .immediate_loop
     ldy #7                                                            ; 8af6: a0 07       ..       ; PtrA = &0700, the input buffer: high byte
@@ -2273,7 +2283,16 @@ l848a = sub_c847b+15
 ; Execute the line at the program pointer
 ;
 ; Run the tokenised statements on the line addressed by the program pointer (zp_text_ptr,
-; &0B), starting at offset zp_text_ptr_off.
+; &0B), starting at offset zp_text_ptr_off. Resets the error handler and the 6502 stack,
+; tokenises the line, and either inserts a numbered line or runs it via the statement
+; loop.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the line to execute
+;     ZP_TEXT_PTR_OFF (&0A): the starting offset
+;
+; On Exit:
+;     CONTROL: runs the line (numbered lines are inserted instead)
 ; &8b0b referenced 1 time by &bd1d
 .execute_line
     lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3       ; Restore the default error handler (ON ERROR OFF)
@@ -2399,8 +2418,16 @@ l848a = sub_c847b+15
 ; Statement execution loop
 ;
 ; The main interpreter loop: fetch the next statement's leading token and dispatch it,
-; then advance to the next statement (after a colon) or line. Returns here after each
-; statement completes.
+; then advance to the next statement (after a colon) or line. Statement handlers jmp back
+; here when they finish, so it is the common continuation rather than a callable
+; subroutine.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset at the next statement
+;
+; On Exit:
+;     CONTROL: dispatches the statement; handlers return here
 ; &8b9b referenced 23 times by &8bf8, &8c08, &8ecf, &8f18, &926c, &928a, &92b4, &92d7, &9318, &93e1, &9427, &b49d, &b4ab, &b8c9, &b8ef, &bb12, &bbca, &becc, &bf21, &bf43, &bf6c, &bfa6, &bff6
 .statement_loop
     ldy #0                                                            ; 8b9b: a0 00       ..       ; Fetch the next character of the statement
@@ -12601,6 +12628,14 @@ l848a = sub_c847b+15
 ; Read a line-number argument (an embedded tokenised line number or an evaluated integer
 ; expression) and locate that line in the program via find_program_line. Used by GOTO,
 ; GOSUB and RESTORE. Raises "No such line" if absent.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset at the line-number operand
+;
+; On Exit:
+;     (ZP_FWB_EXP) (&3D/&3E): a pointer to the target line
+;     BRK: No such line if the line is absent
 ; &b99a referenced 4 times by &b888, &b8cc, &b95c, &baff
 .find_line_target
     jsr check_line_number                                             ; b99a: 20 df 97     ..      ; Embedded line-number token?
@@ -13073,8 +13108,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Delete a program line and close the gap
 ;
-; Find the line, then shift every later line down over it (source &37, destination &12)
-; and update the top of program. No-ops if the line is absent.
+; Find the line (find_program_line), then shift every later line down over it and update
+; TOP. No-op if the line is absent.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the line number to delete
+;
+; On Exit:
+;     THE PROGRAM: the line removed and memory compacted
+;     ZP_TOP (&12/&13): TOP reduced by the deleted line
 ; &bc2d referenced 2 times by &8f53, &bc8f
 .delete_program_line
     jsr find_program_line                                             ; bc2d: 20 70 99     p.      ; Find the line
@@ -13252,7 +13294,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Clear all variables, the heap and the stack
 ;
-; Reset variable storage, the heap and the BASIC stack (NEW/CLEAR).
+; Reset LOMEM and VARTOP to TOP, empty the per-letter variable table, and clear the DATA
+; pointer and the BASIC stacks (NEW/CLEAR/RUN).
+;
+; On Entry:
+;     ZP_TOP (&12/&13): TOP, the end of the program
+;
+; On Exit:
+;     ZP_LOMEM (&00/&01): = TOP
+;     ZP_VARTOP (&02/&03): = TOP
+;     THE VARIABLE TABLE AND STACKS: cleared
 ; &bd20 referenced 5 times by &8af3, &90c9, &9290, &bcc9, &bd14
 .clear_vars_heap_stack
     lda zp_top                                                        ; bd20: a5 12       ..       ; LOMEM and VARTOP = TOP: low
@@ -13627,7 +13678,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Load a program from the filing system
 ;
-; Used by LOAD and CHAIN to read a BASIC program into memory.
+; Set the OSFILE load address to PAGE and call OSFILE &FF to read the named BASIC program
+; into memory. Used by LOAD and CHAIN.
+;
+; On Entry:
+;     THE FILENAME BLOCK: set up for OSFILE (control block at &37)
+;     ZP_PAGE (&18): PAGE, where the program loads
+;
+; On Exit:
+;     MEMORY FROM PAGE: the loaded program
 ; &be62 referenced 2 times by &bf24, &bf2a
 .load_program
     jsr sub_cbedd                                                     ; be62: 20 dd be     ..      ; Set the OSFILE load address to PAGE
@@ -13640,7 +13699,14 @@ l848a = sub_c847b+15
 ; Validate the program and set TOP
 ;
 ; Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length),
-; set TOP past the end; "Bad program" otherwise.
+; and set TOP past the end. Raises "Bad program" if a line is malformed.
+;
+; On Entry:
+;     ZP_PAGE (&18): PAGE, the start of the program
+;
+; On Exit:
+;     ZP_TOP (&12/&13): TOP, just past the last line
+;     BRK: Bad program if a line is malformed
 ; &be6f referenced 6 times by &8ac3, &8acb, &8fab, &b5e6, &bcc6, &bef3
 .check_program
     lda zp_page                                                       ; be6f: a5 18       ..       ; Set TOP = PAGE: high

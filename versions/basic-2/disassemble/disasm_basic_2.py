@@ -1562,9 +1562,12 @@ d.comment(0x8ada, 'Check the statement ends', align=Align.INLINE)
 d.subroutine(
     0x8add, 'start_new_program',
     title='Clear program and enter the immediate loop',
-    description="""Entered from language_startup. Sets up an empty program (as the
-NEW command does) and falls through into the immediate loop.
+    description="""Entered from language_startup. Sets up an empty program (a CR
+and an &FF end marker at PAGE, TOP = PAGE+2), clears variables/heap/stack,
+and falls through into the immediate loop. Does not return.
 """,
+    on_entry={'zp_page (&18)': 'PAGE, the start of program memory'},
+    on_exit={'control': 'falls into immediate_loop (does not return)'},
 )
 # start_new_program (&8ADD): set up an empty program
 d.comment(0x8add, 'Empty program is a single CR...', align=Align.INLINE)
@@ -1584,10 +1587,12 @@ d.comment(0x8af3, 'Clear variables, heap and stack', align=Align.INLINE)
 d.subroutine(
     0x8af6, 'immediate_loop',
     title='Immediate ("> ") loop',
-    description="""Print the prompt, read a line into the input buffer, and
-tokenise it. A line that begins with a line number is inserted into
-the program; otherwise it is executed immediately.
+    description="""Print the prompt, read a line into the input buffer (PtrA =
+&0700), and tokenise it. A line that begins with a line number is
+inserted into the program; otherwise it is executed immediately. The
+top-level loop - does not return.
 """,
+    on_exit={'control': 'loops forever reading and running immediate lines'},
 )
 # immediate_loop (&8AF6)
 d.comment(0x8af6, 'PtrA = &0700, the input buffer: high byte', align=Align.INLINE)
@@ -1606,7 +1611,12 @@ d.subroutine(
     title='Execute the line at the program pointer',
     description="""Run the tokenised statements on the line addressed by the
 program pointer (zp_text_ptr, &0B), starting at offset zp_text_ptr_off.
+Resets the error handler and the 6502 stack, tokenises the line, and
+either inserts a numbered line or runs it via the statement loop.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the line to execute',
+              'zp_text_ptr_off (&0A)': 'the starting offset'},
+    on_exit={'control': 'runs the line (numbered lines are inserted instead)'},
 )
 # --- interpreter core: execute_line / statement_loop / dispatch ------
 d.comment(0x8b0b, 'Restore the default error handler (ON ERROR OFF)',
@@ -1703,8 +1713,12 @@ d.subroutine(
     title='Statement execution loop',
     description="""The main interpreter loop: fetch the next statement's leading
 token and dispatch it, then advance to the next statement (after a
-colon) or line. Returns here after each statement completes.
+colon) or line. Statement handlers jmp back here when they finish, so
+it is the common continuation rather than a callable subroutine.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset at the next statement'},
+    on_exit={'control': 'dispatches the statement; handlers return here'},
 )
 d.comment(0x8b9b, 'Fetch the next character of the statement',
           align=Align.INLINE)
@@ -9180,6 +9194,10 @@ or an evaluated integer expression) and locate that line in the
 program via find_program_line. Used by GOTO, GOSUB and RESTORE.
 Raises "No such line" if absent.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset at the line-number operand'},
+    on_exit={'(zp_fwb_exp) (&3D/&3E)': 'a pointer to the target line',
+             'BRK': 'No such line if the line is absent'},
 )
 # find_line_target (&B99A): read a line number then locate the line.
 d.comment(0xb99a, 'Embedded line-number token?', align=Align.INLINE)
@@ -9520,9 +9538,12 @@ d.comment(0xbc2c, 'Return', align=Align.INLINE)
 
 d.subroutine(0xbc2d, 'delete_program_line',
              title='Delete a program line and close the gap',
-             description='Find the line, then shift every later line down '
-                         'over it (source &37, destination &12) and update '
-                         'the top of program. No-ops if the line is absent.')
+             description='Find the line (find_program_line), then shift every '
+                         'later line down over it and update TOP. No-op if the '
+                         'line is absent.',
+             on_entry={'zp_iwa (&2A/&2B)': 'the line number to delete'},
+             on_exit={'the program': 'the line removed and memory compacted',
+                      'zp_top (&12/&13)': 'TOP reduced by the deleted line'})
 # delete_program_line (&BC2D): remove a line and compact memory.
 d.comment(0xbc2d, 'Find the line', align=Align.INLINE)
 d.comment(0xbc30, 'not present: nothing to do', align=Align.INLINE)
@@ -9655,7 +9676,12 @@ d.comment(0xbd1d, 'execute from the start', align=Align.INLINE)
 
 d.subroutine(0xbd20, 'clear_vars_heap_stack',
              title='Clear all variables, the heap and the stack',
-             description='Reset variable storage, the heap and the BASIC stack (NEW/CLEAR).')
+             description='Reset LOMEM and VARTOP to TOP, empty the per-letter '
+                         'variable table, and clear the DATA pointer and the '
+                         'BASIC stacks (NEW/CLEAR/RUN).',
+             on_entry={'zp_top (&12/&13)': 'TOP, the end of the program'},
+             on_exit={'zp_lomem (&00/&01)': '= TOP', 'zp_vartop (&02/&03)': '= TOP',
+                      'the variable table and stacks': 'cleared'})
 # clear_vars_heap_stack (&BD20)
 d.comment(0xbd20, 'LOMEM and VARTOP = TOP: low', align=Align.INLINE)
 d.comment(0xbd22, 'LOMEM low', align=Align.INLINE)
@@ -9980,7 +10006,12 @@ d.comment(0xbe5f, 'Y = 1', align=Align.INLINE)
 d.comment(0xbe61, 'Return', align=Align.INLINE)
 
 d.subroutine(0xbe62, 'load_program', title='Load a program from the filing system',
-             description='Used by LOAD and CHAIN to read a BASIC program into memory.')
+             description='Set the OSFILE load address to PAGE and call OSFILE &FF '
+                         'to read the named BASIC program into memory. Used by '
+                         'LOAD and CHAIN.',
+             on_entry={'the filename block': 'set up for OSFILE (control block at &37)',
+                       'zp_page (&18)': 'PAGE, where the program loads'},
+             on_exit={'memory from PAGE': 'the loaded program'})
 # load_program (&BE62)
 d.comment(0xbe62, 'Set the OSFILE load address to PAGE', align=Align.INLINE)
 d.comment(0xbe65, 'Y = 0 (for the exec address)', align=Align.INLINE)
@@ -9988,7 +10019,12 @@ d.comment(0xbe66, 'OSFILE &FF: load the named file', align=Align.INLINE)
 d.comment(0xbe68, 'exec address = 0 (load to the given address)', align=Align.INLINE)
 d.comment(0xbe6a, 'control block at &37', align=Align.INLINE)
 d.subroutine(0xbe6f, 'check_program', title='Validate the program and set TOP',
-             description='Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length), set TOP past the end; "Bad program" otherwise.')
+             description='Walk the lines from PAGE checking each is well-formed '
+                         '(CR-terminated, non-zero length), and set TOP past the '
+                         'end. Raises "Bad program" if a line is malformed.',
+             on_entry={'zp_page (&18)': 'PAGE, the start of the program'},
+             on_exit={'zp_top (&12/&13)': 'TOP, just past the last line',
+                      'BRK': 'Bad program if a line is malformed'})
 
 d.comment(0xbe6f, 'Set TOP = PAGE: high', align=Align.INLINE)
 d.comment(0xbe71, '(TOP high)', align=Align.INLINE)
