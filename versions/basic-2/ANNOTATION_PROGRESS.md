@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 349 of 7,129 placeholders left (4.9 %);
+**STATUS: in progress — 336 of 7,129 placeholders left (4.7 %);
 depths 0–5 complete, depth 6 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -255,4 +255,5 @@ placeholders goes first.
 | 2026-06-14 | depth 6: stmt_next | stmt_next (NEXT: 15-byte FOR-frame match/walk, integer add-STEP/compare-LIMIT, loop-back vs exit, float STEP/LIMIT path) | 41 | 416 |
 | 2026-06-14 | depth 6: stmt_list | stmt_list (LIST: range parse/defaults, line walk + end test, LISTO indent, de-tokenise with quote tracking, embedded line-number decode) | 35 | 381 |
 | 2026-06-14 | depth 6: stmt_renumber | stmt_renumber (RENUMBER 3 passes: record old numbers in heap table, write new numbers+step, rewrite &8D references) | 17 | 364 |
-| 2026-06-14 | depth 6: stmt_mode | stmt_mode (MODE: STACK==HIMEM check, OSBYTE &85 top-of-RAM, VARTOP/TOP room checks, set HIMEM/STACK, VDU 22) | 15 | 349 | — |
+| 2026-06-14 | depth 6: stmt_mode | stmt_mode (MODE: STACK==HIMEM check, OSBYTE &85 top-of-RAM, VARTOP/TOP room checks, set HIMEM/STACK, VDU 22) | 15 | 349 |
+| 2026-06-14 | depth 6: stmt_save | stmt_save (SAVE: build the OSFILE block - end=TOP, exec=&8023, start=PAGE, address high words) | 13 | 336 | — |
