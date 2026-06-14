@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — label-naming pass
 
-**STATUS: in progress — 863 auto-generated labels across 176 routines.
+**STATUS: in progress — 787 auto-generated labels remaining (of 864).
 Goal: give every dasmos auto-named label (`cXXXX`, `loop_cXXXX`,
 `sub_cXXXX`, `lXXXX`) a semantically meaningful, globally unique name.**
 
@@ -43,9 +43,13 @@ label), so a clash is caught immediately.
 ## Workflow per batch (a few routines at a time, address-ascending)
 
 1. For each routine, `uv run fantasm asm extract 2 <routine>` — read the
-   body and its (already rich) inline comments to understand each label.
-   `fantasm labels refs 2 <label>` shows who branches to a label if the
-   role is unclear.
+   **whole body and its control flow**, not just the one inline comment
+   at a label's address. A label's *role* (why control arrives there,
+   what the block represents, where it exits) often needs the branch
+   condition that targets it and the surrounding structure — the
+   `; &XXXX referenced N times by &YYYY` lines in the .asm and
+   `fantasm labels refs 2 <label>` show the inbound sites. Shared tails,
+   error exits, and mode-dispatch targets especially need this.
 2. Decide names. Append `d.label(0xXXXX, 'name')` lines for the batch
    just before the `ir = d.disassemble()` render block (any order — they
    get sorted next).
@@ -78,14 +82,25 @@ label), so a clash is caught immediately.
 
 | Date | Routines (addr range) | Labels named | Remaining | Commit |
 |------|-----------------------|--------------|-----------|--------|
-| 2026-06-14 | setup + proof-of-concept (asm_enter) | 1 | 862 | (pending) |
+| 2026-06-14 | setup + assembler_exit + language_startup | 19 | 845 | 5f2a08b |
+| 2026-06-14 | keyword/action + asm decode tables | 7 | 838 | 3a522de |
+| 2026-06-14 | asm_parse_mnemonic (full assembler) | 51 | 787 | 6ea288a |
 
 ## Resume here
 
-Proof-of-concept done: `c8504` → `asm_enter` (verified). The append +
-`driver sort -i` recipe is confirmed working and byte-identical.
+Done through the inline assembler (&8063-&8831). The append +
+`driver sort -i` recipe is confirmed (byte-identical each batch).
 
-Work the routine worklist address-ascending. Full live list:
-`uv run fantasm labels classify 2`. Next: the early routines from
-`language_startup` (&8063) onward — see the worklist order. Record the
-last completed routine address here each batch so the pass is resumable.
+Next routine in address order: **parse_decimal_u16 (&889D)**, then
+encode_line_number, is_alphanumeric, inc_ptr_general, tokenise_line
+(&8955, 35 labels), … Work address-ascending; regenerate the live,
+comment-enriched worklist with:
+
+```
+uv run fantasm labels classify 2 --no-header --as tsv > /tmp/labels_classify.tsv
+# then the python snippet in the conversation builds /tmp/labels_enriched.tsv
+```
+
+`/tmp/labels_enriched.tsv` columns: routine, addr, auto-name, category,
+refs, inline-comment — a starting hint only; read the full routine body
+before naming (see step 1).
