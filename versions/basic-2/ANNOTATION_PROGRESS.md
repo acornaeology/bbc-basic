@@ -1,7 +1,18 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 958 of 7,129 placeholders left (13.4 %);
-depths 0–3 complete.**
+**STATUS: in progress — 934 of 7,129 placeholders left (13.1 %);
+depths 0–4 complete.**
+
+**Stray partial placeholders:** the status tool counts an instruction
+as a placeholder only when its *whole* rendered comment is `...`. A few
+instructions carry a sub-instruction `'...'` d.comment concatenated with
+real text (an artefact of the first pass placing comments at mid-
+instruction byte addresses), so they render as e.g. `...  Recover x` and
+are NOT counted. As of depth 4 there are ~12 such strays (source `...`
+count 946 vs counted 934). Find them by diffing `grep -c ",'\.\.\.'"`
+against the tool count; clean by deleting the redundant d.comment line
+(as done for fn_point &AB56/&AB5B). Worth a final sweep once the counted
+placeholders are gone.
 
 **Note for `stmt_dim` (depth 5):** its descriptor byte 0 leads are
 mislabelled the same way index_array's was — &91C4 "Store the dimension
@@ -14,9 +25,10 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 `...` comment — coverage theatre, not annotation.
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
-worklist (leaves-first, worst offenders first). Depth 4 next:
-`fn_point` (7), then `eval_or_eor` (6), `trace_line` (5),
-`eval_and` (3), `eval_mul_div` (2), and the rest of depths 4–8. Per routine:
+worklist (leaves-first, worst offenders first). Depth 5 next:
+`stmt_dim` (58 — see the byte-0 lead note above), then
+`parse_var_ref` (51), `unstack_value_to_var` (42), `iwa_divide` (38),
+and the rest of depths 5–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -213,3 +225,4 @@ placeholders goes first.
 | 2026-06-14 | depth 4: eval_power | eval_power (^ operator: int/frac/large-exponent paths; owned hex-output nibble expansion and real-print sign) | 23 | 988 | — |
 | 2026-06-14 | depth 4: eval_relational | eval_relational (< <= = >= > <> -> TRUE/FALSE; owned string-concat tail: new length, prepend) | 16 | 972 | — |
 | 2026-06-14 | depth 4: eval_factor | eval_factor (level-1 factor: token classify; hex-number parse - clear IWA, nibble shift, bit roll) | 14 | 958 | — |
+| 2026-06-14 | depth 4 complete | fn_point (POINT->OSWORD 9), eval_or_eor, trace_line ([line] TRACE), eval_and, eval_mul_div, eval_expr_to_integer; +2 stray concat-placeholder lines removed | 24 | 934 | — |

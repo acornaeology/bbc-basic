@@ -1515,7 +1515,7 @@ l848a = sub_c847b+15
 ; &8827 referenced 3 times by &85b7, &8875, &9121
 .sub_c8827
     ldy zp_text_ptr2_off                                              ; 8827: a4 1b       ..       ; Sync the primary text offset
-    sty zp_text_ptr_off                                               ; 8829: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 8829: 84 0a       ..       ; copy PtrB offset to PtrA
     rts                                                               ; 882b: 60          `        ; Return
 ; ***************************************************************************************
 ; Advance the opcode by four addressing-mode columns (+16)
@@ -4754,15 +4754,15 @@ l848a = sub_c847b+15
 ; &9905 referenced 2 times by &98a7, &b8d6
 .trace_line
     lda zp_iwa                                                        ; 9905: a5 2a       .*       ; Line number vs TRACE ceiling
-    cmp zp_trace_max                                                  ; 9907: c5 21       .!       ; ...
-    lda zp_iwa_1                                                      ; 9909: a5 2b       .+       ; ...
-    sbc l0022                                                         ; 990b: e5 22       ."       ; ...
+    cmp zp_trace_max                                                  ; 9907: c5 21       .!       ; vs ceiling low,
+    lda zp_iwa_1                                                      ; 9909: a5 2b       .+       ; line high
+    sbc l0022                                                         ; 990b: e5 22       ."       ; minus ceiling high
     bcs return_15                                                     ; 990d: b0 ac       ..       ; above the ceiling: do not trace
     lda #&5b ; '['                                                    ; 990f: a9 5b       .[       ; Print '['
-    jsr print_char                                                    ; 9911: 20 58 b5     X.      ; ...
+    jsr print_char                                                    ; 9911: 20 58 b5     X.      ; output it
     jsr print_line_number                                             ; 9914: 20 1f 99     ..      ; print the line number
     lda #&5d ; ']'                                                    ; 9917: a9 5d       .]       ; Print ']'
-    jsr print_char                                                    ; 9919: 20 58 b5     X.      ; ...
+    jsr print_char                                                    ; 9919: 20 58 b5     X.      ; output it
     jmp print_space                                                   ; 991c: 4c 65 b5    Le.      ; and a space
 ; ***************************************************************************************
 ; Print a 16-bit line number in decimal
@@ -5163,13 +5163,13 @@ l848a = sub_c847b+15
     beq c9b55                                                         ; 9b32: f0 21       .!       ; yes
     dec zp_text_ptr2_off                                              ; 9b34: c6 1b       ..       ; neither: back up over the token
     tay                                                               ; 9b36: a8          .        ; set the result-type flags
-    sta zp_var_type                                                   ; 9b37: 85 27       .'       ; ...
+    sta zp_var_type                                                   ; 9b37: 85 27       .'       ; store it
     rts                                                               ; 9b39: 60          `        ; Return
 ; &9b3a referenced 1 time by &9b2e
 .c9b3a
     jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
     tay                                                               ; 9b3d: a8          .        ; ensure the right operand is integer
-    jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..      ; ...
+    jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b41: a0 03       ..       ; Four bytes
 ; &9b43 referenced 1 time by &9b4c
 .loop_c9b43
@@ -5177,7 +5177,7 @@ l848a = sub_c847b+15
     ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.      ; OR with IWA
     sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b4b: 88          .        ; next byte
-    bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..       ; ...
+    bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..       ; until all four OR-ed
 ; &9b4e referenced 1 time by &9b69
 .loop_c9b4e
     jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..      ; Drop the stacked operand
@@ -5187,7 +5187,7 @@ l848a = sub_c847b+15
 .c9b55
     jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.      ; EOR: stack the left operand, evaluate the right
     tay                                                               ; 9b58: a8          .        ; ensure the right operand is integer
-    jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..      ; ...
+    jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b5c: a0 03       ..       ; Four bytes
 ; &9b5e referenced 1 time by &9b67
 .loop_c9b5e
@@ -5195,12 +5195,12 @@ l848a = sub_c847b+15
     eor zp_iwa,y                                                      ; 9b60: 59 2a 00    Y*.      ; EOR with IWA
     sta zp_iwa,y                                                      ; 9b63: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b66: 88          .        ; next byte
-    bpl loop_c9b5e                                                    ; 9b67: 10 f5       ..       ; ...
+    bpl loop_c9b5e                                                    ; 9b67: 10 f5       ..       ; until all four EOR-ed
     bmi loop_c9b4e                                                    ; 9b69: 30 e3       0.       ; drop and loop
 ; &9b6b referenced 2 times by &9b3a, &9b55
 .sub_c9b6b
     tay                                                               ; 9b6b: a8          .        ; Coerce the left operand to integer
-    jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..      ; ...
+    jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..      ; coerce it
     jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..      ; stack it
 ; ***************************************************************************************
 ; Evaluator level 6: AND
@@ -5217,11 +5217,11 @@ l848a = sub_c847b+15
 ; &9b7a referenced 1 time by &9b77
 .c9b7a
     tay                                                               ; 9b7a: a8          .        ; Coerce the left operand to integer
-    jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..      ; ...
+    jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..      ; coerce it
     jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..      ; stack it
     jsr eval_relational                                               ; 9b81: 20 9c 9b     ..      ; evaluate the right operand
     tay                                                               ; 9b84: a8          .        ; ensure it is integer
-    jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..      ; ...
+    jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b88: a0 03       ..       ; Four bytes
 ; &9b8a referenced 1 time by &9b93
 .loop_c9b8a
@@ -5229,7 +5229,7 @@ l848a = sub_c847b+15
     and zp_iwa,y                                                      ; 9b8c: 39 2a 00    9*.      ; AND with IWA
     sta zp_iwa,y                                                      ; 9b8f: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b92: 88          .        ; next byte
-    bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..       ; ...
+    bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..       ; until all four AND-ed
     jsr drop_stack_integer                                            ; 9b95: 20 ff bd     ..      ; Drop the stacked operand
     lda #&40 ; '@'                                                    ; 9b98: a9 40       .@       ; Result type = integer
     bne loop_c9b75                                                    ; 9b9a: d0 d9       ..       ; loop for further AND
@@ -5655,12 +5655,12 @@ l848a = sub_c847b+15
 ; &9de5 referenced 1 time by &9dda
 .c9de5
     tay                                                               ; 9de5: a8          .        ; Divide: ensure the left operand is real
-    jsr ensure_real                                                   ; 9de6: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9de6: 20 fd 92     ..      ; convert if integer
     jsr stack_real                                                    ; 9de9: 20 51 bd     Q.      ; stack it
     jsr eval_power                                                    ; 9dec: 20 20 9e      .      ; evaluate the right operand
     stx zp_var_type                                                   ; 9def: 86 27       .'       ; remember the operator
     tay                                                               ; 9df1: a8          .        ; ensure the right operand is real
-    jsr ensure_real                                                   ; 9df2: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9df2: 20 fd 92     ..      ; convert if integer
     jsr unstack_real                                                  ; 9df5: 20 7e bd     ~.      ; pop the left operand as the fp operand
     jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..      ; FWA = left / right
     ldx zp_var_type                                                   ; 9dfb: a6 27       .'       ; restore the operator
@@ -8051,15 +8051,15 @@ l848a = sub_c847b+15
     jsr cae56                                                         ; ab4a: 20 56 ae     V.      ; Evaluate y, expect )
     jsr coerce_to_integer                                             ; ab4d: 20 f0 92     ..      ; coerce to integer
     lda zp_iwa                                                        ; ab50: a5 2a       .*       ; Save y
-    pha                                                               ; ab52: 48          H        ; ...
-    lda zp_iwa_1                                                      ; ab53: a5 2b       .+       ; ...
-    pha                                                               ; ab55: 48          H        ; ...
-    jsr unstack_integer                                               ; ab56: 20 ea bd     ..      ; ...  Recover x
-    pla                                                               ; ab59: 68          h        ; ...
-    sta zp_iwa_3                                                      ; ab5a: 85 2d       .-       ; into the OSWORD block  ...
-    pla                                                               ; ab5c: 68          h        ; ...
-    sta zp_iwa_2                                                      ; ab5d: 85 2c       .,       ; ...
-    ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*       ; ...
+    pha                                                               ; ab52: 48          H        ; push the low byte
+    lda zp_iwa_1                                                      ; ab53: a5 2b       .+       ; high byte
+    pha                                                               ; ab55: 48          H        ; push it
+    jsr unstack_integer                                               ; ab56: 20 ea bd     ..      ; Recover x
+    pla                                                               ; ab59: 68          h        ; pull y high
+    sta zp_iwa_3                                                      ; ab5a: 85 2d       .-       ; into the OSWORD block
+    pla                                                               ; ab5c: 68          h        ; pull y low
+    sta zp_iwa_2                                                      ; ab5d: 85 2c       .,       ; y low into the block
+    ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*       ; point X at the block (&2A)
     lda #osword_read_pixel                                            ; ab61: a9 09       ..       ; Read the pixel colour
     jsr osword                                                        ; ab63: 20 f1 ff     ..      ; ...  Read pixel value  ...
     lda zp_fwa_sign                                                   ; ab66: a5 2e       ..       ; Result sign (off-screen = -1)

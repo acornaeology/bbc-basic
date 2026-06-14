@@ -14650,7 +14650,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "copy PtrB offset to PtrA",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -44251,7 +44251,7 @@
         197,
         33
       ],
-      "comment_inline": "...",
+      "comment_inline": "vs ceiling low,",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_trace_max",
@@ -44264,7 +44264,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "line high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -44277,7 +44277,7 @@
         229,
         34
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus ceiling high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l0022",
@@ -44315,7 +44315,7 @@
         88,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "output it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -44354,7 +44354,7 @@
         88,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "output it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -48091,7 +48091,7 @@
         133,
         39
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -48146,7 +48146,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "coerce it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -48229,7 +48229,7 @@
         16,
         245
       ],
-      "comment_inline": "...",
+      "comment_inline": "until all four OR-ed",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b43",
@@ -48322,7 +48322,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "coerce it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -48405,7 +48405,7 @@
         16,
         245
       ],
-      "comment_inline": "...",
+      "comment_inline": "until all four EOR-ed",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b5e",
@@ -48451,7 +48451,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "coerce it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -48562,7 +48562,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "coerce it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -48613,7 +48613,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "coerce it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -48696,7 +48696,7 @@
         16,
         245
       ],
-      "comment_inline": "...",
+      "comment_inline": "until all four AND-ed",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9b8a",
@@ -52663,7 +52663,7 @@
         253,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "convert if integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ensure_real",
@@ -52727,7 +52727,7 @@
         253,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "convert if integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ensure_real",
@@ -75549,7 +75549,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push the low byte",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -75559,7 +75559,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -75571,7 +75571,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -75582,7 +75582,7 @@
         234,
         189
       ],
-      "comment_inline": "... Recover x",
+      "comment_inline": "Recover x",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_integer",
@@ -75594,7 +75594,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull y high",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -75604,7 +75604,7 @@
         133,
         45
       ],
-      "comment_inline": "into the OSWORD block ...",
+      "comment_inline": "into the OSWORD block",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -75616,7 +75616,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull y low",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -75626,7 +75626,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "y low into the block",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -75639,7 +75639,7 @@
         162,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "point X at the block (&2A)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&2a"
