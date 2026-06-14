@@ -117,3 +117,4 @@ placeholders goes first.
 | 2026-06-14 | depth 1: FP add/align | fwa_add_fwb_raw (+1 smaller/larger fix) | 23 | 1583 | — |
 | 2026-06-14 | depth 1: find_def | find_def (PROC/FN definition search + cache) | 30 | 1553 | — |
 | 2026-06-14 | depth 1: FP divide | fp_divide (restoring long division, 32-bit + 7 guard bits) | 70 | 1483 | — |
+| 2026-06-14 | depth 1: assign_string | assign_string (string store: reuse/extend/grow allocation) | 47 | 1436 | — |

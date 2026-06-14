@@ -21858,7 +21858,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -21910,7 +21910,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -21923,7 +21923,7 @@
         165,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1",
@@ -21936,7 +21936,7 @@
         133,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -21962,7 +21962,7 @@
         201,
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "at least 8?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#8"
@@ -21973,7 +21973,7 @@
         144,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "under 8: take it as is",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8c43",
@@ -21986,7 +21986,7 @@
         105,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "else add 7 (round up),",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#7"
@@ -21997,7 +21997,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no overflow",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8c43",
@@ -22023,7 +22023,7 @@
       "labels": [
         "c8c43"
       ],
-      "comment_inline": "...",
+      "comment_inline": "(clear carry)",
       "xref_summaries": [
         "&8c43 referenced 2 times by &8c3b, &8c3f"
       ],
@@ -22048,7 +22048,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep the size in X",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -22071,7 +22071,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 0 (data low)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -22095,7 +22095,7 @@
         69,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "compare with heap top low",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_vartop",
@@ -22120,7 +22120,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte:",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22130,7 +22130,7 @@
         113,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ allocated,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "(zp_iwa),y",
@@ -22143,7 +22143,7 @@
         69,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "== heap top high?",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_vartop_1",
@@ -22181,7 +22181,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "new size...",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -22190,7 +22190,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 2 (old allocation)",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22199,7 +22199,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "new - old...",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -22221,7 +22221,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "X = extra bytes needed",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -22249,7 +22249,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "(clear carry)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -22259,7 +22259,7 @@
         101,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ heap top low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop",
@@ -22271,7 +22271,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low in Y)",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -22281,7 +22281,7 @@
         165,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "heap top high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop_1",
@@ -22294,7 +22294,7 @@
         105,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ carry (new top high)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -22317,7 +22317,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "(keep the new top high)",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -22327,7 +22327,7 @@
         229,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top - stack pointer",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_stack_ptr_1",
@@ -22366,7 +22366,7 @@
         134,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_vartop_1",
@@ -22388,7 +22388,7 @@
         160,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 2",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#2"
@@ -22399,7 +22399,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22421,7 +22421,7 @@
         165,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "data address high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -22447,7 +22447,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the data high,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22459,7 +22459,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 0",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22469,7 +22469,7 @@
         165,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "data low...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -22482,7 +22482,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22516,7 +22516,7 @@
         165,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "the length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_strbuf_len",
@@ -22529,7 +22529,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22563,7 +22563,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "(to offset 1)",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22573,7 +22573,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -22586,7 +22586,7 @@
         133,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -22598,7 +22598,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 0",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -22608,7 +22608,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "low...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -22621,7 +22621,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -22657,7 +22657,7 @@
         145,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "to storage",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa_2),y",
@@ -22669,7 +22669,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -22679,7 +22679,7 @@
         196,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "done?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_strbuf_len",
@@ -22793,7 +22793,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -22805,7 +22805,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "next (downwards)",
       "type": "code",
       "mnemonic": "dey"
     },
