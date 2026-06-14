@@ -37987,9 +37987,9 @@
       "comment_inline": "PROC: scan the PROC list",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c946f",
+      "operand": "findvar_chain_head",
       "target": 37999,
-      "target_label": "c946f"
+      "target_label": "findvar_chain_head"
     },
     {
       "addr": 37989,
@@ -38011,9 +38011,9 @@
       "comment_inline": "scan the FN list",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c946f",
+      "operand": "findvar_chain_head",
       "target": 37999,
-      "target_label": "c946f"
+      "target_label": "findvar_chain_head"
     },
     {
       "addr": 37993,
@@ -38080,7 +38080,7 @@
         4
       ],
       "labels": [
-        "c946f"
+        "findvar_chain_head"
       ],
       "comment_inline": "Head of the chain from the variable table (&0400+2*ch)",
       "xref_summaries": [
@@ -38143,7 +38143,7 @@
         59
       ],
       "labels": [
-        "c9479"
+        "findvar_walk"
       ],
       "comment_inline": "End of the chain: variable not found",
       "xref_summaries": [
@@ -38277,9 +38277,9 @@
       "comment_inline": "Non-null: compare the name",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c949a",
+      "operand": "findvar_cmp_a",
       "target": 38042,
-      "target_label": "c949a"
+      "target_label": "findvar_cmp_a"
     },
     {
       "addr": 38029,
@@ -38312,9 +38312,9 @@
       "comment_inline": "no: follow the link",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c94b3",
+      "operand": "findvar_walk_b",
       "target": 38067,
-      "target_label": "c94b3"
+      "target_label": "findvar_walk_b"
     },
     {
       "addr": 38034,
@@ -38334,9 +38334,9 @@
       "comment_inline": "match: compute the value pointer",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c94a7",
+      "operand": "findvar_match_a",
       "target": 38055,
-      "target_label": "c94a7"
+      "target_label": "findvar_match_a"
     },
     {
       "addr": 38037,
@@ -38344,7 +38344,7 @@
         200
       ],
       "labels": [
-        "loop_c9495"
+        "findvar_cmp_a_loop"
       ],
       "comment_inline": "Compare the rest of the name against this entry",
       "xref_summaries": [
@@ -38378,9 +38378,9 @@
       "comment_inline": "entry name ended early: no match",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c94b3",
+      "operand": "findvar_walk_b",
       "target": 38067,
-      "target_label": "c94b3"
+      "target_label": "findvar_walk_b"
     },
     {
       "addr": 38042,
@@ -38389,7 +38389,7 @@
         55
       ],
       "labels": [
-        "c949a"
+        "findvar_cmp_a"
       ],
       "comment_inline": "compare with the search name",
       "xref_summaries": [
@@ -38413,9 +38413,9 @@
       "comment_inline": "differ: follow the link",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c94b3",
+      "operand": "findvar_walk_b",
       "target": 38067,
-      "target_label": "c94b3"
+      "target_label": "findvar_walk_b"
     },
     {
       "addr": 38046,
@@ -38439,9 +38439,9 @@
       "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9495",
+      "operand": "findvar_cmp_a_loop",
       "target": 38037,
-      "target_label": "loop_c9495"
+      "target_label": "findvar_cmp_a_loop"
     },
     {
       "addr": 38050,
@@ -38474,9 +38474,9 @@
       "comment_inline": "entry name is longer: no match",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c94b3",
+      "operand": "findvar_walk_b",
       "target": 38067,
-      "target_label": "c94b3"
+      "target_label": "findvar_walk_b"
     },
     {
       "addr": 38055,
@@ -38484,7 +38484,7 @@
         152
       ],
       "labels": [
-        "c94a7"
+        "findvar_match_a"
       ],
       "comment_inline": "Match: return a pointer to the value",
       "xref_summaries": [
@@ -38585,7 +38585,7 @@
         61
       ],
       "labels": [
-        "c94b3"
+        "findvar_walk_b"
       ],
       "comment_inline": "No match: follow the link to the next entry",
       "xref_summaries": [
@@ -38719,9 +38719,9 @@
       "comment_inline": "Non-null: compare the name",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c94d4",
+      "operand": "findvar_cmp_b",
       "target": 38100,
-      "target_label": "c94d4"
+      "target_label": "findvar_cmp_b"
     },
     {
       "addr": 38087,
@@ -38754,9 +38754,9 @@
       "comment_inline": "no: back to the other-pointer loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9479",
+      "operand": "findvar_walk",
       "target": 38009,
-      "target_label": "c9479"
+      "target_label": "findvar_walk"
     },
     {
       "addr": 38092,
@@ -38776,9 +38776,9 @@
       "comment_inline": "match: compute the value pointer",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c94e1",
+      "operand": "findvar_match_b",
       "target": 38113,
-      "target_label": "c94e1"
+      "target_label": "findvar_match_b"
     },
     {
       "addr": 38095,
@@ -38786,7 +38786,7 @@
         200
       ],
       "labels": [
-        "loop_c94cf"
+        "findvar_cmp_b_loop"
       ],
       "comment_inline": "compare loop",
       "xref_summaries": [
@@ -38820,9 +38820,9 @@
       "comment_inline": "entry name ended: no match",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9479",
+      "operand": "findvar_walk",
       "target": 38009,
-      "target_label": "c9479"
+      "target_label": "findvar_walk"
     },
     {
       "addr": 38100,
@@ -38831,7 +38831,7 @@
         55
       ],
       "labels": [
-        "c94d4"
+        "findvar_cmp_b"
       ],
       "comment_inline": "compare with the search name",
       "xref_summaries": [
@@ -38855,9 +38855,9 @@
       "comment_inline": "differ: next entry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9479",
+      "operand": "findvar_walk",
       "target": 38009,
-      "target_label": "c9479"
+      "target_label": "findvar_walk"
     },
     {
       "addr": 38104,
@@ -38881,9 +38881,9 @@
       "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c94cf",
+      "operand": "findvar_cmp_b_loop",
       "target": 38095,
-      "target_label": "loop_c94cf"
+      "target_label": "findvar_cmp_b_loop"
     },
     {
       "addr": 38108,
@@ -38916,9 +38916,9 @@
       "comment_inline": "entry name is longer: no match",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9479",
+      "operand": "findvar_walk",
       "target": 38009,
-      "target_label": "c9479"
+      "target_label": "findvar_walk"
     },
     {
       "addr": 38113,
@@ -38926,7 +38926,7 @@
         152
       ],
       "labels": [
-        "c94e1"
+        "findvar_match_b"
       ],
       "comment_inline": "value pointer = node + name length: low",
       "xref_summaries": [
@@ -39017,7 +39017,7 @@
         1
       ],
       "labels": [
-        "sub_c94ed"
+        "create_def_entry"
       ],
       "comment_inline": "Look at the PROC/FN token",
       "xref_summaries": [
@@ -39083,9 +39083,9 @@
       "comment_inline": "PROC: use that chain",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9501",
+      "operand": "createvar_chain",
       "target": 38145,
-      "target_label": "c9501"
+      "target_label": "createvar_chain"
     },
     {
       "addr": 38136,
@@ -39107,9 +39107,9 @@
       "comment_inline": "use the FN chain",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9501",
+      "operand": "createvar_chain",
       "target": 38145,
-      "target_label": "c9501"
+      "target_label": "createvar_chain"
     },
     {
       "addr": 38140,
@@ -39162,7 +39162,7 @@
         58
       ],
       "labels": [
-        "c9501"
+        "createvar_chain"
       ],
       "comment_inline": "chain pointer low (&3A)",
       "xref_summaries": [
@@ -39209,7 +39209,7 @@
         58
       ],
       "labels": [
-        "loop_c9507"
+        "createvar_walk_loop"
       ],
       "comment_inline": "Walk to the end of the chain: link high",
       "xref_summaries": [
@@ -39233,9 +39233,9 @@
       "comment_inline": "zero: found the end, append here",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9516",
+      "operand": "createvar_link",
       "target": 38166,
-      "target_label": "c9516"
+      "target_label": "createvar_link"
     },
     {
       "addr": 38155,
@@ -39312,9 +39312,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c9507",
+      "operand": "createvar_walk_loop",
       "target": 38151,
-      "target_label": "loop_c9507"
+      "target_label": "createvar_walk_loop"
     },
     {
       "addr": 38166,
@@ -39323,7 +39323,7 @@
         3
       ],
       "labels": [
-        "c9516"
+        "createvar_link"
       ],
       "comment_inline": "Link the new entry (at VARTOP): high...",
       "xref_summaries": [
@@ -39449,7 +39449,7 @@
         200
       ],
       "labels": [
-        "loop_c9527"
+        "createvar_copy_loop"
       ],
       "comment_inline": "Copy the name into the entry:",
       "xref_summaries": [
@@ -39509,9 +39509,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9527",
+      "operand": "createvar_copy_loop",
       "target": 38183,
-      "target_label": "loop_c9527"
+      "target_label": "createvar_copy_loop"
     },
     {
       "addr": 38192,
@@ -39551,7 +39551,7 @@
         200
       ],
       "labels": [
-        "loop_c9533"
+        "clearval_loop"
       ],
       "comment_inline": "advance",
       "xref_summaries": [
@@ -39594,9 +39594,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9533",
+      "operand": "clearval_loop",
       "target": 38195,
-      "target_label": "loop_c9533"
+      "target_label": "clearval_loop"
     },
     {
       "addr": 38201,
@@ -39604,7 +39604,7 @@
         56
       ],
       "labels": [
-        "sub_c9539"
+        "advance_vartop"
       ],
       "comment_inline": "Advance VARTOP past the new entry:",
       "xref_summaries": [
@@ -39647,9 +39647,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9541",
+      "operand": "vartop_check",
       "target": 38209,
-      "target_label": "c9541"
+      "target_label": "vartop_check"
     },
     {
       "addr": 38207,
@@ -39671,7 +39671,7 @@
         3
       ],
       "labels": [
-        "c9541"
+        "vartop_check"
       ],
       "comment_inline": "Check VARTOP hasn't reached the stack:",
       "xref_summaries": [
@@ -39708,9 +39708,9 @@
       "comment_inline": "below: room",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9556",
+      "operand": "vartop_commit",
       "target": 38230,
-      "target_label": "c9556"
+      "target_label": "vartop_commit"
     },
     {
       "addr": 38215,
@@ -39721,9 +39721,9 @@
       "comment_inline": "above: no room",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c954d",
+      "operand": "vartop_no_room",
       "target": 38221,
-      "target_label": "c954d"
+      "target_label": "vartop_no_room"
     },
     {
       "addr": 38217,
@@ -39747,9 +39747,9 @@
       "comment_inline": "below: room",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9556",
+      "operand": "vartop_commit",
       "target": 38230,
-      "target_label": "c9556"
+      "target_label": "vartop_commit"
     },
     {
       "addr": 38221,
@@ -39758,7 +39758,7 @@
         0
       ],
       "labels": [
-        "c954d"
+        "vartop_no_room"
       ],
       "comment_inline": "No room: unlink the new entry...",
       "xref_summaries": [
@@ -39816,7 +39816,7 @@
         2
       ],
       "labels": [
-        "c9556"
+        "vartop_commit"
       ],
       "comment_inline": "Commit the new VARTOP",
       "xref_summaries": [
@@ -39877,7 +39877,7 @@
         55
       ],
       "labels": [
-        "c955b"
+        "valname_loop"
       ],
       "comment_inline": "character...",
       "xref_summaries": [
@@ -39937,9 +39937,9 @@
       "comment_inline": "letter range: continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9571",
+      "operand": "valname_check_uc",
       "target": 38257,
-      "target_label": "c9571"
+      "target_label": "valname_check_uc"
     },
     {
       "addr": 38245,
@@ -39995,7 +39995,7 @@
         232
       ],
       "labels": [
-        "c956d"
+        "valname_count"
       ],
       "comment_inline": "count the character",
       "xref_summaries": [
@@ -40026,9 +40026,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c955b",
+      "operand": "valname_loop",
       "target": 38235,
-      "target_label": "c955b"
+      "target_label": "valname_loop"
     },
     {
       "addr": 38257,
@@ -40037,7 +40037,7 @@
         95
       ],
       "labels": [
-        "c9571"
+        "valname_check_uc"
       ],
       "comment_inline": "below \"_\"?",
       "xref_summaries": [
@@ -40059,9 +40059,9 @@
       "comment_inline": "\"_\" or lower-case: accept",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c957a",
+      "operand": "valname_check_lc",
       "target": 38266,
-      "target_label": "c957a"
+      "target_label": "valname_check_lc"
     },
     {
       "addr": 38261,
@@ -40083,9 +40083,9 @@
       "comment_inline": "letter: accept",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c956d",
+      "operand": "valname_count",
       "target": 38253,
-      "target_label": "c956d"
+      "target_label": "valname_count"
     },
     {
       "addr": 38265,
@@ -40114,7 +40114,7 @@
         123
       ],
       "labels": [
-        "c957a"
+        "valname_check_lc"
       ],
       "comment_inline": "a-z?",
       "xref_summaries": [
@@ -40136,9 +40136,9 @@
       "comment_inline": "accept",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c956d",
+      "operand": "valname_count",
       "target": 38253,
-      "target_label": "c956d"
+      "target_label": "valname_count"
     },
     {
       "addr": 38270,
@@ -40157,7 +40157,7 @@
         149
       ],
       "labels": [
-        "c957f"
+        "zero_new_value"
       ],
       "comment_inline": "Zero the value bytes of the new variable",
       "xref_summaries": [
@@ -40277,9 +40277,9 @@
       "comment_inline": "integer: clear 5 bytes",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c957f",
+      "operand": "zero_new_value",
       "target": 38271,
-      "target_label": "c957f"
+      "target_label": "zero_new_value"
     },
     {
       "addr": 38290,
@@ -40299,9 +40299,9 @@
       "comment_inline": "then retry the parse so it is found",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c957f",
+      "operand": "zero_new_value",
       "target": 38271,
-      "target_label": "c957f"
+      "target_label": "zero_new_value"
     },
     {
       "addr": 38293,
@@ -40310,7 +40310,7 @@
         33
       ],
       "labels": [
-        "loop_c9595"
+        "lvalue_indirect"
       ],
       "comment_inline": "'!' indirection?",
       "xref_summaries": [
@@ -40332,9 +40332,9 @@
       "comment_inline": "yes: word indirection",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c95a5",
+      "operand": "lvalue_word",
       "target": 38309,
-      "target_label": "c95a5"
+      "target_label": "lvalue_word"
     },
     {
       "addr": 38297,
@@ -40356,9 +40356,9 @@
       "comment_inline": "yes: string indirection",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c95b0",
+      "operand": "lvalue_dollar",
       "target": 38320,
-      "target_label": "c95b0"
+      "target_label": "lvalue_dollar"
     },
     {
       "addr": 38301,
@@ -40380,9 +40380,9 @@
       "comment_inline": "yes: byte indirection",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c95a7",
+      "operand": "lvalue_save_width",
       "target": 38311,
-      "target_label": "c95a7"
+      "target_label": "lvalue_save_width"
     },
     {
       "addr": 38305,
@@ -40430,7 +40430,7 @@
         4
       ],
       "labels": [
-        "c95a5"
+        "lvalue_word"
       ],
       "comment_inline": "'!': word width (4)",
       "xref_summaries": [
@@ -40449,7 +40449,7 @@
         72
       ],
       "labels": [
-        "c95a7"
+        "lvalue_save_width"
       ],
       "comment_inline": "Save the width",
       "xref_summaries": [
@@ -40509,7 +40509,7 @@
         27
       ],
       "labels": [
-        "c95b0"
+        "lvalue_dollar"
       ],
       "comment_inline": "'$': step past the operator",
       "xref_summaries": [
@@ -40560,9 +40560,9 @@
       "comment_inline": "yes: $ range error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c95bf",
+      "operand": "lvalue_range_error",
       "target": 38335,
-      "target_label": "c95bf"
+      "target_label": "lvalue_range_error"
     },
     {
       "addr": 38329,
@@ -40612,7 +40612,7 @@
         0
       ],
       "labels": [
-        "c95bf"
+        "lvalue_range_error"
       ],
       "comment_inline": "$ range error",
       "xref_summaries": [
@@ -40849,9 +40849,9 @@
       "comment_inline": "below '@': handle as indirection ($ ! ?)",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c9595",
+      "operand": "lvalue_indirect",
       "target": 38293,
-      "target_label": "loop_c9595"
+      "target_label": "lvalue_indirect"
     },
     {
       "addr": 38369,
@@ -88300,9 +88300,9 @@
       "comment_inline": "create/find the FN/PROC entry",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c94ed",
+      "operand": "create_def_entry",
       "target": 38125,
-      "target_label": "sub_c94ed"
+      "target_label": "create_def_entry"
     },
     {
       "addr": 45428,
@@ -88411,9 +88411,9 @@
       "comment_inline": "advance VARTOP",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9539",
+      "operand": "advance_vartop",
       "target": 38201,
-      "target_label": "sub_c9539"
+      "target_label": "advance_vartop"
     },
     {
       "addr": 45447,
@@ -88955,9 +88955,9 @@
       "comment_inline": "scan it from offset 2",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c955b",
+      "operand": "valname_loop",
       "target": 38235,
-      "target_label": "c955b"
+      "target_label": "valname_loop"
     },
     {
       "addr": 45528,

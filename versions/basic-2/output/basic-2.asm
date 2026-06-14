@@ -4373,9 +4373,9 @@ oscli            = &fff7
     lda (zp_general),y                                                ; 945d: b1 37       .7       ; get it
     ldy #&f6                                                          ; 945f: a0 f6       ..       ; Index the PROC / FN entries of the variable table
     cmp #&f2                                                          ; 9461: c9 f2       ..       ; Is it PROC (&F2)?
-    beq c946f                                                         ; 9463: f0 0a       ..       ; PROC: scan the PROC list
+    beq findvar_chain_head                                            ; 9463: f0 0a       ..       ; PROC: scan the PROC list
     ldy #&f8                                                          ; 9465: a0 f8       ..       ; FN: point at the FN list head
-    bne c946f                                                         ; 9467: d0 06       ..       ; scan the FN list
+    bne findvar_chain_head                                            ; 9467: d0 06       ..       ; scan the FN list
 ; ***************************************************************************************
 ; Find a variable by name
 ;
@@ -4405,13 +4405,13 @@ oscli            = &fff7
     asl a                                                             ; 946d: 0a          .        ; Two bytes per entry: double the initial letter
     tay                                                               ; 946e: a8          .        ; Y = 2 * char: index into the variable table
 ; &946f referenced 2 times by &9463, &9467
-.c946f
+.findvar_chain_head
     lda resint_at,y                                                   ; 946f: b9 00 04    ...      ; Head of the chain from the variable table (&0400+2*ch)
     sta l003a                                                         ; 9472: 85 3a       .:       ; Chain head low byte -> node pointer (&3A)
     lda l0401,y                                                       ; 9474: b9 01 04    ...      ; Chain head high byte (&0400 + 1 + 2*char)
     sta zp_fwb_sign                                                   ; 9477: 85 3b       .;       ; node pointer high (&3B)
 ; &9479 referenced 4 times by &94ca, &94d2, &94d6, &94df
-.c9479
+.findvar_walk
     lda zp_fwb_sign                                                   ; 9479: a5 3b       .;       ; End of the chain: variable not found
     beq return_10                                                     ; 947b: f0 35       .5       ; Zero high byte: end of chain, not found
     ldy #0                                                            ; 947d: a0 00       ..       ; Read the node: offset 0
@@ -4422,28 +4422,28 @@ oscli            = &fff7
     sta zp_fwb_exp                                                    ; 9486: 85 3d       .=       ; ...saved (&3D)
     iny                                                               ; 9488: c8          .        ; offset 2: first stored name character
     lda (l003a),y                                                     ; 9489: b1 3a       .:       ; get it
-    bne c949a                                                         ; 948b: d0 0d       ..       ; Non-null: compare the name
+    bne findvar_cmp_a                                                 ; 948b: d0 0d       ..       ; Non-null: compare the name
     dey                                                               ; 948d: 88          .        ; Null name (the base entry): ...
     cpy zp_fileblk                                                    ; 948e: c4 39       .9       ; did the search name end too?
-    bne c94b3                                                         ; 9490: d0 21       .!       ; no: follow the link
+    bne findvar_walk_b                                                ; 9490: d0 21       .!       ; no: follow the link
     iny                                                               ; 9492: c8          .        ; advance
-    bcs c94a7                                                         ; 9493: b0 12       ..       ; match: compute the value pointer
+    bcs findvar_match_a                                               ; 9493: b0 12       ..       ; match: compute the value pointer
 ; &9495 referenced 1 time by &94a0
-.loop_c9495
+.findvar_cmp_a_loop
     iny                                                               ; 9495: c8          .        ; Compare the rest of the name against this entry
     lda (l003a),y                                                     ; 9496: b1 3a       .:       ; next stored name character
-    beq c94b3                                                         ; 9498: f0 19       ..       ; entry name ended early: no match
+    beq findvar_walk_b                                                ; 9498: f0 19       ..       ; entry name ended early: no match
 ; &949a referenced 1 time by &948b
-.c949a
+.findvar_cmp_a
     cmp (zp_general),y                                                ; 949a: d1 37       .7       ; compare with the search name
-    bne c94b3                                                         ; 949c: d0 15       ..       ; differ: follow the link
+    bne findvar_walk_b                                                ; 949c: d0 15       ..       ; differ: follow the link
     cpy zp_fileblk                                                    ; 949e: c4 39       .9       ; reached the end of the search name?
-    bne loop_c9495                                                    ; 94a0: d0 f3       ..       ; no: keep comparing
+    bne findvar_cmp_a_loop                                            ; 94a0: d0 f3       ..       ; no: keep comparing
     iny                                                               ; 94a2: c8          .        ; does the entry name end here too?
     lda (l003a),y                                                     ; 94a3: b1 3a       .:       ; read the stored name char
-    bne c94b3                                                         ; 94a5: d0 0c       ..       ; entry name is longer: no match
+    bne findvar_walk_b                                                ; 94a5: d0 0c       ..       ; entry name is longer: no match
 ; &94a7 referenced 1 time by &9493
-.c94a7
+.findvar_match_a
     tya                                                               ; 94a7: 98          .        ; Match: return a pointer to the value
     adc l003a                                                         ; 94a8: 65 3a       e:       ; value pointer = node + name length: low
     sta zp_iwa                                                        ; 94aa: 85 2a       .*       ; (IWA low)
@@ -4454,7 +4454,7 @@ oscli            = &fff7
 .return_10
     rts                                                               ; 94b2: 60          `        ; Return (IWA = value pointer, or not found)
 ; &94b3 referenced 4 times by &9490, &9498, &949c, &94a5
-.c94b3
+.findvar_walk_b
     lda zp_fwb_exp                                                    ; 94b3: a5 3d       .=       ; No match: follow the link to the next entry
     beq return_10                                                     ; 94b5: f0 fb       ..       ; Zero high byte: end of chain, not found
     ldy #0                                                            ; 94b7: a0 00       ..       ; Read the next node via its saved link (&3C)
@@ -4465,28 +4465,28 @@ oscli            = &fff7
     sta zp_fwb_sign                                                   ; 94c0: 85 3b       .;       ; ...(&3B)
     iny                                                               ; 94c2: c8          .        ; offset 2: name character
     lda (zp_fwb_ovf),y                                                ; 94c3: b1 3c       .<       ; get it
-    bne c94d4                                                         ; 94c5: d0 0d       ..       ; Non-null: compare the name
+    bne findvar_cmp_b                                                 ; 94c5: d0 0d       ..       ; Non-null: compare the name
     dey                                                               ; 94c7: 88          .        ; Null name: ...
     cpy zp_fileblk                                                    ; 94c8: c4 39       .9       ; did the search name end too?
-    bne c9479                                                         ; 94ca: d0 ad       ..       ; no: back to the other-pointer loop
+    bne findvar_walk                                                  ; 94ca: d0 ad       ..       ; no: back to the other-pointer loop
     iny                                                               ; 94cc: c8          .        ; advance
-    bcs c94e1                                                         ; 94cd: b0 12       ..       ; match: compute the value pointer
+    bcs findvar_match_b                                               ; 94cd: b0 12       ..       ; match: compute the value pointer
 ; &94cf referenced 1 time by &94da
-.loop_c94cf
+.findvar_cmp_b_loop
     iny                                                               ; 94cf: c8          .        ; compare loop
     lda (zp_fwb_ovf),y                                                ; 94d0: b1 3c       .<       ; next stored character
-    beq c9479                                                         ; 94d2: f0 a5       ..       ; entry name ended: no match
+    beq findvar_walk                                                  ; 94d2: f0 a5       ..       ; entry name ended: no match
 ; &94d4 referenced 1 time by &94c5
-.c94d4
+.findvar_cmp_b
     cmp (zp_general),y                                                ; 94d4: d1 37       .7       ; compare with the search name
-    bne c9479                                                         ; 94d6: d0 a1       ..       ; differ: next entry
+    bne findvar_walk                                                  ; 94d6: d0 a1       ..       ; differ: next entry
     cpy zp_fileblk                                                    ; 94d8: c4 39       .9       ; end of the search name?
-    bne loop_c94cf                                                    ; 94da: d0 f3       ..       ; no: keep comparing
+    bne findvar_cmp_b_loop                                            ; 94da: d0 f3       ..       ; no: keep comparing
     iny                                                               ; 94dc: c8          .        ; does the entry name end here too?
     lda (zp_fwb_ovf),y                                                ; 94dd: b1 3c       .<       ; read the stored name char
-    bne c9479                                                         ; 94df: d0 98       ..       ; entry name is longer: no match
+    bne findvar_walk                                                  ; 94df: d0 98       ..       ; entry name is longer: no match
 ; &94e1 referenced 1 time by &94cd
-.c94e1
+.findvar_match_b
     tya                                                               ; 94e1: 98          .        ; value pointer = node + name length: low
     adc zp_fwb_ovf                                                    ; 94e2: 65 3c       e<       ; plus the node low
     sta zp_iwa                                                        ; 94e4: 85 2a       .*       ; (IWA low)
@@ -4495,15 +4495,15 @@ oscli            = &fff7
     sta zp_iwa_1                                                      ; 94ea: 85 2b       .+       ; IWA high = pointer to the value
     rts                                                               ; 94ec: 60          `        ; Return the value pointer
 ; &94ed referenced 1 time by &b171
-.sub_c94ed
+.create_def_entry
     ldy #1                                                            ; 94ed: a0 01       ..       ; Look at the PROC/FN token
     lda (zp_general),y                                                ; 94ef: b1 37       .7       ; get it
     tax                                                               ; 94f1: aa          .        ; to X
     lda #&f6                                                          ; 94f2: a9 f6       ..       ; PROC list index (&F6)
     cpx #&f2                                                          ; 94f4: e0 f2       ..       ; Is it PROC?
-    beq c9501                                                         ; 94f6: f0 09       ..       ; PROC: use that chain
+    beq createvar_chain                                               ; 94f6: f0 09       ..       ; PROC: use that chain
     lda #&f8                                                          ; 94f8: a9 f8       ..       ; FN list index (&F8)
-    bne c9501                                                         ; 94fa: d0 05       ..       ; use the FN chain
+    bne createvar_chain                                               ; 94fa: d0 05       ..       ; use the FN chain
 ; ***************************************************************************************
 ; Create a new variable
 ;
@@ -4525,23 +4525,23 @@ oscli            = &fff7
     lda (zp_general),y                                                ; 94fe: b1 37       .7       ; get it
     asl a                                                             ; 9500: 0a          .        ; double it to index the variable table
 ; &9501 referenced 2 times by &94f6, &94fa
-.c9501
+.createvar_chain
     sta l003a                                                         ; 9501: 85 3a       .:       ; chain pointer low (&3A)
     lda #4                                                            ; 9503: a9 04       ..       ; table base high page (&04)
     sta zp_fwb_sign                                                   ; 9505: 85 3b       .;       ; chain pointer high (&3B)
 ; &9507 referenced 1 time by &9514
-.loop_c9507
+.createvar_walk_loop
     lda (l003a),y                                                     ; 9507: b1 3a       .:       ; Walk to the end of the chain: link high
-    beq c9516                                                         ; 9509: f0 0b       ..       ; zero: found the end, append here
+    beq createvar_link                                                ; 9509: f0 0b       ..       ; zero: found the end, append here
     tax                                                               ; 950b: aa          .        ; save it
     dey                                                               ; 950c: 88          .        ; link low
     lda (l003a),y                                                     ; 950d: b1 3a       .:       ; read it
     sta l003a                                                         ; 950f: 85 3a       .:       ; follow the link: low
     stx zp_fwb_sign                                                   ; 9511: 86 3b       .;       ; high
     iny                                                               ; 9513: c8          .        ; advance
-    bpl loop_c9507                                                    ; 9514: 10 f1       ..       ; loop
+    bpl createvar_walk_loop                                           ; 9514: 10 f1       ..       ; loop
 ; &9516 referenced 1 time by &9509
-.c9516
+.createvar_link
     lda zp_vartop_1                                                   ; 9516: a5 03       ..       ; Link the new entry (at VARTOP): high...
     sta (l003a),y                                                     ; 9518: 91 3a       .:       ; ...into the previous link
     lda zp_vartop                                                     ; 951a: a5 02       ..       ; low...
@@ -4553,12 +4553,12 @@ oscli            = &fff7
     cpy zp_fileblk                                                    ; 9523: c4 39       .9       ; name length reached?
     beq return_11                                                     ; 9525: f0 31       .1       ; done
 ; &9527 referenced 1 time by &952e
-.loop_c9527
+.createvar_copy_loop
     iny                                                               ; 9527: c8          .        ; Copy the name into the entry:
     lda (zp_general),y                                                ; 9528: b1 37       .7       ; name char...
     sta (zp_vartop),y                                                 ; 952a: 91 02       ..       ; ...into the entry
     cpy zp_fileblk                                                    ; 952c: c4 39       .9       ; all of the name?
-    bne loop_c9527                                                    ; 952e: d0 f7       ..       ; loop
+    bne createvar_copy_loop                                           ; 952e: d0 f7       ..       ; loop
     rts                                                               ; 9530: 60          `        ; Return
 ; ***************************************************************************************
 ; Zero a run of value bytes
@@ -4580,34 +4580,34 @@ oscli            = &fff7
 .clear_value_bytes
     lda #0                                                            ; 9531: a9 00       ..       ; Zero X value bytes after the name:
 ; &9533 referenced 1 time by &9537
-.loop_c9533
+.clearval_loop
     iny                                                               ; 9533: c8          .        ; advance
     sta (zp_vartop),y                                                 ; 9534: 91 02       ..       ; clear a byte
     dex                                                               ; 9536: ca          .        ; count down
-    bne loop_c9533                                                    ; 9537: d0 fa       ..       ; loop
+    bne clearval_loop                                                 ; 9537: d0 fa       ..       ; loop
 ; &9539 referenced 1 time by &b184
-.sub_c9539
+.advance_vartop
     sec                                                               ; 9539: 38          8        ; Advance VARTOP past the new entry:
     tya                                                               ; 953a: 98          .        ; Y = bytes used
     adc zp_vartop                                                     ; 953b: 65 02       e.       ; low
-    bcc c9541                                                         ; 953d: 90 02       ..       ; no carry into the high byte
+    bcc vartop_check                                                  ; 953d: 90 02       ..       ; no carry into the high byte
     inc zp_vartop_1                                                   ; 953f: e6 03       ..       ; carry into high
 ; &9541 referenced 1 time by &953d
-.c9541
+.vartop_check
     ldy zp_vartop_1                                                   ; 9541: a4 03       ..       ; Check VARTOP hasn't reached the stack:
     cpy zp_stack_ptr_1                                                ; 9543: c4 05       ..       ; compare high
-    bcc c9556                                                         ; 9545: 90 0f       ..       ; below: room
-    bne c954d                                                         ; 9547: d0 04       ..       ; above: no room
+    bcc vartop_commit                                                 ; 9545: 90 0f       ..       ; below: room
+    bne vartop_no_room                                                ; 9547: d0 04       ..       ; above: no room
     cmp zp_stack_ptr                                                  ; 9549: c5 04       ..       ; equal: compare low
-    bcc c9556                                                         ; 954b: 90 09       ..       ; below: room
+    bcc vartop_commit                                                 ; 954b: 90 09       ..       ; below: room
 ; &954d referenced 1 time by &9547
-.c954d
+.vartop_no_room
     lda #0                                                            ; 954d: a9 00       ..       ; No room: unlink the new entry...
     ldy #1                                                            ; 954f: a0 01       ..       ; link field offset
     sta (l003a),y                                                     ; 9551: 91 3a       .:       ; (clear the link)
     jmp err_no_room                                                   ; 9553: 4c b7 8c    L..      ; No room error
 ; &9556 referenced 2 times by &9545, &954b
-.c9556
+.vartop_commit
     sta zp_vartop                                                     ; 9556: 85 02       ..       ; Commit the new VARTOP
 ; &9558 referenced 1 time by &9525
 .return_11
@@ -4631,37 +4631,37 @@ oscli            = &fff7
 .validate_var_name
     ldy #1                                                            ; 9559: a0 01       ..       ; Validate the name from offset 1:
 ; &955b referenced 2 times by &956f, &b1d5
-.c955b
+.valname_loop
     lda (zp_general),y                                                ; 955b: b1 37       .7       ; character...
     cmp #&30 ; '0'                                                    ; 955d: c9 30       .0       ; below "0": end of name
     bcc return_12                                                     ; 955f: 90 18       ..       ; below "0": stop
     cmp #&40 ; '@'                                                    ; 9561: c9 40       .@       ; in the digit/symbol range?
-    bcs c9571                                                         ; 9563: b0 0c       ..       ; letter range: continue
+    bcs valname_check_uc                                              ; 9563: b0 0c       ..       ; letter range: continue
     cmp #&3a ; ':'                                                    ; 9565: c9 3a       .:       ; ":" or above (not a digit)?
     bcs return_12                                                     ; 9567: b0 10       ..       ; not a name character: stop
     cpy #1                                                            ; 9569: c0 01       ..       ; is this the first character?
     beq return_12                                                     ; 956b: f0 0c       ..       ; names can't start with a digit
 ; &956d referenced 2 times by &9577, &957c
-.c956d
+.valname_count
     inx                                                               ; 956d: e8          .        ; count the character
     iny                                                               ; 956e: c8          .        ; next
-    bne c955b                                                         ; 956f: d0 ea       ..       ; loop
+    bne valname_loop                                                  ; 956f: d0 ea       ..       ; loop
 ; &9571 referenced 1 time by &9563
-.c9571
+.valname_check_uc
     cmp #&5f ; '_'                                                    ; 9571: c9 5f       ._       ; below "_"?
-    bcs c957a                                                         ; 9573: b0 05       ..       ; "_" or lower-case: accept
+    bcs valname_check_lc                                              ; 9573: b0 05       ..       ; "_" or lower-case: accept
     cmp #&5b ; '['                                                    ; 9575: c9 5b       .[       ; A-Z?
-    bcc c956d                                                         ; 9577: 90 f4       ..       ; letter: accept
+    bcc valname_count                                                 ; 9577: 90 f4       ..       ; letter: accept
 ; &9579 referenced 3 times by &955f, &9567, &956b
 .return_12
     rts                                                               ; 9579: 60          `        ; Return
 ; &957a referenced 1 time by &9573
-.c957a
+.valname_check_lc
     cmp #&7b ; '{'                                                    ; 957a: c9 7b       .{       ; a-z?
-    bcc c956d                                                         ; 957c: 90 ef       ..       ; accept
+    bcc valname_count                                                 ; 957c: 90 ef       ..       ; accept
     rts                                                               ; 957e: 60          `        ; Return
 ; &957f referenced 2 times by &9590, &9593
-.c957f
+.zero_new_value
     jsr clear_value_bytes                                             ; 957f: 20 31 95     1.      ; Zero the value bytes of the new variable
 ; ***************************************************************************************
 ; Parse an assignment target variable
@@ -4685,43 +4685,43 @@ oscli            = &fff7
     jsr create_variable                                               ; 9589: 20 fc 94     ..      ; undefined: create the variable
     ldx #5                                                            ; 958c: a2 05       ..       ; Decide how many value bytes to clear
     cpx zp_iwa_2                                                      ; 958e: e4 2c       .,       ; integer type (4) or real (5)?
-    bne c957f                                                         ; 9590: d0 ed       ..       ; integer: clear 5 bytes
+    bne zero_new_value                                                ; 9590: d0 ed       ..       ; integer: clear 5 bytes
     inx                                                               ; 9592: e8          .        ; real: clear 6 bytes
-    bne c957f                                                         ; 9593: d0 ea       ..       ; then retry the parse so it is found
+    bne zero_new_value                                                ; 9593: d0 ea       ..       ; then retry the parse so it is found
 ; &9595 referenced 1 time by &95df
-.loop_c9595
+.lvalue_indirect
     cmp #&21 ; '!'                                                    ; 9595: c9 21       .!       ; '!' indirection?
-    beq c95a5                                                         ; 9597: f0 0c       ..       ; yes: word indirection
+    beq lvalue_word                                                   ; 9597: f0 0c       ..       ; yes: word indirection
     cmp #&24 ; '$'                                                    ; 9599: c9 24       .$       ; '$' indirection?
-    beq c95b0                                                         ; 959b: f0 13       ..       ; yes: string indirection
+    beq lvalue_dollar                                                 ; 959b: f0 13       ..       ; yes: string indirection
     eor #&3f ; '?'                                                    ; 959d: 49 3f       I?       ; '?' indirection?
-    beq c95a7                                                         ; 959f: f0 06       ..       ; yes: byte indirection
+    beq lvalue_save_width                                             ; 959f: f0 06       ..       ; yes: byte indirection
     lda #0                                                            ; 95a1: a9 00       ..       ; none: not an lvalue
     sec                                                               ; 95a3: 38          8        ; set carry (not an lvalue)
 ; &95a4 referenced 2 times by &9585, &9587
 .return_13
     rts                                                               ; 95a4: 60          `        ; Return
 ; &95a5 referenced 1 time by &9597
-.c95a5
+.lvalue_word
     lda #4                                                            ; 95a5: a9 04       ..       ; '!': word width (4)
 ; &95a7 referenced 1 time by &959f
-.c95a7
+.lvalue_save_width
     pha                                                               ; 95a7: 48          H        ; Save the width
     inc zp_text_ptr2_off                                              ; 95a8: e6 1b       ..       ; step past the operator
     jsr eval_factor_integer                                           ; 95aa: 20 e3 92     ..      ; evaluate the address
     jmp c969f                                                         ; 95ad: 4c 9f 96    L..      ; finish as an indirection
 ; &95b0 referenced 1 time by &959b
-.c95b0
+.lvalue_dollar
     inc zp_text_ptr2_off                                              ; 95b0: e6 1b       ..       ; '$': step past the operator
     jsr eval_factor_integer                                           ; 95b2: 20 e3 92     ..      ; evaluate the address
     lda zp_iwa_1                                                      ; 95b5: a5 2b       .+       ; address in zero page?
-    beq c95bf                                                         ; 95b7: f0 06       ..       ; yes: $ range error
+    beq lvalue_range_error                                            ; 95b7: f0 06       ..       ; yes: $ range error
     lda #&80                                                          ; 95b9: a9 80       ..       ; Type = string indirection (&80)
     sta zp_iwa_2                                                      ; 95bb: 85 2c       .,       ; store the type byte
     sec                                                               ; 95bd: 38          8        ; found: SEC
     rts                                                               ; 95be: 60          `        ; Return
 ; &95bf referenced 1 time by &95b7
-.c95bf
+.lvalue_range_error
     brk                                                               ; 95bf: 00          .        ; $ range error
     equb &08                                                          ; 95c0: 08          .     
     equs "$ range"                                                    ; 95c1: 24 20 72... $ r...
@@ -4764,7 +4764,7 @@ oscli            = &fff7
 ; &95dd referenced 2 times by &8bc9, &ae22
 .sub_c95dd
     cmp #&40 ; '@'                                                    ; 95dd: c9 40       .@       ; below '@': an indirection operator
-    bcc loop_c9595                                                    ; 95df: 90 b4       ..       ; below '@': handle as indirection ($ ! ?)
+    bcc lvalue_indirect                                               ; 95df: 90 b4       ..       ; below '@': handle as indirection ($ ! ?)
     cmp #&5b ; '['                                                    ; 95e1: c9 5b       .[       ; above 'Z'?
     bcs c95ff                                                         ; 95e3: b0 1a       ..       ; yes: a named (dynamic) variable
     asl a                                                             ; 95e5: 0a          .        ; Resident integer: hash char to &0400 + char*4
@@ -11200,7 +11200,7 @@ oscli            = &fff7
     txa                                                               ; b16c: 8a          .        ; Match: cache the definition
     tay                                                               ; b16d: a8          .        ; Y = name length
     jsr c986d                                                         ; b16e: 20 6d 98     m.      ; point PtrA at the body
-    jsr sub_c94ed                                                     ; b171: 20 ed 94     ..      ; create/find the FN/PROC entry
+    jsr create_def_entry                                              ; b171: 20 ed 94     ..      ; create/find the FN/PROC entry
     ldx #1                                                            ; b174: a2 01       ..       ; init it
     jsr clear_value_bytes                                             ; b176: 20 31 95     1.      ; initialise the value
     ldy #0                                                            ; b179: a0 00       ..       ; store the body pointer:
@@ -11209,7 +11209,7 @@ oscli            = &fff7
     iny                                                               ; b17f: c8          .        ; next byte
     lda zp_text_ptr_1                                                 ; b180: a5 0c       ..       ; pointer high...
     sta (zp_vartop),y                                                 ; b182: 91 02       ..       ; (store)
-    jsr sub_c9539                                                     ; b184: 20 39 95     9.      ; advance VARTOP
+    jsr advance_vartop                                                ; b184: 20 39 95     9.      ; advance VARTOP
     jmp cb1f4                                                         ; b187: 4c f4 b1    L..      ; continue
 ; &b18a referenced 1 time by &b1da
 .loop_cb18a
@@ -11294,7 +11294,7 @@ oscli            = &fff7
     sbc #0                                                            ; b1cf: e9 00       ..       ; with borrow,
     sta zp_general_1                                                  ; b1d1: 85 38       .8       ; to &38
     ldy #2                                                            ; b1d3: a0 02       ..       ; Validate the name
-    jsr c955b                                                         ; b1d5: 20 5b 95     [.      ; scan it from offset 2
+    jsr valname_loop                                                  ; b1d5: 20 5b 95     [.      ; scan it from offset 2
     cpy #2                                                            ; b1d8: c0 02       ..       ; no valid characters?
     beq loop_cb18a                                                    ; b1da: f0 ae       ..       ; yes: Bad call
     stx zp_text_ptr2_off                                              ; b1dc: 86 1b       ..       ; Offset past the name
@@ -14523,8 +14523,6 @@ save pydis_start, pydis_end
 ;     zp_trace_flag:               5
 ;     asm_mistake:                 4
 ;     bad_statement:               4
-;     c9479:                       4
-;     c94b3:                       4
 ;     c9641:                       4
 ;     c984c:                       4
 ;     c9877:                       4
@@ -14542,6 +14540,8 @@ save pydis_start, pydis_end
 ;     eval_power:                  4
 ;     find_line_target:            4
 ;     find_variable:               4
+;     findvar_walk:                4
+;     findvar_walk_b:              4
 ;     fp_eval_cont_frac:           4
 ;     fwa_rdiv_var:                4
 ;     fwa_to_int2:                 4
@@ -14660,12 +14660,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:            2
 ;     assign_string_to:            2
 ;     auto_loop:                   2
-;     c946f:                       2
-;     c9501:                       2
-;     c9556:                       2
-;     c955b:                       2
-;     c956d:                       2
-;     c957f:                       2
 ;     c95ff:                       2
 ;     c9677:                       2
 ;     c96d7:                       2
@@ -14752,6 +14746,7 @@ save pydis_start, pydis_end
 ;     cbe41:                       2
 ;     cbe9e:                       2
 ;     cbf82:                       2
+;     createvar_chain:             2
 ;     decode_line_number:          2
 ;     delete_program_line:         2
 ;     dim_array:                   2
@@ -14760,6 +14755,7 @@ save pydis_start, pydis_end
 ;     err_too_big:                 2
 ;     eval_relational:             2
 ;     expect_eq:                   2
+;     findvar_chain_head:          2
 ;     fp_split_int_frac:           2
 ;     fp_temp1:                    2
 ;     fwa_acc_fwb:                 2
@@ -14878,11 +14874,16 @@ save pydis_start, pydis_end
 ;     try_variable_assignment:     2
 ;     unstack_numeric_drop:        2
 ;     usr_call:                    2
+;     valname_count:               2
+;     valname_loop:                2
+;     vartop_commit:               2
 ;     wrchv:                       2
+;     zero_new_value:              2
 ;     zp_rnd_seed_3:               2
 ;     zp_trace_max:                2
 ;     action_hi_by_token:          1
 ;     action_lo_by_token:          1
+;     advance_vartop:              1
 ;     ascii_to_number:             1
 ;     asm_abs_from_paren:          1
 ;     asm_acc_or_abs:              1
@@ -14950,19 +14951,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c949a:                       1
-;     c94a7:                       1
-;     c94d4:                       1
-;     c94e1:                       1
-;     c9516:                       1
-;     c9541:                       1
-;     c954d:                       1
-;     c9571:                       1
-;     c957a:                       1
-;     c95a5:                       1
-;     c95a7:                       1
-;     c95b0:                       1
-;     c95bf:                       1
 ;     c960e:                       1
 ;     c9615:                       1
 ;     c962d:                       1
@@ -15242,8 +15230,13 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     clearval_loop:               1
 ;     cls_send:                    1
 ;     coerce_real:                 1
+;     create_def_entry:            1
+;     createvar_copy_loop:         1
+;     createvar_link:              1
+;     createvar_walk_loop:         1
 ;     data_scan_loop:              1
 ;     delete_loop:                 1
 ;     dim_after:                   1
@@ -15274,6 +15267,12 @@ save pydis_start, pydis_end
 ;     find_def:                    1
 ;     find_error_line:             1
 ;     find_proc_fn:                1
+;     findvar_cmp_a:               1
+;     findvar_cmp_a_loop:          1
+;     findvar_cmp_b:               1
+;     findvar_cmp_b_loop:          1
+;     findvar_match_a:             1
+;     findvar_match_b:             1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
 ;     fn_return:                   1
@@ -15333,12 +15332,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c9495:                  1
-;     loop_c94cf:                  1
-;     loop_c9507:                  1
-;     loop_c9527:                  1
-;     loop_c9533:                  1
-;     loop_c9595:                  1
 ;     loop_c95d4:                  1
 ;     loop_c96ff:                  1
 ;     loop_c97dd:                  1
@@ -15464,6 +15457,11 @@ save pydis_start, pydis_end
 ;     loop_cbecf:                  1
 ;     loop_cbfd9:                  1
 ;     loop_cbfec:                  1
+;     lvalue_dollar:               1
+;     lvalue_indirect:             1
+;     lvalue_range_error:          1
+;     lvalue_save_width:           1
+;     lvalue_word:                 1
 ;     not_local_error:             1
 ;     osasci:                      1
 ;     osnewl:                      1
@@ -15548,8 +15546,6 @@ save pydis_start, pydis_end
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
 ;     sub_c9231:                   1
-;     sub_c94ed:                   1
-;     sub_c9539:                   1
 ;     sub_c95d5:                   1
 ;     sub_c9807:                   1
 ;     sub_c987b:                   1
@@ -15612,33 +15608,16 @@ save pydis_start, pydis_end
 ;     unstack_str_setlen:          1
 ;     unstack_value_to_var:        1
 ;     validate_var_name:           1
+;     valname_check_lc:            1
+;     valname_check_uc:            1
+;     vartop_check:                1
+;     vartop_no_room:              1
 ;     vdu_loop:                    1
 
 ; Automatically generated labels:
 ;     c883a
 ;     c8858
 ;     c886a
-;     c946f
-;     c9479
-;     c949a
-;     c94a7
-;     c94b3
-;     c94d4
-;     c94e1
-;     c9501
-;     c9516
-;     c9541
-;     c954d
-;     c9556
-;     c955b
-;     c956d
-;     c9571
-;     c957a
-;     c957f
-;     c95a5
-;     c95a7
-;     c95b0
-;     c95bf
 ;     c95ff
 ;     c960e
 ;     c9615
@@ -16100,12 +16079,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9495
-;     loop_c94cf
-;     loop_c9507
-;     loop_c9527
-;     loop_c9533
-;     loop_c9595
 ;     loop_c95d4
 ;     loop_c96ff
 ;     loop_c97dd
@@ -16274,8 +16247,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c94ed
-;     sub_c9539
 ;     sub_c95d5
 ;     sub_c95dd
 ;     sub_c9807
