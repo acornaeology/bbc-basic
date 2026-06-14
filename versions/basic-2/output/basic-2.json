@@ -50737,7 +50737,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "from offset 0,",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -50748,7 +50748,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked low,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50761,7 +50761,7 @@
         229,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "- IWA low,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -50774,7 +50774,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -50796,7 +50796,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50809,7 +50809,7 @@
         229,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "- IWA &2B,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -50822,7 +50822,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -50844,7 +50844,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50857,7 +50857,7 @@
         229,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "- IWA &2C,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -50870,7 +50870,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -50892,7 +50892,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50905,7 +50905,7 @@
         229,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "- IWA &2D (high)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -50956,7 +50956,7 @@
         209,
         157
       ],
-      "comment_inline": "...",
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_mul_div",
@@ -51352,7 +51352,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "test the operand type",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -51532,7 +51532,7 @@
         197,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3 == byte 2 (sign-extended)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa_2",
@@ -51714,7 +51714,7 @@
         197,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3 == byte 2 (sign-extended)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa_2",

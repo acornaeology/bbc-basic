@@ -5457,26 +5457,26 @@ l848a = sub_c847b+15
 ;     ZP_IWA: operand - IWA
 .iwa_rsub
     sec                                                               ; 9cc2: 38          8        ; int - int: stacked value minus IWA, byte 0
-    ldy #0                                                            ; 9cc3: a0 00       ..       ; ...
-    lda (zp_stack_ptr),y                                              ; 9cc5: b1 04       ..       ; ...
-    sbc zp_iwa                                                        ; 9cc7: e5 2a       .*       ; ...
-    sta zp_iwa                                                        ; 9cc9: 85 2a       .*       ; ...
+    ldy #0                                                            ; 9cc3: a0 00       ..       ; from offset 0,
+    lda (zp_stack_ptr),y                                              ; 9cc5: b1 04       ..       ; stacked low,
+    sbc zp_iwa                                                        ; 9cc7: e5 2a       .*       ; - IWA low,
+    sta zp_iwa                                                        ; 9cc9: 85 2a       .*       ; store,
     iny                                                               ; 9ccb: c8          .        ; ...byte 1
-    lda (zp_stack_ptr),y                                              ; 9ccc: b1 04       ..       ; ...
-    sbc zp_iwa_1                                                      ; 9cce: e5 2b       .+       ; ...
-    sta zp_iwa_1                                                      ; 9cd0: 85 2b       .+       ; ...
+    lda (zp_stack_ptr),y                                              ; 9ccc: b1 04       ..       ; stacked,
+    sbc zp_iwa_1                                                      ; 9cce: e5 2b       .+       ; - IWA &2B,
+    sta zp_iwa_1                                                      ; 9cd0: 85 2b       .+       ; store,
     iny                                                               ; 9cd2: c8          .        ; ...byte 2
-    lda (zp_stack_ptr),y                                              ; 9cd3: b1 04       ..       ; ...
-    sbc zp_iwa_2                                                      ; 9cd5: e5 2c       .,       ; ...
-    sta zp_iwa_2                                                      ; 9cd7: 85 2c       .,       ; ...
+    lda (zp_stack_ptr),y                                              ; 9cd3: b1 04       ..       ; stacked,
+    sbc zp_iwa_2                                                      ; 9cd5: e5 2c       .,       ; - IWA &2C,
+    sta zp_iwa_2                                                      ; 9cd7: 85 2c       .,       ; store,
     iny                                                               ; 9cd9: c8          .        ; ...byte 3
-    lda (zp_stack_ptr),y                                              ; 9cda: b1 04       ..       ; ...
-    sbc zp_iwa_3                                                      ; 9cdc: e5 2d       .-       ; ...
+    lda (zp_stack_ptr),y                                              ; 9cda: b1 04       ..       ; stacked,
+    sbc zp_iwa_3                                                      ; 9cdc: e5 2d       .-       ; - IWA &2D (high)
     jmp c9c77                                                         ; 9cde: 4c 77 9c    Lw.      ; store byte 3, drop the operand and loop
 ; &9ce1 referenced 1 time by &9cb8
 .c9ce1
     jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
-    jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..      ; ...
+    jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..      ; evaluate the right operand
     tay                                                               ; 9ce7: a8          .        ; Type of the right operand
     beq c9c88                                                         ; 9ce8: f0 9e       ..       ; string: Type mismatch
     stx zp_var_type                                                   ; 9cea: 86 27       .'       ; remember it
@@ -5513,7 +5513,7 @@ l848a = sub_c847b+15
     jsr stack_real                                                    ; 9d20: 20 51 bd     Q.      ; Stack the left real
     jsr eval_power                                                    ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
     stx zp_var_type                                                   ; 9d26: 86 27       .'       ; remember the operand type
-    tay                                                               ; 9d28: a8          .        ; ...
+    tay                                                               ; 9d28: a8          .        ; test the operand type
     jsr ensure_real                                                   ; 9d29: 20 fd 92     ..      ; ensure the operand is real
 ; &9d2c referenced 1 time by &9d1a
 .c9d2c
@@ -5531,7 +5531,7 @@ l848a = sub_c847b+15
     beq c9d39                                                         ; 9d3d: f0 fa       ..       ; string: Type mismatch
     bmi loop_c9d20                                                    ; 9d3f: 30 df       0.       ; real: floating-point multiply
     lda zp_iwa_3                                                      ; 9d41: a5 2d       .-       ; Integer: does it fit signed 16 bits?
-    cmp zp_iwa_2                                                      ; 9d43: c5 2c       .,       ; ...
+    cmp zp_iwa_2                                                      ; 9d43: c5 2c       .,       ; byte 3 == byte 2 (sign-extended)?
     bne c9d1d                                                         ; 9d45: d0 d6       ..       ; no: floating-point multiply
     tay                                                               ; 9d47: a8          .        ; high word zero (positive)?
     beq c9d4e                                                         ; 9d48: f0 04       ..       ; yes
@@ -5547,7 +5547,7 @@ l848a = sub_c847b+15
     beq c9d39                                                         ; 9d58: f0 df       ..       ; string: Type mismatch
     bmi loop_c9d11                                                    ; 9d5a: 30 b5       0.       ; real: floating-point multiply
     lda zp_iwa_3                                                      ; 9d5c: a5 2d       .-       ; fits signed 16 bits?
-    cmp zp_iwa_2                                                      ; 9d5e: c5 2c       .,       ; ...
+    cmp zp_iwa_2                                                      ; 9d5e: c5 2c       .,       ; byte 3 == byte 2 (sign-extended)?
     bne c9d0e                                                         ; 9d60: d0 ac       ..       ; no: floating-point multiply
     tay                                                               ; 9d62: a8          .        ; positive?
     beq c9d69                                                         ; 9d63: f0 04       ..       ; yes
