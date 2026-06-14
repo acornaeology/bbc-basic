@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — label-naming pass
 
-**STATUS: in progress — 787 auto-generated labels remaining (of 864).
+**STATUS: in progress — 744 auto-generated labels remaining (of 864).
 Goal: give every dasmos auto-named label (`cXXXX`, `loop_cXXXX`,
 `sub_cXXXX`, `lXXXX`) a semantically meaningful, globally unique name.**
 
@@ -85,15 +85,18 @@ label), so a clash is caught immediately.
 | 2026-06-14 | setup + assembler_exit + language_startup | 19 | 845 | 5f2a08b |
 | 2026-06-14 | keyword/action + asm decode tables | 7 | 838 | 3a522de |
 | 2026-06-14 | asm_parse_mnemonic (full assembler) | 51 | 787 | 6ea288a |
+| 2026-06-14 | parse_decimal_u16 + name-char helpers | 8 | 779 | ce7b6f7 |
+| 2026-06-14 | tokenise_line | 35 | 744 | 75b0d75 |
 
 ## Resume here
 
 Done through the inline assembler (&8063-&8831). The append +
 `driver sort -i` recipe is confirmed (byte-identical each batch).
 
-Next routine in address order: **parse_decimal_u16 (&889D)**, then
-encode_line_number, is_alphanumeric, inc_ptr_general, tokenise_line
-(&8955, 35 labels), … Work address-ascending; regenerate the live,
+Next routine in address order: **skip_spaces (&8AA2)**, then
+start_new_program (&8AF3), execute_line (&8B38), stmt_data, … through
+the statement handlers and beyond. Work address-ascending; regenerate
+the live,
 comment-enriched worklist with:
 
 ```
