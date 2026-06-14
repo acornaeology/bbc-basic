@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,270 of 7,129 placeholders left (17.8 %);
+**STATUS: in progress — 1,240 of 7,129 placeholders left (17.4 %);
 depths 0 and 1 complete.** Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
@@ -8,9 +8,9 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 `...` comment — coverage theatre, not annotation.
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
-worklist (leaves-first, worst offenders first). Next up is `index_array`
-(62), then `parse_number` (30), `eval_power` (23), `iwa_store_var` (22),
-`iwa_mul` (21), and the rest of depths 2–8. Per routine:
+worklist (leaves-first, worst offenders first). Next up is
+`iwa_store_var` (22), then `iwa_mul` (21), `fp_split_int_frac` (13),
+`fp_eval_cont_frac` (13), and the rest of depths 2–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -189,3 +189,4 @@ placeholders goes first.
 | 2026-06-14 | depth 1: output helpers | output_top_digit, output_char, output_byte_decimal, print_hex_byte, fn_usr, encode_line_number tail | 17 | 1337 | — |
 | 2026-06-14 | depth 1 complete | read_string_literal, stmt_until, stmt_oscli, stmt_close, validate_var_name, stack_real/integer/string, stmt_ptr | 18 | 1319 | — |
 | 2026-06-14 | depth 2: number_to_ascii | number_to_ascii (PRINT number formatter: round, format-select, trim, exponent) | 49 | 1270 | — |
+| 2026-06-14 | depth 2: parse_number | parse_number (decimal/real parse: digit accumulate, decimal point/exponent, real-vs-integer result) | 30 | 1240 | — |

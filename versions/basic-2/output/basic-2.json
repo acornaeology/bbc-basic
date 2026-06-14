@@ -57149,7 +57149,7 @@
         134,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "mantissa byte 1 (top),",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m1",
@@ -57162,7 +57162,7 @@
         134,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m2",
@@ -57175,7 +57175,7 @@
         134,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m3",
@@ -57188,7 +57188,7 @@
         134,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 4,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_m4",
@@ -57201,7 +57201,7 @@
         134,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "and the guard byte",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_rnd",
@@ -57350,7 +57350,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -57605,7 +57605,7 @@
         176,
         215
       ],
-      "comment_inline": "...",
+      "comment_inline": "skip this over-large digit",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "ca099",
@@ -57702,7 +57702,7 @@
         133,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the new low mantissa byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -57741,7 +57741,7 @@
         208,
         196
       ],
-      "comment_inline": "...",
+      "comment_inline": "absorbed in byte 4: next digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -57754,7 +57754,7 @@
         230,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "wrapped: carry into byte 3,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m3",
@@ -57767,7 +57767,7 @@
         208,
         192
       ],
-      "comment_inline": "...",
+      "comment_inline": "absorbed: next digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -57780,7 +57780,7 @@
         230,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m2",
@@ -57793,7 +57793,7 @@
         208,
         188
       ],
-      "comment_inline": "...",
+      "comment_inline": "absorbed: next digit",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca099",
@@ -57806,7 +57806,7 @@
         230,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1 (top)",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m1",
@@ -57868,7 +57868,7 @@
         133,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_dec_exp",
@@ -57918,7 +57918,7 @@
         5,
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "combine with the decimal-point flag",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_dp_flag",
@@ -57991,7 +57991,7 @@
         133,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -58004,7 +58004,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "zero for overflow and sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -58117,7 +58117,7 @@
         198,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer power of ten to apply",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_dec_exp",
@@ -58180,7 +58180,7 @@
         230,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "count the exponent up toward zero",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_dec_exp",
@@ -58248,7 +58248,7 @@
         169,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = &FF: real result",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -58290,7 +58290,7 @@
         133,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "stash byte 2 as the IWA top byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -58303,7 +58303,7 @@
         41,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "isolate its sign bit",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -58353,7 +58353,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "guard byte -> IWA low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -58366,7 +58366,7 @@
         165,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 4",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -58379,7 +58379,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "-> IWA byte 1,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -58392,7 +58392,7 @@
         165,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -58405,7 +58405,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "-> IWA byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -58428,7 +58428,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry set: a valid number",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -58480,7 +58480,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry so caller adc completes the negate",
       "type": "code",
       "mnemonic": "sec"
     },
