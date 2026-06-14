@@ -93199,7 +93199,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -93247,7 +93247,7 @@
         133,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "FOR/REPEAT indent = 0,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -93260,7 +93260,7 @@
         133,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "second indent = 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -93335,7 +93335,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte = &FF,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -93348,7 +93348,7 @@
         169,
         127
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &7F,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&7f"
@@ -93359,7 +93359,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte (= 32767)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -93447,7 +93447,7 @@
         148,
         189
       ],
-      "comment_inline": "...",
+      "comment_inline": "re-stack it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "stack_integer",
@@ -93473,7 +93473,7 @@
         16,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "always taken",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cb5db",
@@ -93592,7 +93592,7 @@
         133,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "low to &31,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -93605,7 +93605,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -93618,7 +93618,7 @@
         133,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "high to &32",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -93700,7 +93700,7 @@
         133,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -93713,7 +93713,7 @@
         165,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -93726,7 +93726,7 @@
         133,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -93751,7 +93751,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up the offset,",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -93761,7 +93761,7 @@
         176,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "inexact: start at the next line",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "cb602",
@@ -93833,7 +93833,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store high,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -93845,7 +93845,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -93868,7 +93868,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -93889,7 +93889,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -93899,7 +93899,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the body offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -93933,7 +93933,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry,",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -93943,7 +93943,7 @@
         229,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "line - end low,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m1",
@@ -93956,7 +93956,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -93969,7 +93969,7 @@
         229,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "line - end high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m2",
@@ -94043,7 +94043,7 @@
         134,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&4D)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l004d",
@@ -94068,7 +94068,7 @@
         119,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "do it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_listo_indent",
@@ -94106,7 +94106,7 @@
         119,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "do it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_listo_indent",
@@ -94144,7 +94144,7 @@
         119,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "do it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_listo_indent",
@@ -94261,7 +94261,7 @@
         69,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "flip the flag,",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l004d",
@@ -94274,7 +94274,7 @@
         133,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -94302,7 +94302,7 @@
       "labels": [
         "loop_cb64b"
       ],
-      "comment_inline": "...",
+      "comment_inline": "do it",
       "xref_summaries": [
         "&b64b referenced 1 time by &b653"
       ],
@@ -94330,7 +94330,7 @@
         208,
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "continue the line",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cb639",
@@ -94416,7 +94416,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the advanced offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -94440,7 +94440,7 @@
         133,
         20
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear the field width",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
