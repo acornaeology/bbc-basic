@@ -2201,9 +2201,15 @@ d.comment(0x8f18, 'Back to execution', align=Align.INLINE)
 d.comment(0x8f1b, 'parameter error (shared)', align=Align.INLINE)
 
 d.subroutine(0x8f1e, 'usr_call', title='Call user machine code (USR/CALL)',
-             description="""Load A, X, Y and the flags from the resident integer
-variables, then call the routine at the address in IWA. On return the
-registers are captured back.""")
+             description="""Load A, X, Y and the carry from the resident integer
+variables A%, X%, Y% and C%, then JMP (IWA) to the user routine. Its RTS
+returns to usr_call's caller, which captures the registers back.""",
+             on_entry={'zp_iwa (&2A/&2B)': 'the address to call',
+                       'resint_a/x/y/c (A%, X%, Y%, C%)': 'the register values'},
+             on_exit={'A': 'as left by the called code',
+                      'X': 'as left by the called code',
+                      'Y': 'as left by the called code',
+                      'P': 'as left by the called code'})
 
 # usr_call (&8F1E)
 d.comment(0x8f1e, 'C% supplies the carry...', align=Align.INLINE)
@@ -2611,6 +2617,9 @@ d.subroutine(
     0x9222, 'iwa_inc',
     title='Increment the integer accumulator',
     description='IWA = IWA + 1, carrying through all four bytes.',
+    on_entry={'zp_iwa (&2A-&2D)': 'the integer to increment'},
+    on_exit={'zp_iwa': 'incremented by one',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 # iwa_inc (&9222): 32-bit IWA = IWA + 1
 d.comment(0x9222, 'Increment IWA: byte 0', align=Align.INLINE)
@@ -2626,7 +2635,15 @@ d.comment(0x9230, 'Return', align=Align.INLINE)
 d.comment(0x9231, 'Unstack the multiplier (into &3F area)', align=Align.INLINE)
 d.comment(0x9233, 'into the &3F area', align=Align.INLINE)
 d.subroutine(0x9236, 'imul16', title='16-bit integer multiply (IWA * FWB)',
-             description='Multiply IWA by the value in the FWB mantissa by shift-and-add; "Too big" on overflow.')
+             description='Multiply IWA by the 16-bit multiplier in the FWB '
+                         'mantissa (m2/m3) by shift-and-add, leaving the 16-bit '
+                         'product in IWA low/high. Raises Too big on overflow. '
+                         'Used for array subscript arithmetic.',
+             on_entry={'zp_iwa (&2A/&2B)': 'the multiplicand',
+                       'zp_fwb_m2 (&3F/&40)': 'the 16-bit multiplier'},
+             on_exit={'zp_iwa (&2A/&2B)': 'the 16-bit product',
+                      'X': 'corrupted', 'Y': 'corrupted',
+                      'BRK': 'Too big on overflow'})
 
 d.comment(0x9236, 'Clear the running product (X:Y)', align=Align.INLINE)
 d.comment(0x9238, 'high in X, low in Y', align=Align.INLINE)
@@ -7356,6 +7373,9 @@ little-endian state &0D,&0E,&0F,&10, which byte-reverses the 32-bit
 value; with exponent &80 and after normalisation the result is
 state-reversed / 2^32, a real in [0, 1).
 """,
+    on_entry={'zp_rnd_seed (&0D-&10)': 'the current 32-bit generator state'},
+    on_exit={'zp_fwa (&2E-&35)': 'a normalised real in [0, 1)',
+             'A': 'real type marker (&FF)', 'X': 'corrupted'},
 )
 d.comment(0xaf6c, 'Zero for the FP fields', align=Align.INLINE)
 d.comment(0xaf6e, 'Sign positive', align=Align.INLINE)
@@ -7393,6 +7413,9 @@ Per step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches
 bit 0, EOR with byte 4 to bring in bit 32, rotate to put the feedback
 bit into carry, then ROL the five state bytes so carry enters bit 0.
 """,
+    on_entry={'zp_rnd_seed (&0D-&11)': 'the 33-bit generator state'},
+    on_exit={'zp_rnd_seed': 'advanced by 32 steps',
+             'X': 'preserved'},
 )
 # rnd_step (&AF87): one RND advance = 32 LFSR steps, trinomial (33,20,0)
 d.comment(0xaf87, '32 single-bit steps make one RND advance', align=Align.INLINE)
@@ -7420,7 +7443,13 @@ d.comment(0xafa6, 'Read the error number...', align=Align.INLINE)
 d.comment(0xafa8, '...from the error block (&FD)', align=Align.INLINE)
 d.comment(0xafaa, 'Return ERR as an integer', align=Align.INLINE)
 d.subroutine(0xafad, 'read_key_timed', title='Read a key within a time limit (INKEY)',
-             description='Wait up to the given time for a key; the INKEY/INKEY$ primitive.')
+             description='Evaluate the time-limit argument at PtrB into IWA, then '
+                         'tail-call OSBYTE &81 (INKEY) to read a key with that '
+                         'timeout. Shared by the INKEY and INKEY$ functions.',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the time-limit argument'},
+             on_exit={'X': 'the key code (or internal key number on a scan)',
+                      'Y': '0 if a key was read, &FF on timeout, &1B on Escape',
+                      'C': 'per OSBYTE &81'})
 
 # read_key_timed (&AFAD) remaining
 d.comment(0xafad, 'Evaluate the time-limit argument', align=Align.INLINE)
@@ -9609,7 +9638,12 @@ d.subroutine(0xbe0d, 'unstack_int_to_zp',
              title='Pop a stacked integer into a zero-page variable',
              description="""Copy the four-byte integer on top of the BASIC stack into
 the zero-page bytes at (X .. X+3), then drop it from the stack. The
-&BE0B entry uses X = &37 (the general work area).""")
+&BE0B entry uses X = &37 (the general work area).""",
+             on_entry={'X': 'the destination zero-page offset (from &00)',
+                       '(zp_stack_ptr) (&04/&05)': 'a 4-byte integer on top of stack'},
+             on_exit={'(&00+X .. +3)': 'the popped integer',
+                      'zp_stack_ptr': 'advanced by 4 (integer dropped)',
+                      'X': 'preserved'})
 d.comment(0xbe0d, 'Copy the stacked integer to (X): top byte', align=Align.INLINE)
 d.comment(0xbe0f, '(read)', align=Align.INLINE)
 d.comment(0xbe11, '...byte 3', align=Align.INLINE)
@@ -9659,7 +9693,12 @@ d.comment(0xbe41, 'Stack meets heap: No room', align=Align.INLINE)
 d.subroutine(
     0xbe44, 'iwa_store_zp',
     title='Store the accumulator into a zero-page integer variable',
-    description='Copy IWA into a 4-byte zero-page integer variable.',
+    description='Copy IWA into the 4-byte resident integer variable at &00+X '
+                '(the inverse of iwa_load_zp).',
+    on_entry={'zp_iwa (&2A-&2D)': 'the integer to store',
+              'X': 'zero-page offset of the destination (from &00)'},
+    on_exit={'(&00+X .. +3)': 'a copy of IWA',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 
 # iwa_store_zp (&BE44): copy IWA into the 4-byte variable at &00+X

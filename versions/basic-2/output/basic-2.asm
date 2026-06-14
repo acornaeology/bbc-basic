@@ -3008,8 +3008,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Call user machine code (USR/CALL)
 ;
-; Load A, X, Y and the flags from the resident integer variables, then call the routine
-; at the address in IWA. On return the registers are captured back.
+; Load A, X, Y and the carry from the resident integer variables A%, X%, Y% and C%, then
+; JMP (IWA) to the user routine. Its RTS returns to usr_call's caller, which captures the
+; registers back.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the address to call
+;     RESINT_A/X/Y/C (A%, X%, Y%, C%): the register values
+;
+; On Exit:
+;     A: as left by the called code
+;     X: as left by the called code
+;     Y: as left by the called code
+;     P: as left by the called code
 ; &8f1e referenced 2 times by &8f14, &abd5
 .usr_call
     lda resint_c                                                      ; 8f1e: ad 0c 04    ...      ; C% supplies the carry...
@@ -3534,6 +3545,14 @@ l848a = sub_c847b+15
 ; Increment the integer accumulator
 ;
 ; IWA = IWA + 1, carrying through all four bytes.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the integer to increment
+;
+; On Exit:
+;     ZP_IWA: incremented by one
+;     X: preserved
+;     Y: preserved
 ; &9222 referenced 4 times by &8f59, &90ee, &9195, &af39
 .iwa_inc
     inc zp_iwa                                                        ; 9222: e6 2a       .*       ; Increment IWA: byte 0
@@ -3553,7 +3572,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; 16-bit integer multiply (IWA * FWB)
 ;
-; Multiply IWA by the value in the FWB mantissa by shift-and-add; "Too big" on overflow.
+; Multiply IWA by the 16-bit multiplier in the FWB mantissa (m2/m3) by shift-and-add,
+; leaving the 16-bit product in IWA low/high. Raises Too big on overflow. Used for array
+; subscript arithmetic.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the multiplicand
+;     ZP_FWB_M2 (&3F/&40): the 16-bit multiplier
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): the 16-bit product
+;     X: corrupted
+;     Y: corrupted
+;     BRK: Too big on overflow
 ; &9236 referenced 2 times by &91c1, &9736
 .imul16
     ldx #0                                                            ; 9236: a2 00       ..       ; Clear the running product (X:Y)
@@ -10019,6 +10050,14 @@ l848a = sub_c847b+15
 ; most-significant-first from the little-endian state &0D,&0E,&0F,&10, which
 ; byte-reverses the 32-bit value; with exponent &80 and after normalisation the result is
 ; state-reversed / 2^32, a real in [0, 1).
+;
+; On Entry:
+;     ZP_RND_SEED (&0D-&10): the current 32-bit generator state
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): a normalised real in [0, 1)
+;     A: real type marker (&FF)
+;     X: corrupted
 ; &af6c referenced 1 time by &af1e
 .rnd_repeat
     ldx #0                                                            ; af6c: a2 00       ..       ; Zero for the FP fields
@@ -10048,6 +10087,13 @@ l848a = sub_c847b+15
 ; Per step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches bit 0, EOR with
 ; byte 4 to bring in bit 32, rotate to put the feedback bit into carry, then ROL the five
 ; state bytes so carry enters bit 0.
+;
+; On Entry:
+;     ZP_RND_SEED (&0D-&11): the 33-bit generator state
+;
+; On Exit:
+;     ZP_RND_SEED: advanced by 32 steps
+;     X: preserved
 ; &af87 referenced 2 times by &af51, &af69
 .rnd_step
     ldy #&20 ; ' '                                                    ; af87: a0 20       .        ; 32 single-bit steps make one RND advance
@@ -10106,7 +10152,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Read a key within a time limit (INKEY)
 ;
-; Wait up to the given time for a key; the INKEY/INKEY$ primitive.
+; Evaluate the time-limit argument at PtrB into IWA, then tail-call OSBYTE &81 (INKEY) to
+; read a key with that timeout. Shared by the INKEY and INKEY$ functions.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the time-limit argument
+;
+; On Exit:
+;     X: the key code (or internal key number on a scan)
+;     Y: 0 if a key was read, &FF on timeout, &1B on Escape
+;     C: per OSBYTE &81
 ; &afad referenced 2 times by &acad, &b026
 .read_key_timed
     jsr sub_c92e3                                                     ; afad: 20 e3 92     ..      ; Evaluate the time-limit argument
@@ -12981,6 +13036,15 @@ l848a = sub_c847b+15
 ; Copy the four-byte integer on top of the BASIC stack into the zero-page bytes at (X ..
 ; X+3), then drop it from the stack. The &BE0B entry uses X = &37 (the general work
 ; area).
+;
+; On Entry:
+;     X: the destination zero-page offset (from &00)
+;     (ZP_STACK_PTR) (&04/&05): a 4-byte integer on top of stack
+;
+; On Exit:
+;     (&00+X .. +3): the popped integer
+;     ZP_STACK_PTR: advanced by 4 (integer dropped)
+;     X: preserved
 ; &be0d referenced 5 times by &8fa8, &9233, &970d, &9755, &99dd
 .unstack_int_to_zp
     ldy #3                                                            ; be0d: a0 03       ..       ; Copy the stacked integer to (X): top byte
@@ -13034,7 +13098,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Store the accumulator into a zero-page integer variable
 ;
-; Copy IWA into a 4-byte zero-page integer variable.
+; Copy IWA into the 4-byte resident integer variable at &00+X (the inverse of
+; iwa_load_zp).
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the integer to store
+;     X: zero-page offset of the destination (from &00)
+;
+; On Exit:
+;     (&00+X .. +3): a copy of IWA
+;     X: preserved
+;     Y: preserved
 ; &be44 referenced 5 times by &885f, &9d75, &af41, &b2e0, &b315
 .iwa_store_zp
     lda zp_iwa                                                        ; be44: a5 2a       .*       ; Copy IWA to the zp variable at X: byte 0
