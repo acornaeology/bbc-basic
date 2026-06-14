@@ -1,11 +1,12 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: COMPLETE — 285 ROM subroutine banners, 284 fully documented
-(desc + calling contract), 99 %. The one undocumented banner is
-fwa_compare_var (&A5FF), a FALL_THROUGH_ENTRY with no callers — a
-mid-instruction continuation, not a callable routine, so a contract
-would be meaningless. Inline-comment pass is COMPLETE (see
-ANNOTATION_PROGRESS.md); this follow-on banner pass is now COMPLETE.**
+**STATUS: COMPLETE — 289 ROM subroutine banners, all 289 fully documented
+(desc + calling contract), 100 %. (Count rose from 285 to 289: the
+spurious fwa_compare_var banner was removed, and the five-strong
+integer-argument evaluator family was promoted from auto-named
+sub_c92XX to named, bannered routines.) Inline-comment pass is COMPLETE
+(see ANNOTATION_PROGRESS.md); this follow-on banner pass is now
+COMPLETE.**
 
 Every banner's description was reviewed for accuracy and every callable
 ROM routine now carries a structured on_entry/on_exit contract naming
@@ -295,6 +296,9 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | transcendental/print | parse_number, fp_eval_cont_frac, fwa_complement_half_pi, sin_cos_reduce, fwa_int_power, print_special_item, print_line_number, print_token, print_listo_indent | 9 | 12 | 254bb1c |
 | 2026-06-14 | final helpers | tokenise_line, read_string_literal, find_def, find_error_line, next_data_item, language_startup, stack_local, read_input_line, index_array, trace_line, stmt_listo | 11 | 1 | 781d56c |
 | 2026-06-14 | re-sort | driver back to canonical order | — | 1 | 2008518 |
+| 2026-06-14 | fwa_compare_var | removed spurious mid-instruction banner | — | 0 | 500c4f8 |
+| 2026-06-14 | iwa_divide inline | fixed swapped dividend/divisor comments | — | 0 | 61cd014 |
+| 2026-06-14 | promotions | named the 5-strong integer-arg evaluator family | +5 | 0 | 3ae50c8 |
 
 ## Resume here
 
@@ -306,14 +310,21 @@ this pass. The shared-contract dicts live in the top constants block:
 evaluator levels. A HANDLER_INFO entry may override either family default
 with an optional 3rd/4th tuple element (None = use the default).
 
-Possible follow-ups, all out of this pass's scope:
+Follow-ups, now all done:
 
-1. **Inline-comment fix:** iwa_divide (&99BE) has ~5 inline comments that
-   swap "dividend"/"divisor"; the banner is correct, the inline labels
-   are not. A small inline-pass correction.
-2. **Optional promotions:** `fantasm audit undeclared 2` still lists
-   JSR'd routines with no banner (auto-named cXXXX). Promote only the
-   genuinely reusable ones, leaves-first, noting each in the batch log.
-3. **Consider** demoting fwa_compare_var (&A5FF) from `d.subroutine` to a
-   plain `d.label` — it is a fall-through point with no callers, not a
-   routine. Would make the count 284/284. Verify it stays byte-identical.
+1. **Inline-comment fix (done, 61cd014):** iwa_divide (&99BE) had ~10
+   inline comments that swapped "dividend"/"divisor"; relabelled to match
+   the data flow (entry IWA = dividend, evaluated operand = divisor).
+2. **Promotions (done, 3ae50c8):** promoted the integer-argument
+   evaluator family — eval_factor_integer, eval_expr_integer,
+   eval_comma_integer, eval_eq_integer, coerce_var_to_integer (~30 call
+   sites). The other ~88 undeclared JSR targets are one-off internal
+   labels / alternate entries and were deliberately left unpromoted.
+3. **fwa_compare_var (done, 500c4f8):** turned out to be mid-instruction,
+   not a fall-through entry — a `d.label` would still split the real
+   `sbc zp_fwb_m1` / `sta zp_fwa_m1`, so the spurious declaration was
+   removed entirely and the instruction now disassembles cleanly.
+
+Remaining optional ideas (genuinely out of scope): promote more of the
+~88 undeclared cXXXX fragments only where it clearly helps; the inline
+pass is otherwise complete.
