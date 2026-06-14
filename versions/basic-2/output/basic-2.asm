@@ -2961,7 +2961,7 @@ l848a = sub_c847b+15
     jmp c8e6a                                                         ; 8e3d: 4c 6a 8e    Lj.      ; next item
 ; &8e40 referenced 1 time by &8e82
 .loop_c8e40
-    jsr sub_c92dd                                                     ; 8e40: 20 dd 92     ..      ; TAB(x): evaluate x
+    jsr eval_expr_integer                                             ; 8e40: 20 dd 92     ..      ; TAB(x): evaluate x
     jsr skip_spaces_ptr2                                              ; 8e43: 20 8c 8a     ..      ; skip spaces
     cmp #&29 ; ')'                                                    ; 8e46: c9 29       .)       ; ')'?
     bne loop_c8e24                                                    ; 8e48: d0 da       ..       ; no: TAB(x,y)
@@ -2974,7 +2974,7 @@ l848a = sub_c847b+15
     beq c8e5b                                                         ; 8e56: f0 03       ..       ; fresh line: pad to column x
 ; &8e58 referenced 1 time by &8e86
 .loop_c8e58
-    jsr sub_c92e3                                                     ; 8e58: 20 e3 92     ..      ; SPC(n): evaluate the count
+    jsr eval_factor_integer                                           ; 8e58: 20 e3 92     ..      ; SPC(n): evaluate the count
 ; &8e5b referenced 1 time by &8e56
 .c8e5b
     ldy zp_iwa                                                        ; 8e5b: a4 2a       .*       ; spaces = x
@@ -3109,7 +3109,7 @@ l848a = sub_c847b+15
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_call
     jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..      ; Evaluate the call address
-    jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..      ; coerce to an integer
+    jsr coerce_var_to_integer                                         ; 8ed5: 20 ee 92     ..      ; coerce to an integer
     jsr stack_integer                                                 ; 8ed8: 20 94 bd     ..      ; stack the address
     ldy #0                                                            ; 8edb: a0 00       ..       ; Build the parameter block at &0600:
     sty string_work                                                   ; 8edd: 8c 00 06    ...      ; zero the parameter count
@@ -3485,7 +3485,7 @@ l848a = sub_c847b+15
     beq c9127                                                         ; 90e4: f0 41       .A       ; not a variable: Bad DIM
     bcs c9127                                                         ; 90e6: b0 3f       .?       ; indirection: Bad DIM
     jsr stack_integer                                                 ; 90e8: 20 94 bd     ..      ; Stack the variable address
-    jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..      ; Evaluate the size
+    jsr eval_expr_integer                                             ; 90eb: 20 dd 92     ..      ; Evaluate the size
     jsr iwa_inc                                                       ; 90ee: 20 22 92     ".      ; n + 1 bytes
     lda zp_iwa_3                                                      ; 90f1: a5 2d       .-       ; fits in 16 bits?
     ora zp_iwa_2                                                      ; 90f3: 05 2c       .,       ; OR byte 2 (any => > 65535)
@@ -3768,7 +3768,7 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_himem
-    jsr sub_c92eb                                                     ; 925d: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    jsr eval_eq_integer                                               ; 925d: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa                                                        ; 9260: a5 2a       .*       ; Set HIMEM and the stack: low
     sta zp_himem                                                      ; 9262: 85 06       ..       ; HIMEM low
     sta zp_stack_ptr                                                  ; 9264: 85 04       ..       ; stack pointer low
@@ -3789,7 +3789,7 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_lomem
-    jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    jsr eval_eq_integer                                               ; 926f: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa                                                        ; 9272: a5 2a       .*       ; Set LOMEM (and empty the variables): low byte
     sta zp_lomem                                                      ; 9274: 85 00       ..       ; LOMEM low
     sta zp_vartop                                                     ; 9276: 85 02       ..       ; VARTOP low (no variables yet)
@@ -3811,7 +3811,7 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_page
-    jsr sub_c92eb                                                     ; 9283: 20 eb 92     ..      ; Step past "=", evaluate an integer
+    jsr eval_eq_integer                                               ; 9283: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa_1                                                      ; 9286: a5 2b       .+       ; PAGE is a page number (the high byte)
     sta zp_page                                                       ; 9288: 85 18       ..       ; (store)
 ; &928a referenced 2 times by &9281, &9293
@@ -3892,33 +3892,98 @@ l848a = sub_c847b+15
 ; On Exit:
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_time
-    jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..      ; Step past "=", evaluate the value
+    jsr eval_eq_integer                                               ; 92c9: 20 eb 92     ..      ; Step past "=", evaluate the value
     ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*       ; Point at IWA
     ldy #>(zp_iwa)                                                    ; 92ce: a0 00       ..       ; high byte of the address
     sty zp_fwa_sign                                                   ; 92d0: 84 2e       ..       ; clear the 5th byte
     lda #osword_write_clock                                           ; 92d2: a9 02       ..       ; OSWORD 2 (write clock)
     jsr osword                                                        ; 92d4: 20 f1 ff     ..      ; Write system clock
     jmp statement_loop                                                ; 92d7: 4c 9b 8b    L..      ; next statement
+; ***************************************************************************************
+; Evaluate a comma-separated integer argument
+;
+; Skip a comma at PtrB (Missing , if absent), then fall into eval_expr_integer to
+; evaluate the following expression as an integer.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the comma
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer result
+;     BRK: Missing , or Type mismatch
 ; &92da referenced 4 times by &9380, &9403, &b459, &b47c
-.sub_c92da
+.eval_comma_integer
     jsr skip_spaces_expect_comma                                      ; 92da: 20 ae 8a     ..      ; Step past the comma
+; ***************************************************************************************
+; Evaluate an expression as an integer
+;
+; Evaluate the expression at PtrB (eval_or_eor) and coerce the result to an integer
+; (coerce_to_integer). Unlike eval_expr_to_integer it does not sync the primary pointer,
+; so the caller keeps managing PtrB.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the expression
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer result
+;     BRK: Type mismatch on a string
 ; &92dd referenced 8 times by &8e40, &90eb, &9702, &ab41, &b047, &b0c2, &b7f5, &b81a
-.sub_c92dd
+.eval_expr_integer
     jsr eval_or_eor                                                   ; 92dd: 20 29 9b     ).      ; Evaluate the expression
     jmp coerce_to_integer                                             ; 92e0: 4c f0 92    L..      ; ...and coerce to integer
+; ***************************************************************************************
+; Evaluate a single factor as an integer
+;
+; Evaluate one factor at PtrB (eval_factor, so without applying any operators) and coerce
+; it to an integer: a string raises Type mismatch, a real is converted, an integer is
+; returned unchanged.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the factor
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer result
+;     BRK: Type mismatch on a string
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
-.sub_c92e3
+.eval_factor_integer
     jsr eval_factor                                                   ; 92e3: 20 ec ad     ..      ; Evaluate a factor
     beq c92f7                                                         ; 92e6: f0 0f       ..       ; string: Type mismatch
     bmi c92f4                                                         ; 92e8: 30 0a       0.       ; real: convert to integer
 ; &92ea referenced 2 times by &92f2, &92ff
 .return_9
     rts                                                               ; 92ea: 60          `        ; Return
+; ***************************************************************************************
+; Require "=" then evaluate an integer
+;
+; Copy PtrA to PtrB and require an "=" (sub_c9807), evaluate the value that follows, then
+; fall into coerce_var_to_integer. Used by the pseudo-variable assignments (TIME=, PAGE=,
+; ...).
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): PtrA before the "="
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer result
+;     BRK: Mistake if "=" is missing, Type mismatch on a string
 ; &92eb referenced 4 times by &925d, &926f, &9283, &92c9
-.sub_c92eb
+.eval_eq_integer
     jsr sub_c9807                                                     ; 92eb: 20 07 98     ..      ; Expect "=" and evaluate
+; ***************************************************************************************
+; Coerce the current value to an integer
+;
+; Load the value type from zp_var_type and fall into coerce_to_integer, converting the
+; just-evaluated value to an integer. The entry to use when the type is in zp_var_type
+; rather than A.
+;
+; On Entry:
+;     ZP_VAR_TYPE (&27): the value type
+;     ZP_IWA / ZP_FWA: the value
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the integer result
+;     BRK: Type mismatch on a string
 ; &92ee referenced 6 times by &8ed5, &93fd, &b592, &bbb7, &bf37, &bf62
-.sub_c92ee
+.coerce_var_to_integer
     lda zp_var_type                                                   ; 92ee: a5 27       .'       ; Result type, then coerce to integer
 ; ***************************************************************************************
 ; Coerce the current value to an integer
@@ -4100,7 +4165,7 @@ l848a = sub_c847b+15
     jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.      ; Evaluate the GCOL mode
     lda zp_iwa                                                        ; 937d: a5 2a       .*       ; save it
     pha                                                               ; 937f: 48          H        ; push the GCOL mode
-    jsr sub_c92da                                                     ; 9380: 20 da 92     ..      ; Step past the comma, evaluate the colour
+    jsr eval_comma_integer                                            ; 9380: 20 da 92     ..      ; Step past the comma, evaluate the colour
     jsr sub_c9852                                                     ; 9383: 20 52 98     R.      ; check the statement ends
     lda #&12                                                          ; 9386: a9 12       ..       ; VDU 18 (GCOL)
     jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; send it
@@ -4229,9 +4294,9 @@ l848a = sub_c847b+15
     jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).      ; Evaluate the X coordinate
 ; &93fd referenced 1 time by &93ee
 .c93fd
-    jsr sub_c92ee                                                     ; 93fd: 20 ee 92     ..      ; ensure integer
+    jsr coerce_var_to_integer                                         ; 93fd: 20 ee 92     ..      ; ensure integer
     jsr stack_integer                                                 ; 9400: 20 94 bd     ..      ; stack X
-    jsr sub_c92da                                                     ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
+    jsr eval_comma_integer                                            ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
     jsr sub_c9852                                                     ; 9406: 20 52 98     R.      ; check the statement ends
     lda #&19                                                          ; 9409: a9 19       ..       ; VDU 25 (PLOT)
     jsr oswrch                                                        ; 940b: 20 ee ff     ..      ; send it
@@ -4644,12 +4709,12 @@ l848a = sub_c847b+15
 .c95a7
     pha                                                               ; 95a7: 48          H        ; Save the width
     inc zp_text_ptr2_off                                              ; 95a8: e6 1b       ..       ; step past the operator
-    jsr sub_c92e3                                                     ; 95aa: 20 e3 92     ..      ; evaluate the address
+    jsr eval_factor_integer                                           ; 95aa: 20 e3 92     ..      ; evaluate the address
     jmp c969f                                                         ; 95ad: 4c 9f 96    L..      ; finish as an indirection
 ; &95b0 referenced 1 time by &959b
 .c95b0
     inc zp_text_ptr2_off                                              ; 95b0: e6 1b       ..       ; '$': step past the operator
-    jsr sub_c92e3                                                     ; 95b2: 20 e3 92     ..      ; evaluate the address
+    jsr eval_factor_integer                                           ; 95b2: 20 e3 92     ..      ; evaluate the address
     lda zp_iwa_1                                                      ; 95b5: a5 2b       .+       ; address in zero page?
     beq c95bf                                                         ; 95b7: f0 06       ..       ; yes: $ range error
     lda #&80                                                          ; 95b9: a9 80       ..       ; Type = string indirection (&80)
@@ -4832,7 +4897,7 @@ l848a = sub_c847b+15
     pha                                                               ; 968d: 48          H        ; push high byte,
     lda zp_iwa                                                        ; 968e: a5 2a       .*       ; low byte,
     pha                                                               ; 9690: 48          H        ; push it too
-    jsr sub_c92e3                                                     ; 9691: 20 e3 92     ..      ; evaluate the index expression
+    jsr eval_factor_integer                                           ; 9691: 20 e3 92     ..      ; evaluate the index expression
     clc                                                               ; 9694: 18          .        ; address = base + index
     pla                                                               ; 9695: 68          h        ; pull base low,
     adc zp_iwa                                                        ; 9696: 65 2a       e*       ; - index low,
@@ -4923,7 +4988,7 @@ l848a = sub_c847b+15
 ; &96ff referenced 1 time by &9742
 .loop_c96ff
     jsr stack_integer                                                 ; 96ff: 20 94 bd     ..      ; Stack the running index
-    jsr sub_c92dd                                                     ; 9702: 20 dd 92     ..      ; Evaluate the next subscript
+    jsr eval_expr_integer                                             ; 9702: 20 dd 92     ..      ; Evaluate the next subscript
     inc zp_text_ptr2_off                                              ; 9705: e6 1b       ..       ; step past it
     cpx #&2c ; ','                                                    ; 9707: e0 2c       .,       ; comma (another subscript)?
     bne c96d7                                                         ; 9709: d0 cc       ..       ; no: wrong dimension count -> Array
@@ -9346,7 +9411,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_adval
-    jsr sub_c92e3                                                     ; ab33: 20 e3 92     ..      ; Evaluate the integer argument
+    jsr eval_factor_integer                                           ; ab33: 20 e3 92     ..      ; Evaluate the integer argument
     ldx zp_iwa                                                        ; ab36: a6 2a       .*       ; X = the channel / buffer number
     lda #osbyte_read_adc_or_get_buffer_status                         ; ab38: a9 80       ..       ; OSBYTE &80: read ADC / buffer status
     jsr osbyte                                                        ; ab3a: 20 f4 ff     ..      ; Read ADC channel X or buffer status
@@ -9367,7 +9432,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_point
-    jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..      ; Evaluate x
+    jsr eval_expr_integer                                             ; ab41: 20 dd 92     ..      ; Evaluate x
     jsr stack_integer                                                 ; ab44: 20 94 bd     ..      ; stack it
     jsr skip_spaces_expect_comma                                      ; ab47: 20 ae 8a     ..      ; Expect a comma
     jsr cae56                                                         ; ab4a: 20 56 ae     V.      ; Evaluate y, expect )
@@ -9566,7 +9631,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_usr
-    jsr sub_c92e3                                                     ; abd2: 20 e3 92     ..      ; Evaluate the address argument as an integer
+    jsr eval_factor_integer                                           ; abd2: 20 e3 92     ..      ; Evaluate the address argument as an integer
     jsr usr_call                                                      ; abd5: 20 1e 8f     ..      ; Set up registers and call the code
     sta zp_iwa                                                        ; abd8: 85 2a       .*       ; Returned A...
     stx zp_iwa_1                                                      ; abda: 86 2b       .+       ; ...and X into the low result bytes
@@ -9847,7 +9912,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_not
-    jsr sub_c92e3                                                     ; acd1: 20 e3 92     ..      ; Evaluate the argument as an integer
+    jsr eval_factor_integer                                           ; acd1: 20 e3 92     ..      ; Evaluate the argument as an integer
     ldx #3                                                            ; acd4: a2 03       ..       ; Complement all four IWA bytes
 ; &acd6 referenced 1 time by &acdd
 .loop_cacd6
@@ -10724,7 +10789,7 @@ l848a = sub_c847b+15
 ;     C: per OSBYTE &81
 ; &afad referenced 2 times by &acad, &b026
 .read_key_timed
-    jsr sub_c92e3                                                     ; afad: 20 e3 92     ..      ; Evaluate the time-limit argument
+    jsr eval_factor_integer                                           ; afad: 20 e3 92     ..      ; Evaluate the time-limit argument
     lda #osbyte_inkey                                                 ; afb0: a9 81       ..       ; OSBYTE &81: INKEY (read a key with a timeout)
     ldx zp_iwa                                                        ; afb2: a6 2a       .*       ; time limit low
     ldy zp_iwa_1                                                      ; afb4: a4 2b       .+       ; time limit high
@@ -10900,7 +10965,7 @@ l848a = sub_c847b+15
     bne cb036                                                         ; b040: d0 f4       ..       ; no: Missing ,
     jsr stack_string                                                  ; b042: 20 b2 bd     ..      ; Stack the string
     inc zp_text_ptr2_off                                              ; b045: e6 1b       ..       ; step past
-    jsr sub_c92dd                                                     ; b047: 20 dd 92     ..      ; Evaluate the start position
+    jsr eval_expr_integer                                             ; b047: 20 dd 92     ..      ; Evaluate the start position
     lda zp_iwa                                                        ; b04a: a5 2a       .*       ; Save it
     pha                                                               ; b04c: 48          H        ; push the start position
     lda #&ff                                                          ; b04d: a9 ff       ..       ; Default length = 255
@@ -11008,7 +11073,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_strings
-    jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..      ; Evaluate the count (n) as an integer
+    jsr eval_expr_integer                                             ; b0c2: 20 dd 92     ..      ; Evaluate the count (n) as an integer
     jsr stack_integer                                                 ; b0c5: 20 94 bd     ..      ; stack it
     jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..      ; require a comma
     jsr cae56                                                         ; b0cb: 20 56 ae     V.      ; evaluate the string s$
@@ -11626,7 +11691,7 @@ l848a = sub_c847b+15
 ;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_chrs
-    jsr sub_c92e3                                                     ; b3bd: 20 e3 92     ..      ; Evaluate the integer argument
+    jsr eval_factor_integer                                           ; b3bd: 20 e3 92     ..      ; Evaluate the integer argument
 ; &b3c0 referenced 1 time by &b3a9
 .cb3c0
     lda zp_iwa                                                        ; b3c0: a5 2a       .*       ; A = the character code
@@ -11732,7 +11797,7 @@ l848a = sub_c847b+15
     pha                                                               ; b456: 48          H        ; push high
     txa                                                               ; b457: 8a          .        ; save the counter
     pha                                                               ; b458: 48          H        ; push it
-    jsr sub_c92da                                                     ; b459: 20 da 92     ..      ; step past the comma, evaluate the next
+    jsr eval_comma_integer                                            ; b459: 20 da 92     ..      ; step past the comma, evaluate the next
     pla                                                               ; b45c: 68          h        ; restore the counter
     tax                                                               ; b45d: aa          .        ; into X,
     dex                                                               ; b45e: ca          .        ; one fewer parameter
@@ -11766,7 +11831,7 @@ l848a = sub_c847b+15
     pha                                                               ; b479: 48          H        ; push it
     txa                                                               ; b47a: 8a          .        ; save the counter
     pha                                                               ; b47b: 48          H        ; push it
-    jsr sub_c92da                                                     ; b47c: 20 da 92     ..      ; step past the comma, evaluate the next
+    jsr eval_comma_integer                                            ; b47c: 20 da 92     ..      ; step past the comma, evaluate the next
     pla                                                               ; b47f: 68          h        ; restore the counter
     tax                                                               ; b480: aa          .        ; into X,
     dex                                                               ; b481: ca          .        ; one fewer parameter
@@ -12099,7 +12164,7 @@ l848a = sub_c847b+15
     inc zp_text_ptr_off                                               ; b58a: e6 0a       ..       ; Step past LISTO
     jsr eval_expr                                                     ; b58c: 20 1d 9b     ..      ; Evaluate the option value
     jsr c984c                                                         ; b58f: 20 4c 98     L.      ; check the statement ends
-    jsr sub_c92ee                                                     ; b592: 20 ee 92     ..      ; coerce to a byte
+    jsr coerce_var_to_integer                                         ; b592: 20 ee 92     ..      ; coerce to a byte
     lda zp_iwa                                                        ; b595: a5 2a       .*       ; Store the LISTO flag
     sta zp_listo                                                      ; b597: 85 1f       ..       ; into &1F
     jmp immediate_loop                                                ; b599: 4c f6 8a    L..      ; next statement
@@ -12476,7 +12541,7 @@ l848a = sub_c847b+15
     bne loop_cb7bd                                                    ; b7ef: d0 cc       ..       ; no: No TO error
     cpx #5                                                            ; b7f1: e0 05       ..       ; real loop variable?
     beq cb84f                                                         ; b7f3: f0 5a       .Z       ; yes: real FOR loop
-    jsr sub_c92dd                                                     ; b7f5: 20 dd 92     ..      ; Integer: evaluate the limit
+    jsr eval_expr_integer                                             ; b7f5: 20 dd 92     ..      ; Integer: evaluate the limit
     ldy zp_for_level                                                  ; b7f8: a4 26       .&       ; FOR level
     lda zp_iwa                                                        ; b7fa: a5 2a       .*       ; Store the limit in the frame (+8)
     sta l0508,y                                                       ; b7fc: 99 08 05    ...      ; limit byte 0 (+8),
@@ -12491,7 +12556,7 @@ l848a = sub_c847b+15
     jsr skip_spaces_ptr2                                              ; b813: 20 8c 8a     ..      ; Next character
     cmp #&88                                                          ; b816: c9 88       ..       ; Optional STEP (otherwise step defaults to 1)
     bne cb81f                                                         ; b818: d0 05       ..       ; no: use the default
-    jsr sub_c92dd                                                     ; b81a: 20 dd 92     ..      ; Evaluate the step
+    jsr eval_expr_integer                                             ; b81a: 20 dd 92     ..      ; Evaluate the step
     ldy zp_text_ptr2_off                                              ; b81d: a4 1b       ..       ; update the offset
 ; &b81f referenced 1 time by &b818
 .cb81f
@@ -13170,7 +13235,7 @@ l848a = sub_c847b+15
 .stmt_until
     jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..      ; Evaluate the UNTIL condition
     jsr c984c                                                         ; bbb4: 20 4c 98     L.      ; Check for end of statement
-    jsr sub_c92ee                                                     ; bbb7: 20 ee 92     ..      ; coerce the condition to an integer
+    jsr coerce_var_to_integer                                         ; bbb7: 20 ee 92     ..      ; coerce the condition to an integer
     ldx zp_repeat_level                                               ; bbba: a6 24       .$       ; UNTIL with no REPEAT pending: error
     beq err_no_repeat                                                 ; bbbc: f0 e8       ..       ; UNTIL with no REPEAT: error
     lda zp_iwa                                                        ; bbbe: a5 2a       .*       ; Test the condition for true (non-zero):
@@ -14042,7 +14107,7 @@ l848a = sub_c847b+15
     jsr sub_cbfa9                                                     ; bf30: 20 a9 bf     ..      ; Evaluate the #handle
     pha                                                               ; bf33: 48          H        ; save it
     jsr eval_after_eq                                                 ; bf34: 20 13 98     ..      ; Expect "=" and evaluate
-    jsr sub_c92ee                                                     ; bf37: 20 ee 92     ..      ; coerce to integer
+    jsr coerce_var_to_integer                                         ; bf37: 20 ee 92     ..      ; coerce to integer
     pla                                                               ; bf3a: 68          h        ; Recover the handle
     tay                                                               ; bf3b: a8          .        ; Y = the handle
     ldx #&2a ; '*'                                                    ; bf3c: a2 2a       .*       ; Point at the value
@@ -14107,7 +14172,7 @@ l848a = sub_c847b+15
     pha                                                               ; bf5b: 48          H        ; save it
     jsr skip_spaces_expect_comma                                      ; bf5c: 20 ae 8a     ..      ; require a comma
     jsr c9849                                                         ; bf5f: 20 49 98     I.      ; evaluate the value
-    jsr sub_c92ee                                                     ; bf62: 20 ee 92     ..      ; coerce to an integer
+    jsr coerce_var_to_integer                                         ; bf62: 20 ee 92     ..      ; coerce to an integer
     pla                                                               ; bf65: 68          h        ; recover the handle
     tay                                                               ; bf66: a8          .        ; Y = handle
     lda zp_iwa                                                        ; bf67: a5 2a       .*       ; A = the byte to write
@@ -14241,7 +14306,7 @@ l848a = sub_c847b+15
     jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..      ; Skip spaces
     cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#       ; Require "#"
     bne cbfc3                                                         ; bfba: d0 07       ..       ; missing: error
-    jsr sub_c92e3                                                     ; bfbc: 20 e3 92     ..      ; Evaluate the handle as an integer
+    jsr eval_factor_integer                                           ; bfbc: 20 e3 92     ..      ; Evaluate the handle as an integer
     ldy zp_iwa                                                        ; bfbf: a4 2a       .*       ; Y = the handle
     tya                                                               ; bfc1: 98          .        ; A = the handle too
     rts                                                               ; bfc2: 60          `        ; Return
@@ -14375,9 +14440,9 @@ save pydis_start, pydis_end
 ;     zp_opt_flag:                11
 ;     c8ba3:                      10
 ;     check_line_number:          10
+;     eval_factor_integer:        10
 ;     fwa_add_var:                10
 ;     fwa_unpack_var:             10
-;     sub_c92e3:                  10
 ;     fwa_pack_temp1:              9
 ;     parse_lvalue:                9
 ;     print_space:                 9
@@ -14389,11 +14454,11 @@ save pydis_start, pydis_end
 ;     c9127:                       8
 ;     c986d:                       8
 ;     ca099:                       8
+;     eval_expr_integer:           8
 ;     fwa_clear:                   8
 ;     fwa_normalise:               8
 ;     inc_ptr_general:             8
 ;     l05ff:                       8
-;     sub_c92dd:                   8
 ;     sub_c9852:                   8
 ;     zp_himem:                    8
 ;     zp_himem_1:                  8
@@ -14416,12 +14481,12 @@ save pydis_start, pydis_end
 ;     cb2b5:                       6
 ;     cbddc:                       6
 ;     check_program:               6
+;     coerce_var_to_integer:       6
 ;     fwa_pack_temp3:              6
 ;     fwa_set_one:                 6
 ;     osbget:                      6
 ;     osbput:                      6
 ;     point_fp_temp1:              6
-;     sub_c92ee:                   6
 ;     unstack_string:              6
 ;     zp_error_vec:                6
 ;     zp_error_vec_1:              6
@@ -14477,6 +14542,8 @@ save pydis_start, pydis_end
 ;     clear_value_bytes:           4
 ;     eval_add_sub:                4
 ;     eval_after_eq:               4
+;     eval_comma_integer:          4
+;     eval_eq_integer:             4
 ;     eval_power:                  4
 ;     find_line_target:            4
 ;     find_variable:               4
@@ -14493,8 +14560,6 @@ save pydis_start, pydis_end
 ;     reserve_stack:               4
 ;     resint_p:                    4
 ;     return_23:                   4
-;     sub_c92da:                   4
-;     sub_c92eb:                   4
 ;     sub_c9456:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
@@ -16459,11 +16524,6 @@ save pydis_start, pydis_end
 ;     sub_c8f92
 ;     sub_c8f9a
 ;     sub_c9231
-;     sub_c92da
-;     sub_c92dd
-;     sub_c92e3
-;     sub_c92eb
-;     sub_c92ee
 ;     sub_c9456
 ;     sub_c94ed
 ;     sub_c9539

@@ -2823,13 +2823,72 @@ d.comment(0x92da, 'Step past the comma', align=Align.INLINE)
 d.comment(0x92dd, 'Evaluate the expression', align=Align.INLINE)
 d.comment(0x92e0, '...and coerce to integer', align=Align.INLINE)
 
-# sub_c92e3: evaluate a factor as an integer.
 d.comment(0x92e3, 'Evaluate a factor', align=Align.INLINE)
 d.comment(0x92e6, 'string: Type mismatch', align=Align.INLINE)
 d.comment(0x92e8, 'real: convert to integer', align=Align.INLINE)
 d.comment(0x92ea, 'Return', align=Align.INLINE)
 d.comment(0x92eb, 'Expect "=" and evaluate', align=Align.INLINE)
 d.comment(0x92ee, 'Result type, then coerce to integer', align=Align.INLINE)
+
+# The integer-argument evaluators: a stack of entry points sharing the
+# coerce_to_integer tail. Each evaluates at PtrB and returns the integer
+# in IWA, raising Type mismatch on a string. (eval_expr_to_integer at
+# &8821 is the PtrA sibling that also syncs the primary pointer.)
+d.subroutine(
+    0x92da, 'eval_comma_integer',
+    title='Evaluate a comma-separated integer argument',
+    description="""Skip a comma at PtrB (Missing , if absent), then fall into
+eval_expr_integer to evaluate the following expression as an integer.
+""",
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the comma'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
+             'BRK': 'Missing , or Type mismatch'},
+)
+d.subroutine(
+    0x92dd, 'eval_expr_integer',
+    title='Evaluate an expression as an integer',
+    description="""Evaluate the expression at PtrB (eval_or_eor) and coerce the
+result to an integer (coerce_to_integer). Unlike eval_expr_to_integer
+it does not sync the primary pointer, so the caller keeps managing PtrB.
+""",
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the expression'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
+             'BRK': 'Type mismatch on a string'},
+)
+d.subroutine(
+    0x92e3, 'eval_factor_integer',
+    title='Evaluate a single factor as an integer',
+    description="""Evaluate one factor at PtrB (eval_factor, so without applying
+any operators) and coerce it to an integer: a string raises Type
+mismatch, a real is converted, an integer is returned unchanged.
+""",
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the factor'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
+             'BRK': 'Type mismatch on a string'},
+)
+d.subroutine(
+    0x92eb, 'eval_eq_integer',
+    title='Require "=" then evaluate an integer',
+    description="""Copy PtrA to PtrB and require an "=" (sub_c9807), evaluate the
+value that follows, then fall into coerce_var_to_integer. Used by the
+pseudo-variable assignments (TIME=, PAGE=, ...).
+""",
+    on_entry={'zp_text_ptr (&0B/&0C)': 'PtrA before the "="'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
+             'BRK': 'Mistake if "=" is missing, Type mismatch on a string'},
+)
+d.subroutine(
+    0x92ee, 'coerce_var_to_integer',
+    title='Coerce the current value to an integer',
+    description="""Load the value type from zp_var_type and fall into
+coerce_to_integer, converting the just-evaluated value to an integer.
+The entry to use when the type is in zp_var_type rather than A.
+""",
+    on_entry={'zp_var_type (&27)': 'the value type',
+              'zp_iwa / zp_fwa': 'the value'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
+             'BRK': 'Type mismatch on a string'},
+)
 
 d.subroutine(
     0x92f0, 'coerce_to_integer',

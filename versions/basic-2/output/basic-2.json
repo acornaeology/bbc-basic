@@ -1239,8 +1239,7 @@
       },
       "on_exit": {
         "control": "rejoins statement_loop; no value, registers not preserved"
-      },
-      "fall_through": true
+      }
     },
     {
       "addr": 37487,
@@ -2275,6 +2274,75 @@
         "Y": "corrupted",
         "BRK": "Too big on overflow"
       }
+    },
+    {
+      "addr": 37594,
+      "name": "eval_comma_integer",
+      "title": "Evaluate a comma-separated integer argument",
+      "description": "Skip a comma at PtrB (Missing , if absent), then fall into\neval_expr_integer to evaluate the following expression as an integer.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the comma"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer result",
+        "BRK": "Missing , or Type mismatch"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 37597,
+      "name": "eval_expr_integer",
+      "title": "Evaluate an expression as an integer",
+      "description": "Evaluate the expression at PtrB (eval_or_eor) and coerce the\nresult to an integer (coerce_to_integer). Unlike eval_expr_to_integer\nit does not sync the primary pointer, so the caller keeps managing PtrB.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the expression"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer result",
+        "BRK": "Type mismatch on a string"
+      }
+    },
+    {
+      "addr": 37603,
+      "name": "eval_factor_integer",
+      "title": "Evaluate a single factor as an integer",
+      "description": "Evaluate one factor at PtrB (eval_factor, so without applying\nany operators) and coerce it to an integer: a string raises Type\nmismatch, a real is converted, an integer is returned unchanged.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the factor"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer result",
+        "BRK": "Type mismatch on a string"
+      }
+    },
+    {
+      "addr": 37611,
+      "name": "eval_eq_integer",
+      "title": "Require \"=\" then evaluate an integer",
+      "description": "Copy PtrA to PtrB and require an \"=\" (sub_c9807), evaluate the\nvalue that follows, then fall into coerce_var_to_integer. Used by the\npseudo-variable assignments (TIME=, PAGE=, ...).\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "PtrA before the \"=\""
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer result",
+        "BRK": "Mistake if \"=\" is missing, Type mismatch on a string"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 37614,
+      "name": "coerce_var_to_integer",
+      "title": "Coerce the current value to an integer",
+      "description": "Load the value type from zp_var_type and fall into\ncoerce_to_integer, converting the just-evaluated value to an integer.\nThe entry to use when the type is in zp_var_type rather than A.\n",
+      "on_entry": {
+        "zp_var_type (&27)": "the value type",
+        "zp_iwa / zp_fwa": "the value"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the integer result",
+        "BRK": "Type mismatch on a string"
+      },
+      "fall_through": true
     },
     {
       "addr": 37616,
@@ -27815,9 +27883,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 36419,
@@ -27964,9 +28032,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 36443,
@@ -28799,9 +28867,9 @@
       "comment_inline": "coerce to an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 36568,
@@ -32126,9 +32194,9 @@
       "comment_inline": "Evaluate the size",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 37102,
@@ -34614,9 +34682,9 @@
       "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92eb",
+      "operand": "eval_eq_integer",
       "target": 37611,
-      "target_label": "sub_c92eb"
+      "target_label": "eval_eq_integer"
     },
     {
       "addr": 37472,
@@ -34723,9 +34791,9 @@
       "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92eb",
+      "operand": "eval_eq_integer",
       "target": 37611,
-      "target_label": "sub_c92eb"
+      "target_label": "eval_eq_integer"
     },
     {
       "addr": 37490,
@@ -34845,9 +34913,9 @@
       "comment_inline": "Step past \"=\", evaluate an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92eb",
+      "operand": "eval_eq_integer",
       "target": 37611,
-      "target_label": "sub_c92eb"
+      "target_label": "eval_eq_integer"
     },
     {
       "addr": 37510,
@@ -35299,9 +35367,9 @@
       "comment_inline": "Step past \"=\", evaluate the value",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92eb",
+      "operand": "eval_eq_integer",
       "target": 37611,
-      "target_label": "sub_c92eb"
+      "target_label": "eval_eq_integer"
     },
     {
       "addr": 37580,
@@ -35385,7 +35453,7 @@
         138
       ],
       "labels": [
-        "sub_c92da"
+        "eval_comma_integer"
       ],
       "comment_inline": "Step past the comma",
       "xref_summaries": [
@@ -35411,7 +35479,7 @@
         155
       ],
       "labels": [
-        "sub_c92dd"
+        "eval_expr_integer"
       ],
       "comment_inline": "Evaluate the expression",
       "xref_summaries": [
@@ -35455,7 +35523,7 @@
         173
       ],
       "labels": [
-        "sub_c92e3"
+        "eval_factor_integer"
       ],
       "comment_inline": "Evaluate a factor",
       "xref_summaries": [
@@ -35532,7 +35600,7 @@
         152
       ],
       "labels": [
-        "sub_c92eb"
+        "eval_eq_integer"
       ],
       "comment_inline": "Expect \"=\" and evaluate",
       "xref_summaries": [
@@ -35557,7 +35625,7 @@
         39
       ],
       "labels": [
-        "sub_c92ee"
+        "coerce_var_to_integer"
       ],
       "comment_inline": "Result type, then coerce to integer",
       "xref_summaries": [
@@ -36556,9 +36624,9 @@
       "comment_inline": "Step past the comma, evaluate the colour",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92da",
+      "operand": "eval_comma_integer",
       "target": 37594,
-      "target_label": "sub_c92da"
+      "target_label": "eval_comma_integer"
     },
     {
       "addr": 37763,
@@ -37313,9 +37381,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 37888,
@@ -37341,9 +37409,9 @@
       "comment_inline": "Step past the comma, evaluate Y",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92da",
+      "operand": "eval_comma_integer",
       "target": 37594,
-      "target_label": "sub_c92da"
+      "target_label": "eval_comma_integer"
     },
     {
       "addr": 37894,
@@ -40411,9 +40479,9 @@
       "comment_inline": "evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 38317,
@@ -40461,9 +40529,9 @@
       "comment_inline": "evaluate the address",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 38325,
@@ -42084,9 +42152,9 @@
       "comment_inline": "evaluate the index expression",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 38548,
@@ -42862,9 +42930,9 @@
       "comment_inline": "Evaluate the next subscript",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 38661,
@@ -77626,9 +77694,9 @@
       "comment_inline": "Evaluate the integer argument",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 43830,
@@ -77704,9 +77772,9 @@
       "comment_inline": "Evaluate x",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 43844,
@@ -78611,9 +78679,9 @@
       "comment_inline": "Evaluate the address argument as an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 43989,
@@ -80268,9 +80336,9 @@
       "comment_inline": "Evaluate the argument as an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 44244,
@@ -85244,9 +85312,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 44976,
@@ -86217,9 +86285,9 @@
       "comment_inline": "Evaluate the start position",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 45130,
@@ -87043,9 +87111,9 @@
       "comment_inline": "Evaluate the count (n) as an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 45253,
@@ -92217,9 +92285,9 @@
       "comment_inline": "Evaluate the integer argument",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 46016,
@@ -93132,9 +93200,9 @@
       "comment_inline": "step past the comma, evaluate the next",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92da",
+      "operand": "eval_comma_integer",
       "target": 37594,
-      "target_label": "sub_c92da"
+      "target_label": "eval_comma_integer"
     },
     {
       "addr": 46172,
@@ -93364,9 +93432,9 @@
       "comment_inline": "step past the comma, evaluate the next",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92da",
+      "operand": "eval_comma_integer",
       "target": 37594,
-      "target_label": "sub_c92da"
+      "target_label": "eval_comma_integer"
     },
     {
       "addr": 46207,
@@ -95370,9 +95438,9 @@
       "comment_inline": "coerce to a byte",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 46485,
@@ -99117,9 +99185,9 @@
       "comment_inline": "Integer: evaluate the limit",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 47096,
@@ -99315,9 +99383,9 @@
       "comment_inline": "Evaluate the step",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92dd",
+      "operand": "eval_expr_integer",
       "target": 37597,
-      "target_label": "sub_c92dd"
+      "target_label": "eval_expr_integer"
     },
     {
       "addr": 47133,
@@ -105169,9 +105237,9 @@
       "comment_inline": "coerce the condition to an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 48058,
@@ -111373,9 +111441,9 @@
       "comment_inline": "coerce to integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 48954,
@@ -111630,9 +111698,9 @@
       "comment_inline": "coerce to an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92ee",
+      "operand": "coerce_var_to_integer",
       "target": 37614,
-      "target_label": "sub_c92ee"
+      "target_label": "coerce_var_to_integer"
     },
     {
       "addr": 48997,
@@ -112181,9 +112249,9 @@
       "comment_inline": "Evaluate the handle as an integer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c92e3",
+      "operand": "eval_factor_integer",
       "target": 37603,
-      "target_label": "sub_c92e3"
+      "target_label": "eval_factor_integer"
     },
     {
       "addr": 49087,
