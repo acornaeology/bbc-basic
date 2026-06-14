@@ -4872,7 +4872,14 @@ d.comment(0xa03a, 'done', align=Align.INLINE)
 d.comment(0xa03c, 'output a final space', align=Align.INLINE)
 d.comment(0xa03f, 'Return', align=Align.INLINE)
 d.subroutine(0xa040, 'output_top_digit', title='Output the leading decimal digit of FWA',
-             description='Emit the integer part of the FWA mantissa as a digit, then multiply the remaining fraction by 10.')
+             description='Emit the integer part (top nibble of the mantissa MSB) '
+                         'as a decimal digit, mask it off, then multiply the '
+                         'remaining fraction by 10 ready for the next digit. The '
+                         'inner step of the real-to-ASCII conversion.',
+             on_entry={'zp_fwa_m1 (&31)': 'mantissa MSB; top nibble is the digit'},
+             on_exit={'string_work (&0600)': 'the digit appended',
+                      'zp_strbuf_len (&36)': 'incremented',
+                      'zp_fwa (&31-&35)': 'fraction times ten for the next digit'})
 # output_top_digit (&A040)
 d.comment(0xa040, 'Integer part: top nibble', align=Align.INLINE)
 d.comment(0xa042, 'shift the top nibble down,', align=Align.INLINE)
@@ -4884,7 +4891,13 @@ d.comment(0xa049, 'mask off the integer part:', align=Align.INLINE)
 d.comment(0xa04b, 'keep the low nibble', align=Align.INLINE)
 d.comment(0xa04d, '(store)', align=Align.INLINE)
 d.comment(0xa04f, 'multiply the fraction by 10', align=Align.INLINE)
-d.subroutine(0xa052, 'output_byte_decimal', title='Output a byte (0-99) in decimal')
+d.subroutine(0xa052, 'output_byte_decimal', title='Output a byte (0-99) in decimal',
+             description='Append a byte 0-99 to the output string as one or two '
+                         'decimal digits (a leading-zero tens digit is dropped) '
+                         'by repeated subtraction of ten.',
+             on_entry={'A': 'the value 0-99 to output'},
+             on_exit={'string_work (&0600)': 'the digits appended',
+                      'zp_strbuf_len (&36)': 'advanced', 'X': 'the tens count'})
 # output_byte_decimal (&A052)
 d.comment(0xa052, 'count the tens:', align=Align.INLINE)
 d.comment(0xa054, 'ready the subtract', align=Align.INLINE)
@@ -4897,9 +4910,20 @@ d.comment(0xa05d, 'the tens digit', align=Align.INLINE)
 d.comment(0xa05e, 'no tens: skip', align=Align.INLINE)
 d.comment(0xa060, 'output the tens digit', align=Align.INLINE)
 d.comment(0xa063, 'units digit', align=Align.INLINE)
-d.subroutine(0xa064, 'output_digit', title='Output A as a decimal digit (A + "0")')
+d.subroutine(0xa064, 'output_digit', title='Output A as a decimal digit (A + "0")',
+             description='Convert the digit value in A to ASCII ("0" + A) and '
+                         'append it via output_char.',
+             on_entry={'A': 'a digit value 0-9'},
+             on_exit={'string_work (&0600)': 'the digit appended',
+                      'zp_strbuf_len (&36)': 'incremented', 'X': 'preserved'})
 d.comment(0xa064, 'make it a digit ("0" + A)', align=Align.INLINE)
-d.subroutine(0xa066, 'output_char', title='Append a character to the output string')
+d.subroutine(0xa066, 'output_char', title='Append a character to the output string',
+             description='Append the character in A to the end of the output '
+                         'string buffer and bump its length.',
+             on_entry={'A': 'the character to append',
+                       'zp_strbuf_len (&36)': 'the current buffer length'},
+             on_exit={'string_work (&0600)': 'A stored at the old length',
+                      'zp_strbuf_len (&36)': 'incremented', 'X': 'preserved'})
 
 # output_char (&A066)
 d.comment(0xa066, 'save X', align=Align.INLINE)
@@ -5015,7 +5039,16 @@ d.comment(0xa139, 'negative exponent: scan the digits', align=Align.INLINE)
 d.comment(0xa13c, 'negate it', align=Align.INLINE)
 d.comment(0xa13e, 'carry so caller adc completes the negate', align=Align.INLINE)
 d.comment(0xa13f, 'Return', align=Align.INLINE)
-d.subroutine(0xa140, 'parse_exponent', title='Parse the "E" exponent (optional sign, 1-2 digits)')
+d.subroutine(0xa140, 'parse_exponent', title='Parse the "E" exponent (optional sign, 1-2 digits)',
+             description='Read the one- or two-digit decimal exponent after "E" '
+                         'at PtrB, returning its magnitude in A (0 if no digits). '
+                         'The sign is handled on a separate entry path; the '
+                         'caller adds the result to the FWA exponent.',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'the expression text pointer (PtrB)',
+                       'Y': 'offset of the "E" character'},
+             on_exit={'A': 'the exponent magnitude (0-99)',
+                      'Y': 'advanced past the exponent digits',
+                      'C': 'clear (ready for the caller to add it)'})
 
 d.comment(0xa140, 'Scan exponent: next character', align=Align.INLINE)
 d.comment(0xa141, 'read it', align=Align.INLINE)
@@ -5180,7 +5213,12 @@ d.comment(0xa1f1, 'and overflow byte, then return A = 0', align=Align.INLINE)
 # shared return points and small helpers filling the leaf extents
 d.comment(0xa1f3, 'Return (shared)', align=Align.INLINE)
 d.subroutine(0xa1f4, 'fwa_mul10', title='FWA = FWA * 10',
-             description='Multiply FWA by ten, unnormalised and unrounded.')
+             description='Multiply FWA by ten as x8 + x2: scale the exponent by '
+                         'eight, build x2 in FWB, and add. Left unnormalised and '
+                         'unrounded (the caller normalises). Uses FWB as scratch.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to scale'},
+             on_exit={'zp_fwa (&2E-&35)': 'ten times FWA, unnormalised',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_mul10 (&A1F4): FWA = FWA * 10
 d.comment(0xa1f4, 'x*8: add 3 to the exponent', align=Align.INLINE)
 d.comment(0xa1f5, 'exponent...', align=Align.INLINE)
@@ -5244,7 +5282,13 @@ d.comment(0xa24a, 'rounding byte', align=Align.INLINE)
 d.comment(0xa24c, 'FWB halved', align=Align.INLINE)
 
 d.subroutine(0xa24d, 'fwa_div10', title='FWA = FWA / 10',
-             description='Divide FWA by ten, unnormalised and unrounded.')
+             description='Divide FWA by ten using the binary expansion of 1/10 '
+                         '(x/16 plus progressively shifted terms accumulated via '
+                         'FWB). Left unnormalised and unrounded (the caller '
+                         'normalises). Uses FWB as scratch.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to divide'},
+             on_exit={'zp_fwa (&2E-&35)': 'FWA / 10, unnormalised',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_div10 (&A24D): FWA = FWA / 10
 d.comment(
     0xa24d,
@@ -5332,7 +5376,12 @@ d.comment(0xa2bd, 'Return (shared)', align=Align.INLINE)
 d.subroutine(
     0xa2be, 'int_to_fwa',
     title='Convert the integer accumulator to floating point',
-    description='Convert the integer in IWA to a real in FWA.',
+    description='Convert the signed 32-bit integer in IWA to a normalised real '
+                'in FWA: record the sign (negating IWA if needed), copy the '
+                'magnitude into the mantissa with exponent 32, and normalise.',
+    on_entry={'zp_iwa (&2A-&2D)': 'the signed integer to convert'},
+    on_exit={'zp_fwa (&2E-&35)': 'the value as a normalised real',
+             'zp_iwa': 'made positive if it was negative', 'X': 'corrupted'},
 )
 
 # int_to_fwa (&A2BE): IWA -> FWA
@@ -5359,7 +5408,13 @@ d.comment(0xa2e6, 'Zero: clear sign,', align=Align.INLINE)
 d.comment(0xa2e8, 'exponent,', align=Align.INLINE)
 d.comment(0xa2ea, 'overflow', align=Align.INLINE)
 d.comment(0xa2ec, 'Return', align=Align.INLINE)
-d.subroutine(0xa2ed, 'small_int_to_fwa', title='Convert a small (8-bit) integer in A to FWA')
+d.subroutine(0xa2ed, 'small_int_to_fwa', title='Convert a small (8-bit) integer in A to FWA',
+             description='Convert the signed 8-bit integer in A to a normalised '
+                         'real in FWA (clears FWA, places the magnitude in the '
+                         'mantissa MSB with exponent 8, sets the sign, and '
+                         'normalises).',
+             on_entry={'A': 'the signed 8-bit integer to convert'},
+             on_exit={'zp_fwa (&2E-&35)': 'the value as a normalised real'})
 
 d.comment(0xa2ed, 'Small int to FWA: save it', align=Align.INLINE)
 d.comment(0xa2ee, 'clear FWA', align=Align.INLINE)

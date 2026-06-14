@@ -2496,24 +2496,60 @@
       "addr": 41024,
       "name": "output_top_digit",
       "title": "Output the leading decimal digit of FWA",
-      "description": "Emit the integer part of the FWA mantissa as a digit, then multiply the remaining fraction by 10."
+      "description": "Emit the integer part (top nibble of the mantissa MSB) as a decimal digit, mask it off, then multiply the remaining fraction by 10 ready for the next digit. The inner step of the real-to-ASCII conversion.",
+      "on_entry": {
+        "zp_fwa_m1 (&31)": "mantissa MSB; top nibble is the digit"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the digit appended",
+        "zp_strbuf_len (&36)": "incremented",
+        "zp_fwa (&31-&35)": "fraction times ten for the next digit"
+      }
     },
     {
       "addr": 41042,
       "name": "output_byte_decimal",
       "title": "Output a byte (0-99) in decimal",
+      "description": "Append a byte 0-99 to the output string as one or two decimal digits (a leading-zero tens digit is dropped) by repeated subtraction of ten.",
+      "on_entry": {
+        "A": "the value 0-99 to output"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the digits appended",
+        "zp_strbuf_len (&36)": "advanced",
+        "X": "the tens count"
+      },
       "fall_through": true
     },
     {
       "addr": 41060,
       "name": "output_digit",
       "title": "Output A as a decimal digit (A + \"0\")",
+      "description": "Convert the digit value in A to ASCII (\"0\" + A) and append it via output_char.",
+      "on_entry": {
+        "A": "a digit value 0-9"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the digit appended",
+        "zp_strbuf_len (&36)": "incremented",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41062,
       "name": "output_char",
-      "title": "Append a character to the output string"
+      "title": "Append a character to the output string",
+      "description": "Append the character in A to the end of the output string buffer and bump its length.",
+      "on_entry": {
+        "A": "the character to append",
+        "zp_strbuf_len (&36)": "the current buffer length"
+      },
+      "on_exit": {
+        "string_work (&0600)": "A stored at the old length",
+        "zp_strbuf_len (&36)": "incremented",
+        "X": "preserved"
+      }
     },
     {
       "addr": 41083,
@@ -2524,7 +2560,17 @@
     {
       "addr": 41280,
       "name": "parse_exponent",
-      "title": "Parse the \"E\" exponent (optional sign, 1-2 digits)"
+      "title": "Parse the \"E\" exponent (optional sign, 1-2 digits)",
+      "description": "Read the one- or two-digit decimal exponent after \"E\" at PtrB, returning its magnitude in A (0 if no digits). The sign is handled on a separate entry path; the caller adds the result to the FWA exponent.",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "Y": "offset of the \"E\" character"
+      },
+      "on_exit": {
+        "A": "the exponent magnitude (0-99)",
+        "Y": "advanced past the exponent digits",
+        "C": "clear (ready for the caller to add it)"
+      }
     },
     {
       "addr": 41336,
@@ -2579,7 +2625,14 @@
       "addr": 41460,
       "name": "fwa_mul10",
       "title": "FWA = FWA * 10",
-      "description": "Multiply FWA by ten, unnormalised and unrounded."
+      "description": "Multiply FWA by ten as x8 + x2: scale the exponent by eight, build x2 in FWB, and add. Left unnormalised and unrounded (the caller normalises). Uses FWB as scratch.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to scale"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "ten times FWA, unnormalised",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      }
     },
     {
       "addr": 41502,
@@ -2613,7 +2666,14 @@
       "addr": 41549,
       "name": "fwa_div10",
       "title": "FWA = FWA / 10",
-      "description": "Divide FWA by ten, unnormalised and unrounded.",
+      "description": "Divide FWA by ten using the binary expansion of 1/10 (x/16 plus progressively shifted terms accumulated via FWB). Left unnormalised and unrounded (the caller normalises). Uses FWB as scratch.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to divide"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "FWA / 10, unnormalised",
+        "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
       "fall_through": true
     },
     {
@@ -2636,12 +2696,27 @@
       "addr": 41662,
       "name": "int_to_fwa",
       "title": "Convert the integer accumulator to floating point",
-      "description": "Convert the integer in IWA to a real in FWA."
+      "description": "Convert the signed 32-bit integer in IWA to a normalised real in FWA: record the sign (negating IWA if needed), copy the magnitude into the mantissa with exponent 32, and normalise.",
+      "on_entry": {
+        "zp_iwa (&2A-&2D)": "the signed integer to convert"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the value as a normalised real",
+        "zp_iwa": "made positive if it was negative",
+        "X": "corrupted"
+      }
     },
     {
       "addr": 41709,
       "name": "small_int_to_fwa",
       "title": "Convert a small (8-bit) integer in A to FWA",
+      "description": "Convert the signed 8-bit integer in A to a normalised real in FWA (clears FWA, places the magnitude in the mantissa MSB with exponent 8, sets the sign, and normalises).",
+      "on_entry": {
+        "A": "the signed 8-bit integer to convert"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the value as a normalised real"
+      },
       "fall_through": true
     },
     {

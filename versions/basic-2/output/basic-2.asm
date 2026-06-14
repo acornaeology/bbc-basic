@@ -6472,8 +6472,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Output the leading decimal digit of FWA
 ;
-; Emit the integer part of the FWA mantissa as a digit, then multiply the remaining
-; fraction by 10.
+; Emit the integer part (top nibble of the mantissa MSB) as a decimal digit, mask it off,
+; then multiply the remaining fraction by 10 ready for the next digit. The inner step of
+; the real-to-ASCII conversion.
+;
+; On Entry:
+;     ZP_FWA_M1 (&31): mantissa MSB; top nibble is the digit
+;
+; On Exit:
+;     STRING_WORK (&0600): the digit appended
+;     ZP_STRBUF_LEN (&36): incremented
+;     ZP_FWA (&31-&35): fraction times ten for the next digit
 ; &a040 referenced 1 time by &9fe8
 .output_top_digit
     lda zp_fwa_m1                                                     ; a040: a5 31       .1       ; Integer part: top nibble
@@ -6488,6 +6497,17 @@ l848a = sub_c847b+15
     jmp mant_mul10                                                    ; a04f: 4c 97 a1    L..      ; multiply the fraction by 10
 ; ***************************************************************************************
 ; Output a byte (0-99) in decimal
+;
+; Append a byte 0-99 to the output string as one or two decimal digits (a leading-zero
+; tens digit is dropped) by repeated subtraction of ten.
+;
+; On Entry:
+;     A: the value 0-99 to output
+;
+; On Exit:
+;     STRING_WORK (&0600): the digits appended
+;     ZP_STRBUF_LEN (&36): advanced
+;     X: the tens count
 ; &a052 referenced 1 time by &a028
 .output_byte_decimal
     ldx #&ff                                                          ; a052: a2 ff       ..       ; count the tens:
@@ -6507,11 +6527,32 @@ l848a = sub_c847b+15
     pla                                                               ; a063: 68          h        ; units digit
 ; ***************************************************************************************
 ; Output A as a decimal digit (A + "0")
+;
+; Convert the digit value in A to ASCII ("0" + A) and append it via output_char.
+;
+; On Entry:
+;     A: a digit value 0-9
+;
+; On Exit:
+;     STRING_WORK (&0600): the digit appended
+;     ZP_STRBUF_LEN (&36): incremented
+;     X: preserved
 ; &a064 referenced 2 times by &a046, &a060
 .output_digit
     ora #&30 ; '0'                                                    ; a064: 09 30       .0       ; make it a digit ("0" + A)
 ; ***************************************************************************************
 ; Append a character to the output string
+;
+; Append the character in A to the end of the output string buffer and bump its length.
+;
+; On Entry:
+;     A: the character to append
+;     ZP_STRBUF_LEN (&36): the current buffer length
+;
+; On Exit:
+;     STRING_WORK (&0600): A stored at the old length
+;     ZP_STRBUF_LEN (&36): incremented
+;     X: preserved
 ; &a066 referenced 11 times by &9ec1, &9ece, &9f1a, &9fd1, &9fd6, &9fdf, &9ff1, &a017, &a020, &a035, &a03c
 .output_char
     stx zp_fwb_sign                                                   ; a066: 86 3b       .;       ; save X
@@ -6661,6 +6702,19 @@ l848a = sub_c847b+15
     rts                                                               ; a13f: 60          `        ; Return
 ; ***************************************************************************************
 ; Parse the "E" exponent (optional sign, 1-2 digits)
+;
+; Read the one- or two-digit decimal exponent after "E" at PtrB, returning its magnitude
+; in A (0 if no digits). The sign is handled on a separate entry path; the caller adds
+; the result to the FWA exponent.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     Y: offset of the "E" character
+;
+; On Exit:
+;     A: the exponent magnitude (0-99)
+;     Y: advanced past the exponent digits
+;     C: clear (ready for the caller to add it)
 ; &a140 referenced 1 time by &a0e1
 .parse_exponent
     iny                                                               ; a140: c8          .        ; Scan exponent: next character
@@ -6837,7 +6891,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA * 10
 ;
-; Multiply FWA by ten, unnormalised and unrounded.
+; Multiply FWA by ten as x8 + x2: scale the exponent by eight, build x2 in FWB, and add.
+; Left unnormalised and unrounded (the caller normalises). Uses FWB as scratch.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to scale
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): ten times FWA, unnormalised
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a1f4 referenced 2 times by &9ed7, &a108
 .fwa_mul10
     clc                                                               ; a1f4: 18          .        ; x*8: add 3 to the exponent
@@ -6925,7 +6987,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWA / 10
 ;
-; Divide FWA by ten, unnormalised and unrounded.
+; Divide FWA by ten using the binary expansion of 1/10 (x/16 plus progressively shifted
+; terms accumulated via FWB). Left unnormalised and unrounded (the caller normalises).
+; Uses FWB as scratch.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to divide
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): FWA / 10, unnormalised
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; Divide FWA by ten. In binary 1/10 = 0.000110011001100...,
 ; so x/10 is x/16 plus a series of progressively shifted terms.
 ; Each term is built in FWB as a byte/bit-shifted copy of the
@@ -7012,7 +7083,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Convert the integer accumulator to floating point
 ;
-; Convert the integer in IWA to a real in FWA.
+; Convert the signed 32-bit integer in IWA to a normalised real in FWA: record the sign
+; (negating IWA if needed), copy the magnitude into the mantissa with exponent 32, and
+; normalise.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the signed integer to convert
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the value as a normalised real
+;     ZP_IWA: made positive if it was negative
+;     X: corrupted
 ; &a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6
 .int_to_fwa
     ldx #0                                                            ; a2be: a2 00       ..       ; Clear the rounding...
@@ -7046,6 +7127,15 @@ l848a = sub_c847b+15
     rts                                                               ; a2ec: 60          `        ; Return
 ; ***************************************************************************************
 ; Convert a small (8-bit) integer in A to FWA
+;
+; Convert the signed 8-bit integer in A to a normalised real in FWA (clears FWA, places
+; the magnitude in the mantissa MSB with exponent 8, sets the sign, and normalises).
+;
+; On Entry:
+;     A: the signed 8-bit integer to convert
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the value as a normalised real
 ; &a2ed referenced 1 time by &a852
 .small_int_to_fwa
     pha                                                               ; a2ed: 48          H        ; Small int to FWA: save it
