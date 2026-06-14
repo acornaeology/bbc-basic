@@ -3072,7 +3072,7 @@ oscli            = &fff7
 .stmt_clg
     jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.      ; Check the statement ends
     lda #&10                                                          ; 8ec0: a9 10       ..       ; VDU 16 (clear graphics)
-    bne c8ecc                                                         ; 8ec2: d0 08       ..       ; send it
+    bne cls_send                                                      ; 8ec2: d0 08       ..       ; send it
 ; ***************************************************************************************
 ; CLS
 ;
@@ -3090,7 +3090,7 @@ oscli            = &fff7
     jsr cbc28                                                         ; 8ec7: 20 28 bc     (.      ; Reset the print column
     lda #&0c                                                          ; 8eca: a9 0c       ..       ; VDU 12 (clear screen)
 ; &8ecc referenced 1 time by &8ec2
-.c8ecc
+.cls_send
     jsr oswrch                                                        ; 8ecc: 20 ee ff     ..      ; send it
     jmp statement_loop                                                ; 8ecf: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
@@ -3113,14 +3113,14 @@ oscli            = &fff7
     ldy #0                                                            ; 8edb: a0 00       ..       ; Build the parameter block at &0600:
     sty string_work                                                   ; 8edd: 8c 00 06    ...      ; zero the parameter count
 ; &8ee0 referenced 1 time by &8f09
-.c8ee0
+.call_block_init
     sty l06ff                                                         ; 8ee0: 8c ff 06    ...      ; reset the block write offset
     jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..      ; next parameter?
     cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,       ; a comma?
-    bne c8f0c                                                         ; 8ee8: d0 22       ."       ; no: end of the parameters
+    bne call_check_end                                                ; 8ee8: d0 22       ."       ; no: end of the parameters
     ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..       ; parse the parameter (a variable)
     jsr sub_c95d5                                                     ; 8eec: 20 d5 95     ..      ; resolve it to an address
-    beq c8f1b                                                         ; 8eef: f0 2a       .*       ; bad parameter: error
+    beq call_param_error                                              ; 8eef: f0 2a       .*       ; bad parameter: error
     ldy l06ff                                                         ; 8ef1: ac ff 06    ...      ; append its address to the block:
     iny                                                               ; 8ef4: c8          .        ; advance to the next slot
     lda zp_iwa                                                        ; 8ef5: a5 2a       .*       ; address low
@@ -3132,9 +3132,9 @@ oscli            = &fff7
     lda zp_iwa_2                                                      ; 8f01: a5 2c       .,       ; type
     sta string_work,y                                                 ; 8f03: 99 00 06    ...      ; store it
     inc string_work                                                   ; 8f06: ee 00 06    ...      ; one more parameter
-    jmp c8ee0                                                         ; 8f09: 4c e0 8e    L..      ; next parameter
+    jmp call_block_init                                               ; 8f09: 4c e0 8e    L..      ; next parameter
 ; &8f0c referenced 1 time by &8ee8
-.c8f0c
+.call_check_end
     dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..       ; Check for end of statement
     jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.      ; error if more follows
     jsr unstack_integer                                               ; 8f11: 20 ea bd     ..      ; pop the address into IWA
@@ -3142,7 +3142,7 @@ oscli            = &fff7
     cld                                                               ; 8f17: d8          .        ; clear decimal mode on return
     jmp statement_loop                                                ; 8f18: 4c 9b 8b    L..      ; Back to execution
 ; &8f1b referenced 1 time by &8eef
-.c8f1b
+.call_param_error
     jmp cae43                                                         ; 8f1b: 4c 43 ae    LC.      ; parameter error (shared)
 ; ***************************************************************************************
 ; Call user machine code (USR/CALL)
@@ -3169,7 +3169,7 @@ oscli            = &fff7
     ldy resint_y                                                      ; 8f28: ac 64 04    .d.      ; Y from Y%
     jmp (zp_iwa)                                                      ; 8f2b: 6c 2a 00    l*.      ; Call the routine at the address in IWA
 ; &8f2e referenced 3 times by &8f34, &8f3e, &8f43
-.c8f2e
+.call_arg_error
     jmp c982a                                                         ; 8f2e: 4c 2a 98    L*.      ; error (shared)
 ; ***************************************************************************************
 ; DELETE
@@ -3185,13 +3185,13 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_delete
     jsr check_line_number                                             ; 8f31: 20 df 97     ..      ; Read the start line number
-    bcc c8f2e                                                         ; 8f34: 90 f8       ..       ; none: Syntax error
+    bcc call_arg_error                                                ; 8f34: 90 f8       ..       ; none: Syntax error
     jsr stack_integer                                                 ; 8f36: 20 94 bd     ..      ; stack it
     jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,       ; ','?
-    bne c8f2e                                                         ; 8f3e: d0 ee       ..       ; no: error
+    bne call_arg_error                                                ; 8f3e: d0 ee       ..       ; no: error
     jsr check_line_number                                             ; 8f40: 20 df 97     ..      ; Read the end line number
-    bcc c8f2e                                                         ; 8f43: 90 e9       ..       ; none: error
+    bcc call_arg_error                                                ; 8f43: 90 e9       ..       ; none: error
     jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.      ; check the statement ends
     lda zp_iwa                                                        ; 8f48: a5 2a       .*       ; Save the end line
     sta zp_fileblk                                                    ; 8f4a: 85 39       .9       ; low to &39,
@@ -3199,7 +3199,7 @@ oscli            = &fff7
     sta l003a                                                         ; 8f4e: 85 3a       .:       ; to &3A
     jsr unstack_integer                                               ; 8f50: 20 ea bd     ..      ; Recover the start line
 ; &8f53 referenced 1 time by &8f64
-.loop_c8f53
+.delete_loop
     jsr delete_program_line                                           ; 8f53: 20 2d bc     -.      ; Delete the line
     jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.      ; Find the next line number
     jsr iwa_inc                                                       ; 8f59: 20 22 92     ".      ; Advance the line counter
@@ -3207,10 +3207,10 @@ oscli            = &fff7
     cmp zp_iwa                                                        ; 8f5e: c5 2a       .*       ; end low - line low,
     lda l003a                                                         ; 8f60: a5 3a       .:       ; end high,
     sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; - line high
-    bcs loop_c8f53                                                    ; 8f64: b0 ed       ..       ; no: delete the next
+    bcs delete_loop                                                   ; 8f64: b0 ed       ..       ; no: delete the next
     jmp clear_then_immediate                                          ; 8f66: 4c f3 8a    L..      ; done: immediate mode
 ; &8f69 referenced 2 times by &8fa3, &90ac
-.sub_c8f69
+.parse_line_range
     lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
     jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..      ; IWA = 10
     jsr check_line_number                                             ; 8f6e: 20 df 97     ..      ; Read the start line if given
@@ -3219,25 +3219,25 @@ oscli            = &fff7
     jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; IWA = 10
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,       ; ',' increment given?
-    bne c8f8d                                                         ; 8f7e: d0 0d       ..       ; no: use the default
+    bne range_backup                                                  ; 8f7e: d0 0d       ..       ; no: use the default
     jsr check_line_number                                             ; 8f80: 20 df 97     ..      ; Read the increment
     lda zp_iwa_1                                                      ; 8f83: a5 2b       .+       ; zero?
-    bne c8fdf                                                         ; 8f85: d0 58       .X       ; no
+    bne silly_error                                                   ; 8f85: d0 58       .X       ; no
     lda zp_iwa                                                        ; 8f87: a5 2a       .*       ; low byte zero too?
-    beq c8fdf                                                         ; 8f89: f0 54       .T       ; zero increment: error
+    beq silly_error                                                   ; 8f89: f0 54       .T       ; zero increment: error
     inc zp_text_ptr_off                                               ; 8f8b: e6 0a       ..       ; step past
 ; &8f8d referenced 1 time by &8f7e
-.c8f8d
+.range_backup
     dec zp_text_ptr_off                                               ; 8f8d: c6 0a       ..       ; back up
     jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.      ; check the statement ends
 ; &8f92 referenced 2 times by &8fae, &9040
-.sub_c8f92
+.setup_scan_top
     lda zp_top                                                        ; 8f92: a5 12       ..       ; Copy TOP to &3B/&3C
     sta zp_fwb_sign                                                   ; 8f94: 85 3b       .;       ; low to &3B,
     lda zp_top_1                                                      ; 8f96: a5 13       ..       ; high byte,
     sta zp_fwb_ovf                                                    ; 8f98: 85 3c       .<       ; to &3C
 ; &8f9a referenced 1 time by &8fe7
-.sub_c8f9a
+.point_general_page
     lda zp_page                                                       ; 8f9a: a5 18       ..       ; Point &37/&38 at PAGE
     sta zp_general_1                                                  ; 8f9c: 85 38       .8       ; page to &38,
     lda #1                                                            ; 8f9e: a9 01       ..       ; offset 1,
@@ -3262,16 +3262,16 @@ oscli            = &fff7
 ; program for line-number references (the &8D token) and
 ; rewrites each via the old->new table.
 .stmt_renumber
-    jsr sub_c8f69                                                     ; 8fa3: 20 69 8f     i.      ; Parse the start and step arguments
+    jsr parse_line_range                                              ; 8fa3: 20 69 8f     i.      ; Parse the start and step arguments
     ldx #&39 ; '9'                                                    ; 8fa6: a2 39       .9       ; Pop the step into the file block (&39)
     jsr unstack_int_to_zp                                             ; 8fa8: 20 0d be     ..      ; (pop it)
     jsr check_program                                                 ; 8fab: 20 6f be     o.      ; Pop the start number
-    jsr sub_c8f92                                                     ; 8fae: 20 92 8f     ..      ; Point at the program start and the table
+    jsr setup_scan_top                                                ; 8fae: 20 92 8f     ..      ; Point at the program start and the table
 ; &8fb1 referenced 1 time by &8fd4
-.loop_c8fb1
+.renum_pass1_loop
     ldy #0                                                            ; 8fb1: a0 00       ..       ; Pass 1: for each line, read its number
     lda (zp_general),y                                                ; 8fb3: b1 37       .7       ; high byte
-    bmi c8fe7                                                         ; 8fb5: 30 30       00       ; high bit set marks the end of program
+    bmi renum_pass2                                                   ; 8fb5: 30 30       00       ; high bit set marks the end of program
     sta (zp_fwb_sign),y                                               ; 8fb7: 91 3b       .;       ; Store the old number in the table
     iny                                                               ; 8fb9: c8          .        ; low byte
     lda (zp_general),y                                                ; 8fba: b1 37       .7       ; read the line number low
@@ -3286,28 +3286,28 @@ oscli            = &fff7
     sta zp_fwb_ovf                                                    ; 8fc9: 85 3c       .<       ; (store)
     cpx zp_himem                                                      ; 8fcb: e4 06       ..       ; Has the table reached HIMEM?
     sbc zp_himem_1                                                    ; 8fcd: e5 07       ..       ; high byte vs HIMEM
-    bcs c8fd6                                                         ; 8fcf: b0 05       ..       ; yes: no room for the table
+    bcs renum_no_space                                                ; 8fcf: b0 05       ..       ; yes: no room for the table
     jsr advance_to_next_line                                          ; 8fd1: 20 9f 90     ..      ; Advance to the next program line
-    bcc loop_c8fb1                                                    ; 8fd4: 90 db       ..       ; loop over all lines
+    bcc renum_pass1_loop                                              ; 8fd4: 90 db       ..       ; loop over all lines
 ; &8fd6 referenced 1 time by &8fcf
-.c8fd6
+.renum_no_space
     brk                                                               ; 8fd6: 00          .        ; RENUMBER ran out of space: error
     equb &00, &cc                                                     ; 8fd7: 00 cc       ..    
     equs " space"                                                     ; 8fd9: 20 73 70...  sp...
 ; &8fdf referenced 2 times by &8f85, &8f89
-.c8fdf
+.silly_error
     brk                                                               ; 8fdf: 00          .        ; error block
     equb &00                                                          ; 8fe0: 00          .     
     equs "Silly"                                                      ; 8fe1: 53 69 6c... Sil...
     equb &00                                                          ; 8fe6: 00          .     
 ; &8fe7 referenced 1 time by &8fb5
-.c8fe7
-    jsr sub_c8f9a                                                     ; 8fe7: 20 9a 8f     ..      ; Pass 2: reset to the program start
+.renum_pass2
+    jsr point_general_page                                            ; 8fe7: 20 9a 8f     ..      ; Pass 2: reset to the program start
 ; &8fea referenced 1 time by &900b
-.loop_c8fea
+.renum_pass2_loop
     ldy #0                                                            ; 8fea: a0 00       ..       ; for each line:
     lda (zp_general),y                                                ; 8fec: b1 37       .7       ; line number high byte
-    bmi c900d                                                         ; 8fee: 30 1d       0.       ; end of program: go to pass 3
+    bmi renum_pass3                                                   ; 8fee: 30 1d       0.       ; end of program: go to pass 3
     lda l003a                                                         ; 8ff0: a5 3a       .:       ; Write the new number: high byte
     sta (zp_general),y                                                ; 8ff2: 91 37       .7       ; (into the line)
     lda zp_fileblk                                                    ; 8ff4: a5 39       .9       ; low byte
@@ -3322,56 +3322,56 @@ oscli            = &fff7
     and #&7f                                                          ; 9004: 29 7f       ).       ; keep it a valid line number (< &8000)
     sta l003a                                                         ; 9006: 85 3a       .:       ; (store)
     jsr advance_to_next_line                                          ; 9008: 20 9f 90     ..      ; Advance to the next line
-    bcc loop_c8fea                                                    ; 900b: 90 dd       ..       ; loop
+    bcc renum_pass2_loop                                              ; 900b: 90 dd       ..       ; loop
 ; &900d referenced 1 time by &8fee
-.c900d
+.renum_pass3
     lda zp_page                                                       ; 900d: a5 18       ..       ; Pass 3: scan from PAGE, high byte
     sta zp_text_ptr_1                                                 ; 900f: 85 0c       ..       ; (text pointer high)
     ldy #0                                                            ; 9011: a0 00       ..       ; low byte 0
     sty zp_text_ptr                                                   ; 9013: 84 0b       ..       ; (store)
     iny                                                               ; 9015: c8          .        ; advance
     lda (zp_text_ptr),y                                               ; 9016: b1 0b       ..       ; read the line number high byte
-    bmi c903a                                                         ; 9018: 30 20       0        ; end of program: done
+    bmi renum_done                                                    ; 9018: 30 20       0        ; end of program: done
 ; &901a referenced 2 times by &9034, &9038
-.c901a
+.renum_line_loop
     ldy #4                                                            ; 901a: a0 04       ..       ; Scan the line from offset 4 (past the header)
 ; &901c referenced 2 times by &9025, &906f
-.c901c
+.renum_scan_loop
     lda (zp_text_ptr),y                                               ; 901c: b1 0b       ..       ; next token
     cmp #&8d                                                          ; 901e: c9 8d       ..       ; Is it the line-number prefix &8D?
-    beq c903d                                                         ; 9020: f0 1b       ..       ; yes: rewrite the reference
+    beq renum_ref                                                     ; 9020: f0 1b       ..       ; yes: rewrite the reference
     iny                                                               ; 9022: c8          .        ; advance
     cmp #&0d                                                          ; 9023: c9 0d       ..       ; end of line (CR)?
-    bne c901c                                                         ; 9025: d0 f5       ..       ; no: keep scanning
+    bne renum_scan_loop                                               ; 9025: d0 f5       ..       ; no: keep scanning
     lda (zp_text_ptr),y                                               ; 9027: b1 0b       ..       ; read the next line's header
-    bmi c903a                                                         ; 9029: 30 0f       0.       ; end of program
+    bmi renum_done                                                    ; 9029: 30 0f       0.       ; end of program
     ldy #3                                                            ; 902b: a0 03       ..       ; line length is at offset 3
     lda (zp_text_ptr),y                                               ; 902d: b1 0b       ..       ; get it
     clc                                                               ; 902f: 18          .        ; advance to the next line: low
     adc zp_text_ptr                                                   ; 9030: 65 0b       e.       ; - text pointer low
     sta zp_text_ptr                                                   ; 9032: 85 0b       ..       ; (store)
-    bcc c901a                                                         ; 9034: 90 e4       ..       ; loop
+    bcc renum_line_loop                                               ; 9034: 90 e4       ..       ; loop
     inc zp_text_ptr_1                                                 ; 9036: e6 0c       ..       ; carry into high byte
-    bcs c901a                                                         ; 9038: b0 e0       ..       ; loop
+    bcs renum_line_loop                                               ; 9038: b0 e0       ..       ; loop
 ; &903a referenced 2 times by &9018, &9029
-.c903a
+.renum_done
     jmp clear_then_immediate                                          ; 903a: 4c f3 8a    L..      ; Done: back to the immediate loop
 ; &903d referenced 1 time by &9020
-.c903d
+.renum_ref
     jsr decode_line_number                                            ; 903d: 20 eb 97     ..      ; Decode the &8D-encoded line number
-    jsr sub_c8f92                                                     ; 9040: 20 92 8f     ..      ; Point at the old->new table
+    jsr setup_scan_top                                                ; 9040: 20 92 8f     ..      ; Point at the old->new table
 ; &9043 referenced 2 times by &907a, &907e
-.c9043
+.renum_table_search
     ldy #0                                                            ; 9043: a0 00       ..       ; Search the table for this old number:
     lda (zp_general),y                                                ; 9045: b1 37       .7       ; table end marker?
-    bmi c9080                                                         ; 9047: 30 37       07       ; not found: reference to a missing line
+    bmi renum_missing_line                                            ; 9047: 30 37       07       ; not found: reference to a missing line
     lda (zp_fwb_sign),y                                               ; 9049: b1 3b       .;       ; old number high...
     iny                                                               ; 904b: c8          .        ; advance
     cmp zp_iwa_1                                                      ; 904c: c5 2b       .+       ; match the referenced number high?
-    bne c9071                                                         ; 904e: d0 21       .!       ; no: next table entry
+    bne renum_table_next                                              ; 904e: d0 21       .!       ; no: next table entry
     lda (zp_fwb_sign),y                                               ; 9050: b1 3b       .;       ; old number low...
     cmp zp_iwa                                                        ; 9052: c5 2a       .*       ; match low?
-    bne c9071                                                         ; 9054: d0 1b       ..       ; no: next entry
+    bne renum_table_next                                              ; 9054: d0 1b       ..       ; no: next entry
     lda (zp_general),y                                                ; 9056: b1 37       .7       ; Found: take the new number high
     sta zp_fwb_exp                                                    ; 9058: 85 3d       .=       ; (save)
     dey                                                               ; 905a: 88          .        ; new number low
@@ -3385,20 +3385,20 @@ oscli            = &fff7
     sta zp_general_1                                                  ; 9068: 85 38       .8       ; reference pointer high
     jsr encode_line_number                                            ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
 ; &906d referenced 1 time by &909d
-.loop_c906d
+.renum_resume
     ldy zp_text_ptr_off                                               ; 906d: a4 0a       ..       ; resume scanning
-    bne c901c                                                         ; 906f: d0 ab       ..       ; continue the line scan
+    bne renum_scan_loop                                               ; 906f: d0 ab       ..       ; continue the line scan
 ; &9071 referenced 2 times by &904e, &9054
-.c9071
+.renum_table_next
     jsr advance_to_next_line                                          ; 9071: 20 9f 90     ..      ; Next table entry: advance...
     lda zp_fwb_sign                                                   ; 9074: a5 3b       .;       ; ...the table pointer by 2
     adc #2                                                            ; 9076: 69 02       i.       ; low + 2
     sta zp_fwb_sign                                                   ; 9078: 85 3b       .;       ; (store)
-    bcc c9043                                                         ; 907a: 90 c7       ..       ; loop
+    bcc renum_table_search                                            ; 907a: 90 c7       ..       ; loop
     inc zp_fwb_ovf                                                    ; 907c: e6 3c       .<       ; carry
-    bcs c9043                                                         ; 907e: b0 c3       ..       ; loop
+    bcs renum_table_search                                            ; 907e: b0 c3       ..       ; loop
 ; &9080 referenced 1 time by &9047
-.c9080
+.renum_missing_line
     jsr print_inline_string                                           ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
     equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  print it
     iny                                                               ; 908d: c8          .        ; This line's number
@@ -3409,7 +3409,7 @@ oscli            = &fff7
     sta zp_iwa                                                        ; 9095: 85 2a       .*       ; store low
     jsr print_line_number                                             ; 9097: 20 1f 99     ..      ; print it
     jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.      ; newline
-    beq loop_c906d                                                    ; 909d: f0 ce       ..       ; loop
+    beq renum_resume                                                  ; 909d: f0 ce       ..       ; loop
 ; ***************************************************************************************
 ; Advance the general pointer to the next program line
 ;
@@ -3451,12 +3451,12 @@ oscli            = &fff7
 ; On Exit:
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_auto
-    jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.      ; Parse the start and increment
+    jsr parse_line_range                                              ; 90ac: 20 69 8f     i.      ; Parse the start and increment
     lda zp_iwa                                                        ; 90af: a5 2a       .*       ; Save the increment
     pha                                                               ; 90b1: 48          H        ; push it
     jsr unstack_integer                                               ; 90b2: 20 ea bd     ..      ; Recover the start line
 ; &90b5 referenced 2 times by &90d3, &90d7
-.c90b5
+.auto_loop
     jsr stack_integer                                                 ; 90b5: 20 94 bd     ..      ; Stack the line number
     jsr sub_c9923                                                     ; 90b8: 20 23 99     #.      ; Print it
     lda #&20 ; ' '                                                    ; 90bb: a9 20       .        ; Print a space and read a line
@@ -3470,25 +3470,25 @@ oscli            = &fff7
     clc                                                               ; 90ce: 18          .        ; Next line number = line + increment
     adc zp_iwa                                                        ; 90cf: 65 2a       e*       ; - current line low,
     sta zp_iwa                                                        ; 90d1: 85 2a       .*       ; store low,
-    bcc c90b5                                                         ; 90d3: 90 e0       ..       ; no carry: loop,
+    bcc auto_loop                                                     ; 90d3: 90 e0       ..       ; no carry: loop,
     inc zp_iwa_1                                                      ; 90d5: e6 2b       .+       ; carry into the high byte
-    bpl c90b5                                                         ; 90d7: 10 dc       ..       ; still in range: loop
+    bpl auto_loop                                                     ; 90d7: 10 dc       ..       ; still in range: loop
     jmp clear_then_immediate                                          ; 90d9: 4c f3 8a    L..      ; overflow: stop
 ; &90dc referenced 1 time by &9106
-.loop_c90dc
-    jmp c9218                                                         ; 90dc: 4c 18 92    L..      ; No room error
+.dim_no_room_jmp
+    jmp dim_no_room                                                   ; 90dc: 4c 18 92    L..      ; No room error
 ; &90df referenced 1 time by &9168
-.c90df
+.dim_byte_block
     dec zp_text_ptr_off                                               ; 90df: c6 0a       ..       ; Back up to the variable
     jsr parse_lvalue                                                  ; 90e1: 20 82 95     ..      ; Parse it
-    beq c9127                                                         ; 90e4: f0 41       .A       ; not a variable: Bad DIM
-    bcs c9127                                                         ; 90e6: b0 3f       .?       ; indirection: Bad DIM
+    beq bad_dim                                                       ; 90e4: f0 41       .A       ; not a variable: Bad DIM
+    bcs bad_dim                                                       ; 90e6: b0 3f       .?       ; indirection: Bad DIM
     jsr stack_integer                                                 ; 90e8: 20 94 bd     ..      ; Stack the variable address
     jsr eval_expr_integer                                             ; 90eb: 20 dd 92     ..      ; Evaluate the size
     jsr iwa_inc                                                       ; 90ee: 20 22 92     ".      ; n + 1 bytes
     lda zp_iwa_3                                                      ; 90f1: a5 2d       .-       ; fits in 16 bits?
     ora zp_iwa_2                                                      ; 90f3: 05 2c       .,       ; OR byte 2 (any => > 65535)
-    bne c9127                                                         ; 90f5: d0 30       .0       ; no: Bad DIM
+    bne bad_dim                                                       ; 90f5: d0 30       .0       ; no: Bad DIM
     clc                                                               ; 90f7: 18          .        ; New top = top + size
     lda zp_iwa                                                        ; 90f8: a5 2a       .*       ; size low,
     adc zp_vartop                                                     ; 90fa: 65 02       e.       ; - VARTOP low,
@@ -3498,7 +3498,7 @@ oscli            = &fff7
     tax                                                               ; 9101: aa          .        ; new top high in X
     cpy zp_stack_ptr                                                  ; 9102: c4 04       ..       ; collides with the stack?
     sbc zp_stack_ptr_1                                                ; 9104: e5 05       ..       ; high byte vs the stack
-    bcs loop_c90dc                                                    ; 9106: b0 d4       ..       ; yes: No room
+    bcs dim_no_room_jmp                                               ; 9106: b0 d4       ..       ; yes: No room
     lda zp_vartop                                                     ; 9108: a5 02       ..       ; Block address = old top
     sta zp_iwa                                                        ; 910a: 85 2a       .*       ; address low,
     lda zp_vartop_1                                                   ; 910c: a5 03       ..       ; high byte,
@@ -3512,9 +3512,9 @@ oscli            = &fff7
     sta zp_var_type                                                   ; 911c: 85 27       .'       ; set the type
     jsr assign_number                                                 ; 911e: 20 b4 b4     ..      ; assign the address to the variable
     jsr sub_c8827                                                     ; 9121: 20 27 88     '.      ; sync the pointer
-    jmp c920b                                                         ; 9124: 4c 0b 92    L..      ; continue
+    jmp dim_after                                                     ; 9124: 4c 0b 92    L..      ; continue
 ; &9127 referenced 8 times by &90e4, &90e6, &90f5, &9150, &9172, &9193, &91b4, &925a
-.c9127
+.bad_dim
     brk                                                               ; 9127: 00          .        ; Bad DIM error
     equb &0a                                                          ; 9128: 0a          .     
     equs "Bad "                                                       ; 9129: 42 61 64... Bad...
@@ -3538,11 +3538,11 @@ oscli            = &fff7
     clc                                                               ; 9133: 18          .        ; Clear carry for the add
     adc zp_text_ptr                                                   ; 9134: 65 0b       e.       ; Name offset + text pointer low
     ldx zp_text_ptr_1                                                 ; 9136: a6 0c       ..       ; Text pointer high in X
-    bcc c913c                                                         ; 9138: 90 02       ..       ; No carry into the high byte
+    bcc dim_name                                                      ; 9138: 90 02       ..       ; No carry into the high byte
     inx                                                               ; 913a: e8          .        ; Carry into the high byte
     clc                                                               ; 913b: 18          .        ; Clear carry to back up by one
 ; &913c referenced 1 time by &9138
-.c913c
+.dim_name
     sbc #0                                                            ; 913c: e9 00       ..       ; Back up one byte (validate reads from offset 1): low
     sta zp_general                                                    ; 913e: 85 37       .7       ; &37 = name pointer low
     txa                                                               ; 9140: 8a          .        ; High byte
@@ -3553,30 +3553,30 @@ oscli            = &fff7
     ldx zp_text_ptr_off                                               ; 9149: a6 0a       ..       ; Name offset
     jsr validate_var_name                                             ; 914b: 20 59 95     Y.      ; Validate the name
     cpy #1                                                            ; 914e: c0 01       ..       ; empty name?
-    beq c9127                                                         ; 9150: f0 d5       ..       ; yes: Bad DIM
+    beq bad_dim                                                       ; 9150: f0 d5       ..       ; yes: Bad DIM
     cmp #&28 ; '('                                                    ; 9152: c9 28       .(       ; '(' array?
-    beq c916b                                                         ; 9154: f0 15       ..       ; yes
+    beq dim_array                                                     ; 9154: f0 15       ..       ; yes
     cmp #&24 ; '$'                                                    ; 9156: c9 24       .$       ; '$' string?
-    beq c915e                                                         ; 9158: f0 04       ..       ; yes
+    beq dim_check_paren                                               ; 9158: f0 04       ..       ; yes
     cmp #&25 ; '%'                                                    ; 915a: c9 25       .%       ; '%' integer?
-    bne c9168                                                         ; 915c: d0 0a       ..       ; no: DIM var n (byte block)
+    bne dim_byte                                                      ; 915c: d0 0a       ..       ; no: DIM var n (byte block)
 ; &915e referenced 1 time by &9158
-.c915e
+.dim_check_paren
     dec zp_fwb_m2                                                     ; 915e: c6 3f       .?       ; Element size = 4 (integer/string)
     iny                                                               ; 9160: c8          .        ; step past the suffix
     inx                                                               ; 9161: e8          .        ; Count the suffix char in the name length too
     lda (zp_general),y                                                ; 9162: b1 37       .7       ; following character
     cmp #&28 ; '('                                                    ; 9164: c9 28       .(       ; '(' array?
-    beq c916b                                                         ; 9166: f0 03       ..       ; yes
+    beq dim_array                                                     ; 9166: f0 03       ..       ; yes
 ; &9168 referenced 1 time by &915c
-.c9168
-    jmp c90df                                                         ; 9168: 4c df 90    L..      ; DIM var n: allocate a byte block
+.dim_byte
+    jmp dim_byte_block                                                ; 9168: 4c df 90    L..      ; DIM var n: allocate a byte block
 ; &916b referenced 2 times by &9154, &9166
-.c916b
+.dim_array
     sty zp_fileblk                                                    ; 916b: 84 39       .9       ; Array: save the name length
     stx zp_text_ptr_off                                               ; 916d: 86 0a       ..       ; Save the name offset too (&0a)
     jsr find_variable                                                 ; 916f: 20 69 94     i.      ; Already defined?
-    bne c9127                                                         ; 9172: d0 b3       ..       ; yes: Bad DIM (re-DIM)
+    bne bad_dim                                                       ; 9172: d0 b3       ..       ; yes: Bad DIM (re-DIM)
     jsr create_variable                                               ; 9174: 20 fc 94     ..      ; Create the array variable
     ldx #1                                                            ; 9177: a2 01       ..       ; Clear its pointer
     jsr clear_value_bytes                                             ; 9179: 20 31 95     1.      ; Zero the value byte
@@ -3586,14 +3586,14 @@ oscli            = &fff7
     pha                                                               ; 9181: 48          H        ; Push the descriptor write offset
     jsr int_result_a                                                  ; 9182: 20 d8 ae     ..      ; running size = 1
 ; &9185 referenced 1 time by &91ae
-.loop_c9185
+.dim_bound_loop
     jsr stack_integer                                                 ; 9185: 20 94 bd     ..      ; Stack the running size
     jsr eval_expr_to_integer                                          ; 9188: 20 21 88     !.      ; Evaluate the next bound
     lda zp_iwa_1                                                      ; 918b: a5 2b       .+       ; fits in 14 bits?
     and #&c0                                                          ; 918d: 29 c0       ).       ; Isolate the top 2 bits of the bound high byte
     ora zp_iwa_2                                                      ; 918f: 05 2c       .,       ; OR in byte 2,
     ora zp_iwa_3                                                      ; 9191: 05 2d       .-       ; and byte 3 (any set => bound > 16383)
-    bne c9127                                                         ; 9193: d0 92       ..       ; no: Bad DIM
+    bne bad_dim                                                       ; 9193: d0 92       ..       ; no: Bad DIM
     jsr iwa_inc                                                       ; 9195: 20 22 92     ".      ; Extent = bound + 1
     pla                                                               ; 9198: 68          h        ; Restore the descriptor offset
     tay                                                               ; 9199: a8          .        ; into Y as the descriptor write index
@@ -3608,12 +3608,12 @@ oscli            = &fff7
     jsr sub_c9231                                                     ; 91a6: 20 31 92     1.      ; Multiply the running size by the extent
     jsr skip_spaces                                                   ; 91a9: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 91ac: c9 2c       .,       ; ',' another dimension?
-    beq loop_c9185                                                    ; 91ae: f0 d5       ..       ; yes
+    beq dim_bound_loop                                                ; 91ae: f0 d5       ..       ; yes
     cmp #&29 ; ')'                                                    ; 91b0: c9 29       .)       ; ')' end of dimensions?
-    beq c91b7                                                         ; 91b2: f0 03       ..       ; yes
-    jmp c9127                                                         ; 91b4: 4c 27 91    L'.      ; otherwise Bad DIM
+    beq dim_alloc                                                     ; 91b2: f0 03       ..       ; yes
+    jmp bad_dim                                                       ; 91b4: 4c 27 91    L'.      ; otherwise Bad DIM
 ; &91b7 referenced 1 time by &91b2
-.c91b7
+.dim_alloc
     pla                                                               ; 91b7: 68          h        ; Recover the data offset (1 + 2*dims)
     sta zp_print_flag                                                 ; 91b8: 85 15       ..       ; save it
     pla                                                               ; 91ba: 68          h        ; Recover the element size
@@ -3626,10 +3626,10 @@ oscli            = &fff7
     sta (zp_vartop),y                                                 ; 91c8: 91 02       ..       ; into descriptor byte 0
     adc zp_iwa                                                        ; 91ca: 65 2a       e*       ; Add it to the total size
     sta zp_iwa                                                        ; 91cc: 85 2a       .*       ; total size low = header + data,
-    bcc c91d2                                                         ; 91ce: 90 02       ..       ; no carry into the high byte
+    bcc dim_clear                                                     ; 91ce: 90 02       ..       ; no carry into the high byte
     inc zp_iwa_1                                                      ; 91d0: e6 2b       .+       ; carry into the total size high byte
 ; &91d2 referenced 1 time by &91ce
-.c91d2
+.dim_clear
     lda zp_vartop_1                                                   ; 91d2: a5 03       ..       ; Point at the current variable top
     sta zp_general_1                                                  ; 91d4: 85 38       .8       ; high byte to &38,
     lda zp_vartop                                                     ; 91d6: a5 02       ..       ; low byte
@@ -3639,11 +3639,11 @@ oscli            = &fff7
     tay                                                               ; 91dd: a8          .        ; new top low held in Y,
     lda zp_iwa_1                                                      ; 91de: a5 2b       .+       ; high byte
     adc zp_vartop_1                                                   ; 91e0: 65 03       e.       ; - total size high
-    bcs c9218                                                         ; 91e2: b0 34       .4       ; overflow: No room
+    bcs dim_no_room                                                   ; 91e2: b0 34       .4       ; overflow: No room
     tax                                                               ; 91e4: aa          .        ; new top high in X
     cpy zp_stack_ptr                                                  ; 91e5: c4 04       ..       ; collides with the stack?
     sbc zp_stack_ptr_1                                                ; 91e7: e5 05       ..       ; high byte vs stack high (16-bit compare)
-    bcs c9218                                                         ; 91e9: b0 2d       .-       ; yes: No room
+    bcs dim_no_room                                                   ; 91e9: b0 2d       .-       ; yes: No room
     sty zp_vartop                                                     ; 91eb: 84 02       ..       ; Commit the new variable top
     stx zp_vartop_1                                                   ; 91ed: 86 03       ..       ; high byte
     lda zp_general                                                    ; 91ef: a5 37       .7       ; Zero the array storage from the old top
@@ -3651,31 +3651,31 @@ oscli            = &fff7
     tay                                                               ; 91f3: a8          .        ; data start offset in Y,
     lda #0                                                            ; 91f4: a9 00       ..       ; zero byte to fill with,
     sta zp_general                                                    ; 91f6: 85 37       .7       ; pointer low = 0 (Y carries the offset)
-    bcc c91fc                                                         ; 91f8: 90 02       ..       ; no page crossing
+    bcc dim_clear_loop                                                ; 91f8: 90 02       ..       ; no page crossing
     inc zp_general_1                                                  ; 91fa: e6 38       .8       ; step the pointer to the next page
 ; &91fc referenced 3 times by &91f8, &9205, &9209
-.c91fc
+.dim_clear_loop
     sta (zp_general),y                                                ; 91fc: 91 37       .7       ; store a zero byte
     iny                                                               ; 91fe: c8          .        ; next byte,
-    bne c9203                                                         ; 91ff: d0 02       ..       ; no page wrap
+    bne dim_clear_check                                               ; 91ff: d0 02       ..       ; no page wrap
     inc zp_general_1                                                  ; 9201: e6 38       .8       ; cross into the next page
 ; &9203 referenced 1 time by &91ff
-.c9203
+.dim_clear_check
     cpy zp_vartop                                                     ; 9203: c4 02       ..       ; reached the new top?
-    bne c91fc                                                         ; 9205: d0 f5       ..       ; low byte not at top yet: keep zeroing
+    bne dim_clear_loop                                                ; 9205: d0 f5       ..       ; low byte not at top yet: keep zeroing
     cpx zp_general_1                                                  ; 9207: e4 38       .8       ; compare the page to the new top page
-    bne c91fc                                                         ; 9209: d0 f1       ..       ; not there yet: keep zeroing
+    bne dim_clear_loop                                                ; 9209: d0 f1       ..       ; not there yet: keep zeroing
 ; &920b referenced 1 time by &9124
-.c920b
+.dim_after
     jsr skip_spaces                                                   ; 920b: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 920e: c9 2c       .,       ; ',' another array?
-    beq c9215                                                         ; 9210: f0 03       ..       ; yes
+    beq dim_next_array                                                ; 9210: f0 03       ..       ; yes
     jmp stmt_backup_end                                               ; 9212: 4c 96 8b    L..      ; no: next statement
 ; &9215 referenced 1 time by &9210
-.c9215
+.dim_next_array
     jmp stmt_dim                                                      ; 9215: 4c 2f 91    L/.      ; DIM the next array
 ; &9218 referenced 3 times by &90dc, &91e2, &91e9
-.c9218
+.dim_no_room
     brk                                                               ; 9218: 00          .        ; No room error
     equb &0b, &de                                                     ; 9219: 0b de       ..    
     equs " space"                                                     ; 921b: 20 73 70...  sp...
@@ -3753,7 +3753,7 @@ oscli            = &fff7
     rts                                                               ; 9259: 60          `        ; Return
 ; &925a referenced 1 time by &9249
 .c925a
-    jmp c9127                                                         ; 925a: 4c 27 91    L'.      ; overflow error
+    jmp bad_dim                                                       ; 925a: 4c 27 91    L'.      ; overflow error
 ; ***************************************************************************************
 ; HIMEM=
 ;
@@ -14450,7 +14450,7 @@ save pydis_start, pydis_end
 ;     zp_dp_flag:                  9
 ;     zp_print_flag:               9
 ;     asm_index_error:             8
-;     c9127:                       8
+;     bad_dim:                     8
 ;     c986d:                       8
 ;     ca099:                       8
 ;     eval_expr_integer:           8
@@ -14573,9 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c8f2e:                       3
-;     c91fc:                       3
-;     c9218:                       3
 ;     c92f7:                       3
 ;     c9453:                       3
 ;     c961b:                       3
@@ -14594,6 +14591,7 @@ save pydis_start, pydis_end
 ;     ca99e:                       3
 ;     caad1:                       3
 ;     caea2:                       3
+;     call_arg_error:              3
 ;     cb033:                       3
 ;     cb32c:                       3
 ;     cb8d2:                       3
@@ -14601,6 +14599,8 @@ save pydis_start, pydis_end
 ;     cbb7a:                       3
 ;     check_subscript_bound:       3
 ;     create_variable:             3
+;     dim_clear_loop:              3
+;     dim_no_room:                 3
 ;     err_no_room:                 3
 ;     eval_channel:                3
 ;     eval_mul_div:                3
@@ -14659,14 +14659,7 @@ save pydis_start, pydis_end
 ;     assign_str_alloc_size:       2
 ;     assign_str_store:            2
 ;     assign_string_to:            2
-;     c8fdf:                       2
-;     c901a:                       2
-;     c901c:                       2
-;     c903a:                       2
-;     c9043:                       2
-;     c9071:                       2
-;     c90b5:                       2
-;     c916b:                       2
+;     auto_loop:                   2
 ;     c928a:                       2
 ;     c9365:                       2
 ;     c93d7:                       2
@@ -14765,6 +14758,7 @@ save pydis_start, pydis_end
 ;     cbf82:                       2
 ;     decode_line_number:          2
 ;     delete_program_line:         2
+;     dim_array:                   2
 ;     dispatch_token:              2
 ;     drop_stack_integer:          2
 ;     err_too_big:                 2
@@ -14816,6 +14810,7 @@ save pydis_start, pydis_end
 ;     output_digit:                2
 ;     parse_dec_encode:            2
 ;     parse_dec_loop:              2
+;     parse_line_range:            2
 ;     parse_var_ref:               2
 ;     point_const_half_pi:         2
 ;     point_fp_temp3:              2
@@ -14830,6 +14825,11 @@ save pydis_start, pydis_end
 ;     read_input_line:             2
 ;     read_key_timed:              2
 ;     read_string_literal:         2
+;     renum_done:                  2
+;     renum_line_loop:             2
+;     renum_scan_loop:             2
+;     renum_table_next:            2
+;     renum_table_search:          2
 ;     resint_o:                    2
 ;     return_1:                    2
 ;     return_10:                   2
@@ -14844,13 +14844,13 @@ save pydis_start, pydis_end
 ;     return_9:                    2
 ;     rnd_fraction:                2
 ;     rnd_step:                    2
+;     setup_scan_top:              2
+;     silly_error:                 2
 ;     stack_local:                 2
 ;     stack_value:                 2
 ;     stmt_data:                   2
 ;     stmt_eol:                    2
 ;     sub_c887c:                   2
-;     sub_c8f69:                   2
-;     sub_c8f92:                   2
 ;     sub_c95dd:                   2
 ;     sub_c9890:                   2
 ;     sub_c9923:                   2
@@ -14950,25 +14950,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c8ecc:                       1
-;     c8ee0:                       1
-;     c8f0c:                       1
-;     c8f1b:                       1
-;     c8f8d:                       1
-;     c8fd6:                       1
-;     c8fe7:                       1
-;     c900d:                       1
-;     c903d:                       1
-;     c9080:                       1
-;     c90df:                       1
-;     c913c:                       1
-;     c915e:                       1
-;     c9168:                       1
-;     c91b7:                       1
-;     c91d2:                       1
-;     c9203:                       1
-;     c920b:                       1
-;     c9215:                       1
 ;     c924b:                       1
 ;     c925a:                       1
 ;     c92a5:                       1
@@ -15170,6 +15151,9 @@ save pydis_start, pydis_end
 ;     cae8d:                       1
 ;     caeaa:                       1
 ;     cafeb:                       1
+;     call_block_init:             1
+;     call_check_end:              1
+;     call_param_error:            1
 ;     call_proc_fn:                1
 ;     cb023:                       1
 ;     cb061:                       1
@@ -15269,7 +15253,20 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     cls_send:                    1
 ;     data_scan_loop:              1
+;     delete_loop:                 1
+;     dim_after:                   1
+;     dim_alloc:                   1
+;     dim_bound_loop:              1
+;     dim_byte:                    1
+;     dim_byte_block:              1
+;     dim_check_paren:             1
+;     dim_clear:                   1
+;     dim_clear_check:             1
+;     dim_name:                    1
+;     dim_next_array:              1
+;     dim_no_room_jmp:             1
 ;     encode_line_number:          1
 ;     err_no_gosub:                1
 ;     err_no_repeat:               1
@@ -15340,12 +15337,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c8f53:                  1
-;     loop_c8fb1:                  1
-;     loop_c8fea:                  1
-;     loop_c906d:                  1
-;     loop_c90dc:                  1
-;     loop_c9185:                  1
 ;     loop_c923a:                  1
 ;     loop_c92ae:                  1
 ;     loop_c92b2:                  1
@@ -15490,6 +15481,7 @@ save pydis_start, pydis_end
 ;     parse_dec_shift_loop:        1
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
+;     point_general_page:          1
 ;     print_check_sep:             1
 ;     print_comma:                 1
 ;     print_field_loop:            1
@@ -15513,6 +15505,15 @@ save pydis_start, pydis_end
 ;     print_tab_error:             1
 ;     print_tab_x:                 1
 ;     print_tab_xy:                1
+;     range_backup:                1
+;     renum_missing_line:          1
+;     renum_no_space:              1
+;     renum_pass1_loop:            1
+;     renum_pass2:                 1
+;     renum_pass2_loop:            1
+;     renum_pass3:                 1
+;     renum_ref:                   1
+;     renum_resume:                1
 ;     repeat_stack:                1
 ;     repeat_stack_hi:             1
 ;     resint_a:                    1
@@ -15552,7 +15553,6 @@ save pydis_start, pydis_end
 ;     stmt_next:                   1
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
-;     sub_c8f9a:                   1
 ;     sub_c9231:                   1
 ;     sub_c94ed:                   1
 ;     sub_c9539:                   1
@@ -15618,37 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c8ecc
-;     c8ee0
-;     c8f0c
-;     c8f1b
-;     c8f2e
-;     c8f8d
-;     c8fd6
-;     c8fdf
-;     c8fe7
-;     c900d
-;     c901a
-;     c901c
-;     c903a
-;     c903d
-;     c9043
-;     c9071
-;     c9080
-;     c90b5
-;     c90df
-;     c9127
-;     c913c
-;     c915e
-;     c9168
-;     c916b
-;     c91b7
-;     c91d2
-;     c91fc
-;     c9203
-;     c920b
-;     c9215
-;     c9218
 ;     c924b
 ;     c925a
 ;     c928a
@@ -16149,12 +16118,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c8f53
-;     loop_c8fb1
-;     loop_c8fea
-;     loop_c906d
-;     loop_c90dc
-;     loop_c9185
 ;     loop_c923a
 ;     loop_c92ae
 ;     loop_c92b2
@@ -16334,9 +16297,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c8f69
-;     sub_c8f92
-;     sub_c8f9a
 ;     sub_c9231
 ;     sub_c9456
 ;     sub_c94ed

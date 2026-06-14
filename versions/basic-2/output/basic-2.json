@@ -28762,9 +28762,9 @@
       "comment_inline": "send it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8ecc",
+      "operand": "cls_send",
       "target": 36556,
-      "target_label": "c8ecc"
+      "target_label": "cls_send"
     },
     {
       "addr": 36548,
@@ -28816,7 +28816,7 @@
         255
       ],
       "labels": [
-        "c8ecc"
+        "cls_send"
       ],
       "comment_inline": "send it",
       "xref_summaries": [
@@ -28923,7 +28923,7 @@
         6
       ],
       "labels": [
-        "c8ee0"
+        "call_block_init"
       ],
       "comment_inline": "reset the block write offset",
       "xref_summaries": [
@@ -28972,9 +28972,9 @@
       "comment_inline": "no: end of the parameters",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8f0c",
+      "operand": "call_check_end",
       "target": 36620,
-      "target_label": "c8f0c"
+      "target_label": "call_check_end"
     },
     {
       "addr": 36586,
@@ -29012,9 +29012,9 @@
       "comment_inline": "bad parameter: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8f1b",
+      "operand": "call_param_error",
       "target": 36635,
-      "target_label": "c8f1b"
+      "target_label": "call_param_error"
     },
     {
       "addr": 36593,
@@ -29162,9 +29162,9 @@
       "comment_inline": "next parameter",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ee0",
+      "operand": "call_block_init",
       "target": 36576,
-      "target_label": "c8ee0"
+      "target_label": "call_block_init"
     },
     {
       "addr": 36620,
@@ -29173,7 +29173,7 @@
         27
       ],
       "labels": [
-        "c8f0c"
+        "call_check_end"
       ],
       "comment_inline": "Check for end of statement",
       "xref_summaries": [
@@ -29261,7 +29261,7 @@
         174
       ],
       "labels": [
-        "c8f1b"
+        "call_param_error"
       ],
       "comment_inline": "parameter error (shared)",
       "xref_summaries": [
@@ -29373,7 +29373,7 @@
         152
       ],
       "labels": [
-        "c8f2e"
+        "call_arg_error"
       ],
       "comment_inline": "error (shared)",
       "xref_summaries": [
@@ -29416,9 +29416,9 @@
       "comment_inline": "none: Syntax error",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8f2e",
+      "operand": "call_arg_error",
       "target": 36654,
-      "target_label": "c8f2e"
+      "target_label": "call_arg_error"
     },
     {
       "addr": 36662,
@@ -29468,9 +29468,9 @@
       "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8f2e",
+      "operand": "call_arg_error",
       "target": 36654,
-      "target_label": "c8f2e"
+      "target_label": "call_arg_error"
     },
     {
       "addr": 36672,
@@ -29495,9 +29495,9 @@
       "comment_inline": "none: error",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8f2e",
+      "operand": "call_arg_error",
       "target": 36654,
-      "target_label": "c8f2e"
+      "target_label": "call_arg_error"
     },
     {
       "addr": 36677,
@@ -29587,7 +29587,7 @@
         188
       ],
       "labels": [
-        "loop_c8f53"
+        "delete_loop"
       ],
       "comment_inline": "Delete the line",
       "xref_summaries": [
@@ -29691,9 +29691,9 @@
       "comment_inline": "no: delete the next",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c8f53",
+      "operand": "delete_loop",
       "target": 36691,
-      "target_label": "loop_c8f53"
+      "target_label": "delete_loop"
     },
     {
       "addr": 36710,
@@ -29716,7 +29716,7 @@
         10
       ],
       "labels": [
-        "sub_c8f69"
+        "parse_line_range"
       ],
       "comment_inline": "Default start = 10",
       "xref_summaries": [
@@ -29831,9 +29831,9 @@
       "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8f8d",
+      "operand": "range_backup",
       "target": 36749,
-      "target_label": "c8f8d"
+      "target_label": "range_backup"
     },
     {
       "addr": 36736,
@@ -29871,9 +29871,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8fdf",
+      "operand": "silly_error",
       "target": 36831,
-      "target_label": "c8fdf"
+      "target_label": "silly_error"
     },
     {
       "addr": 36743,
@@ -29897,9 +29897,9 @@
       "comment_inline": "zero increment: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8fdf",
+      "operand": "silly_error",
       "target": 36831,
-      "target_label": "c8fdf"
+      "target_label": "silly_error"
     },
     {
       "addr": 36747,
@@ -29921,7 +29921,7 @@
         10
       ],
       "labels": [
-        "c8f8d"
+        "range_backup"
       ],
       "comment_inline": "back up",
       "xref_summaries": [
@@ -29957,7 +29957,7 @@
         18
       ],
       "labels": [
-        "sub_c8f92"
+        "setup_scan_top"
       ],
       "comment_inline": "Copy TOP to &3B/&3C",
       "xref_summaries": [
@@ -30019,7 +30019,7 @@
         24
       ],
       "labels": [
-        "sub_c8f9a"
+        "point_general_page"
       ],
       "comment_inline": "Point &37/&38 at PAGE",
       "xref_summaries": [
@@ -30096,9 +30096,9 @@
       "comment_inline": "Parse the start and step arguments",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f69",
+      "operand": "parse_line_range",
       "target": 36713,
-      "target_label": "sub_c8f69"
+      "target_label": "parse_line_range"
     },
     {
       "addr": 36774,
@@ -30149,9 +30149,9 @@
       "comment_inline": "Point at the program start and the table",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f92",
+      "operand": "setup_scan_top",
       "target": 36754,
-      "target_label": "sub_c8f92"
+      "target_label": "setup_scan_top"
     },
     {
       "addr": 36785,
@@ -30160,7 +30160,7 @@
         0
       ],
       "labels": [
-        "loop_c8fb1"
+        "renum_pass1_loop"
       ],
       "comment_inline": "Pass 1: for each line, read its number",
       "xref_summaries": [
@@ -30195,9 +30195,9 @@
       "comment_inline": "high bit set marks the end of program",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8fe7",
+      "operand": "renum_pass2",
       "target": 36839,
-      "target_label": "c8fe7"
+      "target_label": "renum_pass2"
     },
     {
       "addr": 36791,
@@ -30372,9 +30372,9 @@
       "comment_inline": "yes: no room for the table",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8fd6",
+      "operand": "renum_no_space",
       "target": 36822,
-      "target_label": "c8fd6"
+      "target_label": "renum_no_space"
     },
     {
       "addr": 36817,
@@ -30399,9 +30399,9 @@
       "comment_inline": "loop over all lines",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c8fb1",
+      "operand": "renum_pass1_loop",
       "target": 36785,
-      "target_label": "loop_c8fb1"
+      "target_label": "renum_pass1_loop"
     },
     {
       "addr": 36822,
@@ -30409,7 +30409,7 @@
         0
       ],
       "labels": [
-        "c8fd6"
+        "renum_no_space"
       ],
       "comment_inline": "RENUMBER ran out of space: error",
       "xref_summaries": [
@@ -30452,7 +30452,7 @@
         0
       ],
       "labels": [
-        "c8fdf"
+        "silly_error"
       ],
       "comment_inline": "error block",
       "xref_summaries": [
@@ -30505,7 +30505,7 @@
         143
       ],
       "labels": [
-        "c8fe7"
+        "renum_pass2"
       ],
       "comment_inline": "Pass 2: reset to the program start",
       "xref_summaries": [
@@ -30516,9 +30516,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f9a",
+      "operand": "point_general_page",
       "target": 36762,
-      "target_label": "sub_c8f9a"
+      "target_label": "point_general_page"
     },
     {
       "addr": 36842,
@@ -30527,7 +30527,7 @@
         0
       ],
       "labels": [
-        "loop_c8fea"
+        "renum_pass2_loop"
       ],
       "comment_inline": "for each line:",
       "xref_summaries": [
@@ -30562,9 +30562,9 @@
       "comment_inline": "end of program: go to pass 3",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c900d",
+      "operand": "renum_pass3",
       "target": 36877,
-      "target_label": "c900d"
+      "target_label": "renum_pass3"
     },
     {
       "addr": 36848,
@@ -30746,9 +30746,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c8fea",
+      "operand": "renum_pass2_loop",
       "target": 36842,
-      "target_label": "loop_c8fea"
+      "target_label": "renum_pass2_loop"
     },
     {
       "addr": 36877,
@@ -30757,7 +30757,7 @@
         24
       ],
       "labels": [
-        "c900d"
+        "renum_pass3"
       ],
       "comment_inline": "Pass 3: scan from PAGE, high byte",
       "xref_summaries": [
@@ -30840,9 +30840,9 @@
       "comment_inline": "end of program: done",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c903a",
+      "operand": "renum_done",
       "target": 36922,
-      "target_label": "c903a"
+      "target_label": "renum_done"
     },
     {
       "addr": 36890,
@@ -30851,7 +30851,7 @@
         4
       ],
       "labels": [
-        "c901a"
+        "renum_line_loop"
       ],
       "comment_inline": "Scan the line from offset 4 (past the header)",
       "xref_summaries": [
@@ -30872,7 +30872,7 @@
         11
       ],
       "labels": [
-        "c901c"
+        "renum_scan_loop"
       ],
       "comment_inline": "next token",
       "xref_summaries": [
@@ -30908,9 +30908,9 @@
       "comment_inline": "yes: rewrite the reference",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c903d",
+      "operand": "renum_ref",
       "target": 36925,
-      "target_label": "c903d"
+      "target_label": "renum_ref"
     },
     {
       "addr": 36898,
@@ -30941,9 +30941,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c901c",
+      "operand": "renum_scan_loop",
       "target": 36892,
-      "target_label": "c901c"
+      "target_label": "renum_scan_loop"
     },
     {
       "addr": 36903,
@@ -30967,9 +30967,9 @@
       "comment_inline": "end of program",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c903a",
+      "operand": "renum_done",
       "target": 36922,
-      "target_label": "c903a"
+      "target_label": "renum_done"
     },
     {
       "addr": 36907,
@@ -31039,9 +31039,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c901a",
+      "operand": "renum_line_loop",
       "target": 36890,
-      "target_label": "c901a"
+      "target_label": "renum_line_loop"
     },
     {
       "addr": 36918,
@@ -31065,9 +31065,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c901a",
+      "operand": "renum_line_loop",
       "target": 36890,
-      "target_label": "c901a"
+      "target_label": "renum_line_loop"
     },
     {
       "addr": 36922,
@@ -31077,7 +31077,7 @@
         138
       ],
       "labels": [
-        "c903a"
+        "renum_done"
       ],
       "comment_inline": "Done: back to the immediate loop",
       "xref_summaries": [
@@ -31101,7 +31101,7 @@
         151
       ],
       "labels": [
-        "c903d"
+        "renum_ref"
       ],
       "comment_inline": "Decode the &8D-encoded line number",
       "xref_summaries": [
@@ -31126,9 +31126,9 @@
       "comment_inline": "Point at the old->new table",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f92",
+      "operand": "setup_scan_top",
       "target": 36754,
-      "target_label": "sub_c8f92"
+      "target_label": "setup_scan_top"
     },
     {
       "addr": 36931,
@@ -31137,7 +31137,7 @@
         0
       ],
       "labels": [
-        "c9043"
+        "renum_table_search"
       ],
       "comment_inline": "Search the table for this old number:",
       "xref_summaries": [
@@ -31173,9 +31173,9 @@
       "comment_inline": "not found: reference to a missing line",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9080",
+      "operand": "renum_missing_line",
       "target": 36992,
-      "target_label": "c9080"
+      "target_label": "renum_missing_line"
     },
     {
       "addr": 36937,
@@ -31221,9 +31221,9 @@
       "comment_inline": "no: next table entry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9071",
+      "operand": "renum_table_next",
       "target": 36977,
-      "target_label": "c9071"
+      "target_label": "renum_table_next"
     },
     {
       "addr": 36944,
@@ -31260,9 +31260,9 @@
       "comment_inline": "no: next entry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9071",
+      "operand": "renum_table_next",
       "target": 36977,
-      "target_label": "c9071"
+      "target_label": "renum_table_next"
     },
     {
       "addr": 36950,
@@ -31420,7 +31420,7 @@
         10
       ],
       "labels": [
-        "loop_c906d"
+        "renum_resume"
       ],
       "comment_inline": "resume scanning",
       "xref_summaries": [
@@ -31444,9 +31444,9 @@
       "comment_inline": "continue the line scan",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c901c",
+      "operand": "renum_scan_loop",
       "target": 36892,
-      "target_label": "c901c"
+      "target_label": "renum_scan_loop"
     },
     {
       "addr": 36977,
@@ -31456,7 +31456,7 @@
         144
       ],
       "labels": [
-        "c9071"
+        "renum_table_next"
       ],
       "comment_inline": "Next table entry: advance...",
       "xref_summaries": [
@@ -31518,9 +31518,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9043",
+      "operand": "renum_table_search",
       "target": 36931,
-      "target_label": "c9043"
+      "target_label": "renum_table_search"
     },
     {
       "addr": 36988,
@@ -31544,9 +31544,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9043",
+      "operand": "renum_table_search",
       "target": 36931,
-      "target_label": "c9043"
+      "target_label": "renum_table_search"
     },
     {
       "addr": 36992,
@@ -31556,7 +31556,7 @@
         191
       ],
       "labels": [
-        "c9080"
+        "renum_missing_line"
       ],
       "comment_inline": "Reference to a missing line: report it",
       "xref_summaries": [
@@ -31696,9 +31696,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c906d",
+      "operand": "renum_resume",
       "target": 36973,
-      "target_label": "loop_c906d"
+      "target_label": "renum_resume"
     },
     {
       "addr": 37023,
@@ -31825,9 +31825,9 @@
       "comment_inline": "Parse the start and increment",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8f69",
+      "operand": "parse_line_range",
       "target": 36713,
-      "target_label": "sub_c8f69"
+      "target_label": "parse_line_range"
     },
     {
       "addr": 37039,
@@ -31873,7 +31873,7 @@
         189
       ],
       "labels": [
-        "c90b5"
+        "auto_loop"
       ],
       "comment_inline": "Stack the line number",
       "xref_summaries": [
@@ -32046,9 +32046,9 @@
       "comment_inline": "no carry: loop,",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c90b5",
+      "operand": "auto_loop",
       "target": 37045,
-      "target_label": "c90b5"
+      "target_label": "auto_loop"
     },
     {
       "addr": 37077,
@@ -32072,9 +32072,9 @@
       "comment_inline": "still in range: loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c90b5",
+      "operand": "auto_loop",
       "target": 37045,
-      "target_label": "c90b5"
+      "target_label": "auto_loop"
     },
     {
       "addr": 37081,
@@ -32098,7 +32098,7 @@
         146
       ],
       "labels": [
-        "loop_c90dc"
+        "dim_no_room_jmp"
       ],
       "comment_inline": "No room error",
       "xref_summaries": [
@@ -32109,9 +32109,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9218",
+      "operand": "dim_no_room",
       "target": 37400,
-      "target_label": "c9218"
+      "target_label": "dim_no_room"
     },
     {
       "addr": 37087,
@@ -32120,7 +32120,7 @@
         10
       ],
       "labels": [
-        "c90df"
+        "dim_byte_block"
       ],
       "comment_inline": "Back up to the variable",
       "xref_summaries": [
@@ -32158,9 +32158,9 @@
       "comment_inline": "not a variable: Bad DIM",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37094,
@@ -32171,9 +32171,9 @@
       "comment_inline": "indirection: Bad DIM",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37096,
@@ -32252,9 +32252,9 @@
       "comment_inline": "no: Bad DIM",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37111,
@@ -32370,9 +32370,9 @@
       "comment_inline": "yes: No room",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c90dc",
+      "operand": "dim_no_room_jmp",
       "target": 37084,
-      "target_label": "loop_c90dc"
+      "target_label": "dim_no_room_jmp"
     },
     {
       "addr": 37128,
@@ -32551,9 +32551,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c920b",
+      "operand": "dim_after",
       "target": 37387,
-      "target_label": "c920b"
+      "target_label": "dim_after"
     },
     {
       "addr": 37159,
@@ -32561,7 +32561,7 @@
         0
       ],
       "labels": [
-        "c9127"
+        "bad_dim"
       ],
       "comment_inline": "Bad DIM error",
       "xref_summaries": [
@@ -32689,9 +32689,9 @@
       "comment_inline": "No carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c913c",
+      "operand": "dim_name",
       "target": 37180,
-      "target_label": "c913c"
+      "target_label": "dim_name"
     },
     {
       "addr": 37178,
@@ -32718,7 +32718,7 @@
         0
       ],
       "labels": [
-        "c913c"
+        "dim_name"
       ],
       "comment_inline": "Back up one byte (validate reads from offset 1): low",
       "xref_summaries": [
@@ -32848,9 +32848,9 @@
       "comment_inline": "yes: Bad DIM",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37202,
@@ -32872,9 +32872,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c916b",
+      "operand": "dim_array",
       "target": 37227,
-      "target_label": "c916b"
+      "target_label": "dim_array"
     },
     {
       "addr": 37206,
@@ -32896,9 +32896,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c915e",
+      "operand": "dim_check_paren",
       "target": 37214,
-      "target_label": "c915e"
+      "target_label": "dim_check_paren"
     },
     {
       "addr": 37210,
@@ -32920,9 +32920,9 @@
       "comment_inline": "no: DIM var n (byte block)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9168",
+      "operand": "dim_byte",
       "target": 37224,
-      "target_label": "c9168"
+      "target_label": "dim_byte"
     },
     {
       "addr": 37214,
@@ -32931,7 +32931,7 @@
         63
       ],
       "labels": [
-        "c915e"
+        "dim_check_paren"
       ],
       "comment_inline": "Element size = 4 (integer/string)",
       "xref_summaries": [
@@ -32997,9 +32997,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c916b",
+      "operand": "dim_array",
       "target": 37227,
-      "target_label": "c916b"
+      "target_label": "dim_array"
     },
     {
       "addr": 37224,
@@ -33009,7 +33009,7 @@
         144
       ],
       "labels": [
-        "c9168"
+        "dim_byte"
       ],
       "comment_inline": "DIM var n: allocate a byte block",
       "xref_summaries": [
@@ -33020,9 +33020,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c90df",
+      "operand": "dim_byte_block",
       "target": 37087,
-      "target_label": "c90df"
+      "target_label": "dim_byte_block"
     },
     {
       "addr": 37227,
@@ -33031,7 +33031,7 @@
         57
       ],
       "labels": [
-        "c916b"
+        "dim_array"
       ],
       "comment_inline": "Array: save the name length",
       "xref_summaries": [
@@ -33083,9 +33083,9 @@
       "comment_inline": "yes: Bad DIM (re-DIM)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37236,
@@ -33190,7 +33190,7 @@
         189
       ],
       "labels": [
-        "loop_c9185"
+        "dim_bound_loop"
       ],
       "comment_inline": "Stack the running size",
       "xref_summaries": [
@@ -33278,9 +33278,9 @@
       "comment_inline": "no: Bad DIM",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37269,
@@ -33450,9 +33450,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9185",
+      "operand": "dim_bound_loop",
       "target": 37253,
-      "target_label": "loop_c9185"
+      "target_label": "dim_bound_loop"
     },
     {
       "addr": 37296,
@@ -33474,9 +33474,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c91b7",
+      "operand": "dim_alloc",
       "target": 37303,
-      "target_label": "c91b7"
+      "target_label": "dim_alloc"
     },
     {
       "addr": 37300,
@@ -33488,9 +33488,9 @@
       "comment_inline": "otherwise Bad DIM",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37303,
@@ -33498,7 +33498,7 @@
         104
       ],
       "labels": [
-        "c91b7"
+        "dim_alloc"
       ],
       "comment_inline": "Recover the data offset (1 + 2*dims)",
       "xref_summaries": [
@@ -33655,9 +33655,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c91d2",
+      "operand": "dim_clear",
       "target": 37330,
-      "target_label": "c91d2"
+      "target_label": "dim_clear"
     },
     {
       "addr": 37328,
@@ -33679,7 +33679,7 @@
         3
       ],
       "labels": [
-        "c91d2"
+        "dim_clear"
       ],
       "comment_inline": "Point at the current variable top",
       "xref_summaries": [
@@ -33799,9 +33799,9 @@
       "comment_inline": "overflow: No room",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9218",
+      "operand": "dim_no_room",
       "target": 37400,
-      "target_label": "c9218"
+      "target_label": "dim_no_room"
     },
     {
       "addr": 37348,
@@ -33847,9 +33847,9 @@
       "comment_inline": "yes: No room",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9218",
+      "operand": "dim_no_room",
       "target": 37400,
-      "target_label": "c9218"
+      "target_label": "dim_no_room"
     },
     {
       "addr": 37355,
@@ -33945,9 +33945,9 @@
       "comment_inline": "no page crossing",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c91fc",
+      "operand": "dim_clear_loop",
       "target": 37372,
-      "target_label": "c91fc"
+      "target_label": "dim_clear_loop"
     },
     {
       "addr": 37370,
@@ -33969,7 +33969,7 @@
         55
       ],
       "labels": [
-        "c91fc"
+        "dim_clear_loop"
       ],
       "comment_inline": "store a zero byte",
       "xref_summaries": [
@@ -34004,9 +34004,9 @@
       "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9203",
+      "operand": "dim_clear_check",
       "target": 37379,
-      "target_label": "c9203"
+      "target_label": "dim_clear_check"
     },
     {
       "addr": 37377,
@@ -34028,7 +34028,7 @@
         2
       ],
       "labels": [
-        "c9203"
+        "dim_clear_check"
       ],
       "comment_inline": "reached the new top?",
       "xref_summaries": [
@@ -34052,9 +34052,9 @@
       "comment_inline": "low byte not at top yet: keep zeroing",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c91fc",
+      "operand": "dim_clear_loop",
       "target": 37372,
-      "target_label": "c91fc"
+      "target_label": "dim_clear_loop"
     },
     {
       "addr": 37383,
@@ -34078,9 +34078,9 @@
       "comment_inline": "not there yet: keep zeroing",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c91fc",
+      "operand": "dim_clear_loop",
       "target": 37372,
-      "target_label": "c91fc"
+      "target_label": "dim_clear_loop"
     },
     {
       "addr": 37387,
@@ -34090,7 +34090,7 @@
         138
       ],
       "labels": [
-        "c920b"
+        "dim_after"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -34125,9 +34125,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9215",
+      "operand": "dim_next_array",
       "target": 37397,
-      "target_label": "c9215"
+      "target_label": "dim_next_array"
     },
     {
       "addr": 37394,
@@ -34151,7 +34151,7 @@
         145
       ],
       "labels": [
-        "c9215"
+        "dim_next_array"
       ],
       "comment_inline": "DIM the next array",
       "xref_summaries": [
@@ -34172,7 +34172,7 @@
         0
       ],
       "labels": [
-        "c9218"
+        "dim_no_room"
       ],
       "comment_inline": "No room error",
       "xref_summaries": [
@@ -34670,9 +34670,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9127",
+      "operand": "bad_dim",
       "target": 37159,
-      "target_label": "c9127"
+      "target_label": "bad_dim"
     },
     {
       "addr": 37469,
