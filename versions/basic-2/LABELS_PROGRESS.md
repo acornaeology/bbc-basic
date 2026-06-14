@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — label-naming pass
 
-**STATUS: in progress — 744 auto-generated labels remaining (of 864).
+**STATUS: in progress — 554 auto-generated labels remaining (of 864).
 Goal: give every dasmos auto-named label (`cXXXX`, `loop_cXXXX`,
 `sub_cXXXX`, `lXXXX`) a semantically meaningful, globally unique name.**
 
@@ -87,15 +87,24 @@ label), so a clash is caught immediately.
 | 2026-06-14 | asm_parse_mnemonic (full assembler) | 51 | 787 | 6ea288a |
 | 2026-06-14 | parse_decimal_u16 + name-char helpers | 8 | 779 | ce7b6f7 |
 | 2026-06-14 | tokenise_line | 35 | 744 | 75b0d75 |
+| 2026-06-14 | line exec + LET | 16 | 728 | 935168b |
+| 2026-06-14 | string assign + LOCAL + PRINT# | 27 | 701 | 928d13d |
+| 2026-06-14 | stmt_print + special items | 22 | 679 | 5e0b606 |
+| 2026-06-14 | CLS/CALL/DELETE/RENUMBER/AUTO/DIM | 40 | 639 | ecb899b |
+| 2026-06-14 | imul/TRACE/PROC/LOCAL/MODE/PLOT/VDU | 25 | 614 | a6b1165 |
+| 2026-06-14 | find/create var + lvalue | 29 | 585 | 1365841 |
+| 2026-06-14 | parse_var_ref + index_array | 31 | 554 | 23e4916 |
 
 ## Resume here
 
 Done through the inline assembler (&8063-&8831). The append +
 `driver sort -i` recipe is confirmed (byte-identical each batch).
 
-Next routine in address order: **skip_spaces (&8AA2)**, then
-start_new_program (&8AF3), execute_line (&8B38), stmt_data, … through
-the statement handlers and beyond. Work address-ascending; regenerate
+Next routine in address order: **decode_line_number (&9805)**, then
+eval_after_eq, expect_eq, check_end_of_statement (&9859, 12), stmt_if,
+print_line_number, find_program_line, iwa_divide, the iwa_* arithmetic,
+the eval_* operators, number_to_ascii (&9EE8, 32), parse_number, the FP
+routines, the fn_* functions, the remaining stmt_* handlers. Regenerate
 the live,
 comment-enriched worklist with:
 
