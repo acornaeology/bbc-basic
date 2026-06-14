@@ -149,8 +149,8 @@ HANDLER_INFO = {
                         'also the ineg1 integer primitive.'),
     'fn_false': ('FALSE', 'The constant FALSE (0). Sets IWA = 0; this is '
                           'also the izero integer primitive.'),
-    'fn_to': ('TO', 'The TO keyword of FOR. It has no standalone action; '
-                    'reaching it as a statement token is an error.'),
+    'fn_to': ('TO', 'The TO keyword. "TO P" reads TOP, the end of the BASIC '
+                    'program, as an integer; any other TO is a syntax error.'),
     'fn_asc': ('ASC', 'ASCII code of the first character of a string, or '
                       '-1 if empty. ASC string.'),
     'fn_len': ('LEN', 'Length of a string. LEN string.'),
@@ -1203,7 +1203,10 @@ d.comment(0x8925, 'return (carry clear)', align=Align.INLINE)
 d.subroutine(0x8926, 'is_alphanumeric',
              title='Test A for a name character',
              description='Return carry set if A is 0-9, A-Z, a-z or _, the '
-                         'characters allowed in a variable or FN/PROC name.')
+                         'characters allowed in a variable or FN/PROC name.',
+             on_entry={'A': 'the character to test'},
+             on_exit={'C': 'set if A is a name character',
+                      'A': 'preserved', 'X': 'preserved', 'Y': 'preserved'})
 # is_alphanumeric (&8926).
 d.comment(0x8926, "above 'z'?", align=Align.INLINE)
 d.comment(0x8928, 'yes: no', align=Align.INLINE)
@@ -1227,6 +1230,10 @@ d.subroutine(
     description="""Load the byte at (zp_general),Y and fall through to
 inc_ptr_general to step the 16-bit pointer on by one.
 """,
+    on_entry={'(zp_general) (&37/&38)': 'the pointer to read through',
+              'Y': 'offset added to the pointer'},
+    on_exit={'A': 'the byte read', 'zp_general': 'advanced by one',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 # read_via_ptr_general (&8942) / inc_ptr_general (&8944) / sub_c894b
 d.comment(0x8942, 'Read the byte at (zp_general)+Y, then advance', align=Align.INLINE)
@@ -1236,6 +1243,9 @@ d.subroutine(
     description="""Increment the little-endian pointer held in zp_general
 (&37/&38) by one, carrying into the high byte.
 """,
+    on_entry={'zp_general (&37/&38)': 'the pointer to advance'},
+    on_exit={'zp_general': 'incremented by one',
+             'A': 'preserved', 'X': 'preserved', 'Y': 'preserved'},
 )
 d.comment(0x8944, 'Increment the general pointer: low byte', align=Align.INLINE)
 d.comment(0x8946, 'No carry: done', align=Align.INLINE)
@@ -6137,16 +6147,28 @@ d.comment(0xa7e2, 'count', align=Align.INLINE)
 d.comment(0xa7e4, 'iterate', align=Align.INLINE)
 d.comment(0xa7e6, 'real result', align=Align.INLINE)
 d.comment(0xa7e8, 'Return the root', align=Align.INLINE)
-d.subroutine(0xa7e9, 'point_fp_temp4', title='Point zp_fp_ptr at FP TEMP4 (&047B)')
+d.subroutine(0xa7e9, 'point_fp_temp4', title='Point zp_fp_ptr at FP TEMP4 (&047B)',
+             description='Set zp_fp_ptr to FP TEMP4, ready for a pack/unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &047B',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xa7e9, 'TEMP4 low (&7B)', align=Align.INLINE)
 d.comment(0xa7eb, 'set it (shared tail)', align=Align.INLINE)
-d.subroutine(0xa7ed, 'point_fp_temp2', title='Point zp_fp_ptr at FP TEMP2 (&0471)')
+d.subroutine(0xa7ed, 'point_fp_temp2', title='Point zp_fp_ptr at FP TEMP2 (&0471)',
+             description='Set zp_fp_ptr to FP TEMP2, ready for a pack/unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &0471',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xa7ed, 'TEMP2 low (&71)', align=Align.INLINE)
 d.comment(0xa7ef, 'set it (shared tail)', align=Align.INLINE)
-d.subroutine(0xa7f1, 'point_fp_temp3', title='Point zp_fp_ptr at FP TEMP3 (&0476)')
+d.subroutine(0xa7f1, 'point_fp_temp3', title='Point zp_fp_ptr at FP TEMP3 (&0476)',
+             description='Set zp_fp_ptr to FP TEMP3, ready for a pack/unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &0476',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xa7f1, 'TEMP3 low (&76)', align=Align.INLINE)
 d.comment(0xa7f3, 'set it (shared tail)', align=Align.INLINE)
-d.subroutine(0xa7f5, 'point_fp_temp1', title='Point zp_fp_ptr at FP TEMP1 (&046C)')
+d.subroutine(0xa7f5, 'point_fp_temp1', title='Point zp_fp_ptr at FP TEMP1 (&046C)',
+             description='Set zp_fp_ptr to FP TEMP1, ready for a pack/unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &046C',
+                      'X': 'preserved', 'Y': 'preserved'})
 
 d.comment(0xa7f5, 'TEMP1 low (&6C)', align=Align.INLINE)
 d.comment(0xa7f7, 'set the pointer low', align=Align.INLINE)
@@ -6401,19 +6423,31 @@ d.comment(0xaa35, 'Argument in range: reduced angle is the argument',
 d.comment(0xaa38, 'Argument too large: error', align=Align.INLINE)
 
 d.subroutine(0xaa48, 'point_half_pi_hi',
-             title='Point the fp pointer at the high part of pi/2 (&AA59)')
+             title='Point the fp pointer at the high part of pi/2 (&AA59)',
+             description='Set zp_fp_ptr to the high half of the extended-'
+                         'precision pi/2 constant, ready to unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &AA59',
+                      'X': 'preserved', 'Y': 'preserved'})
 # Constant loaders for the two-part pi/2 and the rounded pi/2.
 d.comment(0xaa48, 'High part of pi/2: low byte', align=Align.INLINE)
 d.comment(0xaa4a, '...(shared tail)', align=Align.INLINE)
 d.subroutine(0xaa4c, 'point_half_pi_lo',
-             title='Point the fp pointer at the low part of pi/2 (&AA5E)')
+             title='Point the fp pointer at the low part of pi/2 (&AA5E)',
+             description='Set zp_fp_ptr to the low half of the extended-'
+                         'precision pi/2 constant, ready to unpack.',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &AA5E',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xaa4c, 'Low part of pi/2: low byte', align=Align.INLINE)
 d.comment(0xaa4e, 'Set the fp pointer low', align=Align.INLINE)
 d.comment(0xaa50, 'high &AA', align=Align.INLINE)
 d.comment(0xaa52, 'pointer high', align=Align.INLINE)
 d.comment(0xaa54, 'Return', align=Align.INLINE)
 d.subroutine(0xaa55, 'point_const_half_pi',
-             title='Point the fp pointer at the pi/2 constant (&AA63)')
+             title='Point the fp pointer at the pi/2 constant (&AA63)',
+             description='Set zp_fp_ptr to the packed pi/2 constant, ready to '
+                         'unpack (used by the range reduction in SIN/COS).',
+             on_exit={'zp_fp_ptr (&4B/&4C)': '= &AA63',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xaa55, 'pi/2 constant: low byte', align=Align.INLINE)
 d.comment(0xaa57, '...(shared tail)', align=Align.INLINE)
 
@@ -7029,9 +7063,13 @@ d.comment(0xaed6, 'Length, returned as an integer', align=Align.INLINE)
 
 d.subroutine(0xaed8, 'int_result_a',
              title='Return A as an integer result',
-             description='Set the result to the unsigned byte in A (high '
-                         'bytes zero) and mark it integer. The common tail '
-                         'for functions returning a small integer.')
+             description='Set IWA to the unsigned byte in A (high bytes zero) '
+                         'and report the integer type. The common tail for '
+                         'functions returning a small integer.',
+             on_entry={'A': 'the unsigned byte to return'},
+             on_exit={'zp_iwa (&2A-&2D)': 'A zero-extended to 32 bits',
+                      'A': 'integer type marker (&40)',
+                      'X': 'preserved'})
 # int_result_a (&AED8).
 d.comment(0xaed8, 'High byte zero', align=Align.INLINE)
 d.comment(0xaeda, 'return A as the integer', align=Align.INLINE)
@@ -7048,9 +7086,11 @@ d.comment(0xaee8, 'high byte (returned as an integer)', align=Align.INLINE)
 d.subroutine(
     0xaeea, 'iwa_from_ya',
     title='Set the integer accumulator to a small integer',
-    description='IWA = 256*Y + A.',
+    description='IWA = 256*Y + A, zero-extended to 32 bits (unsigned '
+                '0-65535), then report the integer type.',
     on_entry={'A': 'low byte', 'Y': 'high byte'},
-    on_exit={'zp_iwa': '256*Y + A (sign-extended)'},
+    on_exit={'zp_iwa (&2A-&2D)': '256*Y + A (unsigned, top two bytes zero)',
+             'A': 'integer type marker (&40)', 'X': 'preserved'},
 )
 # iwa_from_ya (&AEEA): IWA = unsigned 256*Y + A
 d.comment(0xaeea, 'Low byte (A) into IWA byte 0', align=Align.INLINE)
@@ -7153,7 +7193,12 @@ d.comment(0xaf54, 'Point at the state (&0D), then copy it to IWA',
 d.subroutine(
     0xaf56, 'iwa_load_zp',
     title='Load a zero-page integer variable into the accumulator',
-    description='Copy a 4-byte integer from a zero-page location into IWA.',
+    description='Copy the 4-byte integer at &00+X (a resident integer variable '
+                'A%-Z% or @%) into IWA, then report the integer type.',
+    on_entry={'X': 'zero-page offset of the source variable (from &00)'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the loaded integer',
+             'A': 'integer type marker (&40)',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 # iwa_load_zp (&AF56): copy the 4-byte integer at (&00+X) into IWA
 d.comment(0xaf56, 'Copy 4-byte value at &00+X into IWA: byte 0', align=Align.INLINE)
@@ -8150,7 +8195,12 @@ d.comment(0xb54a, 'print it', align=Align.INLINE)
 d.comment(0xb54d, 'Low nibble', align=Align.INLINE)
 d.comment(0xb54e, 'keep the low nibble', align=Align.INLINE)
 d.subroutine(0xb550, 'print_hex_digit',
-             title='Print the low nibble of A as a hex digit')
+             title='Print the low nibble of A as a hex digit',
+             description='Convert A (0-15) to the ASCII hex digit 0-9 / A-F and '
+                         'fall into print_char to emit it with column tracking.',
+             on_entry={'A': 'a value 0-15 (the low nibble to print)'},
+             on_exit={'zp_count (&1E)': 'the print column, advanced',
+                      'A': 'corrupted', 'X': 'corrupted', 'Y': 'corrupted'})
 # print_hex_digit (&B550).
 d.comment(0xb550, 'above 9?', align=Align.INLINE)
 d.comment(0xb552, 'no', align=Align.INLINE)
@@ -8159,7 +8209,13 @@ d.comment(0xb556, 'to ASCII, then fall into print_char', align=Align.INLINE)
 d.subroutine(0xb558, 'print_char',
              title='Print a character with column tracking',
              description='Output A through the print formatter, handling CR '
-                         'specially and maintaining the print column COUNT.')
+                         'specially and maintaining the print column COUNT. '
+                         'Auto-newlines when the column reaches WIDTH.',
+             on_entry={'A': 'the character to print',
+                       'zp_count (&1E)': 'the current print column',
+                       'zp_width (&23)': 'the print WIDTH limit'},
+             on_exit={'zp_count (&1E)': 'updated (reset by CR, else advanced)',
+                      'X': 'corrupted', 'Y': 'corrupted'})
 # print_char (&B558).
 d.comment(0xb558, 'carriage return?', align=Align.INLINE)
 d.comment(0xb55a, 'no: format and print', align=Align.INLINE)
@@ -8167,7 +8223,13 @@ d.comment(0xb55c, 'print the CR', align=Align.INLINE)
 d.comment(0xb55f, 'reset the column', align=Align.INLINE)
 d.comment(0xb562, 'Print A as hex then a space', align=Align.INLINE)
 d.subroutine(0xb565, 'print_space',
-             title='Print a space through the print formatter')
+             title='Print a space through the print formatter',
+             description='Print a space via print_char, auto-newlining when the '
+                         'column reaches WIDTH.',
+             on_entry={'zp_count (&1E)': 'the current print column',
+                       'zp_width (&23)': 'the print WIDTH limit'},
+             on_exit={'zp_count (&1E)': 'advanced past the space',
+                      'A': 'space (&20)', 'X': 'corrupted', 'Y': 'corrupted'})
 d.comment(0xb565, 'Space', align=Align.INLINE)
 d.comment(0xb567, 'Save the character', align=Align.INLINE)
 d.comment(0xb568, 'WIDTH limit', align=Align.INLINE)

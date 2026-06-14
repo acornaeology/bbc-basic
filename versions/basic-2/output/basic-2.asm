@@ -1713,6 +1713,15 @@ l848a = sub_c847b+15
 ;
 ; Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or
 ; FN/PROC name.
+;
+; On Entry:
+;     A: the character to test
+;
+; On Exit:
+;     C: set if A is a name character
+;     A: preserved
+;     X: preserved
+;     Y: preserved
 ; &8926 referenced 5 times by &89cb, &89d4, &8a43, &8a74, &b167
 .is_alphanumeric
     cmp #&7b ; '{'                                                    ; 8926: c9 7b       .{       ; above 'z'?
@@ -1741,6 +1750,16 @@ l848a = sub_c847b+15
 ;
 ; Load the byte at (zp_general),Y and fall through to inc_ptr_general to step the 16-bit
 ; pointer on by one.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the pointer to read through
+;     Y: offset added to the pointer
+;
+; On Exit:
+;     A: the byte read
+;     ZP_GENERAL: advanced by one
+;     X: preserved
+;     Y: preserved
 ; &8942 referenced 4 times by &b3d9, &b3e8, &b3f1, &b3f6
 .read_via_ptr_general
     lda (zp_general),y                                                ; 8942: b1 37       .7       ; Read the byte at (zp_general)+Y, then advance
@@ -1749,6 +1768,15 @@ l848a = sub_c847b+15
 ;
 ; Increment the little-endian pointer held in zp_general (&37/&38) by one, carrying into
 ; the high byte.
+;
+; On Entry:
+;     ZP_GENERAL (&37/&38): the pointer to advance
+;
+; On Exit:
+;     ZP_GENERAL: incremented by one
+;     A: preserved
+;     X: preserved
+;     Y: preserved
 ; &8944 referenced 8 times by &8919, &891c, &891f, &894b, &8961, &89bc, &89d9, &8a79
 .inc_ptr_general
     inc zp_general                                                    ; 8944: e6 37       .7       ; Increment the general pointer: low byte
@@ -7970,24 +7998,52 @@ l848a = sub_c847b+15
     rts                                                               ; a7e8: 60          `        ; Return the root
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP4 (&047B)
+;
+; Set zp_fp_ptr to FP TEMP4, ready for a pack/unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &047B
+;     X: preserved
+;     Y: preserved
 ; &a7e9 referenced 4 times by &a6c7, &a6d2, &a6de, &a83f
 .point_fp_temp4
     lda #&7b ; '{'                                                    ; a7e9: a9 7b       .{       ; TEMP4 low (&7B)
     bne ca7f7                                                         ; a7eb: d0 0a       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP2 (&0471)
+;
+; Set zp_fp_ptr to FP TEMP2, ready for a pack/unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &0471
+;     X: preserved
+;     Y: preserved
 ; &a7ed referenced 3 times by &9e7e, &a7cc, &aa23
 .point_fp_temp2
     lda #&71 ; 'q'                                                    ; a7ed: a9 71       .q       ; TEMP2 low (&71)
     bne ca7f7                                                         ; a7ef: d0 06       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP3 (&0476)
+;
+; Set zp_fp_ptr to FP TEMP3, ready for a pack/unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &0476
+;     X: preserved
+;     Y: preserved
 ; &a7f1 referenced 2 times by &a8f5, &aad1
 .point_fp_temp3
     lda #&76 ; 'v'                                                    ; a7f1: a9 76       .v       ; TEMP3 low (&76)
     bne ca7f7                                                         ; a7f3: d0 02       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP1 (&046C)
+;
+; Set zp_fp_ptr to FP TEMP1, ready for a pack/unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &046C
+;     X: preserved
+;     Y: preserved
 ; &a7f5 referenced 6 times by &9f71, &a3b2, &a860, &a8b5, &aa1a, &aa2f
 .point_fp_temp1
     lda #&6c ; 'l'                                                    ; a7f5: a9 6c       .l       ; TEMP1 low (&6C)
@@ -8380,12 +8436,27 @@ l848a = sub_c847b+15
     equb &00                                                          ; aa47: 00          .     
 ; ***************************************************************************************
 ; Point the fp pointer at the high part of pi/2 (&AA59)
+;
+; Set zp_fp_ptr to the high half of the extended-precision pi/2 constant, ready to
+; unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &AA59
+;     X: preserved
+;     Y: preserved
 ; &aa48 referenced 2 times by &a927, &aa14
 .point_half_pi_hi
     lda #&59 ; 'Y'                                                    ; aa48: a9 59       .Y       ; High part of pi/2: low byte
     bne caa4e                                                         ; aa4a: d0 02       ..       ; ...(shared tail)
 ; ***************************************************************************************
 ; Point the fp pointer at the low part of pi/2 (&AA5E)
+;
+; Set zp_fp_ptr to the low half of the extended-precision pi/2 constant, ready to unpack.
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &AA5E
+;     X: preserved
+;     Y: preserved
 ; &aa4c referenced 2 times by &a92d, &aa29
 .point_half_pi_lo
     lda #&5e ; '^'                                                    ; aa4c: a9 5e       .^       ; Low part of pi/2: low byte
@@ -8397,6 +8468,14 @@ l848a = sub_c847b+15
     rts                                                               ; aa54: 60          `        ; Return
 ; ***************************************************************************************
 ; Point the fp pointer at the pi/2 constant (&AA63)
+;
+; Set zp_fp_ptr to the packed pi/2 constant, ready to unpack (used by the range reduction
+; in SIN/COS).
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): = &AA63
+;     X: preserved
+;     Y: preserved
 ; &aa55 referenced 2 times by &a8fe, &a9dc
 .point_const_half_pi
     lda #&63 ; 'c'                                                    ; aa55: a9 63       .c       ; pi/2 constant: low byte
@@ -9513,8 +9592,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Return A as an integer result
 ;
-; Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The
+; Set IWA to the unsigned byte in A (high bytes zero) and report the integer type. The
 ; common tail for functions returning a small integer.
+;
+; On Entry:
+;     A: the unsigned byte to return
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): A zero-extended to 32 bits
+;     A: integer type marker (&40)
+;     X: preserved
 ; &aed8 referenced 18 times by &8f6b, &8f76, &9182, &9339, &96f8, &ab6a, &ab73, &ab7c, &aba2, &acaa, &ad4f, &aecc, &aef9, &afbc, &b5a9, &b810, &bf75, &bf93
 .int_result_a
     ldy #0                                                            ; aed8: a0 00       ..       ; High byte zero
@@ -9522,8 +9609,8 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; TO
 ;
-; The TO keyword of FOR. It has no standalone action; reaching it as a statement token is
-; an error.
+; The TO keyword. "TO P" reads TOP, the end of the BASIC program, as an integer; any
+; other TO is a syntax error.
 ;
 ; On Entry:
 ;     A: the function keyword token (&8E-&C5)
@@ -9545,14 +9632,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Set the integer accumulator to a small integer
 ;
-; IWA = 256*Y + A.
+; IWA = 256*Y + A, zero-extended to 32 bits (unsigned 0-65535), then report the integer
+; type.
 ;
 ; On Entry:
 ;     A: low byte
 ;     Y: high byte
 ;
 ; On Exit:
-;     ZP_IWA: 256*Y + A (sign-extended)
+;     ZP_IWA (&2A-&2D): 256*Y + A (unsigned, top two bytes zero)
+;     A: integer type marker (&40)
+;     X: preserved
 ; &aeea referenced 11 times by &98a4, &ab3e, &acb5, &ae40, &aec4, &aeda, &af00, &af07, &afa3, &afaa, &b351
 .iwa_from_ya
     sta zp_iwa                                                        ; aeea: 85 2a       .*       ; Low byte (A) into IWA byte 0
@@ -9691,7 +9781,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Load a zero-page integer variable into the accumulator
 ;
-; Copy a 4-byte integer from a zero-page location into IWA.
+; Copy the 4-byte integer at &00+X (a resident integer variable A%-Z% or @%) into IWA,
+; then report the integer type.
+;
+; On Entry:
+;     X: zero-page offset of the source variable (from &00)
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the loaded integer
+;     A: integer type marker (&40)
+;     X: preserved
+;     Y: preserved
 ; &af56 referenced 2 times by &9dbd, &b326
 .iwa_load_zp
     lda zp_lomem,x                                                    ; af56: b5 00       ..       ; Copy 4-byte value at &00+X into IWA: byte 0
@@ -10976,6 +11076,18 @@ l848a = sub_c847b+15
     and #&0f                                                          ; b54e: 29 0f       ).       ; keep the low nibble
 ; ***************************************************************************************
 ; Print the low nibble of A as a hex digit
+;
+; Convert A (0-15) to the ASCII hex digit 0-9 / A-F and fall into print_char to emit it
+; with column tracking.
+;
+; On Entry:
+;     A: a value 0-15 (the low nibble to print)
+;
+; On Exit:
+;     ZP_COUNT (&1E): the print column, advanced
+;     A: corrupted
+;     X: corrupted
+;     Y: corrupted
 ; &b550 referenced 1 time by &b54a
 .print_hex_digit
     cmp #&0a                                                          ; b550: c9 0a       ..       ; above 9?
@@ -10988,7 +11100,17 @@ l848a = sub_c847b+15
 ; Print a character with column tracking
 ;
 ; Output A through the print formatter, handling CR specially and maintaining the print
-; column COUNT.
+; column COUNT. Auto-newlines when the column reaches WIDTH.
+;
+; On Entry:
+;     A: the character to print
+;     ZP_COUNT (&1E): the current print column
+;     ZP_WIDTH (&23): the print WIDTH limit
+;
+; On Exit:
+;     ZP_COUNT (&1E): updated (reset by CR, else advanced)
+;     X: corrupted
+;     Y: corrupted
 ; &b558 referenced 13 times by &855c, &855f, &8e17, &8ea4, &9911, &9919, &9964, &b512, &b53c, &b583, &b64b, &ba9f, &bc02
 .print_char
     cmp #&0d                                                          ; b558: c9 0d       ..       ; carriage return?
@@ -11000,6 +11122,18 @@ l848a = sub_c847b+15
     jsr print_hex_byte                                                ; b562: 20 45 b5     E.      ; Print A as hex then a space
 ; ***************************************************************************************
 ; Print a space through the print formatter
+;
+; Print a space via print_char, auto-newlining when the column reaches WIDTH.
+;
+; On Entry:
+;     ZP_COUNT (&1E): the current print column
+;     ZP_WIDTH (&23): the print WIDTH limit
+;
+; On Exit:
+;     ZP_COUNT (&1E): advanced past the space
+;     A: space (&20)
+;     X: corrupted
+;     Y: corrupted
 ; &b565 referenced 9 times by &8544, &8559, &8db5, &8e08, &8e5f, &991c, &995a, &b57e, &b580
 .print_space
     lda #&20 ; ' '                                                    ; b565: a9 20       .        ; Space

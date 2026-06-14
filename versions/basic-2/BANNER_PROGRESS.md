@@ -269,6 +269,7 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | setup | banner_status.py tool + this tracker | — | 265 | — |
 | 2026-06-14 | driver sort | (whole driver) address-ordered | — | 265 | b8a29c5 |
 | 2026-06-14 | shared contracts | ~112 table-generated stmt_*/fn_* handlers | 111 | 154 | 8ed2ace |
+| 2026-06-14 | FP primitives | 17 FWA/FWB pack/unpack/move/mantissa routines | 17 | 137 | ad91f78 |
 
 ## Resume here
 

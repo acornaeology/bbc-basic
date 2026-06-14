@@ -853,7 +853,7 @@
       "addr": 44764,
       "name": "fn_to",
       "title": "TO",
-      "description": "The TO keyword of FOR. It has no standalone action; reaching it as a statement token is an error.",
+      "description": "The TO keyword. \"TO P\" reads TOP, the end of the BASIC program, as an integer; any other TO is a syntax error.",
       "on_entry": {
         "A": "the function keyword token (&8E-&C5)",
         "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
@@ -1921,20 +1921,48 @@
       "addr": 35110,
       "name": "is_alphanumeric",
       "title": "Test A for a name character",
-      "description": "Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or FN/PROC name."
+      "description": "Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or FN/PROC name.",
+      "on_entry": {
+        "A": "the character to test"
+      },
+      "on_exit": {
+        "C": "set if A is a name character",
+        "A": "preserved",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 35138,
       "name": "read_via_ptr_general",
       "title": "Read a byte via the general pointer, then advance it",
       "description": "Load the byte at (zp_general),Y and fall through to\ninc_ptr_general to step the 16-bit pointer on by one.\n",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "the pointer to read through",
+        "Y": "offset added to the pointer"
+      },
+      "on_exit": {
+        "A": "the byte read",
+        "zp_general": "advanced by one",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 35140,
       "name": "inc_ptr_general",
       "title": "Increment the general 16-bit pointer",
-      "description": "Increment the little-endian pointer held in zp_general\n(&37/&38) by one, carrying into the high byte.\n"
+      "description": "Increment the little-endian pointer held in zp_general\n(&37/&38) by one, carrying into the high byte.\n",
+      "on_entry": {
+        "zp_general (&37/&38)": "the pointer to advance"
+      },
+      "on_exit": {
+        "zp_general": "incremented by one",
+        "A": "preserved",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 35153,
@@ -2780,24 +2808,48 @@
       "addr": 42985,
       "name": "point_fp_temp4",
       "title": "Point zp_fp_ptr at FP TEMP4 (&047B)",
+      "description": "Set zp_fp_ptr to FP TEMP4, ready for a pack/unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &047B",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 42989,
       "name": "point_fp_temp2",
       "title": "Point zp_fp_ptr at FP TEMP2 (&0471)",
+      "description": "Set zp_fp_ptr to FP TEMP2, ready for a pack/unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &0471",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 42993,
       "name": "point_fp_temp3",
       "title": "Point zp_fp_ptr at FP TEMP3 (&0476)",
+      "description": "Set zp_fp_ptr to FP TEMP3, ready for a pack/unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &0476",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 42997,
       "name": "point_fp_temp1",
-      "title": "Point zp_fp_ptr at FP TEMP1 (&046C)"
+      "title": "Point zp_fp_ptr at FP TEMP1 (&046C)",
+      "description": "Set zp_fp_ptr to FP TEMP1, ready for a pack/unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &046C",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 43159,
@@ -2821,17 +2873,35 @@
       "addr": 43592,
       "name": "point_half_pi_hi",
       "title": "Point the fp pointer at the high part of pi/2 (&AA59)",
+      "description": "Set zp_fp_ptr to the high half of the extended-precision pi/2 constant, ready to unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &AA59",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 43596,
       "name": "point_half_pi_lo",
-      "title": "Point the fp pointer at the low part of pi/2 (&AA5E)"
+      "title": "Point the fp pointer at the low part of pi/2 (&AA5E)",
+      "description": "Set zp_fp_ptr to the low half of the extended-precision pi/2 constant, ready to unpack.",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &AA5E",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 43605,
       "name": "point_const_half_pi",
       "title": "Point the fp pointer at the pi/2 constant (&AA63)",
+      "description": "Set zp_fp_ptr to the packed pi/2 constant, ready to unpack (used by the range reduction in SIN/COS).",
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "= &AA63",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
@@ -2904,20 +2974,30 @@
       "addr": 44760,
       "name": "int_result_a",
       "title": "Return A as an integer result",
-      "description": "Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The common tail for functions returning a small integer.",
+      "description": "Set IWA to the unsigned byte in A (high bytes zero) and report the integer type. The common tail for functions returning a small integer.",
+      "on_entry": {
+        "A": "the unsigned byte to return"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "A zero-extended to 32 bits",
+        "A": "integer type marker (&40)",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 44778,
       "name": "iwa_from_ya",
       "title": "Set the integer accumulator to a small integer",
-      "description": "IWA = 256*Y + A.",
+      "description": "IWA = 256*Y + A, zero-extended to 32 bits (unsigned 0-65535), then report the integer type.",
       "on_entry": {
         "A": "low byte",
         "Y": "high byte"
       },
       "on_exit": {
-        "zp_iwa": "256*Y + A (sign-extended)"
+        "zp_iwa (&2A-&2D)": "256*Y + A (unsigned, top two bytes zero)",
+        "A": "integer type marker (&40)",
+        "X": "preserved"
       }
     },
     {
@@ -2943,7 +3023,16 @@
       "addr": 44886,
       "name": "iwa_load_zp",
       "title": "Load a zero-page integer variable into the accumulator",
-      "description": "Copy a 4-byte integer from a zero-page location into IWA."
+      "description": "Copy the 4-byte integer at &00+X (a resident integer variable A%-Z% or @%) into IWA, then report the integer type.",
+      "on_entry": {
+        "X": "zero-page offset of the source variable (from &00)"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the loaded integer",
+        "A": "integer type marker (&40)",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 44905,
@@ -3062,19 +3151,50 @@
       "addr": 46416,
       "name": "print_hex_digit",
       "title": "Print the low nibble of A as a hex digit",
+      "description": "Convert A (0-15) to the ASCII hex digit 0-9 / A-F and fall into print_char to emit it with column tracking.",
+      "on_entry": {
+        "A": "a value 0-15 (the low nibble to print)"
+      },
+      "on_exit": {
+        "zp_count (&1E)": "the print column, advanced",
+        "A": "corrupted",
+        "X": "corrupted",
+        "Y": "corrupted"
+      },
       "fall_through": true
     },
     {
       "addr": 46424,
       "name": "print_char",
       "title": "Print a character with column tracking",
-      "description": "Output A through the print formatter, handling CR specially and maintaining the print column COUNT.",
+      "description": "Output A through the print formatter, handling CR specially and maintaining the print column COUNT. Auto-newlines when the column reaches WIDTH.",
+      "on_entry": {
+        "A": "the character to print",
+        "zp_count (&1E)": "the current print column",
+        "zp_width (&23)": "the print WIDTH limit"
+      },
+      "on_exit": {
+        "zp_count (&1E)": "updated (reset by CR, else advanced)",
+        "X": "corrupted",
+        "Y": "corrupted"
+      },
       "fall_through": true
     },
     {
       "addr": 46437,
       "name": "print_space",
-      "title": "Print a space through the print formatter"
+      "title": "Print a space through the print formatter",
+      "description": "Print a space via print_char, auto-newlining when the column reaches WIDTH.",
+      "on_entry": {
+        "zp_count (&1E)": "the current print column",
+        "zp_width (&23)": "the print WIDTH limit"
+      },
+      "on_exit": {
+        "zp_count (&1E)": "advanced past the space",
+        "A": "space (&20)",
+        "X": "corrupted",
+        "Y": "corrupted"
+      }
     },
     {
       "addr": 46455,
