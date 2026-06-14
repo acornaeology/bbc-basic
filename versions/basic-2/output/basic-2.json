@@ -16427,7 +16427,7 @@
       "bytes": [
         96
       ],
-      "comment_inline": "...",
+      "comment_inline": "return (carry clear)",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -56699,7 +56699,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the top nibble down,",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -56708,7 +56708,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -56717,7 +56717,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -56726,7 +56726,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -56763,7 +56763,7 @@
         41,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep the low nibble",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&0f"
@@ -56774,7 +56774,7 @@
         133,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -56820,7 +56820,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "ready the subtract",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -56848,7 +56848,7 @@
         233,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus 10",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&0a"
@@ -57013,7 +57013,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,x",
@@ -57080,7 +57080,7 @@
         134,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "(rnd = 0)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwa_rnd",
@@ -57094,7 +57094,7 @@
         218,
         161
       ],
-      "comment_inline": "...",
+      "comment_inline": "test the sign",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_sign",
@@ -76449,7 +76449,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull them into A",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -92566,7 +92566,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift it down,",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -92575,7 +92575,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -92584,7 +92584,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -92617,7 +92617,7 @@
         41,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep the low nibble",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&0f"

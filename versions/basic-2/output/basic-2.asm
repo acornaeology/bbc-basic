@@ -1707,7 +1707,7 @@ l848a = sub_c847b+15
 ; &8924 referenced 3 times by &8928, &8930, &8938
 .c8924
     clc                                                               ; 8924: 18          .        ; not a name character
-    rts                                                               ; 8925: 60          `        ; ...
+    rts                                                               ; 8925: 60          `        ; return (carry clear)
 ; ***************************************************************************************
 ; Test A for a name character
 ;
@@ -6091,25 +6091,25 @@ l848a = sub_c847b+15
 ; &a040 referenced 1 time by &9fe8
 .output_top_digit
     lda zp_fwa_m1                                                     ; a040: a5 31       .1       ; Integer part: top nibble
-    lsr a                                                             ; a042: 4a          J        ; ...
-    lsr a                                                             ; a043: 4a          J        ; ...
-    lsr a                                                             ; a044: 4a          J        ; ...
-    lsr a                                                             ; a045: 4a          J        ; ...
+    lsr a                                                             ; a042: 4a          J        ; shift the top nibble down,
+    lsr a                                                             ; a043: 4a          J        ; (continued)
+    lsr a                                                             ; a044: 4a          J        ; (continued)
+    lsr a                                                             ; a045: 4a          J        ; (continued)
     jsr output_digit                                                  ; a046: 20 64 a0     d.      ; output it as a digit
     lda zp_fwa_m1                                                     ; a049: a5 31       .1       ; mask off the integer part:
-    and #&0f                                                          ; a04b: 29 0f       ).       ; ...
-    sta zp_fwa_m1                                                     ; a04d: 85 31       .1       ; ...
+    and #&0f                                                          ; a04b: 29 0f       ).       ; keep the low nibble
+    sta zp_fwa_m1                                                     ; a04d: 85 31       .1       ; (store)
     jmp mant_mul10                                                    ; a04f: 4c 97 a1    L..      ; multiply the fraction by 10
 ; ***************************************************************************************
 ; Output a byte (0-99) in decimal
 ; &a052 referenced 1 time by &a028
 .output_byte_decimal
     ldx #&ff                                                          ; a052: a2 ff       ..       ; count the tens:
-    sec                                                               ; a054: 38          8        ; ...
+    sec                                                               ; a054: 38          8        ; ready the subtract
 ; &a055 referenced 1 time by &a058
 .loop_ca055
     inx                                                               ; a055: e8          .        ; subtract 10...
-    sbc #&0a                                                          ; a056: e9 0a       ..       ; ...
+    sbc #&0a                                                          ; a056: e9 0a       ..       ; minus 10
     bcs loop_ca055                                                    ; a058: b0 fb       ..       ; until it goes negative
     adc #&0a                                                          ; a05a: 69 0a       i.       ; add 10 back (the units)
     pha                                                               ; a05c: 48          H        ; save the units
@@ -6130,15 +6130,15 @@ l848a = sub_c847b+15
 .output_char
     stx zp_fwb_sign                                                   ; a066: 86 3b       .;       ; save X
     ldx zp_strbuf_len                                                 ; a068: a6 36       .6       ; append at the end of the buffer
-    sta string_work,x                                                 ; a06a: 9d 00 06    ...      ; ...
+    sta string_work,x                                                 ; a06a: 9d 00 06    ...      ; write it
     ldx zp_fwb_sign                                                   ; a06d: a6 3b       .;       ; restore X
     inc zp_strbuf_len                                                 ; a06f: e6 36       .6       ; one longer
     rts                                                               ; a071: 60          `        ; Return
 ; &a072 referenced 2 times by &a091, &a095
 .ca072
     clc                                                               ; a072: 18          .        ; set the rounding byte and test the sign
-    stx zp_fwa_rnd                                                    ; a073: 86 35       .5       ; ...
-    jsr fwa_sign                                                      ; a075: 20 da a1     ..      ; ...
+    stx zp_fwa_rnd                                                    ; a073: 86 35       .5       ; (rnd = 0)
+    jsr fwa_sign                                                      ; a075: 20 da a1     ..      ; test the sign
     lda #&ff                                                          ; a078: a9 ff       ..       ; real result
     rts                                                               ; a07a: 60          `        ; Return
 ; ***************************************************************************************
@@ -8170,7 +8170,7 @@ l848a = sub_c847b+15
     stx zp_iwa_1                                                      ; abda: 86 2b       .+       ; ...and X into the low result bytes
     sty zp_iwa_2                                                      ; abdc: 84 2c       .,       ; Returned Y
     php                                                               ; abde: 08          .        ; Returned flags...
-    pla                                                               ; abdf: 68          h        ; ...
+    pla                                                               ; abdf: 68          h        ; pull them into A
     sta zp_iwa_3                                                      ; abe0: 85 2d       .-       ; ...into the top result byte
     cld                                                               ; abe2: d8          .        ; Clear decimal mode the code may have left set
     lda #&40 ; '@'                                                    ; abe3: a9 40       .@       ; Integer result
@@ -10045,12 +10045,12 @@ l848a = sub_c847b+15
 .print_hex_byte
     pha                                                               ; b545: 48          H        ; Save the byte
     lsr a                                                             ; b546: 4a          J        ; High nibble
-    lsr a                                                             ; b547: 4a          J        ; ...
-    lsr a                                                             ; b548: 4a          J        ; ...
-    lsr a                                                             ; b549: 4a          J        ; ...
+    lsr a                                                             ; b547: 4a          J        ; shift it down,
+    lsr a                                                             ; b548: 4a          J        ; (continued)
+    lsr a                                                             ; b549: 4a          J        ; (continued)
     jsr print_hex_digit                                               ; b54a: 20 50 b5     P.      ; print it
     pla                                                               ; b54d: 68          h        ; Low nibble
-    and #&0f                                                          ; b54e: 29 0f       ).       ; ...
+    and #&0f                                                          ; b54e: 29 0f       ).       ; keep the low nibble
 ; ***************************************************************************************
 ; Print the low nibble of A as a hex digit
 ; &b550 referenced 1 time by &b54a

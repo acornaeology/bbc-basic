@@ -121,3 +121,4 @@ placeholders goes first.
 | 2026-06-14 | depth 1: FP arithmetic cluster | fwa_mul_var_raw, fp_compare, int_to_fwa, fwa_mul10, fwa_div10, small_int_to_fwa, fwa_round, fwa_negate, iwa_inc | 33 | 1403 | — |
 | 2026-06-14 | depth 1: tokenise_line | tokenise_line (keyword match, abbreviations, token emit, state flags) | 19 | 1384 | — |
 | 2026-06-14 | depth 1: error/DATA walkers | find_error_line (set ERL, ON ERROR handler dispatch), next_data_item | 30 | 1354 | — |
+| 2026-06-14 | depth 1: output helpers | output_top_digit, output_char, output_byte_decimal, print_hex_byte, fn_usr, encode_line_number tail | 17 | 1337 | — |
