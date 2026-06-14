@@ -1019,7 +1019,7 @@ oscli            = &fff7
     lda zp_general_1                                                  ; 8524: a5 38       .8       ; Print P% high
     jsr print_hex_byte                                                ; 8526: 20 45 b5     E.      ; as two hex digits
     lda zp_general                                                    ; 8529: a5 37       .7       ; Print P% low
-    jsr sub_cb562                                                     ; 852b: 20 62 b5     b.      ; as two hex digits
+    jsr print_hex_space                                               ; 852b: 20 62 b5     b.      ; as two hex digits
     ldx #&fc                                                          ; 852e: a2 fc       ..       ; Byte count
     ldy zp_fileblk                                                    ; 8530: a4 39       .9       ; String (EQUS) length?
     bpl asm_list_count                                                ; 8532: 10 02       ..       ; not EQUS: use the byte count,
@@ -1044,7 +1044,7 @@ oscli            = &fff7
 ; &854c referenced 1 time by &853d
 .asm_list_byte
     lda (l003a),y                                                     ; 854c: b1 3a       .:       ; Assembled byte
-    jsr sub_cb562                                                     ; 854e: 20 62 b5     b.      ; print it as hex
+    jsr print_hex_space                                               ; 854e: 20 62 b5     b.      ; print it as hex
     iny                                                               ; 8551: c8          .        ; next
     dec zp_general_1                                                  ; 8552: c6 38       .8       ; all bytes?
     bne asm_list_byte_loop                                            ; 8554: d0 e6       ..       ; no: continue
@@ -4890,7 +4890,7 @@ oscli            = &fff7
     pha                                                               ; 9681: 48          H        ; Save the indirection width
     iny                                                               ; 9682: c8          .        ; step past the operator
     sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..       ; record the new scan offset
-    jsr cb32c                                                         ; 9685: 20 2c b3     ,.      ; Stack the base address
+    jsr load_var_by_type                                              ; 9685: 20 2c b3     ,.      ; Stack the base address
     jsr coerce_to_integer                                             ; 9688: 20 f0 92     ..      ; evaluate it as an integer
     lda zp_iwa_1                                                      ; 968b: a5 2b       .+       ; Save the base address:
     pha                                                               ; 968d: 48          H        ; push high byte,
@@ -10243,7 +10243,7 @@ oscli            = &fff7
     dec zp_text_ptr2_off                                              ; ae20: c6 1b       ..       ; Back up to the name
     jsr pvr_parse                                                     ; ae22: 20 dd 95     ..      ; Parse the variable reference
     beq factor_undefined                                              ; ae25: f0 09       ..       ; undefined: handle below
-    jmp cb32c                                                         ; ae27: 4c 2c b3    L,.      ; load the variable value
+    jmp load_var_by_type                                              ; ae27: 4c 2c b3    L,.      ; load the variable value
 ; &ae2a referenced 1 time by &ae16
 .factor_number
     jsr parse_number                                                  ; ae2a: 20 7b a0     {.      ; Parse the decimal number
@@ -11474,7 +11474,7 @@ oscli            = &fff7
     jsr unstack_integer                                               ; b2f0: 20 ea bd     ..      ; unstack the integer value
 ; &b2f3 referenced 1 time by &b2ed
 .callpf_assign
-    jsr sub_cb4b7                                                     ; b2f3: 20 b7 b4     ..      ; Assign to the formal
+    jsr assign_num_by_type                                            ; b2f3: 20 b7 b4     ..      ; Assign to the formal
     jmp callpf_bound                                                  ; b2f6: 4c 03 b3    L..      ; next argument
 ; &b2f9 referenced 1 time by &b2d6
 .callpf_string_formal
@@ -11505,24 +11505,24 @@ oscli            = &fff7
 .stack_local
     ldy zp_iwa_2                                                      ; b30d: a4 2c       .,       ; Variable type
     cpy #4                                                            ; b30f: c0 04       ..       ; an integer?
-    bne cb318                                                         ; b311: d0 05       ..       ; no
+    bne local_load_value                                              ; b311: d0 05       ..       ; no
     ldx #&37 ; '7'                                                    ; b313: a2 37       .7       ; integer: address its 4 bytes via &37
     jsr iwa_store_zp                                                  ; b315: 20 44 be     D.      ; copy them there
 ; &b318 referenced 1 time by &b311
-.cb318
-    jsr cb32c                                                         ; b318: 20 2c b3     ,.      ; Load the variable's current value by type
+.local_load_value
+    jsr load_var_by_type                                              ; b318: 20 2c b3     ,.      ; Load the variable's current value by type
     php                                                               ; b31b: 08          .        ; save the type flags
     jsr stack_value                                                   ; b31c: 20 90 bd     ..      ; push the value onto the stack
     plp                                                               ; b31f: 28          (        ; restore the type
-    beq cb329                                                         ; b320: f0 07       ..       ; byte/string
-    bmi cb329                                                         ; b322: 30 05       0.       ; or string
+    beq local_push_id                                                 ; b320: f0 07       ..       ; byte/string
+    bmi local_push_id                                                 ; b322: 30 05       0.       ; or string
     ldx #&37 ; '7'                                                    ; b324: a2 37       .7       ; integer: reload
     jsr iwa_load_zp                                                   ; b326: 20 56 af     V.      ; from &37
 ; &b329 referenced 2 times by &b320, &b322
-.cb329
+.local_push_id
     jmp stack_integer                                                 ; b329: 4c 94 bd    L..      ; push the variable identity (as an integer)
 ; &b32c referenced 3 times by &9685, &ae27, &b318
-.cb32c
+.load_var_by_type
     ldy zp_iwa_2                                                      ; b32c: a4 2c       .,       ; Load the variable by type:
     bmi load_string_var                                               ; b32e: 30 54       0T       ; string
     beq load_byte_var                                                 ; b330: f0 1d       ..       ; byte
@@ -11609,11 +11609,11 @@ oscli            = &fff7
     ora zp_fwa_m2                                                     ; b373: 05 32       .2       ; m2,
     ora zp_fwa_m3                                                     ; b375: 05 33       .3       ; m3,
     ora zp_fwa_m4                                                     ; b377: 05 34       .4       ; m4
-    beq cb37f                                                         ; b379: f0 04       ..       ; zero: leave the MSB clear
+    beq lrv_set_msb                                                   ; b379: f0 04       ..       ; zero: leave the MSB clear
     lda zp_fwa_sign                                                   ; b37b: a5 2e       ..       ; restore the implied 1...
     ora #&80                                                          ; b37d: 09 80       ..       ; set the top bit
 ; &b37f referenced 1 time by &b379
-.cb37f
+.lrv_set_msb
     sta zp_fwa_m1                                                     ; b37f: 85 31       .1       ; store the mantissa MSB
     lda #&ff                                                          ; b381: a9 ff       ..       ; real type
     rts                                                               ; b383: 60          `        ; Return the real
@@ -11635,7 +11635,7 @@ oscli            = &fff7
 ; &b384 referenced 1 time by &b32e
 .load_string_var
     cpy #&80                                                          ; b384: c0 80       ..       ; $-string (absolute address)?
-    beq cb3a7                                                         ; b386: f0 1f       ..       ; yes
+    beq lsv_dollar                                                    ; b386: f0 1f       ..       ; yes
     ldy #3                                                            ; b388: a0 03       ..       ; normal string: length at offset 3
     lda (zp_iwa),y                                                    ; b38a: b1 2a       .*       ; read it
     sta zp_strbuf_len                                                 ; b38c: 85 36       .6       ; string length
@@ -11648,31 +11648,31 @@ oscli            = &fff7
     sta zp_general                                                    ; b399: 85 37       .7       ; and the low byte
     ldy zp_strbuf_len                                                 ; b39b: a4 36       .6       ; copy into the buffer:
 ; &b39d referenced 1 time by &b3a4
-.loop_cb39d
+.lsv_copy_loop
     dey                                                               ; b39d: 88          .        ; char...
     lda (zp_general),y                                                ; b39e: b1 37       .7       ; read it
     sta string_work,y                                                 ; b3a0: 99 00 06    ...      ; -> buffer
     tya                                                               ; b3a3: 98          .        ; count
-    bne loop_cb39d                                                    ; b3a4: d0 f7       ..       ; loop
+    bne lsv_copy_loop                                                 ; b3a4: d0 f7       ..       ; loop
 ; &b3a6 referenced 1 time by &b38e
 .return_32
     rts                                                               ; b3a6: 60          `        ; Return the string
 ; &b3a7 referenced 1 time by &b386
-.cb3a7
+.lsv_dollar
     lda zp_iwa_1                                                      ; b3a7: a5 2b       .+       ; $-string: copy until CR
-    beq cb3c0                                                         ; b3a9: f0 15       ..       ; null pointer: empty
+    beq chrs_code                                                     ; b3a9: f0 15       ..       ; null pointer: empty
     ldy #0                                                            ; b3ab: a0 00       ..       ; from the start
 ; &b3ad referenced 1 time by &b3b7
-.loop_cb3ad
+.lsv_dollar_loop
     lda (zp_iwa),y                                                    ; b3ad: b1 2a       .*       ; char...
     sta string_work,y                                                 ; b3af: 99 00 06    ...      ; -> buffer
     eor #&0d                                                          ; b3b2: 49 0d       I.       ; CR?
-    beq cb3ba                                                         ; b3b4: f0 04       ..       ; yes: end
+    beq lsv_set_length                                                ; b3b4: f0 04       ..       ; yes: end
     iny                                                               ; b3b6: c8          .        ; next
-    bne loop_cb3ad                                                    ; b3b7: d0 f4       ..       ; loop
+    bne lsv_dollar_loop                                               ; b3b7: d0 f4       ..       ; loop
     tya                                                               ; b3b9: 98          .        ; ran 256 chars without CR: length 0
 ; &b3ba referenced 1 time by &b3b4
-.cb3ba
+.lsv_set_length
     sty zp_strbuf_len                                                 ; b3ba: 84 36       .6       ; set the length
     rts                                                               ; b3bc: 60          `        ; Return
 ; ***************************************************************************************
@@ -11692,7 +11692,7 @@ oscli            = &fff7
 .fn_chrs
     jsr eval_factor_integer                                           ; b3bd: 20 e3 92     ..      ; Evaluate the integer argument
 ; &b3c0 referenced 1 time by &b3a9
-.cb3c0
+.chrs_code
     lda zp_iwa                                                        ; b3c0: a5 2a       .*       ; A = the character code
     jmp gets_char                                                     ; b3c2: 4c c2 af    L..      ; return a one-character string
 ; ***************************************************************************************
@@ -11720,10 +11720,10 @@ oscli            = &fff7
     beq return_33                                                     ; b3d5: f0 2a       .*       ; reached it: done
     ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..       ; X = error position low
 ; &b3d9 referenced 1 time by &b3ff
-.loop_cb3d9
+.fel_scan_loop
     jsr read_via_ptr_general                                          ; b3d9: 20 42 89     B.      ; read a program byte
     cmp #&0d                                                          ; b3dc: c9 0d       ..       ; a line end (CR)?
-    bne cb3f9                                                         ; b3de: d0 19       ..       ; no: keep scanning
+    bne fel_check                                                     ; b3de: d0 19       ..       ; no: keep scanning
     cpx zp_general                                                    ; b3e0: e4 37       .7       ; is this line past the error?
     lda zp_text_ptr_1                                                 ; b3e2: a5 0c       ..       ; error high...
     sbc zp_general_1                                                  ; b3e4: e5 38       .8       ; minus the scan high
@@ -11736,11 +11736,11 @@ oscli            = &fff7
     sta zp_erl                                                        ; b3f4: 85 08       ..       ; record ERL low
     jsr read_via_ptr_general                                          ; b3f6: 20 42 89     B.      ; skip the line length byte
 ; &b3f9 referenced 1 time by &b3de
-.cb3f9
+.fel_check
     cpx zp_general                                                    ; b3f9: e4 37       .7       ; still before the error?
     lda zp_text_ptr_1                                                 ; b3fb: a5 0c       ..       ; error high...
     sbc zp_general_1                                                  ; b3fd: e5 38       .8       ; minus the scan high
-    bcs loop_cb3d9                                                    ; b3ff: b0 d8       ..       ; yes: scan the next line
+    bcs fel_scan_loop                                                 ; b3ff: b0 d8       ..       ; yes: scan the next line
 ; &b401 referenced 3 times by &b3d5, &b3e6, &b3ed
 .return_33
     rts                                                               ; b401: 60          `        ; Return
@@ -11748,13 +11748,13 @@ oscli            = &fff7
     jsr find_error_line                                               ; b402: 20 c5 b3     ..      ; Find the line number (set ERL)
     sty zp_trace_flag                                                 ; b405: 84 20       .        ; TRACE off
     lda (zp_error_ptr),y                                              ; b407: b1 fd       ..       ; error number
-    bne cb413                                                         ; b409: d0 08       ..       ; non-zero: an ON ERROR handler is active
+    bne fel_set_handler                                               ; b409: d0 08       ..       ; non-zero: an ON ERROR handler is active
     lda #&33 ; '3'                                                    ; b40b: a9 33       .3       ; no handler: reset to the default (ON ERROR OFF)
     sta zp_error_vec                                                  ; b40d: 85 16       ..       ; default handler &B433: low,
     lda #&b4                                                          ; b40f: a9 b4       ..       ; high...
     sta zp_error_vec_1                                                ; b411: 85 17       ..       ; (store)
 ; &b413 referenced 1 time by &b409
-.cb413
+.fel_set_handler
     lda zp_error_vec                                                  ; b413: a5 16       ..       ; Point the program pointer at the handler code: low
     sta zp_text_ptr                                                   ; b415: 85 0b       ..       ; (low)
     lda zp_error_vec_1                                                ; b417: a5 17       ..       ; high
@@ -11789,7 +11789,7 @@ oscli            = &fff7
     jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.      ; Evaluate the first parameter
     ldx #3                                                            ; b44f: a2 03       ..       ; three more
 ; &b451 referenced 1 time by &b45f
-.loop_cb451
+.sound_stack_loop
     lda zp_iwa                                                        ; b451: a5 2a       .*       ; Stack the 16-bit value
     pha                                                               ; b453: 48          H        ; push low,
     lda zp_iwa_1                                                      ; b454: a5 2b       .+       ; high,
@@ -11800,7 +11800,7 @@ oscli            = &fff7
     pla                                                               ; b45c: 68          h        ; restore the counter
     tax                                                               ; b45d: aa          .        ; into X,
     dex                                                               ; b45e: ca          .        ; one fewer parameter
-    bne loop_cb451                                                    ; b45f: d0 f0       ..       ; loop
+    bne sound_stack_loop                                              ; b45f: d0 f0       ..       ; loop
     jsr sync_text_ptr                                                 ; b461: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b464: a5 2a       .*       ; Last value to the block end
     sta zp_fwb_exp                                                    ; b466: 85 3d       .=       ; low byte to &3D,
@@ -11808,7 +11808,7 @@ oscli            = &fff7
     sta zp_fwb_m1                                                     ; b46a: 85 3e       .>       ; high byte to &3E
     ldy #7                                                            ; b46c: a0 07       ..       ; OSWORD 7, 6 bytes
     ldx #5                                                            ; b46e: a2 05       ..       ; 6-byte block (X=5)
-    bne cb48f                                                         ; b470: d0 1d       ..       ; pop into the block and call
+    bne env_pop_loop                                                  ; b470: d0 1d       ..       ; pop into the block and call
 ; ***************************************************************************************
 ; ENVELOPE
 ;
@@ -11825,7 +11825,7 @@ oscli            = &fff7
     jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.      ; Evaluate the first parameter
     ldx #&0d                                                          ; b475: a2 0d       ..       ; 13 more
 ; &b477 referenced 1 time by &b482
-.loop_cb477
+.env_stack_loop
     lda zp_iwa                                                        ; b477: a5 2a       .*       ; Stack the 8-bit value
     pha                                                               ; b479: 48          H        ; push it
     txa                                                               ; b47a: 8a          .        ; save the counter
@@ -11834,18 +11834,18 @@ oscli            = &fff7
     pla                                                               ; b47f: 68          h        ; restore the counter
     tax                                                               ; b480: aa          .        ; into X,
     dex                                                               ; b481: ca          .        ; one fewer parameter
-    bne loop_cb477                                                    ; b482: d0 f3       ..       ; loop
+    bne env_stack_loop                                                ; b482: d0 f3       ..       ; loop
     jsr sync_text_ptr                                                 ; b484: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b487: a5 2a       .*       ; Last value to the block end
     sta l0044                                                         ; b489: 85 44       .D       ; into &44 (the block end)
     ldx #&0c                                                          ; b48b: a2 0c       ..       ; OSWORD 8, 12 bytes
     ldy #osword_envelope                                              ; b48d: a0 08       ..       ; OSWORD number 8
 ; &b48f referenced 2 times by &b470, &b493
-.cb48f
+.env_pop_loop
     pla                                                               ; b48f: 68          h        ; Pop a byte into the control block
     sta zp_general,x                                                  ; b490: 95 37       .7       ; store at offset X,
     dex                                                               ; b492: ca          .        ; next lower offset
-    bpl cb48f                                                         ; b493: 10 fa       ..       ; loop
+    bpl env_pop_loop                                                  ; b493: 10 fa       ..       ; loop
     tya                                                               ; b495: 98          .        ; OSWORD number
     ldx #<(zp_general)                                                ; b496: a2 37       .7       ; Point at the control block
     ldy #>(zp_general)                                                ; b498: a0 00       ..       ; block address high
@@ -11871,10 +11871,10 @@ oscli            = &fff7
     sty zp_width                                                      ; b4a9: 84 23       .#       ; store it
     jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..      ; next statement
 ; &b4ae referenced 2 times by &b4bf, &b4e2
-.cb4ae
+.width_type_error
     jmp err_type_mismatch                                             ; b4ae: 4c 0e 8c    L..      ; Type mismatch error
 ; &b4b1 referenced 2 times by &b7d1, &bb2c
-.sub_cb4b1
+.width_eval_value
     jsr eval_or_eor                                                   ; b4b1: 20 29 9b     ).      ; Evaluate the value
 ; ***************************************************************************************
 ; Store a numeric value into a variable
@@ -11894,12 +11894,12 @@ oscli            = &fff7
 .assign_number
     jsr unstack_int_to_general                                        ; b4b4: 20 0b be     ..      ; Pop the variable data address from the stack
 ; &b4b7 referenced 1 time by &b2f3
-.sub_cb4b7
+.assign_num_by_type
     lda zp_fileblk                                                    ; b4b7: a5 39       .9       ; Variable's size/type byte
     cmp #5                                                            ; b4b9: c9 05       ..       ; size 5 = real variable?
-    beq cb4e0                                                         ; b4bb: f0 23       .#       ; yes: store as a real
+    beq store_var_type                                                ; b4bb: f0 23       .#       ; yes: store as a real
     lda zp_var_type                                                   ; b4bd: a5 27       .'       ; Type of the value
-    beq cb4ae                                                         ; b4bf: f0 ed       ..       ; string: Type mismatch
+    beq width_type_error                                              ; b4bf: f0 ed       ..       ; string: Type mismatch
     bpl iwa_store_var                                                 ; b4c1: 10 03       ..       ; integer: store directly
     jsr fwa_to_int                                                    ; b4c3: 20 e4 a3     ..      ; real value, integer variable: convert
 ; ***************************************************************************************
@@ -11933,13 +11933,13 @@ oscli            = &fff7
 .return_34
     rts                                                               ; b4df: 60          `        ; Return
 ; &b4e0 referenced 1 time by &b4bb
-.cb4e0
+.store_var_type
     lda zp_var_type                                                   ; b4e0: a5 27       .'       ; Value type
-    beq cb4ae                                                         ; b4e2: f0 ca       ..       ; string: Type mismatch
-    bmi cb4e9                                                         ; b4e4: 30 03       0.       ; real: store it
+    beq width_type_error                                              ; b4e2: f0 ca       ..       ; string: Type mismatch
+    bmi store_real                                                    ; b4e4: 30 03       0.       ; real: store it
     jsr int_to_fwa                                                    ; b4e6: 20 be a2     ..      ; integer: convert to real
 ; &b4e9 referenced 2 times by &b4e4, &b77f
-.cb4e9
+.store_real
     ldy #0                                                            ; b4e9: a0 00       ..       ; Store the 5-byte real: exponent
     lda zp_fwa_exp                                                    ; b4eb: a5 30       .0       ; load the exponent
     sta (zp_general),y                                                ; b4ed: 91 37       .7       ; to variable+0
@@ -11985,35 +11985,35 @@ oscli            = &fff7
     sta zp_fileblk                                                    ; b51a: 85 39       .9       ; set it
     sty l003a                                                         ; b51c: 84 3a       .:       ; save Y
 ; &b51e referenced 2 times by &b530, &b534
-.cb51e
+.ptok_entry_start
     ldy #0                                                            ; b51e: a0 00       ..       ; Start of an entry
 ; &b520 referenced 1 time by &b523
-.loop_cb520
+.ptok_scan_loop
     iny                                                               ; b520: c8          .        ; Scan to the token byte
     lda (zp_general_1),y                                              ; b521: b1 38       .8       ; read it
-    bpl loop_cb520                                                    ; b523: 10 fb       ..       ; ...(skip the keyword text)
+    bpl ptok_scan_loop                                                ; b523: 10 fb       ..       ; ...(skip the keyword text)
     cmp zp_general                                                    ; b525: c5 37       .7       ; this token?
-    beq cb536                                                         ; b527: f0 0d       ..       ; yes: print its keyword
+    beq ptok_print                                                    ; b527: f0 0d       ..       ; yes: print its keyword
     iny                                                               ; b529: c8          .        ; Advance to the next entry
     tya                                                               ; b52a: 98          .        ; offset into A
     sec                                                               ; b52b: 38          8        ; set carry: +1 past the flag byte
     adc zp_general_1                                                  ; b52c: 65 38       e8       ; add to the pointer low,
     sta zp_general_1                                                  ; b52e: 85 38       .8       ; store it
-    bcc cb51e                                                         ; b530: 90 ec       ..       ; no carry: scan the next entry
+    bcc ptok_entry_start                                              ; b530: 90 ec       ..       ; no carry: scan the next entry
     inc zp_fileblk                                                    ; b532: e6 39       .9       ; else carry into the high byte
-    bcs cb51e                                                         ; b534: b0 e8       ..       ; continue
+    bcs ptok_entry_start                                              ; b534: b0 e8       ..       ; continue
 ; &b536 referenced 1 time by &b527
-.cb536
+.ptok_print
     ldy #0                                                            ; b536: a0 00       ..       ; Print the keyword text: from the start
 ; &b538 referenced 1 time by &b540
-.loop_cb538
+.ptok_print_loop
     lda (zp_general_1),y                                              ; b538: b1 38       .8       ; Next character
-    bmi cb542                                                         ; b53a: 30 06       0.       ; token byte: done
+    bmi ptok_restore_y                                                ; b53a: 30 06       0.       ; token byte: done
     jsr print_char                                                    ; b53c: 20 58 b5     X.      ; print it
     iny                                                               ; b53f: c8          .        ; next
-    bne loop_cb538                                                    ; b540: d0 f6       ..       ; loop
+    bne ptok_print_loop                                               ; b540: d0 f6       ..       ; loop
 ; &b542 referenced 1 time by &b53a
-.cb542
+.ptok_restore_y
     ldy l003a                                                         ; b542: a4 3a       .:       ; Restore Y
     rts                                                               ; b544: 60          `        ; Return
 ; ***************************************************************************************
@@ -12057,10 +12057,10 @@ oscli            = &fff7
 ; &b550 referenced 1 time by &b54a
 .print_hex_digit
     cmp #&0a                                                          ; b550: c9 0a       ..       ; above 9?
-    bcc cb556                                                         ; b552: 90 02       ..       ; no
+    bcc phd_ascii                                                     ; b552: 90 02       ..       ; no
     adc #6                                                            ; b554: 69 06       i.       ; adjust for A-F
 ; &b556 referenced 1 time by &b552
-.cb556
+.phd_ascii
     adc #&30 ; '0'                                                    ; b556: 69 30       i0       ; to ASCII, then fall into print_char
 ; ***************************************************************************************
 ; Print a character with column tracking
@@ -12080,11 +12080,11 @@ oscli            = &fff7
 ; &b558 referenced 13 times by &855c, &855f, &8e17, &8ea4, &9911, &9919, &9964, &b512, &b53c, &b583, &b64b, &ba9f, &bc02
 .print_char
     cmp #&0d                                                          ; b558: c9 0d       ..       ; carriage return?
-    bne cb567                                                         ; b55a: d0 0b       ..       ; no: format and print
+    bne print_char_body                                               ; b55a: d0 0b       ..       ; no: format and print
     jsr oswrch                                                        ; b55c: 20 ee ff     ..      ; print the CR
     jmp cbc28                                                         ; b55f: 4c 28 bc    L(.      ; reset the column
 ; &b562 referenced 2 times by &852b, &854e
-.sub_cb562
+.print_hex_space
     jsr print_hex_byte                                                ; b562: 20 45 b5     E.      ; Print A as hex then a space
 ; ***************************************************************************************
 ; Print a space through the print formatter
@@ -12104,14 +12104,14 @@ oscli            = &fff7
 .print_space
     lda #&20 ; ' '                                                    ; b565: a9 20       .        ; Space
 ; &b567 referenced 1 time by &b55a
-.cb567
+.print_char_body
     pha                                                               ; b567: 48          H        ; Save the character
     lda zp_width                                                      ; b568: a5 23       .#       ; WIDTH limit
     cmp zp_count                                                      ; b56a: c5 1e       ..       ; vs the current column
-    bcs cb571                                                         ; b56c: b0 03       ..       ; within the width
+    bcs print_char_emit                                               ; b56c: b0 03       ..       ; within the width
     jsr sub_cbc25                                                     ; b56e: 20 25 bc     %.      ; else auto-newline
 ; &b571 referenced 1 time by &b56c
-.cb571
+.print_char_emit
     pla                                                               ; b571: 68          h        ; Recover the character
     inc zp_count                                                      ; b572: e6 1e       ..       ; Advance the column
     jmp (wrchv)                                                       ; b574: 6c 0e 02    l..      ; Print it via WRCHV
@@ -12136,11 +12136,11 @@ oscli            = &fff7
     beq return_35                                                     ; b57c: f0 0b       ..       ; zero: none
     bmi print_space                                                   ; b57e: 30 e5       0.       ; single space
 ; &b580 referenced 1 time by &b587
-.loop_cb580
+.listo_space_loop
     jsr print_space                                                   ; b580: 20 65 b5     e.      ; Print a space...
     jsr print_char                                                    ; b583: 20 58 b5     X.      ; ...and a space (two per level)
     dex                                                               ; b586: ca          .        ; next level
-    bne loop_cb580                                                    ; b587: d0 f7       ..       ; loop
+    bne listo_space_loop                                              ; b587: d0 f7       ..       ; loop
 ; &b589 referenced 2 times by &b579, &b57c
 .return_35
     rts                                                               ; b589: 60          `        ; Return
@@ -12469,7 +12469,7 @@ oscli            = &fff7
     sta zp_general                                                    ; b779: 85 37       .7       ; var address low,
     lda zp_iwa_1                                                      ; b77b: a5 2b       .+       ; high byte,
     sta zp_general_1                                                  ; b77d: 85 38       .8       ; var address high
-    jsr cb4e9                                                         ; b77f: 20 e9 b4     ..      ; store the updated variable
+    jsr store_real                                                    ; b77f: 20 e9 b4     ..      ; store the updated variable
     lda zp_for_level                                                  ; b782: a5 26       .&       ; point at the LIMIT:
     sta zp_var_type                                                   ; b784: 85 27       .'       ; stash the level in &27,
     clc                                                               ; b786: 18          .        ; clear carry,
@@ -12524,7 +12524,7 @@ oscli            = &fff7
     bcs cb7a4                                                         ; b7c9: b0 d9       ..       ; indirection: error
     jsr stack_integer                                                 ; b7cb: 20 94 bd     ..      ; Stack the variable pointer
     jsr expect_eq                                                     ; b7ce: 20 41 98     A.      ; Expect "="
-    jsr sub_cb4b1                                                     ; b7d1: 20 b1 b4     ..      ; Assign the initial value
+    jsr width_eval_value                                              ; b7d1: 20 b1 b4     ..      ; Assign the initial value
     ldy zp_for_level                                                  ; b7d4: a4 26       .&       ; Index the FOR stack by nesting level
     cpy #&96                                                          ; b7d6: c0 96       ..       ; At most 10 nested FOR loops (10 * 15)
     bcs loop_cb7b0                                                    ; b7d8: b0 d6       ..       ; yes: error
@@ -13121,7 +13121,7 @@ oscli            = &fff7
     bcs cbb32                                                         ; bb24: b0 0c       ..       ; string variable?
     jsr next_data_item                                                ; bb26: 20 50 bb     P.      ; Numeric: find the next DATA item
     jsr stack_integer                                                 ; bb29: 20 94 bd     ..      ; Stack the variable address
-    jsr sub_cb4b1                                                     ; bb2c: 20 b1 b4     ..      ; read the value and assign it
+    jsr width_eval_value                                              ; bb2c: 20 b1 b4     ..      ; read the value and assign it
     jmp cbb40                                                         ; bb2f: 4c 40 bb    L@.      ; update the DATA pointer
 ; &bb32 referenced 1 time by &bb24
 .cbb32
@@ -14576,7 +14576,6 @@ save pydis_start, pydis_end
 ;     c8858:                         3
 ;     ca7f7:                         3
 ;     call_arg_error:                3
-;     cb32c:                         3
 ;     cb8d2:                         3
 ;     cbb07:                         3
 ;     cbb7a:                         3
@@ -14603,6 +14602,7 @@ save pydis_start, pydis_end
 ;     is_digit:                      3
 ;     iwa_negate:                    3
 ;     l0401:                         3
+;     load_var_by_type:              3
 ;     mul_by_temp3:                  3
 ;     mul_conv_left:                 3
 ;     mul_conv_right:                3
@@ -14671,11 +14671,6 @@ save pydis_start, pydis_end
 ;     caa4e:                         2
 ;     callpf_save_parser2:           2
 ;     callpf_unstack_arg:            2
-;     cb329:                         2
-;     cb48f:                         2
-;     cb4ae:                         2
-;     cb4e9:                         2
-;     cb51e:                         2
 ;     cb5d8:                         2
 ;     cb639:                         2
 ;     cb678:                         2
@@ -14706,6 +14701,7 @@ save pydis_start, pydis_end
 ;     dispatch_token:                2
 ;     div_zero_error:                2
 ;     drop_stack_integer:            2
+;     env_pop_loop:                  2
 ;     err_too_big:                   2
 ;     escape_error:                  2
 ;     eval_relational:               2
@@ -14762,6 +14758,7 @@ save pydis_start, pydis_end
 ;     l06ff:                         2
 ;     load_program:                  2
 ;     load_real_var:                 2
+;     local_push_id:                 2
 ;     make_real_result:              2
 ;     mant_mul10:                    2
 ;     missing_quote:                 2
@@ -14802,11 +14799,13 @@ save pydis_start, pydis_end
 ;     pow_result:                    2
 ;     pow_stack_eval:                2
 ;     print_hex_byte:                2
+;     print_hex_space:               2
 ;     print_inline_char:             2
 ;     print_inline_string:           2
 ;     print_spc_loop:                2
 ;     print_special_item:            2
 ;     print_special_skip:            2
+;     ptok_entry_start:              2
 ;     pvr_named:                     2
 ;     pvr_parse:                     2
 ;     pvr_undefined:                 2
@@ -14845,12 +14844,11 @@ save pydis_start, pydis_end
 ;     step_to_next_line:             2
 ;     stmt_data:                     2
 ;     stmt_eol:                      2
+;     store_real:                    2
 ;     string_too_long:               2
 ;     strings_type:                  2
 ;     strs_type_error:               2
 ;     sub_c887c:                     2
-;     sub_cb4b1:                     2
-;     sub_cb562:                     2
 ;     sub_cbc81:                     2
 ;     sub_cbc8d:                     2
 ;     sub_cbe92:                     2
@@ -14877,6 +14875,8 @@ save pydis_start, pydis_end
 ;     valname_count:                 2
 ;     valname_loop:                  2
 ;     vartop_commit:                 2
+;     width_eval_value:              2
+;     width_type_error:              2
 ;     wrchv:                         2
 ;     zero_new_value:                2
 ;     zp_rnd_seed_3:                 2
@@ -14959,6 +14959,7 @@ save pydis_start, pydis_end
 ;     asm_try_indirect:              1
 ;     assembler_exit:                1
 ;     assign_new_var:                1
+;     assign_num_by_type:            1
 ;     assign_str_addr:               1
 ;     assign_str_addr_cr:            1
 ;     assign_str_addr_loop:          1
@@ -14989,19 +14990,6 @@ save pydis_start, pydis_end
 ;     callpf_save_stack:             1
 ;     callpf_set_ptr:                1
 ;     callpf_string_formal:          1
-;     cb318:                         1
-;     cb37f:                         1
-;     cb3a7:                         1
-;     cb3ba:                         1
-;     cb3c0:                         1
-;     cb3f9:                         1
-;     cb413:                         1
-;     cb4e0:                         1
-;     cb536:                         1
-;     cb542:                         1
-;     cb556:                         1
-;     cb567:                         1
-;     cb571:                         1
 ;     cb5cf:                         1
 ;     cb5db:                         1
 ;     cb602:                         1
@@ -15074,6 +15062,7 @@ save pydis_start, pydis_end
 ;     check_escape:                  1
 ;     check_statement_terminated:    1
 ;     chkline_skip:                  1
+;     chrs_code:                     1
 ;     clearval_loop:                 1
 ;     cls_send:                      1
 ;     cmp_bytes:                     1
@@ -15116,6 +15105,7 @@ save pydis_start, pydis_end
 ;     do_or:                         1
 ;     draw_save_mode:                1
 ;     encode_line_number:            1
+;     env_stack_loop:                1
 ;     eor_byte_loop:                 1
 ;     err_no_gosub:                  1
 ;     err_no_repeat:                 1
@@ -15148,6 +15138,9 @@ save pydis_start, pydis_end
 ;     factor_pcounter:               1
 ;     factor_unary_plus:             1
 ;     factor_undefined:              1
+;     fel_check:                     1
+;     fel_scan_loop:                 1
+;     fel_set_handler:               1
 ;     find_def:                      1
 ;     find_error_line:               1
 ;     find_proc_fn:                  1
@@ -15269,6 +15262,7 @@ save pydis_start, pydis_end
 ;     let_mistake:                   1
 ;     let_numeric:                   1
 ;     line_reset_offset:             1
+;     listo_space_loop:              1
 ;     ln_compute:                    1
 ;     ln_save_exp:                   1
 ;     ln_scale:                      1
@@ -15276,19 +15270,12 @@ save pydis_start, pydis_end
 ;     load_byte_var:                 1
 ;     load_string_var:               1
 ;     local_bump:                    1
+;     local_load_value:              1
 ;     local_not_var:                 1
 ;     log_range_error:               1
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_cb39d:                    1
-;     loop_cb3ad:                    1
-;     loop_cb3d9:                    1
-;     loop_cb451:                    1
-;     loop_cb477:                    1
-;     loop_cb520:                    1
-;     loop_cb538:                    1
-;     loop_cb580:                    1
 ;     loop_cb5fc:                    1
 ;     loop_cb64b:                    1
 ;     loop_cb6a0:                    1
@@ -15320,6 +15307,11 @@ save pydis_start, pydis_end
 ;     loop_cbecf:                    1
 ;     loop_cbfd9:                    1
 ;     loop_cbfec:                    1
+;     lrv_set_msb:                   1
+;     lsv_copy_loop:                 1
+;     lsv_dollar:                    1
+;     lsv_dollar_loop:               1
+;     lsv_set_length:                1
 ;     lvalue_dollar:                 1
 ;     lvalue_indirect:               1
 ;     lvalue_range_error:            1
@@ -15392,6 +15384,7 @@ save pydis_start, pydis_end
 ;     parse_exponent:                1
 ;     pe_digit:                      1
 ;     pe_skip_sign:                  1
+;     phd_ascii:                     1
 ;     plnum_clear_loop:              1
 ;     plnum_digit_loop:              1
 ;     plnum_next_power:              1
@@ -15419,6 +15412,8 @@ save pydis_start, pydis_end
 ;     pow_op_loop:                   1
 ;     powers_of_ten_hi:              1
 ;     powers_of_ten_lo:              1
+;     print_char_body:               1
+;     print_char_emit:               1
 ;     print_check_sep:               1
 ;     print_comma:                   1
 ;     print_field_loop:              1
@@ -15444,6 +15439,10 @@ save pydis_start, pydis_end
 ;     print_tab_xy:                  1
 ;     proc_clear_loop:               1
 ;     pseudovar_syntax_error:        1
+;     ptok_print:                    1
+;     ptok_print_loop:               1
+;     ptok_restore_y:                1
+;     ptok_scan_loop:                1
 ;     pvr_advance:                   1
 ;     pvr_after_name:                1
 ;     pvr_byte_indirect:             1
@@ -15533,6 +15532,7 @@ save pydis_start, pydis_end
 ;     sign_force_zero:               1
 ;     sin_series:                    1
 ;     small_int_to_fwa:              1
+;     sound_stack_loop:              1
 ;     sqr_done:                      1
 ;     sqr_iter_loop:                 1
 ;     sqr_neg_error:                 1
@@ -15545,6 +15545,7 @@ save pydis_start, pydis_end
 ;     stmt_next:                     1
 ;     stmt_read:                     1
 ;     stmt_vdu:                      1
+;     store_var_type:                1
 ;     str_compare:                   1
 ;     strcmp_lengths:                1
 ;     strcmp_loop:                   1
@@ -15557,7 +15558,6 @@ save pydis_start, pydis_end
 ;     strs_formatted:                1
 ;     strs_save_flag:                1
 ;     sub_c9231:                     1
-;     sub_cb4b7:                     1
 ;     sub_cbbfc:                     1
 ;     sub_cbd2f:                     1
 ;     sub_cbe55:                     1
@@ -15620,25 +15620,6 @@ save pydis_start, pydis_end
 ;     c886a
 ;     ca7f7
 ;     caa4e
-;     cb318
-;     cb329
-;     cb32c
-;     cb37f
-;     cb3a7
-;     cb3ba
-;     cb3c0
-;     cb3f9
-;     cb413
-;     cb48f
-;     cb4ae
-;     cb4e0
-;     cb4e9
-;     cb51e
-;     cb536
-;     cb542
-;     cb556
-;     cb567
-;     cb571
 ;     cb5cf
 ;     cb5d8
 ;     cb5db
@@ -15783,14 +15764,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_cb39d
-;     loop_cb3ad
-;     loop_cb3d9
-;     loop_cb451
-;     loop_cb477
-;     loop_cb520
-;     loop_cb538
-;     loop_cb580
 ;     loop_cb5fc
 ;     loop_cb64b
 ;     loop_cb6a0
@@ -15865,9 +15838,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_cb4b1
-;     sub_cb4b7
-;     sub_cb562
 ;     sub_cbbfc
 ;     sub_cbc25
 ;     sub_cbc81

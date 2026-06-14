@@ -11926,9 +11926,9 @@
       "comment_inline": "as two hex digits",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb562",
+      "operand": "print_hex_space",
       "target": 46434,
-      "target_label": "sub_cb562"
+      "target_label": "print_hex_space"
     },
     {
       "addr": 34094,
@@ -12172,9 +12172,9 @@
       "comment_inline": "print it as hex",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb562",
+      "operand": "print_hex_space",
       "target": 46434,
-      "target_label": "sub_cb562"
+      "target_label": "print_hex_space"
     },
     {
       "addr": 34129,
@@ -42085,9 +42085,9 @@
       "comment_inline": "Stack the base address",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb32c",
+      "operand": "load_var_by_type",
       "target": 45868,
-      "target_label": "cb32c"
+      "target_label": "load_var_by_type"
     },
     {
       "addr": 38536,
@@ -82759,9 +82759,9 @@
       "comment_inline": "load the variable value",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb32c",
+      "operand": "load_var_by_type",
       "target": 45868,
-      "target_label": "cb32c"
+      "target_label": "load_var_by_type"
     },
     {
       "addr": 44586,
@@ -90876,9 +90876,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b7",
+      "operand": "assign_num_by_type",
       "target": 46263,
-      "target_label": "sub_cb4b7"
+      "target_label": "assign_num_by_type"
     },
     {
       "addr": 45814,
@@ -91071,9 +91071,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb318",
+      "operand": "local_load_value",
       "target": 45848,
-      "target_label": "cb318"
+      "target_label": "local_load_value"
     },
     {
       "addr": 45843,
@@ -91108,7 +91108,7 @@
         179
       ],
       "labels": [
-        "cb318"
+        "local_load_value"
       ],
       "comment_inline": "Load the variable's current value by type",
       "xref_summaries": [
@@ -91119,9 +91119,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb32c",
+      "operand": "load_var_by_type",
       "target": 45868,
-      "target_label": "cb32c"
+      "target_label": "load_var_by_type"
     },
     {
       "addr": 45851,
@@ -91164,9 +91164,9 @@
       "comment_inline": "byte/string",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb329",
+      "operand": "local_push_id",
       "target": 45865,
-      "target_label": "cb329"
+      "target_label": "local_push_id"
     },
     {
       "addr": 45858,
@@ -91177,9 +91177,9 @@
       "comment_inline": "or string",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb329",
+      "operand": "local_push_id",
       "target": 45865,
-      "target_label": "cb329"
+      "target_label": "local_push_id"
     },
     {
       "addr": 45860,
@@ -91214,7 +91214,7 @@
         189
       ],
       "labels": [
-        "cb329"
+        "local_push_id"
       ],
       "comment_inline": "push the variable identity (as an integer)",
       "xref_summaries": [
@@ -91237,7 +91237,7 @@
         44
       ],
       "labels": [
-        "cb32c"
+        "load_var_by_type"
       ],
       "comment_inline": "Load the variable by type:",
       "xref_summaries": [
@@ -91786,9 +91786,9 @@
       "comment_inline": "zero: leave the MSB clear",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb37f",
+      "operand": "lrv_set_msb",
       "target": 45951,
-      "target_label": "cb37f"
+      "target_label": "lrv_set_msb"
     },
     {
       "addr": 45947,
@@ -91821,7 +91821,7 @@
         49
       ],
       "labels": [
-        "cb37f"
+        "lrv_set_msb"
       ],
       "comment_inline": "store the mantissa MSB",
       "xref_summaries": [
@@ -91885,9 +91885,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb3a7",
+      "operand": "lsv_dollar",
       "target": 45991,
-      "target_label": "cb3a7"
+      "target_label": "lsv_dollar"
     },
     {
       "addr": 45960,
@@ -92030,7 +92030,7 @@
         136
       ],
       "labels": [
-        "loop_cb39d"
+        "lsv_copy_loop"
       ],
       "comment_inline": "char...",
       "xref_summaries": [
@@ -92087,9 +92087,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb39d",
+      "operand": "lsv_copy_loop",
       "target": 45981,
-      "target_label": "loop_cb39d"
+      "target_label": "lsv_copy_loop"
     },
     {
       "addr": 45990,
@@ -92116,7 +92116,7 @@
         43
       ],
       "labels": [
-        "cb3a7"
+        "lsv_dollar"
       ],
       "comment_inline": "$-string: copy until CR",
       "xref_summaries": [
@@ -92140,9 +92140,9 @@
       "comment_inline": "null pointer: empty",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb3c0",
+      "operand": "chrs_code",
       "target": 46016,
-      "target_label": "cb3c0"
+      "target_label": "chrs_code"
     },
     {
       "addr": 45995,
@@ -92162,7 +92162,7 @@
         42
       ],
       "labels": [
-        "loop_cb3ad"
+        "lsv_dollar_loop"
       ],
       "comment_inline": "char...",
       "xref_summaries": [
@@ -92211,9 +92211,9 @@
       "comment_inline": "yes: end",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb3ba",
+      "operand": "lsv_set_length",
       "target": 46010,
-      "target_label": "cb3ba"
+      "target_label": "lsv_set_length"
     },
     {
       "addr": 46006,
@@ -92233,9 +92233,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb3ad",
+      "operand": "lsv_dollar_loop",
       "target": 45997,
-      "target_label": "loop_cb3ad"
+      "target_label": "lsv_dollar_loop"
     },
     {
       "addr": 46009,
@@ -92253,7 +92253,7 @@
         54
       ],
       "labels": [
-        "cb3ba"
+        "lsv_set_length"
       ],
       "comment_inline": "set the length",
       "xref_summaries": [
@@ -92301,7 +92301,7 @@
         42
       ],
       "labels": [
-        "cb3c0"
+        "chrs_code"
       ],
       "comment_inline": "A = the character code",
       "xref_summaries": [
@@ -92473,7 +92473,7 @@
         137
       ],
       "labels": [
-        "loop_cb3d9"
+        "fel_scan_loop"
       ],
       "comment_inline": "read a program byte",
       "xref_summaries": [
@@ -92508,9 +92508,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb3f9",
+      "operand": "fel_check",
       "target": 46073,
-      "target_label": "cb3f9"
+      "target_label": "fel_check"
     },
     {
       "addr": 46048,
@@ -92663,7 +92663,7 @@
         55
       ],
       "labels": [
-        "cb3f9"
+        "fel_check"
       ],
       "comment_inline": "still before the error?",
       "xref_summaries": [
@@ -92713,9 +92713,9 @@
       "comment_inline": "yes: scan the next line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_cb3d9",
+      "operand": "fel_scan_loop",
       "target": 46041,
-      "target_label": "loop_cb3d9"
+      "target_label": "fel_scan_loop"
     },
     {
       "addr": 46081,
@@ -92789,9 +92789,9 @@
       "comment_inline": "non-zero: an ON ERROR handler is active",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb413",
+      "operand": "fel_set_handler",
       "target": 46099,
-      "target_label": "cb413"
+      "target_label": "fel_set_handler"
     },
     {
       "addr": 46091,
@@ -92848,7 +92848,7 @@
         22
       ],
       "labels": [
-        "cb413"
+        "fel_set_handler"
       ],
       "comment_inline": "Point the program pointer at the handler code: low",
       "xref_summaries": [
@@ -93131,7 +93131,7 @@
         42
       ],
       "labels": [
-        "loop_cb451"
+        "sound_stack_loop"
       ],
       "comment_inline": "Stack the 16-bit value",
       "xref_summaries": [
@@ -93245,9 +93245,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb451",
+      "operand": "sound_stack_loop",
       "target": 46161,
-      "target_label": "loop_cb451"
+      "target_label": "sound_stack_loop"
     },
     {
       "addr": 46177,
@@ -93346,9 +93346,9 @@
       "comment_inline": "pop into the block and call",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb48f",
+      "operand": "env_pop_loop",
       "target": 46223,
-      "target_label": "cb48f"
+      "target_label": "env_pop_loop"
     },
     {
       "addr": 46194,
@@ -93385,7 +93385,7 @@
         42
       ],
       "labels": [
-        "loop_cb477"
+        "env_stack_loop"
       ],
       "comment_inline": "Stack the 8-bit value",
       "xref_summaries": [
@@ -93477,9 +93477,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb477",
+      "operand": "env_stack_loop",
       "target": 46199,
-      "target_label": "loop_cb477"
+      "target_label": "env_stack_loop"
     },
     {
       "addr": 46212,
@@ -93549,7 +93549,7 @@
         104
       ],
       "labels": [
-        "cb48f"
+        "env_pop_loop"
       ],
       "comment_inline": "Pop a byte into the control block",
       "xref_summaries": [
@@ -93593,9 +93593,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cb48f",
+      "operand": "env_pop_loop",
       "target": 46223,
-      "target_label": "cb48f"
+      "target_label": "env_pop_loop"
     },
     {
       "addr": 46229,
@@ -93744,7 +93744,7 @@
         140
       ],
       "labels": [
-        "cb4ae"
+        "width_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -93768,7 +93768,7 @@
         155
       ],
       "labels": [
-        "sub_cb4b1"
+        "width_eval_value"
       ],
       "comment_inline": "Evaluate the value",
       "xref_summaries": [
@@ -93819,7 +93819,7 @@
         57
       ],
       "labels": [
-        "sub_cb4b7"
+        "assign_num_by_type"
       ],
       "comment_inline": "Variable's size/type byte",
       "xref_summaries": [
@@ -93854,9 +93854,9 @@
       "comment_inline": "yes: store as a real",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb4e0",
+      "operand": "store_var_type",
       "target": 46304,
-      "target_label": "cb4e0"
+      "target_label": "store_var_type"
     },
     {
       "addr": 46269,
@@ -93880,9 +93880,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb4ae",
+      "operand": "width_type_error",
       "target": 46254,
-      "target_label": "cb4ae"
+      "target_label": "width_type_error"
     },
     {
       "addr": 46273,
@@ -94113,7 +94113,7 @@
         39
       ],
       "labels": [
-        "cb4e0"
+        "store_var_type"
       ],
       "comment_inline": "Value type",
       "xref_summaries": [
@@ -94137,9 +94137,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb4ae",
+      "operand": "width_type_error",
       "target": 46254,
-      "target_label": "cb4ae"
+      "target_label": "width_type_error"
     },
     {
       "addr": 46308,
@@ -94150,9 +94150,9 @@
       "comment_inline": "real: store it",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb4e9",
+      "operand": "store_real",
       "target": 46313,
-      "target_label": "cb4e9"
+      "target_label": "store_real"
     },
     {
       "addr": 46310,
@@ -94175,7 +94175,7 @@
         0
       ],
       "labels": [
-        "cb4e9"
+        "store_real"
       ],
       "comment_inline": "Store the 5-byte real: exponent",
       "xref_summaries": [
@@ -94541,7 +94541,7 @@
         0
       ],
       "labels": [
-        "cb51e"
+        "ptok_entry_start"
       ],
       "comment_inline": "Start of an entry",
       "xref_summaries": [
@@ -94561,7 +94561,7 @@
         200
       ],
       "labels": [
-        "loop_cb520"
+        "ptok_scan_loop"
       ],
       "comment_inline": "Scan to the token byte",
       "xref_summaries": [
@@ -94595,9 +94595,9 @@
       "comment_inline": "...(skip the keyword text)",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cb520",
+      "operand": "ptok_scan_loop",
       "target": 46368,
-      "target_label": "loop_cb520"
+      "target_label": "ptok_scan_loop"
     },
     {
       "addr": 46373,
@@ -94621,9 +94621,9 @@
       "comment_inline": "yes: print its keyword",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb536",
+      "operand": "ptok_print",
       "target": 46390,
-      "target_label": "cb536"
+      "target_label": "ptok_print"
     },
     {
       "addr": 46377,
@@ -94687,9 +94687,9 @@
       "comment_inline": "no carry: scan the next entry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb51e",
+      "operand": "ptok_entry_start",
       "target": 46366,
-      "target_label": "cb51e"
+      "target_label": "ptok_entry_start"
     },
     {
       "addr": 46386,
@@ -94713,9 +94713,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb51e",
+      "operand": "ptok_entry_start",
       "target": 46366,
-      "target_label": "cb51e"
+      "target_label": "ptok_entry_start"
     },
     {
       "addr": 46390,
@@ -94724,7 +94724,7 @@
         0
       ],
       "labels": [
-        "cb536"
+        "ptok_print"
       ],
       "comment_inline": "Print the keyword text: from the start",
       "xref_summaries": [
@@ -94744,7 +94744,7 @@
         56
       ],
       "labels": [
-        "loop_cb538"
+        "ptok_print_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -94768,9 +94768,9 @@
       "comment_inline": "token byte: done",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb542",
+      "operand": "ptok_restore_y",
       "target": 46402,
-      "target_label": "cb542"
+      "target_label": "ptok_restore_y"
     },
     {
       "addr": 46396,
@@ -94804,9 +94804,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb538",
+      "operand": "ptok_print_loop",
       "target": 46392,
-      "target_label": "loop_cb538"
+      "target_label": "ptok_print_loop"
     },
     {
       "addr": 46402,
@@ -94815,7 +94815,7 @@
         58
       ],
       "labels": [
-        "cb542"
+        "ptok_restore_y"
       ],
       "comment_inline": "Restore Y",
       "xref_summaries": [
@@ -94957,9 +94957,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb556",
+      "operand": "phd_ascii",
       "target": 46422,
-      "target_label": "cb556"
+      "target_label": "phd_ascii"
     },
     {
       "addr": 46420,
@@ -94979,7 +94979,7 @@
         48
       ],
       "labels": [
-        "cb556"
+        "phd_ascii"
       ],
       "comment_inline": "to ASCII, then fall into print_char",
       "xref_summaries": [
@@ -95033,9 +95033,9 @@
       "comment_inline": "no: format and print",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb567",
+      "operand": "print_char_body",
       "target": 46439,
-      "target_label": "cb567"
+      "target_label": "print_char_body"
     },
     {
       "addr": 46428,
@@ -95073,7 +95073,7 @@
         181
       ],
       "labels": [
-        "sub_cb562"
+        "print_hex_space"
       ],
       "comment_inline": "Print A as hex then a space",
       "xref_summaries": [
@@ -95123,7 +95123,7 @@
         72
       ],
       "labels": [
-        "cb567"
+        "print_char_body"
       ],
       "comment_inline": "Save the character",
       "xref_summaries": [
@@ -95170,9 +95170,9 @@
       "comment_inline": "within the width",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb571",
+      "operand": "print_char_emit",
       "target": 46449,
-      "target_label": "cb571"
+      "target_label": "print_char_emit"
     },
     {
       "addr": 46446,
@@ -95194,7 +95194,7 @@
         104
       ],
       "labels": [
-        "cb571"
+        "print_char_emit"
       ],
       "comment_inline": "Recover the character",
       "xref_summaries": [
@@ -95313,7 +95313,7 @@
         181
       ],
       "labels": [
-        "loop_cb580"
+        "listo_space_loop"
       ],
       "comment_inline": "Print a space...",
       "xref_summaries": [
@@ -95360,9 +95360,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb580",
+      "operand": "listo_space_loop",
       "target": 46464,
-      "target_label": "loop_cb580"
+      "target_label": "listo_space_loop"
     },
     {
       "addr": 46473,
@@ -98546,9 +98546,9 @@
       "comment_inline": "store the updated variable",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb4e9",
+      "operand": "store_real",
       "target": 46313,
-      "target_label": "cb4e9"
+      "target_label": "store_real"
     },
     {
       "addr": 46978,
@@ -98987,9 +98987,9 @@
       "comment_inline": "Assign the initial value",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b1",
+      "operand": "width_eval_value",
       "target": 46257,
-      "target_label": "sub_cb4b1"
+      "target_label": "width_eval_value"
     },
     {
       "addr": 47060,
@@ -104341,9 +104341,9 @@
       "comment_inline": "read the value and assign it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cb4b1",
+      "operand": "width_eval_value",
       "target": 46257,
-      "target_label": "sub_cb4b1"
+      "target_label": "width_eval_value"
     },
     {
       "addr": 47919,
