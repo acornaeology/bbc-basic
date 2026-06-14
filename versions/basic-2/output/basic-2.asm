@@ -9876,28 +9876,28 @@ l848a = sub_c847b+15
 ; &b477 referenced 1 time by &b482
 .loop_cb477
     lda zp_iwa                                                        ; b477: a5 2a       .*       ; Stack the 8-bit value
-    pha                                                               ; b479: 48          H        ; ...
+    pha                                                               ; b479: 48          H        ; push it
     txa                                                               ; b47a: 8a          .        ; save the counter
-    pha                                                               ; b47b: 48          H        ; ...
+    pha                                                               ; b47b: 48          H        ; push it
     jsr sub_c92da                                                     ; b47c: 20 da 92     ..      ; step past the comma, evaluate the next
     pla                                                               ; b47f: 68          h        ; restore the counter
-    tax                                                               ; b480: aa          .        ; ...
-    dex                                                               ; b481: ca          .        ; ...
+    tax                                                               ; b480: aa          .        ; into X,
+    dex                                                               ; b481: ca          .        ; one fewer parameter
     bne loop_cb477                                                    ; b482: d0 f3       ..       ; loop
     jsr sub_c9852                                                     ; b484: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b487: a5 2a       .*       ; Last value to the block end
-    sta l0044                                                         ; b489: 85 44       .D       ; ...
+    sta l0044                                                         ; b489: 85 44       .D       ; into &44 (the block end)
     ldx #&0c                                                          ; b48b: a2 0c       ..       ; OSWORD 8, 12 bytes
-    ldy #osword_envelope                                              ; b48d: a0 08       ..       ; ...
+    ldy #osword_envelope                                              ; b48d: a0 08       ..       ; OSWORD number 8
 ; &b48f referenced 2 times by &b470, &b493
 .cb48f
     pla                                                               ; b48f: 68          h        ; Pop a byte into the control block
-    sta zp_general,x                                                  ; b490: 95 37       .7       ; ...
-    dex                                                               ; b492: ca          .        ; ...
+    sta zp_general,x                                                  ; b490: 95 37       .7       ; store at offset X,
+    dex                                                               ; b492: ca          .        ; next lower offset
     bpl cb48f                                                         ; b493: 10 fa       ..       ; loop
     tya                                                               ; b495: 98          .        ; OSWORD number
     ldx #<(zp_general)                                                ; b496: a2 37       .7       ; Point at the control block
-    ldy #>(zp_general)                                                ; b498: a0 00       ..       ; ...
+    ldy #>(zp_general)                                                ; b498: a0 00       ..       ; block address high
     jsr osword                                                        ; b49a: 20 f1 ff     ..      ; ENVELOPE command
     jmp statement_loop                                                ; b49d: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************

@@ -91099,7 +91099,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -91117,7 +91117,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -91149,7 +91149,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "into X,",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -91158,7 +91158,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer parameter",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -91208,7 +91208,7 @@
         133,
         68
       ],
-      "comment_inline": "...",
+      "comment_inline": "into &44 (the block end)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0044",
@@ -91232,7 +91232,7 @@
         160,
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "OSWORD number 8",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#osword_envelope"
@@ -91262,7 +91262,7 @@
         149,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store at offset X,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general,x",
@@ -91274,7 +91274,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next lower offset",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -91317,7 +91317,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "block address high",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#>(zp_general)"
