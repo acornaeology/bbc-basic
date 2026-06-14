@@ -59184,7 +59184,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push m1,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -59194,7 +59194,7 @@
         165,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -59206,7 +59206,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push m2,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -59216,7 +59216,7 @@
         165,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -59228,7 +59228,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push m3 (m4 already in X)",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -59250,7 +59250,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the low byte left,",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -59260,7 +59260,7 @@
         38,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "carrying up through m4,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -59273,7 +59273,7 @@
         38,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -59286,7 +59286,7 @@
         38,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -59299,7 +59299,7 @@
         38,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "m1 (mantissa now x2)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m1",
@@ -59321,7 +59321,7 @@
         38,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "m4,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -59334,7 +59334,7 @@
         38,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -59347,7 +59347,7 @@
         38,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -59360,7 +59360,7 @@
         38,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "m1 (now x4)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m1",
@@ -59408,7 +59408,7 @@
         101,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ original m4 (was in X)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m4",
@@ -59443,7 +59443,7 @@
         101,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ original m3 (pulled)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m3",
@@ -59478,7 +59478,7 @@
         101,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ original m2 (pulled)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m2",
@@ -59513,7 +59513,7 @@
         101,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ original m1 -> kept in A",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwa_m1",
@@ -59539,7 +59539,7 @@
         38,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "carrying up through m4,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m4",
@@ -59552,7 +59552,7 @@
         38,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m3",
@@ -59565,7 +59565,7 @@
         38,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwa_m2",
@@ -59577,7 +59577,7 @@
       "bytes": [
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "m1 (still in A): mantissa now x10",
       "type": "code",
       "mnemonic": "rol"
     },
@@ -83527,7 +83527,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "ready the subtract",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -83537,7 +83537,7 @@
         229,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the count: A = start offset",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -83598,7 +83598,7 @@
         133,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the new (shorter) length",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -83637,9 +83637,9 @@
         6
       ],
       "labels": [
-        "loop_cb017"
+        "rights_copy_down"
       ],
-      "comment_inline": "...",
+      "comment_inline": "Read a kept char from the tail (at X)",
       "xref_summaries": [
         "&b017 referenced 1 time by &b021"
       ],
@@ -83659,7 +83659,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "Pack it down to the front (at Y)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -83671,7 +83671,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "Advance the read cursor",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -83680,7 +83680,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "Advance the write cursor",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -83690,7 +83690,7 @@
         198,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "One fewer char to move",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_iwa",
@@ -83703,12 +83703,12 @@
         208,
         244
       ],
-      "comment_inline": "loop",
+      "comment_inline": "Until all `count` chars are shifted down",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb017",
+      "operand": "rights_copy_down",
       "target": 45079,
-      "target_label": "loop_cb017"
+      "target_label": "rights_copy_down"
     },
     {
       "addr": 45091,
@@ -104500,7 +104500,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -104509,7 +104509,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "iny"
     },

@@ -6350,40 +6350,40 @@ l848a = sub_c847b+15
     pha                                                               ; a197: 48          H        ; Save A
     ldx zp_fwa_m4                                                     ; a198: a6 34       .4       ; keep m4 in X
     lda zp_fwa_m1                                                     ; a19a: a5 31       .1       ; save the mantissa (m1..m3):
-    pha                                                               ; a19c: 48          H        ; ...
-    lda zp_fwa_m2                                                     ; a19d: a5 32       .2       ; ...
-    pha                                                               ; a19f: 48          H        ; ...
-    lda zp_fwa_m3                                                     ; a1a0: a5 33       .3       ; ...
-    pha                                                               ; a1a2: 48          H        ; ...
+    pha                                                               ; a19c: 48          H        ; push m1,
+    lda zp_fwa_m2                                                     ; a19d: a5 32       .2       ; m2,
+    pha                                                               ; a19f: 48          H        ; push m2,
+    lda zp_fwa_m3                                                     ; a1a0: a5 33       .3       ; m3,
+    pha                                                               ; a1a2: 48          H        ; push m3 (m4 already in X)
     lda zp_fwa_rnd                                                    ; a1a3: a5 35       .5       ; x2: shift the mantissa left
-    asl a                                                             ; a1a5: 0a          .        ; ...
-    rol zp_fwa_m4                                                     ; a1a6: 26 34       &4       ; ...
-    rol zp_fwa_m3                                                     ; a1a8: 26 33       &3       ; ...
-    rol zp_fwa_m2                                                     ; a1aa: 26 32       &2       ; ...
-    rol zp_fwa_m1                                                     ; a1ac: 26 31       &1       ; ...
+    asl a                                                             ; a1a5: 0a          .        ; shift the low byte left,
+    rol zp_fwa_m4                                                     ; a1a6: 26 34       &4       ; carrying up through m4,
+    rol zp_fwa_m3                                                     ; a1a8: 26 33       &3       ; m3,
+    rol zp_fwa_m2                                                     ; a1aa: 26 32       &2       ; m2,
+    rol zp_fwa_m1                                                     ; a1ac: 26 31       &1       ; m1 (mantissa now x2)
     asl a                                                             ; a1ae: 0a          .        ; x2 again (now x4)
-    rol zp_fwa_m4                                                     ; a1af: 26 34       &4       ; ...
-    rol zp_fwa_m3                                                     ; a1b1: 26 33       &3       ; ...
-    rol zp_fwa_m2                                                     ; a1b3: 26 32       &2       ; ...
-    rol zp_fwa_m1                                                     ; a1b5: 26 31       &1       ; ...
+    rol zp_fwa_m4                                                     ; a1af: 26 34       &4       ; m4,
+    rol zp_fwa_m3                                                     ; a1b1: 26 33       &3       ; m3,
+    rol zp_fwa_m2                                                     ; a1b3: 26 32       &2       ; m2,
+    rol zp_fwa_m1                                                     ; a1b5: 26 31       &1       ; m1 (now x4)
     adc zp_fwa_rnd                                                    ; a1b7: 65 35       e5       ; add the saved original (x4 + x1 = x5): rnd
     sta zp_fwa_rnd                                                    ; a1b9: 85 35       .5       ; (store)
     txa                                                               ; a1bb: 8a          .        ; m4
-    adc zp_fwa_m4                                                     ; a1bc: 65 34       e4       ; ...
+    adc zp_fwa_m4                                                     ; a1bc: 65 34       e4       ; - original m4 (was in X)
     sta zp_fwa_m4                                                     ; a1be: 85 34       .4       ; (store)
     pla                                                               ; a1c0: 68          h        ; m3
-    adc zp_fwa_m3                                                     ; a1c1: 65 33       e3       ; ...
+    adc zp_fwa_m3                                                     ; a1c1: 65 33       e3       ; - original m3 (pulled)
     sta zp_fwa_m3                                                     ; a1c3: 85 33       .3       ; (store)
     pla                                                               ; a1c5: 68          h        ; m2
-    adc zp_fwa_m2                                                     ; a1c6: 65 32       e2       ; ...
+    adc zp_fwa_m2                                                     ; a1c6: 65 32       e2       ; - original m2 (pulled)
     sta zp_fwa_m2                                                     ; a1c8: 85 32       .2       ; (store)
     pla                                                               ; a1ca: 68          h        ; m1
-    adc zp_fwa_m1                                                     ; a1cb: 65 31       e1       ; ...
+    adc zp_fwa_m1                                                     ; a1cb: 65 31       e1       ; - original m1 -> kept in A
     asl zp_fwa_rnd                                                    ; a1cd: 06 35       .5       ; x2 (now x10): shift left
-    rol zp_fwa_m4                                                     ; a1cf: 26 34       &4       ; ...
-    rol zp_fwa_m3                                                     ; a1d1: 26 33       &3       ; ...
-    rol zp_fwa_m2                                                     ; a1d3: 26 32       &2       ; ...
-    rol a                                                             ; a1d5: 2a          *        ; ...
+    rol zp_fwa_m4                                                     ; a1cf: 26 34       &4       ; carrying up through m4,
+    rol zp_fwa_m3                                                     ; a1d1: 26 33       &3       ; m3,
+    rol zp_fwa_m2                                                     ; a1d3: 26 32       &2       ; m2,
+    rol a                                                             ; a1d5: 2a          *        ; m1 (still in A): mantissa now x10
     sta zp_fwa_m1                                                     ; a1d6: 85 31       .1       ; store m1
     pla                                                               ; a1d8: 68          h        ; restore A
     rts                                                               ; a1d9: 60          `        ; Return
@@ -9073,23 +9073,23 @@ l848a = sub_c847b+15
     jsr coerce_to_integer                                             ; afff: 20 f0 92     ..      ; coerce to integer
     jsr unstack_string                                                ; b002: 20 cb bd     ..      ; Restore the string
     lda zp_strbuf_len                                                 ; b005: a5 36       .6       ; Start = length - count
-    sec                                                               ; b007: 38          8        ; ...
-    sbc zp_iwa                                                        ; b008: e5 2a       .*       ; ...
+    sec                                                               ; b007: 38          8        ; ready the subtract
+    sbc zp_iwa                                                        ; b008: e5 2a       .*       ; minus the count: A = start offset
     bcc cb023                                                         ; b00a: 90 17       ..       ; count > length: keep the whole string
     beq return_31                                                     ; b00c: f0 17       ..       ; count == length: keep it
     tax                                                               ; b00e: aa          .        ; Start offset
     lda zp_iwa                                                        ; b00f: a5 2a       .*       ; New length = count
-    sta zp_strbuf_len                                                 ; b011: 85 36       .6       ; ...
+    sta zp_strbuf_len                                                 ; b011: 85 36       .6       ; store the new (shorter) length
     beq return_31                                                     ; b013: f0 10       ..       ; zero: empty string
     ldy #0                                                            ; b015: a0 00       ..       ; Copy the last count chars to the front
 ; &b017 referenced 1 time by &b021
-.loop_cb017
-    lda string_work,x                                                 ; b017: bd 00 06    ...      ; ...
-    sta string_work,y                                                 ; b01a: 99 00 06    ...      ; ...
-    inx                                                               ; b01d: e8          .        ; ...
-    iny                                                               ; b01e: c8          .        ; ...
-    dec zp_iwa                                                        ; b01f: c6 2a       .*       ; ...
-    bne loop_cb017                                                    ; b021: d0 f4       ..       ; loop
+.rights_copy_down
+    lda string_work,x                                                 ; b017: bd 00 06    ...      ; Read a kept char from the tail (at X)
+    sta string_work,y                                                 ; b01a: 99 00 06    ...      ; Pack it down to the front (at Y)
+    inx                                                               ; b01d: e8          .        ; Advance the read cursor
+    iny                                                               ; b01e: c8          .        ; Advance the write cursor
+    dec zp_iwa                                                        ; b01f: c6 2a       .*       ; One fewer char to move
+    bne rights_copy_down                                              ; b021: d0 f4       ..       ; Until all count chars are shifted down
 ; &b023 referenced 1 time by &b00a
 .cb023
     lda #0                                                            ; b023: a9 00       ..       ; Keep the whole string
@@ -11251,8 +11251,8 @@ l848a = sub_c847b+15
     cmp (zp_fwb_sign),y                                               ; bc9f: d1 3b       .;       ; ...
     bne loop_cbc9e                                                    ; bca1: d0 fb       ..       ; ...
     iny                                                               ; bca3: c8          .        ; Add the 4-byte header
-    iny                                                               ; bca4: c8          .        ; ...
-    iny                                                               ; bca5: c8          .        ; ...
+    iny                                                               ; bca4: c8          .        ; (continued)
+    iny                                                               ; bca5: c8          .        ; (continued)
     sty zp_fwb_m2                                                     ; bca6: 84 3f       .?       ; Line length
     inc zp_fwb_m2                                                     ; bca8: e6 3f       .?       ; ...
     lda zp_top                                                        ; bcaa: a5 12       ..       ; Old top of program
@@ -13070,7 +13070,6 @@ save pydis_start, pydis_end
 ;     loop_caece:                  1
 ;     loop_caf78:                  1
 ;     loop_caf89:                  1
-;     loop_cb017:                  1
 ;     loop_cb083:                  1
 ;     loop_cb0df:                  1
 ;     loop_cb0e1:                  1
@@ -13154,6 +13153,7 @@ save pydis_start, pydis_end
 ;     return_5:                    1
 ;     return_6:                    1
 ;     return_7:                    1
+;     rights_copy_down:            1
 ;     rnd_dispatch:                1
 ;     rnd_range:                   1
 ;     rnd_repeat:                  1
@@ -14007,7 +14007,6 @@ save pydis_start, pydis_end
 ;     loop_caece
 ;     loop_caf78
 ;     loop_caf89
-;     loop_cb017
 ;     loop_cb083
 ;     loop_cb0df
 ;     loop_cb0e1

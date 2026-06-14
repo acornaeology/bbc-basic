@@ -1,254 +1,109 @@
-# BBC BASIC II annotation progress
+# BBC BASIC II annotation — semantic quality pass
 
-**STATUS: COMPLETE — 100.0% inline density (7135/7135 code instructions).**
-Every code instruction in the ROM carries an intention-revealing inline
-comment; the disassembly reassembles byte-identically; lint and
-comments-check are clean. The notes below record the bottom-up path taken.
+**STATUS: in progress.** Inline-comment *density* is 100 %, but that
+number is hollow: a first pass met the coverage target by emitting a
+literal `...` placeholder wherever it had nothing to say. At the start
+of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
+`...` comment — coverage theatre, not annotation.
 
-Full per-instruction inline commenting, **every instruction**, working
-bottom-up by call-graph depth (leaves = depth 0 first), to the standard
-of the sibling ADFS/NFS disassemblies (~97%+). Comment intent in light
-of the whole routine: name the domain value, not the opcode.
+This pass replaces every placeholder with an intention-revealing comment
+in the language of the domain (BASIC interpretation: tokeniser, line
+editor, statement dispatch, expression evaluator, variable storage,
+40-bit floating point), to the standard of the sibling NFS / ADFS /
+Econet disassemblies.
 
-Workflow per routine:
-`fantasm context uncommented 2` to pick the next and see its callees;
-`fantasm asm extract 2 <name>` to read it in context (callers shown);
-`uv run tools/show_routine.py <name>` for gaps + JGH cross-reference;
-comment every line; then `fantasm comments check 2`, verify, lint, commit.
-Rename labels/addresses as understanding firms up. Verify stays
-byte-identical throughout.
+## The quality bar
 
-Percentages are current inline density (auto-updated by re-running the
-generator note in git history); tick a routine only at 100%.
+A comment must say *why*, in domain terms — never restate the opcode.
 
-## Depth 0
+Bad (the first pass):
+```
+    lda string_work,x     ; ...
+    sta string_work,y     ; ...
+    inx                   ; ...
+    dec zp_iwa            ; ...
+    bne loop_cb017        ; loop
+```
 
-- [ ] &8071 keyword_table  (0%, 1)
-- [ ] &8942 read_via_ptr_general  (0%, 1)
-- [ ] &8944 inc_ptr_general  (0%, 7)
-- [ ] &8A8C skip_spaces_ptr2  (17%, 6)
-- [ ] &8A97 skip_spaces  (14%, 7)
-- [ ] &8ADD start_new_program  (0%, 13)
-- [ ] &8AF6 immediate_loop  (0%, 10)
-- [ ] &8B60 check_eq_star_bracket  (21%, 14)
-- [ ] &8B9B statement_loop  (36%, 11)
-- [ ] &8BB1 dispatch_token  (50%, 6)
-- [ ] &8BBF try_variable_assignment  (0%, 17)
-- [ ] &8FA3 stmt_renumber  (0%, 118)
-- [ ] &926F stmt_lomem  (0%, 9)
-- [ ] &93E4 stmt_move  (0%, 2)
-- [ ] &945B find_proc_fn  (14%, 7)
-- [ ] &9469 find_variable  (4%, 157)
-- [ ] &9B1D eval_expr  (17%, 6)
-- [ ] &9E01 iwa_mod  (0%, 4)
-- [ ] &A1DA fwa_sign  (29%, 14)
-- [ ] &A21E fwb_copy_from_fwa  (0%, 24)
-- [ ] &A24D fwa_div10  (0%, 41)
-- [ ] &A2A4 fwa_round_carry  (0%, 13)
-- [ ] &A303 fwa_normalise  (13%, 38)
-- [ ] &A34E fwb_unpack_var  (0%, 26)
-- [ ] &A37D fwa_pack_temp2  (0%, 2)
-- [ ] &A381 fwa_pack_temp3  (0%, 2)
-- [ ] &A385 fwa_pack_temp1  (0%, 4)
-- [ ] &A38D fwa_pack_var  (14%, 21)
-- [ ] &A3B2 fwa_unpack_temp1  (0%, 1)
-- [ ] &A3B5 fwa_unpack_var  (23%, 26)
-- [ ] &A4DC fwa_copy_from_fwb  (0%, 17)
-- [ ] &A686 fwa_clear  (0%, 10)
-- [ ] &A98D fn_cos  (0%, 4)
-- [ ] &AB6D fn_pos  (50%, 4)
-- [ ] &ABC2 fn_deg  (0%, 4)
-- [ ] &ABCB fn_pi  (0%, 4)
-- [ ] &ABD2 fn_usr  (0%, 12)
-- [ ] &ACB8 fn_eof  (33%, 6)
-- [ ] &ACC4 fn_true  (0%, 7)
-- [ ] &ACD1 fn_not  (0%, 9)
-- [ ] &AEB4 fn_time  (17%, 6)
-- [ ] &AECA fn_false  (0%, 3)
-- [ ] &AEDC fn_to  (0%, 7)
-- [ ] &AEEA iwa_from_ya  (29%, 7)
-- [ ] &AEF7 fn_count  (0%, 2)
-- [ ] &AF49 fn_rnd  (0%, 4)
-- [ ] &AF51 rnd_integer  (0%, 2)
-- [ ] &AF56 iwa_load_zp  (0%, 10)
-- [ ] &AF69 rnd_fraction  (0%, 1)
-- [ ] &AF6C rnd_repeat  (0%, 29)
-- [ ] &AFB9 fn_get  (50%, 2)
-- [ ] &AFBF fn_gets  (0%, 6)
-- [ ] &B026 fn_inkeys  (0%, 9)
-- [ ] &B195 fn_fn  (0%, 1)
-- [ ] &BDEA unstack_integer  (0%, 39)
-- [ ] &BE2E reserve_stack  (18%, 11)
-- [ ] &BE44 iwa_store_zp  (2%, 60)
-- [ ] &BF24 stmt_load  (0%, 2)
-- [ ] &BF2A stmt_chain  (0%, 2)
-- [ ] &BF46 fn_ext  (0%, 1)
-- [ ] &BF47 fn_ptr  (0%, 10)
-- [ ] &BF6F fn_bget  (0%, 3)
-- [ ] &BF78 fn_openin  (0%, 2)
-- [ ] &BF7C fn_openout  (0%, 2)
+Good (this pass — RIGHT$ shifting the tail to the front):
+```
+    lda string_work,x     ; Read a kept char from the tail (offset X)
+    sta string_work,y     ; Pack it down to the front of the buffer
+    inx                   ; Advance the read cursor
+    dec zp_iwa            ; One fewer char to move
+    bne loop_cb017        ; Until all `count` chars are shifted down
+```
 
-## Depth 1
+Rules of thumb:
+- Name the **domain value**, not the register (`new string length`, not
+  `A`). State register identity only when it is the point (`A = &82:
+  TX in reset`).
+- A branch comment says what the *taken* branch means
+  (`count == length: keep it`), not "branch if equal".
+- Lean on the routine's purpose: a line is allowed to be terse when an
+  adjacent line already gives the context.
+- 62-character limit on the rendered comment (py8dis formatting).
+- Acorn notation (`&XXXX`) in comments; Python (`0xXXXX`) in the driver.
 
-- [ ] &8023 language_startup  (36%, 36)
-- [ ] &8951 tokenise_line  (5%, 159)
-- [ ] &8AAE skip_spaces_expect_comma  (0%, 4)
-- [ ] &8B0B execute_line  (25%, 36)
-- [ ] &8E70 print_special_item  (0%, 35)
-- [ ] &925D stmt_himem  (0%, 8)
-- [ ] &9283 stmt_page  (0%, 4)
-- [ ] &93E8 stmt_draw  (0%, 4)
-- [ ] &9857 check_end_of_statement  (0%, 61)
-- [ ] &A1F4 fwa_mul10  (0%, 20)
-- [ ] &A4D6 fwa_swap_var  (0%, 2)
-- [ ] &A500 fwa_add_var  (50%, 2)
-- [ ] &A50B fwa_add_fwb_raw  (10%, 131)
-- [ ] &A5FF fwa_compare_var  (0%, 3)
-- [ ] &A606 fwa_mul_var_raw  (0%, 41)
-- [ ] &A65C fwa_round  (44%, 16)
-- [ ] &A699 fwa_set_one  (0%, 7)
-- [ ] &A6AD fwa_rdiv_var  (0%, 7)
-- [ ] &AB33 fn_adval  (17%, 6)
-- [ ] &AB76 fn_vpos  (25%, 8)
-- [ ] &AC34 ascii_to_number  (0%, 31)
-- [ ] &ACAD fn_inkey  (0%, 5)
-- [ ] &AD71 iwa_abs  (0%, 6)
-- [ ] &AD7E fwa_negate  (0%, 10)
-- [ ] &AD93 iwa_negate  (0%, 49)
-- [ ] &AEC0 fn_page  (0%, 4)
-- [ ] &AEFC fn_lomem  (0%, 3)
-- [ ] &AF3F rnd_seed  (0%, 5)
-- [ ] &AF9F fn_erl  (0%, 3)
-- [ ] &AFA6 fn_err  (12%, 8)
-- [ ] &B336 iwa_load_var  (0%, 75)
-- [ ] &B3BD fn_chrs  (4%, 55)
-- [ ] &BBB1 stmt_until  (31%, 16)
-- [ ] &BD51 stack_real  (5%, 37)
-- [ ] &BD94 stack_integer  (6%, 17)
-- [ ] &BDB2 stack_string  (3%, 30)
-- [ ] &BEC2 stmt_oscli  (5%, 21)
-- [ ] &BEF3 stmt_save  (0%, 23)
-- [ ] &BF99 stmt_close  (3%, 30)
+### Continuation lines (multi-instruction operations)
 
-## Depth 2
+Two sanctioned idioms — never leave a continuation as `...`:
 
-- [ ] &8AB6 stmt_old  (0%, 8)
-- [ ] &8AC8 stmt_end  (0%, 3)
-- [ ] &8AD0 stmt_stop  (0%, 2)
-- [ ] &8ADA stmt_new  (0%, 1)
-- [ ] &8B7D stmt_data  (0%, 15)
-- [ ] &8EBD stmt_clg  (0%, 3)
-- [ ] &8EC4 stmt_cls  (0%, 5)
-- [ ] &8ED2 stmt_call  (0%, 38)
-- [ ] &8F31 stmt_delete  (0%, 49)
-- [ ] &928D stmt_clear  (0%, 3)
-- [ ] &9356 stmt_endproc  (30%, 10)
-- [ ] &9D6D iwa_mul  (0%, 50)
-- [ ] &9DD1 eval_mul_div  (0%, 22)
-- [ ] &A2BE int_to_fwa  (0%, 35)
-- [ ] &A4FD fwa_rsub_var  (0%, 1)
-- [ ] &A505 fwa_add_fwb  (0%, 2)
-- [ ] &A656 fwa_mul_var  (0%, 2)
-- [ ] &A6A5 fwa_reciprocal  (0%, 3)
-- [ ] &A6BE fn_tan  (0%, 117)
-- [ ] &A7B4 fn_sqr  (0%, 35)
-- [ ] &A8DA fn_asn  (0%, 17)
-- [ ] &B0C2 fn_strings  (0%, 98)
-- [ ] &B30D stack_local  (0%, 19)
-- [ ] &B695 stmt_next  (3%, 123)
-- [ ] &B8B6 stmt_return  (33%, 9)
-- [ ] &BD11 stmt_run  (0%, 31)
-- [ ] &BF58 stmt_bput  (0%, 10)
-- [ ] &BFE4 stmt_report  (0%, 9)
+- **Repeated identical instructions doing one thing** (e.g. three `iny`
+  to skip a 4-byte header): the first line carries the description, the
+  rest are `(continued)`. `fantasm comments check` enforces this
+  (`chain_comment` finding); ~13 already exist.
+- **A chain over distinct named bytes** (e.g. `rol m4 / rol m3 / rol m2`
+  shifting the 40-bit mantissa, or `adc m4 / adc m3 …` summing it): the
+  lead states the operation and the result; each continuation **names
+  its byte** so the line reads as a sentence across the chain —
+  `carrying up through m4, / m3, / m2, / m1 (mantissa now x2)`. Mirrors
+  the existing `fwa_sign` style (`(mantissa byte 2)`).
 
-## Depth 3
+## Reference works (consult before guessing)
 
-- [ ] &9C42 eval_add_sub  (8%, 13)
-- [ ] &9C5B iwa_add  (0%, 50)
-- [ ] &9CC2 iwa_rsub  (0%, 77)
-- [ ] &9EDF number_to_ascii  (0%, 389)
-- [ ] &A3FE fwa_to_int2  (0%, 41)
-- [ ] &A453 fwb_clear  (0%, 62)
-- [ ] &A8D4 fn_acs  (0%, 2)
-- [ ] &AA91 fn_exp  (0%, 52)
-- [ ] &ABB1 fn_rad  (0%, 8)
-- [ ] &B4C6 iwa_store_var  (0%, 113)
+- **J.G. Harston's source reconstruction** — harvested into
+  `tools/jgh_correlation.tsv` (addr → his inline comment) and
+  `tools/jgh_banners.tsv`. The primary external anchor; sparse in
+  places, authoritative where present.
+- **The Advanced BASIC ROM User Guide (Colin Pharo)** — zero-page map,
+  keyword table, interpreter loop, variable storage, FP routines. Linked
+  in `acornaeology.json`.
+- **hoglet's BBC BASIC 4r32 disassembly** — a later, reorganised cousin;
+  useful for cross-checking structure and names.
+- Existing **substantive** comments already in the driver — match their
+  vocabulary (e.g. `zp_iwa` = integer work accumulator, `fwa`/`fwb` =
+  floating-point work accumulators A/B, `string_work` = &0600 string
+  buffer).
 
-## Depth 4
+## Workflow per routine
 
-- [ ] &9AAD iwa_test_var  (0%, 61)
-- [ ] &9B9C eval_relational  (0%, 76)
-- [ ] &A3E4 fwa_to_int  (0%, 12)
-- [ ] &A7FE fn_ln  (0%, 74)
-- [ ] &A907 fn_atn  (0%, 35)
-- [ ] &A998 fn_sin  (0%, 75)
+1. `uv run tools/annotation_status.py` — live worklist. A routine is
+   **done** when its placeholder count hits 0; the driver is the single
+   source of truth, so this is fully resumable. Worst offenders surface
+   first within each call-graph depth (leaves first).
+2. `uv run fantasm asm extract 2 <name>` — read it in context (callers
+   and callees shown).
+3. `uv run tools/show_routine.py <name>` — per-line view with JGH
+   cross-reference.
+4. Understand the whole routine, then replace each `...` with intent.
+   Rename `loop_cXXXX` / `cXXXX` / `return_N` auto-labels to semantic
+   names as understanding firms up.
+5. `uv run fantasm verify 2` (byte-identical), `lint 2 <driver>`,
+   `comments check 2` — all clean before commit.
+6. Commit per batch (a coherent cluster of routines), then re-run the
+   status tool and log below.
 
-## Depth 5
+## Ordering
 
-- [ ] &92F0 coerce_to_integer  (0%, 8)
-- [ ] &98C2 stmt_if  (0%, 81)
-- [ ] &9B29 eval_or_eor  (15%, 34)
-- [ ] &9B72 eval_and  (5%, 19)
-- [ ] &ABA8 fn_log  (0%, 4)
-- [ ] &ADEC eval_factor  (0%, 84)
-- [ ] &AF24 rnd_range  (0%, 10)
-- [ ] &B4B4 assign_number  (0%, 8)
+Leaves first (call-graph depth 0 upward): a leaf can be understood in
+isolation, and doing it first establishes the vocabulary that the
+callers above it reuse. Within a depth, the routine with the most
+placeholders goes first.
 
-## Depth 6
+## Batch log
 
-- [ ] &8821 eval_expr_to_integer  (0%, 157)
-- [ ] &8C1E assign_string  (2%, 199)
-- [ ] &8D9A stmt_print  (11%, 103)
-- [ ] &92C9 stmt_time  (6%, 16)
-- [ ] &9582 parse_lvalue  (0%, 347)
-- [ ] &9813 eval_after_eq  (0%, 20)
-- [ ] &9970 find_program_line  (0%, 150)
-- [ ] &9E0A iwa_div  (0%, 101)
-- [ ] &AB41 fn_point  (5%, 20)
-- [ ] &AB88 fn_sgn  (0%, 15)
-- [ ] &ABE9 fn_eval  (0%, 37)
-- [ ] &AC2F fn_val  (0%, 2)
-- [ ] &AC78 fn_int  (0%, 18)
-- [ ] &AC9E fn_asc  (0%, 6)
-- [ ] &ACE2 fn_instr  (0%, 65)
-- [ ] &AD6A fn_abs  (0%, 3)
-- [ ] &AED1 fn_len  (0%, 5)
-- [ ] &AF03 fn_himem  (0%, 15)
-- [ ] &AFCC fn_lefts  (0%, 15)
-- [ ] &AFEE fn_rights  (0%, 27)
-- [ ] &B039 fn_mids  (0%, 47)
-- [ ] &B094 fn_strs  (0%, 23)
-- [ ] &BF80 fn_openup  (0%, 11)
-
-## Depth 7
-
-- [ ] &84FD assembler_exit  (0%, 358)
-- [ ] &8BE4 stmt_let  (41%, 17)
-- [ ] &90AC stmt_auto  (0%, 57)
-- [ ] &912F stmt_dim  (0%, 152)
-- [ ] &9295 stmt_trace  (0%, 23)
-- [ ] &9323 stmt_local  (18%, 22)
-- [ ] &937A stmt_gcol  (0%, 8)
-- [ ] &938E stmt_colour  (0%, 5)
-- [ ] &939A stmt_mode  (3%, 35)
-- [ ] &93F1 stmt_plot  (0%, 24)
-- [ ] &942F stmt_vdu  (0%, 19)
-- [ ] &B197 call_proc_fn  (2%, 200)
-- [ ] &B44C stmt_sound  (0%, 21)
-- [ ] &B472 stmt_envelope  (4%, 25)
-- [ ] &B4A0 stmt_width  (0%, 8)
-- [ ] &B59C stmt_list  (0%, 115)
-- [ ] &B7C4 stmt_for  (10%, 84)
-- [ ] &B99A find_line_target  (0%, 72)
-- [ ] &BA44 stmt_input  (0%, 80)
-- [ ] &BB1F stmt_read  (0%, 65)
-- [ ] &BBE4 stmt_repeat  (2%, 150)
-- [ ] &BF30 stmt_ptr  (10%, 10)
-
-## Depth 8
-
-- [ ] &9304 stmt_proc  (14%, 14)
-- [ ] &B888 stmt_gosub  (31%, 13)
-- [ ] &B8CC stmt_goto  (7%, 28)
-- [ ] &B915 stmt_on  (0%, 64)
-- [ ] &BAE6 stmt_restore  (0%, 25)
+| Date | Batch | Routines | Placeholders fixed | Remaining | Commit |
+|------|-------|----------|--------------------|-----------|--------|
+| 2026-06-14 | start | — | — | 1806 | — |
+| 2026-06-14 | pilot | mant_mul10, fn_rights (RIGHT$), +2 chain fixes | 32 | 1774 | — |
