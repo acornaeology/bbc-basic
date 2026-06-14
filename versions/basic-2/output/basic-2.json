@@ -108768,7 +108768,7 @@
         133,
         69
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte to &45,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0045",
@@ -108781,7 +108781,7 @@
         165,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -108794,7 +108794,7 @@
         133,
         70
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &46",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0046",
@@ -108818,7 +108818,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte &23 to &3D,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -108831,7 +108831,7 @@
         169,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &80,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -108842,7 +108842,7 @@
         133,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &3E (exec &8023)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -108868,7 +108868,7 @@
         133,
         66
       ],
-      "comment_inline": "...",
+      "comment_inline": "PAGE to &42",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -108908,7 +108908,7 @@
         132,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "&40,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -108921,7 +108921,7 @@
         134,
         67
       ],
-      "comment_inline": "...",
+      "comment_inline": "&43,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fp_temp",
@@ -108934,7 +108934,7 @@
         132,
         68
       ],
-      "comment_inline": "...",
+      "comment_inline": "&44,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l0044",
@@ -108947,7 +108947,7 @@
         134,
         71
       ],
-      "comment_inline": "...",
+      "comment_inline": "&47,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l0047",
@@ -108960,7 +108960,7 @@
         132,
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "&48",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_dp_flag",
@@ -108985,7 +108985,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y too",
       "type": "code",
       "mnemonic": "tay"
     },
