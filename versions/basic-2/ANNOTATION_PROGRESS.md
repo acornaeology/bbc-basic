@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 559 of 7,129 placeholders left (7.8 %);
+**STATUS: in progress — 551 of 7,129 placeholders left (7.7 %);
 depths 0–4 complete, depth 5 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,11 +27,12 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`execute_line` (8), then `stmt_plot` (7), and the rest of depths 5–8.
+`stmt_plot` (7), then `fn_sqr` (4), `fn_int` (4), and the small
+remainder of depth 5, then depths 6–8.
 (Done 2026-06-14: `stmt_dim`, `parse_var_ref`, `unstack_value_to_var`,
 `iwa_divide`, `check_end_of_statement`, `iwa_test_var`, `stmt_print`,
 `asm_opcode_add4`, `iwa_add`, `fn_eval`, `iwa_rsub`, `fn_instr`,
-`fn_mids`, `fn_ln`, `stmt_sound`, `stmt_envelope`.) Per routine:
+`fn_mids`, `fn_ln`, `stmt_sound`, `stmt_envelope`, `execute_line`.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -244,4 +245,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: fn_mids | fn_mids (MID$: start/length parse, zero-based start, length clamp to available, substring copy-to-front) | 12 | 588 |
 | 2026-06-14 | depth 5: fn_ln | fn_ln (LN: FWB=-1 for m-1, sqrt(2) range reduction, continued fraction, e*ln2 recombine) | 10 | 578 |
 | 2026-06-14 | depth 5: stmt_sound | stmt_sound (SOUND: stack 4 params with loop counter, build OSWORD 7 6-byte block) | 10 | 568 |
-| 2026-06-14 | depth 5: stmt_envelope | stmt_envelope (ENVELOPE: stack 14 params, pop into the ZP control block, OSWORD 8) | 9 | 559 | — |
+| 2026-06-14 | depth 5: stmt_envelope | stmt_envelope (ENVELOPE: stack 14 params, pop into the ZP control block, OSWORD 8) | 9 | 559 |
+| 2026-06-14 | depth 5: execute_line | execute_line (run a tokenised line: default error vector &B433, OPT flag, general pointer, missing-FN-frame check) | 8 | 551 | — |
