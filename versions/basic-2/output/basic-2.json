@@ -103692,7 +103692,7 @@
         233,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "line start - 2,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#2"
@@ -103703,7 +103703,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination low (&37),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -103716,7 +103716,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "also &3D,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -103729,7 +103729,7 @@
         133,
         18
       ],
-      "comment_inline": "...",
+      "comment_inline": "and TOP (&12),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top",
@@ -103742,7 +103742,7 @@
         165,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -103755,7 +103755,7 @@
         233,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "with borrow,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -103766,7 +103766,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination high (&38),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -103779,7 +103779,7 @@
         133,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "and TOP+1 (&13),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_top_1",
@@ -103792,7 +103792,7 @@
         133,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "and &3E",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -103816,7 +103816,7 @@
         177,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it (offset 3)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -103838,7 +103838,7 @@
         101,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination + length,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general",
@@ -103851,7 +103851,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "source low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -103864,7 +103864,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbc53",
@@ -103877,7 +103877,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -103933,7 +103933,7 @@
         145,
         18
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the destination",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -103988,7 +103988,7 @@
         208,
         245
       ],
-      "comment_inline": "...",
+      "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc55",
@@ -104014,7 +104014,7 @@
         230,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination page too",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -104058,7 +104058,7 @@
         208,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "no page wrap,",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc6d",
@@ -104071,7 +104071,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "source page,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -104084,7 +104084,7 @@
         230,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination page",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_top_1",
@@ -104119,7 +104119,7 @@
         145,
         18
       ],
-      "comment_inline": "...",
+      "comment_inline": "copy it down",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -104209,7 +104209,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear: line was deleted",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -104256,7 +104256,7 @@
         208,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbc88",
@@ -104282,7 +104282,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "source page too",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -104298,7 +104298,7 @@
       "labels": [
         "cbc88"
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the byte,",
       "xref_summaries": [
         "&bc88 referenced 1 time by &bc82"
       ],
@@ -104317,7 +104317,7 @@
         145,
         18
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it down",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_top),y",
@@ -104387,7 +104387,7 @@
         132,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "save offset 7 in &3C",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -104466,7 +104466,7 @@
         209,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "CR yet?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "(zp_fwb_sign),y",
@@ -104479,7 +104479,7 @@
         208,
         251
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep scanning",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_cbc9e",
@@ -104532,7 +104532,7 @@
         230,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "include the CR",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwb_m2",
@@ -104558,7 +104558,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "low to &39,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -104571,7 +104571,7 @@
         165,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -104584,7 +104584,7 @@
         133,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &3A",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -104611,7 +104611,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top low (&37),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -104624,7 +104624,7 @@
         165,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -104637,7 +104637,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top high (&38),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -104649,7 +104649,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "index the last byte (length-1)",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -104672,7 +104672,7 @@
         197,
         18
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte vs TOP,",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_top",
@@ -104685,7 +104685,7 @@
         165,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_himem_1",
@@ -104698,7 +104698,7 @@
         229,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "HIMEM >= new top?",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_top_1",
@@ -104819,7 +104819,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the higher address,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -104831,7 +104831,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "at a page boundary?,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -104841,7 +104841,7 @@
         208,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
       "operand": "cbce1",
@@ -104867,7 +104867,7 @@
         198,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "destination page too",
       "type": "code",
       "mnemonic": "dec",
       "operand": "zp_general_1",
@@ -104897,7 +104897,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -104907,7 +104907,7 @@
         101,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ source low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -104920,7 +104920,7 @@
         166,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "source high in X,",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "l003a",
@@ -104933,7 +104933,7 @@
         144,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbcea",
@@ -104945,7 +104945,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -104976,7 +104976,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -104986,7 +104986,7 @@
         229,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "source vs the insertion point",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m1",
@@ -105021,7 +105021,7 @@
         160,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "from offset 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -105045,7 +105045,7 @@
         145,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -105057,7 +105057,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -105080,7 +105080,7 @@
         145,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -105092,7 +105092,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -105115,7 +105115,7 @@
         145,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fwb_exp),y",
@@ -105155,7 +105155,7 @@
       "labels": [
         "loop_cbd07"
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the index",
       "xref_summaries": [
         "&bd07 referenced 1 time by &bd0e"
       ],
