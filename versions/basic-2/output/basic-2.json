@@ -62018,9 +62018,9 @@
       "comment_inline": "All zero: clean up and return zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca1ed",
+      "operand": "sign_force_zero",
       "target": 41453,
-      "target_label": "ca1ed"
+      "target_label": "sign_force_zero"
     },
     {
       "addr": 41446,
@@ -62075,7 +62075,7 @@
         46
       ],
       "labels": [
-        "ca1ed"
+        "sign_force_zero"
       ],
       "comment_inline": "Zero path: force a clean zero - sign,",
       "xref_summaries": [
@@ -62849,9 +62849,9 @@
       "comment_inline": "no borrow: continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca258",
+      "operand": "div10_step",
       "target": 41560,
-      "target_label": "ca258"
+      "target_label": "div10_step"
     },
     {
       "addr": 41558,
@@ -62874,7 +62874,7 @@
         162
       ],
       "labels": [
-        "ca258"
+        "div10_step"
       ],
       "comment_inline": "FWB = x/2",
       "xref_summaries": [
@@ -63915,9 +63915,9 @@
       "comment_inline": "positive",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca2fd",
+      "operand": "si8_set_mantissa",
       "target": 41725,
-      "target_label": "ca2fd"
+      "target_label": "si8_set_mantissa"
     },
     {
       "addr": 41718,
@@ -63972,7 +63972,7 @@
         49
       ],
       "labels": [
-        "ca2fd"
+        "si8_set_mantissa"
       ],
       "comment_inline": "value into the mantissa MSB",
       "xref_summaries": [
@@ -64821,9 +64821,9 @@
       "comment_inline": "All zero: leave the mantissa MSB clear",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca37a",
+      "operand": "fwb_unpack_msb",
       "target": 41850,
-      "target_label": "ca37a"
+      "target_label": "fwb_unpack_msb"
     },
     {
       "addr": 41846,
@@ -64856,7 +64856,7 @@
         62
       ],
       "labels": [
-        "ca37a"
+        "fwb_unpack_msb"
       ],
       "comment_inline": "Store the true mantissa MSB",
       "xref_summaries": [
@@ -64910,9 +64910,9 @@
       "comment_inline": "join the common pack code",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca387",
+      "operand": "pack_temp_tail",
       "target": 41863,
-      "target_label": "ca387"
+      "target_label": "pack_temp_tail"
     },
     {
       "addr": 41857,
@@ -64948,9 +64948,9 @@
       "comment_inline": "join the common pack code",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca387",
+      "operand": "pack_temp_tail",
       "target": 41863,
-      "target_label": "ca387"
+      "target_label": "pack_temp_tail"
     },
     {
       "addr": 41861,
@@ -64987,7 +64987,7 @@
         75
       ],
       "labels": [
-        "ca387"
+        "pack_temp_tail"
       ],
       "comment_inline": "set the fp-variable pointer",
       "xref_summaries": [
@@ -65596,9 +65596,9 @@
       "comment_inline": "All zero: leave the mantissa MSB clear",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca3e1",
+      "operand": "fwa_unpack_msb",
       "target": 41953,
-      "target_label": "ca3e1"
+      "target_label": "fwa_unpack_msb"
     },
     {
       "addr": 41949,
@@ -65631,7 +65631,7 @@
         49
       ],
       "labels": [
-        "ca3e1"
+        "fwa_unpack_msb"
       ],
       "comment_inline": "Store the true mantissa MSB",
       "xref_summaries": [
@@ -66923,9 +66923,9 @@
       "comment_inline": "Bring the fractional bits back into FWA",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4e8",
+      "operand": "copy_fwb_mantissa",
       "target": 42216,
-      "target_label": "sub_ca4e8"
+      "target_label": "copy_fwb_mantissa"
     },
     {
       "addr": 42139,
@@ -67465,7 +67465,7 @@
         62
       ],
       "labels": [
-        "sub_ca4e8"
+        "copy_fwb_mantissa"
       ],
       "comment_inline": "Copy mantissa byte 1...",
       "xref_summaries": [
@@ -67816,9 +67816,9 @@
       "comment_inline": "Equal exponents: already aligned",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca590",
+      "operand": "addf_compare_signs",
       "target": 42384,
-      "target_label": "ca590"
+      "target_label": "addf_compare_signs"
     },
     {
       "addr": 42265,
@@ -67829,9 +67829,9 @@
       "comment_inline": "FWA the smaller: align it to FWB instead",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca552",
+      "operand": "addf_align_fwa",
       "target": 42322,
-      "target_label": "ca552"
+      "target_label": "addf_align_fwa"
     },
     {
       "addr": 42267,
@@ -67886,9 +67886,9 @@
       "comment_inline": "no whole-byte shift: go to the bit shift",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca53d",
+      "operand": "addf_fwb_bits",
       "target": 42301,
-      "target_label": "ca53d"
+      "target_label": "addf_fwb_bits"
     },
     {
       "addr": 42276,
@@ -67933,7 +67933,7 @@
         65
       ],
       "labels": [
-        "loop_ca528"
+        "addf_shift_fwb_byte"
       ],
       "comment_inline": "Shift FWB down a byte at a time",
       "xref_summaries": [
@@ -68070,9 +68070,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca528",
+      "operand": "addf_shift_fwb_byte",
       "target": 42280,
-      "target_label": "loop_ca528"
+      "target_label": "addf_shift_fwb_byte"
     },
     {
       "addr": 42301,
@@ -68080,7 +68080,7 @@
         104
       ],
       "labels": [
-        "ca53d"
+        "addf_fwb_bits"
       ],
       "comment_inline": "recover the shift count",
       "xref_summaries": [
@@ -68112,9 +68112,9 @@
       "comment_inline": "no bit shift: add the mantissas",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca590",
+      "operand": "addf_compare_signs",
       "target": 42384,
-      "target_label": "ca590"
+      "target_label": "addf_compare_signs"
     },
     {
       "addr": 42306,
@@ -68132,7 +68132,7 @@
         62
       ],
       "labels": [
-        "loop_ca543"
+        "addf_shift_fwb_bit"
       ],
       "comment_inline": "shift FWB right one bit: m1",
       "xref_summaries": [
@@ -68217,9 +68217,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca543",
+      "operand": "addf_shift_fwb_bit",
       "target": 42307,
-      "target_label": "loop_ca543"
+      "target_label": "addf_shift_fwb_bit"
     },
     {
       "addr": 42320,
@@ -68230,9 +68230,9 @@
       "comment_inline": "aligned: add the mantissas",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca590",
+      "operand": "addf_compare_signs",
       "target": 42384,
-      "target_label": "ca590"
+      "target_label": "addf_compare_signs"
     },
     {
       "addr": 42322,
@@ -68240,7 +68240,7 @@
         56
       ],
       "labels": [
-        "ca552"
+        "addf_align_fwa"
       ],
       "comment_inline": "FWA the smaller: shift FWA down to align",
       "xref_summaries": [
@@ -68331,9 +68331,9 @@
       "comment_inline": "none: go to the bit shift",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca579",
+      "operand": "addf_fwa_bits",
       "target": 42361,
-      "target_label": "ca579"
+      "target_label": "addf_fwa_bits"
     },
     {
       "addr": 42336,
@@ -68378,7 +68378,7 @@
         52
       ],
       "labels": [
-        "loop_ca564"
+        "addf_shift_fwa_byte"
       ],
       "comment_inline": "shift FWA down a byte: m4 -> rnd",
       "xref_summaries": [
@@ -68515,9 +68515,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca564",
+      "operand": "addf_shift_fwa_byte",
       "target": 42340,
-      "target_label": "loop_ca564"
+      "target_label": "addf_shift_fwa_byte"
     },
     {
       "addr": 42361,
@@ -68525,7 +68525,7 @@
         104
       ],
       "labels": [
-        "ca579"
+        "addf_fwa_bits"
       ],
       "comment_inline": "recover the shift count",
       "xref_summaries": [
@@ -68557,9 +68557,9 @@
       "comment_inline": "none: take the larger exponent",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca58c",
+      "operand": "addf_take_exp",
       "target": 42380,
-      "target_label": "ca58c"
+      "target_label": "addf_take_exp"
     },
     {
       "addr": 42366,
@@ -68577,7 +68577,7 @@
         49
       ],
       "labels": [
-        "loop_ca57f"
+        "addf_shift_fwa_bit"
       ],
       "comment_inline": "shift FWA right one bit: m1",
       "xref_summaries": [
@@ -68662,9 +68662,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca57f",
+      "operand": "addf_shift_fwa_bit",
       "target": 42367,
-      "target_label": "loop_ca57f"
+      "target_label": "addf_shift_fwa_bit"
     },
     {
       "addr": 42380,
@@ -68673,7 +68673,7 @@
         61
       ],
       "labels": [
-        "ca58c"
+        "addf_take_exp"
       ],
       "comment_inline": "Result takes the larger exponent",
       "xref_summaries": [
@@ -68708,7 +68708,7 @@
         46
       ],
       "labels": [
-        "ca590"
+        "addf_compare_signs"
       ],
       "comment_inline": "Compare the signs: load FWA sign",
       "xref_summaries": [
@@ -68982,9 +68982,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca5e3",
+      "operand": "addf_subtract",
       "target": 42467,
-      "target_label": "ca5e3"
+      "target_label": "addf_subtract"
     },
     {
       "addr": 42425,
@@ -69268,7 +69268,7 @@
         56
       ],
       "labels": [
-        "ca5e3"
+        "addf_subtract"
       ],
       "comment_inline": "FWA - FWB: rnd",
       "xref_summaries": [
@@ -69567,9 +69567,9 @@
       "comment_inline": "non-zero: multiply",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca613",
+      "operand": "mulf_add_exp",
       "target": 42515,
-      "target_label": "ca613"
+      "target_label": "mulf_add_exp"
     },
     {
       "addr": 42512,
@@ -69591,7 +69591,7 @@
         24
       ],
       "labels": [
-        "ca613"
+        "mulf_add_exp"
       ],
       "comment_inline": "Add the exponents:",
       "xref_summaries": [
@@ -69638,9 +69638,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca61d",
+      "operand": "mulf_unbias",
       "target": 42525,
-      "target_label": "ca61d"
+      "target_label": "mulf_unbias"
     },
     {
       "addr": 42522,
@@ -69671,7 +69671,7 @@
         127
       ],
       "labels": [
-        "ca61d"
+        "mulf_unbias"
       ],
       "comment_inline": "remove the excess-128 bias (added twice)",
       "xref_summaries": [
@@ -69706,9 +69706,9 @@
       "comment_inline": "no borrow",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca625",
+      "operand": "mulf_setup",
       "target": 42533,
-      "target_label": "ca625"
+      "target_label": "mulf_setup"
     },
     {
       "addr": 42531,
@@ -69730,7 +69730,7 @@
         5
       ],
       "labels": [
-        "ca625"
+        "mulf_setup"
       ],
       "comment_inline": "Move FWA aside as the multiplicand and clear FWA:",
       "xref_summaries": [
@@ -69761,7 +69761,7 @@
         48
       ],
       "labels": [
-        "loop_ca629"
+        "mulf_copy_loop"
       ],
       "comment_inline": "copy a FWA byte...",
       "xref_summaries": [
@@ -69820,9 +69820,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca629",
+      "operand": "mulf_copy_loop",
       "target": 42537,
-      "target_label": "loop_ca629"
+      "target_label": "mulf_copy_loop"
     },
     {
       "addr": 42546,
@@ -69881,7 +69881,7 @@
         62
       ],
       "labels": [
-        "loop_ca63a"
+        "mulf_bit_loop"
       ],
       "comment_inline": "Shift the multiplier right: next bit into carry",
       "xref_summaries": [
@@ -70009,9 +70009,9 @@
       "comment_inline": "multiplier bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca652",
+      "operand": "mulf_count",
       "target": 42578,
-      "target_label": "ca652"
+      "target_label": "mulf_count"
     },
     {
       "addr": 42574,
@@ -70042,7 +70042,7 @@
         136
       ],
       "labels": [
-        "ca652"
+        "mulf_count"
       ],
       "comment_inline": "count",
       "xref_summaries": [
@@ -70063,9 +70063,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca63a",
+      "operand": "mulf_bit_loop",
       "target": 42554,
-      "target_label": "loop_ca63a"
+      "target_label": "mulf_bit_loop"
     },
     {
       "addr": 42581,
@@ -70118,7 +70118,7 @@
         163
       ],
       "labels": [
-        "ca659"
+        "mulf_normalise"
       ],
       "comment_inline": "normalise (round below)",
       "xref_summaries": [
@@ -70177,9 +70177,9 @@
       "comment_inline": "Below half: round down (truncate)",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca67c",
+      "operand": "round_clear",
       "target": 42620,
-      "target_label": "ca67c"
+      "target_label": "round_clear"
     },
     {
       "addr": 42594,
@@ -70190,9 +70190,9 @@
       "comment_inline": "Exactly half: special-case the LSB",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca676",
+      "operand": "round_half",
       "target": 42614,
-      "target_label": "ca676"
+      "target_label": "round_half"
     },
     {
       "addr": 42596,
@@ -70229,9 +70229,9 @@
       "comment_inline": "then finish",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca67c",
+      "operand": "round_clear",
       "target": 42620,
-      "target_label": "ca67c"
+      "target_label": "round_clear"
     },
     {
       "addr": 42604,
@@ -70293,7 +70293,7 @@
         52
       ],
       "labels": [
-        "ca676"
+        "round_half"
       ],
       "comment_inline": "Exactly half: force the mantissa LSB",
       "xref_summaries": [
@@ -70339,7 +70339,7 @@
         0
       ],
       "labels": [
-        "ca67c"
+        "round_clear"
       ],
       "comment_inline": "Clear the now-spent rounding byte",
       "xref_summaries": [
@@ -70733,9 +70733,9 @@
       "comment_inline": "yes: Division by zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca6bb",
+      "operand": "fp_div_zero",
       "target": 42683,
-      "target_label": "ca6bb"
+      "target_label": "fp_div_zero"
     },
     {
       "addr": 42674,
@@ -70795,7 +70795,7 @@
         153
       ],
       "labels": [
-        "ca6bb"
+        "fp_div_zero"
       ],
       "comment_inline": "Division by zero error",
       "xref_summaries": [
@@ -71092,9 +71092,9 @@
       "comment_inline": "divisor zero: Division by zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca6bb",
+      "operand": "fp_div_zero",
       "target": 42683,
-      "target_label": "ca6bb"
+      "target_label": "fp_div_zero"
     },
     {
       "addr": 42737,
@@ -72397,9 +72397,9 @@
       "comment_inline": "normalise and round",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca659",
+      "operand": "mulf_normalise",
       "target": 42585,
-      "target_label": "ca659"
+      "target_label": "mulf_normalise"
     },
     {
       "addr": 42921,
@@ -73345,9 +73345,9 @@
       "comment_inline": "pack FWA there",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca387",
+      "operand": "pack_temp_tail",
       "target": 41863,
-      "target_label": "ca387"
+      "target_label": "pack_temp_tail"
     },
     {
       "addr": 43064,
@@ -85001,9 +85001,9 @@
       "comment_inline": "Normalise: value = reversed-state / 2^32",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca659",
+      "operand": "mulf_normalise",
       "target": 42585,
-      "target_label": "ca659"
+      "target_label": "mulf_normalise"
     },
     {
       "addr": 44932,

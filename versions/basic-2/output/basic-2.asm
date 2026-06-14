@@ -7310,13 +7310,13 @@ oscli            = &fff7
     ora zp_fwa_m3                                                     ; a1de: 05 33       .3       ; (mantissa byte 3)
     ora zp_fwa_m4                                                     ; a1e0: 05 34       .4       ; (mantissa byte 4)
     ora zp_fwa_rnd                                                    ; a1e2: 05 35       .5       ; (rounding) - a non-zero value is never all zero
-    beq ca1ed                                                         ; a1e4: f0 07       ..       ; All zero: clean up and return zero
+    beq sign_force_zero                                               ; a1e4: f0 07       ..       ; All zero: clean up and return zero
     lda zp_fwa_sign                                                   ; a1e6: a5 2e       ..       ; Non-zero: the sign is in bit 7 of the sign byte
     bne return_20                                                     ; a1e8: d0 09       ..       ; Bit 7 set: negative, return with A < 0
     lda #1                                                            ; a1ea: a9 01       ..       ; Otherwise positive: return A = +1
     rts                                                               ; a1ec: 60          `        ; A and the flags now give the sign
 ; &a1ed referenced 1 time by &a1e4
-.ca1ed
+.sign_force_zero
     sta zp_fwa_sign                                                   ; a1ed: 85 2e       ..       ; Zero path: force a clean zero - sign,
     sta zp_fwa_exp                                                    ; a1ef: 85 30       .0       ; exponent,
     sta zp_fwa_ovf                                                    ; a1f1: 85 2f       ./       ; and overflow byte, then return A = 0
@@ -7443,10 +7443,10 @@ oscli            = &fff7
     lda zp_fwa_exp                                                    ; a24e: a5 30       .0       ; (exponent)
     sbc #4                                                            ; a250: e9 04       ..       ; (- 4)
     sta zp_fwa_exp                                                    ; a252: 85 30       .0       ; (store)
-    bcs ca258                                                         ; a254: b0 02       ..       ; no borrow: continue
+    bcs div10_step                                                    ; a254: b0 02       ..       ; no borrow: continue
     dec zp_fwa_ovf                                                    ; a256: c6 2f       ./       ; borrow into the overflow byte
 ; &a258 referenced 1 time by &a254
-.ca258
+.div10_step
     jsr fwb_half_fwa                                                  ; a258: 20 3f a2     ?.      ; FWB = x/2
     jsr fwa_acc10                                                     ; a25b: 20 08 a2     ..      ; accumulate a shifted term into FWA
     jsr fwb_half_fwa                                                  ; a25e: 20 3f a2     ?.      ; FWB = x/2 again
@@ -7577,13 +7577,13 @@ oscli            = &fff7
     jsr fwa_clear                                                     ; a2ee: 20 86 a6     ..      ; clear FWA
     pla                                                               ; a2f1: 68          h        ; recover it
     beq return_23                                                     ; a2f2: f0 f8       ..       ; zero: done
-    bpl ca2fd                                                         ; a2f4: 10 07       ..       ; positive
+    bpl si8_set_mantissa                                              ; a2f4: 10 07       ..       ; positive
     sta zp_fwa_sign                                                   ; a2f6: 85 2e       ..       ; negative: set the sign...
     lda #0                                                            ; a2f8: a9 00       ..       ; 0...
     sec                                                               ; a2fa: 38          8        ; minus the value:
     sbc zp_fwa_sign                                                   ; a2fb: e5 2e       ..       ; ...and negate the value
 ; &a2fd referenced 1 time by &a2f4
-.ca2fd
+.si8_set_mantissa
     sta zp_fwa_m1                                                     ; a2fd: 85 31       .1       ; value into the mantissa MSB
     lda #&88                                                          ; a2ff: a9 88       ..       ; Exponent &88 (= 8): an 8-bit value
     sta zp_fwa_exp                                                    ; a301: 85 30       .0       ; (store; falls into normalise)
@@ -7682,11 +7682,11 @@ oscli            = &fff7
     ora zp_fwb_m2                                                     ; a36e: 05 3f       .?       ; m2,
     ora zp_fwb_m3                                                     ; a370: 05 40       .@       ; m3,
     ora zp_fwb_m4                                                     ; a372: 05 41       .A       ; m4
-    beq ca37a                                                         ; a374: f0 04       ..       ; All zero: leave the mantissa MSB clear
+    beq fwb_unpack_msb                                                ; a374: f0 04       ..       ; All zero: leave the mantissa MSB clear
     lda zp_fwb_sign                                                   ; a376: a5 3b       .;       ; Non-zero: restore the implied leading 1...
     ora #&80                                                          ; a378: 09 80       ..       ; set the top bit
 ; &a37a referenced 1 time by &a374
-.ca37a
+.fwb_unpack_msb
     sta zp_fwb_m1                                                     ; a37a: 85 3e       .>       ; Store the true mantissa MSB
     rts                                                               ; a37c: 60          `        ; FWB now holds the unpacked value
 ; ***************************************************************************************
@@ -7704,7 +7704,7 @@ oscli            = &fff7
 ; &a37d referenced 2 times by &9e6c, &aa11
 .fwa_pack_temp2
     lda #&71 ; 'q'                                                    ; a37d: a9 71       .q       ; Point at FP TEMP2 (&0471): low byte
-    bne ca387                                                         ; a37f: d0 06       ..       ; join the common pack code
+    bne pack_temp_tail                                                ; a37f: d0 06       ..       ; join the common pack code
 ; ***************************************************************************************
 ; Pack FWA into TEMP3
 ;
@@ -7720,7 +7720,7 @@ oscli            = &fff7
 ; &a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe
 .fwa_pack_temp3
     lda #&76 ; 'v'                                                    ; a381: a9 76       .v       ; Point at FP TEMP3 (&0476): low byte
-    bne ca387                                                         ; a383: d0 02       ..       ; join the common pack code
+    bne pack_temp_tail                                                ; a383: d0 02       ..       ; join the common pack code
 ; ***************************************************************************************
 ; Pack FWA into TEMP1
 ;
@@ -7737,7 +7737,7 @@ oscli            = &fff7
 .fwa_pack_temp1
     lda #&6c ; 'l'                                                    ; a385: a9 6c       .l       ; Point at FP TEMP1 (&046C): low byte
 ; &a387 referenced 3 times by &a37f, &a383, &a835
-.ca387
+.pack_temp_tail
     sta zp_fp_ptr                                                     ; a387: 85 4b       .K       ; set the fp-variable pointer
     lda #4                                                            ; a389: a9 04       ..       ; high byte &04
     sta zp_fp_ptr_1                                                   ; a38b: 85 4c       .L       ; then fall into fwa_pack_var
@@ -7830,11 +7830,11 @@ oscli            = &fff7
     ora zp_fwa_m2                                                     ; a3d5: 05 32       .2       ; (mantissa byte 2)
     ora zp_fwa_m3                                                     ; a3d7: 05 33       .3       ; (mantissa byte 3)
     ora zp_fwa_m4                                                     ; a3d9: 05 34       .4       ; (mantissa byte 4)
-    beq ca3e1                                                         ; a3db: f0 04       ..       ; All zero: leave the mantissa MSB clear
+    beq fwa_unpack_msb                                                ; a3db: f0 04       ..       ; All zero: leave the mantissa MSB clear
     lda zp_fwa_sign                                                   ; a3dd: a5 2e       ..       ; Non-zero: take the packed MSB (carrying the sign)
     ora #&80                                                          ; a3df: 09 80       ..       ; Non-zero: restore the implied leading 1
 ; &a3e1 referenced 1 time by &a3db
-.ca3e1
+.fwa_unpack_msb
     sta zp_fwa_m1                                                     ; a3e1: 85 31       .1       ; Store the true mantissa MSB
     rts                                                               ; a3e3: 60          `        ; FWA now holds the unpacked value
 ; ***************************************************************************************
@@ -8001,7 +8001,7 @@ oscli            = &fff7
     jsr fwa_to_int2                                                   ; a491: 20 fe a3     ..      ; Convert to a fixed integer (fraction into FWB)
     lda zp_fwa_m4                                                     ; a494: a5 34       .4       ; Low byte of the integer part...
     sta l004a                                                         ; a496: 85 4a       .J       ; ...kept in &4A
-    jsr sub_ca4e8                                                     ; a498: 20 e8 a4     ..      ; Bring the fractional bits back into FWA
+    jsr copy_fwb_mantissa                                             ; a498: 20 e8 a4     ..      ; Bring the fractional bits back into FWA
     lda #&80                                                          ; a49b: a9 80       ..       ; Exponent for a value in [0,1)
     sta zp_fwa_exp                                                    ; a49d: 85 30       .0       ; set it
     ldx zp_fwa_m1                                                     ; a49f: a6 31       .1       ; Top fraction bit set (fraction >= 0.5)?
@@ -8093,7 +8093,7 @@ oscli            = &fff7
     lda zp_fwb_exp                                                    ; a4e4: a5 3d       .=       ; Copy the exponent...
     sta zp_fwa_exp                                                    ; a4e6: 85 30       .0       ; ...into FWA
 ; &a4e8 referenced 1 time by &a498
-.sub_ca4e8
+.copy_fwb_mantissa
     lda zp_fwb_m1                                                     ; a4e8: a5 3e       .>       ; Copy mantissa byte 1...
     sta zp_fwa_m1                                                     ; a4ea: 85 31       .1       ; ...into FWA
     lda zp_fwb_m2                                                     ; a4ec: a5 3f       .?       ; Copy mantissa byte 2...
@@ -8175,19 +8175,19 @@ oscli            = &fff7
     sec                                                               ; a512: 38          8        ; prepare the exponent compare
     lda zp_fwa_exp                                                    ; a513: a5 30       .0       ; FWA exponent...
     sbc zp_fwb_exp                                                    ; a515: e5 3d       .=       ; Exponent difference is the alignment shift
-    beq ca590                                                         ; a517: f0 77       .w       ; Equal exponents: already aligned
-    bcc ca552                                                         ; a519: 90 37       .7       ; FWA the smaller: align it to FWB instead
+    beq addf_compare_signs                                            ; a517: f0 77       .w       ; Equal exponents: already aligned
+    bcc addf_align_fwa                                                ; a519: 90 37       .7       ; FWA the smaller: align it to FWB instead
     cmp #&25 ; '%'                                                    ; a51b: c9 25       .%       ; differ by >= 37 bits?
     bcs return_26                                                     ; a51d: b0 dd       ..       ; Differ by >= 37 bits: FWB too small to count
     pha                                                               ; a51f: 48          H        ; save the shift count
     and #&38 ; '8'                                                    ; a520: 29 38       )8       ; Whole-byte part of the shift (difference / 8)
-    beq ca53d                                                         ; a522: f0 19       ..       ; no whole-byte shift: go to the bit shift
+    beq addf_fwb_bits                                                 ; a522: f0 19       ..       ; no whole-byte shift: go to the bit shift
     lsr a                                                             ; a524: 4a          J        ; shift count / 8...
     lsr a                                                             ; a525: 4a          J        ; (continued)
     lsr a                                                             ; a526: 4a          J        ; = whole-byte shifts
     tax                                                               ; a527: aa          .        ; X = byte-shift count
 ; &a528 referenced 1 time by &a53b
-.loop_ca528
+.addf_shift_fwb_byte
     lda zp_fwb_m4                                                     ; a528: a5 41       .A       ; Shift FWB down a byte at a time
     sta zp_fwb_rnd                                                    ; a52a: 85 42       .B       ; shift FWB down a byte: m4 -> rnd
     lda zp_fwb_m3                                                     ; a52c: a5 40       .@       ; m3...
@@ -8198,25 +8198,25 @@ oscli            = &fff7
     sta zp_fwb_m2                                                     ; a536: 85 3f       .?       ; -> m2
     sty zp_fwb_m1                                                     ; a538: 84 3e       .>       ; m1 = 0
     dex                                                               ; a53a: ca          .        ; count
-    bne loop_ca528                                                    ; a53b: d0 eb       ..       ; loop
+    bne addf_shift_fwb_byte                                           ; a53b: d0 eb       ..       ; loop
 ; &a53d referenced 1 time by &a522
-.ca53d
+.addf_fwb_bits
     pla                                                               ; a53d: 68          h        ; recover the shift count
     and #7                                                            ; a53e: 29 07       ).       ; then the remaining bits, to finish aligning FWB
-    beq ca590                                                         ; a540: f0 4e       .N       ; no bit shift: add the mantissas
+    beq addf_compare_signs                                            ; a540: f0 4e       .N       ; no bit shift: add the mantissas
     tax                                                               ; a542: aa          .        ; X = bit-shift count
 ; &a543 referenced 1 time by &a54e
-.loop_ca543
+.addf_shift_fwb_bit
     lsr zp_fwb_m1                                                     ; a543: 46 3e       F>       ; shift FWB right one bit: m1
     ror zp_fwb_m2                                                     ; a545: 66 3f       f?       ; m2
     ror zp_fwb_m3                                                     ; a547: 66 40       f@       ; m3
     ror zp_fwb_m4                                                     ; a549: 66 41       fA       ; m4
     ror zp_fwb_rnd                                                    ; a54b: 66 42       fB       ; rnd
     dex                                                               ; a54d: ca          .        ; count
-    bne loop_ca543                                                    ; a54e: d0 f3       ..       ; loop
-    beq ca590                                                         ; a550: f0 3e       .>       ; aligned: add the mantissas
+    bne addf_shift_fwb_bit                                            ; a54e: d0 f3       ..       ; loop
+    beq addf_compare_signs                                            ; a550: f0 3e       .>       ; aligned: add the mantissas
 ; &a552 referenced 1 time by &a519
-.ca552
+.addf_align_fwa
     sec                                                               ; a552: 38          8        ; FWA the smaller: shift FWA down to align
     lda zp_fwb_exp                                                    ; a553: a5 3d       .=       ; FWB exponent - FWA exponent
     sbc zp_fwa_exp                                                    ; a555: e5 30       .0       ; minus FWA exponent
@@ -8224,13 +8224,13 @@ oscli            = &fff7
     bcs fwa_copy_from_fwb                                             ; a559: b0 81       ..       ; FWA negligible: result is FWB
     pha                                                               ; a55b: 48          H        ; save the shift count
     and #&38 ; '8'                                                    ; a55c: 29 38       )8       ; whole-byte part
-    beq ca579                                                         ; a55e: f0 19       ..       ; none: go to the bit shift
+    beq addf_fwa_bits                                                 ; a55e: f0 19       ..       ; none: go to the bit shift
     lsr a                                                             ; a560: 4a          J        ; / 8...
     lsr a                                                             ; a561: 4a          J        ; (continued)
     lsr a                                                             ; a562: 4a          J        ; = whole-byte shifts
     tax                                                               ; a563: aa          .        ; X = byte-shift count
 ; &a564 referenced 1 time by &a577
-.loop_ca564
+.addf_shift_fwa_byte
     lda zp_fwa_m4                                                     ; a564: a5 34       .4       ; shift FWA down a byte: m4 -> rnd
     sta zp_fwa_rnd                                                    ; a566: 85 35       .5       ; (store)
     lda zp_fwa_m3                                                     ; a568: a5 33       .3       ; m3 -> m4
@@ -8241,28 +8241,28 @@ oscli            = &fff7
     sta zp_fwa_m2                                                     ; a572: 85 32       .2       ; (store)
     sty zp_fwa_m1                                                     ; a574: 84 31       .1       ; m1 = 0
     dex                                                               ; a576: ca          .        ; count
-    bne loop_ca564                                                    ; a577: d0 eb       ..       ; loop
+    bne addf_shift_fwa_byte                                           ; a577: d0 eb       ..       ; loop
 ; &a579 referenced 1 time by &a55e
-.ca579
+.addf_fwa_bits
     pla                                                               ; a579: 68          h        ; recover the shift count
     and #7                                                            ; a57a: 29 07       ).       ; bit part
-    beq ca58c                                                         ; a57c: f0 0e       ..       ; none: take the larger exponent
+    beq addf_take_exp                                                 ; a57c: f0 0e       ..       ; none: take the larger exponent
     tax                                                               ; a57e: aa          .        ; X = bit-shift count
 ; &a57f referenced 1 time by &a58a
-.loop_ca57f
+.addf_shift_fwa_bit
     lsr zp_fwa_m1                                                     ; a57f: 46 31       F1       ; shift FWA right one bit: m1
     ror zp_fwa_m2                                                     ; a581: 66 32       f2       ; m2
     ror zp_fwa_m3                                                     ; a583: 66 33       f3       ; m3
     ror zp_fwa_m4                                                     ; a585: 66 34       f4       ; m4
     ror zp_fwa_rnd                                                    ; a587: 66 35       f5       ; rnd
     dex                                                               ; a589: ca          .        ; count
-    bne loop_ca57f                                                    ; a58a: d0 f3       ..       ; loop
+    bne addf_shift_fwa_bit                                            ; a58a: d0 f3       ..       ; loop
 ; &a58c referenced 1 time by &a57c
-.ca58c
+.addf_take_exp
     lda zp_fwb_exp                                                    ; a58c: a5 3d       .=       ; Result takes the larger exponent
     sta zp_fwa_exp                                                    ; a58e: 85 30       .0       ; store the larger exponent
 ; &a590 referenced 3 times by &a517, &a540, &a550
-.ca590
+.addf_compare_signs
     lda zp_fwa_sign                                                   ; a590: a5 2e       ..       ; Compare the signs: load FWA sign
     eor zp_fwb_sign                                                   ; a592: 45 3b       E;       ; Compare the operand signs
     bpl fp_mantissas_add                                              ; a594: 10 49       .I       ; Same sign: add; opposite: subtract smaller from larger
@@ -8284,7 +8284,7 @@ oscli            = &fff7
     jmp fwa_clear                                                     ; a5b4: 4c 86 a6    L..      ; Equal magnitudes of opposite sign cancel to zero
 ; &a5b7 referenced 5 times by &a59a, &a5a0, &a5a6, &a5ac, &a5b2
 .fp_mantissas_sub
-    bcs ca5e3                                                         ; a5b7: b0 2a       .*       ; FWA >= FWB? choose the subtraction order
+    bcs addf_subtract                                                 ; a5b7: b0 2a       .*       ; FWA >= FWB? choose the subtraction order
     sec                                                               ; a5b9: 38          8        ; FWB - FWA: rnd
     lda zp_fwb_rnd                                                    ; a5ba: a5 42       .B       ; FWB rnd...
     sbc zp_fwa_rnd                                                    ; a5bc: e5 35       .5       ; - FWA rnd,
@@ -8309,7 +8309,7 @@ oscli            = &fff7
     clc                                                               ; a5df: 18          .        ; Same sign: add the mantissas
     jmp fwa_acc10                                                     ; a5e0: 4c 08 a2    L..      ; FWA += FWB
 ; &a5e3 referenced 1 time by &a5b7
-.ca5e3
+.addf_subtract
     sec                                                               ; a5e3: 38          8        ; FWA - FWB: rnd
     lda zp_fwa_rnd                                                    ; a5e4: a5 35       .5       ; FWA rnd...
     sbc zp_fwb_rnd                                                    ; a5e6: e5 42       .B       ; - FWB rnd,
@@ -8349,39 +8349,39 @@ oscli            = &fff7
     jsr fwa_sign                                                      ; a606: 20 da a1     ..      ; Is FWA zero?
     beq return_27                                                     ; a609: f0 fa       ..       ; zero: the product is zero
     jsr fwb_unpack_var                                                ; a60b: 20 4e a3     N.      ; FWB = the fp variable (the multiplier)
-    bne ca613                                                         ; a60e: d0 03       ..       ; non-zero: multiply
+    bne mulf_add_exp                                                  ; a60e: d0 03       ..       ; non-zero: multiply
     jmp fwa_clear                                                     ; a610: 4c 86 a6    L..      ; multiplier zero: the product is zero
 ; &a613 referenced 1 time by &a60e
-.ca613
+.mulf_add_exp
     clc                                                               ; a613: 18          .        ; Add the exponents:
     lda zp_fwa_exp                                                    ; a614: a5 30       .0       ; FWA exp...
     adc zp_fwb_exp                                                    ; a616: 65 3d       e=       ; - FWB exp
-    bcc ca61d                                                         ; a618: 90 03       ..       ; no carry
+    bcc mulf_unbias                                                   ; a618: 90 03       ..       ; no carry
     inc zp_fwa_ovf                                                    ; a61a: e6 2f       ./       ; carry into overflow
     clc                                                               ; a61c: 18          .        ; (clear carry)
 ; &a61d referenced 1 time by &a618
-.ca61d
+.mulf_unbias
     sbc #&7f                                                          ; a61d: e9 7f       ..       ; remove the excess-128 bias (added twice)
     sta zp_fwa_exp                                                    ; a61f: 85 30       .0       ; store the product exponent
-    bcs ca625                                                         ; a621: b0 02       ..       ; no borrow
+    bcs mulf_setup                                                    ; a621: b0 02       ..       ; no borrow
     dec zp_fwa_ovf                                                    ; a623: c6 2f       ./       ; borrow into overflow
 ; &a625 referenced 1 time by &a621
-.ca625
+.mulf_setup
     ldx #5                                                            ; a625: a2 05       ..       ; Move FWA aside as the multiplicand and clear FWA:
     ldy #0                                                            ; a627: a0 00       ..       ; Y = 0 (to clear FWA with)
 ; &a629 referenced 1 time by &a630
-.loop_ca629
+.mulf_copy_loop
     lda zp_fwa_exp,x                                                  ; a629: b5 30       .0       ; copy a FWA byte...
     sta zp_fwb_rnd,x                                                  ; a62b: 95 42       .B       ; ...to the multiplicand
     sty zp_fwa_exp,x                                                  ; a62d: 94 30       .0       ; clear the FWA byte
     dex                                                               ; a62f: ca          .        ; count
-    bne loop_ca629                                                    ; a630: d0 f7       ..       ; loop
+    bne mulf_copy_loop                                                ; a630: d0 f7       ..       ; loop
     lda zp_fwa_sign                                                   ; a632: a5 2e       ..       ; Product sign = FWA sign XOR FWB sign:
     eor zp_fwb_sign                                                   ; a634: 45 3b       E;       ; XOR FWB sign
     sta zp_fwa_sign                                                   ; a636: 85 2e       ..       ; (store)
     ldy #&20 ; ' '                                                    ; a638: a0 20       .        ; 32 iterations, one per multiplier bit
 ; &a63a referenced 1 time by &a653
-.loop_ca63a
+.mulf_bit_loop
     lsr zp_fwb_m1                                                     ; a63a: 46 3e       F>       ; Shift the multiplier right: next bit into carry
     ror zp_fwb_m2                                                     ; a63c: 66 3f       f?       ; m2,
     ror zp_fwb_m3                                                     ; a63e: 66 40       f@       ; m3,
@@ -8391,13 +8391,13 @@ oscli            = &fff7
     rol l0045                                                         ; a646: 26 45       &E       ; through &45,
     rol l0044                                                         ; a648: 26 44       &D       ; &44,
     rol zp_fp_temp                                                    ; a64a: 26 43       &C       ; &43 (high)
-    bcc ca652                                                         ; a64c: 90 04       ..       ; multiplier bit clear: skip the add
+    bcc mulf_count                                                    ; a64c: 90 04       ..       ; multiplier bit clear: skip the add
     clc                                                               ; a64e: 18          .        ; bit set: add the multiplicand
     jsr fwa_acc_fwb                                                   ; a64f: 20 78 a1     x.      ; FWA += FWB
 ; &a652 referenced 1 time by &a64c
-.ca652
+.mulf_count
     dey                                                               ; a652: 88          .        ; count
-    bne loop_ca63a                                                    ; a653: d0 e5       ..       ; loop
+    bne mulf_bit_loop                                                 ; a653: d0 e5       ..       ; loop
     rts                                                               ; a655: 60          `        ; Return the product
 ; ***************************************************************************************
 ; FWA = FWA * fp var
@@ -8415,7 +8415,7 @@ oscli            = &fff7
 .fwa_mul_var
     jsr fwa_mul_var_raw                                               ; a656: 20 06 a6     ..      ; FWA = FWA * fp var (raw)
 ; &a659 referenced 2 times by &a7a6, &af81
-.ca659
+.mulf_normalise
     jsr fwa_normalise                                                 ; a659: 20 03 a3     ..      ; normalise (round below)
 ; ***************************************************************************************
 ; Round FWA
@@ -8433,11 +8433,11 @@ oscli            = &fff7
 .fwa_round
     lda zp_fwa_rnd                                                    ; a65c: a5 35       .5       ; The rounding byte holds the bits below the LSB
     cmp #&80                                                          ; a65e: c9 80       ..       ; compare with half (&80)
-    bcc ca67c                                                         ; a660: 90 1a       ..       ; Below half: round down (truncate)
-    beq ca676                                                         ; a662: f0 12       ..       ; Exactly half: special-case the LSB
+    bcc round_clear                                                   ; a660: 90 1a       ..       ; Below half: round down (truncate)
+    beq round_half                                                    ; a662: f0 12       ..       ; Exactly half: special-case the LSB
     lda #&ff                                                          ; a664: a9 ff       ..       ; Above half: round up by adding 1
     jsr fwa_round_carry                                               ; a666: 20 a4 a2     ..      ; add 1 via the carry ripple
-    jmp ca67c                                                         ; a669: 4c 7c a6    L|.      ; then finish
+    jmp round_clear                                                   ; a669: 4c 7c a6    L|.      ; then finish
 ; &a66c referenced 2 times by &a450, &a684
 .err_too_big
     brk                                                               ; a66c: 00          .        ; BRK error block: "Too big"
@@ -8445,12 +8445,12 @@ oscli            = &fff7
     equs "Too big"                                                    ; a66e: 54 6f 6f... Too...
     equb &00                                                          ; a675: 00          .     
 ; &a676 referenced 1 time by &a662
-.ca676
+.round_half
     lda zp_fwa_m4                                                     ; a676: a5 34       .4       ; Exactly half: force the mantissa LSB
     ora #1                                                            ; a678: 09 01       ..       ; set the LSB
     sta zp_fwa_m4                                                     ; a67a: 85 34       .4       ; (store)
 ; &a67c referenced 2 times by &a660, &a669
-.ca67c
+.round_clear
     lda #0                                                            ; a67c: a9 00       ..       ; Clear the now-spent rounding byte
     sta zp_fwa_rnd                                                    ; a67e: 85 35       .5       ; clear the rounding byte
     lda zp_fwa_ovf                                                    ; a680: a5 2f       ./       ; A carry may have overflowed the mantissa
@@ -8532,13 +8532,13 @@ oscli            = &fff7
 ; &a6ad referenced 4 times by &9df8, &a7d6, &a8b8, &a8f8
 .fwa_rdiv_var
     jsr fwa_sign                                                      ; a6ad: 20 da a1     ..      ; Is FWA (the divisor) zero?
-    beq ca6bb                                                         ; a6b0: f0 09       ..       ; yes: Division by zero
+    beq fp_div_zero                                                   ; a6b0: f0 09       ..       ; yes: Division by zero
     jsr fwb_copy_from_fwa                                             ; a6b2: 20 1e a2     ..      ; FWB = FWA (the divisor)
     jsr fwa_unpack_var                                                ; a6b5: 20 b5 a3     ..      ; FWA = the fp variable (the dividend)
     bne ca6f1                                                         ; a6b8: d0 37       .7       ; non-zero: do the division
     rts                                                               ; a6ba: 60          `        ; dividend zero: result is zero
 ; &a6bb referenced 2 times by &a6b0, &a6ef
-.ca6bb
+.fp_div_zero
     jmp div_zero_error                                                ; a6bb: 4c a7 99    L..      ; Division by zero error
 ; ***************************************************************************************
 ; TAN
@@ -8593,7 +8593,7 @@ oscli            = &fff7
     jsr fwa_sign                                                      ; a6e7: 20 da a1     ..      ; Is the dividend (FWA) zero?
     beq return_28                                                     ; a6ea: f0 ac       ..       ; zero: result is zero
     jsr fwb_unpack_var                                                ; a6ec: 20 4e a3     N.      ; unpack the divisor into FWB
-    beq ca6bb                                                         ; a6ef: f0 ca       ..       ; divisor zero: Division by zero
+    beq fp_div_zero                                                   ; a6ef: f0 ca       ..       ; divisor zero: Division by zero
 ; &a6f1 referenced 1 time by &a6b8
 .ca6f1
     lda zp_fwa_sign                                                   ; a6f1: a5 2e       ..       ; result sign = sign XOR sign
@@ -8710,7 +8710,7 @@ oscli            = &fff7
     sta zp_fwa_m2                                                     ; a7a0: 85 32       .2       ; -> m2,
     lda zp_fp_temp                                                    ; a7a2: a5 43       .C       ; &43...
     sta zp_fwa_m1                                                     ; a7a4: 85 31       .1       ; -> m1
-    jmp ca659                                                         ; a7a6: 4c 59 a6    LY.      ; normalise and round
+    jmp mulf_normalise                                                ; a7a6: 4c 59 a6    LY.      ; normalise and round
 ; &a7a9 referenced 1 time by &a7bc
 .loop_ca7a9
     brk                                                               ; a7a9: 00          .        ; SQR of a negative: error block
@@ -8871,7 +8871,7 @@ oscli            = &fff7
     sty zp_fwa_exp                                                    ; a82e: 84 30       .0       ; Set the mantissa exponent
     jsr fwa_add_fwb                                                   ; a830: 20 05 a5     ..      ; FWA = mantissa - 1
     lda #&7b ; '{'                                                    ; a833: a9 7b       .{       ; Save (m-1) in TEMP4
-    jsr ca387                                                         ; a835: 20 87 a3     ..      ; pack FWA there
+    jsr pack_temp_tail                                                ; a835: 20 87 a3     ..      ; pack FWA there
     lda #&73 ; 's'                                                    ; a838: a9 73       .s       ; Point at the ln coefficient table: low byte
     ldy #&a8                                                          ; a83a: a0 a8       ..       ; ...high
     jsr fp_eval_cont_frac                                             ; a83c: 20 97 a8     ..      ; Evaluate the ln continued fraction
@@ -10697,7 +10697,7 @@ oscli            = &fff7
     inx                                                               ; af7c: e8          .        ; next byte
     cpx #4                                                            ; af7d: e0 04       ..       ; all four?
     bne loop_caf78                                                    ; af7f: d0 f7       ..       ; loop
-    jsr ca659                                                         ; af81: 20 59 a6     Y.      ; Normalise: value = reversed-state / 2^32
+    jsr mulf_normalise                                                ; af81: 20 59 a6     Y.      ; Normalise: value = reversed-state / 2^32
     lda #&ff                                                          ; af84: a9 ff       ..       ; Real result type
     rts                                                               ; af86: 60          `        ; Return RND(1) / RND(0)
 ; ***************************************************************************************
@@ -14566,6 +14566,7 @@ save pydis_start, pydis_end
 ;     zp_rnd_seed:                   4
 ;     zp_rnd_seed_2:                 4
 ;     zp_rnd_seed_4:                 4
+;     addf_compare_signs:            3
 ;     advance_to_next_line:          3
 ;     asm_got_opcode:                3
 ;     asm_opcode_add4:               3
@@ -14573,8 +14574,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:                 3
 ;     assign_string:                 3
 ;     c8858:                         3
-;     ca387:                         3
-;     ca590:                         3
 ;     ca724:                         3
 ;     ca76c:                         3
 ;     ca7f7:                         3
@@ -14612,6 +14611,7 @@ save pydis_start, pydis_end
 ;     muldiv_check:                  3
 ;     not_name_char:                 3
 ;     num_normalize_loop:            3
+;     pack_temp_tail:                3
 ;     parse_number:                  3
 ;     plnum_print_loop:              3
 ;     pn_store_offset:               3
@@ -14663,9 +14663,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:              2
 ;     assign_string_to:              2
 ;     auto_loop:                     2
-;     ca659:                         2
-;     ca67c:                         2
-;     ca6bb:                         2
 ;     ca8ea:                         2
 ;     ca8fe:                         2
 ;     ca904:                         2
@@ -14733,6 +14730,7 @@ save pydis_start, pydis_end
 ;     eval_rhs:                      2
 ;     expect_eq:                     2
 ;     findvar_chain_head:            2
+;     fp_div_zero:                   2
 ;     fp_split_int_frac:             2
 ;     fp_temp1:                      2
 ;     fpl_check_high:                2
@@ -14779,6 +14777,7 @@ save pydis_start, pydis_end
 ;     mode_send:                     2
 ;     mul_stack_eval:                2
 ;     mul_type_error:                2
+;     mulf_normalise:                2
 ;     next_data_item:                2
 ;     no_fn_error:                   2
 ;     no_proc_error:                 2
@@ -14841,6 +14840,7 @@ save pydis_start, pydis_end
 ;     return_9:                      2
 ;     rnd_fraction:                  2
 ;     rnd_step:                      2
+;     round_clear:                   2
 ;     setup_scan_top:                2
 ;     silly_error:                   2
 ;     stack_local:                   2
@@ -14885,6 +14885,15 @@ save pydis_start, pydis_end
 ;     action_lo_by_token:            1
 ;     add_int_real:                  1
 ;     add_real_left:                 1
+;     addf_align_fwa:                1
+;     addf_fwa_bits:                 1
+;     addf_fwb_bits:                 1
+;     addf_shift_fwa_bit:            1
+;     addf_shift_fwa_byte:           1
+;     addf_shift_fwb_bit:            1
+;     addf_shift_fwb_byte:           1
+;     addf_subtract:                 1
+;     addf_take_exp:                 1
 ;     advance_vartop:                1
 ;     and_byte_loop:                 1
 ;     ascii_to_number:               1
@@ -14954,21 +14963,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     ca1ed:                         1
-;     ca258:                         1
-;     ca2fd:                         1
-;     ca37a:                         1
-;     ca3e1:                         1
-;     ca53d:                         1
-;     ca552:                         1
-;     ca579:                         1
-;     ca58c:                         1
-;     ca5e3:                         1
-;     ca613:                         1
-;     ca61d:                         1
-;     ca625:                         1
-;     ca652:                         1
-;     ca676:                         1
 ;     ca6f1:                         1
 ;     ca701:                         1
 ;     ca70a:                         1
@@ -15133,6 +15127,7 @@ save pydis_start, pydis_end
 ;     cmp_int_real:                  1
 ;     cmp_real_real:                 1
 ;     coerce_real:                   1
+;     copy_fwb_mantissa:             1
 ;     copy_ptra_to_ptrb:             1
 ;     create_def_entry:              1
 ;     createvar_copy_loop:           1
@@ -15151,6 +15146,7 @@ save pydis_start, pydis_end
 ;     dim_name:                      1
 ;     dim_next_array:                1
 ;     dim_no_room_jmp:               1
+;     div10_step:                    1
 ;     do_add:                        1
 ;     do_and:                        1
 ;     do_divide:                     1
@@ -15197,6 +15193,8 @@ save pydis_start, pydis_end
 ;     fwa_complement_half_pi:        1
 ;     fwa_round_carry:               1
 ;     fwa_swap_var:                  1
+;     fwa_unpack_msb:                1
+;     fwb_unpack_msb:                1
 ;     gosub_stack:                   1
 ;     gosub_stack_hi:                1
 ;     hex_convert:                   1
@@ -15279,12 +15277,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_ca528:                    1
-;     loop_ca543:                    1
-;     loop_ca564:                    1
-;     loop_ca57f:                    1
-;     loop_ca629:                    1
-;     loop_ca63a:                    1
 ;     loop_ca70c:                    1
 ;     loop_ca754:                    1
 ;     loop_ca7a9:                    1
@@ -15370,6 +15362,12 @@ save pydis_start, pydis_end
 ;     mul_left_signed:               1
 ;     mul_real_left:                 1
 ;     mul_right_signed:              1
+;     mulf_add_exp:                  1
+;     mulf_bit_loop:                 1
+;     mulf_copy_loop:                1
+;     mulf_count:                    1
+;     mulf_setup:                    1
+;     mulf_unbias:                   1
 ;     negate_mantissa:               1
 ;     norm_bit_loop:                 1
 ;     not_line_number:               1
@@ -15531,10 +15529,13 @@ save pydis_start, pydis_end
 ;     rnd_range:                     1
 ;     rnd_repeat:                    1
 ;     rnd_seed:                      1
+;     round_half:                    1
+;     si8_set_mantissa:              1
 ;     sif_convert:                   1
 ;     sif_negate_frac:               1
 ;     sif_normalise_frac:            1
 ;     sif_round_down:                1
+;     sign_force_zero:               1
 ;     small_int_to_fwa:              1
 ;     start_new_program:             1
 ;     step_past_line_header:         1
@@ -15550,7 +15551,6 @@ save pydis_start, pydis_end
 ;     strcmp_result:                 1
 ;     strcmp_shorter:                1
 ;     sub_c9231:                     1
-;     sub_ca4e8:                     1
 ;     sub_ca801:                     1
 ;     sub_ca9b1:                     1
 ;     sub_caa94:                     1
@@ -15618,26 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     ca1ed
-;     ca258
-;     ca2fd
-;     ca37a
-;     ca387
-;     ca3e1
-;     ca53d
-;     ca552
-;     ca579
-;     ca58c
-;     ca590
-;     ca5e3
-;     ca613
-;     ca61d
-;     ca625
-;     ca652
-;     ca659
-;     ca676
-;     ca67c
-;     ca6bb
 ;     ca6f1
 ;     ca701
 ;     ca70a
@@ -15912,12 +15892,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_ca528
-;     loop_ca543
-;     loop_ca564
-;     loop_ca57f
-;     loop_ca629
-;     loop_ca63a
 ;     loop_ca70c
 ;     loop_ca754
 ;     loop_ca7a9
@@ -16032,7 +16006,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_ca4e8
 ;     sub_ca801
 ;     sub_ca9b1
 ;     sub_caa94
