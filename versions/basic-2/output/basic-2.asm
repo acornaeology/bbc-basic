@@ -2989,6 +2989,14 @@ l848a = sub_c847b+15
 ; Recognise and act on the special PRINT items: apostrophe (force a newline), TAB(x[,y])
 ; and SPC(n). Returns carry clear when it consumed one, so the caller skips ordinary
 ; expression printing.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset at the PRINT item
+;
+; On Exit:
+;     C: clear if a special item was consumed and printed, else set
+;     ZP_TEXT_PTR_OFF (&0A): advanced past a consumed item
 ; &8e70 referenced 2 times by &8dde, &8e8d
 .print_special_item
     ldx zp_text_ptr                                                   ; 8e70: a6 0b       ..       ; Save PtrA into PtrB: low
@@ -5361,7 +5369,15 @@ l848a = sub_c847b+15
 ; Print a 16-bit line number in decimal
 ;
 ; Convert the value in IWA to decimal by repeated subtraction of the powers of ten at
-; &996B/&99B9, suppressing leading zeros, optionally right-justified in a field.
+; &996B/&99B9, suppressing leading zeros, optionally right-justified in a field (the
+; sub_c9923 entry uses a 5-digit TRACE field).
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the line number to print
+;
+; On Exit:
+;     THE OUTPUT: the decimal digits printed
+;     ZP_COUNT (&1E): the print column, advanced
 ; &991f referenced 3 times by &9097, &9914, &b662
 .print_line_number
     lda #0                                                            ; 991f: a9 00       ..       ; Default: no field padding
@@ -6889,7 +6905,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Parse an unsigned number at PtrB
 ;
-; Parse a decimal/hex number (integer or real) into the accumulator.
+; Parse an unsigned decimal or & hex number at PtrB into the accumulator, choosing
+; integer or real form (a decimal point or E exponent forces real).
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the first digit
+;
+; On Exit:
+;     A: result type: <0 float in fwa, >0 integer in iwa
+;     ZP_IWA / ZP_FWA: the parsed value
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the number
 ; &a07b referenced 3 times by &ac60, &ac6b, &ae2a
 .parse_number
     ldx #0                                                            ; a07b: a2 00       ..       ; Clear FWA:
@@ -8794,10 +8819,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Evaluate a continued-fraction approximation
 ;
-; X,Y point at a coefficient table: a count byte followed by that many five-byte fp
-; coefficients. The argument is held in TEMP1; the routine folds the table from the top,
-; alternating FWA = arg / FWA and FWA = FWA + next coefficient, to evaluate the continued
-; fraction used by the trig kernels.
+; A (low) and Y (high) point at a coefficient table: a count byte followed by that many
+; five-byte fp coefficients. The argument is stashed in TEMP1; the routine folds the
+; table from the top, alternating FWA = arg / FWA and FWA = FWA + next coefficient, to
+; evaluate the continued fraction used by the trig kernels.
+;
+; On Entry:
+;     A: coefficient table address low byte
+;     Y: coefficient table address high byte
+;     ZP_FWA (&2E-&35): the argument
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the continued-fraction value
+;     (&046C): corrupted (TEMP1 holds the argument)
 ; &a897 referenced 4 times by &a83c, &a951, &a9cd, &aade
 .fp_eval_cont_frac
     sta l004d                                                         ; a897: 85 4d       .M       ; Save the coefficient table pointer (low)
@@ -8930,6 +8964,13 @@ l848a = sub_c847b+15
 ; Subtract FWA from pi/2 using the two-part constant at &AA59/&AA5E for extra precision,
 ; then negate. Used for ACS (pi/2 - ASN) and the large-argument arctan identity atn(x) =
 ; pi/2 - atn(1/x).
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the angle to complement
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): pi/2 - FWA
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &a927 referenced 1 time by &a8d7
 .fwa_complement_half_pi
     jsr point_half_pi_hi                                              ; a927: 20 48 aa     H.      ; atn(x) = pi/2 - atn(1/x)
@@ -9035,7 +9076,15 @@ l848a = sub_c847b+15
 ;
 ; Divide the argument by pi/2 to find the quadrant (stored in &4A) and Cody-Waite reduce
 ; to the principal range using the two-part pi/2 constant, leaving the reduced angle in
-; FWA for the series.
+; FWA for the series. Errors if the argument is too large to reduce.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the angle in radians
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the reduced angle
+;     (&4A): the quadrant (0-3)
+;     BRK: on an argument too large to reduce
 ; &a9d3 referenced 3 times by &a6c1, &a990, &a99b
 .sin_cos_reduce
     lda zp_fwa_exp                                                    ; a9d3: a5 30       .0       ; Exponent of the argument
@@ -9224,6 +9273,14 @@ l848a = sub_c847b+15
 ;
 ; Raise FWA to an integer power by repeated multiplication; a negative exponent
 ; reciprocates first. Used by EXP to form e^(integer part).
+;
+; On Entry:
+;     A: the signed integer exponent n
+;     ZP_FWA (&2E-&35): the base
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): FWA raised to the n-th power
+;     ZP_FWB (&3B-&42): corrupted (scratch)
 ; &ab12 referenced 3 times by &9e52, &9e69, &aace
 .fwa_int_power
     tax                                                               ; ab12: aa          .        ; Exponent n
@@ -11790,7 +11847,15 @@ l848a = sub_c847b+15
 ; De-tokenise and print a character or token
 ;
 ; Print A directly if below &80, otherwise look the token up in the keyword table at
-; &8071 and print its expanded text.
+; &8071 and print its expanded keyword text.
+;
+; On Entry:
+;     A: the character or keyword token to print
+;
+; On Exit:
+;     THE OUTPUT: the character or expanded keyword
+;     ZP_COUNT (&1E): the print column, advanced
+;     ZP_GENERAL (&37/&38): corrupted (scratch)
 ; &b50e referenced 3 times by &8571, &b688, &bff0
 .print_token
     sta zp_general                                                    ; b50e: 85 37       .7       ; Save the character
@@ -11935,7 +12000,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Print LISTO indentation
 ;
-; If the LISTO flag bit in A is set, print 2*X spaces of indentation for the listing.
+; If the LISTO flag bit in A is set against zp_listo, print 2*X spaces of indentation for
+; a LIST line.
+;
+; On Entry:
+;     A: the LISTO bit mask to test
+;     X: the indent depth (spaces = 2*X)
+;     ZP_LISTO (&1F): the LISTO flags
+;
+; On Exit:
+;     THE OUTPUT: the indentation spaces (none if disabled)
 ; &b577 referenced 3 times by &b626, &b62d, &b634
 .print_listo_indent
     and zp_listo                                                      ; b577: 25 1f       %.       ; LISTO bit set?

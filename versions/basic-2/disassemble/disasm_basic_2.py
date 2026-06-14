@@ -2178,6 +2178,10 @@ d.subroutine(
 (force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when
 it consumed one, so the caller skips ordinary expression printing.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset at the PRINT item'},
+    on_exit={'C': 'clear if a special item was consumed and printed, else set',
+             'zp_text_ptr_off (&0A)': 'advanced past a consumed item'},
 )
 # print_special_item (&8E70): the ' TAB SPC items, and inline strings
 d.comment(0x8e70, 'Save PtrA into PtrB: low', align=Align.INLINE)
@@ -3879,7 +3883,11 @@ d.subroutine(0x991f, 'print_line_number',
              description='Convert the value in IWA to decimal by repeated '
                          'subtraction of the powers of ten at &996B/&99B9, '
                          'suppressing leading zeros, optionally right-'
-                         'justified in a field.')
+                         'justified in a field (the sub_c9923 entry uses a '
+                         '5-digit TRACE field).',
+             on_entry={'zp_iwa (&2A/&2B)': 'the line number to print'},
+             on_exit={'the output': 'the decimal digits printed',
+                      'zp_count (&1E)': 'the print column, advanced'})
 # print_line_number (&991F): IWA -> decimal.
 d.comment(0x991f, 'Default: no field padding', align=Align.INLINE)
 d.comment(0x9921, 'always: skip the TRACE entry', align=Align.INLINE)
@@ -5090,7 +5098,13 @@ d.comment(0xa078, 'real result', align=Align.INLINE)
 d.comment(0xa07a, 'Return', align=Align.INLINE)
 
 d.subroutine(0xa07b, 'parse_number', title='Parse an unsigned number at PtrB',
-             description='Parse a decimal/hex number (integer or real) into the accumulator.')
+             description='Parse an unsigned decimal or & hex number at PtrB into '
+                         'the accumulator, choosing integer or real form (a '
+                         'decimal point or E exponent forces real).',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the first digit'},
+             on_exit={'A': 'result type: <0 float in fwa, >0 integer in iwa',
+                      'zp_iwa / zp_fwa': 'the parsed value',
+                      'zp_text_ptr2_off (&1B)': 'advanced past the number'})
 # parse_number (&A07B): parse a decimal number at PtrB into the accumulator
 d.comment(0xa07b, 'Clear FWA:', align=Align.INLINE)
 d.comment(0xa07d, 'mantissa byte 1 (top),', align=Align.INLINE)
@@ -6592,12 +6606,18 @@ d.comment(0xa868, 'Return', align=Align.INLINE)
 # Transcendental helpers (shared by ATN/ASN/ACS/SIN/COS).
 d.subroutine(0xa897, 'fp_eval_cont_frac',
              title='Evaluate a continued-fraction approximation',
-             description='X,Y point at a coefficient table: a count byte '
-                         'followed by that many five-byte fp coefficients. '
-                         'The argument is held in TEMP1; the routine folds '
-                         'the table from the top, alternating FWA = arg / FWA '
-                         'and FWA = FWA + next coefficient, to evaluate the '
-                         'continued fraction used by the trig kernels.')
+             description='A (low) and Y (high) point at a coefficient table: a '
+                         'count byte followed by that many five-byte fp '
+                         'coefficients. The argument is stashed in TEMP1; the '
+                         'routine folds the table from the top, alternating '
+                         'FWA = arg / FWA and FWA = FWA + next coefficient, to '
+                         'evaluate the continued fraction used by the trig '
+                         'kernels.',
+             on_entry={'A': 'coefficient table address low byte',
+                       'Y': 'coefficient table address high byte',
+                       'zp_fwa (&2E-&35)': 'the argument'},
+             on_exit={'zp_fwa (&2E-&35)': 'the continued-fraction value',
+                      '(&046C)': 'corrupted (TEMP1 holds the argument)'})
 # fp_eval_cont_frac (&A897): evaluate the trig continued fraction.
 d.comment(0xa897, 'Save the coefficient table pointer (low)', align=Align.INLINE)
 d.comment(0xa899, '...and high', align=Align.INLINE)
@@ -6671,7 +6691,10 @@ d.subroutine(0xa927, 'fwa_complement_half_pi', title='FWA = pi/2 - FWA',
              description='Subtract FWA from pi/2 using the two-part constant '
                          'at &AA59/&AA5E for extra precision, then negate. '
                          'Used for ACS (pi/2 - ASN) and the large-argument '
-                         'arctan identity atn(x) = pi/2 - atn(1/x).')
+                         'arctan identity atn(x) = pi/2 - atn(1/x).',
+             on_entry={'zp_fwa (&2E-&35)': 'the angle to complement'},
+             on_exit={'zp_fwa (&2E-&35)': 'pi/2 - FWA',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 d.comment(0xa927, 'atn(x) = pi/2 - atn(1/x)', align=Align.INLINE)
 d.comment(0xa92a, 'add the high part of pi/2', align=Align.INLINE)
 d.comment(0xa92d, 'point at the low part', align=Align.INLINE)
@@ -6734,7 +6757,12 @@ d.subroutine(0xa9d3, 'sin_cos_reduce',
              description='Divide the argument by pi/2 to find the quadrant '
                          '(stored in &4A) and Cody-Waite reduce to the '
                          'principal range using the two-part pi/2 constant, '
-                         'leaving the reduced angle in FWA for the series.')
+                         'leaving the reduced angle in FWA for the series. '
+                         'Errors if the argument is too large to reduce.',
+             on_entry={'zp_fwa (&2E-&35)': 'the angle in radians'},
+             on_exit={'zp_fwa (&2E-&35)': 'the reduced angle',
+                      '(&4A)': 'the quadrant (0-3)',
+                      'BRK': 'on an argument too large to reduce'})
 
 # sin_cos_reduce (&A9D3): argument reduction for SIN/COS.
 d.comment(0xa9d3, 'Exponent of the argument', align=Align.INLINE)
@@ -6854,7 +6882,11 @@ d.comment(0xaae3, 'Return', align=Align.INLINE)
 d.subroutine(0xab12, 'fwa_int_power', title='FWA = FWA ^ n (n in A)',
              description='Raise FWA to an integer power by repeated '
                          'multiplication; a negative exponent reciprocates '
-                         'first. Used by EXP to form e^(integer part).')
+                         'first. Used by EXP to form e^(integer part).',
+             on_entry={'A': 'the signed integer exponent n',
+                       'zp_fwa (&2E-&35)': 'the base'},
+             on_exit={'zp_fwa (&2E-&35)': 'FWA raised to the n-th power',
+                      'zp_fwb (&3B-&42)': 'corrupted (scratch)'})
 # fwa_int_power (&AB12): FWA = FWA ^ n, n in A.
 d.comment(0xab12, 'Exponent n', align=Align.INLINE)
 d.comment(0xab13, 'positive?', align=Align.INLINE)
@@ -8583,7 +8615,11 @@ d.subroutine(0xb50e, 'print_token',
              title='De-tokenise and print a character or token',
              description='Print A directly if below &80, otherwise look the '
                          'token up in the keyword table at &8071 and print '
-                         'its expanded text.')
+                         'its expanded keyword text.',
+             on_entry={'A': 'the character or keyword token to print'},
+             on_exit={'the output': 'the character or expanded keyword',
+                      'zp_count (&1E)': 'the print column, advanced',
+                      'zp_general (&37/&38)': 'corrupted (scratch)'})
 # print_token (&B50E): de-tokenise and print.
 d.comment(0xb50e, 'Save the character', align=Align.INLINE)
 d.comment(0xb510, 'a token?', align=Align.INLINE)
@@ -8677,8 +8713,12 @@ d.comment(0xb572, 'Advance the column', align=Align.INLINE)
 d.comment(0xb574, 'Print it via WRCHV', align=Align.INLINE)
 d.subroutine(0xb577, 'print_listo_indent',
              title='Print LISTO indentation',
-             description='If the LISTO flag bit in A is set, print 2*X spaces '
-                         'of indentation for the listing.')
+             description='If the LISTO flag bit in A is set against zp_listo, '
+                         'print 2*X spaces of indentation for a LIST line.',
+             on_entry={'A': 'the LISTO bit mask to test',
+                       'X': 'the indent depth (spaces = 2*X)',
+                       'zp_listo (&1F)': 'the LISTO flags'},
+             on_exit={'the output': 'the indentation spaces (none if disabled)'})
 # print_listo_indent (&B577).
 d.comment(0xb577, 'LISTO bit set?', align=Align.INLINE)
 d.comment(0xb579, 'no: no indent', align=Align.INLINE)
