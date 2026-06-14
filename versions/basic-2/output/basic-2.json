@@ -1907,8 +1907,17 @@
     {
       "addr": 34967,
       "name": "parse_decimal_u16",
-      "title": "Parse a 16-bit decimal number",
-      "description": "Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow detection. The first digit is in A on entry; stops at the first non-digit. Used to read line numbers.",
+      "title": "Tokenise a line-number reference",
+      "description": "Accumulate the decimal digits at (zp_general),Y into a 16-bit value (value*10 + digit, in &3D/&3E) and, on success, replace them in place with the three-byte &8D line-number token (the GOTO/GOSUB encoding). Stops at the first non-digit; reports overflow if the value exceeds 16 bits.",
+      "on_entry": {
+        "A": "the first decimal digit",
+        "zp_general (&37/&38)": "the source text pointer",
+        "Y": "offset of the first digit"
+      },
+      "on_exit": {
+        "(zp_general)": "the digits replaced by the &8D 3-byte token",
+        "C": "clear on success, set on overflow (too large)"
+      },
       "fall_through": true
     },
     {
@@ -2082,7 +2091,17 @@
       "addr": 37023,
       "name": "advance_to_next_line",
       "title": "Advance the general pointer to the next program line",
-      "description": "Add the line length (at offset 3) to zp_general; carry clear on return."
+      "description": "Add the line length byte (at offset 3 of the current line) to zp_general so it addresses the next program line. Clears carry for the caller.",
+      "on_entry": {
+        "zp_general (&37/&38)": "a pointer to the current line",
+        "Y": "2 (offset just before the length byte)",
+        "C": "clear (it is the carry-in to the add)"
+      },
+      "on_exit": {
+        "zp_general": "addresses the next line",
+        "C": "clear",
+        "X": "preserved"
+      }
     },
     {
       "addr": 37410,
@@ -2143,7 +2162,18 @@
       "addr": 38193,
       "name": "clear_value_bytes",
       "title": "Zero a run of value bytes",
-      "description": "Write X zero bytes after the variable name (initialise its value)."
+      "description": "Write X zero bytes after a new variable name at (zp_vartop),Y, initialising its value to zero.",
+      "on_entry": {
+        "X": "the number of value bytes to clear",
+        "zp_vartop (&02/&03)": "base of the new variable entry",
+        "Y": "offset of the last name byte"
+      },
+      "on_exit": {
+        "(zp_vartop)": "X value bytes zeroed",
+        "Y": "advanced past the cleared bytes",
+        "X": "0",
+        "A": "0"
+      }
     },
     {
       "addr": 38233,
@@ -2174,21 +2204,49 @@
       "addr": 38842,
       "name": "check_subscript_bound",
       "title": "Check a subscript against a dimension extent",
-      "description": "Raise Subscript if the subscript in IWA is negative or not less than the dimension size stored at (&37),Y; advances Y past the two-byte extent.",
+      "description": "Raise Subscript if the subscript in IWA is negative or not less than the two-byte dimension extent at (zp_general),Y, otherwise advance Y past the extent.",
+      "on_entry": {
+        "zp_iwa (&2A-&2D)": "the subscript to check",
+        "zp_general (&37/&38)": "a pointer to the dimension data",
+        "Y": "offset of the two-byte extent"
+      },
+      "on_exit": {
+        "Y": "advanced past the two-byte extent",
+        "X": "preserved",
+        "BRK": "Subscript if out of range"
+      },
       "fall_through": true
     },
     {
       "addr": 38879,
       "name": "check_line_number",
       "title": "Test for an embedded line number",
-      "description": "If the text pointer is at a line-number token, decode it into IWA and return carry set; otherwise carry clear.",
+      "description": "Skip spaces at the text pointer; if the next token is a line-number token (&8D), fall into decode_line_number to decode it into IWA and return carry set, otherwise return carry clear.",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset of the next character"
+      },
+      "on_exit": {
+        "C": "set if a line number was found and decoded",
+        "zp_iwa (&2A/&2B)": "the line number (when found)",
+        "zp_text_ptr_off (&0A)": "advanced past it (when found)"
+      },
       "fall_through": true
     },
     {
       "addr": 38891,
       "name": "decode_line_number",
       "title": "Decode a 3-byte line number into IWA",
-      "description": "Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.",
+      "description": "Reverse the three-byte &8D line-number encoding, reconstructing the 16-bit line number in IWA (the two high-bit pairs are recovered from the control byte).",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "Y": "offset of the &8D token"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "the decoded 16-bit line number",
+        "zp_text_ptr_off (&0A)": "advanced past the 3 bytes",
+        "C": "set (line number found)"
+      },
       "fall_through": true
     },
     {
@@ -2225,7 +2283,15 @@
       "addr": 39280,
       "name": "find_program_line",
       "title": "Search the program for a line number",
-      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n"
+      "description": "Walk the program text from PAGE looking for the target line\nnumber in IWA. Returns a scratch pointer (zp_fwb_exp/zp_fwb_m1) to the\nmatching line, or to the first line with a greater number (the insertion\npoint) when there is no exact match.\n",
+      "on_entry": {
+        "zp_iwa (&2A/&2B)": "the target line number",
+        "zp_page (&18)": "PAGE, the start of the program"
+      },
+      "on_exit": {
+        "(zp_fwb_exp) (&3D/&3E)": "pointer to the line (or insertion point)",
+        "C": "clear if an exact match was found, set if not found"
+      }
     },
     {
       "addr": 39358,

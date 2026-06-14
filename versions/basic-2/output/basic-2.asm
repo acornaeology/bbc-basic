@@ -1603,11 +1603,21 @@ l848a = sub_c847b+15
     bne loop_c888d                                                    ; 8894: d0 f7       ..       ; until the CR
     rts                                                               ; 8896: 60          `        ; Return
 ; ***************************************************************************************
-; Parse a 16-bit decimal number
+; Tokenise a line-number reference
 ;
-; Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow
-; detection. The first digit is in A on entry; stops at the first non-digit. Used to read
-; line numbers.
+; Accumulate the decimal digits at (zp_general),Y into a 16-bit value (value*10 + digit,
+; in &3D/&3E) and, on success, replace them in place with the three-byte &8D line-number
+; token (the GOTO/GOSUB encoding). Stops at the first non-digit; reports overflow if the
+; value exceeds 16 bits.
+;
+; On Entry:
+;     A: the first decimal digit
+;     ZP_GENERAL (&37/&38): the source text pointer
+;     Y: offset of the first digit
+;
+; On Exit:
+;     (ZP_GENERAL): the digits replaced by the &8D 3-byte token
+;     C: clear on success, set on overflow (too large)
 ; &8897 referenced 1 time by &89b0
 .parse_decimal_u16
     and #&0f                                                          ; 8897: 29 0f       ).       ; First digit
@@ -3253,7 +3263,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Advance the general pointer to the next program line
 ;
-; Add the line length (at offset 3) to zp_general; carry clear on return.
+; Add the line length byte (at offset 3 of the current line) to zp_general so it
+; addresses the next program line. Clears carry for the caller.
+;
+; On Entry:
+;     ZP_GENERAL (&37/&38): a pointer to the current line
+;     Y: 2 (offset just before the length byte)
+;     C: clear (it is the carry-in to the add)
+;
+; On Exit:
+;     ZP_GENERAL: addresses the next line
+;     C: clear
+;     X: preserved
 ; &909f referenced 3 times by &8fd1, &9008, &9071
 .advance_to_next_line
     iny                                                               ; 909f: c8          .        ; Line length is at offset 3
@@ -4261,7 +4282,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Zero a run of value bytes
 ;
-; Write X zero bytes after the variable name (initialise its value).
+; Write X zero bytes after a new variable name at (zp_vartop),Y, initialising its value
+; to zero.
+;
+; On Entry:
+;     X: the number of value bytes to clear
+;     ZP_VARTOP (&02/&03): base of the new variable entry
+;     Y: offset of the last name byte
+;
+; On Exit:
+;     (ZP_VARTOP): X value bytes zeroed
+;     Y: advanced past the cleared bytes
+;     X: 0
+;     A: 0
 ; &9531 referenced 4 times by &8bdf, &9179, &957f, &b176
 .clear_value_bytes
     lda #0                                                            ; 9531: a9 00       ..       ; Zero X value bytes after the name:
@@ -4741,8 +4774,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Check a subscript against a dimension extent
 ;
-; Raise Subscript if the subscript in IWA is negative or not less than the dimension size
-; stored at (&37),Y; advances Y past the two-byte extent.
+; Raise Subscript if the subscript in IWA is negative or not less than the two-byte
+; dimension extent at (zp_general),Y, otherwise advance Y past the extent.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the subscript to check
+;     ZP_GENERAL (&37/&38): a pointer to the dimension data
+;     Y: offset of the two-byte extent
+;
+; On Exit:
+;     Y: advanced past the two-byte extent
+;     X: preserved
+;     BRK: Subscript if out of range
 ; &97ba referenced 3 times by &971c, &975a, &977a
 .check_subscript_bound
     lda zp_iwa_1                                                      ; 97ba: a5 2b       .+       ; Top bits of the subscript
@@ -4770,8 +4813,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Test for an embedded line number
 ;
-; If the text pointer is at a line-number token, decode it into IWA and return carry set;
-; otherwise carry clear.
+; Skip spaces at the text pointer; if the next token is a line-number token (&8D), fall
+; into decode_line_number to decode it into IWA and return carry set, otherwise return
+; carry clear.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset of the next character
+;
+; On Exit:
+;     C: set if a line number was found and decoded
+;     ZP_IWA (&2A/&2B): the line number (when found)
+;     ZP_TEXT_PTR_OFF (&0A): advanced past it (when found)
 ; &97df referenced 10 times by &8b2d, &8f31, &8f40, &8f6e, &8f80, &9295, &98e3, &b5ac, &b5d8, &b99a
 .check_line_number
     ldy zp_text_ptr_off                                               ; 97df: a4 0a       ..       ; Next character
@@ -4783,7 +4836,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Decode a 3-byte line number into IWA
 ;
-; Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.
+; Reverse the three-byte &8D line-number encoding, reconstructing the 16-bit line number
+; in IWA (the two high-bit pairs are recovered from the control byte).
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     Y: offset of the &8D token
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): the decoded 16-bit line number
+;     ZP_TEXT_PTR_OFF (&0A): advanced past the 3 bytes
+;     C: set (line number found)
 ; &97eb referenced 2 times by &903d, &b659
 .decode_line_number
     iny                                                               ; 97eb: c8          .        ; Control byte
@@ -5112,8 +5175,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Search the program for a line number
 ;
-; Walk the program text looking for the given line number, returning a pointer to the
-; line (carry set if found).
+; Walk the program text from PAGE looking for the target line number in IWA. Returns a
+; scratch pointer (zp_fwb_exp/zp_fwb_m1) to the matching line, or to the first line with
+; a greater number (the insertion point) when there is no exact match.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the target line number
+;     ZP_PAGE (&18): PAGE, the start of the program
+;
+; On Exit:
+;     (ZP_FWB_EXP) (&3D/&3E): pointer to the line (or insertion point)
+;     C: clear if an exact match was found, set if not found
 ; &9970 referenced 3 times by &b5ec, &b9af, &bc2d
 .find_program_line
     ldy #0                                                            ; 9970: a0 00       ..       ; Pointer low = 0

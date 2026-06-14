@@ -1105,11 +1105,18 @@ d.comment(0x8894, 'until the CR', align=Align.INLINE)
 d.comment(0x8896, 'Return', align=Align.INLINE)
 
 d.subroutine(0x8897, 'parse_decimal_u16',
-             title='Parse a 16-bit decimal number',
-             description='Accumulate decimal digits from (&37) into &3D/&3E '
-                         'as value*10 + digit, with overflow detection. The '
-                         'first digit is in A on entry; stops at the first '
-                         'non-digit. Used to read line numbers.')
+             title='Tokenise a line-number reference',
+             description='Accumulate the decimal digits at (zp_general),Y into '
+                         'a 16-bit value (value*10 + digit, in &3D/&3E) and, on '
+                         'success, replace them in place with the three-byte '
+                         '&8D line-number token (the GOTO/GOSUB encoding). Stops '
+                         'at the first non-digit; reports overflow if the value '
+                         'exceeds 16 bits.',
+             on_entry={'A': 'the first decimal digit',
+                       'zp_general (&37/&38)': 'the source text pointer',
+                       'Y': 'offset of the first digit'},
+             on_exit={'(zp_general)': 'the digits replaced by the &8D 3-byte token',
+                      'C': 'clear on success, set on overflow (too large)'})
 # parse_decimal_u16 (&8897): accumulate value*10 + digit.
 d.comment(0x8897, 'First digit', align=Align.INLINE)
 d.comment(0x8899, 'Value low = digit', align=Align.INLINE)
@@ -2391,7 +2398,14 @@ d.comment(0x909a, 'newline', align=Align.INLINE)
 d.comment(0x909d, 'loop', align=Align.INLINE)
 d.subroutine(0x909f, 'advance_to_next_line',
              title='Advance the general pointer to the next program line',
-             description='Add the line length (at offset 3) to zp_general; carry clear on return.')
+             description='Add the line length byte (at offset 3 of the current '
+                         'line) to zp_general so it addresses the next program '
+                         'line. Clears carry for the caller.',
+             on_entry={'zp_general (&37/&38)': 'a pointer to the current line',
+                       'Y': '2 (offset just before the length byte)',
+                       'C': 'clear (it is the carry-in to the add)'},
+             on_exit={'zp_general': 'addresses the next line',
+                      'C': 'clear', 'X': 'preserved'})
 
 # advance_to_next_line (&909F)
 d.comment(0x909f, 'Line length is at offset 3', align=Align.INLINE)
@@ -3065,7 +3079,14 @@ d.comment(0x952c, 'all of the name?', align=Align.INLINE)
 d.comment(0x952e, 'loop', align=Align.INLINE)
 d.comment(0x9530, 'Return', align=Align.INLINE)
 d.subroutine(0x9531, 'clear_value_bytes', title='Zero a run of value bytes',
-             description='Write X zero bytes after the variable name (initialise its value).')
+             description='Write X zero bytes after a new variable name at '
+                         '(zp_vartop),Y, initialising its value to zero.',
+             on_entry={'X': 'the number of value bytes to clear',
+                       'zp_vartop (&02/&03)': 'base of the new variable entry',
+                       'Y': 'offset of the last name byte'},
+             on_exit={'(zp_vartop)': 'X value bytes zeroed',
+                      'Y': 'advanced past the cleared bytes',
+                      'X': '0', 'A': '0'})
 d.comment(0x9531, 'Zero X value bytes after the name:', align=Align.INLINE)
 d.comment(0x9533, 'advance', align=Align.INLINE)
 d.comment(0x9534, 'clear a byte', align=Align.INLINE)
@@ -3464,8 +3485,13 @@ d.comment(0x97b9, 'Return', align=Align.INLINE)
 d.subroutine(0x97ba, 'check_subscript_bound',
              title='Check a subscript against a dimension extent',
              description='Raise Subscript if the subscript in IWA is negative '
-                         'or not less than the dimension size stored at '
-                         '(&37),Y; advances Y past the two-byte extent.')
+                         'or not less than the two-byte dimension extent at '
+                         '(zp_general),Y, otherwise advance Y past the extent.',
+             on_entry={'zp_iwa (&2A-&2D)': 'the subscript to check',
+                       'zp_general (&37/&38)': 'a pointer to the dimension data',
+                       'Y': 'offset of the two-byte extent'},
+             on_exit={'Y': 'advanced past the two-byte extent',
+                      'X': 'preserved', 'BRK': 'Subscript if out of range'})
 # check_subscript_bound (&97BA): Subscript error if out of range.
 d.comment(0x97ba, 'Top bits of the subscript', align=Align.INLINE)
 d.comment(0x97bc, 'keep just bits 6-7', align=Align.INLINE)
@@ -3485,9 +3511,15 @@ d.comment(0x97d1, 'Subscript error', align=Align.INLINE)
 d.comment(0x97dd, 'Advance', align=Align.INLINE)
 d.subroutine(0x97df, 'check_line_number',
              title='Test for an embedded line number',
-             description='If the text pointer is at a line-number token, '
-                         'decode it into IWA and return carry set; otherwise '
-                         'carry clear.')
+             description='Skip spaces at the text pointer; if the next token is '
+                         'a line-number token (&8D), fall into decode_line_number '
+                         'to decode it into IWA and return carry set, otherwise '
+                         'return carry clear.',
+             on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+                       'zp_text_ptr_off (&0A)': 'offset of the next character'},
+             on_exit={'C': 'set if a line number was found and decoded',
+                      'zp_iwa (&2A/&2B)': 'the line number (when found)',
+                      'zp_text_ptr_off (&0A)': 'advanced past it (when found)'})
 # check_line_number (&97DF) / decode_line_number (&97EB).
 d.comment(0x97df, 'Next character', align=Align.INLINE)
 d.comment(0x97e1, 'read it', align=Align.INLINE)
@@ -3497,8 +3529,14 @@ d.comment(0x97e7, 'line-number token?', align=Align.INLINE)
 d.comment(0x97e9, 'no: carry clear', align=Align.INLINE)
 d.subroutine(0x97eb, 'decode_line_number',
              title='Decode a 3-byte line number into IWA',
-             description='Reverse the GOTO three-byte encoding, reconstructing '
-                         'the 16-bit line number in IWA.')
+             description='Reverse the three-byte &8D line-number encoding, '
+                         'reconstructing the 16-bit line number in IWA (the two '
+                         'high-bit pairs are recovered from the control byte).',
+             on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+                       'Y': 'offset of the &8D token'},
+             on_exit={'zp_iwa (&2A/&2B)': 'the decoded 16-bit line number',
+                      'zp_text_ptr_off (&0A)': 'advanced past the 3 bytes',
+                      'C': 'set (line number found)'})
 d.comment(0x97eb, 'Control byte', align=Align.INLINE)
 d.comment(0x97ec, 'read the packed top-bits byte', align=Align.INLINE)
 d.comment(0x97ee, 'recover the top bits', align=Align.INLINE)
@@ -3753,9 +3791,15 @@ d.comment(0x996a, 'Return', align=Align.INLINE)
 d.subroutine(
     0x9970, 'find_program_line',
     title='Search the program for a line number',
-    description="""Walk the program text looking for the given line number,
-returning a pointer to the line (carry set if found).
+    description="""Walk the program text from PAGE looking for the target line
+number in IWA. Returns a scratch pointer (zp_fwb_exp/zp_fwb_m1) to the
+matching line, or to the first line with a greater number (the insertion
+point) when there is no exact match.
 """,
+    on_entry={'zp_iwa (&2A/&2B)': 'the target line number',
+              'zp_page (&18)': 'PAGE, the start of the program'},
+    on_exit={'(zp_fwb_exp) (&3D/&3E)': 'pointer to the line (or insertion point)',
+             'C': 'clear if an exact match was found, set if not found'},
 )
 # ----------------------------------------------------------------------
 # find_program_line (&9970): find the first line >= the target number.
