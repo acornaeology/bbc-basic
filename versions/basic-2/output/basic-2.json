@@ -2122,20 +2122,44 @@
       "addr": 35775,
       "name": "try_variable_assignment",
       "title": "Not a command token: try an assignment",
-      "description": "Reached when the statement does not begin with a command token:\ntreat it as an implied-LET variable assignment, or one of the\n=, * (OSCLI) or [ (assembler) special statement forms.\n",
+      "description": "Reached when the statement does not begin with a command token:\ncopy PtrA to PtrB, parse a variable / indirection reference, and perform\nan implied-LET assignment (creating the variable if new). Falls back to\nthe =, * (OSCLI) or [ (assembler) special statement forms.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "Y": "offset of the statement start"
+      },
+      "on_exit": {
+        "control": "performs the assignment then rejoins statement_loop, or dispatches to the =, * or [ form"
+      },
       "fall_through": true
     },
     {
       "addr": 35870,
       "name": "assign_string",
       "title": "Store a string value into a variable",
-      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n"
+      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n",
+      "on_entry": {
+        "(zp_stack_ptr) (&04/&05)": "the variable descriptor address",
+        "string_work (&0600)": "the string characters",
+        "zp_strbuf_len (&36)": "the string length"
+      },
+      "on_exit": {
+        "the string variable": "updated (allocation reused or grown)"
+      }
     },
     {
       "addr": 36033,
       "name": "unstack_value_to_var",
       "title": "Restore a stacked value into a variable",
-      "description": "Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated), or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and parameter machinery.",
+      "description": "Pop the value on top of the BASIC stack into the variable at zp_general, dispatched by the type/size byte: a numeric value of that many bytes, a $addr string (CR terminated), or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and parameter machinery.",
+      "on_entry": {
+        "zp_general (&37/&38)": "the destination variable address",
+        "zp_fileblk (&39)": "the type/size byte",
+        "(zp_stack_ptr) (&04/&05)": "the saved value on top of stack"
+      },
+      "on_exit": {
+        "the variable": "restored from the stack",
+        "zp_stack_ptr": "advanced past the popped value"
+      },
       "fall_through": true
     },
     {
@@ -2329,13 +2353,31 @@
       "addr": 38274,
       "name": "parse_lvalue",
       "title": "Parse an assignment target variable",
-      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n"
+      "description": "Parse the variable reference being assigned to (parse_var_ref)\nand return a pointer to its storage plus its type, creating the variable\n(create_variable + clear_value_bytes) if it does not yet exist. Shared\nby LET and FOR.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset of the target reference"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "a pointer to the variable storage",
+        "zp_iwa_2 (&2C)": "the variable type byte"
+      }
     },
     {
       "addr": 38345,
       "name": "parse_var_ref",
       "title": "Parse a variable reference / lvalue",
-      "description": "Scan a variable name, array element, or indirection operator at the text pointer. Sets the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates it), A=0 carry set when no name is present."
+      "description": "Scan a variable name, array element, or indirection operator at the text pointer. Sets the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates it), A=0 carry set when no name is present.",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset of the reference"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "the value address (when resolved)",
+        "zp_iwa_2 (&2C)": "the type byte (0/4/5/&80/&81)",
+        "A": "nonzero if resolved, 0 if a name needs creating / absent",
+        "C": "with A=0: clear = create the name, set = no name"
+      }
     },
     {
       "addr": 38623,
@@ -3745,7 +3787,15 @@
       "addr": 46260,
       "name": "assign_number",
       "title": "Store a numeric value into a variable",
-      "description": "Assign the current numeric value (integer or real) to the\nvariable whose address is on the stack, in the variable's own type.\n",
+      "description": "Assign the current numeric value (integer or real) to the\nvariable whose data address is on the stack, coercing to the variable's\nown type (real variables get the value converted to FP).\n",
+      "on_entry": {
+        "(zp_stack_ptr) (&04/&05)": "the variable data address",
+        "zp_iwa / zp_fwa": "the value to store",
+        "zp_var_type (&27)": "the value type"
+      },
+      "on_exit": {
+        "the numeric variable": "updated in its own type"
+      },
       "fall_through": true
     },
     {

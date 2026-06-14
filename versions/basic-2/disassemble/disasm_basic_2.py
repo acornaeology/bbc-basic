@@ -1743,9 +1743,14 @@ d.subroutine(
     0x8bbf, 'try_variable_assignment',
     title='Not a command token: try an assignment',
     description="""Reached when the statement does not begin with a command token:
-treat it as an implied-LET variable assignment, or one of the
-=, * (OSCLI) or [ (assembler) special statement forms.
+copy PtrA to PtrB, parse a variable / indirection reference, and perform
+an implied-LET assignment (creating the variable if new). Falls back to
+the =, * (OSCLI) or [ (assembler) special statement forms.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'Y': 'offset of the statement start'},
+    on_exit={'control': 'performs the assignment then rejoins statement_loop, '
+                        'or dispatches to the =, * or [ form'},
 )
 # try_variable_assignment (&8BBF)
 d.comment(0x8bbf, 'Copy PtrA to PtrB: low', align=Align.INLINE)
@@ -1795,6 +1800,10 @@ whose descriptor address is on the stack. Reuses the existing
 allocation if the new string fits, otherwise grabs fresh space from
 the heap.
 """,
+    on_entry={'(zp_stack_ptr) (&04/&05)': 'the variable descriptor address',
+              'string_work (&0600)': 'the string characters',
+              'zp_strbuf_len (&36)': 'the string length'},
+    on_exit={'the string variable': 'updated (allocation reused or grown)'},
 )
 # ----------------------------------------------------------------------
 # assign_string (&8C1E): store the string buffer into a string variable.
@@ -1898,12 +1907,17 @@ d.comment(0x8cb7, 'No room error', align=Align.INLINE)
 
 d.subroutine(0x8cc1, 'unstack_value_to_var',
              title='Restore a stacked value into a variable',
-             description='Pop the value at the BASIC stack (&04) into the '
-                         'variable at &37, dispatched by the type/size byte '
-                         '&39: a numeric value of that many bytes, a $addr '
+             description='Pop the value on top of the BASIC stack into the '
+                         'variable at zp_general, dispatched by the type/size '
+                         'byte: a numeric value of that many bytes, a $addr '
                          'string (CR terminated), or a string variable '
                          '(copied into its heap allocation). Used by the '
-                         'FN/PROC LOCAL and parameter machinery.')
+                         'FN/PROC LOCAL and parameter machinery.',
+             on_entry={'zp_general (&37/&38)': 'the destination variable address',
+                       'zp_fileblk (&39)': 'the type/size byte',
+                       '(zp_stack_ptr) (&04/&05)': 'the saved value on top of stack'},
+             on_exit={'the variable': 'restored from the stack',
+                      'zp_stack_ptr': 'advanced past the popped value'})
 # unstack_value_to_var (&8CC1): pop a stacked value into a variable.
 d.comment(0x8cc1, 'Type/size byte', align=Align.INLINE)
 d.comment(0x8cc3, '$addr string?', align=Align.INLINE)
@@ -3222,10 +3236,15 @@ d.comment(0x957f, 'Zero the value bytes of the new variable', align=Align.INLINE
 d.subroutine(
     0x9582, 'parse_lvalue',
     title='Parse an assignment target variable',
-    description="""Parse the variable reference being assigned to and return a
-pointer to its storage plus its type, creating the variable if it
-does not yet exist. Shared by LET and FOR.
+    description="""Parse the variable reference being assigned to (parse_var_ref)
+and return a pointer to its storage plus its type, creating the variable
+(create_variable + clear_value_bytes) if it does not yet exist. Shared
+by LET and FOR.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset of the target reference'},
+    on_exit={'zp_iwa (&2A/&2B)': 'a pointer to the variable storage',
+             'zp_iwa_2 (&2C)': 'the variable type byte'},
 )
 # parse_lvalue (&9582): parse a target, creating the variable if needed.
 d.comment(0x9582, 'Parse the variable reference', align=Align.INLINE)
@@ -3271,7 +3290,13 @@ d.subroutine(0x95c9, 'parse_var_ref',
                          '5=real, &80=$ indirection, &81=string lvalue. '
                          'Returns A nonzero when resolved; A=0 carry clear for '
                          'a valid name not yet defined (caller creates it), '
-                         'A=0 carry set when no name is present.')
+                         'A=0 carry set when no name is present.',
+             on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+                       'zp_text_ptr_off (&0A)': 'offset of the reference'},
+             on_exit={'zp_iwa (&2A/&2B)': 'the value address (when resolved)',
+                      'zp_iwa_2 (&2C)': 'the type byte (0/4/5/&80/&81)',
+                      'A': 'nonzero if resolved, 0 if a name needs creating / absent',
+                      'C': 'with A=0: clear = create the name, set = no name'})
 # ----------------------------------------------------------------------
 # parse_var_ref (&95C9): parse a variable reference or indirection.
 # Scans text via &19/&1A (offset &1B), building the value pointer in
@@ -8469,8 +8494,13 @@ d.subroutine(
     0xb4b4, 'assign_number',
     title='Store a numeric value into a variable',
     description="""Assign the current numeric value (integer or real) to the
-variable whose address is on the stack, in the variable's own type.
+variable whose data address is on the stack, coercing to the variable's
+own type (real variables get the value converted to FP).
 """,
+    on_entry={'(zp_stack_ptr) (&04/&05)': 'the variable data address',
+              'zp_iwa / zp_fwa': 'the value to store',
+              'zp_var_type (&27)': 'the value type'},
+    on_exit={'the numeric variable': 'updated in its own type'},
 )
 # assign_number (&B4B4): store a numeric value into a numeric variable.
 d.comment(0xb4b4, 'Pop the variable data address from the stack',

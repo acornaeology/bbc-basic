@@ -2436,9 +2436,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Not a command token: try an assignment
 ;
-; Reached when the statement does not begin with a command token: treat it as an
-; implied-LET variable assignment, or one of the =, * (OSCLI) or [ (assembler) special
+; Reached when the statement does not begin with a command token: copy PtrA to PtrB,
+; parse a variable / indirection reference, and perform an implied-LET assignment
+; (creating the variable if new). Falls back to the =, * (OSCLI) or [ (assembler) special
 ; statement forms.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     Y: offset of the statement start
+;
+; On Exit:
+;     CONTROL: performs the assignment then rejoins statement_loop, or dispatches to the =, * or [ form
 ; &8bbf referenced 2 times by &8b3f, &8baf
 .try_variable_assignment
     ldx zp_text_ptr                                                   ; 8bbf: a6 0b       ..       ; Copy PtrA to PtrB: low
@@ -2507,6 +2515,14 @@ l848a = sub_c847b+15
 ; Assign the string in the string buffer to the string variable whose descriptor address
 ; is on the stack. Reuses the existing allocation if the new string fits, otherwise grabs
 ; fresh space from the heap.
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): the variable descriptor address
+;     STRING_WORK (&0600): the string characters
+;     ZP_STRBUF_LEN (&36): the string length
+;
+; On Exit:
+;     THE STRING VARIABLE: updated (allocation reused or grown)
 ; &8c1e referenced 3 times by &8bf5, &ba13, &bb3d
 .assign_string
     jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..      ; Unstack the variable descriptor address
@@ -2621,10 +2637,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Restore a stacked value into a variable
 ;
-; Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the
-; type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated),
+; Pop the value on top of the BASIC stack into the variable at zp_general, dispatched by
+; the type/size byte: a numeric value of that many bytes, a $addr string (CR terminated),
 ; or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and
 ; parameter machinery.
+;
+; On Entry:
+;     ZP_GENERAL (&37/&38): the destination variable address
+;     ZP_FILEBLK (&39): the type/size byte
+;     (ZP_STACK_PTR) (&04/&05): the saved value on top of stack
+;
+; On Exit:
+;     THE VARIABLE: restored from the stack
+;     ZP_STACK_PTR: advanced past the popped value
 ; &8cc1 referenced 1 time by &b21f
 .unstack_value_to_var
     lda zp_fileblk                                                    ; 8cc1: a5 39       .9       ; Type/size byte
@@ -4531,8 +4556,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Parse an assignment target variable
 ;
-; Parse the variable reference being assigned to and return a pointer to its storage plus
-; its type, creating the variable if it does not yet exist. Shared by LET and FOR.
+; Parse the variable reference being assigned to (parse_var_ref) and return a pointer to
+; its storage plus its type, creating the variable (create_variable + clear_value_bytes)
+; if it does not yet exist. Shared by LET and FOR.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset of the target reference
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): a pointer to the variable storage
+;     ZP_IWA_2 (&2C): the variable type byte
 ; &9582 referenced 9 times by &85a5, &8be4, &90e1, &9328, &b256, &b7c4, &b9e4, &ba7f, &bb1f
 .parse_lvalue
     jsr parse_var_ref                                                 ; 9582: 20 c9 95     ..      ; Parse the variable reference
@@ -4590,6 +4624,16 @@ l848a = sub_c847b+15
 ; (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A
 ; nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates
 ; it), A=0 carry set when no name is present.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset of the reference
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): the value address (when resolved)
+;     ZP_IWA_2 (&2C): the type byte (0/4/5/&80/&81)
+;     A: nonzero if resolved, 0 if a name needs creating / absent
+;     C: with A=0: clear = create the name, set = no name
 ; &95c9 referenced 2 times by &9582, &b695
 .parse_var_ref
     lda zp_text_ptr                                                   ; 95c9: a5 0b       ..       ; Copy the text pointer into the scan pointer
@@ -11633,8 +11677,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Store a numeric value into a variable
 ;
-; Assign the current numeric value (integer or real) to the variable whose address is on
-; the stack, in the variable's own type.
+; Assign the current numeric value (integer or real) to the variable whose data address
+; is on the stack, coercing to the variable's own type (real variables get the value
+; converted to FP).
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): the variable data address
+;     ZP_IWA / ZP_FWA: the value to store
+;     ZP_VAR_TYPE (&27): the value type
+;
+; On Exit:
+;     THE NUMERIC VARIABLE: updated in its own type
 ; &b4b4 referenced 6 times by &85b4, &8c05, &911e, &933e, &ba39, &bad6
 .assign_number
     jsr unstack_int_to_general                                        ; b4b4: 20 0b be     ..      ; Pop the variable data address from the stack
