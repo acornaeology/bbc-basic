@@ -99523,7 +99523,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from the PtrB offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -99560,7 +99560,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the masked high byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -99799,7 +99799,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from the PtrB offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -99885,7 +99885,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -99935,7 +99935,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from the PtrB offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -99957,7 +99957,7 @@
         133,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&4D),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -99969,7 +99969,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the type flags",
       "type": "code",
       "mnemonic": "php"
     },
@@ -100032,7 +100032,7 @@
       "bytes": [
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "restore the type flags",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -100095,7 +100095,7 @@
         133,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the length,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -100107,7 +100107,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "into X as the count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -100154,7 +100154,7 @@
         255,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the buffer (reversed),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05ff,x",
@@ -100166,7 +100166,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next character",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -100308,7 +100308,7 @@
         149,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "into IWA (MSB first),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa,x",
@@ -100320,7 +100320,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -100400,7 +100400,7 @@
         108,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "into TEMP1 (MSB first),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "fp_temp1,x",
@@ -100412,7 +100412,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -100503,7 +100503,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "pla"
     },

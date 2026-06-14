@@ -10740,10 +10740,10 @@ l848a = sub_c847b+15
     jsr eval_expr                                                     ; b99f: 20 1d 9b     ..      ; Evaluate the line-number expression
     jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..      ; ensure integer
     lda zp_text_ptr2_off                                              ; b9a5: a5 1b       ..       ; Update the program pointer
-    sta zp_text_ptr_off                                               ; b9a7: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; b9a7: 85 0a       ..       ; from the PtrB offset
     lda zp_iwa_1                                                      ; b9a9: a5 2b       .+       ; Mask the high byte to 7 bits
     and #&7f                                                          ; b9ab: 29 7f       ).       ; (so GOTO &8000+n == GOTO n)
-    sta zp_iwa_1                                                      ; b9ad: 85 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; b9ad: 85 2b       .+       ; store the masked high byte
 ; &b9af referenced 2 times by &98e8, &b99d
 .cb9af
     jsr find_program_line                                             ; b9af: 20 70 99     p.      ; Find the line
@@ -10769,7 +10769,7 @@ l848a = sub_c847b+15
     dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..       ; Back up over "#"
     jsr sub_cbfa9                                                     ; b9d1: 20 a9 bf     ..      ; Get the file handle
     lda zp_text_ptr2_off                                              ; b9d4: a5 1b       ..       ; Sync the program pointer
-    sta zp_text_ptr_off                                               ; b9d6: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; b9d6: 85 0a       ..       ; from the PtrB offset
     sty l004d                                                         ; b9d8: 84 4d       .M       ; save the handle
 ; &b9da referenced 2 times by &ba16, &ba3c
 .cb9da
@@ -10777,31 +10777,31 @@ l848a = sub_c847b+15
     cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,       ; ',' another variable?
     bne loop_cb9ca                                                    ; b9df: d0 e9       ..       ; no: done
     lda l004d                                                         ; b9e1: a5 4d       .M       ; Save the handle
-    pha                                                               ; b9e3: 48          H        ; ...
+    pha                                                               ; b9e3: 48          H        ; push it
     jsr parse_lvalue                                                  ; b9e4: 20 82 95     ..      ; Parse the target variable
     beq loop_cb9c7                                                    ; b9e7: f0 de       ..       ; end: error
     lda zp_text_ptr2_off                                              ; b9e9: a5 1b       ..       ; Sync the program pointer
-    sta zp_text_ptr_off                                               ; b9eb: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; b9eb: 85 0a       ..       ; from the PtrB offset
     pla                                                               ; b9ed: 68          h        ; Recover the handle
-    sta l004d                                                         ; b9ee: 85 4d       .M       ; ...
-    php                                                               ; b9f0: 08          .        ; ...
+    sta l004d                                                         ; b9ee: 85 4d       .M       ; store it (&4D),
+    php                                                               ; b9f0: 08          .        ; save the type flags
     jsr stack_integer                                                 ; b9f1: 20 94 bd     ..      ; Stack the variable address
     ldy l004d                                                         ; b9f4: a4 4d       .M       ; Handle
     jsr osbget                                                        ; b9f6: 20 d7 ff     ..      ; Read the type byte
     sta zp_var_type                                                   ; b9f9: 85 27       .'       ; save it
-    plp                                                               ; b9fb: 28          (        ; ...
+    plp                                                               ; b9fb: 28          (        ; restore the type flags
     bcc cba19                                                         ; b9fc: 90 1b       ..       ; string?
     lda zp_var_type                                                   ; b9fe: a5 27       .'       ; String type byte
     bne cb9c4                                                         ; ba00: d0 c2       ..       ; mismatch: error
     jsr osbget                                                        ; ba02: 20 d7 ff     ..      ; Read the length
-    sta zp_strbuf_len                                                 ; ba05: 85 36       .6       ; ...
-    tax                                                               ; ba07: aa          .        ; ...
+    sta zp_strbuf_len                                                 ; ba05: 85 36       .6       ; store the length,
+    tax                                                               ; ba07: aa          .        ; into X as the count
     beq cba13                                                         ; ba08: f0 09       ..       ; empty
 ; &ba0a referenced 1 time by &ba11
 .loop_cba0a
     jsr osbget                                                        ; ba0a: 20 d7 ff     ..      ; Read a character
-    sta l05ff,x                                                       ; ba0d: 9d ff 05    ...      ; ...
-    dex                                                               ; ba10: ca          .        ; ...
+    sta l05ff,x                                                       ; ba0d: 9d ff 05    ...      ; into the buffer (reversed),
+    dex                                                               ; ba10: ca          .        ; next character
     bne loop_cba0a                                                    ; ba11: d0 f7       ..       ; loop
 ; &ba13 referenced 1 time by &ba08
 .cba13
@@ -10816,8 +10816,8 @@ l848a = sub_c847b+15
 ; &ba21 referenced 1 time by &ba27
 .loop_cba21
     jsr osbget                                                        ; ba21: 20 d7 ff     ..      ; Read a byte
-    sta zp_iwa,x                                                      ; ba24: 95 2a       .*       ; ...
-    dex                                                               ; ba26: ca          .        ; ...
+    sta zp_iwa,x                                                      ; ba24: 95 2a       .*       ; into IWA (MSB first),
+    dex                                                               ; ba26: ca          .        ; next byte
     bpl loop_cba21                                                    ; ba27: 10 f8       ..       ; loop
     bmi cba39                                                         ; ba29: 30 0e       0.       ; assign
 ; &ba2b referenced 1 time by &ba1d
@@ -10826,8 +10826,8 @@ l848a = sub_c847b+15
 ; &ba2d referenced 1 time by &ba34
 .loop_cba2d
     jsr osbget                                                        ; ba2d: 20 d7 ff     ..      ; Read a byte
-    sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.      ; ...
-    dex                                                               ; ba33: ca          .        ; ...
+    sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.      ; into TEMP1 (MSB first),
+    dex                                                               ; ba33: ca          .        ; next byte
     bpl loop_cba2d                                                    ; ba34: 10 f7       ..       ; loop
     jsr fwa_unpack_temp1                                              ; ba36: 20 b2 a3     ..      ; unpack into FWA
 ; &ba39 referenced 1 time by &ba29
@@ -10837,7 +10837,7 @@ l848a = sub_c847b+15
 ; &ba3f referenced 1 time by &ba82
 .loop_cba3f
     pla                                                               ; ba3f: 68          h        ; Drop the stacked values
-    pla                                                               ; ba40: 68          h        ; ...
+    pla                                                               ; ba40: 68          h        ; (continued)
     jmp c8b98                                                         ; ba41: 4c 98 8b    L..      ; done
 ; ***************************************************************************************
 ; INPUT
