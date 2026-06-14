@@ -70821,7 +70821,7 @@
         160,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y = &80,",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&80"
@@ -70832,7 +70832,7 @@
         132,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "sign = negative,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -70845,7 +70845,7 @@
         132,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "mantissa top = &80,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -70857,7 +70857,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y = &81,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -70867,7 +70867,7 @@
         132,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "exponent = &81 (value -1.0)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -70987,7 +70987,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -71036,7 +71036,7 @@
         135,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "pack FWA there",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ca387",
@@ -71163,7 +71163,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry for the subtract",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -71209,7 +71209,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -71233,7 +71233,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",

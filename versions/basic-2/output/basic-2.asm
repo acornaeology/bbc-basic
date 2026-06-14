@@ -7600,11 +7600,11 @@ l848a = sub_c847b+15
 ; &a814 referenced 1 time by &a806
 .ca814
     jsr fwb_clear                                                     ; a814: 20 53 a4     S.      ; Set FWB = -1 (to form mantissa - 1)
-    ldy #&80                                                          ; a817: a0 80       ..       ; ...
-    sty zp_fwb_sign                                                   ; a819: 84 3b       .;       ; ...
-    sty zp_fwb_m1                                                     ; a81b: 84 3e       .>       ; ...
-    iny                                                               ; a81d: c8          .        ; ...
-    sty zp_fwb_exp                                                    ; a81e: 84 3d       .=       ; ...
+    ldy #&80                                                          ; a817: a0 80       ..       ; Y = &80,
+    sty zp_fwb_sign                                                   ; a819: 84 3b       .;       ; sign = negative,
+    sty zp_fwb_m1                                                     ; a81b: 84 3e       .>       ; mantissa top = &80,
+    iny                                                               ; a81d: c8          .        ; Y = &81,
+    sty zp_fwb_exp                                                    ; a81e: 84 3d       .=       ; exponent = &81 (value -1.0)
     ldx zp_fwa_exp                                                    ; a820: a6 30       .0       ; Binary exponent of x
     beq ca82a                                                         ; a822: f0 06       ..       ; zero mantissa exponent?
     lda zp_fwa_m1                                                     ; a824: a5 31       .1       ; Mantissa top byte
@@ -7617,11 +7617,11 @@ l848a = sub_c847b+15
 ; &a82c referenced 1 time by &a828
 .ca82c
     txa                                                               ; a82c: 8a          .        ; Save the adjusted binary exponent
-    pha                                                               ; a82d: 48          H        ; ...
+    pha                                                               ; a82d: 48          H        ; push it
     sty zp_fwa_exp                                                    ; a82e: 84 30       .0       ; Set the mantissa exponent
     jsr fwa_add_fwb                                                   ; a830: 20 05 a5     ..      ; FWA = mantissa - 1
     lda #&7b ; '{'                                                    ; a833: a9 7b       .{       ; Save (m-1) in TEMP4
-    jsr ca387                                                         ; a835: 20 87 a3     ..      ; ...
+    jsr ca387                                                         ; a835: 20 87 a3     ..      ; pack FWA there
     lda #&73 ; 's'                                                    ; a838: a9 73       .s       ; Point at the ln coefficient table: low byte
     ldy #&a8                                                          ; a83a: a0 a8       ..       ; ...high
     jsr fp_eval_cont_frac                                             ; a83c: 20 97 a8     ..      ; Evaluate the ln continued fraction
@@ -7631,13 +7631,13 @@ l848a = sub_c847b+15
     jsr fwa_add_var                                                   ; a848: 20 00 a5     ..      ; Add (m-1): FWA = ln(mantissa)
     jsr fwa_pack_temp1                                                ; a84b: 20 85 a3     ..      ; Save ln(mantissa) in TEMP1
     pla                                                               ; a84e: 68          h        ; Recover the adjusted exponent
-    sec                                                               ; a84f: 38          8        ; ...
+    sec                                                               ; a84f: 38          8        ; set carry for the subtract
     sbc #&81                                                          ; a850: e9 81       ..       ; Binary exponent e = adjusted - &81
     jsr small_int_to_fwa                                              ; a852: 20 ed a2     ..      ; FWA = e
     lda #&6e ; 'n'                                                    ; a855: a9 6e       .n       ; Point at the constant ln 2: low byte
-    sta zp_fp_ptr                                                     ; a857: 85 4b       .K       ; ...
+    sta zp_fp_ptr                                                     ; a857: 85 4b       .K       ; store the pointer low
     lda #&a8                                                          ; a859: a9 a8       ..       ; high byte
-    sta zp_fp_ptr_1                                                   ; a85b: 85 4c       .L       ; ...
+    sta zp_fp_ptr_1                                                   ; a85b: 85 4c       .L       ; store the pointer high
     jsr fwa_mul_var                                                   ; a85d: 20 56 a6     V.      ; FWA = e * ln 2
     jsr point_fp_temp1                                                ; a860: 20 f5 a7     ..      ; Point at ln(mantissa) in TEMP1
     jsr fwa_add_var                                                   ; a863: 20 00 a5     ..      ; LN(x) = e*ln2 + ln(mantissa)
