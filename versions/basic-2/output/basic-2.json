@@ -19994,7 +19994,7 @@
         133,
         22
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte = &33,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -20007,7 +20007,7 @@
         169,
         180
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte = &B4,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -20018,7 +20018,7 @@
         133,
         23
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (handler at &B433)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -20042,7 +20042,7 @@
         134,
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the OPT flag",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_opt_flag",
@@ -20113,7 +20113,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -20126,7 +20126,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -20139,7 +20139,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -20371,7 +20371,7 @@
         224,
         252
       ],
-      "comment_inline": "...",
+      "comment_inline": "stack near empty (no FN frame)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#&fc"

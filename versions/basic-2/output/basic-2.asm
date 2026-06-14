@@ -2145,19 +2145,19 @@ l848a = sub_c847b+15
 ; &8b0b referenced 1 time by &bd1d
 .execute_line
     lda #&33 ; '3'                                                    ; 8b0b: a9 33       .3       ; Restore the default error handler (ON ERROR OFF)
-    sta zp_error_vec                                                  ; 8b0d: 85 16       ..       ; ...
-    lda #&b4                                                          ; 8b0f: a9 b4       ..       ; ...
-    sta zp_error_vec_1                                                ; 8b11: 85 17       ..       ; ...
+    sta zp_error_vec                                                  ; 8b0d: 85 16       ..       ; low byte = &33,
+    lda #&b4                                                          ; 8b0f: a9 b4       ..       ; high byte = &B4,
+    sta zp_error_vec_1                                                ; 8b11: 85 17       ..       ; store it (handler at &B433)
     ldx #&ff                                                          ; 8b13: a2 ff       ..       ; OPT = &FF: not inside the [ ] assembler
-    stx zp_opt_flag                                                   ; 8b15: 86 28       .(       ; ...
+    stx zp_opt_flag                                                   ; 8b15: 86 28       .(       ; store the OPT flag
     stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<       ; Clear the machine-stack marker
     txs                                                               ; 8b19: 9a          .        ; Reset the 6502 hardware stack
     jsr sub_cbd3a                                                     ; 8b1a: 20 3a bd     :.      ; Clear the DATA pointer and the BASIC stacks
     tay                                                               ; 8b1d: a8          .        ; Y = 0
     lda zp_text_ptr                                                   ; 8b1e: a5 0b       ..       ; Point the general pointer at the line text
-    sta zp_general                                                    ; 8b20: 85 37       .7       ; ...
-    lda zp_text_ptr_1                                                 ; 8b22: a5 0c       ..       ; ...
-    sta zp_general_1                                                  ; 8b24: 85 38       .8       ; ...
+    sta zp_general                                                    ; 8b20: 85 37       .7       ; low byte,
+    lda zp_text_ptr_1                                                 ; 8b22: a5 0c       ..       ; high byte,
+    sta zp_general_1                                                  ; 8b24: 85 38       .8       ; store it
     sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; clear the quote flag
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
     jsr c8957                                                         ; 8b2a: 20 57 89     W.      ; Tokenise the line
@@ -2180,7 +2180,7 @@ l848a = sub_c847b+15
 ; &8b47 referenced 1 time by &8b67
 .loop_c8b47
     tsx                                                               ; 8b47: ba          .        ; Inside a function call?
-    cpx #&fc                                                          ; 8b48: e0 fc       ..       ; ...
+    cpx #&fc                                                          ; 8b48: e0 fc       ..       ; stack near empty (no FN frame)?
     bcs c8b59                                                         ; 8b4a: b0 0d       ..       ; no: error
     lda l01ff                                                         ; 8b4c: ad ff 01    ...      ; Pushed token
     cmp #&a4                                                          ; 8b4f: c9 a4       ..       ; FN?
