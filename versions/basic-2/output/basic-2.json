@@ -12067,9 +12067,9 @@
       "comment_inline": "Newline and indent for a continuation",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 34114,
@@ -12488,9 +12488,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 34174,
@@ -12882,9 +12882,9 @@
       "comment_inline": "sync the pointer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8827",
+      "operand": "eeti_sync",
       "target": 34855,
-      "target_label": "sub_c8827"
+      "target_label": "eeti_sync"
     },
     {
       "addr": 34234,
@@ -16800,9 +16800,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c883a",
+      "operand": "equb_directive",
       "target": 34874,
-      "target_label": "c883a"
+      "target_label": "equb_directive"
     },
     {
       "addr": 34837,
@@ -16934,7 +16934,7 @@
         27
       ],
       "labels": [
-        "sub_c8827"
+        "eeti_sync"
       ],
       "comment_inline": "Sync the primary text offset",
       "xref_summaries": [
@@ -17100,7 +17100,7 @@
         1
       ],
       "labels": [
-        "c883a"
+        "equb_directive"
       ],
       "comment_inline": "Assume one byte (EQUB)",
       "xref_summaries": [
@@ -17172,9 +17172,9 @@
       "comment_inline": "two bytes (EQUW) 'W' (EQUW)?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8858",
+      "operand": "equb_save_count",
       "target": 34904,
-      "target_label": "c8858"
+      "target_label": "equb_save_count"
     },
     {
       "addr": 34886,
@@ -17205,9 +17205,9 @@
       "comment_inline": "four bytes (EQUD)",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8858",
+      "operand": "equb_save_count",
       "target": 34904,
-      "target_label": "c8858"
+      "target_label": "equb_save_count"
     },
     {
       "addr": 34891,
@@ -17240,9 +17240,9 @@
       "comment_inline": "'S' (EQUS)?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8858",
+      "operand": "equb_save_count",
       "target": 34904,
-      "target_label": "c8858"
+      "target_label": "equb_save_count"
     },
     {
       "addr": 34897,
@@ -17264,9 +17264,9 @@
       "comment_inline": "none: Mistake (syntax error)",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c886a",
+      "operand": "equs_save_opt",
       "target": 34922,
-      "target_label": "c886a"
+      "target_label": "equs_save_opt"
     },
     {
       "addr": 34901,
@@ -17288,7 +17288,7 @@
         138
       ],
       "labels": [
-        "c8858"
+        "equb_save_count"
       ],
       "comment_inline": "Save the byte count",
       "xref_summaries": [
@@ -17376,7 +17376,7 @@
         134
       ],
       "labels": [
-        "loop_c8864"
+        "equb_emit_loop"
       ],
       "comment_inline": "Assemble the bytes",
       "xref_summaries": [
@@ -17399,7 +17399,7 @@
         140
       ],
       "labels": [
-        "loop_c8867"
+        "equs_type_error"
       ],
       "comment_inline": "String expected: Type mismatch",
       "xref_summaries": [
@@ -17421,7 +17421,7 @@
         40
       ],
       "labels": [
-        "c886a"
+        "equs_save_opt"
       ],
       "comment_inline": "EQUS: save the OPT flag",
       "xref_summaries": [
@@ -17468,9 +17468,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8867",
+      "operand": "equs_type_error",
       "target": 34919,
-      "target_label": "loop_c8867"
+      "target_label": "equs_type_error"
     },
     {
       "addr": 34930,
@@ -17504,9 +17504,9 @@
       "comment_inline": "sync the text offset",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8827",
+      "operand": "eeti_sync",
       "target": 34855,
-      "target_label": "sub_c8827"
+      "target_label": "eeti_sync"
     },
     {
       "addr": 34936,
@@ -17528,9 +17528,9 @@
       "comment_inline": "assemble the string bytes",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8864",
+      "operand": "equb_emit_loop",
       "target": 34916,
-      "target_label": "loop_c8864"
+      "target_label": "equb_emit_loop"
     },
     {
       "addr": 34940,
@@ -17538,7 +17538,7 @@
         72
       ],
       "labels": [
-        "sub_c887c"
+        "insert_byte"
       ],
       "comment_inline": "Save the byte to insert",
       "xref_summaries": [
@@ -17669,7 +17669,7 @@
         200
       ],
       "labels": [
-        "loop_c888d"
+        "insert_byte_loop"
       ],
       "comment_inline": "Copy the rest of the line up",
       "xref_summaries": [
@@ -17727,9 +17727,9 @@
       "comment_inline": "until the CR",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c888d",
+      "operand": "insert_byte_loop",
       "target": 34957,
-      "target_label": "loop_c888d"
+      "target_label": "insert_byte_loop"
     },
     {
       "addr": 34966,
@@ -18264,9 +18264,9 @@
       "comment_inline": "Make room for the 3 encoded bytes",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c887c",
+      "operand": "insert_byte",
       "target": 34940,
-      "target_label": "sub_c887c"
+      "target_label": "insert_byte"
     },
     {
       "addr": 35040,
@@ -20985,9 +20985,9 @@
       "comment_inline": "overwrite the keyword",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c887c",
+      "operand": "insert_byte",
       "target": 34940,
-      "target_label": "sub_c887c"
+      "target_label": "insert_byte"
     },
     {
       "addr": 35416,
@@ -22388,9 +22388,9 @@
       "comment_inline": "Clear the DATA pointer and the BASIC stacks",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd3a",
+      "operand": "reset_data_and_stacks",
       "target": 48442,
-      "target_label": "sub_cbd3a"
+      "target_label": "reset_data_and_stacks"
     },
     {
       "addr": 35613,
@@ -22530,9 +22530,9 @@
       "comment_inline": "Numbered line: insert it into the program",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc8d",
+      "operand": "insert_line",
       "target": 48269,
-      "target_label": "sub_cbc8d"
+      "target_label": "insert_line"
     },
     {
       "addr": 35637,
@@ -25043,9 +25043,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbeba",
+      "operand": "terminate_strbuf",
       "target": 48826,
-      "target_label": "sub_cbeba"
+      "target_label": "terminate_strbuf"
     },
     {
       "addr": 36005,
@@ -25547,9 +25547,9 @@
       "comment_inline": "drop the value from the stack",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 36078,
@@ -26008,9 +26008,9 @@
       "comment_inline": "drop them from the stack",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbde1",
+      "operand": "drop_string_adv",
       "target": 48609,
-      "target_label": "cbde1"
+      "target_label": "drop_string_adv"
     },
     {
       "addr": 36139,
@@ -26044,9 +26044,9 @@
       "comment_inline": "Get the file handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfa9",
+      "operand": "sync_ptrb_from_ptra",
       "target": 49065,
-      "target_label": "sub_cbfa9"
+      "target_label": "sync_ptrb_from_ptra"
     },
     {
       "addr": 36144,
@@ -26594,9 +26594,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 36224,
@@ -28001,9 +28001,9 @@
       "comment_inline": "Newline to reach a fresh line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 36438,
@@ -28154,9 +28154,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 36458,
@@ -28793,9 +28793,9 @@
       "comment_inline": "Reset the print column",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbc28",
+      "operand": "reset_print_column",
       "target": 48168,
-      "target_label": "cbc28"
+      "target_label": "reset_print_column"
     },
     {
       "addr": 36554,
@@ -31683,9 +31683,9 @@
       "comment_inline": "newline",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 37021,
@@ -31966,9 +31966,9 @@
       "comment_inline": "Insert it into the program",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc8d",
+      "operand": "insert_line",
       "target": 48269,
-      "target_label": "sub_cbc8d"
+      "target_label": "insert_line"
     },
     {
       "addr": 37065,
@@ -32537,9 +32537,9 @@
       "comment_inline": "sync the pointer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8827",
+      "operand": "eeti_sync",
       "target": 34855,
-      "target_label": "sub_c8827"
+      "target_label": "eeti_sync"
     },
     {
       "addr": 37156,
@@ -33412,9 +33412,9 @@
       "comment_inline": "Multiply the running size by the extent",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9231",
+      "operand": "unstack_multiplier",
       "target": 37425,
-      "target_label": "sub_c9231"
+      "target_label": "unstack_multiplier"
     },
     {
       "addr": 37289,
@@ -34351,7 +34351,7 @@
         63
       ],
       "labels": [
-        "sub_c9231"
+        "unstack_multiplier"
       ],
       "comment_inline": "Unstack the multiplier (into &3F area)",
       "xref_summaries": [
@@ -34888,9 +34888,9 @@
       "comment_inline": "Clear all dynamic variables",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd2f",
+      "operand": "clear_var_table",
       "target": 48431,
-      "target_label": "sub_cbd2f"
+      "target_label": "clear_var_table"
     },
     {
       "addr": 37505,
@@ -36812,9 +36812,9 @@
       "comment_inline": "Read the high word of the machine address",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbee7",
+      "operand": "read_himem_byte",
       "target": 48871,
-      "target_label": "sub_cbee7"
+      "target_label": "read_himem_byte"
     },
     {
       "addr": 37798,
@@ -37148,9 +37148,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbc28",
+      "operand": "reset_print_column",
       "target": 48168,
-      "target_label": "cbc28"
+      "target_label": "reset_print_column"
     },
     {
       "addr": 37850,
@@ -50143,9 +50143,9 @@
       "comment_inline": "Drop the stacked string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 39705,
@@ -72817,9 +72817,9 @@
       "comment_inline": "set it (shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca7f7",
+      "operand": "set_fp_ptr",
       "target": 42999,
-      "target_label": "ca7f7"
+      "target_label": "set_fp_ptr"
     },
     {
       "addr": 42989,
@@ -72852,9 +72852,9 @@
       "comment_inline": "set it (shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca7f7",
+      "operand": "set_fp_ptr",
       "target": 42999,
-      "target_label": "ca7f7"
+      "target_label": "set_fp_ptr"
     },
     {
       "addr": 42993,
@@ -72886,9 +72886,9 @@
       "comment_inline": "set it (shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca7f7",
+      "operand": "set_fp_ptr",
       "target": 42999,
-      "target_label": "ca7f7"
+      "target_label": "set_fp_ptr"
     },
     {
       "addr": 42997,
@@ -72922,7 +72922,7 @@
         75
       ],
       "labels": [
-        "ca7f7"
+        "set_fp_ptr"
       ],
       "comment_inline": "set the pointer low",
       "xref_summaries": [
@@ -76324,9 +76324,9 @@
       "comment_inline": "...(shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "caa4e",
+      "operand": "set_pi_ptr",
       "target": 43598,
-      "target_label": "caa4e"
+      "target_label": "set_pi_ptr"
     },
     {
       "addr": 43596,
@@ -76356,7 +76356,7 @@
         75
       ],
       "labels": [
-        "caa4e"
+        "set_pi_ptr"
       ],
       "comment_inline": "Set the fp pointer low",
       "xref_summaries": [
@@ -76435,9 +76435,9 @@
       "comment_inline": "...(shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "caa4e",
+      "operand": "set_pi_ptr",
       "target": 43598,
-      "target_label": "caa4e"
+      "target_label": "set_pi_ptr"
     },
     {
       "addr": 43609,
@@ -79188,9 +79188,9 @@
       "comment_inline": "Drop the stacked string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 44067,
@@ -81013,9 +81013,9 @@
       "comment_inline": "Re-point at the stacked string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 44348,
@@ -81209,9 +81209,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 44373,
@@ -92912,9 +92912,9 @@
       "comment_inline": "clear DATA and the stacks",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd3a",
+      "operand": "reset_data_and_stacks",
       "target": 48442,
-      "target_label": "sub_cbd3a"
+      "target_label": "reset_data_and_stacks"
     },
     {
       "addr": 46110,
@@ -95061,9 +95061,9 @@
       "comment_inline": "reset the column",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbc28",
+      "operand": "reset_print_column",
       "target": 48168,
-      "target_label": "cbc28"
+      "target_label": "reset_print_column"
     },
     {
       "addr": 46434,
@@ -95184,9 +95184,9 @@
       "comment_inline": "else auto-newline",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 46449,
@@ -96093,9 +96093,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 46591,
@@ -100053,7 +100053,7 @@
         152
       ],
       "labels": [
-        "cb88b"
+        "gosub_check_end"
       ],
       "comment_inline": "Check the statement ends",
       "xref_summaries": [
@@ -101545,9 +101545,9 @@
       "comment_inline": "do the GOSUB",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb88b",
+      "operand": "gosub_check_end",
       "target": 47243,
-      "target_label": "cb88b"
+      "target_label": "gosub_check_end"
     },
     {
       "addr": 47485,
@@ -102082,9 +102082,9 @@
       "comment_inline": "Get the file handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfa9",
+      "operand": "sync_ptrb_from_ptra",
       "target": 49065,
-      "target_label": "sub_cbfa9"
+      "target_label": "sync_ptrb_from_ptra"
     },
     {
       "addr": 47572,
@@ -102888,9 +102888,9 @@
       "comment_inline": "yes: LINE mode (carry set)",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cba52",
+      "operand": "input_line_flag",
       "target": 47698,
-      "target_label": "cba52"
+      "target_label": "input_line_flag"
     },
     {
       "addr": 47695,
@@ -102921,7 +102921,7 @@
         77
       ],
       "labels": [
-        "cba52"
+        "input_line_flag"
       ],
       "comment_inline": "Record the LINE flag in bit 6",
       "xref_summaries": [
@@ -102981,7 +102981,7 @@
         142
       ],
       "labels": [
-        "cba5a"
+        "input_prompt"
       ],
       "comment_inline": "Process a prompt item",
       "xref_summaries": [
@@ -103008,9 +103008,9 @@
       "comment_inline": "none found: parse a variable",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cba69",
+      "operand": "input_item_flag",
       "target": 47721,
-      "target_label": "cba69"
+      "target_label": "input_item_flag"
     },
     {
       "addr": 47711,
@@ -103020,7 +103020,7 @@
         142
       ],
       "labels": [
-        "loop_cba5f"
+        "input_prompt_loop"
       ],
       "comment_inline": "Process further prompt items",
       "xref_summaries": [
@@ -103044,9 +103044,9 @@
       "comment_inline": "more printed items: loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_cba5f",
+      "operand": "input_prompt_loop",
       "target": 47711,
-      "target_label": "loop_cba5f"
+      "target_label": "input_prompt_loop"
     },
     {
       "addr": 47716,
@@ -103087,7 +103087,7 @@
         8
       ],
       "labels": [
-        "cba69"
+        "input_item_flag"
       ],
       "comment_inline": "Preserve the item-seen flag",
       "xref_summaries": [
@@ -103154,9 +103154,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cba5a",
+      "operand": "input_prompt",
       "target": 47706,
-      "target_label": "cba5a"
+      "target_label": "input_prompt"
     },
     {
       "addr": 47731,
@@ -103178,9 +103178,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cba5a",
+      "operand": "input_prompt",
       "target": 47706,
-      "target_label": "cba5a"
+      "target_label": "input_prompt"
     },
     {
       "addr": 47735,
@@ -103367,9 +103367,9 @@
       "comment_inline": "yes: no new prompt",
       "type": "code",
       "mnemonic": "bvs",
-      "operand": "cba99",
+      "operand": "input_line_mode",
       "target": 47769,
-      "target_label": "cba99"
+      "target_label": "input_line_mode"
     },
     {
       "addr": 47763,
@@ -103404,9 +103404,9 @@
       "comment_inline": "yes: read without a ? prompt",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbab0",
+      "operand": "input_set_offset",
       "target": 47792,
-      "target_label": "cbab0"
+      "target_label": "input_set_offset"
     },
     {
       "addr": 47769,
@@ -103415,7 +103415,7 @@
         77
       ],
       "labels": [
-        "cba99"
+        "input_line_mode"
       ],
       "comment_inline": "LINE mode?",
       "xref_summaries": [
@@ -103439,9 +103439,9 @@
       "comment_inline": "yes: no ? prompt",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cbaa2",
+      "operand": "input_read_line",
       "target": 47778,
-      "target_label": "cbaa2"
+      "target_label": "input_read_line"
     },
     {
       "addr": 47773,
@@ -103476,7 +103476,7 @@
         187
       ],
       "labels": [
-        "cbaa2"
+        "input_read_line"
       ],
       "comment_inline": "Read an input line",
       "xref_summaries": [
@@ -103487,9 +103487,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbbfc",
+      "operand": "point_string_buffer",
       "target": 48124,
-      "target_label": "sub_cbbfc"
+      "target_label": "point_string_buffer"
     },
     {
       "addr": 47781,
@@ -103561,9 +103561,9 @@
       "comment_inline": "yes: take the whole line",
       "type": "code",
       "mnemonic": "bvs",
-      "operand": "cbacd",
+      "operand": "input_recover_flag",
       "target": 47821,
-      "target_label": "cbacd"
+      "target_label": "input_recover_flag"
     },
     {
       "addr": 47792,
@@ -103572,7 +103572,7 @@
         27
       ],
       "labels": [
-        "cbab0"
+        "input_set_offset"
       ],
       "comment_inline": "Set the read offset",
       "xref_summaries": [
@@ -103657,7 +103657,7 @@
         138
       ],
       "labels": [
-        "loop_cbabd"
+        "input_skip_spaces"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -103692,9 +103692,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbaca",
+      "operand": "input_field_offset",
       "target": 47818,
-      "target_label": "cbaca"
+      "target_label": "input_field_offset"
     },
     {
       "addr": 47812,
@@ -103716,9 +103716,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbabd",
+      "operand": "input_skip_spaces",
       "target": 47805,
-      "target_label": "loop_cbabd"
+      "target_label": "input_skip_spaces"
     },
     {
       "addr": 47816,
@@ -103737,7 +103737,7 @@
         200
       ],
       "labels": [
-        "cbaca"
+        "input_field_offset"
       ],
       "comment_inline": "Note the next field offset",
       "xref_summaries": [
@@ -103768,7 +103768,7 @@
         40
       ],
       "labels": [
-        "cbacd"
+        "input_recover_flag"
       ],
       "comment_inline": "Recover the LINE flag",
       "xref_summaries": [
@@ -103789,9 +103789,9 @@
       "comment_inline": "LINE mode: assign the whole line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbadc",
+      "operand": "input_line_string",
       "target": 47836,
-      "target_label": "cbadc"
+      "target_label": "input_line_string"
     },
     {
       "addr": 47824,
@@ -103845,9 +103845,9 @@
       "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cba5a",
+      "operand": "input_prompt",
       "target": 47706,
-      "target_label": "cba5a"
+      "target_label": "input_prompt"
     },
     {
       "addr": 47836,
@@ -103856,7 +103856,7 @@
         0
       ],
       "labels": [
-        "cbadc"
+        "input_line_string"
       ],
       "comment_inline": "LINE: string type",
       "xref_summaries": [
@@ -103906,9 +103906,9 @@
       "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cba5a",
+      "operand": "input_prompt",
       "target": 47706,
-      "target_label": "cba5a"
+      "target_label": "input_prompt"
     },
     {
       "addr": 47846,
@@ -104010,9 +104010,9 @@
       "comment_inline": "yes: restore to PAGE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbb07",
+      "operand": "restore_check_end",
       "target": 47879,
-      "target_label": "cbb07"
+      "target_label": "restore_check_end"
     },
     {
       "addr": 47863,
@@ -104034,9 +104034,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbb07",
+      "operand": "restore_check_end",
       "target": 47879,
-      "target_label": "cbb07"
+      "target_label": "restore_check_end"
     },
     {
       "addr": 47867,
@@ -104058,9 +104058,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbb07",
+      "operand": "restore_check_end",
       "target": 47879,
-      "target_label": "cbb07"
+      "target_label": "restore_check_end"
     },
     {
       "addr": 47871,
@@ -104097,9 +104097,9 @@
       "comment_inline": "set the pointer to the line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe55",
+      "operand": "fwb_scale_clc",
       "target": 48725,
-      "target_label": "sub_cbe55"
+      "target_label": "fwb_scale_clc"
     },
     {
       "addr": 47879,
@@ -104109,7 +104109,7 @@
         152
       ],
       "labels": [
-        "cbb07"
+        "restore_check_end"
       ],
       "comment_inline": "Check the statement ends",
       "xref_summaries": [
@@ -104200,7 +104200,7 @@
         138
       ],
       "labels": [
-        "cbb15"
+        "restore_skip_spaces"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -104286,9 +104286,9 @@
       "comment_inline": "end of statement: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbb15",
+      "operand": "restore_skip_spaces",
       "target": 47893,
-      "target_label": "cbb15"
+      "target_label": "restore_skip_spaces"
     },
     {
       "addr": 47908,
@@ -104299,9 +104299,9 @@
       "comment_inline": "string variable?",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbb32",
+      "operand": "read_string",
       "target": 47922,
-      "target_label": "cbb32"
+      "target_label": "read_string"
     },
     {
       "addr": 47910,
@@ -104355,9 +104355,9 @@
       "comment_inline": "update the DATA pointer",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbb40",
+      "operand": "read_advance",
       "target": 47936,
-      "target_label": "cbb40"
+      "target_label": "read_advance"
     },
     {
       "addr": 47922,
@@ -104367,7 +104367,7 @@
         187
       ],
       "labels": [
-        "cbb32"
+        "read_string"
       ],
       "comment_inline": "String: find the next DATA item",
       "xref_summaries": [
@@ -104443,7 +104443,7 @@
         24
       ],
       "labels": [
-        "cbb40"
+        "read_advance"
       ],
       "comment_inline": "Advance the DATA pointer past the item",
       "xref_summaries": [
@@ -104541,9 +104541,9 @@
       "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbb15",
+      "operand": "restore_skip_spaces",
       "target": 47893,
-      "target_label": "cbb15"
+      "target_label": "restore_skip_spaces"
     },
     {
       "addr": 47952,
@@ -104739,9 +104739,9 @@
       "comment_inline": "yes: find the next DATA line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbb7a",
+      "operand": "ndi_line_marker",
       "target": 47994,
-      "target_label": "cbb7a"
+      "target_label": "ndi_line_marker"
     },
     {
       "addr": 47983,
@@ -104751,7 +104751,7 @@
         138
       ],
       "labels": [
-        "loop_cbb6f"
+        "ndi_scan_loop"
       ],
       "comment_inline": "Scan to the item end: next character",
       "xref_summaries": [
@@ -104810,9 +104810,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbb6f",
+      "operand": "ndi_scan_loop",
       "target": 47983,
-      "target_label": "loop_cbb6f"
+      "target_label": "ndi_scan_loop"
     },
     {
       "addr": 47994,
@@ -104821,7 +104821,7 @@
         27
       ],
       "labels": [
-        "cbb7a"
+        "ndi_line_marker"
       ],
       "comment_inline": "Line marker",
       "xref_summaries": [
@@ -104860,9 +104860,9 @@
       "comment_inline": "end of program: Out of DATA",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cbb9c",
+      "operand": "out_of_data",
       "target": 48028,
-      "target_label": "cbb9c"
+      "target_label": "out_of_data"
     },
     {
       "addr": 48000,
@@ -104910,7 +104910,7 @@
         200
       ],
       "labels": [
-        "loop_cbb85"
+        "ndi_scan_loop2"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -104955,9 +104955,9 @@
       "comment_inline": "skip leading spaces",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cbb85",
+      "operand": "ndi_scan_loop2",
       "target": 48005,
-      "target_label": "loop_cbb85"
+      "target_label": "ndi_scan_loop2"
     },
     {
       "addr": 48012,
@@ -104979,9 +104979,9 @@
       "comment_inline": "yes: use this line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbbad",
+      "operand": "ndi_skip_token",
       "target": 48045,
-      "target_label": "cbbad"
+      "target_label": "ndi_skip_token"
     },
     {
       "addr": 48016,
@@ -105036,9 +105036,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbb7a",
+      "operand": "ndi_line_marker",
       "target": 47994,
-      "target_label": "cbb7a"
+      "target_label": "ndi_line_marker"
     },
     {
       "addr": 48024,
@@ -105062,9 +105062,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbb7a",
+      "operand": "ndi_line_marker",
       "target": 47994,
-      "target_label": "cbb7a"
+      "target_label": "ndi_line_marker"
     },
     {
       "addr": 48028,
@@ -105072,7 +105072,7 @@
         0
       ],
       "labels": [
-        "cbb9c"
+        "out_of_data"
       ],
       "comment_inline": "Out of DATA error",
       "xref_summaries": [
@@ -105156,7 +105156,7 @@
         200
       ],
       "labels": [
-        "cbbad"
+        "ndi_skip_token"
       ],
       "comment_inline": "Step past the DATA token",
       "xref_summaries": [
@@ -105333,9 +105333,9 @@
       "comment_inline": "Condition false: loop back to the REPEAT",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbbcd",
+      "operand": "until_reload",
       "target": 48077,
-      "target_label": "cbbcd"
+      "target_label": "until_reload"
     },
     {
       "addr": 48072,
@@ -105372,7 +105372,7 @@
         5
       ],
       "labels": [
-        "cbbcd"
+        "until_reload"
       ],
       "comment_inline": "Reload the saved loop-start position",
       "xref_summaries": [
@@ -105606,7 +105606,7 @@
         0
       ],
       "labels": [
-        "sub_cbbfc"
+        "point_string_buffer"
       ],
       "comment_inline": "Point at the string buffer (&0600): low",
       "xref_summaries": [
@@ -105639,9 +105639,9 @@
       "comment_inline": "set it (shared tail)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbc09",
+      "operand": "ril_set_addr",
       "target": 48137,
-      "target_label": "cbc09"
+      "target_label": "ril_set_addr"
     },
     {
       "addr": 48130,
@@ -105696,7 +105696,7 @@
         55
       ],
       "labels": [
-        "cbc09"
+        "ril_set_addr"
       ],
       "comment_inline": "address low = &00",
       "xref_summaries": [
@@ -105848,9 +105848,9 @@
       "comment_inline": "ok: reset the column",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbc28",
+      "operand": "reset_print_column",
       "target": 48168,
-      "target_label": "cbc28"
+      "target_label": "reset_print_column"
     },
     {
       "addr": 48162,
@@ -105874,7 +105874,7 @@
         255
       ],
       "labels": [
-        "sub_cbc25"
+        "emit_newline"
       ],
       "comment_inline": "Print a newline",
       "xref_summaries": [
@@ -105904,7 +105904,7 @@
         0
       ],
       "labels": [
-        "cbc28"
+        "reset_print_column"
       ],
       "comment_inline": "Reset the column to 0",
       "xref_summaries": [
@@ -106173,9 +106173,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbc53",
+      "operand": "del_copy_start",
       "target": 48211,
-      "target_label": "cbc53"
+      "target_label": "del_copy_start"
     },
     {
       "addr": 48209,
@@ -106197,7 +106197,7 @@
         0
       ],
       "labels": [
-        "cbc53"
+        "del_copy_start"
       ],
       "comment_inline": "From offset 0",
       "xref_summaries": [
@@ -106217,7 +106217,7 @@
         55
       ],
       "labels": [
-        "cbc55"
+        "del_copy_loop"
       ],
       "comment_inline": "Copy a byte down",
       "xref_summaries": [
@@ -106266,9 +106266,9 @@
       "comment_inline": "yes: handle the line boundary",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbc66",
+      "operand": "del_skip_cr",
       "target": 48230,
-      "target_label": "cbc66"
+      "target_label": "del_skip_cr"
     },
     {
       "addr": 48221,
@@ -106276,7 +106276,7 @@
         200
       ],
       "labels": [
-        "cbc5d"
+        "del_copy_next"
       ],
       "comment_inline": "next byte",
       "xref_summaries": [
@@ -106297,9 +106297,9 @@
       "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbc55",
+      "operand": "del_copy_loop",
       "target": 48213,
-      "target_label": "cbc55"
+      "target_label": "del_copy_loop"
     },
     {
       "addr": 48224,
@@ -106336,9 +106336,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbc55",
+      "operand": "del_copy_loop",
       "target": 48213,
-      "target_label": "cbc55"
+      "target_label": "del_copy_loop"
     },
     {
       "addr": 48230,
@@ -106346,7 +106346,7 @@
         200
       ],
       "labels": [
-        "cbc66"
+        "del_skip_cr"
       ],
       "comment_inline": "Step past the CR",
       "xref_summaries": [
@@ -106367,9 +106367,9 @@
       "comment_inline": "no page wrap,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbc6d",
+      "operand": "del_next_marker",
       "target": 48237,
-      "target_label": "cbc6d"
+      "target_label": "del_next_marker"
     },
     {
       "addr": 48233,
@@ -106404,7 +106404,7 @@
         55
       ],
       "labels": [
-        "cbc6d"
+        "del_next_marker"
       ],
       "comment_inline": "Next line marker",
       "xref_summaries": [
@@ -106441,9 +106441,9 @@
       "comment_inline": "end of program?",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cbc7c",
+      "operand": "del_set_top",
       "target": 48252,
-      "target_label": "cbc7c"
+      "target_label": "del_set_top"
     },
     {
       "addr": 48243,
@@ -106455,9 +106455,9 @@
       "comment_inline": "no: copy the line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc81",
+      "operand": "copy_byte",
       "target": 48257,
-      "target_label": "sub_cbc81"
+      "target_label": "copy_byte"
     },
     {
       "addr": 48246,
@@ -106469,9 +106469,9 @@
       "comment_inline": "...and the length byte",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc81",
+      "operand": "copy_byte",
       "target": 48257,
-      "target_label": "sub_cbc81"
+      "target_label": "copy_byte"
     },
     {
       "addr": 48249,
@@ -106483,9 +106483,9 @@
       "comment_inline": "continue with the line body",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbc5d",
+      "operand": "del_copy_next",
       "target": 48221,
-      "target_label": "cbc5d"
+      "target_label": "del_copy_next"
     },
     {
       "addr": 48252,
@@ -106495,7 +106495,7 @@
         190
       ],
       "labels": [
-        "cbc7c"
+        "del_set_top"
       ],
       "comment_inline": "Set the new top of program",
       "xref_summaries": [
@@ -106506,9 +106506,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe92",
+      "operand": "add_y_to_top",
       "target": 48786,
-      "target_label": "sub_cbe92"
+      "target_label": "add_y_to_top"
     },
     {
       "addr": 48255,
@@ -106543,7 +106543,7 @@
         200
       ],
       "labels": [
-        "sub_cbc81"
+        "copy_byte"
       ],
       "comment_inline": "Copy one byte (source -> destination)",
       "xref_summaries": [
@@ -106565,9 +106565,9 @@
       "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbc88",
+      "operand": "copy_byte_read",
       "target": 48264,
-      "target_label": "cbc88"
+      "target_label": "copy_byte_read"
     },
     {
       "addr": 48260,
@@ -106602,7 +106602,7 @@
         55
       ],
       "labels": [
-        "cbc88"
+        "copy_byte_read"
       ],
       "comment_inline": "read the byte,",
       "xref_summaries": [
@@ -106646,7 +106646,7 @@
         59
       ],
       "labels": [
-        "sub_cbc8d"
+        "insert_line"
       ],
       "comment_inline": "Save the line-buffer pointer",
       "xref_summaries": [
@@ -106754,7 +106754,7 @@
         200
       ],
       "labels": [
-        "loop_cbc9e"
+        "insline_scan"
       ],
       "comment_inline": "Scan to the CR",
       "xref_summaries": [
@@ -106788,9 +106788,9 @@
       "comment_inline": "keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbc9e",
+      "operand": "insline_scan",
       "target": 48286,
-      "target_label": "loop_cbc9e"
+      "target_label": "insline_scan"
     },
     {
       "addr": 48291,
@@ -106907,9 +106907,9 @@
       "comment_inline": "New top = old top + line length",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe92",
+      "operand": "add_y_to_top",
       "target": 48786,
-      "target_label": "sub_cbe92"
+      "target_label": "add_y_to_top"
     },
     {
       "addr": 48309,
@@ -107020,9 +107020,9 @@
       "comment_inline": "fits: shift the program up",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbcd6",
+      "operand": "insline_shift",
       "target": 48342,
-      "target_label": "cbcd6"
+      "target_label": "insline_shift"
     },
     {
       "addr": 48326,
@@ -107103,7 +107103,7 @@
         57
       ],
       "labels": [
-        "cbcd6"
+        "insline_shift"
       ],
       "comment_inline": "Shift a byte up",
       "xref_summaries": [
@@ -107150,9 +107150,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbce1",
+      "operand": "insline_shift_next",
       "target": 48353,
-      "target_label": "cbce1"
+      "target_label": "insline_shift_next"
     },
     {
       "addr": 48349,
@@ -107186,7 +107186,7 @@
         136
       ],
       "labels": [
-        "cbce1"
+        "insline_shift_next"
       ],
       "comment_inline": "Next byte down",
       "xref_summaries": [
@@ -107242,9 +107242,9 @@
       "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbcea",
+      "operand": "insline_check",
       "target": 48362,
-      "target_label": "cbcea"
+      "target_label": "insline_check"
     },
     {
       "addr": 48361,
@@ -107262,7 +107262,7 @@
         61
       ],
       "labels": [
-        "cbcea"
+        "insline_check"
       ],
       "comment_inline": "reached the insertion point?",
       "xref_summaries": [
@@ -107308,9 +107308,9 @@
       "comment_inline": "no: keep shifting",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbcd6",
+      "operand": "insline_shift",
       "target": 48342,
-      "target_label": "cbcd6"
+      "target_label": "insline_shift"
     },
     {
       "addr": 48369,
@@ -107438,9 +107438,9 @@
       "comment_inline": "Set the new top of program",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe56",
+      "operand": "fwb_scale",
       "target": 48726,
-      "target_label": "sub_cbe56"
+      "target_label": "fwb_scale"
     },
     {
       "addr": 48389,
@@ -107459,7 +107459,7 @@
         200
       ],
       "labels": [
-        "loop_cbd07"
+        "insline_advance"
       ],
       "comment_inline": "advance the index",
       "xref_summaries": [
@@ -107517,9 +107517,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbd07",
+      "operand": "insline_advance",
       "target": 48391,
-      "target_label": "loop_cbd07"
+      "target_label": "insline_advance"
     },
     {
       "addr": 48400,
@@ -107564,7 +107564,7 @@
         189
       ],
       "labels": [
-        "cbd14"
+        "run_clear"
       ],
       "comment_inline": "Clear variables, heap and stack",
       "xref_summaries": [
@@ -107733,9 +107733,9 @@
       "comment_inline": "Clear the DATA pointer and the stacks",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbd3a",
+      "operand": "reset_data_and_stacks",
       "target": 48442,
-      "target_label": "sub_cbd3a"
+      "target_label": "reset_data_and_stacks"
     },
     {
       "addr": 48431,
@@ -107744,7 +107744,7 @@
         128
       ],
       "labels": [
-        "sub_cbd2f"
+        "clear_var_table"
       ],
       "comment_inline": "Clear the variable table (&0480-&04FF):",
       "xref_summaries": [
@@ -107776,7 +107776,7 @@
         4
       ],
       "labels": [
-        "loop_cbd33"
+        "clear_var_table_loop"
       ],
       "comment_inline": "clear a byte",
       "xref_summaries": [
@@ -107809,9 +107809,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbd33",
+      "operand": "clear_var_table_loop",
       "target": 48435,
-      "target_label": "loop_cbd33"
+      "target_label": "clear_var_table_loop"
     },
     {
       "addr": 48441,
@@ -107829,7 +107829,7 @@
         24
       ],
       "labels": [
-        "sub_cbd3a"
+        "reset_data_and_stacks"
       ],
       "comment_inline": "DATA pointer = PAGE: high",
       "xref_summaries": [
@@ -108793,9 +108793,9 @@
       "comment_inline": "zero length: just push the length",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbdc6",
+      "operand": "ss_push_length",
       "target": 48582,
-      "target_label": "cbdc6"
+      "target_label": "ss_push_length"
     },
     {
       "addr": 48574,
@@ -108805,7 +108805,7 @@
         5
       ],
       "labels": [
-        "loop_cbdbe"
+        "ss_copy_loop"
       ],
       "comment_inline": "Copy the string from the buffer (&0600): char Y",
       "xref_summaries": [
@@ -108851,9 +108851,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbdbe",
+      "operand": "ss_copy_loop",
       "target": 48574,
-      "target_label": "loop_cbdbe"
+      "target_label": "ss_copy_loop"
     },
     {
       "addr": 48582,
@@ -108862,7 +108862,7 @@
         54
       ],
       "labels": [
-        "cbdc6"
+        "ss_push_length"
       ],
       "comment_inline": "Push the length last",
       "xref_summaries": [
@@ -108959,9 +108959,9 @@
       "comment_inline": "zero length: just drop the length",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbddc",
+      "operand": "drop_stacked_string",
       "target": 48604,
-      "target_label": "cbddc"
+      "target_label": "drop_stacked_string"
     },
     {
       "addr": 48595,
@@ -108979,7 +108979,7 @@
         4
       ],
       "labels": [
-        "loop_cbdd4"
+        "us_copy_loop"
       ],
       "comment_inline": "Copy the string to the buffer: char Y",
       "xref_summaries": [
@@ -109026,9 +109026,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbdd4",
+      "operand": "us_copy_loop",
       "target": 48596,
-      "target_label": "loop_cbdd4"
+      "target_label": "us_copy_loop"
     },
     {
       "addr": 48604,
@@ -109037,7 +109037,7 @@
         0
       ],
       "labels": [
-        "cbddc"
+        "drop_stacked_string"
       ],
       "comment_inline": "Drop the string: get its length",
       "xref_summaries": [
@@ -109084,7 +109084,7 @@
         4
       ],
       "labels": [
-        "cbde1"
+        "drop_string_adv"
       ],
       "comment_inline": "advance the stack pointer past it: low",
       "xref_summaries": [
@@ -109707,9 +109707,9 @@
       "comment_inline": "No borrow: high byte unchanged",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cbe34",
+      "operand": "rs_set_high",
       "target": 48692,
-      "target_label": "cbe34"
+      "target_label": "rs_set_high"
     },
     {
       "addr": 48690,
@@ -109731,7 +109731,7 @@
         5
       ],
       "labels": [
-        "cbe34"
+        "rs_set_high"
       ],
       "comment_inline": "New stack-pointer high byte",
       "xref_summaries": [
@@ -109768,9 +109768,9 @@
       "comment_inline": "New top below the heap page: No room",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbe41",
+      "operand": "stack_no_room",
       "target": 48705,
-      "target_label": "cbe41"
+      "target_label": "stack_no_room"
     },
     {
       "addr": 48698,
@@ -109807,9 +109807,9 @@
       "comment_inline": "Below the heap top: No room",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbe41",
+      "operand": "stack_no_room",
       "target": 48705,
-      "target_label": "cbe41"
+      "target_label": "stack_no_room"
     },
     {
       "addr": 48704,
@@ -109837,7 +109837,7 @@
         140
       ],
       "labels": [
-        "cbe41"
+        "stack_no_room"
       ],
       "comment_inline": "Stack meets heap: No room",
       "xref_summaries": [
@@ -109985,7 +109985,7 @@
         24
       ],
       "labels": [
-        "sub_cbe55"
+        "fwb_scale_clc"
       ],
       "comment_inline": "Add without carry",
       "xref_summaries": [
@@ -110003,7 +110003,7 @@
         152
       ],
       "labels": [
-        "sub_cbe56"
+        "fwb_scale"
       ],
       "comment_inline": "A = the amount (Y)",
       "xref_summaries": [
@@ -110050,9 +110050,9 @@
       "comment_inline": "no carry: done",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbe5f",
+      "operand": "fwb_scale_done",
       "target": 48735,
-      "target_label": "cbe5f"
+      "target_label": "fwb_scale_done"
     },
     {
       "addr": 48733,
@@ -110074,7 +110074,7 @@
         1
       ],
       "labels": [
-        "cbe5f"
+        "fwb_scale_done"
       ],
       "comment_inline": "Y = 1",
       "xref_summaries": [
@@ -110116,9 +110116,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbedd",
+      "operand": "eval_filename",
       "target": 48861,
-      "target_label": "sub_cbedd"
+      "target_label": "eval_filename"
     },
     {
       "addr": 48741,
@@ -110257,7 +110257,7 @@
         136
       ],
       "labels": [
-        "loop_cbe78"
+        "chkprog_loop"
       ],
       "comment_inline": "step back to the byte before the line",
       "xref_summaries": [
@@ -110302,9 +110302,9 @@
       "comment_inline": "not a CR: Bad program",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbe9e",
+      "operand": "bad_program",
       "target": 48798,
-      "target_label": "cbe9e"
+      "target_label": "bad_program"
     },
     {
       "addr": 48767,
@@ -110337,9 +110337,9 @@
       "comment_inline": "high bit set: end of program",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cbe90",
+      "operand": "chkprog_end",
       "target": 48784,
-      "target_label": "cbe90"
+      "target_label": "chkprog_end"
     },
     {
       "addr": 48772,
@@ -110374,9 +110374,9 @@
       "comment_inline": "zero length: Bad program",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbe9e",
+      "operand": "bad_program",
       "target": 48798,
-      "target_label": "cbe9e"
+      "target_label": "bad_program"
     },
     {
       "addr": 48778,
@@ -110397,9 +110397,9 @@
       "comment_inline": "TOP += line length",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbe93",
+      "operand": "add_y_to_top_lo",
       "target": 48787,
-      "target_label": "sub_cbe93"
+      "target_label": "add_y_to_top_lo"
     },
     {
       "addr": 48782,
@@ -110410,9 +110410,9 @@
       "comment_inline": "loop over all lines",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbe78",
+      "operand": "chkprog_loop",
       "target": 48760,
-      "target_label": "loop_cbe78"
+      "target_label": "chkprog_loop"
     },
     {
       "addr": 48784,
@@ -110420,7 +110420,7 @@
         200
       ],
       "labels": [
-        "cbe90"
+        "chkprog_end"
       ],
       "comment_inline": "End of program: skip the &FF marker",
       "xref_summaries": [
@@ -110447,7 +110447,7 @@
         152
       ],
       "labels": [
-        "sub_cbe92"
+        "add_y_to_top"
       ],
       "comment_inline": "TOP += Y",
       "xref_summaries": [
@@ -110467,7 +110467,7 @@
         18
       ],
       "labels": [
-        "sub_cbe93"
+        "add_y_to_top_lo"
       ],
       "comment_inline": "add: low",
       "xref_summaries": [
@@ -110504,9 +110504,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cbe9b",
+      "operand": "chkprog_ok",
       "target": 48795,
-      "target_label": "cbe9b"
+      "target_label": "chkprog_ok"
     },
     {
       "addr": 48793,
@@ -110528,7 +110528,7 @@
         1
       ],
       "labels": [
-        "cbe9b"
+        "chkprog_ok"
       ],
       "comment_inline": "return Y=1 (NE)",
       "xref_summaries": [
@@ -110558,7 +110558,7 @@
         191
       ],
       "labels": [
-        "cbe9e"
+        "bad_program"
       ],
       "comment_inline": "Bad program: print the message",
       "xref_summaries": [
@@ -110624,7 +110624,7 @@
         0
       ],
       "labels": [
-        "sub_cbeb2"
+        "point_strbuf_lo"
       ],
       "comment_inline": "Point the general pointer at the string buffer: low",
       "xref_summaries": [
@@ -110681,7 +110681,7 @@
         54
       ],
       "labels": [
-        "sub_cbeba"
+        "terminate_strbuf"
       ],
       "comment_inline": "Terminate the string buffer with a CR:",
       "xref_summaries": [
@@ -110744,9 +110744,9 @@
       "comment_inline": "Evaluate the command string, CR-terminate it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbed2",
+      "operand": "eval_string_arg",
       "target": 48850,
-      "target_label": "sub_cbed2"
+      "target_label": "eval_string_arg"
     },
     {
       "addr": 48837,
@@ -110806,7 +110806,7 @@
         140
       ],
       "labels": [
-        "loop_cbecf"
+        "oscli_type_error"
       ],
       "comment_inline": "not a string: Type mismatch",
       "xref_summaries": [
@@ -110829,7 +110829,7 @@
         155
       ],
       "labels": [
-        "sub_cbed2"
+        "eval_string_arg"
       ],
       "comment_inline": "Evaluate the expression",
       "xref_summaries": [
@@ -110854,9 +110854,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbecf",
+      "operand": "oscli_type_error",
       "target": 48847,
-      "target_label": "loop_cbecf"
+      "target_label": "oscli_type_error"
     },
     {
       "addr": 48855,
@@ -110868,9 +110868,9 @@
       "comment_inline": "CR-terminate the string buffer",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbeb2",
+      "operand": "point_strbuf_lo",
       "target": 48818,
-      "target_label": "sub_cbeb2"
+      "target_label": "point_strbuf_lo"
     },
     {
       "addr": 48858,
@@ -110894,7 +110894,7 @@
         190
       ],
       "labels": [
-        "sub_cbedd"
+        "eval_filename"
       ],
       "comment_inline": "Evaluate the filename, CR-terminate",
       "xref_summaries": [
@@ -110906,9 +110906,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbed2",
+      "operand": "eval_string_arg",
       "target": 48850,
-      "target_label": "sub_cbed2"
+      "target_label": "eval_string_arg"
     },
     {
       "addr": 48864,
@@ -110965,7 +110965,7 @@
         130
       ],
       "labels": [
-        "sub_cbee7"
+        "read_himem_byte"
       ],
       "comment_inline": "OSBYTE &82: read the high-order address",
       "xref_summaries": [
@@ -111191,9 +111191,9 @@
       "comment_inline": "Read the machine high address words",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbedd",
+      "operand": "eval_filename",
       "target": 48861,
-      "target_label": "sub_cbedd"
+      "target_label": "eval_filename"
     },
     {
       "addr": 48909,
@@ -111392,9 +111392,9 @@
       "comment_inline": "then RUN it",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cbd14",
+      "operand": "run_clear",
       "target": 48404,
-      "target_label": "cbd14"
+      "target_label": "run_clear"
     },
     {
       "addr": 48944,
@@ -111409,9 +111409,9 @@
       "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfa9",
+      "operand": "sync_ptrb_from_ptra",
       "target": 49065,
-      "target_label": "sub_cbfa9"
+      "target_label": "sync_ptrb_from_ptra"
     },
     {
       "addr": 48947,
@@ -111652,9 +111652,9 @@
       "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfa9",
+      "operand": "sync_ptrb_from_ptra",
       "target": 49065,
-      "target_label": "sub_cbfa9"
+      "target_label": "sync_ptrb_from_ptra"
     },
     {
       "addr": 48987,
@@ -111834,9 +111834,9 @@
       "comment_inline": "do the open",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbf82",
+      "operand": "openup_action",
       "target": 49026,
-      "target_label": "cbf82"
+      "target_label": "openup_action"
     },
     {
       "addr": 49020,
@@ -111861,9 +111861,9 @@
       "comment_inline": "do the open",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbf82",
+      "operand": "openup_action",
       "target": 49026,
-      "target_label": "cbf82"
+      "target_label": "openup_action"
     },
     {
       "addr": 49024,
@@ -111885,7 +111885,7 @@
         72
       ],
       "labels": [
-        "cbf82"
+        "openup_action"
       ],
       "comment_inline": "Save the action",
       "xref_summaries": [
@@ -111921,9 +111921,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbf96",
+      "operand": "openup_type_error",
       "target": 49046,
-      "target_label": "cbf96"
+      "target_label": "openup_type_error"
     },
     {
       "addr": 49032,
@@ -111935,9 +111935,9 @@
       "comment_inline": "CR-terminate it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbeba",
+      "operand": "terminate_strbuf",
       "target": 48826,
-      "target_label": "sub_cbeba"
+      "target_label": "terminate_strbuf"
     },
     {
       "addr": 49035,
@@ -112006,7 +112006,7 @@
         140
       ],
       "labels": [
-        "cbf96"
+        "openup_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -112034,9 +112034,9 @@
       "comment_inline": "Evaluate the #handle",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbfa9",
+      "operand": "sync_ptrb_from_ptra",
       "target": 49065,
-      "target_label": "sub_cbfa9"
+      "target_label": "sync_ptrb_from_ptra"
     },
     {
       "addr": 49052,
@@ -112111,7 +112111,7 @@
         10
       ],
       "labels": [
-        "sub_cbfa9"
+        "sync_ptrb_from_ptra"
       ],
       "comment_inline": "Set PtrB = PtrA: offset",
       "xref_summaries": [
@@ -112240,9 +112240,9 @@
       "comment_inline": "missing: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cbfc3",
+      "operand": "missing_hash",
       "target": 49091,
-      "target_label": "cbfc3"
+      "target_label": "missing_hash"
     },
     {
       "addr": 49084,
@@ -112295,7 +112295,7 @@
         0
       ],
       "labels": [
-        "cbfc3"
+        "missing_hash"
       ],
       "comment_inline": "BRK error block (\"Missing #\")",
       "xref_summaries": [
@@ -112408,9 +112408,9 @@
       "comment_inline": "jump in to fetch it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbfdc",
+      "operand": "print_msg_next",
       "target": 49116,
-      "target_label": "cbfdc"
+      "target_label": "print_msg_next"
     },
     {
       "addr": 49113,
@@ -112420,7 +112420,7 @@
         255
       ],
       "labels": [
-        "loop_cbfd9"
+        "print_msg_loop"
       ],
       "comment_inline": "Print the character",
       "xref_summaries": [
@@ -112443,7 +112443,7 @@
         137
       ],
       "labels": [
-        "cbfdc"
+        "print_msg_next"
       ],
       "comment_inline": "Advance and fetch the next character",
       "xref_summaries": [
@@ -112467,9 +112467,9 @@
       "comment_inline": "Loop while bit 7 is clear",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cbfd9",
+      "operand": "print_msg_loop",
       "target": 49113,
-      "target_label": "loop_cbfd9"
+      "target_label": "print_msg_loop"
     },
     {
       "addr": 49121,
@@ -112512,9 +112512,9 @@
       "comment_inline": "Newline",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cbc25",
+      "operand": "emit_newline",
       "target": 48165,
-      "target_label": "sub_cbc25"
+      "target_label": "emit_newline"
     },
     {
       "addr": 49130,
@@ -112534,7 +112534,7 @@
         253
       ],
       "labels": [
-        "loop_cbfec"
+        "report_loop"
       ],
       "comment_inline": "Error message byte",
       "xref_summaries": [
@@ -112558,9 +112558,9 @@
       "comment_inline": "terminator: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cbff6",
+      "operand": "report_done",
       "target": 49142,
-      "target_label": "cbff6"
+      "target_label": "report_done"
     },
     {
       "addr": 49136,
@@ -112594,9 +112594,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cbfec",
+      "operand": "report_loop",
       "target": 49132,
-      "target_label": "loop_cbfec"
+      "target_label": "report_loop"
     },
     {
       "addr": 49142,
@@ -112606,7 +112606,7 @@
         139
       ],
       "labels": [
-        "cbff6"
+        "report_done"
       ],
       "comment_inline": "next statement",
       "xref_summaries": [
