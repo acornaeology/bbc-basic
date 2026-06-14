@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 131 fully documented
-(desc + calling contract), 154 remaining (45 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 163 fully documented
+(desc + calling contract), 122 remaining (57 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
 
 Driver sorted into address order; shared stmt_*/fn_* contracts established
@@ -270,6 +270,7 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | driver sort | (whole driver) address-ordered | — | 265 | b8a29c5 |
 | 2026-06-14 | shared contracts | ~112 table-generated stmt_*/fn_* handlers | 111 | 154 | 8ed2ace |
 | 2026-06-14 | FP primitives | 17 FWA/FWB pack/unpack/move/mantissa routines | 17 | 137 | ad91f78 |
+| 2026-06-14 | FP ptrs + helpers | 7 point_* setters, byte/print/int-result helpers; fixed iwa_from_ya + fn_to | 15 | 122 | eccee24 |
 
 ## Resume here
 

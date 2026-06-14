@@ -7847,7 +7847,15 @@ d.comment(0xb34e, 'Return the integer', align=Align.INLINE)
 d.subroutine(0xb34f, 'load_byte_var', title='Load a byte variable into IWA')
 d.comment(0xb34f, 'Read the byte', align=Align.INLINE)
 d.comment(0xb351, 'return as an integer', align=Align.INLINE)
-d.subroutine(0xb354, 'load_real_var', title='Load a real variable into FWA')
+d.subroutine(0xb354, 'load_real_var', title='Load a real variable into FWA',
+             description='Unpack the 5-byte packed real addressed by zp_iwa '
+                         '(used here as a pointer to the variable) into FWA, '
+                         'restoring the implied leading 1 unless the value is '
+                         'zero. Part of the typed variable loader.',
+             on_entry={'(zp_iwa) (&2A/&2B)': 'a pointer to the 5-byte real',
+                       'Y': '5 (the byte count to copy back)'},
+             on_exit={'zp_fwa (&2E-&35)': 'the unpacked real',
+                      'X': 'preserved'})
 d.comment(0xb354, 'Unpack a 5-byte real into FWA: byte 4...', align=Align.INLINE)
 d.comment(0xb355, 'read it', align=Align.INLINE)
 d.comment(0xb357, '-> m4', align=Align.INLINE)
@@ -7875,7 +7883,17 @@ d.comment(0xb37d, 'set the top bit', align=Align.INLINE)
 d.comment(0xb37f, 'store the mantissa MSB', align=Align.INLINE)
 d.comment(0xb381, 'real type', align=Align.INLINE)
 d.comment(0xb383, 'Return the real', align=Align.INLINE)
-d.subroutine(0xb384, 'load_string_var', title='Load a string variable into the buffer')
+d.subroutine(0xb384, 'load_string_var', title='Load a string variable into the buffer',
+             description='Copy a string variable into the string buffer. A '
+                         'normal string variable carries its pointer and length '
+                         'in the descriptor at (zp_iwa); a $-string (Y = &80) '
+                         'is read from (zp_iwa) up to the terminating CR. Part '
+                         'of the typed variable loader.',
+             on_entry={'(zp_iwa) (&2A/&2B)': 'a pointer to the string variable',
+                       'Y': 'the string type byte (&80 = $-string)'},
+             on_exit={'string_work (&0600)': 'the loaded string characters',
+                      'zp_strbuf_len (&36)': 'the string length',
+                      'zp_general (&37/&38)': 'corrupted (used as the source ptr)'})
 d.comment(0xb384, '$-string (absolute address)?', align=Align.INLINE)
 d.comment(0xb386, 'yes', align=Align.INLINE)
 d.comment(0xb388, 'normal string: length at offset 3', align=Align.INLINE)
@@ -9303,6 +9321,10 @@ d.subroutine(
 and drop it (advance the stack pointer by 5), so an FP routine can
 use the popped value as its (zp_fp_ptr) operand.
 """,
+    on_entry={'(zp_stack_ptr) (&04/&05)': 'a packed 5-byte real on top of stack'},
+    on_exit={'zp_fp_ptr (&4B/&4C)': 'addresses the popped real',
+             'zp_stack_ptr': 'advanced by 5 (real dropped)',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 # unstack_real (&BD7E): pop a 5-byte real, leaving zp_fp_ptr at it
 d.comment(0xbd7e, 'Stack top is where the real sits...', align=Align.INLINE)
@@ -9320,7 +9342,11 @@ d.comment(0xbd8f, 'zp_fp_ptr now addresses the popped real', align=Align.INLINE)
 d.subroutine(0xbd90, 'stack_value', title='Push the current value by type',
              description="""Push the current value onto the BASIC stack in the form
 matching its type: a string (stack_string), a real (stack_real) or,
-falling through, an integer (stack_integer).""")
+falling through, an integer (stack_integer).""",
+             on_entry={'A': 'value type: 0 string, negative real, else integer',
+                       'zp_iwa / zp_fwa / string_work (&0600)':
+                           'the value, selected by the type in A'},
+             on_exit={'zp_stack_ptr (&04/&05)': 'lowered past the pushed value'})
 d.comment(0xbd90, 'Type 0 (string): stack as a string', align=Align.INLINE)
 d.comment(0xbd92, 'Negative (real): stack 5 bytes; else integer below',
           align=Align.INLINE)
@@ -9332,6 +9358,8 @@ d.subroutine(
 copy the integer accumulator (zp_iwa) onto it. Errors if the stack
 would collide with the heap.
 """,
+    on_entry={'zp_iwa (&2A-&2D)': 'the integer to push'},
+    on_exit={'zp_stack_ptr (&04/&05)': 'lowered by 4 (integer pushed)'},
 )
 # stack_integer (&BD94): push the 4-byte IWA, MSB first
 d.comment(0xbd94, 'From the stack top...', align=Align.INLINE)
@@ -9381,7 +9409,15 @@ d.comment(0xbdca, 'String pushed', align=Align.INLINE)
 # ======================================================================
 
 d.subroutine(0xbdcb, 'unstack_string', title='Pop a string off the BASIC stack',
-             description='Copy the string on top of the stack into the string buffer and drop it.')
+             description='Copy the length-prefixed string on top of the stack '
+                         'into the string buffer and drop it (advance the stack '
+                         'pointer past the length byte and the characters).',
+             on_entry={'(zp_stack_ptr) (&04/&05)':
+                           'a length-prefixed string on top of stack'},
+             on_exit={'string_work (&0600)': 'the popped string characters',
+                      'zp_strbuf_len (&36)': 'the string length',
+                      'zp_stack_ptr': 'advanced past the string',
+                      'X': 'preserved'})
 d.comment(0xbdcb, 'Pop a string: read its length', align=Align.INLINE)
 d.comment(0xbdcd, 'read it', align=Align.INLINE)
 d.comment(0xbdcf, '(store)', align=Align.INLINE)
@@ -9404,11 +9440,17 @@ d.subroutine(
     0xbdea, 'unstack_integer',
     title='Pop an integer from the BASIC stack',
     description="""Copy the four-byte integer on top of the BASIC stack into the
-integer accumulator (zp_iwa) and drop it.
+integer accumulator (zp_iwa), then fall into drop_stack_integer to
+advance the stack pointer past it.
 """,
+    on_entry={'(zp_stack_ptr) (&04/&05)':
+                  'a 4-byte integer (MSB first) on top of stack'},
+    on_exit={'zp_iwa (&2A-&2D)': 'the popped integer',
+             'zp_stack_ptr': 'advanced by 4 (integer dropped)',
+             'X': 'preserved'},
 )
 
-# unstack_integer (&BDEA): pop a 4-byte integer into IWA (stack not dropped)
+# unstack_integer (&BDEA): pop a 4-byte integer into IWA, then drop it
 d.comment(0xbdea, 'Index the stacked integer (4 bytes, MSB first)',
           align=Align.INLINE)
 d.comment(0xbdec, 'Top byte (MSB)...', align=Align.INLINE)
@@ -9421,11 +9463,14 @@ d.comment(0xbdf6, 'byte 1...', align=Align.INLINE)
 d.comment(0xbdf8, '...into IWA', align=Align.INLINE)
 d.comment(0xbdfa, 'last byte', align=Align.INLINE)
 d.comment(0xbdfb, 'byte 0 (LSB)...', align=Align.INLINE)
-d.comment(0xbdfd, '...into IWA (the caller drops the stack)', align=Align.INLINE)
+d.comment(0xbdfd, '...into IWA, then fall into drop_stack_integer', align=Align.INLINE)
 
 # drop_stack_integer (&BDFF): advance the stack pointer past a 4-byte int
 d.subroutine(0xbdff, 'drop_stack_integer', title='Drop an integer off the stack',
-             description='Advance the BASIC stack pointer by four bytes.')
+             description='Advance the BASIC stack pointer by four bytes.',
+             on_entry={'zp_stack_ptr (&04/&05)': 'the BASIC stack pointer'},
+             on_exit={'zp_stack_ptr': 'advanced by 4',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0xbdff, 'Prepare to add', align=Align.INLINE)
 d.comment(0xbe00, 'Drop four bytes: stack pointer...', align=Align.INLINE)
 d.comment(0xbe02, '...+ 4', align=Align.INLINE)

@@ -10670,6 +10670,18 @@ l848a = sub_c847b+15
     jmp iwa_from_ya                                                   ; b351: 4c ea ae    L..      ; return as an integer
 ; ***************************************************************************************
 ; Load a real variable into FWA
+;
+; Unpack the 5-byte packed real addressed by zp_iwa (used here as a pointer to the
+; variable) into FWA, restoring the implied leading 1 unless the value is zero. Part of
+; the typed variable loader.
+;
+; On Entry:
+;     (ZP_IWA) (&2A/&2B): a pointer to the 5-byte real
+;     Y: 5 (the byte count to copy back)
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the unpacked real
+;     X: preserved
 ; &b354 referenced 2 times by &b334, &b766
 .load_real_var
     dey                                                               ; b354: 88          .        ; Unpack a 5-byte real into FWA: byte 4...
@@ -10703,6 +10715,19 @@ l848a = sub_c847b+15
     rts                                                               ; b383: 60          `        ; Return the real
 ; ***************************************************************************************
 ; Load a string variable into the buffer
+;
+; Copy a string variable into the string buffer. A normal string variable carries its
+; pointer and length in the descriptor at (zp_iwa); a $-string (Y = &80) is read from
+; (zp_iwa) up to the terminating CR. Part of the typed variable loader.
+;
+; On Entry:
+;     (ZP_IWA) (&2A/&2B): a pointer to the string variable
+;     Y: the string type byte (&80 = $-string)
+;
+; On Exit:
+;     STRING_WORK (&0600): the loaded string characters
+;     ZP_STRBUF_LEN (&36): the string length
+;     ZP_GENERAL (&37/&38): corrupted (used as the source ptr)
 ; &b384 referenced 1 time by &b32e
 .load_string_var
     cpy #&80                                                          ; b384: c0 80       ..       ; $-string (absolute address)?
@@ -12568,6 +12593,15 @@ l848a = sub_c847b+15
 ; Point zp_fp_ptr at the 5-byte real on top of the BASIC stack and drop it (advance the
 ; stack pointer by 5), so an FP routine can use the popped value as its (zp_fp_ptr)
 ; operand.
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): a packed 5-byte real on top of stack
+;
+; On Exit:
+;     ZP_FP_PTR (&4B/&4C): addresses the popped real
+;     ZP_STACK_PTR: advanced by 5 (real dropped)
+;     X: preserved
+;     Y: preserved
 ; &bd7e referenced 11 times by &9a47, &9a5c, &9c9b, &9cf1, &9d05, &9d2c, &9df5, &9e4a, &9e6f, &af2d, &b2e7
 .unstack_real
     lda zp_stack_ptr                                                  ; bd7e: a5 04       ..       ; Stack top is where the real sits...
@@ -12585,6 +12619,13 @@ l848a = sub_c847b+15
 ;
 ; Push the current value onto the BASIC stack in the form matching its type: a string
 ; (stack_string), a real (stack_real) or, falling through, an integer (stack_integer).
+;
+; On Entry:
+;     A: value type: 0 string, negative real, else integer
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;
+; On Exit:
+;     ZP_STACK_PTR (&04/&05): lowered past the pushed value
 ; &bd90 referenced 2 times by &b291, &b31c
 .stack_value
     beq stack_string                                                  ; bd90: f0 20       .        ; Type 0 (string): stack as a string
@@ -12594,6 +12635,12 @@ l848a = sub_c847b+15
 ;
 ; Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and copy the integer
 ; accumulator (zp_iwa) onto it. Errors if the stack would collide with the heap.
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the integer to push
+;
+; On Exit:
+;     ZP_STACK_PTR (&04/&05): lowered by 4 (integer pushed)
 ; &bd94 referenced 29 times by &85ac, &8beb, &8bfb, &8ed8, &8f36, &8f71, &90b5, &90e8, &9185, &9334, &9400, &96ff, &9744, &9aa2, &9b6f, &9b7e, &9dce, &9e1d, &ab44, &b0c5, &b298, &b329, &b5b0, &b5c8, &b7cb, &b9f1, &bad0, &bb29, &bb35
 .stack_integer
     lda zp_stack_ptr                                                  ; bd94: a5 04       ..       ; From the stack top...
@@ -12640,7 +12687,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Pop a string off the BASIC stack
 ;
-; Copy the string on top of the stack into the string buffer and drop it.
+; Copy the length-prefixed string on top of the stack into the string buffer and drop it
+; (advance the stack pointer past the length byte and the characters).
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): a length-prefixed string on top of stack
+;
+; On Exit:
+;     STRING_WORK (&0600): the popped string characters
+;     ZP_STRBUF_LEN (&36): the string length
+;     ZP_STACK_PTR: advanced past the string
+;     X: preserved
 ; &bdcb referenced 6 times by &9c37, &ad0f, &afe0, &b002, &b061, &b2fd
 .unstack_string
     ldy #0                                                            ; bdcb: a0 00       ..       ; Pop a string: read its length
@@ -12670,7 +12727,15 @@ l848a = sub_c847b+15
 ; Pop an integer from the BASIC stack
 ;
 ; Copy the four-byte integer on top of the BASIC stack into the integer accumulator
-; (zp_iwa) and drop it.
+; (zp_iwa), then fall into drop_stack_integer to advance the stack pointer past it.
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): a 4-byte integer (MSB first) on top of stack
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the popped integer
+;     ZP_STACK_PTR: advanced by 4 (integer dropped)
+;     X: preserved
 ; &bdea referenced 16 times by &8c1e, &8f11, &8f50, &90b2, &90c0, &9a3b, &9ca9, &9cfc, &9d11, &9d78, &ab56, &b0d0, &b2ca, &b2f0, &b5c5, &b5e9
 .unstack_integer
     ldy #3                                                            ; bdea: a0 03       ..       ; Index the stacked integer (4 bytes, MSB first)
@@ -12684,11 +12749,19 @@ l848a = sub_c847b+15
     sta zp_iwa_1                                                      ; bdf8: 85 2b       .+       ; ...into IWA
     dey                                                               ; bdfa: 88          .        ; last byte
     lda (zp_stack_ptr),y                                              ; bdfb: b1 04       ..       ; byte 0 (LSB)...
-    sta zp_iwa                                                        ; bdfd: 85 2a       .*       ; ...into IWA (the caller drops the stack)
+    sta zp_iwa                                                        ; bdfd: 85 2a       .*       ; ...into IWA, then fall into drop_stack_integer
 ; ***************************************************************************************
 ; Drop an integer off the stack
 ;
 ; Advance the BASIC stack pointer by four bytes.
+;
+; On Entry:
+;     ZP_STACK_PTR (&04/&05): the BASIC stack pointer
+;
+; On Exit:
+;     ZP_STACK_PTR: advanced by 4
+;     X: preserved
+;     Y: preserved
 ; &bdff referenced 2 times by &9b4e, &9b95
 .drop_stack_integer
     clc                                                               ; bdff: 18          .        ; Prepare to add

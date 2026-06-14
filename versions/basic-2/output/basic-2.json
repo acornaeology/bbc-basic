@@ -3102,12 +3102,31 @@
     {
       "addr": 45908,
       "name": "load_real_var",
-      "title": "Load a real variable into FWA"
+      "title": "Load a real variable into FWA",
+      "description": "Unpack the 5-byte packed real addressed by zp_iwa (used here as a pointer to the variable) into FWA, restoring the implied leading 1 unless the value is zero. Part of the typed variable loader.",
+      "on_entry": {
+        "(zp_iwa) (&2A/&2B)": "a pointer to the 5-byte real",
+        "Y": "5 (the byte count to copy back)"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the unpacked real",
+        "X": "preserved"
+      }
     },
     {
       "addr": 45956,
       "name": "load_string_var",
-      "title": "Load a string variable into the buffer"
+      "title": "Load a string variable into the buffer",
+      "description": "Copy a string variable into the string buffer. A normal string variable carries its pointer and length in the descriptor at (zp_iwa); a $-string (Y = &80) is read from (zp_iwa) up to the terminating CR. Part of the typed variable loader.",
+      "on_entry": {
+        "(zp_iwa) (&2A/&2B)": "a pointer to the string variable",
+        "Y": "the string type byte (&80 = $-string)"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the loaded string characters",
+        "zp_strbuf_len (&36)": "the string length",
+        "zp_general (&37/&38)": "corrupted (used as the source ptr)"
+      }
     },
     {
       "addr": 46021,
@@ -3248,20 +3267,42 @@
       "addr": 48510,
       "name": "unstack_real",
       "title": "Pop a real off the BASIC stack",
-      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n"
+      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n",
+      "on_entry": {
+        "(zp_stack_ptr) (&04/&05)": "a packed 5-byte real on top of stack"
+      },
+      "on_exit": {
+        "zp_fp_ptr (&4B/&4C)": "addresses the popped real",
+        "zp_stack_ptr": "advanced by 5 (real dropped)",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 48528,
       "name": "stack_value",
       "title": "Push the current value by type",
       "description": "Push the current value onto the BASIC stack in the form\nmatching its type: a string (stack_string), a real (stack_real) or,\nfalling through, an integer (stack_integer).",
+      "on_entry": {
+        "A": "value type: 0 string, negative real, else integer",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A"
+      },
+      "on_exit": {
+        "zp_stack_ptr (&04/&05)": "lowered past the pushed value"
+      },
       "fall_through": true
     },
     {
       "addr": 48532,
       "name": "stack_integer",
       "title": "Push the integer accumulator onto the BASIC stack",
-      "description": "Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and\ncopy the integer accumulator (zp_iwa) onto it. Errors if the stack\nwould collide with the heap.\n"
+      "description": "Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and\ncopy the integer accumulator (zp_iwa) onto it. Errors if the stack\nwould collide with the heap.\n",
+      "on_entry": {
+        "zp_iwa (&2A-&2D)": "the integer to push"
+      },
+      "on_exit": {
+        "zp_stack_ptr (&04/&05)": "lowered by 4 (integer pushed)"
+      }
     },
     {
       "addr": 48562,
@@ -3273,13 +3314,30 @@
       "addr": 48587,
       "name": "unstack_string",
       "title": "Pop a string off the BASIC stack",
-      "description": "Copy the string on top of the stack into the string buffer and drop it."
+      "description": "Copy the length-prefixed string on top of the stack into the string buffer and drop it (advance the stack pointer past the length byte and the characters).",
+      "on_entry": {
+        "(zp_stack_ptr) (&04/&05)": "a length-prefixed string on top of stack"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the popped string characters",
+        "zp_strbuf_len (&36)": "the string length",
+        "zp_stack_ptr": "advanced past the string",
+        "X": "preserved"
+      }
     },
     {
       "addr": 48618,
       "name": "unstack_integer",
       "title": "Pop an integer from the BASIC stack",
-      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n",
+      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa), then fall into drop_stack_integer to\nadvance the stack pointer past it.\n",
+      "on_entry": {
+        "(zp_stack_ptr) (&04/&05)": "a 4-byte integer (MSB first) on top of stack"
+      },
+      "on_exit": {
+        "zp_iwa (&2A-&2D)": "the popped integer",
+        "zp_stack_ptr": "advanced by 4 (integer dropped)",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
@@ -3287,6 +3345,14 @@
       "name": "drop_stack_integer",
       "title": "Drop an integer off the stack",
       "description": "Advance the BASIC stack pointer by four bytes.",
+      "on_entry": {
+        "zp_stack_ptr (&04/&05)": "the BASIC stack pointer"
+      },
+      "on_exit": {
+        "zp_stack_ptr": "advanced by 4",
+        "X": "preserved",
+        "Y": "preserved"
+      },
       "fall_through": true
     },
     {
@@ -108256,7 +108322,7 @@
         133,
         42
       ],
-      "comment_inline": "...into IWA (the caller drops the stack)",
+      "comment_inline": "...into IWA, then fall into drop_stack_integer",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
