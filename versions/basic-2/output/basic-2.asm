@@ -4615,7 +4615,7 @@ l848a = sub_c847b+15
 ; &985a referenced 1 time by &985f
 .loop_c985a
     iny                                                               ; 985a: c8          .        ; Next character
-    lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..       ; read it
     cmp #&20 ; ' '                                                    ; 985d: c9 20       .        ; space?
     beq loop_c985a                                                    ; 985f: f0 f9       ..       ; skip it
 ; &9861 referenced 1 time by &984f
@@ -4629,15 +4629,15 @@ l848a = sub_c847b+15
 ; &986d referenced 8 times by &850f, &8b73, &9863, &9867, &b16e, &b5ff, &b8fc, &bbea
 .c986d
     clc                                                               ; 986d: 18          .        ; Advance the program pointer past the statement
-    tya                                                               ; 986e: 98          .        ; ...
-    adc zp_text_ptr                                                   ; 986f: 65 0b       e.       ; ...
-    sta zp_text_ptr                                                   ; 9871: 85 0b       ..       ; ...
-    bcc c9877                                                         ; 9873: 90 02       ..       ; ...
-    inc zp_text_ptr_1                                                 ; 9875: e6 0c       ..       ; ...
+    tya                                                               ; 986e: 98          .        ; offset to A,
+    adc zp_text_ptr                                                   ; 986f: 65 0b       e.       ; - pointer low,
+    sta zp_text_ptr                                                   ; 9871: 85 0b       ..       ; store low,
+    bcc c9877                                                         ; 9873: 90 02       ..       ; no carry into the high byte
+    inc zp_text_ptr_1                                                 ; 9875: e6 0c       ..       ; carry into the high byte
 ; &9877 referenced 4 times by &9873, &98eb, &b74b, &b964
 .c9877
     ldy #1                                                            ; 9877: a0 01       ..       ; Reset the offset to 1
-    sty zp_text_ptr_off                                               ; 9879: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 9879: 84 0a       ..       ; store it (&0A)
 ; &987b referenced 1 time by &8f56
 .sub_c987b
     bit l00ff                                                         ; 987b: 24 ff       $.       ; Escape pressed (ESCFLG)?
@@ -4649,45 +4649,45 @@ l848a = sub_c847b+15
 .sub_c9880
     jsr check_end_of_statement                                        ; 9880: 20 57 98     W.      ; Check this statement is terminated
     dey                                                               ; 9883: 88          .        ; Re-read the terminator
-    lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..       ; read it
     cmp #&3a ; ':'                                                    ; 9886: c9 3a       .:       ; ':' (more on this line)?
     beq return_14                                                     ; 9888: f0 f5       ..       ; yes: continue on the line
     lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..       ; At the end of program memory?
-    cmp #7                                                            ; 988c: c9 07       ..       ; ...
+    cmp #7                                                            ; 988c: c9 07       ..       ; in the &0700 buffer (immediate)?
     beq c98bc                                                         ; 988e: f0 2c       .,       ; yes: return to immediate mode
 ; &9890 referenced 2 times by &859f, &8b91
 .sub_c9890
     iny                                                               ; 9890: c8          .        ; Next byte (line-number marker)
-    lda (zp_text_ptr),y                                               ; 9891: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 9891: b1 0b       ..       ; read it
     bmi c98bc                                                         ; 9893: 30 27       0'       ; end of program: immediate mode
     lda zp_trace_flag                                                 ; 9895: a5 20       .        ; TRACE on?
     beq c98ac                                                         ; 9897: f0 13       ..       ; no: skip the line number
     tya                                                               ; 9899: 98          .        ; Save the offset
-    pha                                                               ; 989a: 48          H        ; ...
+    pha                                                               ; 989a: 48          H        ; push it
     iny                                                               ; 989b: c8          .        ; Line number high byte
-    lda (zp_text_ptr),y                                               ; 989c: b1 0b       ..       ; ...
-    pha                                                               ; 989e: 48          H        ; ...
+    lda (zp_text_ptr),y                                               ; 989c: b1 0b       ..       ; read it,
+    pha                                                               ; 989e: 48          H        ; push it
     dey                                                               ; 989f: 88          .        ; Line number low byte
-    lda (zp_text_ptr),y                                               ; 98a0: b1 0b       ..       ; ...
-    tay                                                               ; 98a2: a8          .        ; ...
-    pla                                                               ; 98a3: 68          h        ; ...
+    lda (zp_text_ptr),y                                               ; 98a0: b1 0b       ..       ; read it,
+    tay                                                               ; 98a2: a8          .        ; low byte to Y,
+    pla                                                               ; 98a3: 68          h        ; high byte to A
     jsr iwa_from_ya                                                   ; 98a4: 20 ea ae     ..      ; IWA = line number
     jsr trace_line                                                    ; 98a7: 20 05 99     ..      ; trace it
     pla                                                               ; 98aa: 68          h        ; Restore the offset
-    tay                                                               ; 98ab: a8          .        ; ...
+    tay                                                               ; 98ab: a8          .        ; into Y
 ; &98ac referenced 1 time by &9897
 .c98ac
     iny                                                               ; 98ac: c8          .        ; Step past the 3-byte line header
-    sec                                                               ; 98ad: 38          8        ; ...
-    tya                                                               ; 98ae: 98          .        ; ...
-    adc zp_text_ptr                                                   ; 98af: 65 0b       e.       ; ...
-    sta zp_text_ptr                                                   ; 98b1: 85 0b       ..       ; ...
-    bcc c98b7                                                         ; 98b3: 90 02       ..       ; ...
-    inc zp_text_ptr_1                                                 ; 98b5: e6 0c       ..       ; ...
+    sec                                                               ; 98ad: 38          8        ; set carry (advance by offset + 1),
+    tya                                                               ; 98ae: 98          .        ; offset to A,
+    adc zp_text_ptr                                                   ; 98af: 65 0b       e.       ; - pointer low,
+    sta zp_text_ptr                                                   ; 98b1: 85 0b       ..       ; store low,
+    bcc c98b7                                                         ; 98b3: 90 02       ..       ; no carry into the high byte
+    inc zp_text_ptr_1                                                 ; 98b5: e6 0c       ..       ; carry into the high byte
 ; &98b7 referenced 1 time by &98b3
 .c98b7
     ldy #1                                                            ; 98b7: a0 01       ..       ; Reset the offset to 1
-    sty zp_text_ptr_off                                               ; 98b9: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 98b9: 84 0a       ..       ; store it (&0A)
 ; &98bb referenced 1 time by &990d
 .return_15
     rts                                                               ; 98bb: 60          `        ; Return

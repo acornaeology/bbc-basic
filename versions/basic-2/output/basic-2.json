@@ -42982,7 +42982,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -43124,7 +43124,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -43134,7 +43134,7 @@
         101,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -43147,7 +43147,7 @@
         133,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -43160,7 +43160,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9877",
@@ -43173,7 +43173,7 @@
         230,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -43209,7 +43209,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&0A)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -43307,7 +43307,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -43357,7 +43357,7 @@
         201,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "in the &0700 buffer (immediate)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#7"
@@ -43400,7 +43400,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -43460,7 +43460,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -43479,7 +43479,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -43491,7 +43491,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -43510,7 +43510,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -43522,7 +43522,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte to Y,",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -43531,7 +43531,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte to A",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -43577,7 +43577,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -43604,7 +43604,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry (advance by offset + 1),",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -43613,7 +43613,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -43623,7 +43623,7 @@
         101,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -43636,7 +43636,7 @@
         133,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -43649,7 +43649,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c98b7",
@@ -43662,7 +43662,7 @@
         230,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_1",
@@ -43695,7 +43695,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&0A)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
