@@ -47847,9 +47847,9 @@
       "comment_inline": "Stack it, evaluate the divisor",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9e1d",
+      "operand": "pow_stack_eval",
       "target": 40477,
-      "target_label": "sub_c9e1d"
+      "target_label": "pow_stack_eval"
     },
     {
       "addr": 39371,
@@ -51898,9 +51898,9 @@
       "comment_inline": "number: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 39966,
@@ -52226,9 +52226,9 @@
       "comment_inline": "yes: subtraction",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9cb5",
+      "operand": "sub_dispatch",
       "target": 40117,
-      "target_label": "c9cb5"
+      "target_label": "sub_dispatch"
     },
     {
       "addr": 40013,
@@ -52279,9 +52279,9 @@
       "comment_inline": "real: handle as float add",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9c8b",
+      "operand": "add_real_left",
       "target": 40075,
-      "target_label": "c9c8b"
+      "target_label": "add_real_left"
     },
     {
       "addr": 40019,
@@ -52293,9 +52293,9 @@
       "comment_inline": "integer: stack it and evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9dce",
+      "operand": "mul_stack_eval",
       "target": 40398,
-      "target_label": "sub_c9dce"
+      "target_label": "mul_stack_eval"
     },
     {
       "addr": 40022,
@@ -52315,9 +52315,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 40025,
@@ -52328,9 +52328,9 @@
       "comment_inline": "real: convert the left integer to float",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9ca7",
+      "operand": "add_int_real",
       "target": 40103,
-      "target_label": "c9ca7"
+      "target_label": "add_int_real"
     },
     {
       "addr": 40027,
@@ -52532,7 +52532,7 @@
         45
       ],
       "labels": [
-        "c9c77"
+        "iadd_store_drop"
       ],
       "comment_inline": "store the high byte",
       "xref_summaries": [
@@ -52651,7 +52651,7 @@
         140
       ],
       "labels": [
-        "c9c88"
+        "arith_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -52679,7 +52679,7 @@
         189
       ],
       "labels": [
-        "c9c8b"
+        "add_real_left"
       ],
       "comment_inline": "Left real: stack it, evaluate the right operand",
       "xref_summaries": [
@@ -52726,9 +52726,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 40084,
@@ -52752,9 +52752,9 @@
       "comment_inline": "real: no conversion needed",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9c9b",
+      "operand": "add_floats",
       "target": 40091,
-      "target_label": "c9c9b"
+      "target_label": "add_floats"
     },
     {
       "addr": 40088,
@@ -52778,7 +52778,7 @@
         189
       ],
       "labels": [
-        "c9c9b"
+        "add_floats"
       ],
       "comment_inline": "Pop the stacked real as the fp operand",
       "xref_summaries": [
@@ -52815,7 +52815,7 @@
         39
       ],
       "labels": [
-        "c9ca1"
+        "arith_result_loop"
       ],
       "comment_inline": "Restore the next character",
       "xref_summaries": [
@@ -52862,7 +52862,7 @@
         39
       ],
       "labels": [
-        "c9ca7"
+        "add_int_real"
       ],
       "comment_inline": "Left int, right real: save the operator",
       "xref_summaries": [
@@ -52929,9 +52929,9 @@
       "comment_inline": "then do float + float",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9c9b",
+      "operand": "add_floats",
       "target": 40091,
-      "target_label": "c9c9b"
+      "target_label": "add_floats"
     },
     {
       "addr": 40117,
@@ -52939,7 +52939,7 @@
         168
       ],
       "labels": [
-        "c9cb5"
+        "sub_dispatch"
       ],
       "comment_inline": "Subtraction: type of the left operand",
       "xref_summaries": [
@@ -52960,9 +52960,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 40120,
@@ -52973,9 +52973,9 @@
       "comment_inline": "real: handle as float subtract",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9ce1",
+      "operand": "sub_real_left",
       "target": 40161,
-      "target_label": "c9ce1"
+      "target_label": "sub_real_left"
     },
     {
       "addr": 40122,
@@ -52987,9 +52987,9 @@
       "comment_inline": "integer: stack it, evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9dce",
+      "operand": "mul_stack_eval",
       "target": 40398,
-      "target_label": "sub_c9dce"
+      "target_label": "mul_stack_eval"
     },
     {
       "addr": 40125,
@@ -53009,9 +53009,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 40128,
@@ -53022,9 +53022,9 @@
       "comment_inline": "real: convert and subtract as floats",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9cfa",
+      "operand": "sub_int_real",
       "target": 40186,
-      "target_label": "c9cfa"
+      "target_label": "sub_int_real"
     },
     {
       "addr": 40130,
@@ -53229,9 +53229,9 @@
       "comment_inline": "store byte 3, drop the operand and loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9c77",
+      "operand": "iadd_store_drop",
       "target": 40055,
-      "target_label": "c9c77"
+      "target_label": "iadd_store_drop"
     },
     {
       "addr": 40161,
@@ -53241,7 +53241,7 @@
         189
       ],
       "labels": [
-        "c9ce1"
+        "sub_real_left"
       ],
       "comment_inline": "Left real: stack it, evaluate the right operand",
       "xref_summaries": [
@@ -53288,9 +53288,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c88",
+      "operand": "arith_type_error",
       "target": 40072,
-      "target_label": "c9c88"
+      "target_label": "arith_type_error"
     },
     {
       "addr": 40170,
@@ -53314,9 +53314,9 @@
       "comment_inline": "real: no conversion needed",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9cf1",
+      "operand": "sub_floats",
       "target": 40177,
-      "target_label": "c9cf1"
+      "target_label": "sub_floats"
     },
     {
       "addr": 40174,
@@ -53340,7 +53340,7 @@
         189
       ],
       "labels": [
-        "c9cf1"
+        "sub_floats"
       ],
       "comment_inline": "Pop the stacked real as the fp operand",
       "xref_summaries": [
@@ -53379,9 +53379,9 @@
       "comment_inline": "set result type and loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9ca1",
+      "operand": "arith_result_loop",
       "target": 40097,
-      "target_label": "c9ca1"
+      "target_label": "arith_result_loop"
     },
     {
       "addr": 40186,
@@ -53390,7 +53390,7 @@
         39
       ],
       "labels": [
-        "c9cfa"
+        "sub_int_real"
       ],
       "comment_inline": "Left int, right real: save the operator",
       "xref_summaries": [
@@ -53485,9 +53485,9 @@
       "comment_inline": "set result type and loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9ca1",
+      "operand": "arith_result_loop",
       "target": 40097,
-      "target_label": "c9ca1"
+      "target_label": "arith_result_loop"
     },
     {
       "addr": 40206,
@@ -53497,7 +53497,7 @@
         162
       ],
       "labels": [
-        "c9d0e"
+        "mul_conv_right"
       ],
       "comment_inline": "Convert the right integer to float",
       "xref_summaries": [
@@ -53522,7 +53522,7 @@
         189
       ],
       "labels": [
-        "loop_c9d11"
+        "mul_conv_both"
       ],
       "comment_inline": "Pop the stacked left integer",
       "xref_summaries": [
@@ -53575,9 +53575,9 @@
       "comment_inline": "then do float * float",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9d2c",
+      "operand": "mul_floats",
       "target": 40236,
-      "target_label": "c9d2c"
+      "target_label": "mul_floats"
     },
     {
       "addr": 40221,
@@ -53587,7 +53587,7 @@
         162
       ],
       "labels": [
-        "c9d1d"
+        "mul_conv_left"
       ],
       "comment_inline": "Convert the left integer to float",
       "xref_summaries": [
@@ -53612,7 +53612,7 @@
         189
       ],
       "labels": [
-        "loop_c9d20"
+        "mul_real_left"
       ],
       "comment_inline": "Stack the left real",
       "xref_summaries": [
@@ -53685,7 +53685,7 @@
         189
       ],
       "labels": [
-        "c9d2c"
+        "mul_floats"
       ],
       "comment_inline": "Pop the stacked left real",
       "xref_summaries": [
@@ -53748,9 +53748,9 @@
       "comment_inline": "loop for further * / DIV MOD",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9dd4",
+      "operand": "muldiv_check",
       "target": 40404,
-      "target_label": "c9dd4"
+      "target_label": "muldiv_check"
     },
     {
       "addr": 40249,
@@ -53760,7 +53760,7 @@
         140
       ],
       "labels": [
-        "c9d39"
+        "mul_type_error"
       ],
       "comment_inline": "String operand: Type mismatch",
       "xref_summaries": [
@@ -53782,7 +53782,7 @@
         168
       ],
       "labels": [
-        "c9d3c"
+        "mul_dispatch"
       ],
       "comment_inline": "Left operand type",
       "xref_summaries": [
@@ -53803,9 +53803,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9d39",
+      "operand": "mul_type_error",
       "target": 40249,
-      "target_label": "c9d39"
+      "target_label": "mul_type_error"
     },
     {
       "addr": 40255,
@@ -53816,9 +53816,9 @@
       "comment_inline": "real: floating-point multiply",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9d20",
+      "operand": "mul_real_left",
       "target": 40224,
-      "target_label": "loop_c9d20"
+      "target_label": "mul_real_left"
     },
     {
       "addr": 40257,
@@ -53855,9 +53855,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9d1d",
+      "operand": "mul_conv_left",
       "target": 40221,
-      "target_label": "c9d1d"
+      "target_label": "mul_conv_left"
     },
     {
       "addr": 40263,
@@ -53877,9 +53877,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9d4e",
+      "operand": "mul_right_signed",
       "target": 40270,
-      "target_label": "c9d4e"
+      "target_label": "mul_right_signed"
     },
     {
       "addr": 40266,
@@ -53901,9 +53901,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9d1d",
+      "operand": "mul_conv_left",
       "target": 40221,
-      "target_label": "c9d1d"
+      "target_label": "mul_conv_left"
     },
     {
       "addr": 40270,
@@ -53912,7 +53912,7 @@
         43
       ],
       "labels": [
-        "c9d4e"
+        "mul_right_signed"
       ],
       "comment_inline": "sign consistent with bit 15?",
       "xref_summaries": [
@@ -53936,9 +53936,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9d1d",
+      "operand": "mul_conv_left",
       "target": 40221,
-      "target_label": "c9d1d"
+      "target_label": "mul_conv_left"
     },
     {
       "addr": 40274,
@@ -53950,9 +53950,9 @@
       "comment_inline": "Stack it, evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9e1d",
+      "operand": "pow_stack_eval",
       "target": 40477,
-      "target_label": "sub_c9e1d"
+      "target_label": "pow_stack_eval"
     },
     {
       "addr": 40277,
@@ -53985,9 +53985,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9d39",
+      "operand": "mul_type_error",
       "target": 40249,
-      "target_label": "c9d39"
+      "target_label": "mul_type_error"
     },
     {
       "addr": 40282,
@@ -53998,9 +53998,9 @@
       "comment_inline": "real: floating-point multiply",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9d11",
+      "operand": "mul_conv_both",
       "target": 40209,
-      "target_label": "loop_c9d11"
+      "target_label": "mul_conv_both"
     },
     {
       "addr": 40284,
@@ -54037,9 +54037,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9d0e",
+      "operand": "mul_conv_right",
       "target": 40206,
-      "target_label": "c9d0e"
+      "target_label": "mul_conv_right"
     },
     {
       "addr": 40290,
@@ -54059,9 +54059,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9d69",
+      "operand": "mul_left_signed",
       "target": 40297,
-      "target_label": "c9d69"
+      "target_label": "mul_left_signed"
     },
     {
       "addr": 40293,
@@ -54083,9 +54083,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9d0e",
+      "operand": "mul_conv_right",
       "target": 40206,
-      "target_label": "c9d0e"
+      "target_label": "mul_conv_right"
     },
     {
       "addr": 40297,
@@ -54094,7 +54094,7 @@
         43
       ],
       "labels": [
-        "c9d69"
+        "mul_left_signed"
       ],
       "comment_inline": "sign consistent?",
       "xref_summaries": [
@@ -54118,9 +54118,9 @@
       "comment_inline": "no: floating-point multiply",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9d0e",
+      "operand": "mul_conv_right",
       "target": 40206,
-      "target_label": "c9d0e"
+      "target_label": "mul_conv_right"
     },
     {
       "addr": 40301,
@@ -54304,7 +54304,7 @@
         58
       ],
       "labels": [
-        "loop_c9d8b"
+        "iwamul_loop"
       ],
       "comment_inline": "Shift the multiplier right: next bit",
       "xref_summaries": [
@@ -54341,9 +54341,9 @@
       "comment_inline": "bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9da6",
+      "operand": "iwamul_double",
       "target": 40358,
-      "target_label": "c9da6"
+      "target_label": "iwamul_double"
     },
     {
       "addr": 40337,
@@ -54501,7 +54501,7 @@
         42
       ],
       "labels": [
-        "c9da6"
+        "iwamul_double"
       ],
       "comment_inline": "Shift the multiplicand left",
       "xref_summaries": [
@@ -54590,9 +54590,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9d8b",
+      "operand": "iwamul_loop",
       "target": 40331,
-      "target_label": "loop_c9d8b"
+      "target_label": "iwamul_loop"
     },
     {
       "addr": 40372,
@@ -54649,7 +54649,7 @@
         61
       ],
       "labels": [
-        "c9dbb"
+        "iwamul_result"
       ],
       "comment_inline": "load the product into IWA",
       "xref_summaries": [
@@ -54670,7 +54670,7 @@
         175
       ],
       "labels": [
-        "c9dbd"
+        "iwamul_copy"
       ],
       "comment_inline": "copy &3D..&40 into IWA",
       "xref_summaries": [
@@ -54703,9 +54703,9 @@
       "comment_inline": "positive: done",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c9dc6",
+      "operand": "iwamul_restore_op",
       "target": 40390,
-      "target_label": "c9dc6"
+      "target_label": "iwamul_restore_op"
     },
     {
       "addr": 40387,
@@ -54728,7 +54728,7 @@
         39
       ],
       "labels": [
-        "c9dc6"
+        "iwamul_restore_op"
       ],
       "comment_inline": "restore the operator",
       "xref_summaries": [
@@ -54753,9 +54753,9 @@
       "comment_inline": "loop for further * / DIV MOD",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9dd4",
+      "operand": "muldiv_check",
       "target": 40404,
-      "target_label": "c9dd4"
+      "target_label": "muldiv_check"
     },
     {
       "addr": 40395,
@@ -54765,7 +54765,7 @@
         157
       ],
       "labels": [
-        "loop_c9dcb"
+        "iwamul_bounce"
       ],
       "comment_inline": "bounce back to the multiply code",
       "xref_summaries": [
@@ -54776,9 +54776,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9d3c",
+      "operand": "mul_dispatch",
       "target": 40252,
-      "target_label": "c9d3c"
+      "target_label": "mul_dispatch"
     },
     {
       "addr": 40398,
@@ -54788,7 +54788,7 @@
         189
       ],
       "labels": [
-        "sub_c9dce"
+        "mul_stack_eval"
       ],
       "comment_inline": "stack the operand, then multiply",
       "xref_summaries": [
@@ -54836,7 +54836,7 @@
         42
       ],
       "labels": [
-        "c9dd4"
+        "muldiv_check"
       ],
       "comment_inline": "next operator \"*\"?",
       "xref_summaries": [
@@ -54860,9 +54860,9 @@
       "comment_inline": "yes: multiply",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9dcb",
+      "operand": "iwamul_bounce",
       "target": 40395,
-      "target_label": "loop_c9dcb"
+      "target_label": "iwamul_bounce"
     },
     {
       "addr": 40408,
@@ -54884,9 +54884,9 @@
       "comment_inline": "yes: divide",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9de5",
+      "operand": "do_divide",
       "target": 40421,
-      "target_label": "c9de5"
+      "target_label": "do_divide"
     },
     {
       "addr": 40412,
@@ -54951,7 +54951,7 @@
         168
       ],
       "labels": [
-        "c9de5"
+        "do_divide"
       ],
       "comment_inline": "Divide: ensure the left operand is real",
       "xref_summaries": [
@@ -55102,9 +55102,9 @@
       "comment_inline": "loop for further * / DIV MOD",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9dd4",
+      "operand": "muldiv_check",
       "target": 40404,
-      "target_label": "c9dd4"
+      "target_label": "muldiv_check"
     },
     {
       "addr": 40449,
@@ -55161,9 +55161,9 @@
       "comment_inline": "load the remainder (&3D-&40) and apply the sign",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9dbb",
+      "operand": "iwamul_result",
       "target": 40379,
-      "target_label": "c9dbb"
+      "target_label": "iwamul_result"
     },
     {
       "addr": 40458,
@@ -55283,9 +55283,9 @@
       "comment_inline": "...and apply the sign",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9dbd",
+      "operand": "iwamul_copy",
       "target": 40381,
-      "target_label": "c9dbd"
+      "target_label": "iwamul_copy"
     },
     {
       "addr": 40477,
@@ -55295,7 +55295,7 @@
         189
       ],
       "labels": [
-        "sub_c9e1d"
+        "pow_stack_eval"
       ],
       "comment_inline": "Stack the integer, evaluate the next ^ operand",
       "xref_summaries": [

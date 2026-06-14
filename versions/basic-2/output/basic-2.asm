@@ -5619,7 +5619,7 @@ oscli            = &fff7
     lda zp_iwa_3                                                      ; 99c2: a5 2d       .-       ; Save the dividend sign
     pha                                                               ; 99c4: 48          H        ; push it
     jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.      ; take |dividend|
-    jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..      ; Stack it, evaluate the divisor
+    jsr pow_stack_eval                                                ; 99c8: 20 1d 9e     ..      ; Stack it, evaluate the divisor
     stx zp_var_type                                                   ; 99cb: 86 27       .'       ; remember the operator
     tay                                                               ; 99cd: a8          .        ; coerce the divisor to integer
     jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..      ; IWA = the integer divisor
@@ -6101,7 +6101,7 @@ oscli            = &fff7
     jsr stack_string                                                  ; 9c15: 20 b2 bd     ..      ; Stack the left string
     jsr eval_power                                                    ; 9c18: 20 20 9e      .      ; Evaluate the right operand
     tay                                                               ; 9c1b: a8          .        ; type
-    bne c9c88                                                         ; 9c1c: d0 6a       .j       ; number: Type mismatch
+    bne arith_type_error                                              ; 9c1c: d0 6a       .j       ; number: Type mismatch
     clc                                                               ; 9c1e: 18          .        ; New length = left + right
     stx zp_general                                                    ; 9c1f: 86 37       .7       ; save the pending operator (X)
     ldy #0                                                            ; 9c21: a0 00       ..       ; index the stacked left length
@@ -6146,17 +6146,17 @@ oscli            = &fff7
     cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
     beq do_add                                                        ; 9c47: f0 05       ..       ; yes: addition
     cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-       ; next operator "-"?
-    beq c9cb5                                                         ; 9c4b: f0 68       .h       ; yes: subtraction
+    beq sub_dispatch                                                  ; 9c4b: f0 68       .h       ; yes: subtraction
     rts                                                               ; 9c4d: 60          `        ; neither: expression complete
 ; &9c4e referenced 1 time by &9c47
 .do_add
     tay                                                               ; 9c4e: a8          .        ; Addition: type of the left operand
     beq relstr_stack_loop                                             ; 9c4f: f0 c4       ..       ; string: concatenate
-    bmi c9c8b                                                         ; 9c51: 30 38       08       ; real: handle as float add
-    jsr sub_c9dce                                                     ; 9c53: 20 ce 9d     ..      ; integer: stack it and evaluate the right operand
+    bmi add_real_left                                                 ; 9c51: 30 38       08       ; real: handle as float add
+    jsr mul_stack_eval                                                ; 9c53: 20 ce 9d     ..      ; integer: stack it and evaluate the right operand
     tay                                                               ; 9c56: a8          .        ; Type of the right operand
-    beq c9c88                                                         ; 9c57: f0 2f       ./       ; string: Type mismatch
-    bmi c9ca7                                                         ; 9c59: 30 4c       0L       ; real: convert the left integer to float
+    beq arith_type_error                                              ; 9c57: f0 2f       ./       ; string: Type mismatch
+    bmi add_int_real                                                  ; 9c59: 30 4c       0L       ; real: convert the left integer to float
 ; ***************************************************************************************
 ; Integer add
 ;
@@ -6187,7 +6187,7 @@ oscli            = &fff7
     lda (zp_stack_ptr),y                                              ; 9c73: b1 04       ..       ; stacked,
     adc zp_iwa_3                                                      ; 9c75: 65 2d       e-       ; - IWA &2D (high)
 ; &9c77 referenced 1 time by &9cde
-.c9c77
+.iadd_store_drop
     sta zp_iwa_3                                                      ; 9c77: 85 2d       .-       ; store the high byte
     clc                                                               ; 9c79: 18          .        ; Drop the operand (stack += 4),
     lda zp_stack_ptr                                                  ; 9c7a: a5 04       ..       ; low byte,
@@ -6198,42 +6198,42 @@ oscli            = &fff7
     inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..       ; carry into the high byte,
     bcs addsub_check                                                  ; 9c86: b0 bd       ..       ; back for a further + or -
 ; &9c88 referenced 6 times by &9c1c, &9c57, &9c92, &9cb6, &9cbe, &9ce8
-.c9c88
+.arith_type_error
     jmp err_type_mismatch                                             ; 9c88: 4c 0e 8c    L..      ; Type mismatch error
 ; &9c8b referenced 1 time by &9c51
-.c9c8b
+.add_real_left
     jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
     jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..      ; evaluate the right operand
     tay                                                               ; 9c91: a8          .        ; Type of the right operand
-    beq c9c88                                                         ; 9c92: f0 f4       ..       ; string: Type mismatch
+    beq arith_type_error                                              ; 9c92: f0 f4       ..       ; string: Type mismatch
     stx zp_var_type                                                   ; 9c94: 86 27       .'       ; remember it for later
-    bmi c9c9b                                                         ; 9c96: 30 03       0.       ; real: no conversion needed
+    bmi add_floats                                                    ; 9c96: 30 03       0.       ; real: no conversion needed
     jsr int_to_fwa                                                    ; 9c98: 20 be a2     ..      ; integer: convert the right operand to float
 ; &9c9b referenced 2 times by &9c96, &9cb2
-.c9c9b
+.add_floats
     jsr unstack_real                                                  ; 9c9b: 20 7e bd     ~.      ; Pop the stacked real as the fp operand
     jsr fwa_add_var                                                   ; 9c9e: 20 00 a5     ..      ; FWA = left + right
 ; &9ca1 referenced 2 times by &9cf7, &9d0b
-.c9ca1
+.arith_result_loop
     ldx zp_var_type                                                   ; 9ca1: a6 27       .'       ; Restore the next character
     lda #&ff                                                          ; 9ca3: a9 ff       ..       ; Result type = real
     bne addsub_check                                                  ; 9ca5: d0 9e       ..       ; loop for further + or -
 ; &9ca7 referenced 1 time by &9c59
-.c9ca7
+.add_int_real
     stx zp_var_type                                                   ; 9ca7: 86 27       .'       ; Left int, right real: save the operator
     jsr unstack_integer                                               ; 9ca9: 20 ea bd     ..      ; pop the stacked left integer
     jsr stack_real                                                    ; 9cac: 20 51 bd     Q.      ; stack the right real
     jsr int_to_fwa                                                    ; 9caf: 20 be a2     ..      ; convert the left integer to float
-    jmp c9c9b                                                         ; 9cb2: 4c 9b 9c    L..      ; then do float + float
+    jmp add_floats                                                    ; 9cb2: 4c 9b 9c    L..      ; then do float + float
 ; &9cb5 referenced 1 time by &9c4b
-.c9cb5
+.sub_dispatch
     tay                                                               ; 9cb5: a8          .        ; Subtraction: type of the left operand
-    beq c9c88                                                         ; 9cb6: f0 d0       ..       ; string: Type mismatch
-    bmi c9ce1                                                         ; 9cb8: 30 27       0'       ; real: handle as float subtract
-    jsr sub_c9dce                                                     ; 9cba: 20 ce 9d     ..      ; integer: stack it, evaluate the right operand
+    beq arith_type_error                                              ; 9cb6: f0 d0       ..       ; string: Type mismatch
+    bmi sub_real_left                                                 ; 9cb8: 30 27       0'       ; real: handle as float subtract
+    jsr mul_stack_eval                                                ; 9cba: 20 ce 9d     ..      ; integer: stack it, evaluate the right operand
     tay                                                               ; 9cbd: a8          .        ; Type of the right operand
-    beq c9c88                                                         ; 9cbe: f0 c8       ..       ; string: Type mismatch
-    bmi c9cfa                                                         ; 9cc0: 30 38       08       ; real: convert and subtract as floats
+    beq arith_type_error                                              ; 9cbe: f0 c8       ..       ; string: Type mismatch
+    bmi sub_int_real                                                  ; 9cc0: 30 38       08       ; real: convert and subtract as floats
 ; ***************************************************************************************
 ; Reverse integer subtract
 ;
@@ -6263,91 +6263,91 @@ oscli            = &fff7
     iny                                                               ; 9cd9: c8          .        ; ...byte 3
     lda (zp_stack_ptr),y                                              ; 9cda: b1 04       ..       ; stacked,
     sbc zp_iwa_3                                                      ; 9cdc: e5 2d       .-       ; - IWA &2D (high)
-    jmp c9c77                                                         ; 9cde: 4c 77 9c    Lw.      ; store byte 3, drop the operand and loop
+    jmp iadd_store_drop                                               ; 9cde: 4c 77 9c    Lw.      ; store byte 3, drop the operand and loop
 ; &9ce1 referenced 1 time by &9cb8
-.c9ce1
+.sub_real_left
     jsr stack_real                                                    ; 9ce1: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
     jsr eval_mul_div                                                  ; 9ce4: 20 d1 9d     ..      ; evaluate the right operand
     tay                                                               ; 9ce7: a8          .        ; Type of the right operand
-    beq c9c88                                                         ; 9ce8: f0 9e       ..       ; string: Type mismatch
+    beq arith_type_error                                              ; 9ce8: f0 9e       ..       ; string: Type mismatch
     stx zp_var_type                                                   ; 9cea: 86 27       .'       ; remember it
-    bmi c9cf1                                                         ; 9cec: 30 03       0.       ; real: no conversion needed
+    bmi sub_floats                                                    ; 9cec: 30 03       0.       ; real: no conversion needed
     jsr int_to_fwa                                                    ; 9cee: 20 be a2     ..      ; integer: convert the right operand to float
 ; &9cf1 referenced 1 time by &9cec
-.c9cf1
+.sub_floats
     jsr unstack_real                                                  ; 9cf1: 20 7e bd     ~.      ; Pop the stacked real as the fp operand
     jsr fwa_rsub_var                                                  ; 9cf4: 20 fd a4     ..      ; FWA = left - right
-    jmp c9ca1                                                         ; 9cf7: 4c a1 9c    L..      ; set result type and loop
+    jmp arith_result_loop                                             ; 9cf7: 4c a1 9c    L..      ; set result type and loop
 ; &9cfa referenced 1 time by &9cc0
-.c9cfa
+.sub_int_real
     stx zp_var_type                                                   ; 9cfa: 86 27       .'       ; Left int, right real: save the operator
     jsr unstack_integer                                               ; 9cfc: 20 ea bd     ..      ; pop the stacked left integer
     jsr stack_real                                                    ; 9cff: 20 51 bd     Q.      ; stack the right real
     jsr int_to_fwa                                                    ; 9d02: 20 be a2     ..      ; convert the left integer to float
     jsr unstack_real                                                  ; 9d05: 20 7e bd     ~.      ; pop the stacked right real
     jsr fwa_sub_var                                                   ; 9d08: 20 d0 a4     ..      ; FWA = left - right
-    jmp c9ca1                                                         ; 9d0b: 4c a1 9c    L..      ; set result type and loop
+    jmp arith_result_loop                                             ; 9d0b: 4c a1 9c    L..      ; set result type and loop
 ; &9d0e referenced 3 times by &9d60, &9d67, &9d6b
-.c9d0e
+.mul_conv_right
     jsr int_to_fwa                                                    ; 9d0e: 20 be a2     ..      ; Convert the right integer to float
 ; &9d11 referenced 1 time by &9d5a
-.loop_c9d11
+.mul_conv_both
     jsr unstack_integer                                               ; 9d11: 20 ea bd     ..      ; Pop the stacked left integer
     jsr stack_real                                                    ; 9d14: 20 51 bd     Q.      ; stack the right real
     jsr int_to_fwa                                                    ; 9d17: 20 be a2     ..      ; convert the left integer to float
-    jmp c9d2c                                                         ; 9d1a: 4c 2c 9d    L,.      ; then do float * float
+    jmp mul_floats                                                    ; 9d1a: 4c 2c 9d    L,.      ; then do float * float
 ; &9d1d referenced 3 times by &9d45, &9d4c, &9d50
-.c9d1d
+.mul_conv_left
     jsr int_to_fwa                                                    ; 9d1d: 20 be a2     ..      ; Convert the left integer to float
 ; &9d20 referenced 1 time by &9d3f
-.loop_c9d20
+.mul_real_left
     jsr stack_real                                                    ; 9d20: 20 51 bd     Q.      ; Stack the left real
     jsr eval_power                                                    ; 9d23: 20 20 9e      .      ; evaluate the next (^ level) operand
     stx zp_var_type                                                   ; 9d26: 86 27       .'       ; remember the operand type
     tay                                                               ; 9d28: a8          .        ; test the operand type
     jsr ensure_real                                                   ; 9d29: 20 fd 92     ..      ; ensure the operand is real
 ; &9d2c referenced 1 time by &9d1a
-.c9d2c
+.mul_floats
     jsr unstack_real                                                  ; 9d2c: 20 7e bd     ~.      ; Pop the stacked left real
     jsr fwa_mul_var                                                   ; 9d2f: 20 56 a6     V.      ; FWA = left * right
     lda #&ff                                                          ; 9d32: a9 ff       ..       ; real result
     ldx zp_var_type                                                   ; 9d34: a6 27       .'       ; restore the operator
-    jmp c9dd4                                                         ; 9d36: 4c d4 9d    L..      ; loop for further * / DIV MOD
+    jmp muldiv_check                                                  ; 9d36: 4c d4 9d    L..      ; loop for further * / DIV MOD
 ; &9d39 referenced 2 times by &9d3d, &9d58
-.c9d39
+.mul_type_error
     jmp err_type_mismatch                                             ; 9d39: 4c 0e 8c    L..      ; String operand: Type mismatch
 ; &9d3c referenced 1 time by &9dcb
-.c9d3c
+.mul_dispatch
     tay                                                               ; 9d3c: a8          .        ; Left operand type
-    beq c9d39                                                         ; 9d3d: f0 fa       ..       ; string: Type mismatch
-    bmi loop_c9d20                                                    ; 9d3f: 30 df       0.       ; real: floating-point multiply
+    beq mul_type_error                                                ; 9d3d: f0 fa       ..       ; string: Type mismatch
+    bmi mul_real_left                                                 ; 9d3f: 30 df       0.       ; real: floating-point multiply
     lda zp_iwa_3                                                      ; 9d41: a5 2d       .-       ; Integer: does it fit signed 16 bits?
     cmp zp_iwa_2                                                      ; 9d43: c5 2c       .,       ; byte 3 == byte 2 (sign-extended)?
-    bne c9d1d                                                         ; 9d45: d0 d6       ..       ; no: floating-point multiply
+    bne mul_conv_left                                                 ; 9d45: d0 d6       ..       ; no: floating-point multiply
     tay                                                               ; 9d47: a8          .        ; high word zero (positive)?
-    beq c9d4e                                                         ; 9d48: f0 04       ..       ; yes
+    beq mul_right_signed                                              ; 9d48: f0 04       ..       ; yes
     cmp #&ff                                                          ; 9d4a: c9 ff       ..       ; high word all ones (negative)?
-    bne c9d1d                                                         ; 9d4c: d0 cf       ..       ; no: floating-point multiply
+    bne mul_conv_left                                                 ; 9d4c: d0 cf       ..       ; no: floating-point multiply
 ; &9d4e referenced 1 time by &9d48
-.c9d4e
+.mul_right_signed
     eor zp_iwa_1                                                      ; 9d4e: 45 2b       E+       ; sign consistent with bit 15?
-    bmi c9d1d                                                         ; 9d50: 30 cb       0.       ; no: floating-point multiply
-    jsr sub_c9e1d                                                     ; 9d52: 20 1d 9e     ..      ; Stack it, evaluate the right operand
+    bmi mul_conv_left                                                 ; 9d50: 30 cb       0.       ; no: floating-point multiply
+    jsr pow_stack_eval                                                ; 9d52: 20 1d 9e     ..      ; Stack it, evaluate the right operand
     stx zp_var_type                                                   ; 9d55: 86 27       .'       ; remember the operator
     tay                                                               ; 9d57: a8          .        ; right operand type
-    beq c9d39                                                         ; 9d58: f0 df       ..       ; string: Type mismatch
-    bmi loop_c9d11                                                    ; 9d5a: 30 b5       0.       ; real: floating-point multiply
+    beq mul_type_error                                                ; 9d58: f0 df       ..       ; string: Type mismatch
+    bmi mul_conv_both                                                 ; 9d5a: 30 b5       0.       ; real: floating-point multiply
     lda zp_iwa_3                                                      ; 9d5c: a5 2d       .-       ; fits signed 16 bits?
     cmp zp_iwa_2                                                      ; 9d5e: c5 2c       .,       ; byte 3 == byte 2 (sign-extended)?
-    bne c9d0e                                                         ; 9d60: d0 ac       ..       ; no: floating-point multiply
+    bne mul_conv_right                                                ; 9d60: d0 ac       ..       ; no: floating-point multiply
     tay                                                               ; 9d62: a8          .        ; positive?
-    beq c9d69                                                         ; 9d63: f0 04       ..       ; yes
+    beq mul_left_signed                                               ; 9d63: f0 04       ..       ; yes
     cmp #&ff                                                          ; 9d65: c9 ff       ..       ; negative?
-    bne c9d0e                                                         ; 9d67: d0 a5       ..       ; no: floating-point multiply
+    bne mul_conv_right                                                ; 9d67: d0 a5       ..       ; no: floating-point multiply
 ; &9d69 referenced 1 time by &9d63
-.c9d69
+.mul_left_signed
     eor zp_iwa_1                                                      ; 9d69: 45 2b       E+       ; sign consistent?
-    bmi c9d0e                                                         ; 9d6b: 30 a1       0.       ; no: floating-point multiply
+    bmi mul_conv_right                                                ; 9d6b: 30 a1       0.       ; no: floating-point multiply
 ; ***************************************************************************************
 ; Integer multiply
 ;
@@ -6377,10 +6377,10 @@ oscli            = &fff7
     sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; byte 2,
     sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; and byte 3
 ; &9d8b referenced 1 time by &9db2
-.loop_c9d8b
+.iwamul_loop
     lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit
     ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; low byte; bit 0 -> carry
-    bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add
+    bcc iwamul_double                                                 ; 9d8f: 90 15       ..       ; bit clear: skip the add
     clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand
     tya                                                               ; 9d92: 98          .        ; byte 0
     adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; - multiplicand byte 0,
@@ -6395,36 +6395,36 @@ oscli            = &fff7
     adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; - byte 3,
     sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; back to product byte 3
 ; &9da6 referenced 1 time by &9d8f
-.c9da6
+.iwamul_double
     asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Shift the multiplicand left
     rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; byte 1,
     rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; byte 2,
     rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; byte 3 (multiplicand now x2)
     lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?
     ora l003a                                                         ; 9db0: 05 3a       .:       ; OR in the high byte
-    bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop
+    bne iwamul_loop                                                   ; 9db2: d0 d7       ..       ; loop
     sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)
     stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; and byte 1 (bytes 2-3 already in place)
     lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign
     php                                                               ; 9dba: 08          .        ; save its N flag
 ; &9dbb referenced 1 time by &9e07
-.c9dbb
+.iwamul_result
     ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA
 ; &9dbd referenced 1 time by &9e1a
-.c9dbd
+.iwamul_copy
     jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; copy &3D..&40 into IWA
     plp                                                               ; 9dc0: 28          (        ; Apply the sign
-    bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done
+    bpl iwamul_restore_op                                             ; 9dc1: 10 03       ..       ; positive: done
     jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product
 ; &9dc6 referenced 1 time by &9dc1
-.c9dc6
+.iwamul_restore_op
     ldx zp_var_type                                                   ; 9dc6: a6 27       .'       ; restore the operator
-    jmp c9dd4                                                         ; 9dc8: 4c d4 9d    L..      ; loop for further * / DIV MOD
+    jmp muldiv_check                                                  ; 9dc8: 4c d4 9d    L..      ; loop for further * / DIV MOD
 ; &9dcb referenced 1 time by &9dd6
-.loop_c9dcb
-    jmp c9d3c                                                         ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
+.iwamul_bounce
+    jmp mul_dispatch                                                  ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
 ; &9dce referenced 2 times by &9c53, &9cba
-.sub_c9dce
+.mul_stack_eval
     jsr stack_integer                                                 ; 9dce: 20 94 bd     ..      ; stack the operand, then multiply
 ; ***************************************************************************************
 ; Evaluator level 3: * / DIV MOD
@@ -6444,18 +6444,18 @@ oscli            = &fff7
 .eval_mul_div
     jsr eval_power                                                    ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
 ; &9dd4 referenced 3 times by &9d36, &9dc8, &9dff
-.c9dd4
+.muldiv_check
     cpx #&2a ; '*'                                                    ; 9dd4: e0 2a       .*       ; next operator "*"?
-    beq loop_c9dcb                                                    ; 9dd6: f0 f3       ..       ; yes: multiply
+    beq iwamul_bounce                                                 ; 9dd6: f0 f3       ..       ; yes: multiply
     cpx #&2f ; '/'                                                    ; 9dd8: e0 2f       ./       ; "/"?
-    beq c9de5                                                         ; 9dda: f0 09       ..       ; yes: divide
+    beq do_divide                                                     ; 9dda: f0 09       ..       ; yes: divide
     cpx #&83                                                          ; 9ddc: e0 83       ..       ; MOD token?
     beq iwa_mod                                                       ; 9dde: f0 21       .!       ; yes: integer remainder
     cpx #&81                                                          ; 9de0: e0 81       ..       ; DIV token?
     beq iwa_div                                                       ; 9de2: f0 26       .&       ; yes: integer divide
     rts                                                               ; 9de4: 60          `        ; no operator: return
 ; &9de5 referenced 1 time by &9dda
-.c9de5
+.do_divide
     tay                                                               ; 9de5: a8          .        ; Divide: ensure the left operand is real
     jsr ensure_real                                                   ; 9de6: 20 fd 92     ..      ; convert if integer
     jsr stack_real                                                    ; 9de9: 20 51 bd     Q.      ; stack it
@@ -6467,7 +6467,7 @@ oscli            = &fff7
     jsr fwa_rdiv_var                                                  ; 9df8: 20 ad a6     ..      ; FWA = left / right
     ldx zp_var_type                                                   ; 9dfb: a6 27       .'       ; restore the operator
     lda #&ff                                                          ; 9dfd: a9 ff       ..       ; real result
-    bne c9dd4                                                         ; 9dff: d0 d3       ..       ; loop for further * / DIV MOD
+    bne muldiv_check                                                  ; 9dff: d0 d3       ..       ; loop for further * / DIV MOD
 ; ***************************************************************************************
 ; Integer remainder
 ;
@@ -6483,7 +6483,7 @@ oscli            = &fff7
     jsr iwa_divide                                                    ; 9e01: 20 be 99     ..      ; MOD: divide
     lda zp_general_1                                                  ; 9e04: a5 38       .8       ; remainder takes the dividend sign
     php                                                               ; 9e06: 08          .        ; save the sign
-    jmp c9dbb                                                         ; 9e07: 4c bb 9d    L..      ; load the remainder (&3D-&40) and apply the sign
+    jmp iwamul_result                                                 ; 9e07: 4c bb 9d    L..      ; load the remainder (&3D-&40) and apply the sign
 ; ***************************************************************************************
 ; Integer divide
 ;
@@ -6504,9 +6504,9 @@ oscli            = &fff7
     bit zp_general                                                    ; 9e15: 24 37       $7       ; quotient sign
     php                                                               ; 9e17: 08          .        ; save the sign flags
     ldx #&39 ; '9'                                                    ; 9e18: a2 39       .9       ; load the quotient (&39-&3C)
-    jmp c9dbd                                                         ; 9e1a: 4c bd 9d    L..      ; ...and apply the sign
+    jmp iwamul_copy                                                   ; 9e1a: 4c bd 9d    L..      ; ...and apply the sign
 ; &9e1d referenced 2 times by &99c8, &9d52
-.sub_c9e1d
+.pow_stack_eval
     jsr stack_integer                                                 ; 9e1d: 20 94 bd     ..      ; Stack the integer, evaluate the next ^ operand
 ; ***************************************************************************************
 ; Expression Level 2 - the ^ operator
@@ -14472,8 +14472,8 @@ save pydis_start, pydis_end
 ;     store_bool:                    7
 ;     syntax_error:                  7
 ;     zp_count:                      7
+;     arith_type_error:              6
 ;     assign_number:                 6
-;     c9c88:                         6
 ;     cae43:                         6
 ;     cb2b5:                         6
 ;     cbddc:                         6
@@ -14573,9 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:                 3
 ;     assign_string:                 3
 ;     c8858:                         3
-;     c9d0e:                         3
-;     c9d1d:                         3
-;     c9dd4:                         3
 ;     c9ed1:                         3
 ;     ca0e8:                         3
 ;     ca387:                         3
@@ -14612,6 +14609,9 @@ save pydis_start, pydis_end
 ;     is_digit:                      3
 ;     iwa_negate:                    3
 ;     l0401:                         3
+;     mul_conv_left:                 3
+;     mul_conv_right:                3
+;     muldiv_check:                  3
 ;     not_name_char:                 3
 ;     parse_number:                  3
 ;     plnum_print_loop:              3
@@ -14644,6 +14644,8 @@ save pydis_start, pydis_end
 ;     zp_listo:                      3
 ;     zp_rnd_seed_1:                 3
 ;     zp_width:                      3
+;     add_floats:                    2
+;     arith_result_loop:             2
 ;     array_error:                   2
 ;     asm_branch_range_err:          2
 ;     asm_emit_loop:                 2
@@ -14661,9 +14663,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:              2
 ;     assign_string_to:              2
 ;     auto_loop:                     2
-;     c9c9b:                         2
-;     c9ca1:                         2
-;     c9d39:                         2
 ;     c9e23:                         2
 ;     c9eb7:                         2
 ;     c9ef9:                         2
@@ -14789,6 +14788,8 @@ save pydis_start, pydis_end
 ;     missing_quote:                 2
 ;     mode_reset_col:                2
 ;     mode_send:                     2
+;     mul_stack_eval:                2
+;     mul_type_error:                2
 ;     next_data_item:                2
 ;     no_fn_error:                   2
 ;     no_proc_error:                 2
@@ -14808,6 +14809,7 @@ save pydis_start, pydis_end
 ;     point_fp_temp3:                2
 ;     point_half_pi_hi:              2
 ;     point_half_pi_lo:              2
+;     pow_stack_eval:                2
 ;     print_hex_byte:                2
 ;     print_inline_char:             2
 ;     print_inline_string:           2
@@ -14848,8 +14850,6 @@ save pydis_start, pydis_end
 ;     stmt_eol:                      2
 ;     string_too_long:               2
 ;     sub_c887c:                     2
-;     sub_c9dce:                     2
-;     sub_c9e1d:                     2
 ;     sub_cb4b1:                     2
 ;     sub_cb562:                     2
 ;     sub_cbc81:                     2
@@ -14883,6 +14883,8 @@ save pydis_start, pydis_end
 ;     zp_trace_max:                  2
 ;     action_hi_by_token:            1
 ;     action_lo_by_token:            1
+;     add_int_real:                  1
+;     add_real_left:                 1
 ;     advance_vartop:                1
 ;     and_byte_loop:                 1
 ;     ascii_to_number:               1
@@ -14952,22 +14954,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     c9c77:                         1
-;     c9c8b:                         1
-;     c9ca7:                         1
-;     c9cb5:                         1
-;     c9ce1:                         1
-;     c9cf1:                         1
-;     c9cfa:                         1
-;     c9d2c:                         1
-;     c9d3c:                         1
-;     c9d4e:                         1
-;     c9d69:                         1
-;     c9da6:                         1
-;     c9dbb:                         1
-;     c9dbd:                         1
-;     c9dc6:                         1
-;     c9de5:                         1
 ;     c9e35:                         1
 ;     c9e59:                         1
 ;     c9e88:                         1
@@ -15212,6 +15198,7 @@ save pydis_start, pydis_end
 ;     dim_no_room_jmp:               1
 ;     do_add:                        1
 ;     do_and:                        1
+;     do_divide:                     1
 ;     do_eor:                        1
 ;     do_or:                         1
 ;     draw_save_mode:                1
@@ -15253,6 +15240,7 @@ save pydis_start, pydis_end
 ;     fwa_swap_var:                  1
 ;     gosub_stack:                   1
 ;     gosub_stack_hi:                1
+;     iadd_store_drop:               1
 ;     idiv_next_bit:                 1
 ;     idiv_norm_loop:                1
 ;     idiv_restore:                  1
@@ -15278,6 +15266,12 @@ save pydis_start, pydis_end
 ;     iwa_div:                       1
 ;     iwa_mod:                       1
 ;     iwa_store_var:                 1
+;     iwamul_bounce:                 1
+;     iwamul_copy:                   1
+;     iwamul_double:                 1
+;     iwamul_loop:                   1
+;     iwamul_restore_op:             1
+;     iwamul_result:                 1
 ;     l0047:                         1
 ;     l00ff:                         1
 ;     l0106:                         1
@@ -15318,10 +15312,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_c9d11:                    1
-;     loop_c9d20:                    1
-;     loop_c9d8b:                    1
-;     loop_c9dcb:                    1
 ;     loop_c9e24:                    1
 ;     loop_c9e6c:                    1
 ;     loop_c9e90:                    1
@@ -15423,6 +15413,12 @@ save pydis_start, pydis_end
 ;     lvalue_save_width:             1
 ;     lvalue_word:                   1
 ;     mistake_error:                 1
+;     mul_conv_both:                 1
+;     mul_dispatch:                  1
+;     mul_floats:                    1
+;     mul_left_signed:               1
+;     mul_real_left:                 1
+;     mul_right_signed:              1
 ;     not_line_number:               1
 ;     not_local_error:               1
 ;     or_byte_loop:                  1
@@ -15570,6 +15566,10 @@ save pydis_start, pydis_end
 ;     sub_cbe93:                     1
 ;     sub_cbeb2:                     1
 ;     sub_cbee7:                     1
+;     sub_dispatch:                  1
+;     sub_floats:                    1
+;     sub_int_real:                  1
+;     sub_real_left:                 1
 ;     tok_check_colon:               1
 ;     tok_check_comma_star:          1
 ;     tok_check_hex:                 1
@@ -15618,29 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c9c77
-;     c9c88
-;     c9c8b
-;     c9c9b
-;     c9ca1
-;     c9ca7
-;     c9cb5
-;     c9ce1
-;     c9cf1
-;     c9cfa
-;     c9d0e
-;     c9d1d
-;     c9d2c
-;     c9d39
-;     c9d3c
-;     c9d4e
-;     c9d69
-;     c9da6
-;     c9dbb
-;     c9dbd
-;     c9dc6
-;     c9dd4
-;     c9de5
 ;     c9e23
 ;     c9e35
 ;     c9e59
@@ -16002,10 +15979,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9d11
-;     loop_c9d20
-;     loop_c9d8b
-;     loop_c9dcb
 ;     loop_c9e24
 ;     loop_c9e6c
 ;     loop_c9e90
@@ -16144,8 +16117,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c9dce
-;     sub_c9e1d
 ;     sub_ca14b
 ;     sub_ca3e7
 ;     sub_ca4b6
