@@ -5261,16 +5261,16 @@ l848a = sub_c847b+15
 ; &9bb5 referenced 7 times by &9bb2, &9bd2, &9bdd, &9be6, &9bf4, &9bf8, &9c01
 .c9bb5
     sty zp_iwa                                                        ; 9bb5: 84 2a       .*       ; Store 0/-1 in all four IWA bytes
-    sty zp_iwa_1                                                      ; 9bb7: 84 2b       .+       ; ...
-    sty zp_iwa_2                                                      ; 9bb9: 84 2c       .,       ; ...
-    sty zp_iwa_3                                                      ; 9bbb: 84 2d       .-       ; ...
+    sty zp_iwa_1                                                      ; 9bb7: 84 2b       .+       ; byte 1,
+    sty zp_iwa_2                                                      ; 9bb9: 84 2c       .,       ; byte 2,
+    sty zp_iwa_3                                                      ; 9bbb: 84 2d       .-       ; byte 3
     lda #&40 ; '@'                                                    ; 9bbd: a9 40       .@       ; Result type = integer
     rts                                                               ; 9bbf: 60          `        ; Return
 ; &9bc0 referenced 1 time by &9ba8
 .c9bc0
     tax                                                               ; 9bc0: aa          .        ; '<' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9bc1: a4 1b       ..       ; Peek at the next source character
-    lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..       ; read it
     cmp #&3d ; '='                                                    ; 9bc5: c9 3d       .=       ; '='? (<=)
     beq c9bd4                                                         ; 9bc7: f0 0b       ..       ; yes
     cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>       ; '>'? (<>)
@@ -5295,7 +5295,7 @@ l848a = sub_c847b+15
 .c9be8
     tax                                                               ; 9be8: aa          .        ; '>' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9be9: a4 1b       ..       ; Peek at the next source character
-    lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; read it
     cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=       ; '='? (>=)
     beq c9bfa                                                         ; 9bef: f0 09       ..       ; yes
     jsr sub_c9a9d                                                     ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
@@ -5321,25 +5321,25 @@ l848a = sub_c847b+15
     tay                                                               ; 9c1b: a8          .        ; type
     bne c9c88                                                         ; 9c1c: d0 6a       .j       ; number: Type mismatch
     clc                                                               ; 9c1e: 18          .        ; New length = left + right
-    stx zp_general                                                    ; 9c1f: 86 37       .7       ; ...
-    ldy #0                                                            ; 9c21: a0 00       ..       ; ...
-    lda (zp_stack_ptr),y                                              ; 9c23: b1 04       ..       ; ...
-    adc zp_strbuf_len                                                 ; 9c25: 65 36       e6       ; ...
+    stx zp_general                                                    ; 9c1f: 86 37       .7       ; save the pending operator (X)
+    ldy #0                                                            ; 9c21: a0 00       ..       ; index the stacked left length
+    lda (zp_stack_ptr),y                                              ; 9c23: b1 04       ..       ; left length
+    adc zp_strbuf_len                                                 ; 9c25: 65 36       e6       ; plus the right length
     bcs c9c03                                                         ; 9c27: b0 da       ..       ; over 255: error
     tax                                                               ; 9c29: aa          .        ; Save the new length
-    pha                                                               ; 9c2a: 48          H        ; ...
+    pha                                                               ; 9c2a: 48          H        ; keep it on the stack
     ldy zp_strbuf_len                                                 ; 9c2b: a4 36       .6       ; Move the right string up
 ; &9c2d referenced 1 time by &9c35
 .loop_c9c2d
-    lda l05ff,y                                                       ; 9c2d: b9 ff 05    ...      ; ...
-    sta l05ff,x                                                       ; 9c30: 9d ff 05    ...      ; ...
-    dex                                                               ; 9c33: ca          .        ; ...
-    dey                                                               ; 9c34: 88          .        ; ...
+    lda l05ff,y                                                       ; 9c2d: b9 ff 05    ...      ; right string byte (at Y)
+    sta l05ff,x                                                       ; 9c30: 9d ff 05    ...      ; to the new tail (at X)
+    dex                                                               ; 9c33: ca          .        ; back one destination
+    dey                                                               ; 9c34: 88          .        ; back one source
     bne loop_c9c2d                                                    ; 9c35: d0 f6       ..       ; loop
     jsr unstack_string                                                ; 9c37: 20 cb bd     ..      ; Prepend the left string
     pla                                                               ; 9c3a: 68          h        ; Set the new length
-    sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6       ; ...
-    ldx zp_general                                                    ; 9c3d: a6 37       .7       ; ...
+    sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6       ; store it
+    ldx zp_general                                                    ; 9c3d: a6 37       .7       ; restore the pending operator
     tya                                                               ; 9c3f: 98          .        ; string result
     beq c9c45                                                         ; 9c40: f0 03       ..       ; loop for further + or -
 ; ***************************************************************************************

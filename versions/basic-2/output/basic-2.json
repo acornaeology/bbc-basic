@@ -48970,7 +48970,7 @@
         132,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_1",
@@ -48983,7 +48983,7 @@
         132,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_2",
@@ -48996,7 +48996,7 @@
         132,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa_3",
@@ -49060,7 +49060,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -49329,7 +49329,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -49610,7 +49610,7 @@
         134,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the pending operator (X)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general",
@@ -49623,7 +49623,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "index the stacked left length",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -49634,7 +49634,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "left length",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -49647,7 +49647,7 @@
         101,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "plus the right length",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_strbuf_len",
@@ -49681,7 +49681,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep it on the stack",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -49708,7 +49708,7 @@
       "labels": [
         "loop_c9c2d"
       ],
-      "comment_inline": "...",
+      "comment_inline": "right string byte (at Y)",
       "xref_summaries": [
         "&9c2d referenced 1 time by &9c35"
       ],
@@ -49728,7 +49728,7 @@
         255,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the new tail (at X)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l05ff,x",
@@ -49740,7 +49740,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "back one destination",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -49749,7 +49749,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back one source",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -49795,7 +49795,7 @@
         133,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -49808,7 +49808,7 @@
         166,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "restore the pending operator",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_general",
