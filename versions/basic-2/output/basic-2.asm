@@ -2918,9 +2918,9 @@ l848a = sub_c847b+15
     bcc c8f2e                                                         ; 8f43: 90 e9       ..       ; none: error
     jsr check_end_of_statement                                        ; 8f45: 20 57 98     W.      ; check the statement ends
     lda zp_iwa                                                        ; 8f48: a5 2a       .*       ; Save the end line
-    sta zp_fileblk                                                    ; 8f4a: 85 39       .9       ; ...
-    lda zp_iwa_1                                                      ; 8f4c: a5 2b       .+       ; ...
-    sta l003a                                                         ; 8f4e: 85 3a       .:       ; ...
+    sta zp_fileblk                                                    ; 8f4a: 85 39       .9       ; low to &39,
+    lda zp_iwa_1                                                      ; 8f4c: a5 2b       .+       ; high byte,
+    sta l003a                                                         ; 8f4e: 85 3a       .:       ; to &3A
     jsr unstack_integer                                               ; 8f50: 20 ea bd     ..      ; Recover the start line
 ; &8f53 referenced 1 time by &8f64
 .loop_c8f53
@@ -2928,26 +2928,26 @@ l848a = sub_c847b+15
     jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.      ; Find the next line number
     jsr iwa_inc                                                       ; 8f59: 20 22 92     ".      ; Advance the line counter
     lda zp_fileblk                                                    ; 8f5c: a5 39       .9       ; past the end line?
-    cmp zp_iwa                                                        ; 8f5e: c5 2a       .*       ; ...
-    lda l003a                                                         ; 8f60: a5 3a       .:       ; ...
-    sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; ...
+    cmp zp_iwa                                                        ; 8f5e: c5 2a       .*       ; end low - line low,
+    lda l003a                                                         ; 8f60: a5 3a       .:       ; end high,
+    sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; - line high
     bcs loop_c8f53                                                    ; 8f64: b0 ed       ..       ; no: delete the next
     jmp c8af3                                                         ; 8f66: 4c f3 8a    L..      ; done: immediate mode
 ; &8f69 referenced 2 times by &8fa3, &90ac
 .sub_c8f69
     lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
-    jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..      ; ...
+    jsr int_result_a                                                  ; 8f6b: 20 d8 ae     ..      ; IWA = 10
     jsr check_line_number                                             ; 8f6e: 20 df 97     ..      ; Read the start line if given
     jsr stack_integer                                                 ; 8f71: 20 94 bd     ..      ; stack it
     lda #&0a                                                          ; 8f74: a9 0a       ..       ; Default increment = 10
-    jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; ...
+    jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; IWA = 10
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,       ; ',' increment given?
     bne c8f8d                                                         ; 8f7e: d0 0d       ..       ; no: use the default
     jsr check_line_number                                             ; 8f80: 20 df 97     ..      ; Read the increment
     lda zp_iwa_1                                                      ; 8f83: a5 2b       .+       ; zero?
     bne c8fdf                                                         ; 8f85: d0 58       .X       ; no
-    lda zp_iwa                                                        ; 8f87: a5 2a       .*       ; ...
+    lda zp_iwa                                                        ; 8f87: a5 2a       .*       ; low byte zero too?
     beq c8fdf                                                         ; 8f89: f0 54       .T       ; zero increment: error
     inc zp_text_ptr_off                                               ; 8f8b: e6 0a       ..       ; step past
 ; &8f8d referenced 1 time by &8f7e
@@ -2957,15 +2957,15 @@ l848a = sub_c847b+15
 ; &8f92 referenced 2 times by &8fae, &9040
 .sub_c8f92
     lda zp_top                                                        ; 8f92: a5 12       ..       ; Copy TOP to &3B/&3C
-    sta zp_fwb_sign                                                   ; 8f94: 85 3b       .;       ; ...
-    lda zp_top_1                                                      ; 8f96: a5 13       ..       ; ...
-    sta zp_fwb_ovf                                                    ; 8f98: 85 3c       .<       ; ...
+    sta zp_fwb_sign                                                   ; 8f94: 85 3b       .;       ; low to &3B,
+    lda zp_top_1                                                      ; 8f96: a5 13       ..       ; high byte,
+    sta zp_fwb_ovf                                                    ; 8f98: 85 3c       .<       ; to &3C
 ; &8f9a referenced 1 time by &8fe7
 .sub_c8f9a
     lda zp_page                                                       ; 8f9a: a5 18       ..       ; Point &37/&38 at PAGE
-    sta zp_general_1                                                  ; 8f9c: 85 38       .8       ; ...
-    lda #1                                                            ; 8f9e: a9 01       ..       ; ...
-    sta zp_general                                                    ; 8fa0: 85 37       .7       ; ...
+    sta zp_general_1                                                  ; 8f9c: 85 38       .8       ; page to &38,
+    lda #1                                                            ; 8f9e: a9 01       ..       ; offset 1,
+    sta zp_general                                                    ; 8fa0: 85 37       .7       ; low byte &37
     rts                                                               ; 8fa2: 60          `        ; Return
 ; ***************************************************************************************
 ; RENUMBER

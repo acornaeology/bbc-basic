@@ -27225,7 +27225,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "low to &39,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -27238,7 +27238,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -27251,7 +27251,7 @@
         133,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &3A",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -27342,7 +27342,7 @@
         197,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "end low - line low,",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_iwa",
@@ -27355,7 +27355,7 @@
         165,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "end high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l003a",
@@ -27368,7 +27368,7 @@
         229,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "- line high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -27430,7 +27430,7 @@
         216,
         174
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA = 10",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -27483,7 +27483,7 @@
         216,
         174
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA = 10",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -27574,7 +27574,7 @@
         165,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte zero too?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -27672,7 +27672,7 @@
         133,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "low to &3B,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -27685,7 +27685,7 @@
         165,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_top_1",
@@ -27698,7 +27698,7 @@
         133,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &3C",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_ovf",
@@ -27733,7 +27733,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "page to &38,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -27746,7 +27746,7 @@
         169,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset 1,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -27757,7 +27757,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte &37",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
