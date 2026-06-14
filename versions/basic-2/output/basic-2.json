@@ -95690,9 +95690,9 @@
       "comment_inline": "no: check for a range comma",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb5cf",
+      "operand": "list_skip_spaces",
       "target": 46543,
-      "target_label": "cb5cf"
+      "target_label": "list_skip_spaces"
     },
     {
       "addr": 46526,
@@ -95728,9 +95728,9 @@
       "comment_inline": "yes: read the end line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb5d8",
+      "operand": "list_end_line",
       "target": 46552,
-      "target_label": "cb5d8"
+      "target_label": "list_end_line"
     },
     {
       "addr": 46533,
@@ -95782,9 +95782,9 @@
       "comment_inline": "always taken",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cb5db",
+      "operand": "list_save_end",
       "target": 46555,
-      "target_label": "cb5db"
+      "target_label": "list_save_end"
     },
     {
       "addr": 46543,
@@ -95794,7 +95794,7 @@
         138
       ],
       "labels": [
-        "cb5cf"
+        "list_skip_spaces"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -95829,9 +95829,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb5d8",
+      "operand": "list_end_line",
       "target": 46552,
-      "target_label": "cb5d8"
+      "target_label": "list_end_line"
     },
     {
       "addr": 46550,
@@ -95854,7 +95854,7 @@
         151
       ],
       "labels": [
-        "cb5d8"
+        "list_end_line"
       ],
       "comment_inline": "Read the end line number",
       "xref_summaries": [
@@ -95877,7 +95877,7 @@
         42
       ],
       "labels": [
-        "cb5db"
+        "list_save_end"
       ],
       "comment_inline": "Save the end line",
       "xref_summaries": [
@@ -96048,9 +96048,9 @@
       "comment_inline": "exact line: start here",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb60f",
+      "operand": "list_past_end",
       "target": 46607,
-      "target_label": "cb60f"
+      "target_label": "list_past_end"
     },
     {
       "addr": 46585,
@@ -96070,9 +96070,9 @@
       "comment_inline": "inexact: start at the next line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb602",
+      "operand": "list_check_high",
       "target": 46594,
-      "target_label": "cb602"
+      "target_label": "list_check_high"
     },
     {
       "addr": 46588,
@@ -96082,7 +96082,7 @@
         188
       ],
       "labels": [
-        "loop_cb5fc"
+        "list_line_loop"
       ],
       "comment_inline": "Newline after the previous line",
       "xref_summaries": [
@@ -96118,7 +96118,7 @@
         11
       ],
       "labels": [
-        "cb602"
+        "list_check_high"
       ],
       "comment_inline": "This line's number: high byte",
       "xref_summaries": [
@@ -96219,7 +96219,7 @@
         42
       ],
       "labels": [
-        "cb60f"
+        "list_past_end"
       ],
       "comment_inline": "Past the end line?",
       "xref_summaries": [
@@ -96291,9 +96291,9 @@
       "comment_inline": "no: list this line",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb61d",
+      "operand": "list_print_num",
       "target": 46621,
-      "target_label": "cb61d"
+      "target_label": "list_print_num"
     },
     {
       "addr": 46618,
@@ -96317,7 +96317,7 @@
         153
       ],
       "labels": [
-        "cb61d"
+        "list_print_num"
       ],
       "comment_inline": "Print the line number",
       "xref_summaries": [
@@ -96464,7 +96464,7 @@
         10
       ],
       "labels": [
-        "cb637"
+        "list_line_offset"
       ],
       "comment_inline": "Line offset",
       "xref_summaries": [
@@ -96486,7 +96486,7 @@
         11
       ],
       "labels": [
-        "cb639"
+        "list_char_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -96522,9 +96522,9 @@
       "comment_inline": "yes: next line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb5fc",
+      "operand": "list_line_loop",
       "target": 46588,
-      "target_label": "loop_cb5fc"
+      "target_label": "list_line_loop"
     },
     {
       "addr": 46655,
@@ -96546,9 +96546,9 @@
       "comment_inline": "no: a token or literal",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb651",
+      "operand": "list_in_quote",
       "target": 46673,
-      "target_label": "cb651"
+      "target_label": "list_in_quote"
     },
     {
       "addr": 46659,
@@ -96606,7 +96606,7 @@
         181
       ],
       "labels": [
-        "loop_cb64b"
+        "list_emit"
       ],
       "comment_inline": "do it",
       "xref_summaries": [
@@ -96639,9 +96639,9 @@
       "comment_inline": "continue the line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb639",
+      "operand": "list_char_loop",
       "target": 46649,
-      "target_label": "cb639"
+      "target_label": "list_char_loop"
     },
     {
       "addr": 46673,
@@ -96650,7 +96650,7 @@
         77
       ],
       "labels": [
-        "cb651"
+        "list_in_quote"
       ],
       "comment_inline": "Inside a quoted string?",
       "xref_summaries": [
@@ -96674,9 +96674,9 @@
       "comment_inline": "yes: print literally",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cb64b",
+      "operand": "list_emit",
       "target": 46667,
-      "target_label": "loop_cb64b"
+      "target_label": "list_emit"
     },
     {
       "addr": 46677,
@@ -96698,9 +96698,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb668",
+      "operand": "list_for_token",
       "target": 46696,
-      "target_label": "cb668"
+      "target_label": "list_for_token"
     },
     {
       "addr": 46681,
@@ -96777,9 +96777,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb637",
+      "operand": "list_line_offset",
       "target": 46647,
-      "target_label": "cb637"
+      "target_label": "list_line_offset"
     },
     {
       "addr": 46696,
@@ -96788,7 +96788,7 @@
         227
       ],
       "labels": [
-        "cb668"
+        "list_for_token"
       ],
       "comment_inline": "FOR token?",
       "xref_summaries": [
@@ -96810,9 +96810,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb66e",
+      "operand": "list_next_token",
       "target": 46702,
-      "target_label": "cb66e"
+      "target_label": "list_next_token"
     },
     {
       "addr": 46700,
@@ -96834,7 +96834,7 @@
         237
       ],
       "labels": [
-        "cb66e"
+        "list_next_token"
       ],
       "comment_inline": "NEXT token?",
       "xref_summaries": [
@@ -96856,9 +96856,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb678",
+      "operand": "list_repeat_token",
       "target": 46712,
-      "target_label": "cb678"
+      "target_label": "list_repeat_token"
     },
     {
       "addr": 46706,
@@ -96882,9 +96882,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb678",
+      "operand": "list_repeat_token",
       "target": 46712,
-      "target_label": "cb678"
+      "target_label": "list_repeat_token"
     },
     {
       "addr": 46710,
@@ -96906,7 +96906,7 @@
         245
       ],
       "labels": [
-        "cb678"
+        "list_repeat_token"
       ],
       "comment_inline": "REPEAT token?",
       "xref_summaries": [
@@ -96929,9 +96929,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb67e",
+      "operand": "list_until_token",
       "target": 46718,
-      "target_label": "cb67e"
+      "target_label": "list_until_token"
     },
     {
       "addr": 46716,
@@ -96953,7 +96953,7 @@
         253
       ],
       "labels": [
-        "cb67e"
+        "list_until_token"
       ],
       "comment_inline": "UNTIL token?",
       "xref_summaries": [
@@ -96975,9 +96975,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb688",
+      "operand": "list_print_char",
       "target": 46728,
-      "target_label": "cb688"
+      "target_label": "list_print_char"
     },
     {
       "addr": 46722,
@@ -97001,9 +97001,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb688",
+      "operand": "list_print_char",
       "target": 46728,
-      "target_label": "cb688"
+      "target_label": "list_print_char"
     },
     {
       "addr": 46726,
@@ -97026,7 +97026,7 @@
         181
       ],
       "labels": [
-        "cb688"
+        "list_print_char"
       ],
       "comment_inline": "De-tokenise and print the character",
       "xref_summaries": [
@@ -97060,9 +97060,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb639",
+      "operand": "list_char_loop",
       "target": 46649,
-      "target_label": "cb639"
+      "target_label": "list_char_loop"
     },
     {
       "addr": 46734,
@@ -97070,7 +97070,7 @@
         0
       ],
       "labels": [
-        "cb68e"
+        "list_error"
       ],
       "comment_inline": "No FN error",
       "xref_summaries": [
@@ -97138,9 +97138,9 @@
       "comment_inline": "a variable named after NEXT?",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb6a3",
+      "operand": "next_bad_var",
       "target": 46755,
-      "target_label": "cb6a3"
+      "target_label": "next_bad_var"
     },
     {
       "addr": 46746,
@@ -97164,9 +97164,9 @@
       "comment_inline": "no FOR active: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb68e",
+      "operand": "list_error",
       "target": 46734,
-      "target_label": "cb68e"
+      "target_label": "list_error"
     },
     {
       "addr": 46750,
@@ -97177,9 +97177,9 @@
       "comment_inline": "no variable: use the innermost loop",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb6d7",
+      "operand": "next_found",
       "target": 46807,
-      "target_label": "cb6d7"
+      "target_label": "next_found"
     },
     {
       "addr": 46752,
@@ -97189,7 +97189,7 @@
         152
       ],
       "labels": [
-        "loop_cb6a0"
+        "next_not_var"
       ],
       "comment_inline": "not a variable: error",
       "xref_summaries": [
@@ -97211,7 +97211,7 @@
         251
       ],
       "labels": [
-        "cb6a3"
+        "next_bad_var"
       ],
       "comment_inline": "string/array: not a loop variable",
       "xref_summaries": [
@@ -97222,9 +97222,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_cb6a0",
+      "operand": "next_not_var",
       "target": 46752,
-      "target_label": "loop_cb6a0"
+      "target_label": "next_not_var"
     },
     {
       "addr": 46757,
@@ -97248,9 +97248,9 @@
       "comment_inline": "not found: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb68e",
+      "operand": "list_error",
       "target": 46734,
-      "target_label": "cb68e"
+      "target_label": "list_error"
     },
     {
       "addr": 46761,
@@ -97259,7 +97259,7 @@
         42
       ],
       "labels": [
-        "loop_cb6a9"
+        "next_find_frame"
       ],
       "comment_inline": "Find the matching FOR frame on the stack",
       "xref_summaries": [
@@ -97297,9 +97297,9 @@
       "comment_inline": "no: next frame",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb6be",
+      "operand": "next_discard_frame",
       "target": 46782,
-      "target_label": "cb6be"
+      "target_label": "next_discard_frame"
     },
     {
       "addr": 46768,
@@ -97337,9 +97337,9 @@
       "comment_inline": "no: next frame",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb6be",
+      "operand": "next_discard_frame",
       "target": 46782,
-      "target_label": "cb6be"
+      "target_label": "next_discard_frame"
     },
     {
       "addr": 46775,
@@ -97377,9 +97377,9 @@
       "comment_inline": "match: this loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb6d7",
+      "operand": "next_found",
       "target": 46807,
-      "target_label": "cb6d7"
+      "target_label": "next_found"
     },
     {
       "addr": 46782,
@@ -97387,7 +97387,7 @@
         138
       ],
       "labels": [
-        "cb6be"
+        "next_discard_frame"
       ],
       "comment_inline": "Not this loop: discard the frame and look outward",
       "xref_summaries": [
@@ -97451,9 +97451,9 @@
       "comment_inline": "keep searching",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb6a9",
+      "operand": "next_find_frame",
       "target": 46761,
-      "target_label": "loop_cb6a9"
+      "target_label": "next_find_frame"
     },
     {
       "addr": 46791,
@@ -97504,7 +97504,7 @@
         4
       ],
       "labels": [
-        "cb6d7"
+        "next_found"
       ],
       "comment_inline": "Found: reload the control variable to update it",
       "xref_summaries": [
@@ -97594,9 +97594,9 @@
       "comment_inline": "yes: float NEXT",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb766",
+      "operand": "next_float",
       "target": 46950,
-      "target_label": "cb766"
+      "target_label": "next_float"
     },
     {
       "addr": 46824,
@@ -98044,9 +98044,9 @@
       "comment_inline": "at the limit: last iteration, continue",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb741",
+      "operand": "next_continue",
       "target": 46913,
-      "target_label": "cb741"
+      "target_label": "next_continue"
     },
     {
       "addr": 46898,
@@ -98094,9 +98094,9 @@
       "comment_inline": "sign positive: use the carry test",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cb73f",
+      "operand": "next_exit",
       "target": 46911,
-      "target_label": "cb73f"
+      "target_label": "next_exit"
     },
     {
       "addr": 46907,
@@ -98107,9 +98107,9 @@
       "comment_inline": "within range: continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb741",
+      "operand": "next_continue",
       "target": 46913,
-      "target_label": "cb741"
+      "target_label": "next_continue"
     },
     {
       "addr": 46909,
@@ -98120,9 +98120,9 @@
       "comment_inline": "past: exit the loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb751",
+      "operand": "next_pop_frame",
       "target": 46929,
-      "target_label": "cb751"
+      "target_label": "next_pop_frame"
     },
     {
       "addr": 46911,
@@ -98131,7 +98131,7 @@
         16
       ],
       "labels": [
-        "cb73f"
+        "next_exit"
       ],
       "comment_inline": "past: exit the loop",
       "xref_summaries": [
@@ -98142,9 +98142,9 @@
       ],
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb751",
+      "operand": "next_pop_frame",
       "target": 46929,
-      "target_label": "cb751"
+      "target_label": "next_pop_frame"
     },
     {
       "addr": 46913,
@@ -98154,7 +98154,7 @@
         4
       ],
       "labels": [
-        "cb741"
+        "next_continue"
       ],
       "comment_inline": "Continue: reload the loop-back position:",
       "xref_summaries": [
@@ -98248,7 +98248,7 @@
         38
       ],
       "labels": [
-        "cb751"
+        "next_pop_frame"
       ],
       "comment_inline": "Exit: pop the FOR frame:",
       "xref_summaries": [
@@ -98359,9 +98359,9 @@
       "comment_inline": "no: end of statement",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb7a1",
+      "operand": "next_end",
       "target": 47009,
-      "target_label": "cb7a1"
+      "target_label": "next_end"
     },
     {
       "addr": 46947,
@@ -98385,7 +98385,7 @@
         179
       ],
       "labels": [
-        "cb766"
+        "next_float"
       ],
       "comment_inline": "Float loop: load the control variable",
       "xref_summaries": [
@@ -98656,9 +98656,9 @@
       "comment_inline": "at the limit: continue",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb741",
+      "operand": "next_continue",
       "target": 46913,
-      "target_label": "cb741"
+      "target_label": "next_continue"
     },
     {
       "addr": 46996,
@@ -98683,9 +98683,9 @@
       "comment_inline": "negative step",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb79d",
+      "operand": "next_in_range",
       "target": 47005,
-      "target_label": "cb79d"
+      "target_label": "next_in_range"
     },
     {
       "addr": 47001,
@@ -98696,9 +98696,9 @@
       "comment_inline": "within range: continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb741",
+      "operand": "next_continue",
       "target": 46913,
-      "target_label": "cb741"
+      "target_label": "next_continue"
     },
     {
       "addr": 47003,
@@ -98709,9 +98709,9 @@
       "comment_inline": "past: exit",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb751",
+      "operand": "next_pop_frame",
       "target": 46929,
-      "target_label": "cb751"
+      "target_label": "next_pop_frame"
     },
     {
       "addr": 47005,
@@ -98720,7 +98720,7 @@
         162
       ],
       "labels": [
-        "cb79d"
+        "next_in_range"
       ],
       "comment_inline": "within range: continue",
       "xref_summaries": [
@@ -98731,9 +98731,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb741",
+      "operand": "next_continue",
       "target": 46913,
-      "target_label": "cb741"
+      "target_label": "next_continue"
     },
     {
       "addr": 47007,
@@ -98744,9 +98744,9 @@
       "comment_inline": "past: exit",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb751",
+      "operand": "next_pop_frame",
       "target": 46929,
-      "target_label": "cb751"
+      "target_label": "next_pop_frame"
     },
     {
       "addr": 47009,
@@ -98756,7 +98756,7 @@
         139
       ],
       "labels": [
-        "cb7a1"
+        "next_end"
       ],
       "comment_inline": "End of statement",
       "xref_summaries": [
@@ -98777,7 +98777,7 @@
         0
       ],
       "labels": [
-        "cb7a4"
+        "no_for_error"
       ],
       "comment_inline": "No FOR error block",
       "xref_summaries": [
@@ -98824,7 +98824,7 @@
         0
       ],
       "labels": [
-        "loop_cb7b0"
+        "too_many_fors"
       ],
       "comment_inline": "error block",
       "xref_summaries": [
@@ -98871,7 +98871,7 @@
         0
       ],
       "labels": [
-        "loop_cb7bd"
+        "cant_match_for"
       ],
       "comment_inline": "error block",
       "xref_summaries": [
@@ -98932,9 +98932,9 @@
       "comment_inline": "not a variable: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb7a4",
+      "operand": "no_for_error",
       "target": 47012,
-      "target_label": "cb7a4"
+      "target_label": "no_for_error"
     },
     {
       "addr": 47049,
@@ -98945,9 +98945,9 @@
       "comment_inline": "indirection: error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb7a4",
+      "operand": "no_for_error",
       "target": 47012,
-      "target_label": "cb7a4"
+      "target_label": "no_for_error"
     },
     {
       "addr": 47051,
@@ -99024,9 +99024,9 @@
       "comment_inline": "yes: error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_cb7b0",
+      "operand": "too_many_fors",
       "target": 47024,
-      "target_label": "loop_cb7b0"
+      "target_label": "too_many_fors"
     },
     {
       "addr": 47066,
@@ -99152,9 +99152,9 @@
       "comment_inline": "no: No TO error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb7bd",
+      "operand": "cant_match_for",
       "target": 47037,
-      "target_label": "loop_cb7bd"
+      "target_label": "cant_match_for"
     },
     {
       "addr": 47089,
@@ -99176,9 +99176,9 @@
       "comment_inline": "yes: real FOR loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb84f",
+      "operand": "for_eval_limit",
       "target": 47183,
-      "target_label": "cb84f"
+      "target_label": "for_eval_limit"
     },
     {
       "addr": 47093,
@@ -99374,9 +99374,9 @@
       "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb81f",
+      "operand": "for_sync",
       "target": 47135,
-      "target_label": "cb81f"
+      "target_label": "for_sync"
     },
     {
       "addr": 47130,
@@ -99412,7 +99412,7 @@
         10
       ],
       "labels": [
-        "cb81f"
+        "for_sync"
       ],
       "comment_inline": "Sync the program pointer",
       "xref_summaries": [
@@ -99556,7 +99556,7 @@
         152
       ],
       "labels": [
-        "cb837"
+        "for_skip_body"
       ],
       "comment_inline": "Step over the loop body to find its start",
       "xref_summaries": [
@@ -99702,7 +99702,7 @@
         155
       ],
       "labels": [
-        "cb84f"
+        "for_eval_limit"
       ],
       "comment_inline": "Evaluate the limit",
       "xref_summaries": [
@@ -99863,9 +99863,9 @@
       "comment_inline": "no: use the default",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb875",
+      "operand": "for_sync2",
       "target": 47221,
-      "target_label": "cb875"
+      "target_label": "for_sync2"
     },
     {
       "addr": 47213,
@@ -99915,7 +99915,7 @@
         10
       ],
       "labels": [
-        "cb875"
+        "for_sync2"
       ],
       "comment_inline": "Sync the program pointer",
       "xref_summaries": [
@@ -100024,9 +100024,9 @@
       "comment_inline": "Join the common tail",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb837",
+      "operand": "for_skip_body",
       "target": 47159,
-      "target_label": "cb837"
+      "target_label": "for_skip_body"
     },
     {
       "addr": 47240,
