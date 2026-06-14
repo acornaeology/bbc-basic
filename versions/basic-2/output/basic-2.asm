@@ -5413,9 +5413,9 @@ oscli            = &fff7
 .if_then_line
     jsr check_line_number                                             ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
     bcc if_no_then                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
-    jsr cb9af                                                         ; 98e8: 20 af b9     ..      ; yes: set up the line number...
+    jsr flt_find                                                      ; 98e8: 20 af b9     ..      ; yes: set up the line number...
     jsr reset_offset_1                                                ; 98eb: 20 77 98     w.      ; to the line start, test Escape
-    jmp cb8d2                                                         ; 98ee: 4c d2 b8    L..      ; ...and GOTO it
+    jmp goto_trace                                                    ; 98ee: 4c d2 b8    L..      ; ...and GOTO it
 ; &98f1 referenced 1 time by &98d8
 .if_false
     ldy zp_text_ptr_off                                               ; 98f1: a4 0a       ..       ; False: scan the rest of the line for ELSE
@@ -12636,7 +12636,7 @@ oscli            = &fff7
     lda zp_text_ptr_1                                                 ; b899: a5 0c       ..       ; return position high byte
     sta gosub_stack_hi,y                                              ; b89b: 99 e6 05    ...      ; store it
     inc zp_gosub_level                                                ; b89e: e6 25       .%       ; one more nesting level
-    bcc cb8d2                                                         ; b8a0: 90 30       .0       ; jump to the line
+    bcc goto_trace                                                    ; b8a0: 90 30       .0       ; jump to the line
 ; &b8a2 referenced 1 time by &b892
 .err_too_many_gosubs
     brk                                                               ; b8a2: 00          .        ; Too many GOSUBs error
@@ -12685,21 +12685,21 @@ oscli            = &fff7
     jsr find_line_target                                              ; b8cc: 20 9a b9     ..      ; Resolve the destination line
     jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.      ; check the statement ends
 ; &b8d2 referenced 3 times by &98ee, &b8a0, &b967
-.cb8d2
+.goto_trace
     lda zp_trace_flag                                                 ; b8d2: a5 20       .        ; TRACE: report the destination line number
-    beq cb8d9                                                         ; b8d4: f0 03       ..       ; TRACE off?
+    beq goto_dest_ptr                                                 ; b8d4: f0 03       ..       ; TRACE off?
     jsr trace_line                                                    ; b8d6: 20 05 99     ..      ; trace the line
 ; &b8d9 referenced 1 time by &b8d4
-.cb8d9
+.goto_dest_ptr
     ldy zp_fwb_exp                                                    ; b8d9: a4 3d       .=       ; Destination line pointer
     lda zp_fwb_m1                                                     ; b8db: a5 3e       .>       ; high byte
 ; &b8dd referenced 1 time by &bbd3
-.cb8dd
+.goto_jump
     sty zp_text_ptr                                                   ; b8dd: 84 0b       ..       ; Point the interpreter at the destination line
     sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..       ; PtrA high
     jmp next_statement                                                ; b8e1: 4c a3 8b    L..      ; execute from there
 ; &b8e4 referenced 1 time by &b8f7
-.loop_cb8e4
+.goto_check_end
     jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.      ; Check the statement ends
     lda #&33 ; '3'                                                    ; b8e7: a9 33       .3       ; Restore the default error handler
     sta zp_error_vec                                                  ; b8e9: 85 16       ..       ; low byte = &33,
@@ -12707,10 +12707,10 @@ oscli            = &fff7
     sta zp_error_vec_1                                                ; b8ed: 85 17       ..       ; handler at &B433
     jmp statement_loop                                                ; b8ef: 4c 9b 8b    L..      ; next statement
 ; &b8f2 referenced 1 time by &b91a
-.loop_cb8f2
+.goto_char_loop
     jsr skip_spaces                                                   ; b8f2: 20 97 8a     ..      ; Next character
     cmp #&87                                                          ; b8f5: c9 87       ..       ; OFF token?
-    beq loop_cb8e4                                                    ; b8f7: f0 eb       ..       ; yes: ON ERROR OFF
+    beq goto_check_end                                                ; b8f7: f0 eb       ..       ; yes: ON ERROR OFF
     ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..       ; Point at the handler statement
     dey                                                               ; b8fb: 88          .        ; back up,
     jsr skip_to_statement_end                                         ; b8fc: 20 6d 98     m.      ; check Escape
@@ -12720,7 +12720,7 @@ oscli            = &fff7
     sta zp_error_vec_1                                                ; b905: 85 17       ..       ; store it
     jmp stmt_data                                                     ; b907: 4c 7d 8b    L}.      ; skip the rest of the line
 ; &b90a referenced 1 time by &b92f
-.loop_cb90a
+.on_syntax_error
     brk                                                               ; b90a: 00          .        ; ON syntax error
     equb &27, &ee                                                     ; b90b: 27 ee       '.    
     equs " syntax"                                                    ; b90d: 20 73 79...  sy...
@@ -12741,7 +12741,7 @@ oscli            = &fff7
 .stmt_on
     jsr skip_spaces                                                   ; b915: 20 97 8a     ..      ; Next character
     cmp #&85                                                          ; b918: c9 85       ..       ; ERROR token?
-    beq loop_cb8f2                                                    ; b91a: f0 d6       ..       ; yes: ON ERROR
+    beq goto_char_loop                                                ; b91a: f0 d6       ..       ; yes: ON ERROR
     dec zp_text_ptr_off                                               ; b91c: c6 0a       ..       ; Back up over the character
     jsr eval_expr                                                     ; b91e: 20 1d 9b     ..      ; Evaluate the selector
     jsr coerce_to_integer                                             ; b921: 20 f0 92     ..      ; coerce to integer
@@ -12749,79 +12749,79 @@ oscli            = &fff7
     iny                                                               ; b926: c8          .        ; past the token,
     sty zp_text_ptr_off                                               ; b927: 84 0a       ..       ; sync the offset
     cpx #&e5                                                          ; b929: e0 e5       ..       ; GOTO token?
-    beq cb931                                                         ; b92b: f0 04       ..       ; yes
+    beq on_save_token                                                 ; b92b: f0 04       ..       ; yes
     cpx #&e4                                                          ; b92d: e0 e4       ..       ; GOSUB token?
-    bne loop_cb90a                                                    ; b92f: d0 d9       ..       ; no: syntax error
+    bne on_syntax_error                                               ; b92f: d0 d9       ..       ; no: syntax error
 ; &b931 referenced 1 time by &b92b
-.cb931
+.on_save_token
     txa                                                               ; b931: 8a          .        ; Save the GOTO/GOSUB token
     pha                                                               ; b932: 48          H        ; push it
     lda zp_iwa_1                                                      ; b933: a5 2b       .+       ; Selector > 255?
     ora zp_iwa_2                                                      ; b935: 05 2c       .,       ; OR byte 2,
     ora zp_iwa_3                                                      ; b937: 05 2d       .-       ; byte 3 (any => > 255)
-    bne cb97d                                                         ; b939: d0 42       .B       ; yes: out of range
+    bne on_out_of_range                                               ; b939: d0 42       .B       ; yes: out of range
     ldx zp_iwa                                                        ; b93b: a6 2a       .*       ; Selector zero?
-    beq cb97d                                                         ; b93d: f0 3e       .>       ; yes: out of range
+    beq on_out_of_range                                               ; b93d: f0 3e       .>       ; yes: out of range
     dex                                                               ; b93f: ca          .        ; Count down to the n-th destination
-    beq cb95c                                                         ; b940: f0 1a       ..       ; reached it: use the first
+    beq on_read_dest                                                  ; b940: f0 1a       ..       ; reached it: use the first
     ldy zp_text_ptr_off                                               ; b942: a4 0a       ..       ; Line index
 ; &b944 referenced 2 times by &b955, &b958
-.cb944
+.on_char_loop
     lda (zp_text_ptr),y                                               ; b944: b1 0b       ..       ; Next character
     iny                                                               ; b946: c8          .        ; advance
     cmp #&0d                                                          ; b947: c9 0d       ..       ; end of line?
-    beq cb97d                                                         ; b949: f0 32       .2       ; yes: out of range
+    beq on_out_of_range                                               ; b949: f0 32       .2       ; yes: out of range
     cmp #&3a ; ':'                                                    ; b94b: c9 3a       .:       ; ':' end of statement?
-    beq cb97d                                                         ; b94d: f0 2e       ..       ; yes: out of range
+    beq on_out_of_range                                               ; b94d: f0 2e       ..       ; yes: out of range
     cmp #&8b                                                          ; b94f: c9 8b       ..       ; ELSE?
-    beq cb97d                                                         ; b951: f0 2a       .*       ; yes: out of range
+    beq on_out_of_range                                               ; b951: f0 2a       .*       ; yes: out of range
     cmp #&2c ; ','                                                    ; b953: c9 2c       .,       ; ',' separator?
-    bne cb944                                                         ; b955: d0 ed       ..       ; no: keep scanning
+    bne on_char_loop                                                  ; b955: d0 ed       ..       ; no: keep scanning
     dex                                                               ; b957: ca          .        ; count this destination
-    bne cb944                                                         ; b958: d0 ea       ..       ; not yet reached: continue
+    bne on_char_loop                                                  ; b958: d0 ea       ..       ; not yet reached: continue
     sty zp_text_ptr_off                                               ; b95a: 84 0a       ..       ; Save the line index
 ; &b95c referenced 1 time by &b940
-.cb95c
+.on_read_dest
     jsr find_line_target                                              ; b95c: 20 9a b9     ..      ; Read the destination line number
     pla                                                               ; b95f: 68          h        ; Recover the token
     cmp #&e4                                                          ; b960: c9 e4       ..       ; GOSUB?
-    beq cb96a                                                         ; b962: f0 06       ..       ; yes
+    beq on_gosub_ptr                                                  ; b962: f0 06       ..       ; yes
     jsr reset_offset_1                                                ; b964: 20 77 98     w.      ; GOTO: update the index and check Escape
-    jmp cb8d2                                                         ; b967: 4c d2 b8    L..      ; jump to the line
+    jmp goto_trace                                                    ; b967: 4c d2 b8    L..      ; jump to the line
 ; &b96a referenced 1 time by &b962
-.cb96a
+.on_gosub_ptr
     ldy zp_text_ptr_off                                               ; b96a: a4 0a       ..       ; GOSUB: line pointer
 ; &b96c referenced 1 time by &b975
-.loop_cb96c
+.on_skip_loop
     lda (zp_text_ptr),y                                               ; b96c: b1 0b       ..       ; Next character
     iny                                                               ; b96e: c8          .        ; advance
     cmp #&0d                                                          ; b96f: c9 0d       ..       ; end of line?
-    beq cb977                                                         ; b971: f0 04       ..       ; yes: return point here
+    beq on_return_index                                               ; b971: f0 04       ..       ; yes: return point here
     cmp #&3a ; ':'                                                    ; b973: c9 3a       .:       ; ':' separator?
-    bne loop_cb96c                                                    ; b975: d0 f5       ..       ; no: keep scanning to the return point
+    bne on_skip_loop                                                  ; b975: d0 f5       ..       ; no: keep scanning to the return point
 ; &b977 referenced 1 time by &b971
-.cb977
+.on_return_index
     dey                                                               ; b977: 88          .        ; Set the return index
     sty zp_text_ptr_off                                               ; b978: 84 0a       ..       ; save it
     jmp cb88b                                                         ; b97a: 4c 8b b8    L..      ; do the GOSUB
 ; &b97d referenced 5 times by &b939, &b93d, &b949, &b94d, &b951
-.cb97d
+.on_out_of_range
     ldy zp_text_ptr_off                                               ; b97d: a4 0a       ..       ; Out of range: line index
     pla                                                               ; b97f: 68          h        ; drop the token
 ; &b980 referenced 1 time by &b989
-.loop_cb980
+.on_scan_loop
     lda (zp_text_ptr),y                                               ; b980: b1 0b       ..       ; Next character
     iny                                                               ; b982: c8          .        ; advance
     cmp #&8b                                                          ; b983: c9 8b       ..       ; ELSE?
-    beq cb995                                                         ; b985: f0 0e       ..       ; yes: use it
+    beq on_else                                                       ; b985: f0 0e       ..       ; yes: use it
     cmp #&0d                                                          ; b987: c9 0d       ..       ; end of line?
-    bne loop_cb980                                                    ; b989: d0 f5       ..       ; no: keep scanning
+    bne on_scan_loop                                                  ; b989: d0 f5       ..       ; no: keep scanning
     brk                                                               ; b98b: 00          .        ; ON range error
     equb &28, &ee                                                     ; b98c: 28 ee       (.    
     equs " range"                                                     ; b98e: 20 72 61...  ra...
     equb &00                                                          ; b994: 00          .     
 ; &b995 referenced 1 time by &b985
-.cb995
+.on_else
     sty zp_text_ptr_off                                               ; b995: 84 0a       ..       ; Step past ELSE
     jmp if_then_line                                                  ; b997: 4c e3 98    L..      ; execute what follows
 ; ***************************************************************************************
@@ -12841,7 +12841,7 @@ oscli            = &fff7
 ; &b99a referenced 4 times by &b888, &b8cc, &b95c, &baff
 .find_line_target
     jsr check_line_number                                             ; b99a: 20 df 97     ..      ; Embedded line-number token?
-    bcs cb9af                                                         ; b99d: b0 10       ..       ; yes: use it
+    bcs flt_find                                                      ; b99d: b0 10       ..       ; yes: use it
     jsr eval_expr                                                     ; b99f: 20 1d 9b     ..      ; Evaluate the line-number expression
     jsr coerce_to_integer                                             ; b9a2: 20 f0 92     ..      ; ensure integer
     lda zp_text_ptr2_off                                              ; b9a5: a5 1b       ..       ; Update the program pointer
@@ -12850,7 +12850,7 @@ oscli            = &fff7
     and #&7f                                                          ; b9ab: 29 7f       ).       ; (so GOTO &8000+n == GOTO n)
     sta zp_iwa_1                                                      ; b9ad: 85 2b       .+       ; store the masked high byte
 ; &b9af referenced 2 times by &98e8, &b99d
-.cb9af
+.flt_find
     jsr find_program_line                                             ; b9af: 20 70 99     p.      ; Find the line
     bcs err_no_such_line                                              ; b9b2: b0 01       ..       ; not found: No such line
     rts                                                               ; b9b4: 60          `        ; Return
@@ -12860,31 +12860,31 @@ oscli            = &fff7
     equs ")No such line"                                              ; b9b6: 29 4e 6f... )No...
     equb &00                                                          ; b9c3: 00          .     
 ; &b9c4 referenced 2 times by &ba00, &ba1b
-.cb9c4
+.flt_type_error
     jmp err_type_mismatch                                             ; b9c4: 4c 0e 8c    L..      ; Type mismatch error
 ; &b9c7 referenced 1 time by &b9e7
-.loop_cb9c7
+.flt_mistake
     jmp syntax_error                                                  ; b9c7: 4c 2a 98    L*.      ; Mistake error
 ; &b9ca referenced 1 time by &b9df
-.loop_cb9ca
+.flt_sync
     sty zp_text_ptr_off                                               ; b9ca: 84 0a       ..       ; Sync the pointer
     jmp stmt_check_end                                                ; b9cc: 4c 98 8b    L..      ; check the statement ends
 ; &b9cf referenced 1 time by &ba49
-.loop_cb9cf
+.inputf_skip_hash
     dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..       ; Back up over "#"
     jsr sub_cbfa9                                                     ; b9d1: 20 a9 bf     ..      ; Get the file handle
     lda zp_text_ptr2_off                                              ; b9d4: a5 1b       ..       ; Sync the program pointer
     sta zp_text_ptr_off                                               ; b9d6: 85 0a       ..       ; from the PtrB offset
     sty l004d                                                         ; b9d8: 84 4d       .M       ; save the handle
 ; &b9da referenced 2 times by &ba16, &ba3c
-.cb9da
+.inputf_skip_spaces
     jsr skip_spaces                                                   ; b9da: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,       ; ',' another variable?
-    bne loop_cb9ca                                                    ; b9df: d0 e9       ..       ; no: done
+    bne flt_sync                                                      ; b9df: d0 e9       ..       ; no: done
     lda l004d                                                         ; b9e1: a5 4d       .M       ; Save the handle
     pha                                                               ; b9e3: 48          H        ; push it
     jsr parse_lvalue                                                  ; b9e4: 20 82 95     ..      ; Parse the target variable
-    beq loop_cb9c7                                                    ; b9e7: f0 de       ..       ; end: error
+    beq flt_mistake                                                   ; b9e7: f0 de       ..       ; end: error
     lda zp_text_ptr2_off                                              ; b9e9: a5 1b       ..       ; Sync the program pointer
     sta zp_text_ptr_off                                               ; b9eb: 85 0a       ..       ; from the PtrB offset
     pla                                                               ; b9ed: 68          h        ; Recover the handle
@@ -12895,52 +12895,52 @@ oscli            = &fff7
     jsr osbget                                                        ; b9f6: 20 d7 ff     ..      ; Read the type byte
     sta zp_var_type                                                   ; b9f9: 85 27       .'       ; save it
     plp                                                               ; b9fb: 28          (        ; restore the type flags
-    bcc cba19                                                         ; b9fc: 90 1b       ..       ; string?
+    bcc inputf_numeric                                                ; b9fc: 90 1b       ..       ; string?
     lda zp_var_type                                                   ; b9fe: a5 27       .'       ; String type byte
-    bne cb9c4                                                         ; ba00: d0 c2       ..       ; mismatch: error
+    bne flt_type_error                                                ; ba00: d0 c2       ..       ; mismatch: error
     jsr osbget                                                        ; ba02: 20 d7 ff     ..      ; Read the length
     sta zp_strbuf_len                                                 ; ba05: 85 36       .6       ; store the length,
     tax                                                               ; ba07: aa          .        ; into X as the count
-    beq cba13                                                         ; ba08: f0 09       ..       ; empty
+    beq inputf_assign_str                                             ; ba08: f0 09       ..       ; empty
 ; &ba0a referenced 1 time by &ba11
-.loop_cba0a
+.inputf_read_loop
     jsr osbget                                                        ; ba0a: 20 d7 ff     ..      ; Read a character
     sta l05ff,x                                                       ; ba0d: 9d ff 05    ...      ; into the buffer (reversed),
     dex                                                               ; ba10: ca          .        ; next character
-    bne loop_cba0a                                                    ; ba11: d0 f7       ..       ; loop
+    bne inputf_read_loop                                              ; ba11: d0 f7       ..       ; loop
 ; &ba13 referenced 1 time by &ba08
-.cba13
+.inputf_assign_str
     jsr assign_string                                                 ; ba13: 20 1e 8c     ..      ; Assign the string
-    jmp cb9da                                                         ; ba16: 4c da b9    L..      ; next variable
+    jmp inputf_skip_spaces                                            ; ba16: 4c da b9    L..      ; next variable
 ; &ba19 referenced 1 time by &b9fc
-.cba19
+.inputf_numeric
     lda zp_var_type                                                   ; ba19: a5 27       .'       ; Numeric type byte
-    beq cb9c4                                                         ; ba1b: f0 a7       ..       ; mismatch: error
-    bmi cba2b                                                         ; ba1d: 30 0c       0.       ; real?
+    beq flt_type_error                                                ; ba1b: f0 a7       ..       ; mismatch: error
+    bmi inputf_real                                                   ; ba1d: 30 0c       0.       ; real?
     ldx #3                                                            ; ba1f: a2 03       ..       ; Integer: 4 bytes
 ; &ba21 referenced 1 time by &ba27
-.loop_cba21
+.inputf_int_loop
     jsr osbget                                                        ; ba21: 20 d7 ff     ..      ; Read a byte
     sta zp_iwa,x                                                      ; ba24: 95 2a       .*       ; into IWA (MSB first),
     dex                                                               ; ba26: ca          .        ; next byte
-    bpl loop_cba21                                                    ; ba27: 10 f8       ..       ; loop
-    bmi cba39                                                         ; ba29: 30 0e       0.       ; assign
+    bpl inputf_int_loop                                               ; ba27: 10 f8       ..       ; loop
+    bmi inputf_assign_num                                             ; ba29: 30 0e       0.       ; assign
 ; &ba2b referenced 1 time by &ba1d
-.cba2b
+.inputf_real
     ldx #4                                                            ; ba2b: a2 04       ..       ; Real: 5 bytes
 ; &ba2d referenced 1 time by &ba34
-.loop_cba2d
+.inputf_real_loop
     jsr osbget                                                        ; ba2d: 20 d7 ff     ..      ; Read a byte
     sta fp_temp1,x                                                    ; ba30: 9d 6c 04    .l.      ; into TEMP1 (MSB first),
     dex                                                               ; ba33: ca          .        ; next byte
-    bpl loop_cba2d                                                    ; ba34: 10 f7       ..       ; loop
+    bpl inputf_real_loop                                              ; ba34: 10 f7       ..       ; loop
     jsr fwa_unpack_temp1                                              ; ba36: 20 b2 a3     ..      ; unpack into FWA
 ; &ba39 referenced 1 time by &ba29
-.cba39
+.inputf_assign_num
     jsr assign_number                                                 ; ba39: 20 b4 b4     ..      ; Assign the number
-    jmp cb9da                                                         ; ba3c: 4c da b9    L..      ; next variable
+    jmp inputf_skip_spaces                                            ; ba3c: 4c da b9    L..      ; next variable
 ; &ba3f referenced 1 time by &ba82
-.loop_cba3f
+.inputf_drop_loop
     pla                                                               ; ba3f: 68          h        ; Drop the stacked values
     pla                                                               ; ba40: 68          h        ; (continued)
     jmp stmt_check_end                                                ; ba41: 4c 98 8b    L..      ; done
@@ -12960,7 +12960,7 @@ oscli            = &fff7
 .stmt_input
     jsr skip_spaces                                                   ; ba44: 20 97 8a     ..      ; Next non-space character
     cmp #&23 ; '#'                                                    ; ba47: c9 23       .#       ; '#': INPUT# from a file
-    beq loop_cb9cf                                                    ; ba49: f0 84       ..       ; go handle INPUT#
+    beq inputf_skip_hash                                              ; ba49: f0 84       ..       ; go handle INPUT#
     cmp #&86                                                          ; ba4b: c9 86       ..       ; LINE token?
     beq cba52                                                         ; ba4d: f0 03       ..       ; yes: LINE mode (carry set)
     dec zp_text_ptr_off                                               ; ba4f: c6 0a       ..       ; no: step back, carry clear
@@ -12998,7 +12998,7 @@ oscli            = &fff7
     lda l004e                                                         ; ba7c: a5 4e       .N       ; &4E,
     pha                                                               ; ba7e: 48          H        ; push it
     jsr parse_lvalue                                                  ; ba7f: 20 82 95     ..      ; Parse the target variable
-    beq loop_cba3f                                                    ; ba82: f0 bb       ..       ; end of statement: done
+    beq inputf_drop_loop                                              ; ba82: f0 bb       ..       ; end of statement: done
     pla                                                               ; ba84: 68          h        ; Restore the flags
     sta l004e                                                         ; ba85: 85 4e       .N       ; &4E,
     pla                                                               ; ba87: 68          h        ; pull &4D,
@@ -13248,7 +13248,7 @@ oscli            = &fff7
 .cbbcd
     ldy l05a3,x                                                       ; bbcd: bc a3 05    ...      ; Reload the saved loop-start position
     lda l05b7,x                                                       ; bbd0: bd b7 05    ...      ; Reload the loop position: high
-    jmp cb8dd                                                         ; bbd3: 4c dd b8    L..      ; jump back to the REPEAT
+    jmp goto_jump                                                     ; bbd3: 4c dd b8    L..      ; jump back to the REPEAT
 ; &bbd6 referenced 1 time by &bbe8
 .err_too_many_repeats
     brk                                                               ; bbd6: 00          .        ; BRK error block: too many REPEATs
@@ -14493,7 +14493,6 @@ save pydis_start, pydis_end
 ;     zp_lomem:                      6
 ;     zp_lomem_1:                    6
 ;     asm_absolute:                  5
-;     cb97d:                         5
 ;     clear_vars_heap_stack:         5
 ;     cmp_combine:                   5
 ;     compare_values:                5
@@ -14509,6 +14508,7 @@ save pydis_start, pydis_end
 ;     next_continue:                 5
 ;     nta_digit_pos:                 5
 ;     num_type_error:                5
+;     on_out_of_range:               5
 ;     osword:                        5
 ;     print_sync:                    5
 ;     resint_at:                     5
@@ -14576,7 +14576,6 @@ save pydis_start, pydis_end
 ;     c8858:                         3
 ;     ca7f7:                         3
 ;     call_arg_error:                3
-;     cb8d2:                         3
 ;     cbb07:                         3
 ;     cbb7a:                         3
 ;     check_subscript_bound:         3
@@ -14599,6 +14598,7 @@ save pydis_start, pydis_end
 ;     fwa_int_power:                 3
 ;     fwb_clear:                     3
 ;     general_next_byte:             3
+;     goto_trace:                    3
 ;     is_digit:                      3
 ;     iwa_negate:                    3
 ;     l0401:                         3
@@ -14671,10 +14671,6 @@ save pydis_start, pydis_end
 ;     caa4e:                         2
 ;     callpf_save_parser2:           2
 ;     callpf_unstack_arg:            2
-;     cb944:                         2
-;     cb9af:                         2
-;     cb9c4:                         2
-;     cb9da:                         2
 ;     cbb15:                         2
 ;     cbc55:                         2
 ;     cbcd6:                         2
@@ -14703,6 +14699,8 @@ save pydis_start, pydis_end
 ;     finddef_next_line:             2
 ;     finddef_scan:                  2
 ;     findvar_chain_head:            2
+;     flt_find:                      2
+;     flt_type_error:                2
 ;     fneg_done:                     2
 ;     fp_div_zero:                   2
 ;     fp_split_int_frac:             2
@@ -14729,6 +14727,7 @@ save pydis_start, pydis_end
 ;     imul16:                        2
 ;     index_array:                   2
 ;     inkeys_timeout:                2
+;     inputf_skip_spaces:            2
 ;     instr_compare:                 2
 ;     instr_not_found:               2
 ;     instr_type_error:              2
@@ -14777,6 +14776,7 @@ save pydis_start, pydis_end
 ;     nta_save_temp1:                2
 ;     nta_store_count:               2
 ;     number_to_ascii:               2
+;     on_char_loop:                  2
 ;     osargs:                        2
 ;     oscli:                         2
 ;     osfile:                        2
@@ -14992,17 +14992,6 @@ save pydis_start, pydis_end
 ;     callpf_string_formal:          1
 ;     cant_match_for:                1
 ;     cb88b:                         1
-;     cb8d9:                         1
-;     cb8dd:                         1
-;     cb931:                         1
-;     cb95c:                         1
-;     cb96a:                         1
-;     cb977:                         1
-;     cb995:                         1
-;     cba13:                         1
-;     cba19:                         1
-;     cba2b:                         1
-;     cba39:                         1
 ;     cba52:                         1
 ;     cba69:                         1
 ;     cba99:                         1
@@ -15137,6 +15126,8 @@ save pydis_start, pydis_end
 ;     findvar_cmp_b_loop:            1
 ;     findvar_match_a:               1
 ;     findvar_match_b:               1
+;     flt_mistake:                   1
+;     flt_sync:                      1
 ;     fn_asn:                        1
 ;     fn_ln:                         1
 ;     fn_return:                     1
@@ -15162,6 +15153,10 @@ save pydis_start, pydis_end
 ;     fwb_unpack_msb:                1
 ;     gosub_stack:                   1
 ;     gosub_stack_hi:                1
+;     goto_char_loop:                1
+;     goto_check_end:                1
+;     goto_dest_ptr:                 1
+;     goto_jump:                     1
 ;     hex_convert:                   1
 ;     hex_expand:                    1
 ;     hex_expand_loop:               1
@@ -15190,6 +15185,15 @@ save pydis_start, pydis_end
 ;     imul_overflow:                 1
 ;     inc_int_mantissa:              1
 ;     ineg_done:                     1
+;     inputf_assign_num:             1
+;     inputf_assign_str:             1
+;     inputf_drop_loop:              1
+;     inputf_int_loop:               1
+;     inputf_numeric:                1
+;     inputf_read_loop:              1
+;     inputf_real:                   1
+;     inputf_real_loop:              1
+;     inputf_skip_hash:              1
 ;     instr_advance:                 1
 ;     instr_cmp_loop:                1
 ;     instr_dest_index:              1
@@ -15274,18 +15278,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_cb8e4:                    1
-;     loop_cb8f2:                    1
-;     loop_cb90a:                    1
-;     loop_cb96c:                    1
-;     loop_cb980:                    1
-;     loop_cb9c7:                    1
-;     loop_cb9ca:                    1
-;     loop_cb9cf:                    1
-;     loop_cba0a:                    1
-;     loop_cba21:                    1
-;     loop_cba2d:                    1
-;     loop_cba3f:                    1
 ;     loop_cba5f:                    1
 ;     loop_cbabd:                    1
 ;     loop_cbb6f:                    1
@@ -15372,6 +15364,14 @@ save pydis_start, pydis_end
 ;     num_sign:                      1
 ;     obd_tens_loop:                 1
 ;     obd_units:                     1
+;     on_else:                       1
+;     on_gosub_ptr:                  1
+;     on_read_dest:                  1
+;     on_return_index:               1
+;     on_save_token:                 1
+;     on_scan_loop:                  1
+;     on_skip_loop:                  1
+;     on_syntax_error:               1
 ;     or_byte_loop:                  1
 ;     or_drop_stack:                 1
 ;     osasci:                        1
@@ -15621,23 +15621,6 @@ save pydis_start, pydis_end
 ;     ca7f7
 ;     caa4e
 ;     cb88b
-;     cb8d2
-;     cb8d9
-;     cb8dd
-;     cb931
-;     cb944
-;     cb95c
-;     cb96a
-;     cb977
-;     cb97d
-;     cb995
-;     cb9af
-;     cb9c4
-;     cb9da
-;     cba13
-;     cba19
-;     cba2b
-;     cba39
 ;     cba52
 ;     cba5a
 ;     cba69
@@ -15735,18 +15718,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_cb8e4
-;     loop_cb8f2
-;     loop_cb90a
-;     loop_cb96c
-;     loop_cb980
-;     loop_cb9c7
-;     loop_cb9ca
-;     loop_cb9cf
-;     loop_cba0a
-;     loop_cba21
-;     loop_cba2d
-;     loop_cba3f
 ;     loop_cba5f
 ;     loop_cbabd
 ;     loop_cbb6f

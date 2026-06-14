@@ -46347,9 +46347,9 @@
       "comment_inline": "yes: set up the line number...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cb9af",
+      "operand": "flt_find",
       "target": 47535,
-      "target_label": "cb9af"
+      "target_label": "flt_find"
     },
     {
       "addr": 39147,
@@ -46375,9 +46375,9 @@
       "comment_inline": "...and GOTO it",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb8d2",
+      "operand": "goto_trace",
       "target": 47314,
-      "target_label": "cb8d2"
+      "target_label": "goto_trace"
     },
     {
       "addr": 39153,
@@ -100181,9 +100181,9 @@
       "comment_inline": "jump to the line",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb8d2",
+      "operand": "goto_trace",
       "target": 47314,
-      "target_label": "cb8d2"
+      "target_label": "goto_trace"
     },
     {
       "addr": 47266,
@@ -100435,7 +100435,7 @@
         32
       ],
       "labels": [
-        "cb8d2"
+        "goto_trace"
       ],
       "comment_inline": "TRACE: report the destination line number",
       "xref_summaries": [
@@ -100461,9 +100461,9 @@
       "comment_inline": "TRACE off?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb8d9",
+      "operand": "goto_dest_ptr",
       "target": 47321,
-      "target_label": "cb8d9"
+      "target_label": "goto_dest_ptr"
     },
     {
       "addr": 47318,
@@ -100486,7 +100486,7 @@
         61
       ],
       "labels": [
-        "cb8d9"
+        "goto_dest_ptr"
       ],
       "comment_inline": "Destination line pointer",
       "xref_summaries": [
@@ -100521,7 +100521,7 @@
         11
       ],
       "labels": [
-        "cb8dd"
+        "goto_jump"
       ],
       "comment_inline": "Point the interpreter at the destination line",
       "xref_summaries": [
@@ -100571,7 +100571,7 @@
         152
       ],
       "labels": [
-        "loop_cb8e4"
+        "goto_check_end"
       ],
       "comment_inline": "Check the statement ends",
       "xref_summaries": [
@@ -100656,7 +100656,7 @@
         138
       ],
       "labels": [
-        "loop_cb8f2"
+        "goto_char_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -100691,9 +100691,9 @@
       "comment_inline": "yes: ON ERROR OFF",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb8e4",
+      "operand": "goto_check_end",
       "target": 47332,
-      "target_label": "loop_cb8e4"
+      "target_label": "goto_check_end"
     },
     {
       "addr": 47353,
@@ -100803,7 +100803,7 @@
         0
       ],
       "labels": [
-        "loop_cb90a"
+        "on_syntax_error"
       ],
       "comment_inline": "ON syntax error",
       "xref_summaries": [
@@ -100888,9 +100888,9 @@
       "comment_inline": "yes: ON ERROR",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb8f2",
+      "operand": "goto_char_loop",
       "target": 47346,
-      "target_label": "loop_cb8f2"
+      "target_label": "goto_char_loop"
     },
     {
       "addr": 47388,
@@ -100988,9 +100988,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb931",
+      "operand": "on_save_token",
       "target": 47409,
-      "target_label": "cb931"
+      "target_label": "on_save_token"
     },
     {
       "addr": 47405,
@@ -101012,9 +101012,9 @@
       "comment_inline": "no: syntax error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb90a",
+      "operand": "on_syntax_error",
       "target": 47370,
-      "target_label": "loop_cb90a"
+      "target_label": "on_syntax_error"
     },
     {
       "addr": 47409,
@@ -101022,7 +101022,7 @@
         138
       ],
       "labels": [
-        "cb931"
+        "on_save_token"
       ],
       "comment_inline": "Save the GOTO/GOSUB token",
       "xref_summaries": [
@@ -101091,9 +101091,9 @@
       "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb97d",
+      "operand": "on_out_of_range",
       "target": 47485,
-      "target_label": "cb97d"
+      "target_label": "on_out_of_range"
     },
     {
       "addr": 47419,
@@ -101117,9 +101117,9 @@
       "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb97d",
+      "operand": "on_out_of_range",
       "target": 47485,
-      "target_label": "cb97d"
+      "target_label": "on_out_of_range"
     },
     {
       "addr": 47423,
@@ -101139,9 +101139,9 @@
       "comment_inline": "reached it: use the first",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb95c",
+      "operand": "on_read_dest",
       "target": 47452,
-      "target_label": "cb95c"
+      "target_label": "on_read_dest"
     },
     {
       "addr": 47426,
@@ -101163,7 +101163,7 @@
         11
       ],
       "labels": [
-        "cb944"
+        "on_char_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -101208,9 +101208,9 @@
       "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb97d",
+      "operand": "on_out_of_range",
       "target": 47485,
-      "target_label": "cb97d"
+      "target_label": "on_out_of_range"
     },
     {
       "addr": 47435,
@@ -101232,9 +101232,9 @@
       "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb97d",
+      "operand": "on_out_of_range",
       "target": 47485,
-      "target_label": "cb97d"
+      "target_label": "on_out_of_range"
     },
     {
       "addr": 47439,
@@ -101256,9 +101256,9 @@
       "comment_inline": "yes: out of range",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb97d",
+      "operand": "on_out_of_range",
       "target": 47485,
-      "target_label": "cb97d"
+      "target_label": "on_out_of_range"
     },
     {
       "addr": 47443,
@@ -101280,9 +101280,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb944",
+      "operand": "on_char_loop",
       "target": 47428,
-      "target_label": "cb944"
+      "target_label": "on_char_loop"
     },
     {
       "addr": 47447,
@@ -101302,9 +101302,9 @@
       "comment_inline": "not yet reached: continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb944",
+      "operand": "on_char_loop",
       "target": 47428,
-      "target_label": "cb944"
+      "target_label": "on_char_loop"
     },
     {
       "addr": 47450,
@@ -101327,7 +101327,7 @@
         185
       ],
       "labels": [
-        "cb95c"
+        "on_read_dest"
       ],
       "comment_inline": "Read the destination line number",
       "xref_summaries": [
@@ -101371,9 +101371,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb96a",
+      "operand": "on_gosub_ptr",
       "target": 47466,
-      "target_label": "cb96a"
+      "target_label": "on_gosub_ptr"
     },
     {
       "addr": 47460,
@@ -101399,9 +101399,9 @@
       "comment_inline": "jump to the line",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb8d2",
+      "operand": "goto_trace",
       "target": 47314,
-      "target_label": "cb8d2"
+      "target_label": "goto_trace"
     },
     {
       "addr": 47466,
@@ -101410,7 +101410,7 @@
         10
       ],
       "labels": [
-        "cb96a"
+        "on_gosub_ptr"
       ],
       "comment_inline": "GOSUB: line pointer",
       "xref_summaries": [
@@ -101432,7 +101432,7 @@
         11
       ],
       "labels": [
-        "loop_cb96c"
+        "on_skip_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -101476,9 +101476,9 @@
       "comment_inline": "yes: return point here",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb977",
+      "operand": "on_return_index",
       "target": 47479,
-      "target_label": "cb977"
+      "target_label": "on_return_index"
     },
     {
       "addr": 47475,
@@ -101500,9 +101500,9 @@
       "comment_inline": "no: keep scanning to the return point",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb96c",
+      "operand": "on_skip_loop",
       "target": 47468,
-      "target_label": "loop_cb96c"
+      "target_label": "on_skip_loop"
     },
     {
       "addr": 47479,
@@ -101510,7 +101510,7 @@
         136
       ],
       "labels": [
-        "cb977"
+        "on_return_index"
       ],
       "comment_inline": "Set the return index",
       "xref_summaries": [
@@ -101556,7 +101556,7 @@
         10
       ],
       "labels": [
-        "cb97d"
+        "on_out_of_range"
       ],
       "comment_inline": "Out of range: line index",
       "xref_summaries": [
@@ -101591,7 +101591,7 @@
         11
       ],
       "labels": [
-        "loop_cb980"
+        "on_scan_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -101635,9 +101635,9 @@
       "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb995",
+      "operand": "on_else",
       "target": 47509,
-      "target_label": "cb995"
+      "target_label": "on_else"
     },
     {
       "addr": 47495,
@@ -101659,9 +101659,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb980",
+      "operand": "on_scan_loop",
       "target": 47488,
-      "target_label": "loop_cb980"
+      "target_label": "on_scan_loop"
     },
     {
       "addr": 47499,
@@ -101714,7 +101714,7 @@
         10
       ],
       "labels": [
-        "cb995"
+        "on_else"
       ],
       "comment_inline": "Step past ELSE",
       "xref_summaries": [
@@ -101778,9 +101778,9 @@
       "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb9af",
+      "operand": "flt_find",
       "target": 47535,
-      "target_label": "cb9af"
+      "target_label": "flt_find"
     },
     {
       "addr": 47519,
@@ -101881,7 +101881,7 @@
         153
       ],
       "labels": [
-        "cb9af"
+        "flt_find"
       ],
       "comment_inline": "Find the line",
       "xref_summaries": [
@@ -101975,7 +101975,7 @@
         140
       ],
       "labels": [
-        "cb9c4"
+        "flt_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -101999,7 +101999,7 @@
         152
       ],
       "labels": [
-        "loop_cb9c7"
+        "flt_mistake"
       ],
       "comment_inline": "Mistake error",
       "xref_summaries": [
@@ -102021,7 +102021,7 @@
         10
       ],
       "labels": [
-        "loop_cb9ca"
+        "flt_sync"
       ],
       "comment_inline": "Sync the pointer",
       "xref_summaries": [
@@ -102057,7 +102057,7 @@
         10
       ],
       "labels": [
-        "loop_cb9cf"
+        "inputf_skip_hash"
       ],
       "comment_inline": "Back up over \"#\"",
       "xref_summaries": [
@@ -102133,7 +102133,7 @@
         138
       ],
       "labels": [
-        "cb9da"
+        "inputf_skip_spaces"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -102169,9 +102169,9 @@
       "comment_inline": "no: done",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb9ca",
+      "operand": "flt_sync",
       "target": 47562,
-      "target_label": "loop_cb9ca"
+      "target_label": "flt_sync"
     },
     {
       "addr": 47585,
@@ -102218,9 +102218,9 @@
       "comment_inline": "end: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb9c7",
+      "operand": "flt_mistake",
       "target": 47559,
-      "target_label": "loop_cb9c7"
+      "target_label": "flt_mistake"
     },
     {
       "addr": 47593,
@@ -102351,9 +102351,9 @@
       "comment_inline": "string?",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cba19",
+      "operand": "inputf_numeric",
       "target": 47641,
-      "target_label": "cba19"
+      "target_label": "inputf_numeric"
     },
     {
       "addr": 47614,
@@ -102377,9 +102377,9 @@
       "comment_inline": "mismatch: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb9c4",
+      "operand": "flt_type_error",
       "target": 47556,
-      "target_label": "cb9c4"
+      "target_label": "flt_type_error"
     },
     {
       "addr": 47618,
@@ -102426,9 +102426,9 @@
       "comment_inline": "empty",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cba13",
+      "operand": "inputf_assign_str",
       "target": 47635,
-      "target_label": "cba13"
+      "target_label": "inputf_assign_str"
     },
     {
       "addr": 47626,
@@ -102438,7 +102438,7 @@
         255
       ],
       "labels": [
-        "loop_cba0a"
+        "inputf_read_loop"
       ],
       "comment_inline": "Read a character",
       "xref_summaries": [
@@ -102485,9 +102485,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cba0a",
+      "operand": "inputf_read_loop",
       "target": 47626,
-      "target_label": "loop_cba0a"
+      "target_label": "inputf_read_loop"
     },
     {
       "addr": 47635,
@@ -102497,7 +102497,7 @@
         140
       ],
       "labels": [
-        "cba13"
+        "inputf_assign_str"
       ],
       "comment_inline": "Assign the string",
       "xref_summaries": [
@@ -102522,9 +102522,9 @@
       "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb9da",
+      "operand": "inputf_skip_spaces",
       "target": 47578,
-      "target_label": "cb9da"
+      "target_label": "inputf_skip_spaces"
     },
     {
       "addr": 47641,
@@ -102533,7 +102533,7 @@
         39
       ],
       "labels": [
-        "cba19"
+        "inputf_numeric"
       ],
       "comment_inline": "Numeric type byte",
       "xref_summaries": [
@@ -102557,9 +102557,9 @@
       "comment_inline": "mismatch: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb9c4",
+      "operand": "flt_type_error",
       "target": 47556,
-      "target_label": "cb9c4"
+      "target_label": "flt_type_error"
     },
     {
       "addr": 47645,
@@ -102570,9 +102570,9 @@
       "comment_inline": "real?",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cba2b",
+      "operand": "inputf_real",
       "target": 47659,
-      "target_label": "cba2b"
+      "target_label": "inputf_real"
     },
     {
       "addr": 47647,
@@ -102593,7 +102593,7 @@
         255
       ],
       "labels": [
-        "loop_cba21"
+        "inputf_int_loop"
       ],
       "comment_inline": "Read a byte",
       "xref_summaries": [
@@ -102639,9 +102639,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cba21",
+      "operand": "inputf_int_loop",
       "target": 47649,
-      "target_label": "loop_cba21"
+      "target_label": "inputf_int_loop"
     },
     {
       "addr": 47657,
@@ -102652,9 +102652,9 @@
       "comment_inline": "assign",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cba39",
+      "operand": "inputf_assign_num",
       "target": 47673,
-      "target_label": "cba39"
+      "target_label": "inputf_assign_num"
     },
     {
       "addr": 47659,
@@ -102663,7 +102663,7 @@
         4
       ],
       "labels": [
-        "cba2b"
+        "inputf_real"
       ],
       "comment_inline": "Real: 5 bytes",
       "xref_summaries": [
@@ -102684,7 +102684,7 @@
         255
       ],
       "labels": [
-        "loop_cba2d"
+        "inputf_real_loop"
       ],
       "comment_inline": "Read a byte",
       "xref_summaries": [
@@ -102731,9 +102731,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cba2d",
+      "operand": "inputf_real_loop",
       "target": 47661,
-      "target_label": "loop_cba2d"
+      "target_label": "inputf_real_loop"
     },
     {
       "addr": 47670,
@@ -102757,7 +102757,7 @@
         180
       ],
       "labels": [
-        "cba39"
+        "inputf_assign_num"
       ],
       "comment_inline": "Assign the number",
       "xref_summaries": [
@@ -102782,9 +102782,9 @@
       "comment_inline": "next variable",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb9da",
+      "operand": "inputf_skip_spaces",
       "target": 47578,
-      "target_label": "cb9da"
+      "target_label": "inputf_skip_spaces"
     },
     {
       "addr": 47679,
@@ -102792,7 +102792,7 @@
         104
       ],
       "labels": [
-        "loop_cba3f"
+        "inputf_drop_loop"
       ],
       "comment_inline": "Drop the stacked values",
       "xref_summaries": [
@@ -102864,9 +102864,9 @@
       "comment_inline": "go handle INPUT#",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb9cf",
+      "operand": "inputf_skip_hash",
       "target": 47567,
-      "target_label": "loop_cb9cf"
+      "target_label": "inputf_skip_hash"
     },
     {
       "addr": 47691,
@@ -103262,9 +103262,9 @@
       "comment_inline": "end of statement: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cba3f",
+      "operand": "inputf_drop_loop",
       "target": 47679,
-      "target_label": "loop_cba3f"
+      "target_label": "inputf_drop_loop"
     },
     {
       "addr": 47748,
@@ -105411,9 +105411,9 @@
       "comment_inline": "jump back to the REPEAT",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb8dd",
+      "operand": "goto_jump",
       "target": 47325,
-      "target_label": "cb8dd"
+      "target_label": "goto_jump"
     },
     {
       "addr": 48086,
