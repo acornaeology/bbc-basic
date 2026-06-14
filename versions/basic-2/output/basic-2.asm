@@ -5550,20 +5550,20 @@ l848a = sub_c847b+15
 ;     BRK: Division by zero
 ; &99be referenced 2 times by &9e01, &9e0a
 .iwa_divide
-    tay                                                               ; 99be: a8          .        ; Coerce the divisor to integer
-    jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..      ; IWA = the integer divisor
-    lda zp_iwa_3                                                      ; 99c2: a5 2d       .-       ; Save the divisor sign
+    tay                                                               ; 99be: a8          .        ; Coerce the dividend to integer
+    jsr coerce_to_integer                                             ; 99bf: 20 f0 92     ..      ; IWA = the integer dividend
+    lda zp_iwa_3                                                      ; 99c2: a5 2d       .-       ; Save the dividend sign
     pha                                                               ; 99c4: 48          H        ; push it
-    jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.      ; take |divisor|
-    jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..      ; Stack it, evaluate the dividend
+    jsr iwa_abs                                                       ; 99c5: 20 71 ad     q.      ; take |dividend|
+    jsr sub_c9e1d                                                     ; 99c8: 20 1d 9e     ..      ; Stack it, evaluate the divisor
     stx zp_var_type                                                   ; 99cb: 86 27       .'       ; remember the operator
-    tay                                                               ; 99cd: a8          .        ; coerce the dividend to integer
-    jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..      ; IWA = the integer dividend
-    pla                                                               ; 99d1: 68          h        ; Recover the divisor sign
+    tay                                                               ; 99cd: a8          .        ; coerce the divisor to integer
+    jsr coerce_to_integer                                             ; 99ce: 20 f0 92     ..      ; IWA = the integer divisor
+    pla                                                               ; 99d1: 68          h        ; Recover the dividend sign
     sta zp_general_1                                                  ; 99d2: 85 38       .8       ; remainder takes the dividend sign
-    eor zp_iwa_3                                                      ; 99d4: 45 2d       E-       ; quotient sign = divisor XOR dividend
+    eor zp_iwa_3                                                      ; 99d4: 45 2d       E-       ; quotient sign = dividend XOR divisor
     sta zp_general                                                    ; 99d6: 85 37       .7       ; store the quotient sign (&37)
-    jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.      ; take |dividend|
+    jsr iwa_abs                                                       ; 99d8: 20 71 ad     q.      ; take |divisor|
     ldx #&39 ; '9'                                                    ; 99db: a2 39       .9       ; Move the dividend to the work area (&39-&3C)
     jsr unstack_int_to_zp                                             ; 99dd: 20 0d be     ..      ; unpack starting at &39
     sty zp_fwb_exp                                                    ; 99e0: 84 3d       .=       ; Clear the remainder (&3D-&40)

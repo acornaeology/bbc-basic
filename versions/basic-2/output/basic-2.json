@@ -47703,7 +47703,7 @@
       "labels": [
         "iwa_divide"
       ],
-      "comment_inline": "Coerce the divisor to integer",
+      "comment_inline": "Coerce the dividend to integer",
       "xref_summaries": [
         "&99be referenced 2 times by &9e01, &9e0a"
       ],
@@ -47721,7 +47721,7 @@
         240,
         146
       ],
-      "comment_inline": "IWA = the integer divisor",
+      "comment_inline": "IWA = the integer dividend",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -47734,7 +47734,7 @@
         165,
         45
       ],
-      "comment_inline": "Save the divisor sign",
+      "comment_inline": "Save the dividend sign",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -47757,7 +47757,7 @@
         113,
         173
       ],
-      "comment_inline": "take |divisor|",
+      "comment_inline": "take |dividend|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
@@ -47771,7 +47771,7 @@
         29,
         158
       ],
-      "comment_inline": "Stack it, evaluate the dividend",
+      "comment_inline": "Stack it, evaluate the divisor",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9e1d",
@@ -47796,7 +47796,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "coerce the dividend to integer",
+      "comment_inline": "coerce the divisor to integer",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -47807,7 +47807,7 @@
         240,
         146
       ],
-      "comment_inline": "IWA = the integer dividend",
+      "comment_inline": "IWA = the integer divisor",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -47819,7 +47819,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "Recover the divisor sign",
+      "comment_inline": "Recover the dividend sign",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -47842,7 +47842,7 @@
         69,
         45
       ],
-      "comment_inline": "quotient sign = divisor XOR dividend",
+      "comment_inline": "quotient sign = dividend XOR divisor",
       "type": "code",
       "mnemonic": "eor",
       "operand": "zp_iwa_3",
@@ -47869,7 +47869,7 @@
         113,
         173
       ],
-      "comment_inline": "take |dividend|",
+      "comment_inline": "take |divisor|",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_abs",
