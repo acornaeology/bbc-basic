@@ -4042,7 +4042,7 @@ l848a = sub_c847b+15
 .c955b
     lda (zp_general),y                                                ; 955b: b1 37       .7       ; character...
     cmp #&30 ; '0'                                                    ; 955d: c9 30       .0       ; below "0": end of name
-    bcc return_12                                                     ; 955f: 90 18       ..       ; ...
+    bcc return_12                                                     ; 955f: 90 18       ..       ; below "0": stop
     cmp #&40 ; '@'                                                    ; 9561: c9 40       .@       ; in the digit/symbol range?
     bcs c9571                                                         ; 9563: b0 0c       ..       ; letter range: continue
     cmp #&3a ; ':'                                                    ; 9565: c9 3a       .:       ; ":" or above (not a digit)?
@@ -4057,7 +4057,7 @@ l848a = sub_c847b+15
 ; &9571 referenced 1 time by &9563
 .c9571
     cmp #&5f ; '_'                                                    ; 9571: c9 5f       ._       ; below "_"?
-    bcs c957a                                                         ; 9573: b0 05       ..       ; ...
+    bcs c957a                                                         ; 9573: b0 05       ..       ; "_" or lower-case: accept
     cmp #&5b ; '['                                                    ; 9575: c9 5b       .[       ; A-Z?
     bcc c956d                                                         ; 9577: 90 f4       ..       ; letter: accept
 ; &9579 referenced 3 times by &955f, &9567, &956b
@@ -8570,7 +8570,7 @@ l848a = sub_c847b+15
     lda (zp_text_ptr2),y                                              ; adb6: b1 19       ..       ; char
     sta string_work,x                                                 ; adb8: 9d 00 06    ...      ; into the buffer
     iny                                                               ; adbb: c8          .        ; next
-    inx                                                               ; adbc: e8          .        ; ...
+    inx                                                               ; adbc: e8          .        ; and the buffer index
     cmp #&0d                                                          ; adbd: c9 0d       ..       ; CR?
     beq cadc5                                                         ; adbf: f0 04       ..       ; end
     cmp #&2c ; ','                                                    ; adc1: c9 2c       .,       ; comma?
@@ -8592,11 +8592,11 @@ l848a = sub_c847b+15
     beq cade9                                                         ; add0: f0 17       ..       ; Missing " error
     iny                                                               ; add2: c8          .        ; next
     sta string_work,x                                                 ; add3: 9d 00 06    ...      ; into the buffer
-    inx                                                               ; add6: e8          .        ; ...
+    inx                                                               ; add6: e8          .        ; advance the buffer index
     cmp #&22                                                          ; add7: c9 22       ."       ; a quote?
     bne loop_cadcc                                                    ; add9: d0 f1       ..       ; no: keep copying
     lda (zp_text_ptr2),y                                              ; addb: b1 19       ..       ; doubled "" = a literal quote?
-    cmp #&22                                                          ; addd: c9 22       ."       ; ...
+    cmp #&22                                                          ; addd: c9 22       ."       ; also a quote?
     beq loop_cadcb                                                    ; addf: f0 ea       ..       ; yes: keep it
 ; &ade1 referenced 1 time by &adc6
 .cade1
@@ -11092,9 +11092,9 @@ l848a = sub_c847b+15
     ldx zp_repeat_level                                               ; bbba: a6 24       .$       ; UNTIL with no REPEAT pending: error
     beq err_no_repeat                                                 ; bbbc: f0 e8       ..       ; UNTIL with no REPEAT: error
     lda zp_iwa                                                        ; bbbe: a5 2a       .*       ; Test the condition for true (non-zero):
-    ora zp_iwa_1                                                      ; bbc0: 05 2b       .+       ; ...
-    ora zp_iwa_2                                                      ; bbc2: 05 2c       .,       ; ...
-    ora zp_iwa_3                                                      ; bbc4: 05 2d       .-       ; ...
+    ora zp_iwa_1                                                      ; bbc0: 05 2b       .+       ; byte 1,
+    ora zp_iwa_2                                                      ; bbc2: 05 2c       .,       ; byte 2,
+    ora zp_iwa_3                                                      ; bbc4: 05 2d       .-       ; byte 3
     beq cbbcd                                                         ; bbc6: f0 05       ..       ; Condition false: loop back to the REPEAT
     dec zp_repeat_level                                               ; bbc8: c6 24       .$       ; Condition true: pop the frame and continue
     jmp statement_loop                                                ; bbca: 4c 9b 8b    L..      ; true: exit the loop, continue
@@ -11381,7 +11381,7 @@ l848a = sub_c847b+15
     sbc #5                                                            ; bd54: e9 05       ..       ; Lower the stack by 5 bytes (a packed real)
     jsr reserve_stack                                                 ; bd56: 20 2e be     ..      ; reserve the space
     ldy #0                                                            ; bd59: a0 00       ..       ; Packed byte 0 = exponent
-    lda zp_fwa_exp                                                    ; bd5b: a5 30       .0       ; ...
+    lda zp_fwa_exp                                                    ; bd5b: a5 30       .0       ; read it
     sta (zp_stack_ptr),y                                              ; bd5d: 91 04       ..       ; (store)
     iny                                                               ; bd5f: c8          .        ; advance
     lda zp_fwa_sign                                                   ; bd60: a5 2e       ..       ; Take the sign...
@@ -11440,7 +11440,7 @@ l848a = sub_c847b+15
     sbc #4                                                            ; bd97: e9 04       ..       ; Lower the stack by 4 bytes (an integer)
     jsr reserve_stack                                                 ; bd99: 20 2e be     ..      ; reserve the space (check for room)
     ldy #3                                                            ; bd9c: a0 03       ..       ; Copy IWA, MSB first: byte 3
-    lda zp_iwa_3                                                      ; bd9e: a5 2d       .-       ; ...
+    lda zp_iwa_3                                                      ; bd9e: a5 2d       .-       ; read it
     sta (zp_stack_ptr),y                                              ; bda0: 91 04       ..       ; (store)
     dey                                                               ; bda2: 88          .        ; next
     lda zp_iwa_2                                                      ; bda3: a5 2c       .,       ; byte 2
@@ -11460,7 +11460,7 @@ l848a = sub_c847b+15
 ; &bdb2 referenced 9 times by &9ae7, &9c15, &abf7, &aced, &ad06, &afd7, &aff9, &b042, &bd90
 .stack_string
     clc                                                               ; bdb2: 18          .        ; From the stack top...
-    lda zp_stack_ptr                                                  ; bdb3: a5 04       ..       ; ...
+    lda zp_stack_ptr                                                  ; bdb3: a5 04       ..       ; low...
     sbc zp_strbuf_len                                                 ; bdb5: e5 36       .6       ; Lower the stack by length+1 bytes (carry clear)
     jsr reserve_stack                                                 ; bdb7: 20 2e be     ..      ; reserve the space
     ldy zp_strbuf_len                                                 ; bdba: a4 36       .6       ; string length
@@ -11723,7 +11723,7 @@ l848a = sub_c847b+15
 ; &bedd referenced 2 times by &be62, &bf0a
 .sub_cbedd
     jsr sub_cbed2                                                     ; bedd: 20 d2 be     ..      ; Evaluate the filename, CR-terminate
-    dey                                                               ; bee0: 88          .        ; ...
+    dey                                                               ; bee0: 88          .        ; Y = 0 for the low byte
     sty zp_fileblk                                                    ; bee1: 84 39       .9       ; LOAD address low = 0
     lda zp_page                                                       ; bee3: a5 18       ..       ; LOAD address high = PAGE
     sta l003a                                                         ; bee5: 85 3a       .:       ; (store)
@@ -11732,8 +11732,8 @@ l848a = sub_c847b+15
     lda #osbyte_read_high_order_address                               ; bee7: a9 82       ..       ; OSBYTE &82: read the high-order address
     jsr osbyte                                                        ; bee9: 20 f4 ff     ..      ; Read high-order address (machine high word)
     stx zp_fwb_sign                                                   ; beec: 86 3b       .;       ; set the LOAD high word
-    sty zp_fwb_ovf                                                    ; beee: 84 3c       .<       ; ...
-    lda #0                                                            ; bef0: a9 00       ..       ; ...
+    sty zp_fwb_ovf                                                    ; beee: 84 3c       .<       ; high word: X and Y
+    lda #0                                                            ; bef0: a9 00       ..       ; A = 0
     rts                                                               ; bef2: 60          `        ; Return
 ; ***************************************************************************************
 ; SAVE
@@ -11787,7 +11787,7 @@ l848a = sub_c847b+15
     jsr eval_after_eq                                                 ; bf34: 20 13 98     ..      ; Expect "=" and evaluate
     jsr sub_c92ee                                                     ; bf37: 20 ee 92     ..      ; coerce to integer
     pla                                                               ; bf3a: 68          h        ; Recover the handle
-    tay                                                               ; bf3b: a8          .        ; ...
+    tay                                                               ; bf3b: a8          .        ; Y = the handle
     ldx #&2a ; '*'                                                    ; bf3c: a2 2a       .*       ; Point at the value
     lda #1                                                            ; bf3e: a9 01       ..       ; Write the file pointer
     jsr osargs                                                        ; bf40: 20 da ff     ..      ; Write sequential file pointer from zero page address X (A=1)
@@ -11884,11 +11884,11 @@ l848a = sub_c847b+15
 ; &bfa9 referenced 5 times by &8d2d, &b9d1, &bf30, &bf58, &bf99
 .sub_cbfa9
     lda zp_text_ptr_off                                               ; bfa9: a5 0a       ..       ; Set PtrB = PtrA: offset
-    sta zp_text_ptr2_off                                              ; bfab: 85 1b       ..       ; ...
+    sta zp_text_ptr2_off                                              ; bfab: 85 1b       ..       ; (store)
     lda zp_text_ptr                                                   ; bfad: a5 0b       ..       ; low
-    sta zp_text_ptr2                                                  ; bfaf: 85 19       ..       ; ...
+    sta zp_text_ptr2                                                  ; bfaf: 85 19       ..       ; (store)
     lda zp_text_ptr_1                                                 ; bfb1: a5 0c       ..       ; high
-    sta zp_text_ptr2_1                                                ; bfb3: 85 1a       ..       ; ...
+    sta zp_text_ptr2_1                                                ; bfb3: 85 1a       ..       ; (store)
 ; ***************************************************************************************
 ; Evaluate a #channel argument
 ;

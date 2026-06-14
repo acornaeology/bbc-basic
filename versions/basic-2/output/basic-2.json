@@ -37603,7 +37603,7 @@
         144,
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "below \"0\": stop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "return_12",
@@ -37749,7 +37749,7 @@
         176,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "\"_\" or lower-case: accept",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c957a",
@@ -79690,7 +79690,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "and the buffer index",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -79887,7 +79887,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the buffer index",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -79934,7 +79934,7 @@
         201,
         34
       ],
-      "comment_inline": "...",
+      "comment_inline": "also a quote?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -102985,7 +102985,7 @@
         5,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -102998,7 +102998,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -103011,7 +103011,7 @@
         5,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -105761,7 +105761,7 @@
         165,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -106265,7 +106265,7 @@
         165,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -106431,7 +106431,7 @@
         165,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "low...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -108609,7 +108609,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y = 0 for the low byte",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -108705,7 +108705,7 @@
         132,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "high word: X and Y",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -108718,7 +108718,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -109158,7 +109158,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y = the handle",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -109830,7 +109830,7 @@
         133,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -109856,7 +109856,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -109882,7 +109882,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
