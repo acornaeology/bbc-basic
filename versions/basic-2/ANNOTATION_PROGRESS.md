@@ -1,7 +1,13 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,073 of 7,129 placeholders left (15.1 %);
-depths 0–3 complete.** Inline-comment *density* is 100 %, but that
+**STATUS: in progress — 1,011 of 7,129 placeholders left (14.2 %);
+depths 0–3 complete.**
+
+**Note for `stmt_dim` (depth 5):** its descriptor byte 0 leads are
+mislabelled the same way index_array's was — &91C4 "Store the dimension
+count" actually stores the *data offset* (1 + 2*dims), and &91B7
+"Recover the element size" actually recovers that *offset* (the element
+size is the following pla at &91BA). Fix when annotating stmt_dim. Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
 of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
@@ -9,8 +15,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 4 next:
-`index_array` (62), then `eval_power` (23), `eval_relational` (16),
-`eval_factor` (14), `fn_point` (7), and the rest of depths 4–8. Per routine:
+`eval_power` (23), then `eval_relational` (16), `eval_factor` (14),
+`fn_point` (7), `eval_or_eor` (6), and the rest of depths 4–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -203,3 +209,4 @@ placeholders goes first.
 | 2026-06-14 | depth 3: fwa_complement_half_pi | fwa_complement_half_pi (pi/2 - FWA two-part; ATN core: FWB build, arctan continued fraction) | 9 | 1096 | — |
 | 2026-06-14 | depth 3: read_input_line | read_input_line (prompt + OSWORD 0 read line: build the param block at &37) | 9 | 1087 | — |
 | 2026-06-14 | depth 3 complete | print_special_item (PRINT ' TAB SPC + inline string), stmt_if (IF condition test/THEN/ELSE), fwa_int_power (FWA^n) | 14 | 1073 | — |
+| 2026-06-14 | depth 4: index_array | index_array (array element address: row-major Horner over extents, x4/x5 element scale; +1 byte-0 = data-offset lead fix) | 62 | 1011 | — |
