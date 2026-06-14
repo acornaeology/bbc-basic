@@ -47109,7 +47109,7 @@
         73,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "toggle bit 7 (bias to unsigned),",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&80"
@@ -47120,7 +47120,7 @@
         133,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -47142,7 +47142,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "from offset 0,",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -47153,7 +47153,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked low byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47166,7 +47166,7 @@
         229,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus IWA low,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -47179,7 +47179,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the difference",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -47201,7 +47201,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked byte 1,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47214,7 +47214,7 @@
         229,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus IWA &2B,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -47227,7 +47227,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -47249,7 +47249,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked byte 2,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47262,7 +47262,7 @@
         229,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus IWA &2C,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -47275,7 +47275,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -47297,7 +47297,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked top byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -47310,7 +47310,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "reset Y (bytes done)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -47358,7 +47358,7 @@
         5,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "and &2B,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -47402,7 +47402,7 @@
         169,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "4 bytes,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#4"
@@ -47413,7 +47413,7 @@
         101,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ stack pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr",
@@ -47426,7 +47426,7 @@
         133,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -47439,7 +47439,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9ae5",
@@ -47452,7 +47452,7 @@
         230,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -47639,7 +47639,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked shorter: X = its length",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -47801,7 +47801,7 @@
         197,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked length vs current",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_strbuf_len",
@@ -47846,7 +47846,7 @@
         166,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "restore the saved pointer (X)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_general",

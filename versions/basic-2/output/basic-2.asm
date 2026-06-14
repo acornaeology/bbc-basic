@@ -5058,36 +5058,36 @@ l848a = sub_c847b+15
 ; Compare the integer operand against IWA and set flags.
 .iwa_test_var
     lda zp_iwa_3                                                      ; 9aad: a5 2d       .-       ; Flip the sign bit of the IWA top byte
-    eor #&80                                                          ; 9aaf: 49 80       I.       ; ...
-    sta zp_iwa_3                                                      ; 9ab1: 85 2d       .-       ; ...
+    eor #&80                                                          ; 9aaf: 49 80       I.       ; toggle bit 7 (bias to unsigned),
+    sta zp_iwa_3                                                      ; 9ab1: 85 2d       .-       ; store it back
     sec                                                               ; 9ab3: 38          8        ; Subtract IWA from the stacked integer: byte 0
-    ldy #0                                                            ; 9ab4: a0 00       ..       ; ...
-    lda (zp_stack_ptr),y                                              ; 9ab6: b1 04       ..       ; ...
-    sbc zp_iwa                                                        ; 9ab8: e5 2a       .*       ; ...
-    sta zp_iwa                                                        ; 9aba: 85 2a       .*       ; ...
+    ldy #0                                                            ; 9ab4: a0 00       ..       ; from offset 0,
+    lda (zp_stack_ptr),y                                              ; 9ab6: b1 04       ..       ; stacked low byte,
+    sbc zp_iwa                                                        ; 9ab8: e5 2a       .*       ; minus IWA low,
+    sta zp_iwa                                                        ; 9aba: 85 2a       .*       ; store the difference
     iny                                                               ; 9abc: c8          .        ; byte 1
-    lda (zp_stack_ptr),y                                              ; 9abd: b1 04       ..       ; ...
-    sbc zp_iwa_1                                                      ; 9abf: e5 2b       .+       ; ...
-    sta zp_iwa_1                                                      ; 9ac1: 85 2b       .+       ; ...
+    lda (zp_stack_ptr),y                                              ; 9abd: b1 04       ..       ; stacked byte 1,
+    sbc zp_iwa_1                                                      ; 9abf: e5 2b       .+       ; minus IWA &2B,
+    sta zp_iwa_1                                                      ; 9ac1: 85 2b       .+       ; store it
     iny                                                               ; 9ac3: c8          .        ; byte 2
-    lda (zp_stack_ptr),y                                              ; 9ac4: b1 04       ..       ; ...
-    sbc zp_iwa_2                                                      ; 9ac6: e5 2c       .,       ; ...
-    sta zp_iwa_2                                                      ; 9ac8: 85 2c       .,       ; ...
+    lda (zp_stack_ptr),y                                              ; 9ac4: b1 04       ..       ; stacked byte 2,
+    sbc zp_iwa_2                                                      ; 9ac6: e5 2c       .,       ; minus IWA &2C,
+    sta zp_iwa_2                                                      ; 9ac8: 85 2c       .,       ; store it
     iny                                                               ; 9aca: c8          .        ; byte 3 (top)
-    lda (zp_stack_ptr),y                                              ; 9acb: b1 04       ..       ; ...
-    ldy #0                                                            ; 9acd: a0 00       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; 9acb: b1 04       ..       ; stacked top byte,
+    ldy #0                                                            ; 9acd: a0 00       ..       ; reset Y (bytes done)
     eor #&80                                                          ; 9acf: 49 80       I.       ; flip its sign bit too
     sbc zp_iwa_3                                                      ; 9ad1: e5 2d       .-       ; finish the signed subtract: sets C
     ora zp_iwa                                                        ; 9ad3: 05 2a       .*       ; OR the low bytes...
-    ora zp_iwa_1                                                      ; 9ad5: 05 2b       .+       ; ...
+    ora zp_iwa_1                                                      ; 9ad5: 05 2b       .+       ; and &2B,
     ora zp_iwa_2                                                      ; 9ad7: 05 2c       .,       ; ...to set Z when the values are equal
     php                                                               ; 9ad9: 08          .        ; Save the comparison flags
     clc                                                               ; 9ada: 18          .        ; Drop the integer from the stack
-    lda #4                                                            ; 9adb: a9 04       ..       ; ...
-    adc zp_stack_ptr                                                  ; 9add: 65 04       e.       ; ...
-    sta zp_stack_ptr                                                  ; 9adf: 85 04       ..       ; ...
-    bcc c9ae5                                                         ; 9ae1: 90 02       ..       ; ...
-    inc zp_stack_ptr_1                                                ; 9ae3: e6 05       ..       ; ...
+    lda #4                                                            ; 9adb: a9 04       ..       ; 4 bytes,
+    adc zp_stack_ptr                                                  ; 9add: 65 04       e.       ; - stack pointer low,
+    sta zp_stack_ptr                                                  ; 9adf: 85 04       ..       ; store low,
+    bcc c9ae5                                                         ; 9ae1: 90 02       ..       ; no carry into the high byte
+    inc zp_stack_ptr_1                                                ; 9ae3: e6 05       ..       ; carry into the high byte
 ; &9ae5 referenced 1 time by &9ae1
 .c9ae5
     plp                                                               ; 9ae5: 28          (        ; Restore the flags
@@ -5105,7 +5105,7 @@ l848a = sub_c847b+15
     sta zp_fileblk                                                    ; 9af8: 85 39       .9       ; save it
     cmp zp_strbuf_len                                                 ; 9afa: c5 36       .6       ; compare lengths
     bcs c9aff                                                         ; 9afc: b0 01       ..       ; use the shorter
-    tax                                                               ; 9afe: aa          .        ; ...
+    tax                                                               ; 9afe: aa          .        ; stacked shorter: X = its length
 ; &9aff referenced 1 time by &9afc
 .c9aff
     stx l003a                                                         ; 9aff: 86 3a       .:       ; shorter length
@@ -5122,12 +5122,12 @@ l848a = sub_c847b+15
 ; &9b11 referenced 1 time by &9b05
 .c9b11
     lda zp_fileblk                                                    ; 9b11: a5 39       .9       ; Compare the lengths
-    cmp zp_strbuf_len                                                 ; 9b13: c5 36       .6       ; ...
+    cmp zp_strbuf_len                                                 ; 9b13: c5 36       .6       ; stacked length vs current
 ; &9b15 referenced 1 time by &9b0f
 .c9b15
     php                                                               ; 9b15: 08          .        ; Save the result
     jsr cbddc                                                         ; 9b16: 20 dc bd     ..      ; Drop the stacked string
-    ldx zp_general                                                    ; 9b19: a6 37       .7       ; ...
+    ldx zp_general                                                    ; 9b19: a6 37       .7       ; restore the saved pointer (X)
     plp                                                               ; 9b1b: 28          (        ; Restore the result
     rts                                                               ; 9b1c: 60          `        ; Return
 ; ***************************************************************************************
