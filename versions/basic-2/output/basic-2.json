@@ -22997,7 +22997,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the length,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23009,7 +23009,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "into X as the byte count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -23045,7 +23045,7 @@
         233,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte - 1,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#1"
@@ -23056,7 +23056,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "dest pointer low (&39),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -23068,7 +23068,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23078,7 +23078,7 @@
         177,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -23091,7 +23091,7 @@
         233,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "- borrow,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -23102,7 +23102,7 @@
         133,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "dest pointer high (&3A)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -23137,7 +23137,7 @@
         145,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the heap allocation,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_fileblk),y",
@@ -23149,7 +23149,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23158,7 +23158,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "count down",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -23270,7 +23270,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the length,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23282,7 +23282,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "into X as the count",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -23323,7 +23323,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read a char from the stack,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23335,7 +23335,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back to the destination offset,",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -23345,7 +23345,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it at the address,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23357,7 +23357,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23366,7 +23366,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "count down",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -23442,7 +23442,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23455,7 +23455,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23467,7 +23467,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23516,7 +23516,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23538,7 +23538,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23551,7 +23551,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23573,7 +23573,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -23586,7 +23586,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23598,7 +23598,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23647,7 +23647,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -23659,7 +23659,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -23687,7 +23687,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear for the stack drop",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -23767,7 +23767,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "(push it)",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -23851,7 +23851,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y for OSBPUT",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -23887,7 +23887,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "examine the type byte",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -23957,7 +23957,7 @@
         212,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it,",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbput",
@@ -23969,7 +23969,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte (MSB first)",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -24049,7 +24049,7 @@
         212,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it,",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbput",
@@ -24061,7 +24061,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte (MSB first)",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -24120,7 +24120,7 @@
         212,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it,",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbput",
@@ -24132,7 +24132,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "empty string?",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -24179,7 +24179,7 @@
         212,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it,",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osbput",
@@ -24191,7 +24191,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "next character (written in reverse)",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -24342,7 +24342,7 @@
         133,
         20
       ],
-      "comment_inline": "...",
+      "comment_inline": "the field width,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",

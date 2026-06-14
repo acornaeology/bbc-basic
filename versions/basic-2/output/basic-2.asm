@@ -2477,22 +2477,22 @@ l848a = sub_c847b+15
     beq c8cee                                                         ; 8cc5: f0 27       .'       ; yes
     bcc c8d03                                                         ; 8cc7: 90 3a       .:       ; numeric?
     ldy #0                                                            ; 8cc9: a0 00       ..       ; String variable: length on the stack
-    lda (zp_stack_ptr),y                                              ; 8ccb: b1 04       ..       ; ...
-    tax                                                               ; 8ccd: aa          .        ; ...
+    lda (zp_stack_ptr),y                                              ; 8ccb: b1 04       ..       ; read the length,
+    tax                                                               ; 8ccd: aa          .        ; into X as the byte count
     beq c8ce5                                                         ; 8cce: f0 15       ..       ; empty: just set the length
     lda (zp_general),y                                                ; 8cd0: b1 37       .7       ; Data address - 1 (for 1-based copy)
-    sbc #1                                                            ; 8cd2: e9 01       ..       ; ...
-    sta zp_fileblk                                                    ; 8cd4: 85 39       .9       ; ...
-    iny                                                               ; 8cd6: c8          .        ; ...
-    lda (zp_general),y                                                ; 8cd7: b1 37       .7       ; ...
-    sbc #0                                                            ; 8cd9: e9 00       ..       ; ...
-    sta l003a                                                         ; 8cdb: 85 3a       .:       ; ...
+    sbc #1                                                            ; 8cd2: e9 01       ..       ; low byte - 1,
+    sta zp_fileblk                                                    ; 8cd4: 85 39       .9       ; dest pointer low (&39),
+    iny                                                               ; 8cd6: c8          .        ; next
+    lda (zp_general),y                                                ; 8cd7: b1 37       .7       ; high byte
+    sbc #0                                                            ; 8cd9: e9 00       ..       ; - borrow,
+    sta l003a                                                         ; 8cdb: 85 3a       .:       ; dest pointer high (&3A)
 ; &8cdd referenced 1 time by &8ce3
 .loop_c8cdd
     lda (zp_stack_ptr),y                                              ; 8cdd: b1 04       ..       ; Copy the string bytes
-    sta (zp_fileblk),y                                                ; 8cdf: 91 39       .9       ; ...
-    iny                                                               ; 8ce1: c8          .        ; ...
-    dex                                                               ; 8ce2: ca          .        ; ...
+    sta (zp_fileblk),y                                                ; 8cdf: 91 39       .9       ; into the heap allocation,
+    iny                                                               ; 8ce1: c8          .        ; next byte,
+    dex                                                               ; 8ce2: ca          .        ; count down
     bne loop_c8cdd                                                    ; 8ce3: d0 f8       ..       ; loop
 ; &8ce5 referenced 1 time by &8cce
 .c8ce5
@@ -2505,17 +2505,17 @@ l848a = sub_c847b+15
 ; &8cee referenced 1 time by &8cc5
 .c8cee
     ldy #0                                                            ; 8cee: a0 00       ..       ; $addr: length on the stack
-    lda (zp_stack_ptr),y                                              ; 8cf0: b1 04       ..       ; ...
-    tax                                                               ; 8cf2: aa          .        ; ...
+    lda (zp_stack_ptr),y                                              ; 8cf0: b1 04       ..       ; read the length,
+    tax                                                               ; 8cf2: aa          .        ; into X as the count
     beq c8cff                                                         ; 8cf3: f0 0a       ..       ; empty: just the terminator
 ; &8cf5 referenced 1 time by &8cfd
 .loop_c8cf5
     iny                                                               ; 8cf5: c8          .        ; Copy the string to the address
-    lda (zp_stack_ptr),y                                              ; 8cf6: b1 04       ..       ; ...
-    dey                                                               ; 8cf8: 88          .        ; ...
-    sta (zp_general),y                                                ; 8cf9: 91 37       .7       ; ...
-    iny                                                               ; 8cfb: c8          .        ; ...
-    dex                                                               ; 8cfc: ca          .        ; ...
+    lda (zp_stack_ptr),y                                              ; 8cf6: b1 04       ..       ; read a char from the stack,
+    dey                                                               ; 8cf8: 88          .        ; back to the destination offset,
+    sta (zp_general),y                                                ; 8cf9: 91 37       .7       ; store it at the address,
+    iny                                                               ; 8cfb: c8          .        ; advance,
+    dex                                                               ; 8cfc: ca          .        ; count down
     bne loop_c8cf5                                                    ; 8cfd: d0 f6       ..       ; loop
 ; &8cff referenced 1 time by &8cf3
 .c8cff
@@ -2524,29 +2524,29 @@ l848a = sub_c847b+15
 ; &8d03 referenced 1 time by &8cc7
 .c8d03
     ldy #0                                                            ; 8d03: a0 00       ..       ; Numeric: copy byte 0
-    lda (zp_stack_ptr),y                                              ; 8d05: b1 04       ..       ; ...
-    sta (zp_general),y                                                ; 8d07: 91 37       .7       ; ...
-    iny                                                               ; 8d09: c8          .        ; ...
+    lda (zp_stack_ptr),y                                              ; 8d05: b1 04       ..       ; read it,
+    sta (zp_general),y                                                ; 8d07: 91 37       .7       ; store it,
+    iny                                                               ; 8d09: c8          .        ; next byte
     cpy zp_fileblk                                                    ; 8d0a: c4 39       .9       ; all bytes done?
     bcs c8d26                                                         ; 8d0c: b0 18       ..       ; yes
     lda (zp_stack_ptr),y                                              ; 8d0e: b1 04       ..       ; Copy byte 1
-    sta (zp_general),y                                                ; 8d10: 91 37       .7       ; ...
+    sta (zp_general),y                                                ; 8d10: 91 37       .7       ; store it
     iny                                                               ; 8d12: c8          .        ; byte 2
-    lda (zp_stack_ptr),y                                              ; 8d13: b1 04       ..       ; ...
-    sta (zp_general),y                                                ; 8d15: 91 37       .7       ; ...
+    lda (zp_stack_ptr),y                                              ; 8d13: b1 04       ..       ; read it,
+    sta (zp_general),y                                                ; 8d15: 91 37       .7       ; store it,
     iny                                                               ; 8d17: c8          .        ; byte 3
-    lda (zp_stack_ptr),y                                              ; 8d18: b1 04       ..       ; ...
-    sta (zp_general),y                                                ; 8d1a: 91 37       .7       ; ...
-    iny                                                               ; 8d1c: c8          .        ; ...
+    lda (zp_stack_ptr),y                                              ; 8d18: b1 04       ..       ; read it,
+    sta (zp_general),y                                                ; 8d1a: 91 37       .7       ; store it,
+    iny                                                               ; 8d1c: c8          .        ; next byte
     cpy zp_fileblk                                                    ; 8d1d: c4 39       .9       ; all bytes done?
     bcs c8d26                                                         ; 8d1f: b0 05       ..       ; yes
     lda (zp_stack_ptr),y                                              ; 8d21: b1 04       ..       ; byte 4 (real only)
-    sta (zp_general),y                                                ; 8d23: 91 37       .7       ; ...
-    iny                                                               ; 8d25: c8          .        ; ...
+    sta (zp_general),y                                                ; 8d23: 91 37       .7       ; store it,
+    iny                                                               ; 8d25: c8          .        ; next byte
 ; &8d26 referenced 2 times by &8d0c, &8d1f
 .c8d26
     tya                                                               ; 8d26: 98          .        ; Bytes copied
-    clc                                                               ; 8d27: 18          .        ; ...
+    clc                                                               ; 8d27: 18          .        ; carry clear for the stack drop
     jmp cbde1                                                         ; 8d28: 4c e1 bd    L..      ; drop them from the stack
 ; &8d2b referenced 1 time by &8d9f
 .loop_c8d2b
@@ -2555,25 +2555,25 @@ l848a = sub_c847b+15
 ; &8d30 referenced 4 times by &8d55, &8d62, &8d6a, &8d75
 .c8d30
     tya                                                               ; 8d30: 98          .        ; Save the handle
-    pha                                                               ; 8d31: 48          H        ; ...
+    pha                                                               ; 8d31: 48          H        ; (push it)
     jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,       ; ',' another value?
     bne c8d77                                                         ; 8d37: d0 3e       .>       ; no: done
     jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).      ; Evaluate the value
     jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..      ; pack it (in case real)
     pla                                                               ; 8d3f: 68          h        ; Recover the handle
-    tay                                                               ; 8d40: a8          .        ; ...
+    tay                                                               ; 8d40: a8          .        ; into Y for OSBPUT
     lda zp_var_type                                                   ; 8d41: a5 27       .'       ; Type byte
     jsr osbput                                                        ; 8d43: 20 d4 ff     ..      ; write it
-    tax                                                               ; 8d46: aa          .        ; ...
+    tax                                                               ; 8d46: aa          .        ; examine the type byte
     beq c8d64                                                         ; 8d47: f0 1b       ..       ; string?
     bmi c8d57                                                         ; 8d49: 30 0c       0.       ; real?
     ldx #3                                                            ; 8d4b: a2 03       ..       ; Integer: 4 bytes
 ; &8d4d referenced 1 time by &8d53
 .loop_c8d4d
     lda zp_iwa,x                                                      ; 8d4d: b5 2a       .*       ; Write a byte
-    jsr osbput                                                        ; 8d4f: 20 d4 ff     ..      ; ...
-    dex                                                               ; 8d52: ca          .        ; ...
+    jsr osbput                                                        ; 8d4f: 20 d4 ff     ..      ; send it,
+    dex                                                               ; 8d52: ca          .        ; next byte (MSB first)
     bpl loop_c8d4d                                                    ; 8d53: 10 f8       ..       ; loop
     bmi c8d30                                                         ; 8d55: 30 d9       0.       ; next value
 ; &8d57 referenced 1 time by &8d49
@@ -2582,21 +2582,21 @@ l848a = sub_c847b+15
 ; &8d59 referenced 1 time by &8d60
 .loop_c8d59
     lda fp_temp1,x                                                    ; 8d59: bd 6c 04    .l.      ; Write a byte
-    jsr osbput                                                        ; 8d5c: 20 d4 ff     ..      ; ...
-    dex                                                               ; 8d5f: ca          .        ; ...
+    jsr osbput                                                        ; 8d5c: 20 d4 ff     ..      ; send it,
+    dex                                                               ; 8d5f: ca          .        ; next byte (MSB first)
     bpl loop_c8d59                                                    ; 8d60: 10 f7       ..       ; loop
     bmi c8d30                                                         ; 8d62: 30 cc       0.       ; next value
 ; &8d64 referenced 1 time by &8d47
 .c8d64
     lda zp_strbuf_len                                                 ; 8d64: a5 36       .6       ; String: write the length
-    jsr osbput                                                        ; 8d66: 20 d4 ff     ..      ; ...
-    tax                                                               ; 8d69: aa          .        ; ...
+    jsr osbput                                                        ; 8d66: 20 d4 ff     ..      ; send it,
+    tax                                                               ; 8d69: aa          .        ; empty string?
     beq c8d30                                                         ; 8d6a: f0 c4       ..       ; empty
 ; &8d6c referenced 1 time by &8d73
 .loop_c8d6c
     lda l05ff,x                                                       ; 8d6c: bd ff 05    ...      ; Write a character
-    jsr osbput                                                        ; 8d6f: 20 d4 ff     ..      ; ...
-    dex                                                               ; 8d72: ca          .        ; ...
+    jsr osbput                                                        ; 8d6f: 20 d4 ff     ..      ; send it,
+    dex                                                               ; 8d72: ca          .        ; next character (written in reverse)
     bne loop_c8d6c                                                    ; 8d73: d0 f7       ..       ; loop
     beq c8d30                                                         ; 8d75: f0 b9       ..       ; next value
 ; &8d77 referenced 1 time by &8d37
@@ -2613,7 +2613,7 @@ l848a = sub_c847b+15
 ; &8d83 referenced 1 time by &8ddc
 .loop_c8d83
     lda #0                                                            ; 8d83: a9 00       ..       ; Semicolon: clear the field width...
-    sta zp_print_bytes                                                ; 8d85: 85 14       ..       ; ...
+    sta zp_print_bytes                                                ; 8d85: 85 14       ..       ; the field width,
     sta zp_print_flag                                                 ; 8d87: 85 15       ..       ; ...and flags
     jsr skip_spaces                                                   ; 8d89: 20 97 8a     ..      ; Next non-space character
     cmp #&3a ; ':'                                                    ; 8d8c: c9 3a       .:       ; ':' end?
