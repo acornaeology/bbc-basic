@@ -53077,7 +53077,7 @@
         230,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the offset",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -53090,7 +53090,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -53197,7 +53197,7 @@
         253,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "convert if integer",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "ensure_real",
@@ -53317,7 +53317,7 @@
         181,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "load it into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -53417,7 +53417,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -53430,7 +53430,7 @@
         165,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr_1",
@@ -53443,7 +53443,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the fp pointer",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -53535,7 +53535,7 @@
         181,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "load it into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -53666,7 +53666,7 @@
         153,
         166
       ],
-      "comment_inline": "...",
+      "comment_inline": "base^int = 1 (no integer part)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_set_one",
@@ -53757,7 +53757,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte index = 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -53811,7 +53811,7 @@
         149,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -53832,7 +53832,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the high nibble down,",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53841,7 +53841,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53850,7 +53850,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53859,7 +53859,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -53868,7 +53868,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "next nibble slot",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -53878,7 +53878,7 @@
         149,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -53890,7 +53890,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "next nibble slot",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -53899,7 +53899,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -53964,7 +53964,7 @@
         181,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "this nibble zero?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2,x",
@@ -53977,7 +53977,7 @@
         240,
         249
       ],
-      "comment_inline": "...",
+      "comment_inline": "yes: skip it",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9eb0",
@@ -54146,7 +54146,7 @@
         133,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "also clears the sign bit (bit 7 = 0)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -54160,7 +54160,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "print it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",

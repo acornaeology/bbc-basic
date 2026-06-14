@@ -5720,8 +5720,8 @@ l848a = sub_c847b+15
 ; &9e24 referenced 1 time by &9e2c
 .loop_c9e24
     ldy zp_text_ptr2_off                                              ; 9e24: a4 1b       ..       ; Next character
-    inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..       ; ...
-    lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..       ; ...
+    inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..       ; advance the offset
+    lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..       ; read it
     cmp #&20 ; ' '                                                    ; 9e2a: c9 20       .        ; space?
     beq loop_c9e24                                                    ; 9e2c: f0 f6       ..       ; skip it
     tax                                                               ; 9e2e: aa          .        ; keep the operator
@@ -5732,7 +5732,7 @@ l848a = sub_c847b+15
 ; &9e35 referenced 1 time by &9e32
 .c9e35
     tay                                                               ; 9e35: a8          .        ; Ensure the base is real
-    jsr ensure_real                                                   ; 9e36: 20 fd 92     ..      ; ...
+    jsr ensure_real                                                   ; 9e36: 20 fd 92     ..      ; convert if integer
     jsr stack_real                                                    ; 9e39: 20 51 bd     Q.      ; stack the base
     jsr eval_real                                                     ; 9e3c: 20 fa 92     ..      ; evaluate the exponent as a real
     lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0       ; Exponent magnitude
@@ -5741,7 +5741,7 @@ l848a = sub_c847b+15
     jsr fp_split_int_frac                                             ; 9e45: 20 86 a4     ..      ; Split into integer and fractional parts
     bne c9e59                                                         ; 9e48: d0 0f       ..       ; fractional part nonzero?
     jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.      ; no: integer power - unstack the base
-    jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..      ; ...
+    jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..      ; load it into FWA
     lda l004a                                                         ; 9e50: a5 4a       .J       ; integer exponent
     jsr fwa_int_power                                                 ; 9e52: 20 12 ab     ..      ; FWA = base ^ int
     lda #&ff                                                          ; 9e55: a9 ff       ..       ; real result
@@ -5750,9 +5750,9 @@ l848a = sub_c847b+15
 .c9e59
     jsr fwa_pack_temp3                                                ; 9e59: 20 81 a3     ..      ; Fractional exponent: save the fraction
     lda zp_stack_ptr                                                  ; 9e5c: a5 04       ..       ; point at the stacked base
-    sta zp_fp_ptr                                                     ; 9e5e: 85 4b       .K       ; ...
-    lda zp_stack_ptr_1                                                ; 9e60: a5 05       ..       ; ...
-    sta zp_fp_ptr_1                                                   ; 9e62: 85 4c       .L       ; ...
+    sta zp_fp_ptr                                                     ; 9e5e: 85 4b       .K       ; low byte
+    lda zp_stack_ptr_1                                                ; 9e60: a5 05       ..       ; high byte
+    sta zp_fp_ptr_1                                                   ; 9e62: 85 4c       .L       ; set the fp pointer
     jsr fwa_unpack_var                                                ; 9e64: 20 b5 a3     ..      ; load the base
     lda l004a                                                         ; 9e67: a5 4a       .J       ; integer part of the exponent
     jsr fwa_int_power                                                 ; 9e69: 20 12 ab     ..      ; FWA = base ^ int
@@ -5760,7 +5760,7 @@ l848a = sub_c847b+15
 .loop_c9e6c
     jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.      ; save base^int in TEMP2
     jsr unstack_real                                                  ; 9e6f: 20 7e bd     ~.      ; unstack the base
-    jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..      ; ...
+    jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..      ; load it into FWA
     jsr sub_ca801                                                     ; 9e75: 20 01 a8     ..      ; ln(base)
     jsr caad1                                                         ; 9e78: 20 d1 aa     ..      ; times the fractional exponent
     jsr sub_caa94                                                     ; 9e7b: 20 94 aa     ..      ; exp(that) = base^frac
@@ -5771,7 +5771,7 @@ l848a = sub_c847b+15
 ; &9e88 referenced 1 time by &9e43
 .c9e88
     jsr fwa_pack_temp3                                                ; 9e88: 20 81 a3     ..      ; Large exponent: x^y = exp(y * ln x)
-    jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..      ; ...
+    jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..      ; base^int = 1 (no integer part)
     bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..       ; evaluate it
 ; &9e90 referenced 1 time by &9f07
 .loop_c9e90
@@ -5781,30 +5781,30 @@ l848a = sub_c847b+15
 ; &9e96 referenced 1 time by &9e91
 .c9e96
     ldx #0                                                            ; 9e96: a2 00       ..       ; Expand 4 bytes into 8 nibbles
-    ldy #0                                                            ; 9e98: a0 00       ..       ; ...
+    ldy #0                                                            ; 9e98: a0 00       ..       ; byte index = 0
 ; &9e9a referenced 1 time by &9eae
 .loop_c9e9a
     lda zp_iwa,y                                                      ; 9e9a: b9 2a 00    .*.      ; Byte
     pha                                                               ; 9e9d: 48          H        ; save it
     and #&0f                                                          ; 9e9e: 29 0f       ).       ; low nibble
-    sta zp_fwb_m2,x                                                   ; 9ea0: 95 3f       .?       ; ...
+    sta zp_fwb_m2,x                                                   ; 9ea0: 95 3f       .?       ; store it
     pla                                                               ; 9ea2: 68          h        ; high nibble
-    lsr a                                                             ; 9ea3: 4a          J        ; ...
-    lsr a                                                             ; 9ea4: 4a          J        ; ...
-    lsr a                                                             ; 9ea5: 4a          J        ; ...
-    lsr a                                                             ; 9ea6: 4a          J        ; ...
-    inx                                                               ; 9ea7: e8          .        ; ...
-    sta zp_fwb_m2,x                                                   ; 9ea8: 95 3f       .?       ; ...
-    inx                                                               ; 9eaa: e8          .        ; ...
-    iny                                                               ; 9eab: c8          .        ; ...
+    lsr a                                                             ; 9ea3: 4a          J        ; shift the high nibble down,
+    lsr a                                                             ; 9ea4: 4a          J        ; (continued)
+    lsr a                                                             ; 9ea5: 4a          J        ; (continued)
+    lsr a                                                             ; 9ea6: 4a          J        ; (continued)
+    inx                                                               ; 9ea7: e8          .        ; next nibble slot
+    sta zp_fwb_m2,x                                                   ; 9ea8: 95 3f       .?       ; store it
+    inx                                                               ; 9eaa: e8          .        ; next nibble slot
+    iny                                                               ; 9eab: c8          .        ; next byte
     cpy #4                                                            ; 9eac: c0 04       ..       ; all four bytes?
     bne loop_c9e9a                                                    ; 9eae: d0 ea       ..       ; no: continue
 ; &9eb0 referenced 1 time by &9eb5
 .loop_c9eb0
     dex                                                               ; 9eb0: ca          .        ; Skip leading zero nibbles
     beq c9eb7                                                         ; 9eb1: f0 04       ..       ; all zero: output one zero
-    lda zp_fwb_m2,x                                                   ; 9eb3: b5 3f       .?       ; ...
-    beq loop_c9eb0                                                    ; 9eb5: f0 f9       ..       ; ...
+    lda zp_fwb_m2,x                                                   ; 9eb3: b5 3f       .?       ; this nibble zero?
+    beq loop_c9eb0                                                    ; 9eb5: f0 f9       ..       ; yes: skip it
 ; &9eb7 referenced 2 times by &9eb1, &9ec5
 .c9eb7
     lda zp_fwb_m2,x                                                   ; 9eb7: b5 3f       .?       ; Next nibble
@@ -5822,8 +5822,8 @@ l848a = sub_c847b+15
 .loop_c9ec8
     bpl c9ed1                                                         ; 9ec8: 10 07       ..       ; positive?
     lda #&2d ; '-'                                                    ; 9eca: a9 2d       .-       ; negative: output '-'
-    sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..       ; ...
-    jsr output_char                                                   ; 9ece: 20 66 a0     f.      ; ...
+    sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..       ; also clears the sign bit (bit 7 = 0)
+    jsr output_char                                                   ; 9ece: 20 66 a0     f.      ; print it
 ; &9ed1 referenced 3 times by &9ec8, &9edc, &9f36
 .c9ed1
     lda zp_fwa_exp                                                    ; 9ed1: a5 30       .0       ; Exponent
