@@ -1707,7 +1707,7 @@
       "addr": 38345,
       "name": "parse_var_ref",
       "title": "Parse a variable reference / lvalue",
-      "description": "Scan a variable name or indirection operator at the text pointer. On success returns A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer, 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0, SEC when the name is undefined."
+      "description": "Scan a variable name, array element, or indirection operator at the text pointer. Sets the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates it), A=0 carry set when no name is present."
     },
     {
       "addr": 37626,
@@ -38380,7 +38380,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -38393,7 +38393,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -38406,7 +38406,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -38431,7 +38431,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "(the scan loop pre-increments)",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -38539,7 +38539,7 @@
         144,
         180
       ],
-      "comment_inline": "...",
+      "comment_inline": "below '@': handle as indirection ($ ! ?)",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_c9595",
@@ -38584,7 +38584,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -38618,7 +38618,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "value pointer high byte (&2B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -38640,7 +38640,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -38652,7 +38652,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the scan offset",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -38697,7 +38697,7 @@
         134,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store in the type byte (&2C)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -38768,7 +38768,7 @@
         134,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store in the type byte (&2C)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -38793,7 +38793,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset + scan pointer:",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -38803,7 +38803,7 @@
         101,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -38816,7 +38816,7 @@
         166,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte in X,",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr2_1",
@@ -38829,7 +38829,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c960e",
@@ -38841,7 +38841,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -38850,7 +38850,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry to back up one",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -38863,7 +38863,7 @@
       "labels": [
         "c960e"
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up one (name reads from offset 1): low",
       "xref_summaries": [
         "&960e referenced 1 time by &960a"
       ],
@@ -38880,7 +38880,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "&37 = name pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -38893,7 +38893,7 @@
         176,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "no borrow into the high byte",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9615",
@@ -38905,7 +38905,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "borrow into the high byte",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -38918,7 +38918,7 @@
       "labels": [
         "c9615"
       ],
-      "comment_inline": "...",
+      "comment_inline": "&38 = name pointer high",
       "xref_summaries": [
         "&9615 referenced 1 time by &9612"
       ],
@@ -38950,7 +38950,7 @@
         160,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "scan the name from offset 1",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -39033,7 +39033,7 @@
         201,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "above '9'?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&3a"
@@ -39065,7 +39065,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the scan",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -39129,7 +39129,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the scan",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -39217,7 +39217,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the scan",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -39343,7 +39343,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "count the % in the name length",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -39352,7 +39352,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "peek at the following character",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -39374,7 +39374,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "step back to the %",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -39492,7 +39492,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -39607,7 +39607,7 @@
       "labels": [
         "c9673"
       ],
-      "comment_inline": "Undefined: A=0, SEC",
+      "comment_inline": "No name found: A=0, SEC",
       "xref_summaries": [
         "&9673 referenced 1 time by &9642"
       ],
@@ -39623,7 +39623,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(set carry: caller errors)",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -39645,7 +39645,7 @@
       "labels": [
         "c9677"
       ],
-      "comment_inline": "Found: A=0, CLC",
+      "comment_inline": "Valid name, undefined: A=0, CLC",
       "xref_summaries": [
         "&9677 referenced 2 times by &965d, &96bf"
       ],
@@ -39662,7 +39662,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "(clear carry: caller creates it)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -39701,7 +39701,7 @@
         240,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "always taken",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9681",
@@ -39761,7 +39761,7 @@
         132,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "record the new scan offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -39802,7 +39802,7 @@
         165,
         43
       ],
-      "comment_inline": "Save the offset expression...",
+      "comment_inline": "Save the base address:",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -39814,7 +39814,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push high byte,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -39824,7 +39824,7 @@
         165,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -39836,7 +39836,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it too",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -39868,7 +39868,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull base low,",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39878,7 +39878,7 @@
         101,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ index low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -39891,7 +39891,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -39903,7 +39903,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull base high,",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -39913,7 +39913,7 @@
         101,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ index high,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -39926,7 +39926,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -39957,7 +39957,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the type byte (0=? or 4=!)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -39979,7 +39979,7 @@
         169,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = &FF (found)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&ff"
@@ -40017,7 +40017,7 @@
         230,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "count the \"(\" in the name length too",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fileblk",
@@ -40075,7 +40075,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the scan",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -40097,7 +40097,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "peek at the char after the $",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -40208,7 +40208,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store in the type byte (&2C)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -40308,7 +40308,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store in the type byte (&2C)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",

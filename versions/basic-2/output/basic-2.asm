@@ -4128,18 +4128,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Parse a variable reference / lvalue
 ;
-; Scan a variable name or indirection operator at the text pointer. On success returns
-; A=&FF, CLC, with the value address in &2A/&2B and a type byte in &2C (4=integer,
-; 5=real, &80=$ indirection, &81=byte/word indirection or array element). Returns A=0,
-; SEC when the name is undefined.
+; Scan a variable name, array element, or indirection operator at the text pointer. Sets
+; the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer
+; (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A
+; nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates
+; it), A=0 carry set when no name is present.
 ; &95c9 referenced 2 times by &9582, &b695
 .parse_var_ref
     lda zp_text_ptr                                                   ; 95c9: a5 0b       ..       ; Copy the text pointer into the scan pointer
-    sta zp_text_ptr2                                                  ; 95cb: 85 19       ..       ; ...
-    lda zp_text_ptr_1                                                 ; 95cd: a5 0c       ..       ; ...
-    sta zp_text_ptr2_1                                                ; 95cf: 85 1a       ..       ; ...
+    sta zp_text_ptr2                                                  ; 95cb: 85 19       ..       ; low byte,
+    lda zp_text_ptr_1                                                 ; 95cd: a5 0c       ..       ; high byte,
+    sta zp_text_ptr2_1                                                ; 95cf: 85 1a       ..       ; store it
     ldy zp_text_ptr_off                                               ; 95d1: a4 0a       ..       ; Start one before the text offset
-    dey                                                               ; 95d3: 88          .        ; ...
+    dey                                                               ; 95d3: 88          .        ; (the scan loop pre-increments)
 ; &95d4 referenced 1 time by &95db
 .loop_c95d4
     iny                                                               ; 95d4: c8          .        ; Advance
@@ -4152,46 +4153,46 @@ l848a = sub_c847b+15
 ; &95dd referenced 2 times by &8bc9, &ae22
 .sub_c95dd
     cmp #&40 ; '@'                                                    ; 95dd: c9 40       .@       ; below '@': an indirection operator
-    bcc loop_c9595                                                    ; 95df: 90 b4       ..       ; ...
+    bcc loop_c9595                                                    ; 95df: 90 b4       ..       ; below '@': handle as indirection ($ ! ?)
     cmp #&5b ; '['                                                    ; 95e1: c9 5b       .[       ; above 'Z'?
     bcs c95ff                                                         ; 95e3: b0 1a       ..       ; yes: a named (dynamic) variable
     asl a                                                             ; 95e5: 0a          .        ; Resident integer: hash char to &0400 + char*4
-    asl a                                                             ; 95e6: 0a          .        ; ...
+    asl a                                                             ; 95e6: 0a          .        ; (continued)
     sta zp_iwa                                                        ; 95e7: 85 2a       .*       ; value pointer low
     lda #4                                                            ; 95e9: a9 04       ..       ; page &04
-    sta zp_iwa_1                                                      ; 95eb: 85 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; 95eb: 85 2b       .+       ; value pointer high byte (&2B)
     iny                                                               ; 95ed: c8          .        ; Second character
-    lda (zp_text_ptr2),y                                              ; 95ee: b1 19       ..       ; ...
-    iny                                                               ; 95f0: c8          .        ; ...
+    lda (zp_text_ptr2),y                                              ; 95ee: b1 19       ..       ; read it
+    iny                                                               ; 95f0: c8          .        ; advance the scan offset
     cmp #&25 ; '%'                                                    ; 95f1: c9 25       .%       ; must be '%' for a resident integer
     bne c95ff                                                         ; 95f3: d0 0a       ..       ; not %: treat as a named variable
     ldx #4                                                            ; 95f5: a2 04       ..       ; Type = integer
-    stx zp_iwa_2                                                      ; 95f7: 86 2c       .,       ; ...
+    stx zp_iwa_2                                                      ; 95f7: 86 2c       .,       ; store in the type byte (&2C)
     lda (zp_text_ptr2),y                                              ; 95f9: b1 19       ..       ; Following character
     cmp #&28 ; '('                                                    ; 95fb: c9 28       .(       ; '(' -> array element
     bne c9665                                                         ; 95fd: d0 66       .f       ; yes: handle as an array
 ; &95ff referenced 2 times by &95e3, &95f3
 .c95ff
     ldx #5                                                            ; 95ff: a2 05       ..       ; Named variable: type = real/string (5)
-    stx zp_iwa_2                                                      ; 9601: 86 2c       .,       ; ...
+    stx zp_iwa_2                                                      ; 9601: 86 2c       .,       ; store in the type byte (&2C)
     lda zp_text_ptr2_off                                              ; 9603: a5 1b       ..       ; Point &37/&38 at the name in the text
-    clc                                                               ; 9605: 18          .        ; ...
-    adc zp_text_ptr2                                                  ; 9606: 65 19       e.       ; ...
-    ldx zp_text_ptr2_1                                                ; 9608: a6 1a       ..       ; ...
-    bcc c960e                                                         ; 960a: 90 02       ..       ; ...
-    inx                                                               ; 960c: e8          .        ; ...
-    clc                                                               ; 960d: 18          .        ; ...
+    clc                                                               ; 9605: 18          .        ; offset + scan pointer:
+    adc zp_text_ptr2                                                  ; 9606: 65 19       e.       ; low byte,
+    ldx zp_text_ptr2_1                                                ; 9608: a6 1a       ..       ; high byte in X,
+    bcc c960e                                                         ; 960a: 90 02       ..       ; no carry into the high byte
+    inx                                                               ; 960c: e8          .        ; carry into the high byte
+    clc                                                               ; 960d: 18          .        ; clear carry to back up one
 ; &960e referenced 1 time by &960a
 .c960e
-    sbc #0                                                            ; 960e: e9 00       ..       ; ...
-    sta zp_general                                                    ; 9610: 85 37       .7       ; ...
-    bcs c9615                                                         ; 9612: b0 01       ..       ; ...
-    dex                                                               ; 9614: ca          .        ; ...
+    sbc #0                                                            ; 960e: e9 00       ..       ; back up one (name reads from offset 1): low
+    sta zp_general                                                    ; 9610: 85 37       .7       ; &37 = name pointer low
+    bcs c9615                                                         ; 9612: b0 01       ..       ; no borrow into the high byte
+    dex                                                               ; 9614: ca          .        ; borrow into the high byte
 ; &9615 referenced 1 time by &9612
 .c9615
-    stx zp_general_1                                                  ; 9615: 86 38       .8       ; ...
+    stx zp_general_1                                                  ; 9615: 86 38       .8       ; &38 = name pointer high
     ldx zp_text_ptr2_off                                              ; 9617: a6 1b       ..       ; Reset the length counter
-    ldy #1                                                            ; 9619: a0 01       ..       ; ...
+    ldy #1                                                            ; 9619: a0 01       ..       ; scan the name from offset 1
 ; &961b referenced 3 times by &962b, &9633, &963f
 .c961b
     lda (zp_general),y                                                ; 961b: b1 37       .7       ; Scan the name: next character
@@ -4199,17 +4200,17 @@ l848a = sub_c847b+15
     bcs c962d                                                         ; 961f: b0 0c       ..       ; no: check letters
     cmp #&30 ; '0'                                                    ; 9621: c9 30       .0       ; a digit?
     bcc c9641                                                         ; 9623: 90 1c       ..       ; no: name ends
-    cmp #&3a ; ':'                                                    ; 9625: c9 3a       .:       ; ...
+    cmp #&3a ; ':'                                                    ; 9625: c9 3a       .:       ; above '9'?
     bcs c9641                                                         ; 9627: b0 18       ..       ; no: name ends
     inx                                                               ; 9629: e8          .        ; count this character
-    iny                                                               ; 962a: c8          .        ; ...
+    iny                                                               ; 962a: c8          .        ; advance the scan
     bne c961b                                                         ; 962b: d0 ee       ..       ; continue
 ; &962d referenced 1 time by &961f
 .c962d
     cmp #&5b ; '['                                                    ; 962d: c9 5b       .[       ; above 'Z'?
     bcs c9635                                                         ; 962f: b0 04       ..       ; yes: check lower case
     inx                                                               ; 9631: e8          .        ; A-Z: count it
-    iny                                                               ; 9632: c8          .        ; ...
+    iny                                                               ; 9632: c8          .        ; advance the scan
     bne c961b                                                         ; 9633: d0 e6       ..       ; continue
 ; &9635 referenced 1 time by &962f
 .c9635
@@ -4218,7 +4219,7 @@ l848a = sub_c847b+15
     cmp #&7b ; '{'                                                    ; 9639: c9 7b       .{       ; above 'z'?
     bcs c9641                                                         ; 963b: b0 04       ..       ; yes: name ends
     inx                                                               ; 963d: e8          .        ; _ or a-z: count it
-    iny                                                               ; 963e: c8          .        ; ...
+    iny                                                               ; 963e: c8          .        ; advance the scan
     bne c961b                                                         ; 963f: d0 da       ..       ; continue
 ; &9641 referenced 4 times by &9623, &9627, &9637, &963b
 .c9641
@@ -4230,10 +4231,10 @@ l848a = sub_c847b+15
     bne c9654                                                         ; 964a: d0 08       ..       ; no: real variable
     dec zp_iwa_2                                                      ; 964c: c6 2c       .,       ; mark the type integer
     iny                                                               ; 964e: c8          .        ; step past the %
-    inx                                                               ; 964f: e8          .        ; ...
-    iny                                                               ; 9650: c8          .        ; ...
+    inx                                                               ; 964f: e8          .        ; count the % in the name length
+    iny                                                               ; 9650: c8          .        ; peek at the following character
     lda (zp_general),y                                                ; 9651: b1 37       .7       ; check the following character
-    dey                                                               ; 9653: 88          .        ; ...
+    dey                                                               ; 9653: 88          .        ; step back to the %
 ; &9654 referenced 1 time by &964a
 .c9654
     sty zp_fileblk                                                    ; 9654: 84 39       .9       ; Record the name length
@@ -4245,7 +4246,7 @@ l848a = sub_c847b+15
 ; &9661 referenced 1 time by &96ac
 .c9661
     ldy zp_text_ptr2_off                                              ; 9661: a4 1b       ..       ; Next character after the name
-    lda (zp_text_ptr2),y                                              ; 9663: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; 9663: b1 19       ..       ; read it
 ; &9665 referenced 1 time by &95fd
 .c9665
     cmp #&21 ; '!'                                                    ; 9665: c9 21       .!       ; '!' indirection following?
@@ -4258,18 +4259,18 @@ l848a = sub_c847b+15
     rts                                                               ; 9672: 60          `        ; Return
 ; &9673 referenced 1 time by &9642
 .c9673
-    lda #0                                                            ; 9673: a9 00       ..       ; Undefined: A=0, SEC
-    sec                                                               ; 9675: 38          8        ; ...
+    lda #0                                                            ; 9673: a9 00       ..       ; No name found: A=0, SEC
+    sec                                                               ; 9675: 38          8        ; (set carry: caller errors)
     rts                                                               ; 9676: 60          `        ; Return
 ; &9677 referenced 2 times by &965d, &96bf
 .c9677
-    lda #0                                                            ; 9677: a9 00       ..       ; Found: A=0, CLC
-    clc                                                               ; 9679: 18          .        ; ...
+    lda #0                                                            ; 9677: a9 00       ..       ; Valid name, undefined: A=0, CLC
+    clc                                                               ; 9679: 18          .        ; (clear carry: caller creates it)
     rts                                                               ; 967a: 60          `        ; Return
 ; &967b referenced 1 time by &966b
 .c967b
     lda #0                                                            ; 967b: a9 00       ..       ; '?' indirection: byte type (1)
-    beq c9681                                                         ; 967d: f0 02       ..       ; ...
+    beq c9681                                                         ; 967d: f0 02       ..       ; always taken
 ; &967f referenced 1 time by &9667
 .c967f
     lda #4                                                            ; 967f: a9 04       ..       ; '!' indirection: word type (4)
@@ -4277,40 +4278,40 @@ l848a = sub_c847b+15
 .c9681
     pha                                                               ; 9681: 48          H        ; Save the indirection width
     iny                                                               ; 9682: c8          .        ; step past the operator
-    sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..       ; ...
+    sty zp_text_ptr2_off                                              ; 9683: 84 1b       ..       ; record the new scan offset
     jsr cb32c                                                         ; 9685: 20 2c b3     ,.      ; Stack the base address
     jsr coerce_to_integer                                             ; 9688: 20 f0 92     ..      ; evaluate it as an integer
-    lda zp_iwa_1                                                      ; 968b: a5 2b       .+       ; Save the offset expression...
-    pha                                                               ; 968d: 48          H        ; ...
-    lda zp_iwa                                                        ; 968e: a5 2a       .*       ; ...
-    pha                                                               ; 9690: 48          H        ; ...
+    lda zp_iwa_1                                                      ; 968b: a5 2b       .+       ; Save the base address:
+    pha                                                               ; 968d: 48          H        ; push high byte,
+    lda zp_iwa                                                        ; 968e: a5 2a       .*       ; low byte,
+    pha                                                               ; 9690: 48          H        ; push it too
     jsr sub_c92e3                                                     ; 9691: 20 e3 92     ..      ; evaluate the index expression
     clc                                                               ; 9694: 18          .        ; address = base + index
-    pla                                                               ; 9695: 68          h        ; ...
-    adc zp_iwa                                                        ; 9696: 65 2a       e*       ; ...
-    sta zp_iwa                                                        ; 9698: 85 2a       .*       ; ...
-    pla                                                               ; 969a: 68          h        ; ...
-    adc zp_iwa_1                                                      ; 969b: 65 2b       e+       ; ...
-    sta zp_iwa_1                                                      ; 969d: 85 2b       .+       ; ...
+    pla                                                               ; 9695: 68          h        ; pull base low,
+    adc zp_iwa                                                        ; 9696: 65 2a       e*       ; - index low,
+    sta zp_iwa                                                        ; 9698: 85 2a       .*       ; store low,
+    pla                                                               ; 969a: 68          h        ; pull base high,
+    adc zp_iwa_1                                                      ; 969b: 65 2b       e+       ; - index high,
+    sta zp_iwa_1                                                      ; 969d: 85 2b       .+       ; store high
 ; &969f referenced 1 time by &95ad
 .c969f
     pla                                                               ; 969f: 68          h        ; Restore the indirection type
-    sta zp_iwa_2                                                      ; 96a0: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 96a0: 85 2c       .,       ; into the type byte (0=? or 4=!)
     clc                                                               ; 96a2: 18          .        ; found: A=&FF, CLC
-    lda #&ff                                                          ; 96a3: a9 ff       ..       ; ...
+    lda #&ff                                                          ; 96a3: a9 ff       ..       ; A = &FF (found)
     rts                                                               ; 96a5: 60          `        ; Return
 ; &96a6 referenced 1 time by &9658
 .c96a6
     inx                                                               ; 96a6: e8          .        ; Resident-integer array: step past "("
-    inc zp_fileblk                                                    ; 96a7: e6 39       .9       ; ...
+    inc zp_fileblk                                                    ; 96a7: e6 39       .9       ; count the "(" in the name length too
     jsr index_array                                                   ; 96a9: 20 df 96     ..      ; index the array
     jmp c9661                                                         ; 96ac: 4c 61 96    La.      ; check for trailing ! or ?
 ; &96af referenced 1 time by &9646
 .c96af
     inx                                                               ; 96af: e8          .        ; String variable: step past "$"
-    iny                                                               ; 96b0: c8          .        ; ...
+    iny                                                               ; 96b0: c8          .        ; advance the scan
     sty zp_fileblk                                                    ; 96b1: 84 39       .9       ; record the name length
-    iny                                                               ; 96b3: c8          .        ; ...
+    iny                                                               ; 96b3: c8          .        ; peek at the char after the $
     dec zp_iwa_2                                                      ; 96b4: c6 2c       .,       ; mark the type string
     lda (zp_general),y                                                ; 96b6: b1 37       .7       ; following character
     cmp #&28 ; '('                                                    ; 96b8: c9 28       .(       ; '(' -> string array
@@ -4319,7 +4320,7 @@ l848a = sub_c847b+15
     beq c9677                                                         ; 96bf: f0 b6       ..       ; not found: undefined
     stx zp_text_ptr2_off                                              ; 96c1: 86 1b       ..       ; Update the scan offset
     lda #&81                                                          ; 96c3: a9 81       ..       ; Type = string lvalue (&81)
-    sta zp_iwa_2                                                      ; 96c5: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 96c5: 85 2c       .,       ; store in the type byte (&2C)
     sec                                                               ; 96c7: 38          8        ; found: SEC
     rts                                                               ; 96c8: 60          `        ; Return
 ; &96c9 referenced 1 time by &96ba
@@ -4329,7 +4330,7 @@ l848a = sub_c847b+15
     dec zp_iwa_2                                                      ; 96cc: c6 2c       .,       ; mark the type string
     jsr index_array                                                   ; 96ce: 20 df 96     ..      ; index the array
     lda #&81                                                          ; 96d1: a9 81       ..       ; Type = string lvalue (&81)
-    sta zp_iwa_2                                                      ; 96d3: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 96d3: 85 2c       .,       ; store in the type byte (&2C)
     sec                                                               ; 96d5: 38          8        ; found: SEC
     rts                                                               ; 96d6: 60          `        ; Return
 ; &96d7 referenced 2 times by &96e2, &9709
