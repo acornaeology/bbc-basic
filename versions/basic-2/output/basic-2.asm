@@ -982,7 +982,12 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Finish the inline assembler
 ;
-; Leave the inline 6502 assembler (reached at "]") and resume interpreting BASIC.
+; Leave the inline 6502 assembler (reached at "]"): set the OPT flag to &FF (not
+; assembling) and jump back into the statement interpreter.
+;
+; On Exit:
+;     ZP_OPT_FLAG (&28): &FF (BASIC mode, not assembling)
+;     CONTROL: resumes the statement interpreter (does not return)
 ; &84fd referenced 1 time by &850d
 .assembler_exit
     lda #&ff                                                          ; 84fd: a9 ff       ..       ; Leaving the assembler: OPT = BASIC mode
@@ -1111,8 +1116,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Parse and compact an assembler mnemonic
 ;
-; Skip to the mnemonic, handling end-of-statement and labels, then pack its three letters
-; (5 bits each) into &3D/&3E for the opcode-table lookup.
+; Skip to the mnemonic at PtrA, handling end-of-statement and labels, then pack its three
+; letters (5 bits each) into &3D/&3E for the opcode-table lookup.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the source pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset of the next character
+;
+; On Exit:
+;     ZP_FWB_EXP (&3D/&3E): the three letters packed 5 bits each
+;     ZP_TEXT_PTR_OFF (&0A): advanced past the mnemonic
 ; &85ba referenced 1 time by &8514
 .asm_parse_mnemonic
     ldx #3                                                            ; 85ba: a2 03       ..       ; Three characters
@@ -1519,11 +1532,35 @@ l848a = sub_c847b+15
     rts                                                               ; 882b: 60          `        ; Return
 ; ***************************************************************************************
 ; Advance the opcode by four addressing-mode columns (+16)
+;
+; Add 16 to the base opcode in zp_asm_opcode (via +8, +4, +4) to select an addressing
+; mode four columns along.
+;
+; On Entry:
+;     ZP_ASM_OPCODE (&29): the base opcode
+;
+; On Exit:
+;     ZP_ASM_OPCODE (&29): the opcode + 16
+;     A: the new opcode
+;     X: preserved
+;     Y: preserved
 ; &882c referenced 7 times by &86ef, &8721, &875a, &879f, &87a2, &87e7, &8806
 .asm_opcode_add16
     jsr asm_opcode_add8                                               ; 882c: 20 2f 88     /.      ; add 8 then fall through (+16 total)
 ; ***************************************************************************************
 ; Advance the opcode by two addressing-mode columns (+8)
+;
+; Add 8 to the base opcode in zp_asm_opcode (via +4, +4) to select an addressing mode two
+; columns along.
+;
+; On Entry:
+;     ZP_ASM_OPCODE (&29): the base opcode
+;
+; On Exit:
+;     ZP_ASM_OPCODE (&29): the opcode + 8
+;     A: the new opcode
+;     X: preserved
+;     Y: preserved
 ; &882f referenced 3 times by &86c2, &872f, &882c
 .asm_opcode_add8
     jsr asm_opcode_add4                                               ; 882f: 20 32 88     2.      ; add 4 then fall through (+8 total)
@@ -1531,6 +1568,15 @@ l848a = sub_c847b+15
 ; Step the opcode to the next addressing-mode column (+4)
 ;
 ; Add 4 to the base opcode in &29 to select the next 6502 addressing-mode encoding.
+;
+; On Entry:
+;     ZP_ASM_OPCODE (&29): the base opcode
+;
+; On Exit:
+;     ZP_ASM_OPCODE (&29): the opcode + 4
+;     A: the new opcode
+;     X: preserved
+;     Y: preserved
 ; &8832 referenced 3 times by &8735, &8767, &882f
 .asm_opcode_add4
     lda zp_asm_opcode                                                 ; 8832: a5 29       .)       ; Opcode += 4 (next addressing-mode column)

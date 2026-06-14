@@ -615,9 +615,12 @@ for _i in range(NUM_DISPATCH_TOKENS):
 d.subroutine(
     0x84fd, 'assembler_exit',
     title='Finish the inline assembler',
-    description="""Leave the inline 6502 assembler (reached at "]") and resume
-interpreting BASIC.
+    description="""Leave the inline 6502 assembler (reached at "]"): set the OPT
+flag to &FF (not assembling) and jump back into the statement
+interpreter.
 """,
+    on_exit={'zp_opt_flag (&28)': '&FF (BASIC mode, not assembling)',
+             'control': 'resumes the statement interpreter (does not return)'},
 )
 # ----------------------------------------------------------------------
 # Inline assembler driver (&84FD): the [ ... ] block.
@@ -714,9 +717,13 @@ d.comment(0x85b7, 'sync the pointer', align=Align.INLINE)
 
 d.subroutine(0x85ba, 'asm_parse_mnemonic',
              title='Parse and compact an assembler mnemonic',
-             description='Skip to the mnemonic, handling end-of-statement and '
-                         'labels, then pack its three letters (5 bits each) '
-                         'into &3D/&3E for the opcode-table lookup.')
+             description='Skip to the mnemonic at PtrA, handling end-of-statement '
+                         'and labels, then pack its three letters (5 bits each) '
+                         'into &3D/&3E for the opcode-table lookup.',
+             on_entry={'zp_text_ptr (&0B/&0C)': 'the source pointer (PtrA)',
+                       'zp_text_ptr_off (&0A)': 'offset of the next character'},
+             on_exit={'zp_fwb_exp (&3D/&3E)': 'the three letters packed 5 bits each',
+                      'zp_text_ptr_off (&0A)': 'advanced past the mnemonic'})
 # asm_parse_mnemonic (&85BA): compact three letters into &3D/&3E.
 d.comment(0x85ba, 'Three characters', align=Align.INLINE)
 d.comment(0x85bc, 'Skip spaces', align=Align.INLINE)
@@ -1030,16 +1037,29 @@ d.comment(0x8827, 'Sync the primary text offset', align=Align.INLINE)
 d.comment(0x8829, 'copy PtrB offset to PtrA', align=Align.INLINE)
 d.comment(0x882b, 'Return', align=Align.INLINE)
 d.subroutine(0x882c, 'asm_opcode_add16',
-             title='Advance the opcode by four addressing-mode columns (+16)')
+             title='Advance the opcode by four addressing-mode columns (+16)',
+             description='Add 16 to the base opcode in zp_asm_opcode (via +8, +4, '
+                         '+4) to select an addressing mode four columns along.',
+             on_entry={'zp_asm_opcode (&29)': 'the base opcode'},
+             on_exit={'zp_asm_opcode (&29)': 'the opcode + 16', 'A': 'the new opcode',
+                      'X': 'preserved', 'Y': 'preserved'})
 # Opcode addressing-mode adjusters.
 d.comment(0x882c, 'add 8 then fall through (+16 total)', align=Align.INLINE)
 d.subroutine(0x882f, 'asm_opcode_add8',
-             title='Advance the opcode by two addressing-mode columns (+8)')
+             title='Advance the opcode by two addressing-mode columns (+8)',
+             description='Add 8 to the base opcode in zp_asm_opcode (via +4, +4) '
+                         'to select an addressing mode two columns along.',
+             on_entry={'zp_asm_opcode (&29)': 'the base opcode'},
+             on_exit={'zp_asm_opcode (&29)': 'the opcode + 8', 'A': 'the new opcode',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0x882f, 'add 4 then fall through (+8 total)', align=Align.INLINE)
 d.subroutine(0x8832, 'asm_opcode_add4',
              title='Step the opcode to the next addressing-mode column (+4)',
              description='Add 4 to the base opcode in &29 to select the next '
-                         '6502 addressing-mode encoding.')
+                         '6502 addressing-mode encoding.',
+             on_entry={'zp_asm_opcode (&29)': 'the base opcode'},
+             on_exit={'zp_asm_opcode (&29)': 'the opcode + 4', 'A': 'the new opcode',
+                      'X': 'preserved', 'Y': 'preserved'})
 d.comment(0x8832, 'Opcode += 4 (next addressing-mode column)',
           align=Align.INLINE)
 d.comment(0x8834, 'clear carry,', align=Align.INLINE)
