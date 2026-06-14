@@ -3753,7 +3753,7 @@ l848a = sub_c847b+15
 .stmt_plot
     jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.      ; Evaluate the plot mode
     lda zp_iwa                                                        ; 93f4: a5 2a       .*       ; save it
-    pha                                                               ; 93f6: 48          H        ; ...
+    pha                                                               ; 93f6: 48          H        ; push the plot mode
     jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..      ; Step past the comma
     jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).      ; Evaluate the X coordinate
 ; &93fd referenced 1 time by &93ee
@@ -3763,22 +3763,22 @@ l848a = sub_c847b+15
     jsr sub_c92da                                                     ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
     jsr sub_c9852                                                     ; 9406: 20 52 98     R.      ; check the statement ends
     lda #&19                                                          ; 9409: a9 19       ..       ; VDU 25 (PLOT)
-    jsr oswrch                                                        ; 940b: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 940b: 20 ee ff     ..      ; send it
     pla                                                               ; 940e: 68          h        ; Send the plot action
-    jsr oswrch                                                        ; 940f: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 940f: 20 ee ff     ..      ; send it
     jsr unstack_int_to_general                                        ; 9412: 20 0b be     ..      ; Pop X
     lda zp_general                                                    ; 9415: a5 37       .7       ; Send X low
-    jsr oswrch                                                        ; 9417: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 9417: 20 ee ff     ..      ; send it
     lda zp_general_1                                                  ; 941a: a5 38       .8       ; Send X high
-    jsr oswrch                                                        ; 941c: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 941c: 20 ee ff     ..      ; send it
     jsr sub_c9456                                                     ; 941f: 20 56 94     V.      ; Send Y low
     lda zp_iwa_1                                                      ; 9422: a5 2b       .+       ; Send Y high
-    jsr oswrch                                                        ; 9424: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 9424: 20 ee ff     ..      ; send it
     jmp statement_loop                                                ; 9427: 4c 9b 8b    L..      ; next statement
 ; &942a referenced 1 time by &9451
 .loop_c942a
     lda zp_iwa_1                                                      ; 942a: a5 2b       .+       ; Send the high byte
-    jsr oswrch                                                        ; 942c: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 942c: 20 ee ff     ..      ; send it
 ; ***************************************************************************************
 ; VDU
 ;

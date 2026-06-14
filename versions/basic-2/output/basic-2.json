@@ -35028,7 +35028,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push the plot mode",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -35143,7 +35143,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35166,7 +35166,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35207,7 +35207,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35234,7 +35234,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35275,7 +35275,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35325,7 +35325,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
