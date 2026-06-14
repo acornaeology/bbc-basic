@@ -23600,9 +23600,9 @@
       "comment_inline": "Parse a variable / indirection reference",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c95dd",
+      "operand": "pvr_parse",
       "target": 38365,
-      "target_label": "sub_c95dd"
+      "target_label": "pvr_parse"
     },
     {
       "addr": 35788,
@@ -28999,9 +28999,9 @@
       "comment_inline": "resolve it to an address",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c95d5",
+      "operand": "pvr_record_offset",
       "target": 38357,
-      "target_label": "sub_c95d5"
+      "target_label": "pvr_record_offset"
     },
     {
       "addr": 36591,
@@ -40498,9 +40498,9 @@
       "comment_inline": "finish as an indirection",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c969f",
+      "operand": "pvr_restore_type",
       "target": 38559,
-      "target_label": "c969f"
+      "target_label": "pvr_restore_type"
     },
     {
       "addr": 38320,
@@ -40748,7 +40748,7 @@
         200
       ],
       "labels": [
-        "loop_c95d4"
+        "pvr_advance"
       ],
       "comment_inline": "Advance",
       "xref_summaries": [
@@ -40767,7 +40767,7 @@
         27
       ],
       "labels": [
-        "sub_c95d5"
+        "pvr_record_offset"
       ],
       "comment_inline": "Record the scan offset",
       "xref_summaries": [
@@ -40815,9 +40815,9 @@
       "comment_inline": "skip spaces",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c95d4",
+      "operand": "pvr_advance",
       "target": 38356,
-      "target_label": "loop_c95d4"
+      "target_label": "pvr_advance"
     },
     {
       "addr": 38365,
@@ -40826,7 +40826,7 @@
         64
       ],
       "labels": [
-        "sub_c95dd"
+        "pvr_parse"
       ],
       "comment_inline": "below '@': an indirection operator",
       "xref_summaries": [
@@ -40873,9 +40873,9 @@
       "comment_inline": "yes: a named (dynamic) variable",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c95ff",
+      "operand": "pvr_named",
       "target": 38399,
-      "target_label": "c95ff"
+      "target_label": "pvr_named"
     },
     {
       "addr": 38373,
@@ -40983,9 +40983,9 @@
       "comment_inline": "not %: treat as a named variable",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c95ff",
+      "operand": "pvr_named",
       "target": 38399,
-      "target_label": "c95ff"
+      "target_label": "pvr_named"
     },
     {
       "addr": 38389,
@@ -41044,9 +41044,9 @@
       "comment_inline": "yes: handle as an array",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9665",
+      "operand": "pvr_check_indirect",
       "target": 38501,
-      "target_label": "c9665"
+      "target_label": "pvr_check_indirect"
     },
     {
       "addr": 38399,
@@ -41055,7 +41055,7 @@
         5
       ],
       "labels": [
-        "c95ff"
+        "pvr_named"
       ],
       "comment_inline": "Named variable: type = real/string (5)",
       "xref_summaries": [
@@ -41139,9 +41139,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c960e",
+      "operand": "pvr_name_setup",
       "target": 38414,
-      "target_label": "c960e"
+      "target_label": "pvr_name_setup"
     },
     {
       "addr": 38412,
@@ -41168,7 +41168,7 @@
         0
       ],
       "labels": [
-        "c960e"
+        "pvr_name_setup"
       ],
       "comment_inline": "back up one (name reads from offset 1): low",
       "xref_summaries": [
@@ -41203,9 +41203,9 @@
       "comment_inline": "no borrow into the high byte",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9615",
+      "operand": "pvr_name_ptr_hi",
       "target": 38421,
-      "target_label": "c9615"
+      "target_label": "pvr_name_ptr_hi"
     },
     {
       "addr": 38420,
@@ -41223,7 +41223,7 @@
         56
       ],
       "labels": [
-        "c9615"
+        "pvr_name_ptr_hi"
       ],
       "comment_inline": "&38 = name pointer high",
       "xref_summaries": [
@@ -41269,7 +41269,7 @@
         55
       ],
       "labels": [
-        "c961b"
+        "pvr_scan_loop"
       ],
       "comment_inline": "Scan the name: next character",
       "xref_summaries": [
@@ -41306,9 +41306,9 @@
       "comment_inline": "no: check letters",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c962d",
+      "operand": "pvr_scan_check_uc",
       "target": 38445,
-      "target_label": "c962d"
+      "target_label": "pvr_scan_check_uc"
     },
     {
       "addr": 38433,
@@ -41330,9 +41330,9 @@
       "comment_inline": "no: name ends",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9641",
+      "operand": "pvr_name_end",
       "target": 38465,
-      "target_label": "c9641"
+      "target_label": "pvr_name_end"
     },
     {
       "addr": 38437,
@@ -41354,9 +41354,9 @@
       "comment_inline": "no: name ends",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9641",
+      "operand": "pvr_name_end",
       "target": 38465,
-      "target_label": "c9641"
+      "target_label": "pvr_name_end"
     },
     {
       "addr": 38441,
@@ -41385,9 +41385,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c961b",
+      "operand": "pvr_scan_loop",
       "target": 38427,
-      "target_label": "c961b"
+      "target_label": "pvr_scan_loop"
     },
     {
       "addr": 38445,
@@ -41396,7 +41396,7 @@
         91
       ],
       "labels": [
-        "c962d"
+        "pvr_scan_check_uc"
       ],
       "comment_inline": "above 'Z'?",
       "xref_summaries": [
@@ -41418,9 +41418,9 @@
       "comment_inline": "yes: check lower case",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9635",
+      "operand": "pvr_scan_check_lc",
       "target": 38453,
-      "target_label": "c9635"
+      "target_label": "pvr_scan_check_lc"
     },
     {
       "addr": 38449,
@@ -41449,9 +41449,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c961b",
+      "operand": "pvr_scan_loop",
       "target": 38427,
-      "target_label": "c961b"
+      "target_label": "pvr_scan_loop"
     },
     {
       "addr": 38453,
@@ -41460,7 +41460,7 @@
         95
       ],
       "labels": [
-        "c9635"
+        "pvr_scan_check_lc"
       ],
       "comment_inline": "below '_'?",
       "xref_summaries": [
@@ -41482,9 +41482,9 @@
       "comment_inline": "yes: name ends",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9641",
+      "operand": "pvr_name_end",
       "target": 38465,
-      "target_label": "c9641"
+      "target_label": "pvr_name_end"
     },
     {
       "addr": 38457,
@@ -41506,9 +41506,9 @@
       "comment_inline": "yes: name ends",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9641",
+      "operand": "pvr_name_end",
       "target": 38465,
-      "target_label": "c9641"
+      "target_label": "pvr_name_end"
     },
     {
       "addr": 38461,
@@ -41537,9 +41537,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c961b",
+      "operand": "pvr_scan_loop",
       "target": 38427,
-      "target_label": "c961b"
+      "target_label": "pvr_scan_loop"
     },
     {
       "addr": 38465,
@@ -41547,7 +41547,7 @@
         136
       ],
       "labels": [
-        "c9641"
+        "pvr_name_end"
       ],
       "comment_inline": "Back up to the terminator",
       "xref_summaries": [
@@ -41571,9 +41571,9 @@
       "comment_inline": "empty name: undefined",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9673",
+      "operand": "pvr_no_name",
       "target": 38515,
-      "target_label": "c9673"
+      "target_label": "pvr_no_name"
     },
     {
       "addr": 38468,
@@ -41595,9 +41595,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c96af",
+      "operand": "pvr_string",
       "target": 38575,
-      "target_label": "c96af"
+      "target_label": "pvr_string"
     },
     {
       "addr": 38472,
@@ -41619,9 +41619,9 @@
       "comment_inline": "no: real variable",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9654",
+      "operand": "pvr_name_len",
       "target": 38484,
-      "target_label": "c9654"
+      "target_label": "pvr_name_len"
     },
     {
       "addr": 38476,
@@ -41692,7 +41692,7 @@
         57
       ],
       "labels": [
-        "c9654"
+        "pvr_name_len"
       ],
       "comment_inline": "Record the name length",
       "xref_summaries": [
@@ -41727,9 +41727,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c96a6",
+      "operand": "pvr_resint_array",
       "target": 38566,
-      "target_label": "c96a6"
+      "target_label": "pvr_resint_array"
     },
     {
       "addr": 38490,
@@ -41754,9 +41754,9 @@
       "comment_inline": "not found: undefined",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9677",
+      "operand": "pvr_undefined",
       "target": 38519,
-      "target_label": "c9677"
+      "target_label": "pvr_undefined"
     },
     {
       "addr": 38495,
@@ -41778,7 +41778,7 @@
         27
       ],
       "labels": [
-        "c9661"
+        "pvr_after_name"
       ],
       "comment_inline": "Next character after the name",
       "xref_summaries": [
@@ -41813,7 +41813,7 @@
         33
       ],
       "labels": [
-        "c9665"
+        "pvr_check_indirect"
       ],
       "comment_inline": "'!' indirection following?",
       "xref_summaries": [
@@ -41835,9 +41835,9 @@
       "comment_inline": "yes: word indirection",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c967f",
+      "operand": "pvr_word_indirect",
       "target": 38527,
-      "target_label": "c967f"
+      "target_label": "pvr_word_indirect"
     },
     {
       "addr": 38505,
@@ -41859,9 +41859,9 @@
       "comment_inline": "yes: byte indirection",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c967b",
+      "operand": "pvr_byte_indirect",
       "target": 38523,
-      "target_label": "c967b"
+      "target_label": "pvr_byte_indirect"
     },
     {
       "addr": 38509,
@@ -41912,7 +41912,7 @@
         0
       ],
       "labels": [
-        "c9673"
+        "pvr_no_name"
       ],
       "comment_inline": "No name found: A=0, SEC",
       "xref_summaries": [
@@ -41950,7 +41950,7 @@
         0
       ],
       "labels": [
-        "c9677"
+        "pvr_undefined"
       ],
       "comment_inline": "Valid name, undefined: A=0, CLC",
       "xref_summaries": [
@@ -41989,7 +41989,7 @@
         0
       ],
       "labels": [
-        "c967b"
+        "pvr_byte_indirect"
       ],
       "comment_inline": "'?' indirection: byte type (1)",
       "xref_summaries": [
@@ -42011,9 +42011,9 @@
       "comment_inline": "always taken",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9681",
+      "operand": "pvr_save_width",
       "target": 38529,
-      "target_label": "c9681"
+      "target_label": "pvr_save_width"
     },
     {
       "addr": 38527,
@@ -42022,7 +42022,7 @@
         4
       ],
       "labels": [
-        "c967f"
+        "pvr_word_indirect"
       ],
       "comment_inline": "'!' indirection: word type (4)",
       "xref_summaries": [
@@ -42041,7 +42041,7 @@
         72
       ],
       "labels": [
-        "c9681"
+        "pvr_save_width"
       ],
       "comment_inline": "Save the indirection width",
       "xref_summaries": [
@@ -42246,7 +42246,7 @@
         104
       ],
       "labels": [
-        "c969f"
+        "pvr_restore_type"
       ],
       "comment_inline": "Restore the indirection type",
       "xref_summaries": [
@@ -42306,7 +42306,7 @@
         232
       ],
       "labels": [
-        "c96a6"
+        "pvr_resint_array"
       ],
       "comment_inline": "Resident-integer array: step past \"(\"",
       "xref_summaries": [
@@ -42355,9 +42355,9 @@
       "comment_inline": "check for trailing ! or ?",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9661",
+      "operand": "pvr_after_name",
       "target": 38497,
-      "target_label": "c9661"
+      "target_label": "pvr_after_name"
     },
     {
       "addr": 38575,
@@ -42365,7 +42365,7 @@
         232
       ],
       "labels": [
-        "c96af"
+        "pvr_string"
       ],
       "comment_inline": "String variable: step past \"$\"",
       "xref_summaries": [
@@ -42454,9 +42454,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c96c9",
+      "operand": "pvr_string_array",
       "target": 38601,
-      "target_label": "c96c9"
+      "target_label": "pvr_string_array"
     },
     {
       "addr": 38588,
@@ -42481,9 +42481,9 @@
       "comment_inline": "not found: undefined",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9677",
+      "operand": "pvr_undefined",
       "target": 38519,
-      "target_label": "c9677"
+      "target_label": "pvr_undefined"
     },
     {
       "addr": 38593,
@@ -42546,7 +42546,7 @@
         232
       ],
       "labels": [
-        "c96c9"
+        "pvr_string_array"
       ],
       "comment_inline": "String array: step past \"(\"",
       "xref_summaries": [
@@ -42646,7 +42646,7 @@
         0
       ],
       "labels": [
-        "c96d7"
+        "array_error"
       ],
       "comment_inline": "No such array: Array error",
       "xref_summaries": [
@@ -42724,9 +42724,9 @@
       "comment_inline": "missing: Array error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c96d7",
+      "operand": "array_error",
       "target": 38615,
-      "target_label": "c96d7"
+      "target_label": "array_error"
     },
     {
       "addr": 38628,
@@ -42851,9 +42851,9 @@
       "comment_inline": "no: handle the small case",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c976c",
+      "operand": "idxarr_one",
       "target": 38764,
-      "target_label": "c976c"
+      "target_label": "idxarr_one"
     },
     {
       "addr": 38647,
@@ -42910,7 +42910,7 @@
         189
       ],
       "labels": [
-        "loop_c96ff"
+        "idxarr_loop"
       ],
       "comment_inline": "Stack the running index",
       "xref_summaries": [
@@ -42972,9 +42972,9 @@
       "comment_inline": "no: wrong dimension count -> Array",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c96d7",
+      "operand": "array_error",
       "target": 38615,
-      "target_label": "c96d7"
+      "target_label": "array_error"
     },
     {
       "addr": 38667,
@@ -43335,9 +43335,9 @@
       "comment_inline": "yes: next subscript",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c96ff",
+      "operand": "idxarr_loop",
       "target": 38655,
-      "target_label": "loop_c96ff"
+      "target_label": "idxarr_loop"
     },
     {
       "addr": 38724,
@@ -43573,9 +43573,9 @@
       "comment_inline": "scale by the element size",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c977d",
+      "operand": "idxarr_type",
       "target": 38781,
-      "target_label": "c977d"
+      "target_label": "idxarr_type"
     },
     {
       "addr": 38764,
@@ -43585,7 +43585,7 @@
         174
       ],
       "labels": [
-        "c976c"
+        "idxarr_one"
       ],
       "comment_inline": "One subscript: evaluate it",
       "xref_summaries": [
@@ -43689,7 +43689,7 @@
         104
       ],
       "labels": [
-        "c977d"
+        "idxarr_type"
       ],
       "comment_inline": "Element type",
       "xref_summaries": [
@@ -43734,9 +43734,9 @@
       "comment_inline": "no: integer (4 bytes)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c979b",
+      "operand": "idxarr_scale",
       "target": 38811,
-      "target_label": "c979b"
+      "target_label": "idxarr_scale"
     },
     {
       "addr": 38788,
@@ -43886,9 +43886,9 @@
       "comment_inline": "done: skip the x4 path",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c97a3",
+      "operand": "idxarr_offset",
       "target": 38819,
-      "target_label": "c97a3"
+      "target_label": "idxarr_offset"
     },
     {
       "addr": 38811,
@@ -43897,7 +43897,7 @@
         42
       ],
       "labels": [
-        "c979b"
+        "idxarr_scale"
       ],
       "comment_inline": "index *= 4",
       "xref_summaries": [
@@ -43957,7 +43957,7 @@
         152
       ],
       "labels": [
-        "c97a3"
+        "idxarr_offset"
       ],
       "comment_inline": "Add the element offset within the descriptor",
       "xref_summaries": [
@@ -44004,9 +44004,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c97ad",
+      "operand": "idxarr_addr",
       "target": 38829,
-      "target_label": "c97ad"
+      "target_label": "idxarr_addr"
     },
     {
       "addr": 38826,
@@ -44037,7 +44037,7 @@
         55
       ],
       "labels": [
-        "c97ad"
+        "idxarr_addr"
       ],
       "comment_inline": "Element address = base + offset",
       "xref_summaries": [
@@ -44196,9 +44196,9 @@
       "comment_inline": "negative or huge: Subscript",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c97d1",
+      "operand": "subscript_error",
       "target": 38865,
-      "target_label": "c97d1"
+      "target_label": "subscript_error"
     },
     {
       "addr": 38852,
@@ -44270,9 +44270,9 @@
       "comment_inline": "not less than the extent: Subscript",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c97d1",
+      "operand": "subscript_error",
       "target": 38865,
-      "target_label": "c97d1"
+      "target_label": "subscript_error"
     },
     {
       "addr": 38863,
@@ -44298,7 +44298,7 @@
         0
       ],
       "labels": [
-        "c97d1"
+        "subscript_error"
       ],
       "comment_inline": "Subscript error",
       "xref_summaries": [
@@ -44354,7 +44354,7 @@
         10
       ],
       "labels": [
-        "loop_c97dd"
+        "chkline_skip"
       ],
       "comment_inline": "Advance",
       "xref_summaries": [
@@ -44433,9 +44433,9 @@
       "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c97dd",
+      "operand": "chkline_skip",
       "target": 38877,
-      "target_label": "loop_c97dd"
+      "target_label": "chkline_skip"
     },
     {
       "addr": 38887,
@@ -82732,9 +82732,9 @@
       "comment_inline": "Parse the variable reference",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c95dd",
+      "operand": "pvr_parse",
       "target": 38365,
-      "target_label": "sub_c95dd"
+      "target_label": "pvr_parse"
     },
     {
       "addr": 44581,
