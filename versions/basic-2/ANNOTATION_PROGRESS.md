@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 698 of 7,129 placeholders left (9.8 %);
+**STATUS: in progress — 679 of 7,129 placeholders left (9.5 %);
 depths 0–4 complete, depth 5 in progress.**
 
 **Stray partial placeholders:** the status tool counts an instruction
@@ -26,10 +26,10 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`stmt_print` (19), then `asm_opcode_add4` (17), `iwa_add` (17),
-`fn_eval` (17), and the rest of depths 5–8.
+`asm_opcode_add4` (17), then `iwa_add` (17), `fn_eval` (17),
+`iwa_rsub` (16), and the rest of depths 5–8.
 (`stmt_dim`, `parse_var_ref`, `unstack_value_to_var`, `iwa_divide`,
-`check_end_of_statement`, `iwa_test_var` done 2026-06-14.) Per routine:
+`check_end_of_statement`, `iwa_test_var`, `stmt_print` done 2026-06-14.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -232,4 +232,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: unstack_value_to_var | unstack_value_to_var (pop stacked value to var: string-var heap copy, $addr CR-terminated copy, unrolled numeric copy) + trailing PRINT#-to-file block (OSBPUT type+bytes, MSB-first numerics, reversed strings) | 42 | 783 |
 | 2026-06-14 | depth 5: iwa_divide | iwa_divide (32-bit DIV/MOD restoring division: coerce/sign, /0 guard, dividend normalise, 32-step shift-subtract; byte-named shift & trial-subtraction chains) | 38 | 745 |
 | 2026-06-14 | depth 5: check_end_of_statement | check_end_of_statement (require :/CR/ELSE or Syntax error, poll Escape) + trailing next-line walk (end-of-program, TRACE line report, 3-byte line-header skip) | 24 | 721 |
-| 2026-06-14 | depth 5: iwa_test_var | iwa_test_var (integer compare via sign-biased 32-bit subtract setting C/Z) + trailing string compare (shorter-length scan, length tie-break) | 23 | 698 | — |
+| 2026-06-14 | depth 5: iwa_test_var | iwa_test_var (integer compare via sign-biased 32-bit subtract setting C/Z) + trailing string compare (shorter-length scan, length tie-break) | 23 | 698 |
+| 2026-06-14 | depth 5: stmt_print | stmt_print (PRINT: @% field padding, format-state save/restore, number right-justify, string output) + trailing TAB/SPC cursor positioning | 19 | 679 | — |
