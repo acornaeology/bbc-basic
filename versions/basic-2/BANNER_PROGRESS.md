@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 171 fully documented
-(desc + calling contract), 114 remaining (60 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 178 fully documented
+(desc + calling contract), 107 remaining (62 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
 
 Driver sorted into address order; shared stmt_*/fn_* contracts established
@@ -272,6 +272,7 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | FP primitives | 17 FWA/FWB pack/unpack/move/mantissa routines | 17 | 137 | ad91f78 |
 | 2026-06-14 | FP ptrs + helpers | 7 point_* setters, byte/print/int-result helpers; fixed iwa_from_ya + fn_to | 15 | 122 | eccee24 |
 | 2026-06-14 | value stack + loaders | stack/unstack/drop + load_real_var/load_string_var; fixed unstack_integer | 8 | 114 | 8afd278 |
+| 2026-06-14 | line/program helpers | check/decode_line_number, parse_decimal_u16, advance_to_next_line, check_subscript_bound, clear_value_bytes; fixed find_program_line | 7 | 107 | e46362b |
 
 ## Resume here
 
@@ -283,8 +284,20 @@ an optional 3rd/4th tuple element (None = use the family default) — use
 this for the handful of non-standard handlers (e.g. `fn_to` is an error,
 `stmt_data` just skips the line) as you reach them.
 
-Next: work the `banner_status.py` worklist leaves-first — the FP/IWA
-primitives and small helpers (their contracts are crisp and set the
-vocabulary), then parsers, then any remaining hand-written banners.
-These are all hand-written `d.subroutine(...)` calls — edit in place.
-Run `uv run tools/banner_status.py` for the live list.
+Done so far (all committed): FP pack/unpack/move/mantissa primitives,
+FP pointer setters, small leaf helpers (byte/print/int-result), the
+BASIC value stack + typed loaders, and the line-number / program-walk
+helpers. Several stale banners corrected along the way (iwa_from_ya
+"sign-extended", fn_to, unstack_integer "caller drops", find_program_line
+carry sense) — keep checking descriptions against the code, not just
+filling contracts.
+
+Next (107 remaining, leaves-first via `uv run tools/banner_status.py`):
+the variable-management routines (find_variable, create_variable,
+find_proc_fn), the number<->ASCII conversions (output_digit,
+parse_exponent, ascii/number families), imul16, the RND helpers
+(rnd_step, rnd_repeat, read_key_timed), usr_call, eval_after_eq, and the
+remaining mid-depth parsers/statement helpers. All hand-written
+`d.subroutine(...)` calls — edit in place. The stmt_*/fn_* table
+handlers already carry the shared contract; refine individual ones only
+where the shared default is wrong (e.g. stmt_data skips the line).
