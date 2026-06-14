@@ -33086,7 +33086,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte of the address",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#>(zp_iwa)"
@@ -34308,7 +34308,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push the GCOL mode",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -34358,7 +34358,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -35609,7 +35609,7 @@
         14,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "jump through WRCHV (OSWRCH)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "(wrchv)",
@@ -68554,7 +68554,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -68579,7 +68579,7 @@
         141,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "pack FWA (cos) there",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -68656,7 +68656,7 @@
         133,
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -70246,7 +70246,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "halve the exponent",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -70267,7 +70267,7 @@
         133,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the guess exponent",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -70352,7 +70352,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -70390,7 +70390,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -72186,7 +72186,7 @@
         181,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "unpack pi/2 into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -73229,7 +73229,7 @@
         141,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "save sin^2 to the work var",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_var",
@@ -74712,7 +74712,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -74736,7 +74736,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -75935,7 +75935,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR &2C,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -75948,7 +75948,7 @@
         5,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "&2B,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -75961,7 +75961,7 @@
         5,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "&2A (all zero => SGN 0)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa",
@@ -77499,7 +77499,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the sign flags",
       "type": "code",
       "mnemonic": "php"
     },
@@ -77558,7 +77558,7 @@
         5,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR &3F,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m2",
@@ -77571,7 +77571,7 @@
         5,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "&40,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m3",
@@ -77584,7 +77584,7 @@
         5,
         65
       ],
-      "comment_inline": "...",
+      "comment_inline": "&41 (any set => not exact)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m4",
@@ -84594,7 +84594,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -84639,7 +84639,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "recover the hex/dec flag",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -84689,7 +84689,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear &37 (default format)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -91399,7 +91399,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "width - 1",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -93160,7 +93160,7 @@
         133,
         31
       ],
-      "comment_inline": "...",
+      "comment_inline": "into &1F",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_listo",
@@ -108131,7 +108131,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry for TOP += Y",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -109650,7 +109650,7 @@
         160,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte = &06 (&0600)",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#6"

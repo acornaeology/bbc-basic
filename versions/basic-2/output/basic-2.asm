@@ -3514,7 +3514,7 @@ l848a = sub_c847b+15
 .stmt_time
     jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..      ; Step past "=", evaluate the value
     ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*       ; Point at IWA
-    ldy #>(zp_iwa)                                                    ; 92ce: a0 00       ..       ; ...
+    ldy #>(zp_iwa)                                                    ; 92ce: a0 00       ..       ; high byte of the address
     sty zp_fwa_sign                                                   ; 92d0: 84 2e       ..       ; clear the 5th byte
     lda #osword_write_clock                                           ; 92d2: a9 02       ..       ; OSWORD 2 (write clock)
     jsr osword                                                        ; 92d4: 20 f1 ff     ..      ; Write system clock
@@ -3668,11 +3668,11 @@ l848a = sub_c847b+15
 .stmt_gcol
     jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.      ; Evaluate the GCOL mode
     lda zp_iwa                                                        ; 937d: a5 2a       .*       ; save it
-    pha                                                               ; 937f: 48          H        ; ...
+    pha                                                               ; 937f: 48          H        ; push the GCOL mode
     jsr sub_c92da                                                     ; 9380: 20 da 92     ..      ; Step past the comma, evaluate the colour
     jsr sub_c9852                                                     ; 9383: 20 52 98     R.      ; check the statement ends
     lda #&12                                                          ; 9386: a9 12       ..       ; VDU 18 (GCOL)
-    jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; send it
     jmp c93da                                                         ; 938b: 4c da 93    L..      ; send the mode and colour
 ; ***************************************************************************************
 ; COLOUR
@@ -3809,7 +3809,7 @@ l848a = sub_c847b+15
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
 .sub_c9456
     lda zp_iwa                                                        ; 9456: a5 2a       .*       ; Send the low byte to OSWRCH
-    jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..      ; ...
+    jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..      ; jump through WRCHV (OSWRCH)
 ; ***************************************************************************************
 ; Find a PROC or FN definition by name
 ;
@@ -7367,15 +7367,15 @@ l848a = sub_c847b+15
     jsr eval_real                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
     lda l004a                                                         ; a6c4: a5 4a       .J       ; save the quadrant
-    pha                                                               ; a6c6: 48          H        ; ...
+    pha                                                               ; a6c6: 48          H        ; push it
     jsr point_fp_temp4                                                ; a6c7: 20 e9 a7     ..      ; save the first result (cos) in TEMP4
-    jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..      ; ...
+    jsr fwa_pack_var                                                  ; a6ca: 20 8d a3     ..      ; pack FWA (cos) there
     inc l004a                                                         ; a6cd: e6 4a       .J       ; shift the quadrant (cos -> sin)
     jsr ca99e                                                         ; a6cf: 20 9e a9     ..      ; compute the other (sin)
     jsr point_fp_temp4                                                ; a6d2: 20 e9 a7     ..      ; point at TEMP4
     jsr fwa_swap_var                                                  ; a6d5: 20 d6 a4     ..      ; swap FWA (sin) with TEMP4 (cos)
     pla                                                               ; a6d8: 68          h        ; restore the quadrant
-    sta l004a                                                         ; a6d9: 85 4a       .J       ; ...
+    sta l004a                                                         ; a6d9: 85 4a       .J       ; store it
     jsr ca99e                                                         ; a6db: 20 9e a9     ..      ; finish the trig (cos in FWA)
     jsr point_fp_temp4                                                ; a6de: 20 e9 a7     ..      ; point at TEMP4 (sin)
     jsr fp_divide                                                     ; a6e1: 20 e7 a6     ..      ; TAN = sin / cos
@@ -7528,9 +7528,9 @@ l848a = sub_c847b+15
     bmi loop_ca7a9                                                    ; a7bc: 30 eb       0.       ; negative: -ve root error
     jsr fwa_pack_temp1                                                ; a7be: 20 85 a3     ..      ; Save the argument in TEMP1
     lda zp_fwa_exp                                                    ; a7c1: a5 30       .0       ; Initial guess: halve the exponent
-    lsr a                                                             ; a7c3: 4a          J        ; ...
+    lsr a                                                             ; a7c3: 4a          J        ; halve the exponent
     adc #&40 ; '@'                                                    ; a7c4: 69 40       i@       ; (re-bias)
-    sta zp_fwa_exp                                                    ; a7c6: 85 30       .0       ; ...
+    sta zp_fwa_exp                                                    ; a7c6: 85 30       .0       ; store the guess exponent
     lda #5                                                            ; a7c8: a9 05       ..       ; 5 Newton iterations
     sta l004a                                                         ; a7ca: 85 4a       .J       ; (counter)
     jsr point_fp_temp2                                                ; a7cc: 20 ed a7     ..      ; point at TEMP2 (the guess)
@@ -7538,10 +7538,10 @@ l848a = sub_c847b+15
 .loop_ca7cf
     jsr fwa_pack_var                                                  ; a7cf: 20 8d a3     ..      ; save the current guess
     lda #&6c ; 'l'                                                    ; a7d2: a9 6c       .l       ; point at TEMP1 (the argument)
-    sta zp_fp_ptr                                                     ; a7d4: 85 4b       .K       ; ...
+    sta zp_fp_ptr                                                     ; a7d4: 85 4b       .K       ; store the pointer low
     jsr fwa_rdiv_var                                                  ; a7d6: 20 ad a6     ..      ; FWA = argument / guess
     lda #&71 ; 'q'                                                    ; a7d9: a9 71       .q       ; point at TEMP2 (the guess)
-    sta zp_fp_ptr                                                     ; a7db: 85 4b       .K       ; ...
+    sta zp_fp_ptr                                                     ; a7db: 85 4b       .K       ; store the pointer low
     jsr fwa_add_var                                                   ; a7dd: 20 00 a5     ..      ; FWA = arg/guess + guess
     dec zp_fwa_exp                                                    ; a7e0: c6 30       .0       ; halve it: next guess
     dec l004a                                                         ; a7e2: c6 4a       .J       ; count
@@ -7726,7 +7726,7 @@ l848a = sub_c847b+15
 ; &a8fe referenced 2 times by &a8f3, &abcb
 .ca8fe
     jsr point_const_half_pi                                           ; a8fe: 20 55 aa     U.      ; x = 1: load pi/2
-    jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..      ; ...
+    jsr fwa_unpack_var                                                ; a901: 20 b5 a3     ..      ; unpack pi/2 into FWA
 ; &a904 referenced 2 times by &a90d, &a93a
 .ca904
     lda #&ff                                                          ; a904: a9 ff       ..       ; real result
@@ -7830,7 +7830,7 @@ l848a = sub_c847b+15
 .sub_ca9b1
     jsr fwa_pack_temp1                                                ; a9b1: 20 85 a3     ..      ; Save sin into TEMP1
     jsr fwa_mul_var                                                   ; a9b4: 20 56 a6     V.      ; FWA = sin^2
-    jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..      ; ...
+    jsr fwa_pack_var                                                  ; a9b7: 20 8d a3     ..      ; save sin^2 to the work var
     jsr fwa_set_one                                                   ; a9ba: 20 99 a6     ..      ; FWA = 1
     jsr fwa_sub_var                                                   ; a9bd: 20 d0 a4     ..      ; FWA = 1 - sin^2
     jmp ca7b7                                                         ; a9c0: 4c b7 a7    L..      ; cos = sqrt(1 - sin^2)
@@ -7969,9 +7969,9 @@ l848a = sub_c847b+15
     jsr sub_caada                                                     ; aabb: 20 da aa     ..      ; FWA = e^frac via the series
     jsr fwa_pack_temp3                                                ; aabe: 20 81 a3     ..      ; Save e^frac in TEMP3
     lda #&e4                                                          ; aac1: a9 e4       ..       ; Point at the constant e: low byte
-    sta zp_fp_ptr                                                     ; aac3: 85 4b       .K       ; ...
+    sta zp_fp_ptr                                                     ; aac3: 85 4b       .K       ; store the pointer low
     lda #&aa                                                          ; aac5: a9 aa       ..       ; high byte
-    sta zp_fp_ptr_1                                                   ; aac7: 85 4c       .L       ; ...
+    sta zp_fp_ptr_1                                                   ; aac7: 85 4c       .L       ; store the pointer high
     jsr fwa_unpack_var                                                ; aac9: 20 b5 a3     ..      ; FWA = e
     lda l004a                                                         ; aacc: a5 4a       .J       ; Integer part of x
     jsr fwa_int_power                                                 ; aace: 20 12 ab     ..      ; FWA = e^int
@@ -8099,9 +8099,9 @@ l848a = sub_c847b+15
     beq cabe6                                                         ; ab8b: f0 59       .Y       ; string: error
     bmi loop_cab7f                                                    ; ab8d: 30 f0       0.       ; real: use the FP sign
     lda zp_iwa_3                                                      ; ab8f: a5 2d       .-       ; Integer: test for zero
-    ora zp_iwa_2                                                      ; ab91: 05 2c       .,       ; ...
-    ora zp_iwa_1                                                      ; ab93: 05 2b       .+       ; ...
-    ora zp_iwa                                                        ; ab95: 05 2a       .*       ; ...
+    ora zp_iwa_2                                                      ; ab91: 05 2c       .,       ; OR &2C,
+    ora zp_iwa_1                                                      ; ab93: 05 2b       .+       ; &2B,
+    ora zp_iwa                                                        ; ab95: 05 2a       .*       ; &2A (all zero => SGN 0)
     beq caba5                                                         ; ab97: f0 0c       ..       ; zero: 0
     lda zp_iwa_3                                                      ; ab99: a5 2d       .-       ; Sign bit
     bpl caba0                                                         ; ab9b: 10 03       ..       ; positive: 1
@@ -8294,14 +8294,14 @@ l848a = sub_c847b+15
     beq cac9b                                                         ; ac7b: f0 1e       ..       ; string: error
     bpl return_30                                                     ; ac7d: 10 1b       ..       ; already integer: return it
     lda zp_fwa_sign                                                   ; ac7f: a5 2e       ..       ; Real: remember the sign
-    php                                                               ; ac81: 08          .        ; ...
+    php                                                               ; ac81: 08          .        ; save the sign flags
     jsr fwa_to_int2                                                   ; ac82: 20 fe a3     ..      ; Take the integer part
     plp                                                               ; ac85: 28          (        ; sign
     bpl cac95                                                         ; ac86: 10 0d       ..       ; positive: no adjustment
     lda zp_fwb_m1                                                     ; ac88: a5 3e       .>       ; Negative: any fractional bits?
-    ora zp_fwb_m2                                                     ; ac8a: 05 3f       .?       ; ...
-    ora zp_fwb_m3                                                     ; ac8c: 05 40       .@       ; ...
-    ora zp_fwb_m4                                                     ; ac8e: 05 41       .A       ; ...
+    ora zp_fwb_m2                                                     ; ac8a: 05 3f       .?       ; OR &3F,
+    ora zp_fwb_m3                                                     ; ac8c: 05 40       .@       ; &40,
+    ora zp_fwb_m4                                                     ; ac8e: 05 41       .A       ; &41 (any set => not exact)
     beq cac95                                                         ; ac90: f0 03       ..       ; none: exact
     jsr sub_ca4c7                                                     ; ac92: 20 c7 a4     ..      ; round down (floor of a negative)
 ; &ac95 referenced 2 times by &ac86, &ac90
@@ -9191,15 +9191,15 @@ l848a = sub_c847b+15
 ; &b0a1 referenced 1 time by &b09b
 .cb0a1
     tya                                                               ; b0a1: 98          .        ; Save the hex/dec flag
-    pha                                                               ; b0a2: 48          H        ; ...
+    pha                                                               ; b0a2: 48          H        ; push it
     jsr eval_factor                                                   ; b0a3: 20 ec ad     ..      ; Evaluate the number
     beq cb0bf                                                         ; b0a6: f0 17       ..       ; string: error  ...
     tay                                                               ; b0a8: a8          .        ; Restore the flag
-    pla                                                               ; b0a9: 68          h        ; ...
+    pla                                                               ; b0a9: 68          h        ; recover the hex/dec flag
     sta zp_print_flag                                                 ; b0aa: 85 15       ..       ; @% formatting set?
     lda l0403                                                         ; b0ac: ad 03 04    ...      ; yes: use it
     bne cb0b9                                                         ; b0af: d0 08       ..       ; Default conversion
-    sta zp_general                                                    ; b0b1: 85 37       .7       ; ...
+    sta zp_general                                                    ; b0b1: 85 37       .7       ; clear &37 (default format)
     jsr c9ef9                                                         ; b0b3: 20 f9 9e     ..      ; string result
     lda #0                                                            ; b0b6: a9 00       ..       ; Return
     rts                                                               ; b0b8: 60          `        ; Return
@@ -9908,7 +9908,7 @@ l848a = sub_c847b+15
     jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.      ; Evaluate the width
     jsr sub_c9852                                                     ; b4a3: 20 52 98     R.      ; check the statement ends
     ldy zp_iwa                                                        ; b4a6: a4 2a       .*       ; Auto-newline column = width - 1
-    dey                                                               ; b4a8: 88          .        ; ...
+    dey                                                               ; b4a8: 88          .        ; width - 1
     sty zp_width                                                      ; b4a9: 84 23       .#       ; store it
     jmp statement_loop                                                ; b4ab: 4c 9b 8b    L..      ; next statement
 ; &b4ae referenced 2 times by &b4bf, &b4e2
@@ -10124,7 +10124,7 @@ l848a = sub_c847b+15
     jsr c984c                                                         ; b58f: 20 4c 98     L.      ; check the statement ends
     jsr sub_c92ee                                                     ; b592: 20 ee 92     ..      ; coerce to a byte
     lda zp_iwa                                                        ; b595: a5 2a       .*       ; Store the LISTO flag
-    sta zp_listo                                                      ; b597: 85 1f       ..       ; ...
+    sta zp_listo                                                      ; b597: 85 1f       ..       ; into &1F
     jmp immediate_loop                                                ; b599: 4c f6 8a    L..      ; next statement
 ; ***************************************************************************************
 ; LIST
@@ -11670,7 +11670,7 @@ l848a = sub_c847b+15
 ; &be90 referenced 1 time by &be82
 .cbe90
     iny                                                               ; be90: c8          .        ; End of program: skip the &FF marker
-    clc                                                               ; be91: 18          .        ; ...
+    clc                                                               ; be91: 18          .        ; clear carry for TOP += Y
 ; &be92 referenced 2 times by &bc7c, &bcb2
 .sub_cbe92
     tya                                                               ; be92: 98          .        ; TOP += Y
@@ -11864,7 +11864,7 @@ l848a = sub_c847b+15
     bne cbf96                                                         ; bf86: d0 0e       ..       ; not a string: error
     jsr sub_cbeba                                                     ; bf88: 20 ba be     ..      ; CR-terminate it
     ldx #0                                                            ; bf8b: a2 00       ..       ; Point at the string buffer
-    ldy #6                                                            ; bf8d: a0 06       ..       ; ...
+    ldy #6                                                            ; bf8d: a0 06       ..       ; high byte = &06 (&0600)
     pla                                                               ; bf8f: 68          h        ; recover the action
     jsr osfind                                                        ; bf90: 20 ce ff     ..      ; Open the file
     jmp int_result_a                                                  ; bf93: 4c d8 ae    L..      ; return the handle
