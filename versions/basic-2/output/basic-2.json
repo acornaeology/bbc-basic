@@ -73582,7 +73582,7 @@
         5,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "or byte 2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -73595,7 +73595,7 @@
         5,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "or byte 1",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m1",
@@ -73632,7 +73632,7 @@
         133,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "set it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -73656,7 +73656,7 @@
         132,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwa_rnd",
@@ -73682,7 +73682,7 @@
         133,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "into the sign byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -73774,7 +73774,7 @@
         86,
         166
       ],
-      "comment_inline": "...",
+      "comment_inline": "multiply by it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -73802,7 +73802,7 @@
         0,
         165
       ],
-      "comment_inline": "...",
+      "comment_inline": "add the argument",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -73844,7 +73844,7 @@
         181,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "into FWA",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_unpack_var",
@@ -73872,7 +73872,7 @@
         86,
         166
       ],
-      "comment_inline": "...",
+      "comment_inline": "multiply by it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_mul_var",
@@ -73900,7 +73900,7 @@
         0,
         165
       ],
-      "comment_inline": "...",
+      "comment_inline": "add it (tail call)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_add_var",

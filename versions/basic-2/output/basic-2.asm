@@ -7864,15 +7864,15 @@ l848a = sub_c847b+15
     lda zp_fwa_m4                                                     ; a9f1: a5 34       .4       ; Low byte of the quadrant count
     sta l004a                                                         ; a9f3: 85 4a       .J       ; save it in &4A
     ora zp_fwa_m3                                                     ; a9f5: 05 33       .3       ; Is the whole quadrant count zero?
-    ora zp_fwa_m2                                                     ; a9f7: 05 32       .2       ; ...
-    ora zp_fwa_m1                                                     ; a9f9: 05 31       .1       ; ...
+    ora zp_fwa_m2                                                     ; a9f7: 05 32       .2       ; or byte 2,
+    ora zp_fwa_m1                                                     ; a9f9: 05 31       .1       ; or byte 1
     beq caa35                                                         ; a9fb: f0 38       .8       ; yes: argument already in range, use it as is
     lda #&a0                                                          ; a9fd: a9 a0       ..       ; Rebuild the quadrant count as a real: exponent
-    sta zp_fwa_exp                                                    ; a9ff: 85 30       .0       ; ...
+    sta zp_fwa_exp                                                    ; a9ff: 85 30       .0       ; set it
     ldy #0                                                            ; aa01: a0 00       ..       ; clear the rounding byte
-    sty zp_fwa_rnd                                                    ; aa03: 84 35       .5       ; ...
+    sty zp_fwa_rnd                                                    ; aa03: 84 35       .5       ; store it
     lda zp_fwa_m1                                                     ; aa05: a5 31       .1       ; Sign of the count
-    sta zp_fwa_sign                                                   ; aa07: 85 2e       ..       ; ...
+    sta zp_fwa_sign                                                   ; aa07: 85 2e       ..       ; into the sign byte
     bpl caa0e                                                         ; aa09: 10 03       ..       ; positive: skip
     jsr ca46c                                                         ; aa0b: 20 6c a4     l.      ; negative: negate the mantissa
 ; &aa0e referenced 1 time by &aa09
@@ -7880,16 +7880,16 @@ l848a = sub_c847b+15
     jsr fwa_normalise                                                 ; aa0e: 20 03 a3     ..      ; Normalise the quadrant count
     jsr fwa_pack_temp2                                                ; aa11: 20 7d a3     }.      ; Save it in TEMP2
     jsr point_half_pi_hi                                              ; aa14: 20 48 aa     H.      ; Cody-Waite reduce: FWA = count * (pi/2 high part)
-    jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.      ; ...
+    jsr fwa_mul_var                                                   ; aa17: 20 56 a6     V.      ; multiply by it
     jsr point_fp_temp1                                                ; aa1a: 20 f5 a7     ..      ; FWA = argument - count*(pi/2 high)
-    jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..      ; ...
+    jsr fwa_add_var                                                   ; aa1d: 20 00 a5     ..      ; add the argument
     jsr fwa_pack_var                                                  ; aa20: 20 8d a3     ..      ; Save the partial reduction in TEMP1
     jsr point_fp_temp2                                                ; aa23: 20 ed a7     ..      ; Reload the quadrant count
-    jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..      ; ...
+    jsr fwa_unpack_var                                                ; aa26: 20 b5 a3     ..      ; into FWA
     jsr point_half_pi_lo                                              ; aa29: 20 4c aa     L.      ; FWA = count * (pi/2 low part)
-    jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.      ; ...
+    jsr fwa_mul_var                                                   ; aa2c: 20 56 a6     V.      ; multiply by it
     jsr point_fp_temp1                                                ; aa2f: 20 f5 a7     ..      ; Subtract the low part too: FWA = reduced angle
-    jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..      ; ...
+    jmp fwa_add_var                                                   ; aa32: 4c 00 a5    L..      ; add it (tail call)
 ; &aa35 referenced 1 time by &a9fb
 .caa35
     jmp fwa_unpack_temp1                                              ; aa35: 4c b2 a3    L..      ; Argument in range: reduced angle is the argument
