@@ -110,3 +110,4 @@ placeholders goes first.
 | 2026-06-14 | start | — | — | 1806 | — |
 | 2026-06-14 | pilot | mant_mul10, fn_rights (RIGHT$), +2 chain fixes | 32 | 1774 | — |
 | 2026-06-14 | leaves: number parsing | parse_decimal_u16, decode_line_number, parse_exponent | 29 | 1745 | — |
+| 2026-06-14 | leaves: FP load/unpack | fwa_acc_fwb, fwb_unpack_var, fwb_clear/negate, load_real_var, clear_value_bytes | 28 | 1717 | — |

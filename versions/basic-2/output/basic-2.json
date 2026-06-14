@@ -37314,7 +37314,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y = bytes used",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -37337,7 +37337,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c9541",
@@ -37470,7 +37470,7 @@
         160,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "link field offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#1"
@@ -59027,7 +59027,7 @@
         101,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m3",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m3",
@@ -59066,7 +59066,7 @@
         101,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m2",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m2",
@@ -59105,7 +59105,7 @@
         101,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m1",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_m1",
@@ -62472,7 +62472,7 @@
         5,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m2",
@@ -62485,7 +62485,7 @@
         5,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m3",
@@ -62498,7 +62498,7 @@
         5,
         65
       ],
-      "comment_inline": "...",
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwb_m4",
@@ -62537,7 +62537,7 @@
         9,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the top bit",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&80"
@@ -64289,7 +64289,7 @@
         16,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "positive: nothing to do",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "return_24",
@@ -64323,7 +64323,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte first: 0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -64334,7 +64334,7 @@
         229,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus m4,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m4",
@@ -64347,7 +64347,7 @@
         133,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -64360,7 +64360,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -64371,7 +64371,7 @@
         229,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus m3 (borrow in),",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m3",
@@ -64384,7 +64384,7 @@
         133,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -64397,7 +64397,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -64408,7 +64408,7 @@
         229,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus m2 (borrow in),",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m2",
@@ -64421,7 +64421,7 @@
         133,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -64434,7 +64434,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -64445,7 +64445,7 @@
         229,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus m1 (borrow in)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m1",
@@ -64458,7 +64458,7 @@
         133,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -89233,7 +89233,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -89438,7 +89438,7 @@
         5,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m2",
@@ -89451,7 +89451,7 @@
         5,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m3",
@@ -89464,7 +89464,7 @@
         5,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "m4",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_m4",
@@ -89503,7 +89503,7 @@
         9,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the top bit",
       "type": "code",
       "mnemonic": "ora",
       "operand": "#&80"
