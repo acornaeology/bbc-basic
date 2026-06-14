@@ -31899,9 +31899,9 @@
       "comment_inline": "Print it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9923",
+      "operand": "trace_print_number",
       "target": 39203,
-      "target_label": "sub_c9923"
+      "target_label": "trace_print_number"
     },
     {
       "addr": 37051,
@@ -46713,9 +46713,9 @@
       "comment_inline": "always: skip the TRACE entry",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9925",
+      "operand": "plnum_setwidth",
       "target": 39205,
-      "target_label": "c9925"
+      "target_label": "plnum_setwidth"
     },
     {
       "addr": 39203,
@@ -46724,7 +46724,7 @@
         5
       ],
       "labels": [
-        "sub_c9923"
+        "trace_print_number"
       ],
       "comment_inline": "TRACE entry: 5-digit field",
       "xref_summaries": [
@@ -46745,7 +46745,7 @@
         20
       ],
       "labels": [
-        "c9925"
+        "plnum_setwidth"
       ],
       "comment_inline": "Field width",
       "xref_summaries": [
@@ -46778,7 +46778,7 @@
         0
       ],
       "labels": [
-        "loop_c9929"
+        "plnum_clear_loop"
       ],
       "comment_inline": "Clear this digit",
       "xref_summaries": [
@@ -46820,7 +46820,7 @@
         42
       ],
       "labels": [
-        "loop_c992e"
+        "plnum_sub_loop"
       ],
       "comment_inline": "Subtract this power of ten from IWA",
       "xref_summaries": [
@@ -46845,9 +46845,9 @@
       "comment_inline": "minus the low byte,",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l996b,x",
+      "operand": "powers_of_ten_lo,x",
       "target": 39275,
-      "target_label": "l996b"
+      "target_label": "powers_of_ten_lo"
     },
     {
       "addr": 39219,
@@ -46881,9 +46881,9 @@
       "comment_inline": "minus the high byte",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l99b9,x",
+      "operand": "powers_of_ten_hi,x",
       "target": 39353,
-      "target_label": "l99b9"
+      "target_label": "powers_of_ten_hi"
     },
     {
       "addr": 39225,
@@ -46894,9 +46894,9 @@
       "comment_inline": "underflow: digit complete",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9943",
+      "operand": "plnum_next_power",
       "target": 39235,
-      "target_label": "c9943"
+      "target_label": "plnum_next_power"
     },
     {
       "addr": 39227,
@@ -46946,9 +46946,9 @@
       "comment_inline": "subtract again",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c992e",
+      "operand": "plnum_sub_loop",
       "target": 39214,
-      "target_label": "loop_c992e"
+      "target_label": "plnum_sub_loop"
     },
     {
       "addr": 39235,
@@ -46956,7 +46956,7 @@
         202
       ],
       "labels": [
-        "c9943"
+        "plnum_next_power"
       ],
       "comment_inline": "Next power of ten",
       "xref_summaries": [
@@ -46977,9 +46977,9 @@
       "comment_inline": "until all five powers used",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c9929",
+      "operand": "plnum_clear_loop",
       "target": 39209,
-      "target_label": "loop_c9929"
+      "target_label": "plnum_clear_loop"
     },
     {
       "addr": 39238,
@@ -46998,7 +46998,7 @@
         202
       ],
       "labels": [
-        "loop_c9948"
+        "plnum_digit_loop"
       ],
       "comment_inline": "step down to the next digit",
       "xref_summaries": [
@@ -47019,9 +47019,9 @@
       "comment_inline": "units digit: always shown",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c994f",
+      "operand": "plnum_top_digit",
       "target": 39247,
-      "target_label": "c994f"
+      "target_label": "plnum_top_digit"
     },
     {
       "addr": 39243,
@@ -47045,9 +47045,9 @@
       "comment_inline": "yes: skip the leading zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9948",
+      "operand": "plnum_digit_loop",
       "target": 39240,
-      "target_label": "loop_c9948"
+      "target_label": "plnum_digit_loop"
     },
     {
       "addr": 39247,
@@ -47056,7 +47056,7 @@
         55
       ],
       "labels": [
-        "c994f"
+        "plnum_top_digit"
       ],
       "comment_inline": "Index of the top digit",
       "xref_summaries": [
@@ -47093,9 +47093,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9960",
+      "operand": "plnum_print_loop",
       "target": 39264,
-      "target_label": "c9960"
+      "target_label": "plnum_print_loop"
     },
     {
       "addr": 39253,
@@ -47119,9 +47119,9 @@
       "comment_inline": "none",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9960",
+      "operand": "plnum_print_loop",
       "target": 39264,
-      "target_label": "c9960"
+      "target_label": "plnum_print_loop"
     },
     {
       "addr": 39257,
@@ -47140,7 +47140,7 @@
         181
       ],
       "labels": [
-        "loop_c995a"
+        "plnum_space_loop"
       ],
       "comment_inline": "print a leading space",
       "xref_summaries": [
@@ -47173,9 +47173,9 @@
       "comment_inline": "until the field is padded",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c995a",
+      "operand": "plnum_space_loop",
       "target": 39258,
-      "target_label": "loop_c995a"
+      "target_label": "plnum_space_loop"
     },
     {
       "addr": 39264,
@@ -47184,7 +47184,7 @@
         63
       ],
       "labels": [
-        "c9960"
+        "plnum_print_loop"
       ],
       "comment_inline": "Digit",
       "xref_summaries": [
@@ -47244,9 +47244,9 @@
       "comment_inline": "until all digits printed",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c9960",
+      "operand": "plnum_print_loop",
       "target": 39264,
-      "target_label": "c9960"
+      "target_label": "plnum_print_loop"
     },
     {
       "addr": 39274,
@@ -47267,7 +47267,7 @@
         16
       ],
       "labels": [
-        "l996b"
+        "powers_of_ten_lo"
       ],
       "xref_summaries": [
         "&996b referenced 1 time by &9930"
@@ -47352,7 +47352,7 @@
         1
       ],
       "labels": [
-        "c9978"
+        "fpl_check_high"
       ],
       "comment_inline": "This line's number: high byte",
       "xref_summaries": [
@@ -47401,9 +47401,9 @@
       "comment_inline": ">=: a candidate",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c998e",
+      "operand": "fpl_found",
       "target": 39310,
-      "target_label": "c998e"
+      "target_label": "fpl_found"
     },
     {
       "addr": 39296,
@@ -47412,7 +47412,7 @@
         3
       ],
       "labels": [
-        "loop_c9980"
+        "fpl_next_loop"
       ],
       "comment_inline": "Line length",
       "xref_summaries": [
@@ -47473,9 +47473,9 @@
       "comment_inline": "no carry: same page",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9978",
+      "operand": "fpl_check_high",
       "target": 39288,
-      "target_label": "c9978"
+      "target_label": "fpl_check_high"
     },
     {
       "addr": 39306,
@@ -47499,9 +47499,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9978",
+      "operand": "fpl_check_high",
       "target": 39288,
-      "target_label": "c9978"
+      "target_label": "fpl_check_high"
     },
     {
       "addr": 39310,
@@ -47510,7 +47510,7 @@
         20
       ],
       "labels": [
-        "c998e"
+        "fpl_found"
       ],
       "comment_inline": "high byte greater: found (not exact)",
       "xref_summaries": [
@@ -47521,9 +47521,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c99a4",
+      "operand": "fpl_return",
       "target": 39332,
-      "target_label": "c99a4"
+      "target_label": "fpl_return"
     },
     {
       "addr": 39312,
@@ -47571,9 +47571,9 @@
       "comment_inline": "less: next line",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c9980",
+      "operand": "fpl_next_loop",
       "target": 39296,
-      "target_label": "loop_c9980"
+      "target_label": "fpl_next_loop"
     },
     {
       "addr": 39320,
@@ -47584,9 +47584,9 @@
       "comment_inline": "greater: found (not exact)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c99a4",
+      "operand": "fpl_return",
       "target": 39332,
-      "target_label": "c99a4"
+      "target_label": "fpl_return"
     },
     {
       "addr": 39322,
@@ -47632,9 +47632,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c99a4",
+      "operand": "fpl_return",
       "target": 39332,
-      "target_label": "c99a4"
+      "target_label": "fpl_return"
     },
     {
       "addr": 39329,
@@ -47665,7 +47665,7 @@
         2
       ],
       "labels": [
-        "c99a4"
+        "fpl_return"
       ],
       "comment_inline": "Point at the line number",
       "xref_summaries": [
@@ -47695,7 +47695,7 @@
         0
       ],
       "labels": [
-        "c99a7"
+        "div_zero_error"
       ],
       "comment_inline": "Division by zero error",
       "xref_summaries": [
@@ -47751,7 +47751,7 @@
         39
       ],
       "labels": [
-        "l99b9"
+        "powers_of_ten_hi"
       ],
       "xref_summaries": [
         "&99b9 referenced 1 time by &9936"
@@ -48087,9 +48087,9 @@
       "comment_inline": "yes: Division by zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c99a7",
+      "operand": "div_zero_error",
       "target": 39335,
-      "target_label": "c99a7"
+      "target_label": "div_zero_error"
     },
     {
       "addr": 39410,
@@ -48108,7 +48108,7 @@
         136
       ],
       "labels": [
-        "loop_c99f4"
+        "idiv_norm_loop"
       ],
       "comment_inline": "Normalise: count down",
       "xref_summaries": [
@@ -48194,9 +48194,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c99f4",
+      "operand": "idiv_norm_loop",
       "target": 39412,
-      "target_label": "loop_c99f4"
+      "target_label": "idiv_norm_loop"
     },
     {
       "addr": 39425,
@@ -48205,7 +48205,7 @@
         57
       ],
       "labels": [
-        "loop_c9a01"
+        "idiv_shift_loop"
       ],
       "comment_inline": "Shift a bit from dividend into the remainder",
       "xref_summaries": [
@@ -48460,9 +48460,9 @@
       "comment_inline": "doesn't fit: leave the remainder",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9a33",
+      "operand": "idiv_restore",
       "target": 39475,
-      "target_label": "c9a33"
+      "target_label": "idiv_restore"
     },
     {
       "addr": 39463,
@@ -48543,9 +48543,9 @@
       "comment_inline": "next bit",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9a35",
+      "operand": "idiv_next_bit",
       "target": 39477,
-      "target_label": "c9a35"
+      "target_label": "idiv_next_bit"
     },
     {
       "addr": 39475,
@@ -48553,7 +48553,7 @@
         104
       ],
       "labels": [
-        "c9a33"
+        "idiv_restore"
       ],
       "comment_inline": "discard the trial subtraction",
       "xref_summaries": [
@@ -48580,7 +48580,7 @@
         136
       ],
       "labels": [
-        "c9a35"
+        "idiv_next_bit"
       ],
       "comment_inline": "Next bit",
       "xref_summaries": [
@@ -48601,9 +48601,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9a01",
+      "operand": "idiv_shift_loop",
       "target": 39425,
-      "target_label": "loop_c9a01"
+      "target_label": "idiv_shift_loop"
     },
     {
       "addr": 39480,
@@ -48630,7 +48630,7 @@
         39
       ],
       "labels": [
-        "loop_c9a39"
+        "cmp_int_real"
       ],
       "comment_inline": "Int vs real: save the operator",
       "xref_summaries": [
@@ -48739,9 +48739,9 @@
       "comment_inline": "compare",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9a62",
+      "operand": "cmp_bytes",
       "target": 39522,
-      "target_label": "c9a62"
+      "target_label": "cmp_bytes"
     },
     {
       "addr": 39504,
@@ -48751,7 +48751,7 @@
         189
       ],
       "labels": [
-        "loop_c9a50"
+        "cmp_real_real"
       ],
       "comment_inline": "Real vs real: stack the left",
       "xref_summaries": [
@@ -48860,7 +48860,7 @@
         39
       ],
       "labels": [
-        "c9a62"
+        "cmp_bytes"
       ],
       "comment_inline": "Restore the operator",
       "xref_summaries": [
@@ -49008,9 +49008,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a93",
+      "operand": "cmp_combine",
       "target": 39571,
-      "target_label": "c9a93"
+      "target_label": "cmp_combine"
     },
     {
       "addr": 39546,
@@ -49047,9 +49047,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a93",
+      "operand": "cmp_combine",
       "target": 39571,
-      "target_label": "c9a93"
+      "target_label": "cmp_combine"
     },
     {
       "addr": 39552,
@@ -49086,9 +49086,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a93",
+      "operand": "cmp_combine",
       "target": 39571,
-      "target_label": "c9a93"
+      "target_label": "cmp_combine"
     },
     {
       "addr": 39558,
@@ -49125,9 +49125,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a93",
+      "operand": "cmp_combine",
       "target": 39571,
-      "target_label": "c9a93"
+      "target_label": "cmp_combine"
     },
     {
       "addr": 39564,
@@ -49164,9 +49164,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a93",
+      "operand": "cmp_combine",
       "target": 39571,
-      "target_label": "c9a93"
+      "target_label": "cmp_combine"
     },
     {
       "addr": 39570,
@@ -49192,7 +49192,7 @@
         106
       ],
       "labels": [
-        "c9a93"
+        "cmp_combine"
       ],
       "comment_inline": "Combine the compare carry...",
       "xref_summaries": [
@@ -49258,7 +49258,7 @@
         140
       ],
       "labels": [
-        "c9a9a"
+        "cmp_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -49280,7 +49280,7 @@
         138
       ],
       "labels": [
-        "sub_c9a9d"
+        "compare_values"
       ],
       "comment_inline": "Current type",
       "xref_summaries": [
@@ -49314,9 +49314,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9ae7",
+      "operand": "str_compare",
       "target": 39655,
-      "target_label": "c9ae7"
+      "target_label": "str_compare"
     },
     {
       "addr": 39584,
@@ -49327,9 +49327,9 @@
       "comment_inline": "float: compare floats",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9a50",
+      "operand": "cmp_real_real",
       "target": 39504,
-      "target_label": "loop_c9a50"
+      "target_label": "cmp_real_real"
     },
     {
       "addr": 39586,
@@ -49377,9 +49377,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9a9a",
+      "operand": "cmp_type_error",
       "target": 39578,
-      "target_label": "c9a9a"
+      "target_label": "cmp_type_error"
     },
     {
       "addr": 39595,
@@ -49390,9 +49390,9 @@
       "comment_inline": "float: compare floats",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9a39",
+      "operand": "cmp_int_real",
       "target": 39481,
-      "target_label": "loop_c9a39"
+      "target_label": "cmp_int_real"
     },
     {
       "addr": 39597,
@@ -49749,9 +49749,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9ae5",
+      "operand": "itest_done",
       "target": 39653,
-      "target_label": "c9ae5"
+      "target_label": "itest_done"
     },
     {
       "addr": 39651,
@@ -49772,7 +49772,7 @@
         40
       ],
       "labels": [
-        "c9ae5"
+        "itest_done"
       ],
       "comment_inline": "Restore the flags",
       "xref_summaries": [
@@ -49801,7 +49801,7 @@
         189
       ],
       "labels": [
-        "c9ae7"
+        "str_compare"
       ],
       "comment_inline": "String compare: stack the left",
       "xref_summaries": [
@@ -49848,9 +49848,9 @@
       "comment_inline": "number: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9a9a",
+      "operand": "cmp_type_error",
       "target": 39578,
-      "target_label": "c9a9a"
+      "target_label": "cmp_type_error"
     },
     {
       "addr": 39664,
@@ -49937,9 +49937,9 @@
       "comment_inline": "use the shorter",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9aff",
+      "operand": "strcmp_shorter",
       "target": 39679,
-      "target_label": "c9aff"
+      "target_label": "strcmp_shorter"
     },
     {
       "addr": 39678,
@@ -49957,7 +49957,7 @@
         58
       ],
       "labels": [
-        "c9aff"
+        "strcmp_shorter"
       ],
       "comment_inline": "shorter length",
       "xref_summaries": [
@@ -49990,7 +49990,7 @@
         58
       ],
       "labels": [
-        "loop_c9b03"
+        "strcmp_loop"
       ],
       "comment_inline": "Reached the shorter length?",
       "xref_summaries": [
@@ -50014,9 +50014,9 @@
       "comment_inline": "yes: compare lengths",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9b11",
+      "operand": "strcmp_lengths",
       "target": 39697,
-      "target_label": "c9b11"
+      "target_label": "strcmp_lengths"
     },
     {
       "addr": 39687,
@@ -50063,9 +50063,9 @@
       "comment_inline": "equal: continue",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9b03",
+      "operand": "strcmp_loop",
       "target": 39683,
-      "target_label": "loop_c9b03"
+      "target_label": "strcmp_loop"
     },
     {
       "addr": 39695,
@@ -50076,9 +50076,9 @@
       "comment_inline": "differ",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9b15",
+      "operand": "strcmp_result",
       "target": 39701,
-      "target_label": "c9b15"
+      "target_label": "strcmp_result"
     },
     {
       "addr": 39697,
@@ -50087,7 +50087,7 @@
         57
       ],
       "labels": [
-        "c9b11"
+        "strcmp_lengths"
       ],
       "comment_inline": "Compare the lengths",
       "xref_summaries": [
@@ -50121,7 +50121,7 @@
         8
       ],
       "labels": [
-        "c9b15"
+        "strcmp_result"
       ],
       "comment_inline": "Save the result",
       "xref_summaries": [
@@ -51432,9 +51432,9 @@
       "comment_inline": "plain \"<\": evaluate and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9d",
+      "operand": "compare_values",
       "target": 39581,
-      "target_label": "sub_c9a9d"
+      "target_label": "compare_values"
     },
     {
       "addr": 39888,
@@ -51494,9 +51494,9 @@
       "comment_inline": "evaluate and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9d",
+      "operand": "compare_values",
       "target": 39581,
-      "target_label": "sub_c9a9d"
+      "target_label": "compare_values"
     },
     {
       "addr": 39897,
@@ -51569,9 +51569,9 @@
       "comment_inline": "evaluate and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9d",
+      "operand": "compare_values",
       "target": 39581,
-      "target_label": "sub_c9a9d"
+      "target_label": "compare_values"
     },
     {
       "addr": 39908,
@@ -51677,9 +51677,9 @@
       "comment_inline": "plain \">\": evaluate and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9d",
+      "operand": "compare_values",
       "target": 39581,
-      "target_label": "sub_c9a9d"
+      "target_label": "compare_values"
     },
     {
       "addr": 39924,
@@ -51752,9 +51752,9 @@
       "comment_inline": "evaluate and compare",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9a9d",
+      "operand": "compare_values",
       "target": 39581,
-      "target_label": "sub_c9a9d"
+      "target_label": "compare_values"
     },
     {
       "addr": 39935,
@@ -70807,9 +70807,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c99a7",
+      "operand": "div_zero_error",
       "target": 39335,
-      "target_label": "c99a7"
+      "target_label": "div_zero_error"
     },
     {
       "addr": 42686,
@@ -96328,9 +96328,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9923",
+      "operand": "trace_print_number",
       "target": 39203,
-      "target_label": "sub_c9923"
+      "target_label": "trace_print_number"
     },
     {
       "addr": 46624,

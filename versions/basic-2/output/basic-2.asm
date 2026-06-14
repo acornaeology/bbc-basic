@@ -3458,7 +3458,7 @@ oscli            = &fff7
 ; &90b5 referenced 2 times by &90d3, &90d7
 .auto_loop
     jsr stack_integer                                                 ; 90b5: 20 94 bd     ..      ; Stack the line number
-    jsr sub_c9923                                                     ; 90b8: 20 23 99     #.      ; Print it
+    jsr trace_print_number                                            ; 90b8: 20 23 99     #.      ; Print it
     lda #&20 ; ' '                                                    ; 90bb: a9 20       .        ; Print a space and read a line
     jsr read_input_line                                               ; 90bd: 20 02 bc     ..      ; do it
     jsr unstack_integer                                               ; 90c0: 20 ea bd     ..      ; Pop the line number
@@ -5473,65 +5473,65 @@ oscli            = &fff7
 ; &991f referenced 3 times by &9097, &9914, &b662
 .print_line_number
     lda #0                                                            ; 991f: a9 00       ..       ; Default: no field padding
-    beq c9925                                                         ; 9921: f0 02       ..       ; always: skip the TRACE entry
+    beq plnum_setwidth                                                ; 9921: f0 02       ..       ; always: skip the TRACE entry
 ; &9923 referenced 2 times by &90b8, &b61d
-.sub_c9923
+.trace_print_number
     lda #5                                                            ; 9923: a9 05       ..       ; TRACE entry: 5-digit field
 ; &9925 referenced 1 time by &9921
-.c9925
+.plnum_setwidth
     sta zp_print_bytes                                                ; 9925: 85 14       ..       ; Field width
     ldx #4                                                            ; 9927: a2 04       ..       ; Five powers of ten, index 4..0
 ; &9929 referenced 1 time by &9944
-.loop_c9929
+.plnum_clear_loop
     lda #0                                                            ; 9929: a9 00       ..       ; Clear this digit
     sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?       ; zero its count
     sec                                                               ; 992d: 38          8        ; set carry for the subtraction
 ; &992e referenced 1 time by &9941
-.loop_c992e
+.plnum_sub_loop
     lda zp_iwa                                                        ; 992e: a5 2a       .*       ; Subtract this power of ten from IWA
-    sbc l996b,x                                                       ; 9930: fd 6b 99    .k.      ; minus the low byte,
+    sbc powers_of_ten_lo,x                                            ; 9930: fd 6b 99    .k.      ; minus the low byte,
     tay                                                               ; 9933: a8          .        ; stash the low result
     lda zp_iwa_1                                                      ; 9934: a5 2b       .+       ; IWA high byte
-    sbc l99b9,x                                                       ; 9936: fd b9 99    ...      ; minus the high byte
-    bcc c9943                                                         ; 9939: 90 08       ..       ; underflow: digit complete
+    sbc powers_of_ten_hi,x                                            ; 9936: fd b9 99    ...      ; minus the high byte
+    bcc plnum_next_power                                              ; 9939: 90 08       ..       ; underflow: digit complete
     sta zp_iwa_1                                                      ; 993b: 85 2b       .+       ; keep the remainder
     sty zp_iwa                                                        ; 993d: 84 2a       .*       ; (low byte too)
     inc zp_fwb_m2,x                                                   ; 993f: f6 3f       .?       ; count the digit
-    bne loop_c992e                                                    ; 9941: d0 eb       ..       ; subtract again
+    bne plnum_sub_loop                                                ; 9941: d0 eb       ..       ; subtract again
 ; &9943 referenced 1 time by &9939
-.c9943
+.plnum_next_power
     dex                                                               ; 9943: ca          .        ; Next power of ten
-    bpl loop_c9929                                                    ; 9944: 10 e3       ..       ; until all five powers used
+    bpl plnum_clear_loop                                              ; 9944: 10 e3       ..       ; until all five powers used
     ldx #5                                                            ; 9946: a2 05       ..       ; Find the most significant non-zero digit
 ; &9948 referenced 1 time by &994d
-.loop_c9948
+.plnum_digit_loop
     dex                                                               ; 9948: ca          .        ; step down to the next digit
-    beq c994f                                                         ; 9949: f0 04       ..       ; units digit: always shown
+    beq plnum_top_digit                                               ; 9949: f0 04       ..       ; units digit: always shown
     lda zp_fwb_m2,x                                                   ; 994b: b5 3f       .?       ; is this digit zero?
-    beq loop_c9948                                                    ; 994d: f0 f9       ..       ; yes: skip the leading zero
+    beq plnum_digit_loop                                              ; 994d: f0 f9       ..       ; yes: skip the leading zero
 ; &994f referenced 1 time by &9949
-.c994f
+.plnum_top_digit
     stx zp_general                                                    ; 994f: 86 37       .7       ; Index of the top digit
     lda zp_print_bytes                                                ; 9951: a5 14       ..       ; Field padding requested?
-    beq c9960                                                         ; 9953: f0 0b       ..       ; no
+    beq plnum_print_loop                                              ; 9953: f0 0b       ..       ; no
     sbc zp_general                                                    ; 9955: e5 37       .7       ; leading spaces = field - digits
-    beq c9960                                                         ; 9957: f0 07       ..       ; none
+    beq plnum_print_loop                                              ; 9957: f0 07       ..       ; none
     tay                                                               ; 9959: a8          .        ; space count into Y
 ; &995a referenced 1 time by &995e
-.loop_c995a
+.plnum_space_loop
     jsr print_space                                                   ; 995a: 20 65 b5     e.      ; print a leading space
     dey                                                               ; 995d: 88          .        ; one fewer space
-    bne loop_c995a                                                    ; 995e: d0 fa       ..       ; until the field is padded
+    bne plnum_space_loop                                              ; 995e: d0 fa       ..       ; until the field is padded
 ; &9960 referenced 3 times by &9953, &9957, &9968
-.c9960
+.plnum_print_loop
     lda zp_fwb_m2,x                                                   ; 9960: b5 3f       .?       ; Digit
     ora #&30 ; '0'                                                    ; 9962: 09 30       .0       ; to ASCII
     jsr print_char                                                    ; 9964: 20 58 b5     X.      ; print it
     dex                                                               ; 9967: ca          .        ; next digit
-    bpl c9960                                                         ; 9968: 10 f6       ..       ; until all digits printed
+    bpl plnum_print_loop                                              ; 9968: 10 f6       ..       ; until all digits printed
     rts                                                               ; 996a: 60          `        ; Return
 ; &996b referenced 1 time by &9930
-.l996b
+.powers_of_ten_lo
     equb &01, &0a, &64, &e8, &10                                      ; 996b: 01 0a 64... ..d...
 ; ***************************************************************************************
 ; Search the program for a line number
@@ -5554,45 +5554,45 @@ oscli            = &fff7
     lda zp_page                                                       ; 9974: a5 18       ..       ; Pointer high = PAGE
     sta zp_fwb_m1                                                     ; 9976: 85 3e       .>       ; pointer high
 ; &9978 referenced 2 times by &9988, &998c
-.c9978
+.fpl_check_high
     ldy #1                                                            ; 9978: a0 01       ..       ; This line's number: high byte
     lda (zp_fwb_exp),y                                                ; 997a: b1 3d       .=       ; read it
     cmp zp_iwa_1                                                      ; 997c: c5 2b       .+       ; vs the target high byte
-    bcs c998e                                                         ; 997e: b0 0e       ..       ; > =: a candidate
+    bcs fpl_found                                                     ; 997e: b0 0e       ..       ; > =: a candidate
 ; &9980 referenced 1 time by &9996
-.loop_c9980
+.fpl_next_loop
     ldy #3                                                            ; 9980: a0 03       ..       ; Line length
     lda (zp_fwb_exp),y                                                ; 9982: b1 3d       .=       ; read it
     adc zp_fwb_exp                                                    ; 9984: 65 3d       e=       ; Advance to the next line
     sta zp_fwb_exp                                                    ; 9986: 85 3d       .=       ; pointer low
-    bcc c9978                                                         ; 9988: 90 ee       ..       ; no carry: same page
+    bcc fpl_check_high                                                ; 9988: 90 ee       ..       ; no carry: same page
     inc zp_fwb_m1                                                     ; 998a: e6 3e       .>       ; carry into the pointer high
-    bcs c9978                                                         ; 998c: b0 ea       ..       ; continue
+    bcs fpl_check_high                                                ; 998c: b0 ea       ..       ; continue
 ; &998e referenced 1 time by &997e
-.c998e
-    bne c99a4                                                         ; 998e: d0 14       ..       ; high byte greater: found (not exact)
+.fpl_found
+    bne fpl_return                                                    ; 998e: d0 14       ..       ; high byte greater: found (not exact)
     ldy #2                                                            ; 9990: a0 02       ..       ; This line's number: low byte
     lda (zp_fwb_exp),y                                                ; 9992: b1 3d       .=       ; read it
     cmp zp_iwa                                                        ; 9994: c5 2a       .*       ; vs the target low byte
-    bcc loop_c9980                                                    ; 9996: 90 e8       ..       ; less: next line
-    bne c99a4                                                         ; 9998: d0 0a       ..       ; greater: found (not exact)
+    bcc fpl_next_loop                                                 ; 9996: 90 e8       ..       ; less: next line
+    bne fpl_return                                                    ; 9998: d0 0a       ..       ; greater: found (not exact)
     tya                                                               ; 999a: 98          .        ; Exact match: leave the pointer at this line
     adc zp_fwb_exp                                                    ; 999b: 65 3d       e=       ; point at the line number
     sta zp_fwb_exp                                                    ; 999d: 85 3d       .=       ; (store)
-    bcc c99a4                                                         ; 999f: 90 03       ..       ; no carry
+    bcc fpl_return                                                    ; 999f: 90 03       ..       ; no carry
     inc zp_fwb_m1                                                     ; 99a1: e6 3e       .>       ; carry into the pointer high
     clc                                                               ; 99a3: 18          .        ; flag the exact match (carry clear)
 ; &99a4 referenced 3 times by &998e, &9998, &999f
-.c99a4
+.fpl_return
     ldy #2                                                            ; 99a4: a0 02       ..       ; Point at the line number
     rts                                                               ; 99a6: 60          `        ; Return
 ; &99a7 referenced 2 times by &99f0, &a6bb
-.c99a7
+.div_zero_error
     brk                                                               ; 99a7: 00          .        ; Division by zero error
     equb &12                                                          ; 99a8: 12          .     
     equs "Division by zero"                                           ; 99a9: 44 69 76... Div...
 ; &99b9 referenced 1 time by &9936
-.l99b9
+.powers_of_ten_hi
     equb &00, &00, &00, &03, &27                                      ; 99b9: 00 00 00... ......
 ; ***************************************************************************************
 ; Unsigned/signed 32-bit integer division
@@ -5638,19 +5638,19 @@ oscli            = &fff7
     ora zp_iwa                                                        ; 99ea: 05 2a       .*       ; OR the low byte,
     ora zp_iwa_1                                                      ; 99ec: 05 2b       .+       ; &2B,
     ora zp_iwa_2                                                      ; 99ee: 05 2c       .,       ; &2C (all zero => /0)
-    beq c99a7                                                         ; 99f0: f0 b5       ..       ; yes: Division by zero
+    beq div_zero_error                                                ; 99f0: f0 b5       ..       ; yes: Division by zero
     ldy #&20 ; ' '                                                    ; 99f2: a0 20       .        ; 32 bits
 ; &99f4 referenced 1 time by &99ff
-.loop_c99f4
+.idiv_norm_loop
     dey                                                               ; 99f4: 88          .        ; Normalise: count down
     beq return_16                                                     ; 99f5: f0 41       .A       ; dividend exhausted: done
     asl zp_fileblk                                                    ; 99f7: 06 39       .9       ; shift the dividend left until the top bit is set
     rol l003a                                                         ; 99f9: 26 3a       &:       ; carrying up through &3A,
     rol zp_fwb_sign                                                   ; 99fb: 26 3b       &;       ; &3B,
     rol zp_fwb_ovf                                                    ; 99fd: 26 3c       &<       ; &3C (until bit 7 is set)
-    bpl loop_c99f4                                                    ; 99ff: 10 f3       ..       ; loop
+    bpl idiv_norm_loop                                                ; 99ff: 10 f3       ..       ; loop
 ; &9a01 referenced 1 time by &9a36
-.loop_c9a01
+.idiv_shift_loop
     rol zp_fileblk                                                    ; 9a01: 26 39       &9       ; Shift a bit from dividend into the remainder
     rol l003a                                                         ; 9a03: 26 3a       &:       ; dividend &3A,
     rol zp_fwb_sign                                                   ; 9a05: 26 3b       &;       ; &3B,
@@ -5671,27 +5671,27 @@ oscli            = &fff7
     tax                                                               ; 9a20: aa          .        ; hold it in X,
     lda zp_fwb_m3                                                     ; 9a21: a5 40       .@       ; high byte &40,
     sbc zp_iwa_3                                                      ; 9a23: e5 2d       .-       ; minus divisor high
-    bcc c9a33                                                         ; 9a25: 90 0c       ..       ; doesn't fit: leave the remainder
+    bcc idiv_restore                                                  ; 9a25: 90 0c       ..       ; doesn't fit: leave the remainder
     sta zp_fwb_m3                                                     ; 9a27: 85 40       .@       ; fits: keep the new remainder (quotient bit = 1)
     stx zp_fwb_m2                                                     ; 9a29: 86 3f       .?       ; and &3F,
     pla                                                               ; 9a2b: 68          h        ; pull &3E,
     sta zp_fwb_m1                                                     ; 9a2c: 85 3e       .>       ; store it,
     pla                                                               ; 9a2e: 68          h        ; pull &3D,
     sta zp_fwb_exp                                                    ; 9a2f: 85 3d       .=       ; store it
-    bcs c9a35                                                         ; 9a31: b0 02       ..       ; next bit
+    bcs idiv_next_bit                                                 ; 9a31: b0 02       ..       ; next bit
 ; &9a33 referenced 1 time by &9a25
-.c9a33
+.idiv_restore
     pla                                                               ; 9a33: 68          h        ; discard the trial subtraction
     pla                                                               ; 9a34: 68          h        ; (continued)
 ; &9a35 referenced 1 time by &9a31
-.c9a35
+.idiv_next_bit
     dey                                                               ; 9a35: 88          .        ; Next bit
-    bne loop_c9a01                                                    ; 9a36: d0 c9       ..       ; loop
+    bne idiv_shift_loop                                               ; 9a36: d0 c9       ..       ; loop
 ; &9a38 referenced 1 time by &99f5
 .return_16
     rts                                                               ; 9a38: 60          `        ; Return
 ; &9a39 referenced 1 time by &9aab
-.loop_c9a39
+.cmp_int_real
     stx zp_var_type                                                   ; 9a39: 86 27       .'       ; Int vs real: save the operator
     jsr unstack_integer                                               ; 9a3b: 20 ea bd     ..      ; unstack the integer
     jsr stack_real                                                    ; 9a3e: 20 51 bd     Q.      ; stack the real
@@ -5699,9 +5699,9 @@ oscli            = &fff7
     jsr fwb_copy_from_fwa                                             ; 9a44: 20 1e a2     ..      ; FWB = it
     jsr unstack_real                                                  ; 9a47: 20 7e bd     ~.      ; unstack the real operand
     jsr fwa_unpack_var                                                ; 9a4a: 20 b5 a3     ..      ; into FWA
-    jmp c9a62                                                         ; 9a4d: 4c 62 9a    Lb.      ; compare
+    jmp cmp_bytes                                                     ; 9a4d: 4c 62 9a    Lb.      ; compare
 ; &9a50 referenced 1 time by &9aa0
-.loop_c9a50
+.cmp_real_real
     jsr stack_real                                                    ; 9a50: 20 51 bd     Q.      ; Real vs real: stack the left
     jsr eval_add_sub                                                  ; 9a53: 20 42 9c     B.      ; evaluate the right operand
     stx zp_var_type                                                   ; 9a56: 86 27       .'       ; save the operator
@@ -5726,7 +5726,7 @@ oscli            = &fff7
 .fp_compare
     jsr fwb_unpack_var                                                ; 9a5f: 20 4e a3     N.      ; Unpack the operand into FWB
 ; &9a62 referenced 1 time by &9a4d
-.c9a62
+.cmp_bytes
     ldx zp_var_type                                                   ; 9a62: a6 27       .'       ; Restore the operator
     ldy #0                                                            ; 9a64: a0 00       ..       ; assume equal
     lda zp_fwb_sign                                                   ; 9a66: a5 3b       .;       ; FWB sign
@@ -5738,34 +5738,34 @@ oscli            = &fff7
     bne return_17                                                     ; 9a72: d0 1e       ..       ; yes: unequal
     lda zp_fwb_exp                                                    ; 9a74: a5 3d       .=       ; Compare exponents
     cmp zp_fwa_exp                                                    ; 9a76: c5 30       .0       ; vs FWA exp
-    bne c9a93                                                         ; 9a78: d0 19       ..       ; differ
+    bne cmp_combine                                                   ; 9a78: d0 19       ..       ; differ
     lda zp_fwb_m1                                                     ; 9a7a: a5 3e       .>       ; Compare mantissa byte 1
     cmp zp_fwa_m1                                                     ; 9a7c: c5 31       .1       ; vs FWA m1
-    bne c9a93                                                         ; 9a7e: d0 13       ..       ; differ
+    bne cmp_combine                                                   ; 9a7e: d0 13       ..       ; differ
     lda zp_fwb_m2                                                     ; 9a80: a5 3f       .?       ; byte 2
     cmp zp_fwa_m2                                                     ; 9a82: c5 32       .2       ; vs FWA m2
-    bne c9a93                                                         ; 9a84: d0 0d       ..       ; differ
+    bne cmp_combine                                                   ; 9a84: d0 0d       ..       ; differ
     lda zp_fwb_m3                                                     ; 9a86: a5 40       .@       ; byte 3
     cmp zp_fwa_m3                                                     ; 9a88: c5 33       .3       ; vs FWA m3
-    bne c9a93                                                         ; 9a8a: d0 07       ..       ; differ
+    bne cmp_combine                                                   ; 9a8a: d0 07       ..       ; differ
     lda zp_fwb_m4                                                     ; 9a8c: a5 41       .A       ; byte 4
     cmp zp_fwa_m4                                                     ; 9a8e: c5 34       .4       ; vs FWA m4
-    bne c9a93                                                         ; 9a90: d0 01       ..       ; differ
+    bne cmp_combine                                                   ; 9a90: d0 01       ..       ; differ
 ; &9a92 referenced 1 time by &9a72
 .return_17
     rts                                                               ; 9a92: 60          `        ; Equal: return
 ; &9a93 referenced 5 times by &9a78, &9a7e, &9a84, &9a8a, &9a90
-.c9a93
+.cmp_combine
     ror a                                                             ; 9a93: 6a          j        ; Combine the compare carry...
     eor zp_fwb_sign                                                   ; 9a94: 45 3b       E;       ; ...with the sign
     rol a                                                             ; 9a96: 2a          *        ; ...for the ordering
     lda #1                                                            ; 9a97: a9 01       ..       ; result nonzero
     rts                                                               ; 9a99: 60          `        ; Return
 ; &9a9a referenced 2 times by &9aa9, &9aee
-.c9a9a
+.cmp_type_error
     jmp err_type_mismatch                                             ; 9a9a: 4c 0e 8c    L..      ; Type mismatch error
 ; &9a9d referenced 5 times by &9bcd, &9bd6, &9be1, &9bf1, &9bfc
-.sub_c9a9d
+.compare_values
     txa                                                               ; 9a9d: 8a          .        ; Current type
 ; ***************************************************************************************
 ; Evaluate the next operand and compare
@@ -5785,13 +5785,13 @@ oscli            = &fff7
 ;     X: the next unconsumed operator token
 ; &9a9e referenced 1 time by &9baf
 .eval_and_compare
-    beq c9ae7                                                         ; 9a9e: f0 47       .G       ; string: compare strings
-    bmi loop_c9a50                                                    ; 9aa0: 30 ae       0.       ; float: compare floats
+    beq str_compare                                                   ; 9a9e: f0 47       .G       ; string: compare strings
+    bmi cmp_real_real                                                 ; 9aa0: 30 ae       0.       ; float: compare floats
     jsr stack_integer                                                 ; 9aa2: 20 94 bd     ..      ; Stack the integer
     jsr eval_add_sub                                                  ; 9aa5: 20 42 9c     B.      ; evaluate the next operand
     tay                                                               ; 9aa8: a8          .        ; type
-    beq c9a9a                                                         ; 9aa9: f0 ef       ..       ; string: Type mismatch
-    bmi loop_c9a39                                                    ; 9aab: 30 8c       0.       ; float: compare floats
+    beq cmp_type_error                                                ; 9aa9: f0 ef       ..       ; string: Type mismatch
+    bmi cmp_int_real                                                  ; 9aab: 30 8c       0.       ; float: compare floats
 ; ***************************************************************************************
 ; Compare an integer variable with the accumulator
 ;
@@ -5837,45 +5837,45 @@ oscli            = &fff7
     lda #4                                                            ; 9adb: a9 04       ..       ; 4 bytes,
     adc zp_stack_ptr                                                  ; 9add: 65 04       e.       ; - stack pointer low,
     sta zp_stack_ptr                                                  ; 9adf: 85 04       ..       ; store low,
-    bcc c9ae5                                                         ; 9ae1: 90 02       ..       ; no carry into the high byte
+    bcc itest_done                                                    ; 9ae1: 90 02       ..       ; no carry into the high byte
     inc zp_stack_ptr_1                                                ; 9ae3: e6 05       ..       ; carry into the high byte
 ; &9ae5 referenced 1 time by &9ae1
-.c9ae5
+.itest_done
     plp                                                               ; 9ae5: 28          (        ; Restore the flags
     rts                                                               ; 9ae6: 60          `        ; Return
 ; &9ae7 referenced 1 time by &9a9e
-.c9ae7
+.str_compare
     jsr stack_string                                                  ; 9ae7: 20 b2 bd     ..      ; String compare: stack the left
     jsr eval_add_sub                                                  ; 9aea: 20 42 9c     B.      ; evaluate the right operand
     tay                                                               ; 9aed: a8          .        ; type
-    bne c9a9a                                                         ; 9aee: d0 aa       ..       ; number: Type mismatch
+    bne cmp_type_error                                                ; 9aee: d0 aa       ..       ; number: Type mismatch
     stx zp_general                                                    ; 9af0: 86 37       .7       ; Save the current pointer
     ldx zp_strbuf_len                                                 ; 9af2: a6 36       .6       ; current length
     ldy #0                                                            ; 9af4: a0 00       ..       ; from 0
     lda (zp_stack_ptr),y                                              ; 9af6: b1 04       ..       ; stacked length
     sta zp_fileblk                                                    ; 9af8: 85 39       .9       ; save it
     cmp zp_strbuf_len                                                 ; 9afa: c5 36       .6       ; compare lengths
-    bcs c9aff                                                         ; 9afc: b0 01       ..       ; use the shorter
+    bcs strcmp_shorter                                                ; 9afc: b0 01       ..       ; use the shorter
     tax                                                               ; 9afe: aa          .        ; stacked shorter: X = its length
 ; &9aff referenced 1 time by &9afc
-.c9aff
+.strcmp_shorter
     stx l003a                                                         ; 9aff: 86 3a       .:       ; shorter length
     ldy #0                                                            ; 9b01: a0 00       ..       ; compare from 0
 ; &9b03 referenced 1 time by &9b0d
-.loop_c9b03
+.strcmp_loop
     cpy l003a                                                         ; 9b03: c4 3a       .:       ; Reached the shorter length?
-    beq c9b11                                                         ; 9b05: f0 0a       ..       ; yes: compare lengths
+    beq strcmp_lengths                                                ; 9b05: f0 0a       ..       ; yes: compare lengths
     iny                                                               ; 9b07: c8          .        ; Next character
     lda (zp_stack_ptr),y                                              ; 9b08: b1 04       ..       ; stacked string
     cmp l05ff,y                                                       ; 9b0a: d9 ff 05    ...      ; vs current string
-    beq loop_c9b03                                                    ; 9b0d: f0 f4       ..       ; equal: continue
-    bne c9b15                                                         ; 9b0f: d0 04       ..       ; differ
+    beq strcmp_loop                                                   ; 9b0d: f0 f4       ..       ; equal: continue
+    bne strcmp_result                                                 ; 9b0f: d0 04       ..       ; differ
 ; &9b11 referenced 1 time by &9b05
-.c9b11
+.strcmp_lengths
     lda zp_fileblk                                                    ; 9b11: a5 39       .9       ; Compare the lengths
     cmp zp_strbuf_len                                                 ; 9b13: c5 36       .6       ; stacked length vs current
 ; &9b15 referenced 1 time by &9b0f
-.c9b15
+.strcmp_result
     php                                                               ; 9b15: 08          .        ; Save the result
     jsr cbddc                                                         ; 9b16: 20 dc bd     ..      ; Drop the stacked string
     ldx zp_general                                                    ; 9b19: a6 37       .7       ; restore the saved pointer (X)
@@ -6057,20 +6057,20 @@ oscli            = &fff7
     beq c9bd4                                                         ; 9bc7: f0 0b       ..       ; yes
     cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>       ; '>'? (<>)
     beq c9bdf                                                         ; 9bcb: f0 12       ..       ; yes
-    jsr sub_c9a9d                                                     ; 9bcd: 20 9d 9a     ..      ; plain "<": evaluate and compare
+    jsr compare_values                                                ; 9bcd: 20 9d 9a     ..      ; plain "<": evaluate and compare
     bcc c9bb4                                                         ; 9bd0: 90 e2       ..       ; less: TRUE
     bcs c9bb5                                                         ; 9bd2: b0 e1       ..       ; not less: FALSE
 ; &9bd4 referenced 1 time by &9bc7
 .c9bd4
     inc zp_text_ptr2_off                                              ; 9bd4: e6 1b       ..       ; '<=': step past the '='
-    jsr sub_c9a9d                                                     ; 9bd6: 20 9d 9a     ..      ; evaluate and compare
+    jsr compare_values                                                ; 9bd6: 20 9d 9a     ..      ; evaluate and compare
     beq c9bb4                                                         ; 9bd9: f0 d9       ..       ; equal: TRUE
     bcc c9bb4                                                         ; 9bdb: 90 d7       ..       ; less: TRUE
     bcs c9bb5                                                         ; 9bdd: b0 d6       ..       ; greater: FALSE
 ; &9bdf referenced 1 time by &9bcb
 .c9bdf
     inc zp_text_ptr2_off                                              ; 9bdf: e6 1b       ..       ; '<>': step past the '>'
-    jsr sub_c9a9d                                                     ; 9be1: 20 9d 9a     ..      ; evaluate and compare
+    jsr compare_values                                                ; 9be1: 20 9d 9a     ..      ; evaluate and compare
     bne c9bb4                                                         ; 9be4: d0 ce       ..       ; unequal: TRUE
     beq c9bb5                                                         ; 9be6: f0 cd       ..       ; equal: FALSE
 ; &9be8 referenced 1 time by &9bac
@@ -6080,14 +6080,14 @@ oscli            = &fff7
     lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; read it
     cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=       ; '='? (>=)
     beq c9bfa                                                         ; 9bef: f0 09       ..       ; yes
-    jsr sub_c9a9d                                                     ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
+    jsr compare_values                                                ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
     beq c9bb5                                                         ; 9bf4: f0 bf       ..       ; equal: FALSE
     bcs c9bb4                                                         ; 9bf6: b0 bc       ..       ; greater: TRUE
     bcc c9bb5                                                         ; 9bf8: 90 bb       ..       ; less: FALSE
 ; &9bfa referenced 1 time by &9bef
 .c9bfa
     inc zp_text_ptr2_off                                              ; 9bfa: e6 1b       ..       ; '>=': step past the '='
-    jsr sub_c9a9d                                                     ; 9bfc: 20 9d 9a     ..      ; evaluate and compare
+    jsr compare_values                                                ; 9bfc: 20 9d 9a     ..      ; evaluate and compare
     bcs c9bb4                                                         ; 9bff: b0 b3       ..       ; greater or equal: TRUE
     bcc c9bb5                                                         ; 9c01: 90 b2       ..       ; less: FALSE
 ; &9c03 referenced 2 times by &9c27, &b0fb
@@ -8539,7 +8539,7 @@ oscli            = &fff7
     rts                                                               ; a6ba: 60          `        ; dividend zero: result is zero
 ; &a6bb referenced 2 times by &a6b0, &a6ef
 .ca6bb
-    jmp c99a7                                                         ; a6bb: 4c a7 99    L..      ; Division by zero error
+    jmp div_zero_error                                                ; a6bb: 4c a7 99    L..      ; Division by zero error
 ; ***************************************************************************************
 ; TAN
 ;
@@ -12255,7 +12255,7 @@ oscli            = &fff7
     jmp immediate_loop                                                ; b61a: 4c f6 8a    L..      ; yes: done
 ; &b61d referenced 1 time by &b618
 .cb61d
-    jsr sub_c9923                                                     ; b61d: 20 23 99     #.      ; Print the line number
+    jsr trace_print_number                                            ; b61d: 20 23 99     #.      ; Print the line number
     ldx #&ff                                                          ; b620: a2 ff       ..       ; Reset the quote flag
     stx l004d                                                         ; b622: 86 4d       .M       ; store it (&4D)
     lda #1                                                            ; b624: a9 01       ..       ; Print the LISTO leading space
@@ -14493,13 +14493,14 @@ save pydis_start, pydis_end
 ;     zp_lomem:                      6
 ;     zp_lomem_1:                    6
 ;     asm_absolute:                  5
-;     c9a93:                         5
 ;     c9fe6:                         5
 ;     ca208:                         5
 ;     cac9b:                         5
 ;     cb741:                         5
 ;     cb97d:                         5
 ;     clear_vars_heap_stack:         5
+;     cmp_combine:                   5
+;     compare_values:                5
 ;     fp_mantissas_sub:              5
 ;     fwa_negate:                    5
 ;     fwa_to_int:                    5
@@ -14513,7 +14514,6 @@ save pydis_start, pydis_end
 ;     resint_at:                     5
 ;     return_22:                     5
 ;     skip_spaces_expect_comma:      5
-;     sub_c9a9d:                     5
 ;     sub_cbfa9:                     5
 ;     tok_advance:                   5
 ;     tok_scan:                      5
@@ -14573,8 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:                 3
 ;     assign_string:                 3
 ;     c8858:                         3
-;     c9960:                         3
-;     c99a4:                         3
 ;     c9d0e:                         3
 ;     c9d1d:                         3
 ;     c9dd4:                         3
@@ -14605,6 +14603,7 @@ save pydis_start, pydis_end
 ;     find_program_line:             3
 ;     fn_true:                       3
 ;     fp_divide:                     3
+;     fpl_return:                    3
 ;     fwa_add_fwb:                   3
 ;     fwa_div10:                     3
 ;     fwa_int_power:                 3
@@ -14615,6 +14614,7 @@ save pydis_start, pydis_end
 ;     l0401:                         3
 ;     not_name_char:                 3
 ;     parse_number:                  3
+;     plnum_print_loop:              3
 ;     point_fp_temp2:                3
 ;     print_done:                    3
 ;     print_item:                    3
@@ -14661,9 +14661,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:              2
 ;     assign_string_to:              2
 ;     auto_loop:                     2
-;     c9978:                         2
-;     c99a7:                         2
-;     c9a9a:                         2
 ;     c9c03:                         2
 ;     c9c9b:                         2
 ;     c9ca1:                         2
@@ -14739,11 +14736,13 @@ save pydis_start, pydis_end
 ;     cbe9e:                         2
 ;     cbf82:                         2
 ;     cend_back:                     2
+;     cmp_type_error:                2
 ;     createvar_chain:               2
 ;     decode_line_number:            2
 ;     delete_program_line:           2
 ;     dim_array:                     2
 ;     dispatch_token:                2
+;     div_zero_error:                2
 ;     drop_stack_integer:            2
 ;     err_too_big:                   2
 ;     escape_error:                  2
@@ -14753,6 +14752,7 @@ save pydis_start, pydis_end
 ;     findvar_chain_head:            2
 ;     fp_split_int_frac:             2
 ;     fp_temp1:                      2
+;     fpl_check_high:                2
 ;     fwa_acc_fwb:                   2
 ;     fwa_add_fwb_raw:               2
 ;     fwa_copy_from_fwb:             2
@@ -14847,7 +14847,6 @@ save pydis_start, pydis_end
 ;     stmt_data:                     2
 ;     stmt_eol:                      2
 ;     sub_c887c:                     2
-;     sub_c9923:                     2
 ;     sub_c9b6b:                     2
 ;     sub_c9dce:                     2
 ;     sub_c9e1d:                     2
@@ -14871,6 +14870,7 @@ save pydis_start, pydis_end
 ;     tok_resume_mid:                2
 ;     tok_write_token:               2
 ;     trace_line:                    2
+;     trace_print_number:            2
 ;     try_variable_assignment:       2
 ;     unstack_numeric_drop:          2
 ;     usr_call:                      2
@@ -14951,18 +14951,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     c9925:                         1
-;     c9943:                         1
-;     c994f:                         1
-;     c998e:                         1
-;     c9a33:                         1
-;     c9a35:                         1
-;     c9a62:                         1
-;     c9ae5:                         1
-;     c9ae7:                         1
-;     c9aff:                         1
-;     c9b11:                         1
-;     c9b15:                         1
 ;     c9b3a:                         1
 ;     c9b55:                         1
 ;     c9b7a:                         1
@@ -15209,6 +15197,9 @@ save pydis_start, pydis_end
 ;     chkline_skip:                  1
 ;     clearval_loop:                 1
 ;     cls_send:                      1
+;     cmp_bytes:                     1
+;     cmp_int_real:                  1
+;     cmp_real_real:                 1
 ;     coerce_real:                   1
 ;     copy_ptra_to_ptrb:             1
 ;     create_def_entry:              1
@@ -15257,11 +15248,17 @@ save pydis_start, pydis_end
 ;     for_stack:                     1
 ;     fp_compare:                    1
 ;     fp_mantissas_add:              1
+;     fpl_found:                     1
+;     fpl_next_loop:                 1
 ;     fwa_complement_half_pi:        1
 ;     fwa_round_carry:               1
 ;     fwa_swap_var:                  1
 ;     gosub_stack:                   1
 ;     gosub_stack_hi:                1
+;     idiv_next_bit:                 1
+;     idiv_norm_loop:                1
+;     idiv_restore:                  1
+;     idiv_shift_loop:               1
 ;     idxarr_addr:                   1
 ;     idxarr_loop:                   1
 ;     idxarr_offset:                 1
@@ -15279,6 +15276,7 @@ save pydis_start, pydis_end
 ;     imul_loop:                     1
 ;     imul_overflow:                 1
 ;     is_dot_or_digit:               1
+;     itest_done:                    1
 ;     iwa_div:                       1
 ;     iwa_mod:                       1
 ;     iwa_store_var:                 1
@@ -15309,8 +15307,6 @@ save pydis_start, pydis_end
 ;     l05b7:                         1
 ;     l05cb:                         1
 ;     l05e5:                         1
-;     l996b:                         1
-;     l99b9:                         1
 ;     lang_install_brkv:             1
 ;     language_startup:              1
 ;     let_assign:                    1
@@ -15324,16 +15320,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_c9929:                    1
-;     loop_c992e:                    1
-;     loop_c9948:                    1
-;     loop_c995a:                    1
-;     loop_c9980:                    1
-;     loop_c99f4:                    1
-;     loop_c9a01:                    1
-;     loop_c9a39:                    1
-;     loop_c9a50:                    1
-;     loop_c9b03:                    1
 ;     loop_c9b2c:                    1
 ;     loop_c9b43:                    1
 ;     loop_c9b4e:                    1
@@ -15456,9 +15442,18 @@ save pydis_start, pydis_end
 ;     parse_dec_shift_loop:          1
 ;     parse_decimal_u16:             1
 ;     parse_exponent:                1
+;     plnum_clear_loop:              1
+;     plnum_digit_loop:              1
+;     plnum_next_power:              1
+;     plnum_setwidth:                1
+;     plnum_space_loop:              1
+;     plnum_sub_loop:                1
+;     plnum_top_digit:               1
 ;     plot_coord:                    1
 ;     plot_send_hi:                  1
 ;     point_general_page:            1
+;     powers_of_ten_hi:              1
+;     powers_of_ten_lo:              1
 ;     print_check_sep:               1
 ;     print_comma:                   1
 ;     print_field_loop:              1
@@ -15549,6 +15544,11 @@ save pydis_start, pydis_end
 ;     stmt_next:                     1
 ;     stmt_read:                     1
 ;     stmt_vdu:                      1
+;     str_compare:                   1
+;     strcmp_lengths:                1
+;     strcmp_loop:                   1
+;     strcmp_result:                 1
+;     strcmp_shorter:                1
 ;     sub_c9231:                     1
 ;     sub_ca14b:                     1
 ;     sub_ca3e7:                     1
@@ -15618,24 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c9925
-;     c9943
-;     c994f
-;     c9960
-;     c9978
-;     c998e
-;     c99a4
-;     c99a7
-;     c9a33
-;     c9a35
-;     c9a62
-;     c9a93
-;     c9a9a
-;     c9ae5
-;     c9ae7
-;     c9aff
-;     c9b11
-;     c9b15
 ;     c9b3a
 ;     c9b55
 ;     c9b7a
@@ -16031,21 +16013,9 @@ save pydis_start, pydis_end
 ;     l05e5
 ;     l05ff
 ;     l06ff
-;     l996b
-;     l99b9
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9929
-;     loop_c992e
-;     loop_c9948
-;     loop_c995a
-;     loop_c9980
-;     loop_c99f4
-;     loop_c9a01
-;     loop_c9a39
-;     loop_c9a50
-;     loop_c9b03
 ;     loop_c9b2c
 ;     loop_c9b43
 ;     loop_c9b4e
@@ -16196,8 +16166,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c9923
-;     sub_c9a9d
 ;     sub_c9b6b
 ;     sub_c9dce
 ;     sub_c9e1d
