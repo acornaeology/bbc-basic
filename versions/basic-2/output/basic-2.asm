@@ -5381,38 +5381,38 @@ l848a = sub_c847b+15
 .iwa_add
     ldy #0                                                            ; 9c5b: a0 00       ..       ; int + int: add the 32-bit stacked value to IWA
     clc                                                               ; 9c5d: 18          .        ; ...byte 0
-    lda (zp_stack_ptr),y                                              ; 9c5e: b1 04       ..       ; ...
-    adc zp_iwa                                                        ; 9c60: 65 2a       e*       ; ...
-    sta zp_iwa                                                        ; 9c62: 85 2a       .*       ; ...
+    lda (zp_stack_ptr),y                                              ; 9c5e: b1 04       ..       ; stacked low,
+    adc zp_iwa                                                        ; 9c60: 65 2a       e*       ; - IWA low,
+    sta zp_iwa                                                        ; 9c62: 85 2a       .*       ; store,
     iny                                                               ; 9c64: c8          .        ; ...byte 1
-    lda (zp_stack_ptr),y                                              ; 9c65: b1 04       ..       ; ...
-    adc zp_iwa_1                                                      ; 9c67: 65 2b       e+       ; ...
-    sta zp_iwa_1                                                      ; 9c69: 85 2b       .+       ; ...
+    lda (zp_stack_ptr),y                                              ; 9c65: b1 04       ..       ; stacked,
+    adc zp_iwa_1                                                      ; 9c67: 65 2b       e+       ; - IWA &2B,
+    sta zp_iwa_1                                                      ; 9c69: 85 2b       .+       ; store,
     iny                                                               ; 9c6b: c8          .        ; ...byte 2
-    lda (zp_stack_ptr),y                                              ; 9c6c: b1 04       ..       ; ...
-    adc zp_iwa_2                                                      ; 9c6e: 65 2c       e,       ; ...
-    sta zp_iwa_2                                                      ; 9c70: 85 2c       .,       ; ...
+    lda (zp_stack_ptr),y                                              ; 9c6c: b1 04       ..       ; stacked,
+    adc zp_iwa_2                                                      ; 9c6e: 65 2c       e,       ; - IWA &2C,
+    sta zp_iwa_2                                                      ; 9c70: 85 2c       .,       ; store,
     iny                                                               ; 9c72: c8          .        ; ...byte 3
-    lda (zp_stack_ptr),y                                              ; 9c73: b1 04       ..       ; ...
-    adc zp_iwa_3                                                      ; 9c75: 65 2d       e-       ; ...
+    lda (zp_stack_ptr),y                                              ; 9c73: b1 04       ..       ; stacked,
+    adc zp_iwa_3                                                      ; 9c75: 65 2d       e-       ; - IWA &2D (high)
 ; &9c77 referenced 1 time by &9cde
 .c9c77
-    sta zp_iwa_3                                                      ; 9c77: 85 2d       .-       ; Drop the operand from the stack
-    clc                                                               ; 9c79: 18          .        ; ...
-    lda zp_stack_ptr                                                  ; 9c7a: a5 04       ..       ; ...
-    adc #4                                                            ; 9c7c: 69 04       i.       ; ...(four bytes)
-    sta zp_stack_ptr                                                  ; 9c7e: 85 04       ..       ; ...
+    sta zp_iwa_3                                                      ; 9c77: 85 2d       .-       ; store the high byte
+    clc                                                               ; 9c79: 18          .        ; Drop the operand (stack += 4),
+    lda zp_stack_ptr                                                  ; 9c7a: a5 04       ..       ; low byte,
+    adc #4                                                            ; 9c7c: 69 04       i.       ; - 4,
+    sta zp_stack_ptr                                                  ; 9c7e: 85 04       ..       ; store low,
     lda #&40 ; '@'                                                    ; 9c80: a9 40       .@       ; Result type = integer
     bcc c9c45                                                         ; 9c82: 90 c1       ..       ; loop for further + or -
-    inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..       ; ...
-    bcs c9c45                                                         ; 9c86: b0 bd       ..       ; ...
+    inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..       ; carry into the high byte,
+    bcs c9c45                                                         ; 9c86: b0 bd       ..       ; back for a further + or -
 ; &9c88 referenced 6 times by &9c1c, &9c57, &9c92, &9cb6, &9cbe, &9ce8
 .c9c88
     jmp err_type_mismatch                                             ; 9c88: 4c 0e 8c    L..      ; Type mismatch error
 ; &9c8b referenced 1 time by &9c51
 .c9c8b
     jsr stack_real                                                    ; 9c8b: 20 51 bd     Q.      ; Left real: stack it, evaluate the right operand
-    jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..      ; ...
+    jsr eval_mul_div                                                  ; 9c8e: 20 d1 9d     ..      ; evaluate the right operand
     tay                                                               ; 9c91: a8          .        ; Type of the right operand
     beq c9c88                                                         ; 9c92: f0 f4       ..       ; string: Type mismatch
     stx zp_var_type                                                   ; 9c94: 86 27       .'       ; remember it for later

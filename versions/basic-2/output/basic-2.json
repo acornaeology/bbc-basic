@@ -50054,7 +50054,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked low,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50067,7 +50067,7 @@
         101,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ IWA low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -50080,7 +50080,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -50102,7 +50102,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50115,7 +50115,7 @@
         101,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ IWA &2B,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -50128,7 +50128,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -50150,7 +50150,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50163,7 +50163,7 @@
         101,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ IWA &2C,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_2",
@@ -50176,7 +50176,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -50198,7 +50198,7 @@
         177,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "stacked,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_stack_ptr),y",
@@ -50211,7 +50211,7 @@
         101,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ IWA &2D (high)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_3",
@@ -50227,7 +50227,7 @@
       "labels": [
         "c9c77"
       ],
-      "comment_inline": "Drop the operand from the stack",
+      "comment_inline": "store the high byte",
       "xref_summaries": [
         "&9c77 referenced 1 time by &9cde"
       ],
@@ -50245,7 +50245,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "Drop the operand (stack += 4),",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -50255,7 +50255,7 @@
         165,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr",
@@ -50268,7 +50268,7 @@
         105,
         4
       ],
-      "comment_inline": "...(four bytes)",
+      "comment_inline": "+ 4,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -50279,7 +50279,7 @@
         133,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_stack_ptr",
@@ -50316,7 +50316,7 @@
         230,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_stack_ptr_1",
@@ -50329,7 +50329,7 @@
         176,
         189
       ],
-      "comment_inline": "...",
+      "comment_inline": "back for a further + or -",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "c9c45",
@@ -50394,7 +50394,7 @@
         209,
         157
       ],
-      "comment_inline": "...",
+      "comment_inline": "evaluate the right operand",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_mul_div",
