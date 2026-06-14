@@ -110,7 +110,7 @@ The same reasoning applies to a `FOR` loop left open across an `ENDPROC`, with *
 
 ## Why casual misuse often seems to work
 
-There is one more piece that explains why programmers got away with this more often than the analysis suggests they should have. The routine [`sub_cbd3a`](address:BD3A@2?hex) resets the value stack to `HIMEM`, the `DATA` pointer to `PAGE`, and **zeroes all three loop-level counters**. It runs whenever control returns to the immediate-mode prompt (from [`execute_line`](address:8B1A@2?hex)) and on `RUN`.
+There is one more piece that explains why programmers got away with this more often than the analysis suggests they should have. The routine [`reset_data_and_stacks`](address:BD3A@2?hex) resets the value stack to `HIMEM`, the `DATA` pointer to `PAGE`, and **zeroes all three loop-level counters**. It runs whenever control returns to the immediate-mode prompt (from [`execute_line`](address:8B1A@2?hex)) and on `RUN`.
 
 So a leaked frame from a single ill-advised `ENDPROC` is wiped the moment you get back to the `>` prompt. A program that early-exits a loop once, returns to the prompt, and is re-`RUN` will look perfectly healthy. The leak only bites when it *accumulates within a single run* — many early exits without passing through the prompt — or when a leaked inner frame sits on top of a live **outer** loop, as in the example above. Both are real; both are easy to trigger by accident; neither is reported as an error until the ceiling is hit.
 
@@ -136,5 +136,5 @@ The underlying rule is simple once the stacks are laid bare: **a loop's frame is
 - [`call_proc_fn`](address:B197@2?hex) — saves the 6502 and value stacks across a call; leaves the loop stacks alone.
 - [`stmt_endproc`](address:9356@2?hex) — the early-exit point; restores the two general stacks only.
 - [`stmt_for`](address:B7C4@2?hex) / [`stmt_next`](address:B695@2?hex), [`stmt_repeat`](address:BBE4@2?hex) / [`stmt_until`](address:BBB1@2?hex), [`stmt_gosub`](address:B888@2?hex) / [`stmt_return`](address:B8B6@2?hex) — the matched push/pop pairs.
-- [`sub_cbd3a`](address:BD3A@2?hex) — the prompt/`RUN` reset that zeroes all three loop-level counters.
+- [`reset_data_and_stacks`](address:BD3A@2?hex) — the prompt/`RUN` reset that zeroes all three loop-level counters.
 - Workspace: [`for_stack`](address:0500@2?hex), [`repeat_stack`](address:05A4@2?hex), [`gosub_stack`](address:05CC@2?hex), and the counters [`zp_for_level`](address:0026@2?hex), [`zp_repeat_level`](address:0024@2?hex), [`zp_gosub_level`](address:0025@2?hex).
