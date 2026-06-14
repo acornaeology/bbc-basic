@@ -77997,9 +77997,9 @@
       "comment_inline": "off-screen?",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cab9d",
+      "operand": "sgn_negative",
       "target": 43933,
-      "target_label": "cab9d"
+      "target_label": "sgn_negative"
     },
     {
       "addr": 43882,
@@ -78125,7 +78125,7 @@
         161
       ],
       "labels": [
-        "loop_cab7f"
+        "sgn_real_loop"
       ],
       "comment_inline": "Sign of the real",
       "xref_summaries": [
@@ -78149,9 +78149,9 @@
       "comment_inline": "zero: 0",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caba2",
+      "operand": "sgn_return",
       "target": 43938,
-      "target_label": "caba2"
+      "target_label": "sgn_return"
     },
     {
       "addr": 43908,
@@ -78162,9 +78162,9 @@
       "comment_inline": "positive: 1",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "caba0",
+      "operand": "sgn_positive",
       "target": 43936,
-      "target_label": "caba0"
+      "target_label": "sgn_positive"
     },
     {
       "addr": 43910,
@@ -78175,9 +78175,9 @@
       "comment_inline": "negative: -1",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cab9d",
+      "operand": "sgn_negative",
       "target": 43933,
-      "target_label": "cab9d"
+      "target_label": "sgn_negative"
     },
     {
       "addr": 43912,
@@ -78205,9 +78205,9 @@
       "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cabe6",
+      "operand": "usr_type_error",
       "target": 44006,
-      "target_label": "cabe6"
+      "target_label": "usr_type_error"
     },
     {
       "addr": 43917,
@@ -78218,9 +78218,9 @@
       "comment_inline": "real: use the FP sign",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_cab7f",
+      "operand": "sgn_real_loop",
       "target": 43903,
-      "target_label": "loop_cab7f"
+      "target_label": "sgn_real_loop"
     },
     {
       "addr": 43919,
@@ -78283,9 +78283,9 @@
       "comment_inline": "zero: 0",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caba5",
+      "operand": "sgn_zero",
       "target": 43941,
-      "target_label": "caba5"
+      "target_label": "sgn_zero"
     },
     {
       "addr": 43929,
@@ -78309,9 +78309,9 @@
       "comment_inline": "positive: 1",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "caba0",
+      "operand": "sgn_positive",
       "target": 43936,
-      "target_label": "caba0"
+      "target_label": "sgn_positive"
     },
     {
       "addr": 43933,
@@ -78321,7 +78321,7 @@
         172
       ],
       "labels": [
-        "cab9d"
+        "sgn_negative"
       ],
       "comment_inline": "negative: -1",
       "xref_summaries": [
@@ -78344,7 +78344,7 @@
         1
       ],
       "labels": [
-        "caba0"
+        "sgn_positive"
       ],
       "comment_inline": "Result = 1",
       "xref_summaries": [
@@ -78366,7 +78366,7 @@
         174
       ],
       "labels": [
-        "caba2"
+        "sgn_return"
       ],
       "comment_inline": "return it",
       "xref_summaries": [
@@ -78388,7 +78388,7 @@
         64
       ],
       "labels": [
-        "caba5"
+        "sgn_zero"
       ],
       "comment_inline": "Result = 0 (integer)",
       "xref_summaries": [
@@ -78458,9 +78458,9 @@
       "comment_inline": "FWA = ln(x) * log10(e)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cabb8",
+      "operand": "degrad_set_ptr",
       "target": 43960,
-      "target_label": "cabb8"
+      "target_label": "degrad_set_ptr"
     },
     {
       "addr": 43953,
@@ -78508,7 +78508,7 @@
         75
       ],
       "labels": [
-        "cabb8"
+        "degrad_set_ptr"
       ],
       "comment_inline": "Set the fp pointer low",
       "xref_summaries": [
@@ -78619,9 +78619,9 @@
       "comment_inline": "Multiply FWA by it (radians -> degrees)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cabb8",
+      "operand": "degrad_set_ptr",
       "target": 43960,
-      "target_label": "cabb8"
+      "target_label": "degrad_set_ptr"
     },
     {
       "addr": 43979,
@@ -78809,7 +78809,7 @@
         140
       ],
       "labels": [
-        "cabe6"
+        "usr_type_error"
       ],
       "comment_inline": "Non-numeric address: Type mismatch",
       "xref_summaries": [
@@ -78851,9 +78851,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cabe6",
+      "operand": "usr_type_error",
       "target": 44006,
-      "target_label": "cabe6"
+      "target_label": "usr_type_error"
     },
     {
       "addr": 44014,
@@ -79056,9 +79056,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac0f",
+      "operand": "eval_ptr_hi",
       "target": 44047,
-      "target_label": "cac0f"
+      "target_label": "eval_ptr_hi"
     },
     {
       "addr": 44046,
@@ -79076,7 +79076,7 @@
         26
       ],
       "labels": [
-        "cac0f"
+        "eval_ptr_hi"
       ],
       "comment_inline": "parser pointer high",
       "xref_summaries": [
@@ -79198,7 +79198,7 @@
         104
       ],
       "labels": [
-        "cac23"
+        "eval_restore_ptr"
       ],
       "comment_inline": "Restore the parser pointer",
       "xref_summaries": [
@@ -79315,9 +79315,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac9b",
+      "operand": "num_type_error",
       "target": 44187,
-      "target_label": "cac9b"
+      "target_label": "num_type_error"
     },
     {
       "addr": 44084,
@@ -79538,9 +79538,9 @@
       "comment_inline": "negative number",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cac66",
+      "operand": "a2n_negative",
       "target": 44134,
-      "target_label": "cac66"
+      "target_label": "a2n_negative"
     },
     {
       "addr": 44119,
@@ -79562,9 +79562,9 @@
       "comment_inline": "no sign",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac5e",
+      "operand": "a2n_back",
       "target": 44126,
-      "target_label": "cac5e"
+      "target_label": "a2n_back"
     },
     {
       "addr": 44123,
@@ -79587,7 +79587,7 @@
         27
       ],
       "labels": [
-        "cac5e"
+        "a2n_back"
       ],
       "comment_inline": "step back",
       "xref_summaries": [
@@ -79626,9 +79626,9 @@
       "comment_inline": "finish",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cac73",
+      "operand": "a2n_store_type",
       "target": 44147,
-      "target_label": "cac73"
+      "target_label": "a2n_store_type"
     },
     {
       "addr": 44134,
@@ -79638,7 +79638,7 @@
         138
       ],
       "labels": [
-        "cac66"
+        "a2n_negative"
       ],
       "comment_inline": "negative: skip the minus",
       "xref_summaries": [
@@ -79689,9 +79689,9 @@
       "comment_inline": "integer: done",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cac73",
+      "operand": "a2n_store_type",
       "target": 44147,
-      "target_label": "cac73"
+      "target_label": "a2n_store_type"
     },
     {
       "addr": 44144,
@@ -79714,7 +79714,7 @@
         39
       ],
       "labels": [
-        "cac73"
+        "a2n_store_type"
       ],
       "comment_inline": "store the result type",
       "xref_summaries": [
@@ -79740,9 +79740,9 @@
       "comment_inline": "restore PtrB and return",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cac23",
+      "operand": "eval_restore_ptr",
       "target": 44067,
-      "target_label": "cac23"
+      "target_label": "eval_restore_ptr"
     },
     {
       "addr": 44152,
@@ -79770,9 +79770,9 @@
       "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cac9b",
+      "operand": "num_type_error",
       "target": 44187,
-      "target_label": "cac9b"
+      "target_label": "num_type_error"
     },
     {
       "addr": 44157,
@@ -79841,9 +79841,9 @@
       "comment_inline": "positive: no adjustment",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cac95",
+      "operand": "int_to_iwa",
       "target": 44181,
-      "target_label": "cac95"
+      "target_label": "int_to_iwa"
     },
     {
       "addr": 44168,
@@ -79906,9 +79906,9 @@
       "comment_inline": "none: exact",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cac95",
+      "operand": "int_to_iwa",
       "target": 44181,
-      "target_label": "cac95"
+      "target_label": "int_to_iwa"
     },
     {
       "addr": 44178,
@@ -79932,7 +79932,7 @@
         163
       ],
       "labels": [
-        "cac95"
+        "int_to_iwa"
       ],
       "comment_inline": "Copy the integer to IWA",
       "xref_summaries": [
@@ -79985,7 +79985,7 @@
         140
       ],
       "labels": [
-        "cac9b"
+        "num_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -80030,9 +80030,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac9b",
+      "operand": "num_type_error",
       "target": 44187,
-      "target_label": "cac9b"
+      "target_label": "num_type_error"
     },
     {
       "addr": 44195,
@@ -80082,7 +80082,7 @@
         174
       ],
       "labels": [
-        "loop_cacaa"
+        "asc_result"
       ],
       "comment_inline": "return it",
       "xref_summaries": [
@@ -80230,9 +80230,9 @@
       "comment_inline": "Return TRUE/FALSE per the EOF flag",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cacaa",
+      "operand": "asc_result",
       "target": 44202,
-      "target_label": "loop_cacaa"
+      "target_label": "asc_result"
     },
     {
       "addr": 44228,
@@ -80363,7 +80363,7 @@
         42
       ],
       "labels": [
-        "loop_cacd6"
+        "not_loop"
       ],
       "comment_inline": "byte X...",
       "xref_summaries": [
@@ -80420,9 +80420,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cacd6",
+      "operand": "not_loop",
       "target": 44246,
-      "target_label": "loop_cacd6"
+      "target_label": "not_loop"
     },
     {
       "addr": 44255,
@@ -80470,9 +80470,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac9b",
+      "operand": "num_type_error",
       "target": 44187,
-      "target_label": "cac9b"
+      "target_label": "num_type_error"
     },
     {
       "addr": 44263,
@@ -80494,9 +80494,9 @@
       "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cad03",
+      "operand": "instr_missing_comma",
       "target": 44291,
-      "target_label": "cad03"
+      "target_label": "instr_missing_comma"
     },
     {
       "addr": 44267,
@@ -80548,9 +80548,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cac9b",
+      "operand": "num_type_error",
       "target": 44187,
-      "target_label": "cac9b"
+      "target_label": "num_type_error"
     },
     {
       "addr": 44277,
@@ -80609,9 +80609,9 @@
       "comment_inline": "yes: search from 1",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad12",
+      "operand": "instr_dest_index",
       "target": 44306,
-      "target_label": "cad12"
+      "target_label": "instr_dest_index"
     },
     {
       "addr": 44287,
@@ -80633,9 +80633,9 @@
       "comment_inline": "yes: a start position follows",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad06",
+      "operand": "instr_stack",
       "target": 44294,
-      "target_label": "cad06"
+      "target_label": "instr_stack"
     },
     {
       "addr": 44291,
@@ -80645,7 +80645,7 @@
         138
       ],
       "labels": [
-        "cad03"
+        "instr_missing_comma"
       ],
       "comment_inline": "Missing , error",
       "xref_summaries": [
@@ -80668,7 +80668,7 @@
         189
       ],
       "labels": [
-        "cad06"
+        "instr_stack"
       ],
       "comment_inline": "Stack the search string",
       "xref_summaries": [
@@ -80732,7 +80732,7 @@
         0
       ],
       "labels": [
-        "cad12"
+        "instr_dest_index"
       ],
       "comment_inline": "Destination index",
       "xref_summaries": [
@@ -80767,9 +80767,9 @@
       "comment_inline": "non-zero?",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cad1a",
+      "operand": "instr_match_pos",
       "target": 44314,
-      "target_label": "cad1a"
+      "target_label": "instr_match_pos"
     },
     {
       "addr": 44312,
@@ -80789,7 +80789,7 @@
         42
       ],
       "labels": [
-        "cad1a"
+        "instr_match_pos"
       ],
       "comment_inline": "Current match position",
       "xref_summaries": [
@@ -80949,9 +80949,9 @@
       "comment_inline": "start beyond the end: not found",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cad52",
+      "operand": "instr_not_found",
       "target": 44370,
-      "target_label": "cad52"
+      "target_label": "instr_not_found"
     },
     {
       "addr": 44337,
@@ -80975,9 +80975,9 @@
       "comment_inline": "won't fit: not found",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cad52",
+      "operand": "instr_not_found",
       "target": 44370,
-      "target_label": "cad52"
+      "target_label": "instr_not_found"
     },
     {
       "addr": 44341,
@@ -81024,7 +81024,7 @@
         0
       ],
       "labels": [
-        "cad3c"
+        "instr_compare"
       ],
       "comment_inline": "Compare from index 0",
       "xref_summaries": [
@@ -81060,9 +81060,9 @@
       "comment_inline": "empty search: matches here",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad4d",
+      "operand": "instr_match",
       "target": 44365,
-      "target_label": "cad4d"
+      "target_label": "instr_match"
     },
     {
       "addr": 44354,
@@ -81071,7 +81071,7 @@
         55
       ],
       "labels": [
-        "loop_cad42"
+        "instr_cmp_loop"
       ],
       "comment_inline": "s$ character",
       "xref_summaries": [
@@ -81109,9 +81109,9 @@
       "comment_inline": "mismatch: advance",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cad59",
+      "operand": "instr_advance",
       "target": 44377,
-      "target_label": "cad59"
+      "target_label": "instr_advance"
     },
     {
       "addr": 44361,
@@ -81140,9 +81140,9 @@
       "comment_inline": "all matched?",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cad42",
+      "operand": "instr_cmp_loop",
       "target": 44354,
-      "target_label": "loop_cad42"
+      "target_label": "instr_cmp_loop"
     },
     {
       "addr": 44365,
@@ -81151,7 +81151,7 @@
         42
       ],
       "labels": [
-        "cad4d"
+        "instr_match"
       ],
       "comment_inline": "Match: result is the position",
       "xref_summaries": [
@@ -81174,7 +81174,7 @@
         174
       ],
       "labels": [
-        "loop_cad4f"
+        "instr_result"
       ],
       "comment_inline": "return it as an integer",
       "xref_summaries": [
@@ -81197,7 +81197,7 @@
         189
       ],
       "labels": [
-        "cad52"
+        "instr_not_found"
       ],
       "comment_inline": "Not found: drop the stacked string",
       "xref_summaries": [
@@ -81220,7 +81220,7 @@
         0
       ],
       "labels": [
-        "loop_cad55"
+        "instr_zero"
       ],
       "comment_inline": "result = 0",
       "xref_summaries": [
@@ -81242,9 +81242,9 @@
       "comment_inline": "return it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cad4f",
+      "operand": "instr_result",
       "target": 44367,
-      "target_label": "loop_cad4f"
+      "target_label": "instr_result"
     },
     {
       "addr": 44377,
@@ -81253,7 +81253,7 @@
         42
       ],
       "labels": [
-        "cad59"
+        "instr_advance"
       ],
       "comment_inline": "Advance the match position",
       "xref_summaries": [
@@ -81290,9 +81290,9 @@
       "comment_inline": "exhausted: not found",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cad55",
+      "operand": "instr_zero",
       "target": 44373,
-      "target_label": "loop_cad55"
+      "target_label": "instr_zero"
     },
     {
       "addr": 44383,
@@ -81316,9 +81316,9 @@
       "comment_inline": "retry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cad3c",
+      "operand": "instr_compare",
       "target": 44348,
-      "target_label": "cad3c"
+      "target_label": "instr_compare"
     },
     {
       "addr": 44387,
@@ -81342,9 +81342,9 @@
       "comment_inline": "retry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cad3c",
+      "operand": "instr_compare",
       "target": 44348,
-      "target_label": "cad3c"
+      "target_label": "instr_compare"
     },
     {
       "addr": 44391,
@@ -81354,7 +81354,7 @@
         140
       ],
       "labels": [
-        "cad67"
+        "instr_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -81396,9 +81396,9 @@
       "comment_inline": "zero: return it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad67",
+      "operand": "instr_type_error",
       "target": 44391,
-      "target_label": "cad67"
+      "target_label": "instr_type_error"
     },
     {
       "addr": 44399,
@@ -81670,9 +81670,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad67",
+      "operand": "instr_type_error",
       "target": 44391,
-      "target_label": "cad67"
+      "target_label": "instr_type_error"
     },
     {
       "addr": 44433,

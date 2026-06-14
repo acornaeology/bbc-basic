@@ -9449,7 +9449,7 @@ oscli            = &fff7
     lda #osword_read_pixel                                            ; ab61: a9 09       ..       ; Read the pixel colour
     jsr osword                                                        ; ab63: 20 f1 ff     ..      ; Read pixel value
     lda zp_fwa_sign                                                   ; ab66: a5 2e       ..       ; Result sign (off-screen = -1)
-    bmi cab9d                                                         ; ab68: 30 33       03       ; off-screen?
+    bmi sgn_negative                                                  ; ab68: 30 33       03       ; off-screen?
     jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..      ; return as an integer
 ; ***************************************************************************************
 ; POS
@@ -9490,11 +9490,11 @@ oscli            = &fff7
     tya                                                               ; ab7b: 98          .        ; X is the horizontal text position ('POS') / Y is the vertical text position ('VPOS')
     jmp int_result_a                                                  ; ab7c: 4c d8 ae    L..      ; Return the row (Y) as an integer
 ; &ab7f referenced 1 time by &ab8d
-.loop_cab7f
+.sgn_real_loop
     jsr fwa_sign                                                      ; ab7f: 20 da a1     ..      ; Sign of the real
-    beq caba2                                                         ; ab82: f0 1e       ..       ; zero: 0
-    bpl caba0                                                         ; ab84: 10 1a       ..       ; positive: 1
-    bmi cab9d                                                         ; ab86: 30 15       0.       ; negative: -1
+    beq sgn_return                                                    ; ab82: f0 1e       ..       ; zero: 0
+    bpl sgn_positive                                                  ; ab84: 10 1a       ..       ; positive: 1
+    bmi sgn_negative                                                  ; ab86: 30 15       0.       ; negative: -1
 ; ***************************************************************************************
 ; SGN
 ;
@@ -9511,26 +9511,26 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_sgn
     jsr eval_factor                                                   ; ab88: 20 ec ad     ..      ; Evaluate the argument
-    beq cabe6                                                         ; ab8b: f0 59       .Y       ; string: error
-    bmi loop_cab7f                                                    ; ab8d: 30 f0       0.       ; real: use the FP sign
+    beq usr_type_error                                                ; ab8b: f0 59       .Y       ; string: error
+    bmi sgn_real_loop                                                 ; ab8d: 30 f0       0.       ; real: use the FP sign
     lda zp_iwa_3                                                      ; ab8f: a5 2d       .-       ; Integer: test for zero
     ora zp_iwa_2                                                      ; ab91: 05 2c       .,       ; OR &2C,
     ora zp_iwa_1                                                      ; ab93: 05 2b       .+       ; &2B,
     ora zp_iwa                                                        ; ab95: 05 2a       .*       ; &2A (all zero => SGN 0)
-    beq caba5                                                         ; ab97: f0 0c       ..       ; zero: 0
+    beq sgn_zero                                                      ; ab97: f0 0c       ..       ; zero: 0
     lda zp_iwa_3                                                      ; ab99: a5 2d       .-       ; Sign bit
-    bpl caba0                                                         ; ab9b: 10 03       ..       ; positive: 1
+    bpl sgn_positive                                                  ; ab9b: 10 03       ..       ; positive: 1
 ; &ab9d referenced 2 times by &ab68, &ab86
-.cab9d
+.sgn_negative
     jmp fn_true                                                       ; ab9d: 4c c4 ac    L..      ; negative: -1
 ; &aba0 referenced 2 times by &ab84, &ab9b
-.caba0
+.sgn_positive
     lda #1                                                            ; aba0: a9 01       ..       ; Result = 1
 ; &aba2 referenced 1 time by &ab82
-.caba2
+.sgn_return
     jmp int_result_a                                                  ; aba2: 4c d8 ae    L..      ; return it
 ; &aba5 referenced 1 time by &ab97
-.caba5
+.sgn_zero
     lda #&40 ; '@'                                                    ; aba5: a9 40       .@       ; Result = 0 (integer)
     rts                                                               ; aba7: 60          `        ; Return
 ; ***************************************************************************************
@@ -9551,7 +9551,7 @@ oscli            = &fff7
     jsr fn_ln                                                         ; aba8: 20 fe a7     ..      ; FWA = ln(x)
     ldy #&69 ; 'i'                                                    ; abab: a0 69       .i       ; Point at the constant log10(e): low byte
     lda #&a8                                                          ; abad: a9 a8       ..       ; high byte
-    bne cabb8                                                         ; abaf: d0 07       ..       ; FWA = ln(x) * log10(e)
+    bne degrad_set_ptr                                                ; abaf: d0 07       ..       ; FWA = ln(x) * log10(e)
 ; ***************************************************************************************
 ; RAD
 ;
@@ -9571,7 +9571,7 @@ oscli            = &fff7
     ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h       ; Point at the constant pi/180: low byte
     lda #&aa                                                          ; abb6: a9 aa       ..       ; high byte
 ; &abb8 referenced 2 times by &abaf, &abc9
-.cabb8
+.degrad_set_ptr
     sty zp_fp_ptr                                                     ; abb8: 84 4b       .K       ; Set the fp pointer low
     sta zp_fp_ptr_1                                                   ; abba: 85 4c       .L       ; ...and high
     jsr fwa_mul_var                                                   ; abbc: 20 56 a6     V.      ; FWA = x * pi/180
@@ -9595,7 +9595,7 @@ oscli            = &fff7
     jsr eval_real                                                     ; abc2: 20 fa 92     ..      ; Evaluate the argument as a real
     ldy #&6d ; 'm'                                                    ; abc5: a0 6d       .m       ; Point at the constant 180/pi: low byte
     lda #&aa                                                          ; abc7: a9 aa       ..       ; high byte
-    bne cabb8                                                         ; abc9: d0 ed       ..       ; Multiply FWA by it (radians -> degrees)
+    bne degrad_set_ptr                                                ; abc9: d0 ed       ..       ; Multiply FWA by it (radians -> degrees)
 ; ***************************************************************************************
 ; PI
 ;
@@ -9642,7 +9642,7 @@ oscli            = &fff7
     lda #&40 ; '@'                                                    ; abe3: a9 40       .@       ; Integer result
     rts                                                               ; abe5: 60          `        ; Return the packed A,X,Y,P
 ; &abe6 referenced 2 times by &ab8b, &abec
-.cabe6
+.usr_type_error
     jmp err_type_mismatch                                             ; abe6: 4c 0e 8c    L..      ; Non-numeric address: Type mismatch
 ; ***************************************************************************************
 ; EVAL
@@ -9660,7 +9660,7 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_eval
     jsr eval_factor                                                   ; abe9: 20 ec ad     ..      ; Evaluate the argument string
-    bne cabe6                                                         ; abec: d0 f8       ..       ; not a string: error
+    bne usr_type_error                                                ; abec: d0 f8       ..       ; not a string: error
     inc zp_strbuf_len                                                 ; abee: e6 36       .6       ; Append a CR terminator
     ldy zp_strbuf_len                                                 ; abf0: a4 36       .6       ; index the new last byte,
     lda #&0d                                                          ; abf2: a9 0d       ..       ; CR,
@@ -9677,10 +9677,10 @@ oscli            = &fff7
     iny                                                               ; ac07: c8          .        ; step over the length byte
     sty zp_text_ptr2                                                  ; ac08: 84 19       ..       ; parser pointer low
     sty zp_general                                                    ; ac0a: 84 37       .7       ; name pointer low
-    bne cac0f                                                         ; ac0c: d0 01       ..       ; no carry into the high byte
+    bne eval_ptr_hi                                                   ; ac0c: d0 01       ..       ; no carry into the high byte
     inx                                                               ; ac0e: e8          .        ; carry into the high byte
 ; &ac0f referenced 1 time by &ac0c
-.cac0f
+.eval_ptr_hi
     stx zp_text_ptr2_1                                                ; ac0f: 86 1a       ..       ; parser pointer high
     stx zp_general_1                                                  ; ac11: 86 38       .8       ; name pointer high
     ldy #&ff                                                          ; ac13: a0 ff       ..       ; Quote flag reset
@@ -9691,7 +9691,7 @@ oscli            = &fff7
     jsr eval_or_eor                                                   ; ac1d: 20 29 9b     ).      ; Evaluate the expression
     jsr cbddc                                                         ; ac20: 20 dc bd     ..      ; Drop the stacked string
 ; &ac23 referenced 1 time by &ac75
-.cac23
+.eval_restore_ptr
     pla                                                               ; ac23: 68          h        ; Restore the parser pointer
     sta zp_text_ptr2_off                                              ; ac24: 85 1b       ..       ; the offset,
     pla                                                               ; ac26: 68          h        ; pull the high byte,
@@ -9716,7 +9716,7 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_val
     jsr eval_factor                                                   ; ac2f: 20 ec ad     ..      ; Evaluate the argument
-    bne cac9b                                                         ; ac32: d0 67       .g       ; not a string: error
+    bne num_type_error                                                ; ac32: d0 67       .g       ; not a string: error
 ; ***************************************************************************************
 ; Convert an ASCII number to a value
 ;
@@ -9750,26 +9750,26 @@ oscli            = &fff7
     sta zp_text_ptr2_1                                                ; ac4e: 85 1a       ..       ; set the high byte
     jsr skip_spaces_ptr2                                              ; ac50: 20 8c 8a     ..      ; skip spaces
     cmp #&2d ; '-'                                                    ; ac53: c9 2d       .-       ; minus sign?
-    beq cac66                                                         ; ac55: f0 0f       ..       ; negative number
+    beq a2n_negative                                                  ; ac55: f0 0f       ..       ; negative number
     cmp #&2b ; '+'                                                    ; ac57: c9 2b       .+       ; plus sign?
-    bne cac5e                                                         ; ac59: d0 03       ..       ; no sign
+    bne a2n_back                                                      ; ac59: d0 03       ..       ; no sign
     jsr skip_spaces_ptr2                                              ; ac5b: 20 8c 8a     ..      ; skip the plus
 ; &ac5e referenced 1 time by &ac59
-.cac5e
+.a2n_back
     dec zp_text_ptr2_off                                              ; ac5e: c6 1b       ..       ; step back
     jsr parse_number                                                  ; ac60: 20 7b a0     {.      ; parse the number
-    jmp cac73                                                         ; ac63: 4c 73 ac    Ls.      ; finish
+    jmp a2n_store_type                                                ; ac63: 4c 73 ac    Ls.      ; finish
 ; &ac66 referenced 1 time by &ac55
-.cac66
+.a2n_negative
     jsr skip_spaces_ptr2                                              ; ac66: 20 8c 8a     ..      ; negative: skip the minus
     dec zp_text_ptr2_off                                              ; ac69: c6 1b       ..       ; step back
     jsr parse_number                                                  ; ac6b: 20 7b a0     {.      ; parse the number
-    bcc cac73                                                         ; ac6e: 90 03       ..       ; integer: done
+    bcc a2n_store_type                                                ; ac6e: 90 03       ..       ; integer: done
     jsr sub_cad8f                                                     ; ac70: 20 8f ad     ..      ; real: negate it
 ; &ac73 referenced 2 times by &ac63, &ac6e
-.cac73
+.a2n_store_type
     sta zp_var_type                                                   ; ac73: 85 27       .'       ; store the result type
-    jmp cac23                                                         ; ac75: 4c 23 ac    L#.      ; restore PtrB and return
+    jmp eval_restore_ptr                                              ; ac75: 4c 23 ac    L#.      ; restore PtrB and return
 ; ***************************************************************************************
 ; INT
 ;
@@ -9786,28 +9786,28 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_int
     jsr eval_factor                                                   ; ac78: 20 ec ad     ..      ; Evaluate the argument
-    beq cac9b                                                         ; ac7b: f0 1e       ..       ; string: error
+    beq num_type_error                                                ; ac7b: f0 1e       ..       ; string: error
     bpl return_30                                                     ; ac7d: 10 1b       ..       ; already integer: return it
     lda zp_fwa_sign                                                   ; ac7f: a5 2e       ..       ; Real: remember the sign
     php                                                               ; ac81: 08          .        ; save the sign flags
     jsr fwa_to_int2                                                   ; ac82: 20 fe a3     ..      ; Take the integer part
     plp                                                               ; ac85: 28          (        ; sign
-    bpl cac95                                                         ; ac86: 10 0d       ..       ; positive: no adjustment
+    bpl int_to_iwa                                                    ; ac86: 10 0d       ..       ; positive: no adjustment
     lda zp_fwb_m1                                                     ; ac88: a5 3e       .>       ; Negative: any fractional bits?
     ora zp_fwb_m2                                                     ; ac8a: 05 3f       .?       ; OR &3F,
     ora zp_fwb_m3                                                     ; ac8c: 05 40       .@       ; &40,
     ora zp_fwb_m4                                                     ; ac8e: 05 41       .A       ; &41 (any set => not exact)
-    beq cac95                                                         ; ac90: f0 03       ..       ; none: exact
+    beq int_to_iwa                                                    ; ac90: f0 03       ..       ; none: exact
     jsr negate_mantissa                                               ; ac92: 20 c7 a4     ..      ; round down (floor of a negative)
 ; &ac95 referenced 2 times by &ac86, &ac90
-.cac95
+.int_to_iwa
     jsr mantissa_to_iwa                                               ; ac95: 20 e7 a3     ..      ; Copy the integer to IWA
     lda #&40 ; '@'                                                    ; ac98: a9 40       .@       ; integer result
 ; &ac9a referenced 1 time by &ac7d
 .return_30
     rts                                                               ; ac9a: 60          `        ; Return
 ; &ac9b referenced 5 times by &ac32, &ac7b, &aca1, &ace5, &acf3
-.cac9b
+.num_type_error
     jmp err_type_mismatch                                             ; ac9b: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; ASC
@@ -9825,12 +9825,12 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_asc
     jsr eval_factor                                                   ; ac9e: 20 ec ad     ..      ; Evaluate the string
-    bne cac9b                                                         ; aca1: d0 f8       ..       ; not a string: error
+    bne num_type_error                                                ; aca1: d0 f8       ..       ; not a string: error
     lda zp_strbuf_len                                                 ; aca3: a5 36       .6       ; String length
     beq fn_true                                                       ; aca5: f0 1d       ..       ; empty: -1
     lda string_work                                                   ; aca7: ad 00 06    ...      ; First character
 ; &acaa referenced 1 time by &acc2
-.loop_cacaa
+.asc_result
     jmp int_result_a                                                  ; acaa: 4c d8 ae    L..      ; return it
 ; ***************************************************************************************
 ; INKEY
@@ -9872,7 +9872,7 @@ oscli            = &fff7
     lda #osbyte_check_eof                                             ; acbc: a9 7f       ..       ; OSBYTE &7F: test for end of file
     jsr osbyte                                                        ; acbe: 20 f4 ff     ..      ; Check for end-of-file on file handle Y
     txa                                                               ; acc1: 8a          .        ; X=0 means EOF reached, X=&FF means data remaining
-    beq loop_cacaa                                                    ; acc2: f0 e6       ..       ; Return TRUE/FALSE per the EOF flag
+    beq asc_result                                                    ; acc2: f0 e6       ..       ; Return TRUE/FALSE per the EOF flag
 ; ***************************************************************************************
 ; TRUE
 ;
@@ -9914,12 +9914,12 @@ oscli            = &fff7
     jsr eval_factor_integer                                           ; acd1: 20 e3 92     ..      ; Evaluate the argument as an integer
     ldx #3                                                            ; acd4: a2 03       ..       ; Complement all four IWA bytes
 ; &acd6 referenced 1 time by &acdd
-.loop_cacd6
+.not_loop
     lda zp_iwa,x                                                      ; acd6: b5 2a       .*       ; byte X...
     eor #&ff                                                          ; acd8: 49 ff       I.       ; ...one's complement
     sta zp_iwa,x                                                      ; acda: 95 2a       .*       ; (store)
     dex                                                               ; acdc: ca          .        ; next byte
-    bpl loop_cacd6                                                    ; acdd: 10 f7       ..       ; loop
+    bpl not_loop                                                      ; acdd: 10 f7       ..       ; loop
     lda #&40 ; '@'                                                    ; acdf: a9 40       .@       ; Integer result
     rts                                                               ; ace1: 60          `        ; Return NOT value
 ; ***************************************************************************************
@@ -9938,37 +9938,37 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_instr
     jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).      ; Evaluate the searched string
-    bne cac9b                                                         ; ace5: d0 b4       ..       ; not a string: Type mismatch
+    bne num_type_error                                                ; ace5: d0 b4       ..       ; not a string: Type mismatch
     cpx #&2c ; ','                                                    ; ace7: e0 2c       .,       ; ','?
-    bne cad03                                                         ; ace9: d0 18       ..       ; no: Missing ,
+    bne instr_missing_comma                                           ; ace9: d0 18       ..       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..       ; step past
     jsr stack_string                                                  ; aced: 20 b2 bd     ..      ; Stack the searched string
     jsr eval_or_eor                                                   ; acf0: 20 29 9b     ).      ; Evaluate the search string
-    bne cac9b                                                         ; acf3: d0 a6       ..       ; not a string: Type mismatch
+    bne num_type_error                                                ; acf3: d0 a6       ..       ; not a string: Type mismatch
     lda #1                                                            ; acf5: a9 01       ..       ; Default start position = 1
     sta zp_iwa                                                        ; acf7: 85 2a       .*       ; store as the start position
     inc zp_text_ptr2_off                                              ; acf9: e6 1b       ..       ; step past
     cpx #&29 ; ')'                                                    ; acfb: e0 29       .)       ; ')' (no start given)?
-    beq cad12                                                         ; acfd: f0 13       ..       ; yes: search from 1
+    beq instr_dest_index                                              ; acfd: f0 13       ..       ; yes: search from 1
     cpx #&2c ; ','                                                    ; acff: e0 2c       .,       ; ','?
-    beq cad06                                                         ; ad01: f0 03       ..       ; yes: a start position follows
+    beq instr_stack                                                   ; ad01: f0 03       ..       ; yes: a start position follows
 ; &ad03 referenced 1 time by &ace9
-.cad03
+.instr_missing_comma
     jmp missing_comma                                                 ; ad03: 4c a2 8a    L..      ; Missing , error
 ; &ad06 referenced 1 time by &ad01
-.cad06
+.instr_stack
     jsr stack_string                                                  ; ad06: 20 b2 bd     ..      ; Stack the search string
     jsr cae56                                                         ; ad09: 20 56 ae     V.      ; Evaluate the start, expect )
     jsr coerce_to_integer                                             ; ad0c: 20 f0 92     ..      ; coerce to integer
     jsr unstack_string                                                ; ad0f: 20 cb bd     ..      ; Restore the search string
 ; &ad12 referenced 1 time by &acfd
-.cad12
+.instr_dest_index
     ldy #0                                                            ; ad12: a0 00       ..       ; Destination index
     ldx zp_iwa                                                        ; ad14: a6 2a       .*       ; Start position
-    bne cad1a                                                         ; ad16: d0 02       ..       ; non-zero?
+    bne instr_match_pos                                               ; ad16: d0 02       ..       ; non-zero?
     ldx #1                                                            ; ad18: a2 01       ..       ; force at least 1
 ; &ad1a referenced 1 time by &ad16
-.cad1a
+.instr_match_pos
     stx zp_iwa                                                        ; ad1a: 86 2a       .*       ; Current match position
     txa                                                               ; ad1c: 8a          .        ; Zero-based start = start - 1
     dex                                                               ; ad1d: ca          .        ; start - 1,
@@ -9982,49 +9982,49 @@ oscli            = &fff7
     lda (zp_stack_ptr),y                                              ; ad2a: b1 04       ..       ; Length of s$
     sec                                                               ; ad2c: 38          8        ; minus the start offset...
     sbc zp_iwa_3                                                      ; ad2d: e5 2d       .-       ; len(s$) - (start-1)
-    bcc cad52                                                         ; ad2f: 90 21       .!       ; start beyond the end: not found
+    bcc instr_not_found                                               ; ad2f: 90 21       .!       ; start beyond the end: not found
     sbc zp_strbuf_len                                                 ; ad31: e5 36       .6       ; minus the search length
-    bcc cad52                                                         ; ad33: 90 1d       ..       ; won't fit: not found
+    bcc instr_not_found                                               ; ad33: 90 1d       ..       ; won't fit: not found
     adc #0                                                            ; ad35: 69 00       i.       ; Number of start positions to try
     sta zp_iwa_1                                                      ; ad37: 85 2b       .+       ; positions to try
     jsr cbddc                                                         ; ad39: 20 dc bd     ..      ; Re-point at the stacked string
 ; &ad3c referenced 2 times by &ad61, &ad65
-.cad3c
+.instr_compare
     ldy #0                                                            ; ad3c: a0 00       ..       ; Compare from index 0
     ldx zp_strbuf_len                                                 ; ad3e: a6 36       .6       ; Search length
-    beq cad4d                                                         ; ad40: f0 0b       ..       ; empty search: matches here
+    beq instr_match                                                   ; ad40: f0 0b       ..       ; empty search: matches here
 ; &ad42 referenced 1 time by &ad4b
-.loop_cad42
+.instr_cmp_loop
     lda (zp_general),y                                                ; ad42: b1 37       .7       ; s$ character
     cmp string_work,y                                                 ; ad44: d9 00 06    ...      ; vs search character
-    bne cad59                                                         ; ad47: d0 10       ..       ; mismatch: advance
+    bne instr_advance                                                 ; ad47: d0 10       ..       ; mismatch: advance
     iny                                                               ; ad49: c8          .        ; next
     dex                                                               ; ad4a: ca          .        ; one fewer char to match
-    bne loop_cad42                                                    ; ad4b: d0 f5       ..       ; all matched?
+    bne instr_cmp_loop                                                ; ad4b: d0 f5       ..       ; all matched?
 ; &ad4d referenced 1 time by &ad40
-.cad4d
+.instr_match
     lda zp_iwa                                                        ; ad4d: a5 2a       .*       ; Match: result is the position
 ; &ad4f referenced 1 time by &ad57
-.loop_cad4f
+.instr_result
     jmp int_result_a                                                  ; ad4f: 4c d8 ae    L..      ; return it as an integer
 ; &ad52 referenced 2 times by &ad2f, &ad33
-.cad52
+.instr_not_found
     jsr cbddc                                                         ; ad52: 20 dc bd     ..      ; Not found: drop the stacked string
 ; &ad55 referenced 1 time by &ad5d
-.loop_cad55
+.instr_zero
     lda #0                                                            ; ad55: a9 00       ..       ; result = 0
-    beq loop_cad4f                                                    ; ad57: f0 f6       ..       ; return it
+    beq instr_result                                                  ; ad57: f0 f6       ..       ; return it
 ; &ad59 referenced 1 time by &ad47
-.cad59
+.instr_advance
     inc zp_iwa                                                        ; ad59: e6 2a       .*       ; Advance the match position
     dec zp_iwa_1                                                      ; ad5b: c6 2b       .+       ; one fewer position to try
-    beq loop_cad55                                                    ; ad5d: f0 f6       ..       ; exhausted: not found
+    beq instr_zero                                                    ; ad5d: f0 f6       ..       ; exhausted: not found
     inc zp_general                                                    ; ad5f: e6 37       .7       ; advance the s$ pointer
-    bne cad3c                                                         ; ad61: d0 d9       ..       ; retry
+    bne instr_compare                                                 ; ad61: d0 d9       ..       ; retry
     inc zp_general_1                                                  ; ad63: e6 38       .8       ; carry into the high byte
-    bne cad3c                                                         ; ad65: d0 d5       ..       ; retry
+    bne instr_compare                                                 ; ad65: d0 d5       ..       ; retry
 ; &ad67 referenced 2 times by &ad6d, &ad8f
-.cad67
+.instr_type_error
     jmp err_type_mismatch                                             ; ad67: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; ABS
@@ -10042,7 +10042,7 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_abs
     jsr eval_factor                                                   ; ad6a: 20 ec ad     ..      ; Evaluate the argument
-    beq cad67                                                         ; ad6d: f0 f8       ..       ; zero: return it
+    beq instr_type_error                                              ; ad6d: f0 f8       ..       ; zero: return it
     bmi cad77                                                         ; ad6f: 30 06       0.       ; real: clear the sign
 ; ***************************************************************************************
 ; Make the integer accumulator positive
@@ -10094,7 +10094,7 @@ oscli            = &fff7
     jsr sub_cae02                                                     ; ad8c: 20 02 ae     ..      ; Unary minus: evaluate the operand
 ; &ad8f referenced 1 time by &ac70
 .sub_cad8f
-    beq cad67                                                         ; ad8f: f0 d6       ..       ; zero: leave it
+    beq instr_type_error                                              ; ad8f: f0 d6       ..       ; zero: leave it
     bmi fwa_negate                                                    ; ad91: 30 eb       0.       ; real: negate FWA
 ; ***************************************************************************************
 ; Negate the integer accumulator
@@ -14493,7 +14493,6 @@ save pydis_start, pydis_end
 ;     zp_lomem:                      6
 ;     zp_lomem_1:                    6
 ;     asm_absolute:                  5
-;     cac9b:                         5
 ;     cb741:                         5
 ;     cb97d:                         5
 ;     clear_vars_heap_stack:         5
@@ -14509,6 +14508,7 @@ save pydis_start, pydis_end
 ;     iwa_store_zp:                  5
 ;     l0044:                         5
 ;     nta_digit_pos:                 5
+;     num_type_error:                5
 ;     osword:                        5
 ;     print_sync:                    5
 ;     resint_at:                     5
@@ -14644,6 +14644,7 @@ save pydis_start, pydis_end
 ;     zp_listo:                      3
 ;     zp_rnd_seed_1:                 3
 ;     zp_width:                      3
+;     a2n_store_type:                2
 ;     add_floats:                    2
 ;     arith_result_loop:             2
 ;     array_error:                   2
@@ -14668,15 +14669,6 @@ save pydis_start, pydis_end
 ;     atn_large:                     2
 ;     auto_loop:                     2
 ;     caa4e:                         2
-;     cab9d:                         2
-;     caba0:                         2
-;     cabb8:                         2
-;     cabe6:                         2
-;     cac73:                         2
-;     cac95:                         2
-;     cad3c:                         2
-;     cad52:                         2
-;     cad67:                         2
 ;     cad89:                         2
 ;     cadc9:                         2
 ;     cafc2:                         2
@@ -14716,6 +14708,7 @@ save pydis_start, pydis_end
 ;     coerce_left_int:               2
 ;     createvar_chain:               2
 ;     decode_line_number:            2
+;     degrad_set_ptr:                2
 ;     delete_program_line:           2
 ;     dim_array:                     2
 ;     dispatch_token:                2
@@ -14751,6 +14744,10 @@ save pydis_start, pydis_end
 ;     if_then_line:                  2
 ;     imul16:                        2
 ;     index_array:                   2
+;     instr_compare:                 2
+;     instr_not_found:               2
+;     instr_type_error:              2
+;     int_to_iwa:                    2
 ;     iwa_divide:                    2
 ;     iwa_load_zp:                   2
 ;     l0022:                         2
@@ -14840,6 +14837,8 @@ save pydis_start, pydis_end
 ;     rnd_step:                      2
 ;     round_clear:                   2
 ;     setup_scan_top:                2
+;     sgn_negative:                  2
+;     sgn_positive:                  2
 ;     silly_error:                   2
 ;     sin_odd_quad:                  2
 ;     sin_save_r:                    2
@@ -14874,6 +14873,7 @@ save pydis_start, pydis_end
 ;     try_variable_assignment:       2
 ;     unstack_numeric_drop:          2
 ;     usr_call:                      2
+;     usr_type_error:                2
 ;     valname_count:                 2
 ;     valname_loop:                  2
 ;     vartop_commit:                 2
@@ -14881,6 +14881,8 @@ save pydis_start, pydis_end
 ;     zero_new_value:                2
 ;     zp_rnd_seed_3:                 2
 ;     zp_trace_max:                  2
+;     a2n_back:                      1
+;     a2n_negative:                  1
 ;     action_hi_by_token:            1
 ;     action_lo_by_token:            1
 ;     add_int_real:                  1
@@ -14896,6 +14898,7 @@ save pydis_start, pydis_end
 ;     addf_take_exp:                 1
 ;     advance_vartop:                1
 ;     and_byte_loop:                 1
+;     asc_result:                    1
 ;     ascii_to_number:               1
 ;     asm_abs_from_paren:            1
 ;     asm_acc_or_abs:                1
@@ -14965,18 +14968,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     caba2:                         1
-;     caba5:                         1
-;     cac0f:                         1
-;     cac23:                         1
-;     cac5e:                         1
-;     cac66:                         1
-;     cad03:                         1
-;     cad06:                         1
-;     cad12:                         1
-;     cad1a:                         1
-;     cad4d:                         1
-;     cad59:                         1
 ;     cad77:                         1
 ;     cad83:                         1
 ;     cadaa:                         1
@@ -15154,6 +15145,8 @@ save pydis_start, pydis_end
 ;     eval_and_compare:              1
 ;     eval_and_loop:                 1
 ;     eval_or_loop:                  1
+;     eval_ptr_hi:                   1
+;     eval_restore_ptr:              1
 ;     exec_assembler:                1
 ;     exec_dispatch:                 1
 ;     exec_immediate:                1
@@ -15218,6 +15211,15 @@ save pydis_start, pydis_end
 ;     imul_loop:                     1
 ;     imul_overflow:                 1
 ;     inc_int_mantissa:              1
+;     instr_advance:                 1
+;     instr_cmp_loop:                1
+;     instr_dest_index:              1
+;     instr_match:                   1
+;     instr_match_pos:               1
+;     instr_missing_comma:           1
+;     instr_result:                  1
+;     instr_stack:                   1
+;     instr_zero:                    1
 ;     intpow_check:                  1
 ;     intpow_loop:                   1
 ;     is_dot_or_digit:               1
@@ -15278,12 +15280,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_cab7f:                    1
-;     loop_cacaa:                    1
-;     loop_cacd6:                    1
-;     loop_cad42:                    1
-;     loop_cad4f:                    1
-;     loop_cad55:                    1
 ;     loop_cad8c:                    1
 ;     loop_cadb6:                    1
 ;     loop_cadcb:                    1
@@ -15368,6 +15364,7 @@ save pydis_start, pydis_end
 ;     norm_bit_loop:                 1
 ;     not_line_number:               1
 ;     not_local_error:               1
+;     not_loop:                      1
 ;     nta_all_digits:                1
 ;     nta_check_exp:                 1
 ;     nta_check_fixed:               1
@@ -15529,6 +15526,9 @@ save pydis_start, pydis_end
 ;     rnd_repeat:                    1
 ;     rnd_seed:                      1
 ;     round_half:                    1
+;     sgn_real_loop:                 1
+;     sgn_return:                    1
+;     sgn_zero:                      1
 ;     si8_set_mantissa:              1
 ;     sif_convert:                   1
 ;     sif_negate_frac:               1
@@ -15620,28 +15620,6 @@ save pydis_start, pydis_end
 ;     c886a
 ;     ca7f7
 ;     caa4e
-;     cab9d
-;     caba0
-;     caba2
-;     caba5
-;     cabb8
-;     cabe6
-;     cac0f
-;     cac23
-;     cac5e
-;     cac66
-;     cac73
-;     cac95
-;     cac9b
-;     cad03
-;     cad06
-;     cad12
-;     cad1a
-;     cad3c
-;     cad4d
-;     cad52
-;     cad59
-;     cad67
 ;     cad77
 ;     cad83
 ;     cad89
@@ -15857,12 +15835,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_cab7f
-;     loop_cacaa
-;     loop_cacd6
-;     loop_cad42
-;     loop_cad4f
-;     loop_cad55
 ;     loop_cad8c
 ;     loop_cadb6
 ;     loop_cadcb
