@@ -2067,9 +2067,9 @@ l848a = sub_c847b+15
 .stmt_old
     jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.      ; Check the statement ends
     lda zp_page                                                       ; 8ab9: a5 18       ..       ; Point at PAGE
-    sta zp_general_1                                                  ; 8abb: 85 38       .8       ; ...
-    lda #0                                                            ; 8abd: a9 00       ..       ; ...
-    sta zp_general                                                    ; 8abf: 85 37       .7       ; ...
+    sta zp_general_1                                                  ; 8abb: 85 38       .8       ; high byte (&38),
+    lda #0                                                            ; 8abd: a9 00       ..       ; low byte 0,
+    sta zp_general                                                    ; 8abf: 85 37       .7       ; to &37
     sta (zp_general),y                                                ; 8ac1: 91 37       .7       ; Remove the end marker
     jsr check_program                                                 ; 8ac3: 20 6f be     o.      ; Re-check the program and set TOP
     bne c8af3                                                         ; 8ac6: d0 2b       .+       ; clear heap and return to immediate mode
@@ -2227,18 +2227,18 @@ l848a = sub_c847b+15
 .stmt_data
     lda #&0d                                                          ; 8b7d: a9 0d       ..       ; CR
     ldy zp_text_ptr_off                                               ; 8b7f: a4 0a       ..       ; Line offset
-    dey                                                               ; 8b81: 88          .        ; ...
+    dey                                                               ; 8b81: 88          .        ; back up one (the loop pre-increments)
 ; &8b82 referenced 1 time by &8b85
 .loop_c8b82
     iny                                                               ; 8b82: c8          .        ; Scan to the end of line
-    cmp (zp_text_ptr),y                                               ; 8b83: d1 0b       ..       ; ...
-    bne loop_c8b82                                                    ; 8b85: d0 fb       ..       ; ...
+    cmp (zp_text_ptr),y                                               ; 8b83: d1 0b       ..       ; reached the CR?
+    bne loop_c8b82                                                    ; 8b85: d0 fb       ..       ; no: keep scanning
 ; &8b87 referenced 2 times by &8ba1, &9902
 .c8b87
     cmp #&8b                                                          ; 8b87: c9 8b       ..       ; ELSE?
     beq stmt_data                                                     ; 8b89: f0 f2       ..       ; yes: skip to end of line
     lda zp_text_ptr_1                                                 ; 8b8b: a5 0c       ..       ; In the command buffer?
-    cmp #7                                                            ; 8b8d: c9 07       ..       ; ...
+    cmp #7                                                            ; 8b8d: c9 07       ..       ; page &07 (command buffer)?
     beq loop_c8b41                                                    ; 8b8f: f0 b0       ..       ; yes: immediate mode
     jsr sub_c9890                                                     ; 8b91: 20 90 98     ..      ; Check for end of program, step past CR
     bne c8ba3                                                         ; 8b94: d0 0d       ..       ; more: next statement
@@ -3485,11 +3485,11 @@ l848a = sub_c847b+15
 .c92a5
     jsr check_end_of_statement                                        ; 92a5: 20 57 98     W.      ; check the statement ends
     lda zp_iwa                                                        ; 92a8: a5 2a       .*       ; Set the trace ceiling
-    sta zp_trace_max                                                  ; 92aa: 85 21       .!       ; ...
-    lda zp_iwa_1                                                      ; 92ac: a5 2b       .+       ; ...
+    sta zp_trace_max                                                  ; 92aa: 85 21       .!       ; low byte,
+    lda zp_iwa_1                                                      ; 92ac: a5 2b       .+       ; high byte,
 ; &92ae referenced 1 time by &92be
 .loop_c92ae
-    sta l0022                                                         ; 92ae: 85 22       ."       ; ...
+    sta l0022                                                         ; 92ae: 85 22       ."       ; to &22
     lda #&ff                                                          ; 92b0: a9 ff       ..       ; TRACE on
 ; &92b2 referenced 1 time by &92c7
 .loop_c92b2
@@ -3637,7 +3637,7 @@ l848a = sub_c847b+15
 ; inside a loop leaks that loop's frame. ENDPROC.
 .stmt_endproc
     tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
-    cpx #&fc                                                          ; 9357: e0 fc       ..       ; ...
+    cpx #&fc                                                          ; 9357: e0 fc       ..       ; stack near empty (no PROC frame)?
     bcs c9365                                                         ; 9359: b0 0a       ..       ; no frame: Not PROC error
     lda l01ff                                                         ; 935b: ad ff 01    ...      ; Framed call token
     cmp #&f2                                                          ; 935e: c9 f2       ..       ; The framed call must be a PROC
@@ -3680,7 +3680,7 @@ l848a = sub_c847b+15
 ; Select the text colour or redefine a logical colour. COLOUR n.
 .stmt_colour
     lda #&11                                                          ; 938e: a9 11       ..       ; VDU 17 (COLOUR)
-    pha                                                               ; 9390: 48          H        ; ...
+    pha                                                               ; 9390: 48          H        ; push it for later
     jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.      ; Evaluate the colour
     jsr check_end_of_statement                                        ; 9394: 20 57 98     W.      ; check the statement ends
     jmp c93da                                                         ; 9397: 4c da 93    L..      ; send VDU 17 and the colour
@@ -4083,9 +4083,9 @@ l848a = sub_c847b+15
     bcs return_13                                                     ; 9587: b0 1b       ..       ; indirection/array: return
     jsr create_variable                                               ; 9589: 20 fc 94     ..      ; undefined: create the variable
     ldx #5                                                            ; 958c: a2 05       ..       ; Decide how many value bytes to clear
-    cpx zp_iwa_2                                                      ; 958e: e4 2c       .,       ; ...
-    bne c957f                                                         ; 9590: d0 ed       ..       ; ...
-    inx                                                               ; 9592: e8          .        ; ...
+    cpx zp_iwa_2                                                      ; 958e: e4 2c       .,       ; integer type (4) or real (5)?
+    bne c957f                                                         ; 9590: d0 ed       ..       ; integer: clear 5 bytes
+    inx                                                               ; 9592: e8          .        ; real: clear 6 bytes
     bne c957f                                                         ; 9593: d0 ea       ..       ; then retry the parse so it is found
 ; &9595 referenced 1 time by &95df
 .loop_c9595
@@ -4096,7 +4096,7 @@ l848a = sub_c847b+15
     eor #&3f ; '?'                                                    ; 959d: 49 3f       I?       ; '?' indirection?
     beq c95a7                                                         ; 959f: f0 06       ..       ; yes: byte indirection
     lda #0                                                            ; 95a1: a9 00       ..       ; none: not an lvalue
-    sec                                                               ; 95a3: 38          8        ; ...
+    sec                                                               ; 95a3: 38          8        ; set carry (not an lvalue)
 ; &95a4 referenced 2 times by &9585, &9587
 .return_13
     rts                                                               ; 95a4: 60          `        ; Return
@@ -4116,7 +4116,7 @@ l848a = sub_c847b+15
     lda zp_iwa_1                                                      ; 95b5: a5 2b       .+       ; address in zero page?
     beq c95bf                                                         ; 95b7: f0 06       ..       ; yes: $ range error
     lda #&80                                                          ; 95b9: a9 80       ..       ; Type = string indirection (&80)
-    sta zp_iwa_2                                                      ; 95bb: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; 95bb: 85 2c       .,       ; store the type byte
     sec                                                               ; 95bd: 38          8        ; found: SEC
     rts                                                               ; 95be: 60          `        ; Return
 ; &95bf referenced 1 time by &95b7
@@ -5697,11 +5697,11 @@ l848a = sub_c847b+15
 .iwa_div
     jsr iwa_divide                                                    ; 9e0a: 20 be 99     ..      ; DIV: divide
     rol zp_fileblk                                                    ; 9e0d: 26 39       &9       ; Shift the quotient up by one
-    rol l003a                                                         ; 9e0f: 26 3a       &:       ; ...
-    rol zp_fwb_sign                                                   ; 9e11: 26 3b       &;       ; ...
-    rol zp_fwb_ovf                                                    ; 9e13: 26 3c       &<       ; ...
+    rol l003a                                                         ; 9e0f: 26 3a       &:       ; through &3A,
+    rol zp_fwb_sign                                                   ; 9e11: 26 3b       &;       ; &3B,
+    rol zp_fwb_ovf                                                    ; 9e13: 26 3c       &<       ; &3C
     bit zp_general                                                    ; 9e15: 24 37       $7       ; quotient sign
-    php                                                               ; 9e17: 08          .        ; ...
+    php                                                               ; 9e17: 08          .        ; save the sign flags
     ldx #&39 ; '9'                                                    ; 9e18: a2 39       .9       ; load the quotient (&39-&3C)
     jmp c9dbd                                                         ; 9e1a: 4c bd 9d    L..      ; ...and apply the sign
 ; &9e1d referenced 2 times by &99c8, &9d52
@@ -10586,7 +10586,7 @@ l848a = sub_c847b+15
     ldy l05cb,x                                                       ; b8bf: bc cb 05    ...      ; return position low byte
     lda l05e5,x                                                       ; b8c2: bd e5 05    ...      ; ...high byte
     sty zp_text_ptr                                                   ; b8c5: 84 0b       ..       ; restore the text pointer
-    sta zp_text_ptr_1                                                 ; b8c7: 85 0c       ..       ; ...
+    sta zp_text_ptr_1                                                 ; b8c7: 85 0c       ..       ; high byte
     jmp statement_loop                                                ; b8c9: 4c 9b 8b    L..      ; Resume execution after the GOSUB
 ; ***************************************************************************************
 ; GOTO
@@ -11330,8 +11330,8 @@ l848a = sub_c847b+15
 .cbd14
     jsr clear_vars_heap_stack                                         ; bd14: 20 20 bd      .      ; Clear variables, heap and stack
     lda zp_page                                                       ; bd17: a5 18       ..       ; Point PtrA at PAGE
-    sta zp_text_ptr_1                                                 ; bd19: 85 0c       ..       ; ...
-    stx zp_text_ptr                                                   ; bd1b: 86 0b       ..       ; ...
+    sta zp_text_ptr_1                                                 ; bd19: 85 0c       ..       ; page to the high byte,
+    stx zp_text_ptr                                                   ; bd1b: 86 0b       ..       ; low byte = 0 (X)
     jmp execute_line                                                  ; bd1d: 4c 0b 8b    L..      ; execute from the start
 ; ***************************************************************************************
 ; Clear all variables, the heap and the stack
