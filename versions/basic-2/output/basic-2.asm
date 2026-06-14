@@ -6805,13 +6805,13 @@ l848a = sub_c847b+15
 ; &a3e7 referenced 1 time by &ac95
 .sub_ca3e7
     lda zp_fwa_m1                                                     ; a3e7: a5 31       .1       ; Copy the 32-bit mantissa into IWA: byte 3
-    sta zp_iwa_3                                                      ; a3e9: 85 2d       .-       ; ...
+    sta zp_iwa_3                                                      ; a3e9: 85 2d       .-       ; store it
     lda zp_fwa_m2                                                     ; a3eb: a5 32       .2       ; byte 2
-    sta zp_iwa_2                                                      ; a3ed: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; a3ed: 85 2c       .,       ; store it
     lda zp_fwa_m3                                                     ; a3ef: a5 33       .3       ; byte 1
-    sta zp_iwa_1                                                      ; a3f1: 85 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; a3f1: 85 2b       .+       ; store it
     lda zp_fwa_m4                                                     ; a3f3: a5 34       .4       ; byte 0
-    sta zp_iwa                                                        ; a3f5: 85 2a       .*       ; ...
+    sta zp_iwa                                                        ; a3f5: 85 2a       .*       ; store it
     rts                                                               ; a3f7: 60          `        ; Return
 ; &a3f8 referenced 1 time by &a400
 .loop_ca3f8
@@ -9256,9 +9256,9 @@ l848a = sub_c847b+15
 ; &b0fe referenced 1 time by &b11e
 .loop_cb0fe
     pla                                                               ; b0fe: 68          h        ; No such FN/PROC: restore the text pointer
-    sta zp_text_ptr_1                                                 ; b0ff: 85 0c       ..       ; ...
-    pla                                                               ; b101: 68          h        ; ...
-    sta zp_text_ptr                                                   ; b102: 85 0b       ..       ; ...
+    sta zp_text_ptr_1                                                 ; b0ff: 85 0c       ..       ; pointer high
+    pla                                                               ; b101: 68          h        ; pull the low byte
+    sta zp_text_ptr                                                   ; b102: 85 0b       ..       ; pointer low
     brk                                                               ; b104: 00          .        ; "No such FN/PROC" error block
     equb &1d                                                          ; b105: 1d          .     
     equs "No such "                                                   ; b106: 4e 6f 20... No ...
@@ -9625,7 +9625,7 @@ l848a = sub_c847b+15
     cpy #4                                                            ; b30f: c0 04       ..       ; an integer?
     bne cb318                                                         ; b311: d0 05       ..       ; no
     ldx #&37 ; '7'                                                    ; b313: a2 37       .7       ; integer: address its 4 bytes via &37
-    jsr iwa_store_zp                                                  ; b315: 20 44 be     D.      ; ...
+    jsr iwa_store_zp                                                  ; b315: 20 44 be     D.      ; copy them there
 ; &b318 referenced 1 time by &b311
 .cb318
     jsr cb32c                                                         ; b318: 20 2c b3     ,.      ; Load the variable's current value by type
@@ -9633,9 +9633,9 @@ l848a = sub_c847b+15
     jsr stack_value                                                   ; b31c: 20 90 bd     ..      ; push the value onto the stack
     plp                                                               ; b31f: 28          (        ; restore the type
     beq cb329                                                         ; b320: f0 07       ..       ; byte/string
-    bmi cb329                                                         ; b322: 30 05       0.       ; ...
+    bmi cb329                                                         ; b322: 30 05       0.       ; or string
     ldx #&37 ; '7'                                                    ; b324: a2 37       .7       ; integer: reload
-    jsr iwa_load_zp                                                   ; b326: 20 56 af     V.      ; ...
+    jsr iwa_load_zp                                                   ; b326: 20 56 af     V.      ; from &37
 ; &b329 referenced 2 times by &b320, &b322
 .cb329
     jmp stack_integer                                                 ; b329: 4c 94 bd    L..      ; push the variable identity (as an integer)

@@ -63403,7 +63403,7 @@
         133,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_3",
@@ -63429,7 +63429,7 @@
         133,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_2",
@@ -63455,7 +63455,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -63481,7 +63481,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -85222,7 +85222,7 @@
         133,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -85234,7 +85234,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull the low byte",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -85244,7 +85244,7 @@
         133,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -88787,7 +88787,7 @@
         68,
         190
       ],
-      "comment_inline": "...",
+      "comment_inline": "copy them there",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -88868,7 +88868,7 @@
         48,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "or string",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb329",
@@ -88893,7 +88893,7 @@
         86,
         175
       ],
-      "comment_inline": "...",
+      "comment_inline": "from &37",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_load_zp",

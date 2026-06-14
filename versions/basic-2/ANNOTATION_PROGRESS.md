@@ -1,16 +1,16 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,171 of 7,129 placeholders left (16.4 %);
-depths 0 and 1 complete.** Inline-comment *density* is 100 %, but that
+**STATUS: in progress — 1,152 of 7,129 placeholders left (16.2 %);
+depths 0, 1 and 2 complete.** Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
 of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 `...` comment — coverage theatre, not annotation.
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
-worklist (leaves-first, worst offenders first). Next up is
-`stmt_call` (9), then `fwa_to_int` (4), `fn_strings` (3),
-`stack_local` (3), and the rest of depths 2–8. Per routine:
+worklist (leaves-first, worst offenders first). Depth 3 next:
+`print_line_number` (17), `sin_cos_reduce` (10), `ascii_to_number`
+(10), `print_token` (10), then the rest of depths 3–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -194,3 +194,5 @@ placeholders goes first.
 | 2026-06-14 | depth 2: iwa_mul | iwa_mul (shift-and-add integer multiply: 32-bit running product, multiplier/multiplicand shifts, sign) | 21 | 1197 | — |
 | 2026-06-14 | depth 2: fp_split_int_frac | fp_split_int_frac (round-to-nearest integer/fraction split; +1 swapped round up/down branch fix) | 13 | 1184 | — |
 | 2026-06-14 | depth 2: fp_eval_cont_frac | fp_eval_cont_frac (continued-fraction eval: count byte, 5-byte coefficient pointer walk, arg/FWA + coeff fold) | 13 | 1171 | — |
+| 2026-06-14 | depth 2: stmt_call | stmt_call (CALL: build &0600 parameter block, addr-low/high/type per param) | 9 | 1162 | — |
+| 2026-06-14 | depth 2 complete | fwa_to_int (mantissa->IWA copy), fn_strings (No such FN/PROC error tail), stack_local (LOCAL save) | 10 | 1152 | — |
