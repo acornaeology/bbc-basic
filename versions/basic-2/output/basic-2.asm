@@ -1534,15 +1534,15 @@ l848a = sub_c847b+15
 ; &8832 referenced 3 times by &8735, &8767, &882f
 .asm_opcode_add4
     lda zp_asm_opcode                                                 ; 8832: a5 29       .)       ; Opcode += 4 (next addressing-mode column)
-    clc                                                               ; 8834: 18          .        ; ...
-    adc #4                                                            ; 8835: 69 04       i.       ; ...
-    sta zp_asm_opcode                                                 ; 8837: 85 29       .)       ; ...
+    clc                                                               ; 8834: 18          .        ; clear carry,
+    adc #4                                                            ; 8835: 69 04       i.       ; add 4 (next mode column),
+    sta zp_asm_opcode                                                 ; 8837: 85 29       .)       ; store the opcode
     rts                                                               ; 8839: 60          `        ; Return
 ; &883a referenced 1 time by &8813
 .c883a
     ldx #1                                                            ; 883a: a2 01       ..       ; Assume one byte (EQUB)
     ldy zp_text_ptr_off                                               ; 883c: a4 0a       ..       ; Next character of the directive
-    inc zp_text_ptr_off                                               ; 883e: e6 0a       ..       ; ...  ...
+    inc zp_text_ptr_off                                               ; 883e: e6 0a       ..       ; consume that character
     lda (zp_text_ptr),y                                               ; 8840: b1 0b       ..       ; 'B' (EQUB)?
     cmp #&42 ; 'B'                                                    ; 8842: c9 42       .B       ; yes
     beq c8858                                                         ; 8844: f0 12       ..       ; two bytes (EQUW)  'W' (EQUW)?
@@ -1558,12 +1558,12 @@ l848a = sub_c847b+15
 ; &8858 referenced 3 times by &8844, &8849, &884f
 .c8858
     txa                                                               ; 8858: 8a          .        ; Save the byte count
-    pha                                                               ; 8859: 48          H        ; ...
+    pha                                                               ; 8859: 48          H        ; push it
     jsr eval_expr_to_integer                                          ; 885a: 20 21 88     !.      ; Evaluate the value
     ldx #&29 ; ')'                                                    ; 885d: a2 29       .)       ; Store it into the opcode bytes
-    jsr iwa_store_zp                                                  ; 885f: 20 44 be     D.      ; ...
+    jsr iwa_store_zp                                                  ; 885f: 20 44 be     D.      ; into &29 onward
     pla                                                               ; 8862: 68          h        ; recover the byte count
-    tay                                                               ; 8863: a8          .        ; ...
+    tay                                                               ; 8863: a8          .        ; into Y
 ; &8864 referenced 1 time by &887a
 .loop_c8864
     jmp c862b                                                         ; 8864: 4c 2b 86    L+.      ; Assemble the bytes
@@ -1572,12 +1572,12 @@ l848a = sub_c847b+15
     jmp err_type_mismatch                                             ; 8867: 4c 0e 8c    L..      ; String expected: Type mismatch
 ; &886a referenced 1 time by &8853
 .c886a
-    lda zp_opt_flag                                                   ; 886a: a5 28       .(       ; EQUS: save the OPT flag  ...
-    pha                                                               ; 886c: 48          H        ; evaluate the string expression
-    jsr eval_expr                                                     ; 886d: 20 1d 9b     ..      ; not a string: Type mismatch
-    bne loop_c8867                                                    ; 8870: d0 f5       ..       ; restore the OPT flag
-    pla                                                               ; 8872: 68          h        ; recover the byte count
-    sta zp_opt_flag                                                   ; 8873: 85 28       .(       ; ...
+    lda zp_opt_flag                                                   ; 886a: a5 28       .(       ; EQUS: save the OPT flag
+    pha                                                               ; 886c: 48          H        ; push the OPT flag
+    jsr eval_expr                                                     ; 886d: 20 1d 9b     ..      ; evaluate the string expression
+    bne loop_c8867                                                    ; 8870: d0 f5       ..       ; not a string: Type mismatch
+    pla                                                               ; 8872: 68          h        ; restore the OPT flag
+    sta zp_opt_flag                                                   ; 8873: 85 28       .(       ; store it back
     jsr sub_c8827                                                     ; 8875: 20 27 88     '.      ; sync the text offset
     ldy #&ff                                                          ; 8878: a0 ff       ..       ; flag EQUS (length from the string buffer)
     bne loop_c8864                                                    ; 887a: d0 e8       ..       ; assemble the string bytes
@@ -1585,22 +1585,22 @@ l848a = sub_c847b+15
 .sub_c887c
     pha                                                               ; 887c: 48          H        ; Save the byte to insert
     clc                                                               ; 887d: 18          .        ; Source = dest + Y
-    tya                                                               ; 887e: 98          .        ; ...
-    adc zp_general                                                    ; 887f: 65 37       e7       ; ...
-    sta zp_fileblk                                                    ; 8881: 85 39       .9       ; ...
-    ldy #0                                                            ; 8883: a0 00       ..       ; ...
-    tya                                                               ; 8885: 98          .        ; ...
-    adc zp_general_1                                                  ; 8886: 65 38       e8       ; ...
-    sta l003a                                                         ; 8888: 85 3a       .:       ; ...
-    pla                                                               ; 888a: 68          h        ; Store the inserted byte
+    tya                                                               ; 887e: 98          .        ; offset to A,
+    adc zp_general                                                    ; 887f: 65 37       e7       ; - dest low,
+    sta zp_fileblk                                                    ; 8881: 85 39       .9       ; source low (&39),
+    ldy #0                                                            ; 8883: a0 00       ..       ; reset the index,
+    tya                                                               ; 8885: 98          .        ; A = 0,
+    adc zp_general_1                                                  ; 8886: 65 38       e8       ; - dest high,
+    sta l003a                                                         ; 8888: 85 3a       .:       ; source high (&3A)
+    pla                                                               ; 888a: 68          h        ; recover the byte to insert
     sta (zp_general),y                                                ; 888b: 91 37       .7       ; store the inserted byte
 ; &888d referenced 1 time by &8894
 .loop_c888d
     iny                                                               ; 888d: c8          .        ; Copy the rest of the line up
-    lda (zp_fileblk),y                                                ; 888e: b1 39       .9       ; ...
-    sta (zp_general),y                                                ; 8890: 91 37       .7       ; ...
+    lda (zp_fileblk),y                                                ; 888e: b1 39       .9       ; read from source+Y,
+    sta (zp_general),y                                                ; 8890: 91 37       .7       ; write to dest+Y,
     cmp #&0d                                                          ; 8892: c9 0d       ..       ; until the carriage return
-    bne loop_c888d                                                    ; 8894: d0 f7       ..       ; ...
+    bne loop_c888d                                                    ; 8894: d0 f7       ..       ; until the CR
     rts                                                               ; 8896: 60          `        ; Return
 ; ***************************************************************************************
 ; Parse a 16-bit decimal number

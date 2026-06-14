@@ -14749,7 +14749,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry,",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -14759,7 +14759,7 @@
         105,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "add 4 (next mode column),",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -14770,7 +14770,7 @@
         133,
         41
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the opcode",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_asm_opcode",
@@ -14825,7 +14825,7 @@
         230,
         10
       ],
-      "comment_inline": "... ...",
+      "comment_inline": "consume that character",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr_off",
@@ -15000,7 +15000,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -15036,7 +15036,7 @@
         68,
         190
       ],
-      "comment_inline": "...",
+      "comment_inline": "into &29 onward",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -15057,7 +15057,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -15116,7 +15116,7 @@
       "labels": [
         "c886a"
       ],
-      "comment_inline": "EQUS: save the OPT flag ...",
+      "comment_inline": "EQUS: save the OPT flag",
       "xref_summaries": [
         "&886a referenced 1 time by &8853"
       ],
@@ -15134,7 +15134,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "evaluate the string expression",
+      "comment_inline": "push the OPT flag",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -15145,7 +15145,7 @@
         29,
         155
       ],
-      "comment_inline": "not a string: Type mismatch",
+      "comment_inline": "evaluate the string expression",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "eval_expr",
@@ -15158,7 +15158,7 @@
         208,
         245
       ],
-      "comment_inline": "restore the OPT flag",
+      "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c8867",
@@ -15170,7 +15170,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "recover the byte count",
+      "comment_inline": "restore the OPT flag",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -15180,7 +15180,7 @@
         133,
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_opt_flag",
@@ -15258,7 +15258,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -15268,7 +15268,7 @@
         101,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ dest low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general",
@@ -15281,7 +15281,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "source low (&39),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -15294,7 +15294,7 @@
         160,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "reset the index,",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -15304,7 +15304,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = 0,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -15314,7 +15314,7 @@
         101,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ dest high,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general_1",
@@ -15327,7 +15327,7 @@
         133,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "source high (&3A)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -15339,7 +15339,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "Store the inserted byte",
+      "comment_inline": "recover the byte to insert",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -15380,7 +15380,7 @@
         177,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "read from source+Y,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -15393,7 +15393,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "write to dest+Y,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -15417,7 +15417,7 @@
         208,
         247
       ],
-      "comment_inline": "...",
+      "comment_inline": "until the CR",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c888d",
