@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 628 of 7,129 placeholders left (8.8 %);
+**STATUS: in progress — 612 of 7,129 placeholders left (8.6 %);
 depths 0–4 complete, depth 5 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,11 +27,11 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`iwa_rsub` (16), then `fn_instr` (12), `fn_mids` (12),
-`fn_ln` (10), and the rest of depths 5–8.
+`fn_instr` (12), then `fn_mids` (12), `fn_ln` (10),
+`stmt_sound` (10), and the rest of depths 5–8.
 (`stmt_dim`, `parse_var_ref`, `unstack_value_to_var`, `iwa_divide`,
 `check_end_of_statement`, `iwa_test_var`, `stmt_print`,
-`asm_opcode_add4`, `iwa_add`, `fn_eval` done 2026-06-14.) Per routine:
+`asm_opcode_add4`, `iwa_add`, `fn_eval`, `iwa_rsub` done 2026-06-14.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -238,4 +238,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: stmt_print | stmt_print (PRINT: @% field padding, format-state save/restore, number right-justify, string output) + trailing TAB/SPC cursor positioning | 19 | 679 |
 | 2026-06-14 | depth 5: asm_opcode_add4 | asm_opcode_add4 (+4 addressing-mode step) + EQUB/EQUW/EQUD/EQUS block + sub_c887c byte-insert/line-shift; re-keyed mis-attached EQUS comments, deleted 2 stray placeholders | 17 | 662 |
 | 2026-06-14 | depth 5: iwa_add | iwa_add (32-bit integer add of stacked operand to IWA, 4-byte stack drop, real-promote path); fixed high-byte-store lead, cleaned 1 stray | 17 | 645 |
-| 2026-06-14 | depth 5: fn_eval | fn_eval (EVAL: CR-terminate arg, stack, save/repoint parser pointer, reset quote flag/offset, tokenise+evaluate, restore) | 17 | 628 | — |
+| 2026-06-14 | depth 5: fn_eval | fn_eval (EVAL: CR-terminate arg, stack, save/repoint parser pointer, reset quote flag/offset, tokenise+evaluate, restore) | 17 | 628 |
+| 2026-06-14 | depth 5: iwa_rsub | iwa_rsub (reverse 32-bit subtract stacked-IWA, real-operand path, owned eval_mul_div 16-bit-fit checks) | 16 | 612 | — |
