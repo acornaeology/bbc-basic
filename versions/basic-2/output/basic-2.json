@@ -96742,7 +96742,7 @@
         0,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low (+0),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "for_stack,y",
@@ -96755,7 +96755,7 @@
         165,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_general_1",
@@ -96769,7 +96769,7 @@
         1,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high (+1)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0501,y",
@@ -96796,7 +96796,7 @@
         2,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "type (+2)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0502,y",
@@ -96921,7 +96921,7 @@
         8,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "limit byte 0 (+8),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0508,y",
@@ -96934,7 +96934,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -96948,7 +96948,7 @@
         9,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+9),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0509,y",
@@ -96961,7 +96961,7 @@
         165,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -96975,7 +96975,7 @@
         10,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+A),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050a,y",
@@ -96988,7 +96988,7 @@
         165,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -97002,7 +97002,7 @@
         11,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050b,y",
@@ -97027,7 +97027,7 @@
         216,
         174
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA = 1",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "int_result_a",
@@ -97092,7 +97092,7 @@
         164,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "update the offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -97154,7 +97154,7 @@
         3,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "step byte 0 (+3),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0503,y",
@@ -97167,7 +97167,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -97181,7 +97181,7 @@
         4,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+4),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0504,y",
@@ -97194,7 +97194,7 @@
         165,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_2",
@@ -97208,7 +97208,7 @@
         5,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+5),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0505,y",
@@ -97221,7 +97221,7 @@
         165,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_3",
@@ -97235,7 +97235,7 @@
         6,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+6)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l0506,y",
@@ -97298,7 +97298,7 @@
         13,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "low (+D),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050d,y",
@@ -97311,7 +97311,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -97325,7 +97325,7 @@
         14,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "(+E)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l050e,y",
@@ -97346,7 +97346,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "level to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -97356,7 +97356,7 @@
         105,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ 15,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&0f"
@@ -97367,7 +97367,7 @@
         133,
         38
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_for_level",
@@ -97443,7 +97443,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "level + 8:",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -97453,7 +97453,7 @@
         105,
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#8"
@@ -97464,7 +97464,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -97477,7 +97477,7 @@
         169,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &05,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -97488,7 +97488,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -97595,7 +97595,7 @@
         164,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "update the offset",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -97642,7 +97642,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "level + 3:",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -97652,7 +97652,7 @@
         105,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#3"
@@ -97663,7 +97663,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -97676,7 +97676,7 @@
         169,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &05,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -97687,7 +97687,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
