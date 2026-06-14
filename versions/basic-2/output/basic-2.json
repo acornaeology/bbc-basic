@@ -64536,7 +64536,7 @@
         133,
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004a",
@@ -64637,7 +64637,7 @@
         133,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "set it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -64689,7 +64689,7 @@
         133,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it back",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -64702,7 +64702,7 @@
         16,
         5
       ],
-      "comment_inline": "positive: round the integer part up",
+      "comment_inline": "remainder positive: round the integer down",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "ca4ae",
@@ -64715,7 +64715,7 @@
         230,
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "remainder negative: round the integer up",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004a",
@@ -64729,7 +64729,7 @@
         176,
         164
       ],
-      "comment_inline": "...",
+      "comment_inline": "done: go negate the remainder",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca4b0",
@@ -64832,7 +64832,7 @@
         208,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "done if byte 4 did not wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -64845,7 +64845,7 @@
         230,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "wrapped: carry into byte 3,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m3",
@@ -64858,7 +64858,7 @@
         208,
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "done if no wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -64871,7 +64871,7 @@
         230,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m2",
@@ -64884,7 +64884,7 @@
         208,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "done if no wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "return_25",
@@ -64897,7 +64897,7 @@
         230,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1 (top)",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fwa_m1",
@@ -64967,7 +64967,7 @@
         182,
         164
       ],
-      "comment_inline": "...",
+      "comment_inline": "add one to the magnitude",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_ca4b6",
@@ -64981,7 +64981,7 @@
         108,
         164
       ],
-      "comment_inline": "...",
+      "comment_inline": "negate back",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "ca46c",

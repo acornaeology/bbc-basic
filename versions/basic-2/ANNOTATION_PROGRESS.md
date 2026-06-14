@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,197 of 7,129 placeholders left (16.8 %);
+**STATUS: in progress — 1,184 of 7,129 placeholders left (16.6 %);
 depths 0 and 1 complete.** Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
@@ -9,8 +9,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Next up is
-`fp_split_int_frac` (13), then `fp_eval_cont_frac` (13), `stmt_call`
-(9), `fwa_to_int` (4), and the rest of depths 2–8. Per routine:
+`fp_eval_cont_frac` (13), then `stmt_call` (9), `fwa_to_int` (4),
+`fn_strings` (3), and the rest of depths 2–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -192,3 +192,4 @@ placeholders goes first.
 | 2026-06-14 | depth 2: parse_number | parse_number (decimal/real parse: digit accumulate, decimal point/exponent, real-vs-integer result) | 30 | 1240 | — |
 | 2026-06-14 | depth 2: iwa_store_var | iwa_store_var (store IWA to integer var; trailing real-store path: exponent + sign-packed mantissa) | 22 | 1218 | — |
 | 2026-06-14 | depth 2: iwa_mul | iwa_mul (shift-and-add integer multiply: 32-bit running product, multiplier/multiplicand shifts, sign) | 21 | 1197 | — |
+| 2026-06-14 | depth 2: fp_split_int_frac | fp_split_int_frac (round-to-nearest integer/fraction split; +1 swapped round up/down branch fix) | 13 | 1184 | — |

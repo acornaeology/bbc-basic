@@ -6921,7 +6921,7 @@ l848a = sub_c847b+15
     lda zp_fwa_exp                                                    ; a486: a5 30       .0       ; Exponent of FWA
     bmi ca491                                                         ; a488: 30 07       0.       ; |x| >= 1: has an integer part
     lda #0                                                            ; a48a: a9 00       ..       ; |x| < 1: integer part is zero
-    sta l004a                                                         ; a48c: 85 4a       .J       ; ...
+    sta l004a                                                         ; a48c: 85 4a       .J       ; store it
     jmp fwa_sign                                                      ; a48e: 4c da a1    L..      ; return the fraction (= x)
 ; &a491 referenced 1 time by &a488
 .ca491
@@ -6930,14 +6930,14 @@ l848a = sub_c847b+15
     sta l004a                                                         ; a496: 85 4a       .J       ; ...kept in &4A
     jsr sub_ca4e8                                                     ; a498: 20 e8 a4     ..      ; Bring the fractional bits back into FWA
     lda #&80                                                          ; a49b: a9 80       ..       ; Exponent for a value in [0,1)
-    sta zp_fwa_exp                                                    ; a49d: 85 30       .0       ; ...
+    sta zp_fwa_exp                                                    ; a49d: 85 30       .0       ; set it
     ldx zp_fwa_m1                                                     ; a49f: a6 31       .1       ; Top fraction bit set (fraction >= 0.5)?
     bpl ca4b3                                                         ; a4a1: 10 10       ..       ; no: fraction already in range
     eor zp_fwa_sign                                                   ; a4a3: 45 2e       E.       ; Round to nearest: flip the fraction sign
-    sta zp_fwa_sign                                                   ; a4a5: 85 2e       ..       ; ...
-    bpl ca4ae                                                         ; a4a7: 10 05       ..       ; positive: round the integer part up
-    inc l004a                                                         ; a4a9: e6 4a       .J       ; ...
-    jmp ca4b0                                                         ; a4ab: 4c b0 a4    L..      ; ...
+    sta zp_fwa_sign                                                   ; a4a5: 85 2e       ..       ; store it back
+    bpl ca4ae                                                         ; a4a7: 10 05       ..       ; remainder positive: round the integer down
+    inc l004a                                                         ; a4a9: e6 4a       .J       ; remainder negative: round the integer up
+    jmp ca4b0                                                         ; a4ab: 4c b0 a4    L..      ; done: go negate the remainder
 ; &a4ae referenced 1 time by &a4a7
 .ca4ae
     dec l004a                                                         ; a4ae: c6 4a       .J       ; negative: round the integer part down
@@ -6950,12 +6950,12 @@ l848a = sub_c847b+15
 ; &a4b6 referenced 1 time by &a4ca
 .sub_ca4b6
     inc zp_fwa_m4                                                     ; a4b6: e6 34       .4       ; Increment the integer-part mantissa (carry up)
-    bne return_25                                                     ; a4b8: d0 0c       ..       ; ...
-    inc zp_fwa_m3                                                     ; a4ba: e6 33       .3       ; ...
-    bne return_25                                                     ; a4bc: d0 08       ..       ; ...
-    inc zp_fwa_m2                                                     ; a4be: e6 32       .2       ; ...
-    bne return_25                                                     ; a4c0: d0 04       ..       ; ...
-    inc zp_fwa_m1                                                     ; a4c2: e6 31       .1       ; ...
+    bne return_25                                                     ; a4b8: d0 0c       ..       ; done if byte 4 did not wrap
+    inc zp_fwa_m3                                                     ; a4ba: e6 33       .3       ; wrapped: carry into byte 3,
+    bne return_25                                                     ; a4bc: d0 08       ..       ; done if no wrap
+    inc zp_fwa_m2                                                     ; a4be: e6 32       .2       ; byte 2,
+    bne return_25                                                     ; a4c0: d0 04       ..       ; done if no wrap
+    inc zp_fwa_m1                                                     ; a4c2: e6 31       .1       ; byte 1 (top)
     beq ca450                                                         ; a4c4: f0 8a       ..       ; overflow: Too big
 ; &a4c6 referenced 3 times by &a4b8, &a4bc, &a4c0
 .return_25
@@ -6963,8 +6963,8 @@ l848a = sub_c847b+15
 ; &a4c7 referenced 1 time by &ac92
 .sub_ca4c7
     jsr ca46c                                                         ; a4c7: 20 6c a4     l.      ; Decrement the mantissa magnitude (negate, +1, negate)
-    jsr sub_ca4b6                                                     ; a4ca: 20 b6 a4     ..      ; ...
-    jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.      ; ...
+    jsr sub_ca4b6                                                     ; a4ca: 20 b6 a4     ..      ; add one to the magnitude
+    jmp ca46c                                                         ; a4cd: 4c 6c a4    Ll.      ; negate back
 ; ***************************************************************************************
 ; FWA = FWA - fp var
 ;
