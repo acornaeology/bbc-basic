@@ -92184,7 +92184,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low = &71",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -92197,7 +92197,7 @@
         169,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high = &80",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -92208,7 +92208,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "set it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -92273,7 +92273,7 @@
         177,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general_1),y",
@@ -92333,7 +92333,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset into A",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -92342,7 +92342,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry: +1 past the flag byte",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -92352,7 +92352,7 @@
         101,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "add to the pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_general_1",
@@ -92365,7 +92365,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -92378,7 +92378,7 @@
         144,
         236
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry: scan the next entry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cb51e",
@@ -92391,7 +92391,7 @@
         230,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "else carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_fileblk",

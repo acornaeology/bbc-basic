@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,115 of 7,129 placeholders left (15.6 %);
+**STATUS: in progress — 1,105 of 7,129 placeholders left (15.5 %);
 depths 0, 1 and 2 complete.** Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
@@ -9,8 +9,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 3 next:
-`print_token` (10), `fwa_complement_half_pi` (9), `read_input_line`
-(9), `print_special_item` (5), then the rest of depths 3–8. Per routine:
+`fwa_complement_half_pi` (9), `read_input_line` (9),
+`print_special_item` (5), `stmt_if` (5), then the rest of depths 3–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -199,3 +199,4 @@ placeholders goes first.
 | 2026-06-14 | depth 3: print_line_number | print_line_number (decimal via repeated subtraction of powers of ten, zero-suppress, field pad) | 17 | 1135 | — |
 | 2026-06-14 | depth 3: sin_cos_reduce | sin_cos_reduce (SIN/COS range reduction: quadrant via /(pi/2), Cody-Waite two-part subtract) | 10 | 1125 | — |
 | 2026-06-14 | depth 3: ascii_to_number | ascii_to_number (VAL/tokenise: NUL-terminate SWA, save/repoint PtrB at &0600) | 10 | 1115 | — |
+| 2026-06-14 | depth 3: print_token | print_token (de-tokenise: scan keyword table at &8071, match token byte, advance entry) | 10 | 1105 | — |

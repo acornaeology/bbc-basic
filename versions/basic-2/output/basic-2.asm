@@ -10003,9 +10003,9 @@ l848a = sub_c847b+15
     cmp #&80                                                          ; b510: c9 80       ..       ; a token?
     bcc print_char                                                    ; b512: 90 44       .D       ; no: print it directly
     lda #&71 ; 'q'                                                    ; b514: a9 71       .q       ; Point at the token table (&8071)
-    sta zp_general_1                                                  ; b516: 85 38       .8       ; ...
-    lda #&80                                                          ; b518: a9 80       ..       ; ...
-    sta zp_fileblk                                                    ; b51a: 85 39       .9       ; ...
+    sta zp_general_1                                                  ; b516: 85 38       .8       ; pointer low = &71
+    lda #&80                                                          ; b518: a9 80       ..       ; pointer high = &80
+    sta zp_fileblk                                                    ; b51a: 85 39       .9       ; set it
     sty l003a                                                         ; b51c: 84 3a       .:       ; save Y
 ; &b51e referenced 2 times by &b530, &b534
 .cb51e
@@ -10013,17 +10013,17 @@ l848a = sub_c847b+15
 ; &b520 referenced 1 time by &b523
 .loop_cb520
     iny                                                               ; b520: c8          .        ; Scan to the token byte
-    lda (zp_general_1),y                                              ; b521: b1 38       .8       ; ...
+    lda (zp_general_1),y                                              ; b521: b1 38       .8       ; read it
     bpl loop_cb520                                                    ; b523: 10 fb       ..       ; ...(skip the keyword text)
     cmp zp_general                                                    ; b525: c5 37       .7       ; this token?
     beq cb536                                                         ; b527: f0 0d       ..       ; yes: print its keyword
     iny                                                               ; b529: c8          .        ; Advance to the next entry
-    tya                                                               ; b52a: 98          .        ; ...
-    sec                                                               ; b52b: 38          8        ; ...
-    adc zp_general_1                                                  ; b52c: 65 38       e8       ; ...
-    sta zp_general_1                                                  ; b52e: 85 38       .8       ; ...
-    bcc cb51e                                                         ; b530: 90 ec       ..       ; ...
-    inc zp_fileblk                                                    ; b532: e6 39       .9       ; ...
+    tya                                                               ; b52a: 98          .        ; offset into A
+    sec                                                               ; b52b: 38          8        ; set carry: +1 past the flag byte
+    adc zp_general_1                                                  ; b52c: 65 38       e8       ; add to the pointer low,
+    sta zp_general_1                                                  ; b52e: 85 38       .8       ; store it
+    bcc cb51e                                                         ; b530: 90 ec       ..       ; no carry: scan the next entry
+    inc zp_fileblk                                                    ; b532: e6 39       .9       ; else carry into the high byte
     bcs cb51e                                                         ; b534: b0 e8       ..       ; continue
 ; &b536 referenced 1 time by &b527
 .cb536
