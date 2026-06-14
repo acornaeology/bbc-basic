@@ -161,69 +161,6 @@
       "description": "Reached from the language entry when the MOS starts BASIC\n(A = 1). Reads HIMEM and PAGE from the MOS, clears the print and\nformatting state, seeds the random-number generator if it is cold,\ninstalls the BASIC error handler in BRKV, and jumps to\nstart_new_program, which clears any program and enters the\nimmediate (\"> \") loop.\n"
     },
     {
-      "addr": 35549,
-      "name": "start_new_program",
-      "title": "Clear program and enter the immediate loop",
-      "description": "Entered from language_startup. Sets up an empty program (as the\nNEW command does) and falls through into the immediate loop.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 35574,
-      "name": "immediate_loop",
-      "title": "Immediate (\"> \") loop",
-      "description": "Print the prompt, read a line into the input buffer, and\ntokenise it. A line that begins with a line number is inserted into\nthe program; otherwise it is executed immediately.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 35595,
-      "name": "execute_line",
-      "title": "Execute the line at the program pointer",
-      "description": "Run the tokenised statements on the line addressed by the\nprogram pointer (zp_text_ptr, &0B), starting at offset zp_text_ptr_off.\n"
-    },
-    {
-      "addr": 35739,
-      "name": "statement_loop",
-      "title": "Statement execution loop",
-      "description": "The main interpreter loop: fetch the next statement's leading\ntoken and dispatch it, then advance to the next statement (after a\ncolon) or line. Returns here after each statement completes.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 35761,
-      "name": "dispatch_token",
-      "title": "Dispatch a tokenised function or command",
-      "description": "Index the action-address table by (token - &8E): load the\nhandler address into zp_general (&37/&38) and JMP (&0037). This is\nthe indirect jump that reaches every fn_* / stmt_* handler.\n",
-      "on_entry": {
-        "A": "a command/function token (&8E-&FF)"
-      }
-    },
-    {
-      "addr": 35775,
-      "name": "try_variable_assignment",
-      "title": "Not a command token: try an assignment",
-      "description": "Reached when the statement does not begin with a command token:\ntreat it as an implied-LET variable assignment, or one of the\n=, * (OSCLI) or [ (assembler) special statement forms.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 35680,
-      "name": "check_eq_star_bracket",
-      "title": "Check for =, * and [ statements",
-      "description": "Recognise the statement forms that are not introduced by a\ntoken: \"=\" (return a value from FN), \"*\" (pass the rest of the line\nto OSCLI), and \"[\" (enter the inline assembler).\n",
-      "fall_through": true
-    },
-    {
-      "addr": 35153,
-      "name": "tokenise_line",
-      "title": "Tokenise a line",
-      "description": "Convert the line being entered into its internal form, replacing\nkeywords with tokens via the keyword_table while leaving strings,\nline numbers and names intact. Works through the buffer using the\ngeneral pointer (zp_general, &37).\n"
-    },
-    {
-      "addr": 34045,
-      "name": "assembler_exit",
-      "title": "Finish the inline assembler",
-      "description": "Leave the inline 6502 assembler (reached at \"]\") and resume\ninterpreting BASIC.\n",
-      "fall_through": true
-    },
-    {
       "addr": 32881,
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
@@ -928,36 +865,63 @@
       "description": "Pass a string to the OS command-line interpreter. OSCLI string."
     },
     {
-      "addr": 35479,
-      "name": "skip_spaces",
-      "title": "Skip spaces at the text pointer",
-      "description": "Advance the primary text pointer past any spaces and return the\nfirst non-space character. The workhorse of the tokeniser and\ninterpreter: most statements call it between syntax elements.\n",
-      "on_entry": {
-        "zp_text_ptr (&0B)": "points at the line being interpreted",
-        "zp_text_ptr_off (&0A)": "offset of the next character"
-      },
+      "addr": 34045,
+      "name": "assembler_exit",
+      "title": "Finish the inline assembler",
+      "description": "Leave the inline 6502 assembler (reached at \"]\") and resume\ninterpreting BASIC.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 34234,
+      "name": "asm_parse_mnemonic",
+      "title": "Parse and compact an assembler mnemonic",
+      "description": "Skip to the mnemonic, handling end-of-statement and labels, then pack its three letters (5 bits each) into &3D/&3E for the opcode-table lookup."
+    },
+    {
+      "addr": 34849,
+      "name": "eval_expr_to_integer",
+      "title": "Evaluate an integer expression",
+      "description": "Evaluate the expression at the text pointer (eval_expr) and\ncoerce the result to an integer (coerce_to_integer), then copy the\nsecondary text offset back to the primary pointer. Used wherever a\nstatement needs an integer argument.\n",
       "on_exit": {
-        "A": "first non-space character",
-        "Y": "its offset within the line",
-        "zp_text_ptr_off (&0A)": "advanced past that character"
+        "zp_iwa (&2A)": "4-byte integer result"
       }
     },
     {
-      "addr": 35468,
-      "name": "skip_spaces_ptr2",
-      "title": "Skip spaces at the secondary text pointer",
-      "description": "As skip_spaces, but works on the secondary text pointer\n(zp_text_ptr2, &19) and its offset (&1B). Used while the primary\npointer is preserved, e.g. when scanning ahead during assignment.\n",
-      "on_exit": {
-        "A": "first non-space character",
-        "Y": "its offset",
-        "&1B": "advanced past that character"
-      }
+      "addr": 34860,
+      "name": "asm_opcode_add16",
+      "title": "Advance the opcode by four addressing-mode columns (+16)",
+      "fall_through": true
     },
     {
-      "addr": 35502,
-      "name": "skip_spaces_expect_comma",
-      "title": "Skip spaces and require a comma",
-      "description": "Call skip_spaces, then check the character is a comma. Raises\n\"Missing ,\" if it is not. Used by statements that take a\ncomma-separated argument list.\n"
+      "addr": 34863,
+      "name": "asm_opcode_add8",
+      "title": "Advance the opcode by two addressing-mode columns (+8)",
+      "fall_through": true
+    },
+    {
+      "addr": 34866,
+      "name": "asm_opcode_add4",
+      "title": "Step the opcode to the next addressing-mode column (+4)",
+      "description": "Add 4 to the base opcode in &29 to select the next 6502 addressing-mode encoding."
+    },
+    {
+      "addr": 34967,
+      "name": "parse_decimal_u16",
+      "title": "Parse a 16-bit decimal number",
+      "description": "Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow detection. The first digit is in A on entry; stops at the first non-digit. Used to read line numbers.",
+      "fall_through": true
+    },
+    {
+      "addr": 35061,
+      "name": "encode_line_number",
+      "title": "Encode a 16-bit line number into 3 bytes",
+      "description": "Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide with tokens."
+    },
+    {
+      "addr": 35110,
+      "name": "is_alphanumeric",
+      "title": "Test A for a name character",
+      "description": "Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or FN/PROC name."
     },
     {
       "addr": 35138,
@@ -973,10 +937,294 @@
       "description": "Increment the little-endian pointer held in zp_general\n(&37/&38) by one, carrying into the high byte.\n"
     },
     {
+      "addr": 35153,
+      "name": "tokenise_line",
+      "title": "Tokenise a line",
+      "description": "Convert the line being entered into its internal form, replacing\nkeywords with tokens via the keyword_table while leaving strings,\nline numbers and names intact. Works through the buffer using the\ngeneral pointer (zp_general, &37).\n"
+    },
+    {
+      "addr": 35468,
+      "name": "skip_spaces_ptr2",
+      "title": "Skip spaces at the secondary text pointer",
+      "description": "As skip_spaces, but works on the secondary text pointer\n(zp_text_ptr2, &19) and its offset (&1B). Used while the primary\npointer is preserved, e.g. when scanning ahead during assignment.\n",
+      "on_exit": {
+        "A": "first non-space character",
+        "Y": "its offset",
+        "&1B": "advanced past that character"
+      }
+    },
+    {
+      "addr": 35479,
+      "name": "skip_spaces",
+      "title": "Skip spaces at the text pointer",
+      "description": "Advance the primary text pointer past any spaces and return the\nfirst non-space character. The workhorse of the tokeniser and\ninterpreter: most statements call it between syntax elements.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B)": "points at the line being interpreted",
+        "zp_text_ptr_off (&0A)": "offset of the next character"
+      },
+      "on_exit": {
+        "A": "first non-space character",
+        "Y": "its offset within the line",
+        "zp_text_ptr_off (&0A)": "advanced past that character"
+      }
+    },
+    {
+      "addr": 35502,
+      "name": "skip_spaces_expect_comma",
+      "title": "Skip spaces and require a comma",
+      "description": "Call skip_spaces, then check the character is a comma. Raises\n\"Missing ,\" if it is not. Used by statements that take a\ncomma-separated argument list.\n"
+    },
+    {
+      "addr": 35549,
+      "name": "start_new_program",
+      "title": "Clear program and enter the immediate loop",
+      "description": "Entered from language_startup. Sets up an empty program (as the\nNEW command does) and falls through into the immediate loop.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35574,
+      "name": "immediate_loop",
+      "title": "Immediate (\"> \") loop",
+      "description": "Print the prompt, read a line into the input buffer, and\ntokenise it. A line that begins with a line number is inserted into\nthe program; otherwise it is executed immediately.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35595,
+      "name": "execute_line",
+      "title": "Execute the line at the program pointer",
+      "description": "Run the tokenised statements on the line addressed by the\nprogram pointer (zp_text_ptr, &0B), starting at offset zp_text_ptr_off.\n"
+    },
+    {
+      "addr": 35680,
+      "name": "check_eq_star_bracket",
+      "title": "Check for =, * and [ statements",
+      "description": "Recognise the statement forms that are not introduced by a\ntoken: \"=\" (return a value from FN), \"*\" (pass the rest of the line\nto OSCLI), and \"[\" (enter the inline assembler).\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35739,
+      "name": "statement_loop",
+      "title": "Statement execution loop",
+      "description": "The main interpreter loop: fetch the next statement's leading\ntoken and dispatch it, then advance to the next statement (after a\ncolon) or line. Returns here after each statement completes.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35761,
+      "name": "dispatch_token",
+      "title": "Dispatch a tokenised function or command",
+      "description": "Index the action-address table by (token - &8E): load the\nhandler address into zp_general (&37/&38) and JMP (&0037). This is\nthe indirect jump that reaches every fn_* / stmt_* handler.\n",
+      "on_entry": {
+        "A": "a command/function token (&8E-&FF)"
+      }
+    },
+    {
+      "addr": 35775,
+      "name": "try_variable_assignment",
+      "title": "Not a command token: try an assignment",
+      "description": "Reached when the statement does not begin with a command token:\ntreat it as an implied-LET variable assignment, or one of the\n=, * (OSCLI) or [ (assembler) special statement forms.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 35870,
+      "name": "assign_string",
+      "title": "Store a string value into a variable",
+      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n"
+    },
+    {
+      "addr": 36033,
+      "name": "unstack_value_to_var",
+      "title": "Restore a stacked value into a variable",
+      "description": "Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated), or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and parameter machinery.",
+      "fall_through": true
+    },
+    {
+      "addr": 36464,
+      "name": "print_special_item",
+      "title": "Handle the PRINT ' TAB and SPC items",
+      "description": "Recognise and act on the special PRINT items: apostrophe\n(force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when\nit consumed one, so the caller skips ordinary expression printing.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 36638,
+      "name": "usr_call",
+      "title": "Call user machine code (USR/CALL)",
+      "description": "Load A, X, Y and the flags from the resident integer\nvariables, then call the routine at the address in IWA. On return the\nregisters are captured back."
+    },
+    {
+      "addr": 37023,
+      "name": "advance_to_next_line",
+      "title": "Advance the general pointer to the next program line",
+      "description": "Add the line length (at offset 3) to zp_general; carry clear on return."
+    },
+    {
+      "addr": 37410,
+      "name": "iwa_inc",
+      "title": "Increment the integer accumulator",
+      "description": "IWA = IWA + 1, carrying through all four bytes.",
+      "fall_through": true
+    },
+    {
+      "addr": 37430,
+      "name": "imul16",
+      "title": "16-bit integer multiply (IWA * FWB)",
+      "description": "Multiply IWA by the value in the FWB mantissa by shift-and-add; \"Too big\" on overflow."
+    },
+    {
+      "addr": 37616,
+      "name": "coerce_to_integer",
+      "title": "Coerce the current value to an integer",
+      "description": "Check the type of the last evaluated value (in A from\nzp_var_type): a string raises \"Type mismatch\", an integer returns\nunchanged, and a real is converted to a 4-byte integer in the\ninteger accumulator.\n",
+      "on_entry": {
+        "A": "value type from zp_var_type (&27)"
+      }
+    },
+    {
+      "addr": 37626,
+      "name": "eval_real",
+      "title": "Evaluate an expression as a real",
+      "description": "Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.",
+      "fall_through": true
+    },
+    {
+      "addr": 37629,
+      "name": "ensure_real",
+      "title": "Coerce the result to a real",
+      "description": "Type mismatch for a string, leave a real, or convert an integer to FWA."
+    },
+    {
+      "addr": 37979,
+      "name": "find_proc_fn",
+      "title": "Find a PROC or FN definition by name",
+      "description": "Search the PROC (token &F2) or FN linked list for a definition\nwhose name starts at (zp_general)+1. Shares the chain walk with\nfind_variable; returns a pointer to the body, or \"not found\".\n",
+      "fall_through": true
+    },
+    {
+      "addr": 37993,
+      "name": "find_variable",
+      "title": "Find a variable by name",
+      "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 38140,
+      "name": "create_variable",
+      "title": "Create a new variable",
+      "description": "Allocate a new entry for a variable that does not yet exist."
+    },
+    {
+      "addr": 38193,
+      "name": "clear_value_bytes",
+      "title": "Zero a run of value bytes",
+      "description": "Write X zero bytes after the variable name (initialise its value)."
+    },
+    {
+      "addr": 38233,
+      "name": "validate_var_name",
+      "title": "Validate / measure a variable name",
+      "description": "Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.",
+      "fall_through": true
+    },
+    {
+      "addr": 38274,
+      "name": "parse_lvalue",
+      "title": "Parse an assignment target variable",
+      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n"
+    },
+    {
+      "addr": 38345,
+      "name": "parse_var_ref",
+      "title": "Parse a variable reference / lvalue",
+      "description": "Scan a variable name, array element, or indirection operator at the text pointer. Sets the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates it), A=0 carry set when no name is present."
+    },
+    {
+      "addr": 38623,
+      "name": "index_array",
+      "title": "Locate an array and evaluate one subscript",
+      "description": "Find the named array and step the value pointer to the addressed element; raises Array on a missing array."
+    },
+    {
+      "addr": 38842,
+      "name": "check_subscript_bound",
+      "title": "Check a subscript against a dimension extent",
+      "description": "Raise Subscript if the subscript in IWA is negative or not less than the dimension size stored at (&37),Y; advances Y past the two-byte extent.",
+      "fall_through": true
+    },
+    {
+      "addr": 38879,
+      "name": "check_line_number",
+      "title": "Test for an embedded line number",
+      "description": "If the text pointer is at a line-number token, decode it into IWA and return carry set; otherwise carry clear.",
+      "fall_through": true
+    },
+    {
+      "addr": 38891,
+      "name": "decode_line_number",
+      "title": "Decode a 3-byte line number into IWA",
+      "description": "Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 38931,
+      "name": "eval_after_eq",
+      "title": "Expect \"=\" then evaluate the right-hand side",
+      "description": "Skip spaces, require an \"=\" sign, then evaluate the expression\nthat follows, leaving the value in the accumulator with its type in\nzp_var_type.\n"
+    },
+    {
+      "addr": 38977,
+      "name": "expect_eq",
+      "title": "Require \"=\" at the parser pointer",
+      "description": "Skip spaces and raise Mistake unless the next character is \"=\"."
+    },
+    {
       "addr": 38999,
       "name": "check_end_of_statement",
       "title": "Check for end of statement",
       "description": "Skip spaces and require the statement to end here: a colon, an\nend-of-line (&0D), or ELSE. Anything else raises \"Syntax error\".\nAlso polls for Escape.\n"
+    },
+    {
+      "addr": 39173,
+      "name": "trace_line",
+      "title": "Print [line] when TRACE is active",
+      "description": "If the current line number is within the TRACE ceiling, print the line number in brackets."
+    },
+    {
+      "addr": 39199,
+      "name": "print_line_number",
+      "title": "Print a 16-bit line number in decimal",
+      "description": "Convert the value in IWA to decimal by repeated subtraction of the powers of ten at &996B/&99B9, suppressing leading zeros, optionally right-justified in a field."
+    },
+    {
+      "addr": 39280,
+      "name": "find_program_line",
+      "title": "Search the program for a line number",
+      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n"
+    },
+    {
+      "addr": 39358,
+      "name": "iwa_divide",
+      "title": "Unsigned/signed 32-bit integer division",
+      "description": "Evaluate the right operand, take absolute values, and do a 32-step shift-subtract division. The dividend/quotient builds in &39-&3C and the remainder in &3D-&40; the divisor is IWA. The quotient sign is the XOR of the operand signs in &37, the remainder sign the dividend sign in &38. Raises Division by zero. Shared by DIV and MOD.",
+      "fall_through": true
+    },
+    {
+      "addr": 39519,
+      "name": "fp_compare",
+      "title": "Compare FWA with a fp variable",
+      "description": "Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa bytes, returning the ordering for the relational operators.",
+      "fall_through": true
+    },
+    {
+      "addr": 39582,
+      "name": "eval_and_compare",
+      "title": "Evaluate the next operand and compare",
+      "description": "Stack the current value, evaluate the next arithmetic operand and compare the two (integer, real or string), returning the ordering flags for the relational operators.",
+      "fall_through": true
+    },
+    {
+      "addr": 39597,
+      "name": "iwa_test_var",
+      "title": "Compare an integer variable with the accumulator",
+      "description": "Compare the integer operand against IWA and set flags."
     },
     {
       "addr": 39709,
@@ -991,91 +1239,38 @@
       "fall_through": true
     },
     {
-      "addr": 34849,
-      "name": "eval_expr_to_integer",
-      "title": "Evaluate an integer expression",
-      "description": "Evaluate the expression at the text pointer (eval_expr) and\ncoerce the result to an integer (coerce_to_integer), then copy the\nsecondary text offset back to the primary pointer. Used wherever a\nstatement needs an integer argument.\n",
-      "on_exit": {
-        "zp_iwa (&2A)": "4-byte integer result"
-      }
-    },
-    {
-      "addr": 44524,
-      "name": "eval_factor",
-      "title": "Evaluate a factor (evaluator level 1)",
-      "description": "Evaluate the highest-precedence level of an expression at PtrB:\nunary minus, unary plus and NOT; parenthesised sub-expressions;\nthe ?, !, $ and | indirection operators; string literals; and the\nbuilt-in functions.\n"
-    },
-    {
-      "addr": 37616,
-      "name": "coerce_to_integer",
-      "title": "Coerce the current value to an integer",
-      "description": "Check the type of the last evaluated value (in A from\nzp_var_type): a string raises \"Type mismatch\", an integer returns\nunchanged, and a real is converted to a 4-byte integer in the\ninteger accumulator.\n",
-      "on_entry": {
-        "A": "value type from zp_var_type (&27)"
-      }
-    },
-    {
-      "addr": 41434,
-      "name": "fwa_sign",
-      "title": "Get the sign of the FP accumulator",
-      "description": "Determine the sign of the floating-point accumulator:\nzero, positive or negative (Z set when FWA is zero). Tests the\nmantissa bytes (&31-&35) and the sign.\n"
-    },
-    {
-      "addr": 41909,
-      "name": "fwa_unpack_var",
-      "title": "Unpack a floating-point variable into FWA",
-      "description": "Unpack the packed five-byte floating-point value addressed by\n(&4B/&4C) into the floating-point accumulator (FWA).\n"
-    },
-    {
-      "addr": 48532,
-      "name": "stack_integer",
-      "title": "Push the integer accumulator onto the BASIC stack",
-      "description": "Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and\ncopy the integer accumulator (zp_iwa) onto it. Errors if the stack\nwould collide with the heap.\n"
-    },
-    {
-      "addr": 48465,
-      "name": "stack_real",
-      "title": "Push the floating-point accumulator onto the BASIC stack",
-      "description": "Reserve five bytes on the BASIC stack and copy the packed\nfloating-point accumulator onto it.\n"
-    },
-    {
-      "addr": 48562,
-      "name": "stack_string",
-      "title": "Push the current string onto the BASIC stack",
-      "description": "Copy the string from the string buffer (length zp_strbuf_len,\n&36; text at &0600) onto the BASIC stack, length last.\n"
-    },
-    {
-      "addr": 48618,
-      "name": "unstack_integer",
-      "title": "Pop an integer from the BASIC stack",
-      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n",
+      "addr": 39721,
+      "name": "eval_or_eor",
+      "title": "Evaluator level 7: OR, EOR",
+      "description": "Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.",
       "fall_through": true
     },
     {
-      "addr": 44435,
-      "name": "iwa_negate",
-      "title": "Negate the integer accumulator",
-      "description": "IWA = -IWA (two's-complement negate the 32-bit integer).",
-      "on_entry": {
-        "zp_iwa (&2A)": "32-bit integer"
-      },
-      "on_exit": {
-        "zp_iwa": "negated",
-        "X": "preserved (A, Y, P destroyed)"
-      }
+      "addr": 39794,
+      "name": "eval_and",
+      "title": "Evaluator level 6: AND",
+      "description": "Bitwise AND (&80) on integers.",
+      "fall_through": true
     },
     {
-      "addr": 44401,
-      "name": "iwa_abs",
-      "title": "Make the integer accumulator positive",
-      "description": "IWA = ABS(IWA).",
-      "on_entry": {
-        "zp_iwa (&2A)": "32-bit integer"
-      },
-      "on_exit": {
-        "zp_iwa": "made positive",
-        "X": "preserved"
-      },
+      "addr": 39836,
+      "name": "eval_relational",
+      "title": "Evaluator level 5: < <= = >= > <>",
+      "description": "The relational operators, yielding TRUE (-1) or FALSE (0).",
+      "fall_through": true
+    },
+    {
+      "addr": 40002,
+      "name": "eval_add_sub",
+      "title": "Evaluator level 4: + -",
+      "description": "Addition and subtraction (numeric, or string concatenation).",
+      "fall_through": true
+    },
+    {
+      "addr": 40401,
+      "name": "eval_mul_div",
+      "title": "Evaluator level 3: * / DIV MOD",
+      "description": "Multiplication, division and the integer DIV and MOD operators.",
       "fall_through": true
     },
     {
@@ -1124,6 +1319,18 @@
       "fall_through": true
     },
     {
+      "addr": 40449,
+      "name": "iwa_mod",
+      "title": "Integer remainder",
+      "description": "IWA = IWA MOD the integer operand. Raises \"Division by\nzero\" if the divisor is zero.",
+      "on_entry": {
+        "zp_iwa (&2A)": "the dividend"
+      },
+      "on_exit": {
+        "zp_iwa": "the remainder"
+      }
+    },
+    {
       "addr": 40458,
       "name": "iwa_div",
       "title": "Integer divide",
@@ -1137,311 +1344,10 @@
       "fall_through": true
     },
     {
-      "addr": 40449,
-      "name": "iwa_mod",
-      "title": "Integer remainder",
-      "description": "IWA = IWA MOD the integer operand. Raises \"Division by\nzero\" if the divisor is zero.",
-      "on_entry": {
-        "zp_iwa (&2A)": "the dividend"
-      },
-      "on_exit": {
-        "zp_iwa": "the remainder"
-      }
-    },
-    {
-      "addr": 39597,
-      "name": "iwa_test_var",
-      "title": "Compare an integer variable with the accumulator",
-      "description": "Compare the integer operand against IWA and set flags."
-    },
-    {
-      "addr": 44778,
-      "name": "iwa_from_ya",
-      "title": "Set the integer accumulator to a small integer",
-      "description": "IWA = 256*Y + A.",
-      "on_entry": {
-        "A": "low byte",
-        "Y": "high byte"
-      },
-      "on_exit": {
-        "zp_iwa": "256*Y + A (sign-extended)"
-      }
-    },
-    {
-      "addr": 45878,
-      "name": "iwa_load_var",
-      "title": "Load an integer variable into the accumulator",
-      "description": "Copy the 4-byte integer addressed by zp_iwa into IWA.",
-      "on_entry": {
-        "zp_iwa (&2A/&2B)": "a pointer to the 4-byte integer variable"
-      },
-      "on_exit": {
-        "zp_iwa": "the loaded integer",
-        "X": "preserved"
-      }
-    },
-    {
-      "addr": 46278,
-      "name": "iwa_store_var",
-      "title": "Store the accumulator into an integer variable",
-      "description": "Copy IWA into the 4-byte integer variable addressed by &37.",
-      "on_entry": {
-        "(zp_general) (&37/&38)": "a pointer to the integer variable",
-        "&39": "non-zero"
-      },
-      "on_exit": {
-        "X": "preserved"
-      }
-    },
-    {
-      "addr": 44886,
-      "name": "iwa_load_zp",
-      "title": "Load a zero-page integer variable into the accumulator",
-      "description": "Copy a 4-byte integer from a zero-page location into IWA."
-    },
-    {
-      "addr": 48708,
-      "name": "iwa_store_zp",
-      "title": "Store the accumulator into a zero-page integer variable",
-      "description": "Copy IWA into a 4-byte zero-page integer variable."
-    },
-    {
-      "addr": 42630,
-      "name": "fwa_clear",
-      "title": "FWA = 0",
-      "description": "Set the floating-point accumulator to zero."
-    },
-    {
-      "addr": 42649,
-      "name": "fwa_set_one",
-      "title": "FWA = 1",
-      "description": "Set the floating-point accumulator to 1."
-    },
-    {
-      "addr": 44414,
-      "name": "fwa_negate",
-      "title": "FWA = -FWA",
-      "description": "Negate the floating-point accumulator.",
-      "fall_through": true
-    },
-    {
-      "addr": 41731,
-      "name": "fwa_normalise",
-      "title": "Normalise FWA",
-      "description": "Normalise the floating-point accumulator.",
-      "fall_through": true
-    },
-    {
-      "addr": 42588,
-      "name": "fwa_round",
-      "title": "Round FWA",
-      "description": "Round the floating-point accumulator.",
-      "fall_through": true
-    },
-    {
-      "addr": 42661,
-      "name": "fwa_reciprocal",
-      "title": "FWA = 1 / FWA",
-      "description": "Reciprocal of the FP accumulator (normalised, rounded).",
-      "fall_through": true
-    },
-    {
-      "addr": 42204,
-      "name": "fwa_copy_from_fwb",
-      "title": "FWA = FWB",
-      "description": "Copy FWB into FWA."
-    },
-    {
-      "addr": 42198,
-      "name": "fwa_swap_var",
-      "title": "Swap FWA and a fp variable",
-      "description": "Exchange the FP accumulator with the fp variable operand.",
-      "fall_through": true
-    },
-    {
-      "addr": 42495,
-      "name": "fwa_compare_var",
-      "title": "Compare FWA with a fp variable",
-      "description": "Test the fp variable operand against FWA."
-    },
-    {
-      "addr": 42240,
-      "name": "fwa_add_var",
-      "title": "FWA = FWA + fp var",
-      "description": "Add the fp variable operand to FWA (normalised, rounded).",
-      "fall_through": true
-    },
-    {
-      "addr": 42245,
-      "name": "fwa_add_fwb",
-      "title": "FWA = FWA + FWB",
-      "description": "Add FWB to FWA (normalised, rounded)."
-    },
-    {
-      "addr": 42251,
-      "name": "fwa_add_fwb_raw",
-      "title": "FWA = FWA + FWB (unrounded)",
-      "description": "Add FWB to FWA, normalised but not rounded.",
-      "fall_through": true
-    },
-    {
-      "addr": 42237,
-      "name": "fwa_rsub_var",
-      "title": "FWA = fp var - FWA",
-      "description": "Reverse subtract: operand minus FWA (normalised, rounded).",
-      "fall_through": true
-    },
-    {
-      "addr": 42192,
-      "name": "fwa_sub_var",
-      "title": "FWA = FWA - fp var",
-      "description": "Subtract the fp variable operand from FWA (reverse subtract, then negate)."
-    },
-    {
-      "addr": 42118,
-      "name": "fp_split_int_frac",
-      "title": "Split FWA into integer part (&4A) and fraction (FWA)",
-      "description": "Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers."
-    },
-    {
-      "addr": 43794,
-      "name": "fwa_int_power",
-      "title": "FWA = FWA ^ n (n in A)",
-      "description": "Raise FWA to an integer power by repeated multiplication; a negative exponent reciprocates first. Used by EXP to form e^(integer part)."
-    },
-    {
-      "addr": 42582,
-      "name": "fwa_mul_var",
-      "title": "FWA = FWA * fp var",
-      "description": "Multiply FWA by the fp variable operand (normalised, rounded).",
-      "fall_through": true
-    },
-    {
-      "addr": 42502,
-      "name": "fwa_mul_var_raw",
-      "title": "FWA = FWA * fp var (raw)",
-      "description": "Multiply FWA by the operand, unnormalised and unrounded."
-    },
-    {
-      "addr": 41460,
-      "name": "fwa_mul10",
-      "title": "FWA = FWA * 10",
-      "description": "Multiply FWA by ten, unnormalised and unrounded."
-    },
-    {
-      "addr": 42669,
-      "name": "fwa_rdiv_var",
-      "title": "FWA = fp var / FWA",
-      "description": "Reverse divide: operand divided by FWA (normalised, rounded)."
-    },
-    {
-      "addr": 41549,
-      "name": "fwa_div10",
-      "title": "FWA = FWA / 10",
-      "description": "Divide FWA by ten, unnormalised and unrounded.",
-      "fall_through": true
-    },
-    {
-      "addr": 41869,
-      "name": "fwa_pack_var",
-      "title": "Pack FWA into a fp variable",
-      "description": "Pack FWA into the five-byte fp variable at (&4B/&4C)."
-    },
-    {
-      "addr": 41861,
-      "name": "fwa_pack_temp1",
-      "title": "Pack FWA into TEMP1",
-      "description": "Pack FWA into the floating-point temporary at &046C.",
-      "fall_through": true
-    },
-    {
-      "addr": 41853,
-      "name": "fwa_pack_temp2",
-      "title": "Pack FWA into TEMP2",
-      "description": "Pack FWA into the floating-point temporary at &0471.",
-      "fall_through": true
-    },
-    {
-      "addr": 41857,
-      "name": "fwa_pack_temp3",
-      "title": "Pack FWA into TEMP3",
-      "description": "Pack FWA into the floating-point temporary at &0476.",
-      "fall_through": true
-    },
-    {
-      "addr": 41906,
-      "name": "fwa_unpack_temp1",
-      "title": "Unpack TEMP1 into FWA",
-      "description": "Unpack the floating-point temporary at &046C into FWA.",
-      "fall_through": true
-    },
-    {
-      "addr": 42067,
-      "name": "fwb_clear",
-      "title": "FWB = 0",
-      "description": "Set the second floating-point accumulator to zero."
-    },
-    {
-      "addr": 41502,
-      "name": "fwb_copy_from_fwa",
-      "title": "FWB = FWA",
-      "description": "Copy FWA into FWB.",
-      "fall_through": true
-    },
-    {
-      "addr": 41806,
-      "name": "fwb_unpack_var",
-      "title": "Unpack a fp variable into FWB",
-      "description": "Unpack the fp variable at (&4B/&4C) into FWB."
-    },
-    {
-      "addr": 43159,
-      "name": "fp_eval_cont_frac",
-      "title": "Evaluate a continued-fraction approximation",
-      "description": "X,Y point at a coefficient table: a count byte followed by that many five-byte fp coefficients. The argument is held in TEMP1; the routine folds the table from the top, alternating FWA = arg / FWA and FWA = FWA + next coefficient, to evaluate the continued fraction used by the trig kernels."
-    },
-    {
-      "addr": 43303,
-      "name": "fwa_complement_half_pi",
-      "title": "FWA = pi/2 - FWA",
-      "description": "Subtract FWA from pi/2 using the two-part constant at &AA59/&AA5E for extra precision, then negate. Used for ACS (pi/2 - ASN) and the large-argument arctan identity atn(x) = pi/2 - atn(1/x)."
-    },
-    {
-      "addr": 43592,
-      "name": "point_half_pi_hi",
-      "title": "Point the fp pointer at the high part of pi/2 (&AA59)",
-      "fall_through": true
-    },
-    {
-      "addr": 43596,
-      "name": "point_half_pi_lo",
-      "title": "Point the fp pointer at the low part of pi/2 (&AA5E)"
-    },
-    {
-      "addr": 43605,
-      "name": "point_const_half_pi",
-      "title": "Point the fp pointer at the pi/2 constant (&AA63)",
-      "fall_through": true
-    },
-    {
-      "addr": 43475,
-      "name": "sin_cos_reduce",
-      "title": "Range-reduce the SIN/COS argument",
-      "description": "Divide the argument by pi/2 to find the quadrant (stored in &4A) and Cody-Waite reduce to the principal range using the two-part pi/2 constant, leaving the reduced angle in FWA for the series."
-    },
-    {
-      "addr": 44084,
-      "name": "ascii_to_number",
-      "title": "Convert an ASCII number to a value",
-      "description": "Convert the ASCII number in the string work area to a value:\nan integer in IWA or a real in FWA. Underlies VAL and numeric\ntokenising. A binary zero is appended to the SWA.\n",
-      "on_entry": {
-        "zp_strbuf_len (&36)": "length of the ASCII number in the SWA",
-        "string work area (&0600)": "the ASCII number"
-      },
-      "on_exit": {
-        "zp_iwa / zp_fwa": "the result (integer or real)",
-        "A, zp_var_type (&27)": "type: &40 = integer, &FF = real"
-      }
+      "addr": 40480,
+      "name": "eval_power",
+      "title": "Expression Level 2 - the ^ operator",
+      "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
     },
     {
       "addr": 40671,
@@ -1457,543 +1363,6 @@
         "string work area (&0600)": "the ASCII result",
         "zp_strbuf_len (&36)": "length of the result"
       }
-    },
-    {
-      "addr": 41956,
-      "name": "fwa_to_int",
-      "title": "Convert the FP accumulator to an integer",
-      "description": "Convert FWA to a 4-byte integer in IWA (variant 1)."
-    },
-    {
-      "addr": 41982,
-      "name": "fwa_to_int2",
-      "title": "Convert the FP accumulator to an integer (variant 2)",
-      "description": "Convert FWA to a 4-byte integer in IWA (variant 2)."
-    },
-    {
-      "addr": 41662,
-      "name": "int_to_fwa",
-      "title": "Convert the integer accumulator to floating point",
-      "description": "Convert the integer in IWA to a real in FWA."
-    },
-    {
-      "addr": 44935,
-      "name": "rnd_step",
-      "title": "Advance the random-number LFSR by 32 steps",
-      "description": "Advance the 33-bit linear-feedback shift register in\nzp_rnd_seed by exactly 32 single-bit steps (one RND call). The\nregister uses the primitive trinomial x^33 + x^20 + 1, i.e. taps\n(33, 20, 0): each step feeds (bit 19 XOR bit 32) into bit 0 and\nshifts the whole register left by one.\n\nPer step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches\nbit 0, EOR with byte 4 to bring in bit 32, rotate to put the feedback\nbit into carry, then ROL the five state bytes so carry enters bit 0.\n"
-    },
-    {
-      "addr": 44881,
-      "name": "rnd_integer",
-      "title": "RND: a full-range random integer",
-      "description": "Bare RND. Advance the generator (rnd_step) then read the\n32-bit state (&0D-&10) into IWA as a signed integer, returning the\ninteger type (&40). The result spans the full signed 32-bit range.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 44905,
-      "name": "rnd_fraction",
-      "title": "RND(1): a random real in [0, 1)",
-      "description": "Advance the generator (rnd_step) then fall into rnd_repeat to\nbuild the fraction. The value is the byte-reversed 32-bit state\ndivided by 2^32: a real in [0, 1).\n",
-      "fall_through": true
-    },
-    {
-      "addr": 44908,
-      "name": "rnd_repeat",
-      "title": "RND(0): repeat the last RND(1) without advancing",
-      "description": "Build the floating-point fraction from the CURRENT generator\nstate WITHOUT stepping it (so RND(0) repeats the last RND(1)). The\nmantissa bytes m1..m4 are loaded most-significant-first from the\nlittle-endian state &0D,&0E,&0F,&10, which byte-reverses the 32-bit\nvalue; with exponent &80 and after normalisation the result is\nstate-reversed / 2^32, a real in [0, 1).\n"
-    },
-    {
-      "addr": 44836,
-      "name": "rnd_range",
-      "title": "RND(X), X>=2: a random integer 1 to X",
-      "description": "Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X\n(stack_real), take a fraction (rnd_fraction), pop X back into the\noperand (unstack_real), multiply (fwa_mul_var_raw), convert to an\ninteger (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.\n"
-    },
-    {
-      "addr": 44863,
-      "name": "rnd_seed",
-      "title": "RND(-X): seed the generator and return X",
-      "description": "Store the integer argument into the 32-bit state (&0D-&10) and\nset &11 to &40. Only bit 0 of &11 is part of the LFSR, so the\noverflow bit becomes 0. Returns the argument as an integer.\n"
-    },
-    {
-      "addr": 37410,
-      "name": "iwa_inc",
-      "title": "Increment the integer accumulator",
-      "description": "IWA = IWA + 1, carrying through all four bytes.",
-      "fall_through": true
-    },
-    {
-      "addr": 48510,
-      "name": "unstack_real",
-      "title": "Pop a real off the BASIC stack",
-      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n"
-    },
-    {
-      "addr": 41636,
-      "name": "fwa_round_carry",
-      "title": "Add to the rounding byte and ripple the carry up",
-      "description": "Add A to the FWA rounding byte, then propagate any carry up\nthrough the mantissa (m4 -> m1). A carry out of the top renormalises\nthe exponent (and may overflow). Used to round the mantissa up.\n"
-    },
-    {
-      "addr": 48686,
-      "name": "reserve_stack",
-      "title": "Set the stack pointer and check for room",
-      "description": "Set the BASIC value-stack pointer to a new top (low byte in A,\nborrow already taken into the high byte) and check it has not run\ndown into the top of variable storage (zp_vartop). Raises \"No room\"\non collision; otherwise returns with the stack lowered.\n",
-      "on_entry": {
-        "A": "proposed new stack-pointer low byte",
-        "carry": "clear if the subtraction borrowed"
-      }
-    },
-    {
-      "addr": 37979,
-      "name": "find_proc_fn",
-      "title": "Find a PROC or FN definition by name",
-      "description": "Search the PROC (token &F2) or FN linked list for a definition\nwhose name starts at (zp_general)+1. Shares the chain walk with\nfind_variable; returns a pointer to the body, or \"not found\".\n",
-      "fall_through": true
-    },
-    {
-      "addr": 37993,
-      "name": "find_variable",
-      "title": "Find a variable by name",
-      "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 39721,
-      "name": "eval_or_eor",
-      "title": "Evaluator level 7: OR, EOR",
-      "description": "Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.",
-      "fall_through": true
-    },
-    {
-      "addr": 39794,
-      "name": "eval_and",
-      "title": "Evaluator level 6: AND",
-      "description": "Bitwise AND (&80) on integers.",
-      "fall_through": true
-    },
-    {
-      "addr": 39836,
-      "name": "eval_relational",
-      "title": "Evaluator level 5: < <= = >= > <>",
-      "description": "The relational operators, yielding TRUE (-1) or FALSE (0).",
-      "fall_through": true
-    },
-    {
-      "addr": 40002,
-      "name": "eval_add_sub",
-      "title": "Evaluator level 4: + -",
-      "description": "Addition and subtraction (numeric, or string concatenation).",
-      "fall_through": true
-    },
-    {
-      "addr": 40401,
-      "name": "eval_mul_div",
-      "title": "Evaluator level 3: * / DIV MOD",
-      "description": "Multiplication, division and the integer DIV and MOD operators.",
-      "fall_through": true
-    },
-    {
-      "addr": 47514,
-      "name": "find_line_target",
-      "title": "Resolve a line-number operand to a program line",
-      "description": "Read a line-number argument (an embedded tokenised line number\nor an evaluated integer expression) and locate that line in the\nprogram via find_program_line. Used by GOTO, GOSUB and RESTORE.\nRaises \"No such line\" if absent.\n"
-    },
-    {
-      "addr": 39280,
-      "name": "find_program_line",
-      "title": "Search the program for a line number",
-      "description": "Walk the program text looking for the given line number,\nreturning a pointer to the line (carry set if found).\n"
-    },
-    {
-      "addr": 38274,
-      "name": "parse_lvalue",
-      "title": "Parse an assignment target variable",
-      "description": "Parse the variable reference being assigned to and return a\npointer to its storage plus its type, creating the variable if it\ndoes not yet exist. Shared by LET and FOR.\n"
-    },
-    {
-      "addr": 38931,
-      "name": "eval_after_eq",
-      "title": "Expect \"=\" then evaluate the right-hand side",
-      "description": "Skip spaces, require an \"=\" sign, then evaluate the expression\nthat follows, leaving the value in the accumulator with its type in\nzp_var_type.\n"
-    },
-    {
-      "addr": 35870,
-      "name": "assign_string",
-      "title": "Store a string value into a variable",
-      "description": "Assign the string in the string buffer to the string variable\nwhose descriptor address is on the stack. Reuses the existing\nallocation if the new string fits, otherwise grabs fresh space from\nthe heap.\n"
-    },
-    {
-      "addr": 46260,
-      "name": "assign_number",
-      "title": "Store a numeric value into a variable",
-      "description": "Assign the current numeric value (integer or real) to the\nvariable whose address is on the stack, in the variable's own type.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 36464,
-      "name": "print_special_item",
-      "title": "Handle the PRINT ' TAB and SPC items",
-      "description": "Recognise and act on the special PRINT items: apostrophe\n(force a newline), TAB(x[,y]) and SPC(n). Returns carry clear when\nit consumed one, so the caller skips ordinary expression printing.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 45463,
-      "name": "call_proc_fn",
-      "title": "Enter a PROC or FN",
-      "description": "The procedure/function call mechanism. First copies the live\n6502 hardware stack onto the BASIC value stack and resets the\nhardware stack -- this is how BBC BASIC lets PROCs and FNs nest far\nbeyond the 256-byte 6502 stack. Then pushes the call context (the\nPROC/FN token and the caller's text pointers), locates the named\ndefinition, binds any parameters, and transfers control to the body.\nENDPROC / =expr unwind this frame.\n\nNote what is NOT saved: only the 6502 hardware stack and the BASIC\nvalue stack are preserved across the call. The FOR, REPEAT and GOSUB\nstacks (page 5, counters &24/&25/&26) are global and untouched. So a\nloop opened inside the body and left via an early ENDPROC (or GOTO)\nleaks its frame -- the counter is never decremented. See stmt_endproc\n(&9356) and the page-5 control-flow stacks at &0500.\n",
-      "on_entry": {
-        "A": "PROC token &F2 or FN token &A4"
-      }
-    },
-    {
-      "addr": 45837,
-      "name": "stack_local",
-      "title": "Save a variable for LOCAL",
-      "description": "Push a variable's current value and identity onto the BASIC\nstack so ENDPROC can restore it, implementing LOCAL.\n",
-      "fall_through": true
-    },
-    {
-      "addr": 41538,
-      "name": "fwb_div2",
-      "title": "Divide FWB by two",
-      "description": "Shift the FWB mantissa right one bit (FWB = FWB / 2)."
-    },
-    {
-      "addr": 48528,
-      "name": "stack_value",
-      "title": "Push the current value by type",
-      "description": "Push the current value onto the BASIC stack in the form\nmatching its type: a string (stack_string), a real (stack_real) or,\nfalling through, an integer (stack_integer).",
-      "fall_through": true
-    },
-    {
-      "addr": 48639,
-      "name": "drop_stack_integer",
-      "title": "Drop an integer off the stack",
-      "description": "Advance the BASIC stack pointer by four bytes.",
-      "fall_through": true
-    },
-    {
-      "addr": 48653,
-      "name": "unstack_int_to_zp",
-      "title": "Pop a stacked integer into a zero-page variable",
-      "description": "Copy the four-byte integer on top of the BASIC stack into\nthe zero-page bytes at (X .. X+3), then drop it from the stack. The\n&BE0B entry uses X = &37 (the general work area)."
-    },
-    {
-      "addr": 48738,
-      "name": "load_program",
-      "title": "Load a program from the filing system",
-      "description": "Used by LOAD and CHAIN to read a BASIC program into memory.",
-      "fall_through": true
-    },
-    {
-      "addr": 48751,
-      "name": "check_program",
-      "title": "Validate the program and set TOP",
-      "description": "Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length), set TOP past the end; \"Bad program\" otherwise."
-    },
-    {
-      "addr": 48416,
-      "name": "clear_vars_heap_stack",
-      "title": "Clear all variables, the heap and the stack",
-      "description": "Reset variable storage, the heap and the BASIC stack (NEW/CLEAR)."
-    },
-    {
-      "addr": 48130,
-      "name": "read_input_line",
-      "title": "Print the prompt and read a line",
-      "description": "Print the character in A as a prompt, then read a line into the input buffer."
-    },
-    {
-      "addr": 38345,
-      "name": "parse_var_ref",
-      "title": "Parse a variable reference / lvalue",
-      "description": "Scan a variable name, array element, or indirection operator at the text pointer. Sets the value address in &2A/&2B and a type byte in &2C: 0=? byte indirection, 4=integer (also ! word indirection), 5=real, &80=$ indirection, &81=string lvalue. Returns A nonzero when resolved; A=0 carry clear for a valid name not yet defined (caller creates it), A=0 carry set when no name is present."
-    },
-    {
-      "addr": 37626,
-      "name": "eval_real",
-      "title": "Evaluate an expression as a real",
-      "description": "Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.",
-      "fall_through": true
-    },
-    {
-      "addr": 37629,
-      "name": "ensure_real",
-      "title": "Coerce the result to a real",
-      "description": "Type mismatch for a string, leave a real, or convert an integer to FWA."
-    },
-    {
-      "addr": 38879,
-      "name": "check_line_number",
-      "title": "Test for an embedded line number",
-      "description": "If the text pointer is at a line-number token, decode it into IWA and return carry set; otherwise carry clear.",
-      "fall_through": true
-    },
-    {
-      "addr": 38891,
-      "name": "decode_line_number",
-      "title": "Decode a 3-byte line number into IWA",
-      "description": "Reverse the GOTO three-byte encoding, reconstructing the 16-bit line number in IWA.",
-      "fall_through": true
-    },
-    {
-      "addr": 38977,
-      "name": "expect_eq",
-      "title": "Require \"=\" at the parser pointer",
-      "description": "Skip spaces and raise Mistake unless the next character is \"=\"."
-    },
-    {
-      "addr": 35061,
-      "name": "encode_line_number",
-      "title": "Encode a 16-bit line number into 3 bytes",
-      "description": "Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide with tokens."
-    },
-    {
-      "addr": 35110,
-      "name": "is_alphanumeric",
-      "title": "Test A for a name character",
-      "description": "Return carry set if A is 0-9, A-Z, a-z or _, the characters allowed in a variable or FN/PROC name."
-    },
-    {
-      "addr": 34234,
-      "name": "asm_parse_mnemonic",
-      "title": "Parse and compact an assembler mnemonic",
-      "description": "Skip to the mnemonic, handling end-of-statement and labels, then pack its three letters (5 bits each) into &3D/&3E for the opcode-table lookup."
-    },
-    {
-      "addr": 39582,
-      "name": "eval_and_compare",
-      "title": "Evaluate the next operand and compare",
-      "description": "Stack the current value, evaluate the next arithmetic operand and compare the two (integer, real or string), returning the ordering flags for the relational operators.",
-      "fall_through": true
-    },
-    {
-      "addr": 39519,
-      "name": "fp_compare",
-      "title": "Compare FWA with a fp variable",
-      "description": "Unpack the operand into FWB and compare it with FWA by sign, exponent and mantissa bytes, returning the ordering for the relational operators.",
-      "fall_through": true
-    },
-    {
-      "addr": 34967,
-      "name": "parse_decimal_u16",
-      "title": "Parse a 16-bit decimal number",
-      "description": "Accumulate decimal digits from (&37) into &3D/&3E as value*10 + digit, with overflow detection. The first digit is in A on entry; stops at the first non-digit. Used to read line numbers.",
-      "fall_through": true
-    },
-    {
-      "addr": 44760,
-      "name": "int_result_a",
-      "title": "Return A as an integer result",
-      "description": "Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The common tail for functions returning a small integer.",
-      "fall_through": true
-    },
-    {
-      "addr": 46350,
-      "name": "print_token",
-      "title": "De-tokenise and print a character or token",
-      "description": "Print A directly if below &80, otherwise look the token up in the keyword table at &8071 and print its expanded text."
-    },
-    {
-      "addr": 46405,
-      "name": "print_hex_byte",
-      "title": "Print A as two hex digits",
-      "fall_through": true
-    },
-    {
-      "addr": 46416,
-      "name": "print_hex_digit",
-      "title": "Print the low nibble of A as a hex digit",
-      "fall_through": true
-    },
-    {
-      "addr": 46455,
-      "name": "print_listo_indent",
-      "title": "Print LISTO indentation",
-      "description": "If the LISTO flag bit in A is set, print 2*X spaces of indentation for the listing."
-    },
-    {
-      "addr": 46474,
-      "name": "stmt_listo",
-      "title": "LISTO - set the listing options",
-      "description": "Evaluate the option value and store it in the LISTO flag (&1F)."
-    },
-    {
-      "addr": 46424,
-      "name": "print_char",
-      "title": "Print a character with column tracking",
-      "description": "Output A through the print formatter, handling CR specially and maintaining the print column COUNT.",
-      "fall_through": true
-    },
-    {
-      "addr": 46437,
-      "name": "print_space",
-      "title": "Print a space through the print formatter"
-    },
-    {
-      "addr": 40480,
-      "name": "eval_power",
-      "title": "Expression Level 2 - the ^ operator",
-      "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
-    },
-    {
-      "addr": 48173,
-      "name": "delete_program_line",
-      "title": "Delete a program line and close the gap",
-      "description": "Find the line, then shift every later line down over it (source &37, destination &12) and update the top of program. No-ops if the line is absent."
-    },
-    {
-      "addr": 47952,
-      "name": "next_data_item",
-      "title": "Advance the DATA pointer to the next item",
-      "description": "Move the DATA pointer past the current item to the next comma- or DATA-separated value, searching forward through the program for the next DATA statement at end of line; raises Out of DATA."
-    },
-    {
-      "addr": 36033,
-      "name": "unstack_value_to_var",
-      "title": "Restore a stacked value into a variable",
-      "description": "Pop the value at the BASIC stack (&04) into the variable at &37, dispatched by the type/size byte &39: a numeric value of that many bytes, a $addr string (CR terminated), or a string variable (copied into its heap allocation). Used by the FN/PROC LOCAL and parameter machinery.",
-      "fall_through": true
-    },
-    {
-      "addr": 39358,
-      "name": "iwa_divide",
-      "title": "Unsigned/signed 32-bit integer division",
-      "description": "Evaluate the right operand, take absolute values, and do a 32-step shift-subtract division. The dividend/quotient builds in &39-&3C and the remainder in &3D-&40; the divisor is IWA. The quotient sign is the XOR of the operand signs in &37, the remainder sign the dividend sign in &38. Raises Division by zero. Shared by DIV and MOD.",
-      "fall_through": true
-    },
-    {
-      "addr": 39173,
-      "name": "trace_line",
-      "title": "Print [line] when TRACE is active",
-      "description": "If the current line number is within the TRACE ceiling, print the line number in brackets."
-    },
-    {
-      "addr": 39199,
-      "name": "print_line_number",
-      "title": "Print a 16-bit line number in decimal",
-      "description": "Convert the value in IWA to decimal by repeated subtraction of the powers of ten at &996B/&99B9, suppressing leading zeros, optionally right-justified in a field."
-    },
-    {
-      "addr": 34866,
-      "name": "asm_opcode_add4",
-      "title": "Step the opcode to the next addressing-mode column (+4)",
-      "description": "Add 4 to the base opcode in &29 to select the next 6502 addressing-mode encoding."
-    },
-    {
-      "addr": 34863,
-      "name": "asm_opcode_add8",
-      "title": "Advance the opcode by two addressing-mode columns (+8)",
-      "fall_through": true
-    },
-    {
-      "addr": 34860,
-      "name": "asm_opcode_add16",
-      "title": "Advance the opcode by four addressing-mode columns (+16)",
-      "fall_through": true
-    },
-    {
-      "addr": 38842,
-      "name": "check_subscript_bound",
-      "title": "Check a subscript against a dimension extent",
-      "description": "Raise Subscript if the subscript in IWA is negative or not less than the dimension size stored at (&37),Y; advances Y past the two-byte extent.",
-      "fall_through": true
-    },
-    {
-      "addr": 38623,
-      "name": "index_array",
-      "title": "Locate an array and evaluate one subscript",
-      "description": "Find the named array and step the value pointer to the addressed element; raises Array on a missing array."
-    },
-    {
-      "addr": 38140,
-      "name": "create_variable",
-      "title": "Create a new variable",
-      "description": "Allocate a new entry for a variable that does not yet exist."
-    },
-    {
-      "addr": 49077,
-      "name": "eval_channel",
-      "title": "Evaluate a #channel argument",
-      "description": "Evaluate the #handle of a file operation, leaving it in IWA."
-    },
-    {
-      "addr": 44973,
-      "name": "read_key_timed",
-      "title": "Read a key within a time limit (INKEY)",
-      "description": "Wait up to the given time for a key; the INKEY/INKEY$ primitive."
-    },
-    {
-      "addr": 36638,
-      "name": "usr_call",
-      "title": "Call user machine code (USR/CALL)",
-      "description": "Load A, X, Y and the flags from the resident integer\nvariables, then call the routine at the address in IWA. On return the\nregisters are captured back."
-    },
-    {
-      "addr": 37023,
-      "name": "advance_to_next_line",
-      "title": "Advance the general pointer to the next program line",
-      "description": "Add the line length (at offset 3) to zp_general; carry clear on return."
-    },
-    {
-      "addr": 38193,
-      "name": "clear_value_bytes",
-      "title": "Zero a run of value bytes",
-      "description": "Write X zero bytes after the variable name (initialise its value)."
-    },
-    {
-      "addr": 38233,
-      "name": "validate_var_name",
-      "title": "Validate / measure a variable name",
-      "description": "Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.",
-      "fall_through": true
-    },
-    {
-      "addr": 48587,
-      "name": "unstack_string",
-      "title": "Pop a string off the BASIC stack",
-      "description": "Copy the string on top of the stack into the string buffer and drop it."
-    },
-    {
-      "addr": 37430,
-      "name": "imul16",
-      "title": "16-bit integer multiply (IWA * FWB)",
-      "description": "Multiply IWA by the value in the FWB mantissa by shift-and-add; \"Too big\" on overflow."
-    },
-    {
-      "addr": 44461,
-      "name": "read_string_literal",
-      "title": "Read a string literal",
-      "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
-    },
-    {
-      "addr": 41367,
-      "name": "mant_mul10",
-      "title": "Multiply the FWA mantissa by 10",
-      "description": "Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions."
-    },
-    {
-      "addr": 42985,
-      "name": "point_fp_temp4",
-      "title": "Point zp_fp_ptr at FP TEMP4 (&047B)",
-      "fall_through": true
-    },
-    {
-      "addr": 42989,
-      "name": "point_fp_temp2",
-      "title": "Point zp_fp_ptr at FP TEMP2 (&0471)",
-      "fall_through": true
-    },
-    {
-      "addr": 42993,
-      "name": "point_fp_temp3",
-      "title": "Point zp_fp_ptr at FP TEMP3 (&0476)",
-      "fall_through": true
-    },
-    {
-      "addr": 42997,
-      "name": "point_fp_temp1",
-      "title": "Point zp_fp_ptr at FP TEMP1 (&046C)"
     },
     {
       "addr": 41024,
@@ -2019,22 +1388,486 @@
       "title": "Append a character to the output string"
     },
     {
-      "addr": 45330,
-      "name": "find_def",
-      "title": "Find a PROC/FN definition by name",
-      "description": "Search the program for the DEF line whose name matches, then cache its body address in the variable entry."
-    },
-    {
       "addr": 41083,
       "name": "parse_number",
       "title": "Parse an unsigned number at PtrB",
       "description": "Parse a decimal/hex number (integer or real) into the accumulator."
     },
     {
-      "addr": 46021,
-      "name": "find_error_line",
-      "title": "Find the line an error occurred in",
-      "description": "Walk the program to locate the line containing the current text pointer and set ERL."
+      "addr": 41280,
+      "name": "parse_exponent",
+      "title": "Parse the \"E\" exponent (optional sign, 1-2 digits)"
+    },
+    {
+      "addr": 41336,
+      "name": "fwa_acc_fwb",
+      "title": "Add FWB into FWA",
+      "description": "FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10)."
+    },
+    {
+      "addr": 41367,
+      "name": "mant_mul10",
+      "title": "Multiply the FWA mantissa by 10",
+      "description": "Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions."
+    },
+    {
+      "addr": 41434,
+      "name": "fwa_sign",
+      "title": "Get the sign of the FP accumulator",
+      "description": "Determine the sign of the floating-point accumulator:\nzero, positive or negative (Z set when FWA is zero). Tests the\nmantissa bytes (&31-&35) and the sign.\n"
+    },
+    {
+      "addr": 41460,
+      "name": "fwa_mul10",
+      "title": "FWA = FWA * 10",
+      "description": "Multiply FWA by ten, unnormalised and unrounded."
+    },
+    {
+      "addr": 41502,
+      "name": "fwb_copy_from_fwa",
+      "title": "FWB = FWA",
+      "description": "Copy FWA into FWB.",
+      "fall_through": true
+    },
+    {
+      "addr": 41538,
+      "name": "fwb_div2",
+      "title": "Divide FWB by two",
+      "description": "Shift the FWB mantissa right one bit (FWB = FWB / 2)."
+    },
+    {
+      "addr": 41549,
+      "name": "fwa_div10",
+      "title": "FWA = FWA / 10",
+      "description": "Divide FWA by ten, unnormalised and unrounded.",
+      "fall_through": true
+    },
+    {
+      "addr": 41636,
+      "name": "fwa_round_carry",
+      "title": "Add to the rounding byte and ripple the carry up",
+      "description": "Add A to the FWA rounding byte, then propagate any carry up\nthrough the mantissa (m4 -> m1). A carry out of the top renormalises\nthe exponent (and may overflow). Used to round the mantissa up.\n"
+    },
+    {
+      "addr": 41662,
+      "name": "int_to_fwa",
+      "title": "Convert the integer accumulator to floating point",
+      "description": "Convert the integer in IWA to a real in FWA."
+    },
+    {
+      "addr": 41709,
+      "name": "small_int_to_fwa",
+      "title": "Convert a small (8-bit) integer in A to FWA",
+      "fall_through": true
+    },
+    {
+      "addr": 41731,
+      "name": "fwa_normalise",
+      "title": "Normalise FWA",
+      "description": "Normalise the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 41806,
+      "name": "fwb_unpack_var",
+      "title": "Unpack a fp variable into FWB",
+      "description": "Unpack the fp variable at (&4B/&4C) into FWB."
+    },
+    {
+      "addr": 41853,
+      "name": "fwa_pack_temp2",
+      "title": "Pack FWA into TEMP2",
+      "description": "Pack FWA into the floating-point temporary at &0471.",
+      "fall_through": true
+    },
+    {
+      "addr": 41857,
+      "name": "fwa_pack_temp3",
+      "title": "Pack FWA into TEMP3",
+      "description": "Pack FWA into the floating-point temporary at &0476.",
+      "fall_through": true
+    },
+    {
+      "addr": 41861,
+      "name": "fwa_pack_temp1",
+      "title": "Pack FWA into TEMP1",
+      "description": "Pack FWA into the floating-point temporary at &046C.",
+      "fall_through": true
+    },
+    {
+      "addr": 41869,
+      "name": "fwa_pack_var",
+      "title": "Pack FWA into a fp variable",
+      "description": "Pack FWA into the five-byte fp variable at (&4B/&4C)."
+    },
+    {
+      "addr": 41906,
+      "name": "fwa_unpack_temp1",
+      "title": "Unpack TEMP1 into FWA",
+      "description": "Unpack the floating-point temporary at &046C into FWA.",
+      "fall_through": true
+    },
+    {
+      "addr": 41909,
+      "name": "fwa_unpack_var",
+      "title": "Unpack a floating-point variable into FWA",
+      "description": "Unpack the packed five-byte floating-point value addressed by\n(&4B/&4C) into the floating-point accumulator (FWA).\n"
+    },
+    {
+      "addr": 41956,
+      "name": "fwa_to_int",
+      "title": "Convert the FP accumulator to an integer",
+      "description": "Convert FWA to a 4-byte integer in IWA (variant 1)."
+    },
+    {
+      "addr": 41982,
+      "name": "fwa_to_int2",
+      "title": "Convert the FP accumulator to an integer (variant 2)",
+      "description": "Convert FWA to a 4-byte integer in IWA (variant 2)."
+    },
+    {
+      "addr": 42067,
+      "name": "fwb_clear",
+      "title": "FWB = 0",
+      "description": "Set the second floating-point accumulator to zero."
+    },
+    {
+      "addr": 42118,
+      "name": "fp_split_int_frac",
+      "title": "Split FWA into integer part (&4A) and fraction (FWA)",
+      "description": "Round FWA to the nearest integer, leaving that integer in &4A and the signed remainder (in [-0.5, 0.5]) in FWA. Used by EXP to separate the integer and fractional powers."
+    },
+    {
+      "addr": 42192,
+      "name": "fwa_sub_var",
+      "title": "FWA = FWA - fp var",
+      "description": "Subtract the fp variable operand from FWA (reverse subtract, then negate)."
+    },
+    {
+      "addr": 42198,
+      "name": "fwa_swap_var",
+      "title": "Swap FWA and a fp variable",
+      "description": "Exchange the FP accumulator with the fp variable operand.",
+      "fall_through": true
+    },
+    {
+      "addr": 42204,
+      "name": "fwa_copy_from_fwb",
+      "title": "FWA = FWB",
+      "description": "Copy FWB into FWA."
+    },
+    {
+      "addr": 42237,
+      "name": "fwa_rsub_var",
+      "title": "FWA = fp var - FWA",
+      "description": "Reverse subtract: operand minus FWA (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42240,
+      "name": "fwa_add_var",
+      "title": "FWA = FWA + fp var",
+      "description": "Add the fp variable operand to FWA (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42245,
+      "name": "fwa_add_fwb",
+      "title": "FWA = FWA + FWB",
+      "description": "Add FWB to FWA (normalised, rounded)."
+    },
+    {
+      "addr": 42251,
+      "name": "fwa_add_fwb_raw",
+      "title": "FWA = FWA + FWB (unrounded)",
+      "description": "Add FWB to FWA, normalised but not rounded.",
+      "fall_through": true
+    },
+    {
+      "addr": 42495,
+      "name": "fwa_compare_var",
+      "title": "Compare FWA with a fp variable",
+      "description": "Test the fp variable operand against FWA."
+    },
+    {
+      "addr": 42502,
+      "name": "fwa_mul_var_raw",
+      "title": "FWA = FWA * fp var (raw)",
+      "description": "Multiply FWA by the operand, unnormalised and unrounded."
+    },
+    {
+      "addr": 42582,
+      "name": "fwa_mul_var",
+      "title": "FWA = FWA * fp var",
+      "description": "Multiply FWA by the fp variable operand (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42588,
+      "name": "fwa_round",
+      "title": "Round FWA",
+      "description": "Round the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 42630,
+      "name": "fwa_clear",
+      "title": "FWA = 0",
+      "description": "Set the floating-point accumulator to zero."
+    },
+    {
+      "addr": 42649,
+      "name": "fwa_set_one",
+      "title": "FWA = 1",
+      "description": "Set the floating-point accumulator to 1."
+    },
+    {
+      "addr": 42661,
+      "name": "fwa_reciprocal",
+      "title": "FWA = 1 / FWA",
+      "description": "Reciprocal of the FP accumulator (normalised, rounded).",
+      "fall_through": true
+    },
+    {
+      "addr": 42669,
+      "name": "fwa_rdiv_var",
+      "title": "FWA = fp var / FWA",
+      "description": "Reverse divide: operand divided by FWA (normalised, rounded)."
+    },
+    {
+      "addr": 42727,
+      "name": "fp_divide",
+      "title": "FWA = FWA / divisor (restoring long division)",
+      "description": "Floating-point divide: 32 quotient bits plus guard bits by repeated compare/subtract/shift; the quotient builds in &43-&46."
+    },
+    {
+      "addr": 42985,
+      "name": "point_fp_temp4",
+      "title": "Point zp_fp_ptr at FP TEMP4 (&047B)",
+      "fall_through": true
+    },
+    {
+      "addr": 42989,
+      "name": "point_fp_temp2",
+      "title": "Point zp_fp_ptr at FP TEMP2 (&0471)",
+      "fall_through": true
+    },
+    {
+      "addr": 42993,
+      "name": "point_fp_temp3",
+      "title": "Point zp_fp_ptr at FP TEMP3 (&0476)",
+      "fall_through": true
+    },
+    {
+      "addr": 42997,
+      "name": "point_fp_temp1",
+      "title": "Point zp_fp_ptr at FP TEMP1 (&046C)"
+    },
+    {
+      "addr": 43159,
+      "name": "fp_eval_cont_frac",
+      "title": "Evaluate a continued-fraction approximation",
+      "description": "X,Y point at a coefficient table: a count byte followed by that many five-byte fp coefficients. The argument is held in TEMP1; the routine folds the table from the top, alternating FWA = arg / FWA and FWA = FWA + next coefficient, to evaluate the continued fraction used by the trig kernels."
+    },
+    {
+      "addr": 43303,
+      "name": "fwa_complement_half_pi",
+      "title": "FWA = pi/2 - FWA",
+      "description": "Subtract FWA from pi/2 using the two-part constant at &AA59/&AA5E for extra precision, then negate. Used for ACS (pi/2 - ASN) and the large-argument arctan identity atn(x) = pi/2 - atn(1/x)."
+    },
+    {
+      "addr": 43475,
+      "name": "sin_cos_reduce",
+      "title": "Range-reduce the SIN/COS argument",
+      "description": "Divide the argument by pi/2 to find the quadrant (stored in &4A) and Cody-Waite reduce to the principal range using the two-part pi/2 constant, leaving the reduced angle in FWA for the series."
+    },
+    {
+      "addr": 43592,
+      "name": "point_half_pi_hi",
+      "title": "Point the fp pointer at the high part of pi/2 (&AA59)",
+      "fall_through": true
+    },
+    {
+      "addr": 43596,
+      "name": "point_half_pi_lo",
+      "title": "Point the fp pointer at the low part of pi/2 (&AA5E)"
+    },
+    {
+      "addr": 43605,
+      "name": "point_const_half_pi",
+      "title": "Point the fp pointer at the pi/2 constant (&AA63)",
+      "fall_through": true
+    },
+    {
+      "addr": 43794,
+      "name": "fwa_int_power",
+      "title": "FWA = FWA ^ n (n in A)",
+      "description": "Raise FWA to an integer power by repeated multiplication; a negative exponent reciprocates first. Used by EXP to form e^(integer part)."
+    },
+    {
+      "addr": 44084,
+      "name": "ascii_to_number",
+      "title": "Convert an ASCII number to a value",
+      "description": "Convert the ASCII number in the string work area to a value:\nan integer in IWA or a real in FWA. Underlies VAL and numeric\ntokenising. A binary zero is appended to the SWA.\n",
+      "on_entry": {
+        "zp_strbuf_len (&36)": "length of the ASCII number in the SWA",
+        "string work area (&0600)": "the ASCII number"
+      },
+      "on_exit": {
+        "zp_iwa / zp_fwa": "the result (integer or real)",
+        "A, zp_var_type (&27)": "type: &40 = integer, &FF = real"
+      }
+    },
+    {
+      "addr": 44401,
+      "name": "iwa_abs",
+      "title": "Make the integer accumulator positive",
+      "description": "IWA = ABS(IWA).",
+      "on_entry": {
+        "zp_iwa (&2A)": "32-bit integer"
+      },
+      "on_exit": {
+        "zp_iwa": "made positive",
+        "X": "preserved"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 44414,
+      "name": "fwa_negate",
+      "title": "FWA = -FWA",
+      "description": "Negate the floating-point accumulator.",
+      "fall_through": true
+    },
+    {
+      "addr": 44435,
+      "name": "iwa_negate",
+      "title": "Negate the integer accumulator",
+      "description": "IWA = -IWA (two's-complement negate the 32-bit integer).",
+      "on_entry": {
+        "zp_iwa (&2A)": "32-bit integer"
+      },
+      "on_exit": {
+        "zp_iwa": "negated",
+        "X": "preserved (A, Y, P destroyed)"
+      }
+    },
+    {
+      "addr": 44461,
+      "name": "read_string_literal",
+      "title": "Read a string literal",
+      "description": "Read a quoted (\"...\", with \"\" for a literal quote) or unquoted string into the string buffer."
+    },
+    {
+      "addr": 44524,
+      "name": "eval_factor",
+      "title": "Evaluate a factor (evaluator level 1)",
+      "description": "Evaluate the highest-precedence level of an expression at PtrB:\nunary minus, unary plus and NOT; parenthesised sub-expressions;\nthe ?, !, $ and | indirection operators; string literals; and the\nbuilt-in functions.\n"
+    },
+    {
+      "addr": 44760,
+      "name": "int_result_a",
+      "title": "Return A as an integer result",
+      "description": "Set the result to the unsigned byte in A (high bytes zero) and mark it integer. The common tail for functions returning a small integer.",
+      "fall_through": true
+    },
+    {
+      "addr": 44778,
+      "name": "iwa_from_ya",
+      "title": "Set the integer accumulator to a small integer",
+      "description": "IWA = 256*Y + A.",
+      "on_entry": {
+        "A": "low byte",
+        "Y": "high byte"
+      },
+      "on_exit": {
+        "zp_iwa": "256*Y + A (sign-extended)"
+      }
+    },
+    {
+      "addr": 44836,
+      "name": "rnd_range",
+      "title": "RND(X), X>=2: a random integer 1 to X",
+      "description": "Compute 1 + INT(RND(1) * X). int_to_fwa(X), push X\n(stack_real), take a fraction (rnd_fraction), pop X back into the\noperand (unstack_real), multiply (fwa_mul_var_raw), convert to an\ninteger (fwa_to_int) and add one (iwa_inc), giving a value in 1..X.\n"
+    },
+    {
+      "addr": 44863,
+      "name": "rnd_seed",
+      "title": "RND(-X): seed the generator and return X",
+      "description": "Store the integer argument into the 32-bit state (&0D-&10) and\nset &11 to &40. Only bit 0 of &11 is part of the LFSR, so the\noverflow bit becomes 0. Returns the argument as an integer.\n"
+    },
+    {
+      "addr": 44881,
+      "name": "rnd_integer",
+      "title": "RND: a full-range random integer",
+      "description": "Bare RND. Advance the generator (rnd_step) then read the\n32-bit state (&0D-&10) into IWA as a signed integer, returning the\ninteger type (&40). The result spans the full signed 32-bit range.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 44886,
+      "name": "iwa_load_zp",
+      "title": "Load a zero-page integer variable into the accumulator",
+      "description": "Copy a 4-byte integer from a zero-page location into IWA."
+    },
+    {
+      "addr": 44905,
+      "name": "rnd_fraction",
+      "title": "RND(1): a random real in [0, 1)",
+      "description": "Advance the generator (rnd_step) then fall into rnd_repeat to\nbuild the fraction. The value is the byte-reversed 32-bit state\ndivided by 2^32: a real in [0, 1).\n",
+      "fall_through": true
+    },
+    {
+      "addr": 44908,
+      "name": "rnd_repeat",
+      "title": "RND(0): repeat the last RND(1) without advancing",
+      "description": "Build the floating-point fraction from the CURRENT generator\nstate WITHOUT stepping it (so RND(0) repeats the last RND(1)). The\nmantissa bytes m1..m4 are loaded most-significant-first from the\nlittle-endian state &0D,&0E,&0F,&10, which byte-reverses the 32-bit\nvalue; with exponent &80 and after normalisation the result is\nstate-reversed / 2^32, a real in [0, 1).\n"
+    },
+    {
+      "addr": 44935,
+      "name": "rnd_step",
+      "title": "Advance the random-number LFSR by 32 steps",
+      "description": "Advance the 33-bit linear-feedback shift register in\nzp_rnd_seed by exactly 32 single-bit steps (one RND call). The\nregister uses the primitive trinomial x^33 + x^20 + 1, i.e. taps\n(33, 20, 0): each step feeds (bit 19 XOR bit 32) into bit 0 and\nshifts the whole register left by one.\n\nPer step: take byte 2 (bits 16-23), shift right 3 so bit 19 reaches\nbit 0, EOR with byte 4 to bring in bit 32, rotate to put the feedback\nbit into carry, then ROL the five state bytes so carry enters bit 0.\n"
+    },
+    {
+      "addr": 44973,
+      "name": "read_key_timed",
+      "title": "Read a key within a time limit (INKEY)",
+      "description": "Wait up to the given time for a key; the INKEY/INKEY$ primitive."
+    },
+    {
+      "addr": 45330,
+      "name": "find_def",
+      "title": "Find a PROC/FN definition by name",
+      "description": "Search the program for the DEF line whose name matches, then cache its body address in the variable entry."
+    },
+    {
+      "addr": 45463,
+      "name": "call_proc_fn",
+      "title": "Enter a PROC or FN",
+      "description": "The procedure/function call mechanism. First copies the live\n6502 hardware stack onto the BASIC value stack and resets the\nhardware stack -- this is how BBC BASIC lets PROCs and FNs nest far\nbeyond the 256-byte 6502 stack. Then pushes the call context (the\nPROC/FN token and the caller's text pointers), locates the named\ndefinition, binds any parameters, and transfers control to the body.\nENDPROC / =expr unwind this frame.\n\nNote what is NOT saved: only the 6502 hardware stack and the BASIC\nvalue stack are preserved across the call. The FOR, REPEAT and GOSUB\nstacks (page 5, counters &24/&25/&26) are global and untouched. So a\nloop opened inside the body and left via an early ENDPROC (or GOTO)\nleaks its frame -- the counter is never decremented. See stmt_endproc\n(&9356) and the page-5 control-flow stacks at &0500.\n",
+      "on_entry": {
+        "A": "PROC token &F2 or FN token &A4"
+      }
+    },
+    {
+      "addr": 45837,
+      "name": "stack_local",
+      "title": "Save a variable for LOCAL",
+      "description": "Push a variable's current value and identity onto the BASIC\nstack so ENDPROC can restore it, implementing LOCAL.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 45878,
+      "name": "iwa_load_var",
+      "title": "Load an integer variable into the accumulator",
+      "description": "Copy the 4-byte integer addressed by zp_iwa into IWA.",
+      "on_entry": {
+        "zp_iwa (&2A/&2B)": "a pointer to the 4-byte integer variable"
+      },
+      "on_exit": {
+        "zp_iwa": "the loaded integer",
+        "X": "preserved"
+      }
     },
     {
       "addr": 45903,
@@ -2052,27 +1885,194 @@
       "title": "Load a string variable into the buffer"
     },
     {
-      "addr": 41709,
-      "name": "small_int_to_fwa",
-      "title": "Convert a small (8-bit) integer in A to FWA",
+      "addr": 46021,
+      "name": "find_error_line",
+      "title": "Find the line an error occurred in",
+      "description": "Walk the program to locate the line containing the current text pointer and set ERL."
+    },
+    {
+      "addr": 46260,
+      "name": "assign_number",
+      "title": "Store a numeric value into a variable",
+      "description": "Assign the current numeric value (integer or real) to the\nvariable whose address is on the stack, in the variable's own type.\n",
       "fall_through": true
     },
     {
-      "addr": 41336,
-      "name": "fwa_acc_fwb",
-      "title": "Add FWB into FWA",
-      "description": "FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10)."
+      "addr": 46278,
+      "name": "iwa_store_var",
+      "title": "Store the accumulator into an integer variable",
+      "description": "Copy IWA into the 4-byte integer variable addressed by &37.",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "a pointer to the integer variable",
+        "&39": "non-zero"
+      },
+      "on_exit": {
+        "X": "preserved"
+      }
     },
     {
-      "addr": 42727,
-      "name": "fp_divide",
-      "title": "FWA = FWA / divisor (restoring long division)",
-      "description": "Floating-point divide: 32 quotient bits plus guard bits by repeated compare/subtract/shift; the quotient builds in &43-&46."
+      "addr": 46350,
+      "name": "print_token",
+      "title": "De-tokenise and print a character or token",
+      "description": "Print A directly if below &80, otherwise look the token up in the keyword table at &8071 and print its expanded text."
     },
     {
-      "addr": 41280,
-      "name": "parse_exponent",
-      "title": "Parse the \"E\" exponent (optional sign, 1-2 digits)"
+      "addr": 46405,
+      "name": "print_hex_byte",
+      "title": "Print A as two hex digits",
+      "fall_through": true
+    },
+    {
+      "addr": 46416,
+      "name": "print_hex_digit",
+      "title": "Print the low nibble of A as a hex digit",
+      "fall_through": true
+    },
+    {
+      "addr": 46424,
+      "name": "print_char",
+      "title": "Print a character with column tracking",
+      "description": "Output A through the print formatter, handling CR specially and maintaining the print column COUNT.",
+      "fall_through": true
+    },
+    {
+      "addr": 46437,
+      "name": "print_space",
+      "title": "Print a space through the print formatter"
+    },
+    {
+      "addr": 46455,
+      "name": "print_listo_indent",
+      "title": "Print LISTO indentation",
+      "description": "If the LISTO flag bit in A is set, print 2*X spaces of indentation for the listing."
+    },
+    {
+      "addr": 46474,
+      "name": "stmt_listo",
+      "title": "LISTO - set the listing options",
+      "description": "Evaluate the option value and store it in the LISTO flag (&1F)."
+    },
+    {
+      "addr": 47514,
+      "name": "find_line_target",
+      "title": "Resolve a line-number operand to a program line",
+      "description": "Read a line-number argument (an embedded tokenised line number\nor an evaluated integer expression) and locate that line in the\nprogram via find_program_line. Used by GOTO, GOSUB and RESTORE.\nRaises \"No such line\" if absent.\n"
+    },
+    {
+      "addr": 47952,
+      "name": "next_data_item",
+      "title": "Advance the DATA pointer to the next item",
+      "description": "Move the DATA pointer past the current item to the next comma- or DATA-separated value, searching forward through the program for the next DATA statement at end of line; raises Out of DATA."
+    },
+    {
+      "addr": 48130,
+      "name": "read_input_line",
+      "title": "Print the prompt and read a line",
+      "description": "Print the character in A as a prompt, then read a line into the input buffer."
+    },
+    {
+      "addr": 48173,
+      "name": "delete_program_line",
+      "title": "Delete a program line and close the gap",
+      "description": "Find the line, then shift every later line down over it (source &37, destination &12) and update the top of program. No-ops if the line is absent."
+    },
+    {
+      "addr": 48416,
+      "name": "clear_vars_heap_stack",
+      "title": "Clear all variables, the heap and the stack",
+      "description": "Reset variable storage, the heap and the BASIC stack (NEW/CLEAR)."
+    },
+    {
+      "addr": 48465,
+      "name": "stack_real",
+      "title": "Push the floating-point accumulator onto the BASIC stack",
+      "description": "Reserve five bytes on the BASIC stack and copy the packed\nfloating-point accumulator onto it.\n"
+    },
+    {
+      "addr": 48510,
+      "name": "unstack_real",
+      "title": "Pop a real off the BASIC stack",
+      "description": "Point zp_fp_ptr at the 5-byte real on top of the BASIC stack\nand drop it (advance the stack pointer by 5), so an FP routine can\nuse the popped value as its (zp_fp_ptr) operand.\n"
+    },
+    {
+      "addr": 48528,
+      "name": "stack_value",
+      "title": "Push the current value by type",
+      "description": "Push the current value onto the BASIC stack in the form\nmatching its type: a string (stack_string), a real (stack_real) or,\nfalling through, an integer (stack_integer).",
+      "fall_through": true
+    },
+    {
+      "addr": 48532,
+      "name": "stack_integer",
+      "title": "Push the integer accumulator onto the BASIC stack",
+      "description": "Reserve four bytes on the BASIC stack (zp_stack_ptr, &04) and\ncopy the integer accumulator (zp_iwa) onto it. Errors if the stack\nwould collide with the heap.\n"
+    },
+    {
+      "addr": 48562,
+      "name": "stack_string",
+      "title": "Push the current string onto the BASIC stack",
+      "description": "Copy the string from the string buffer (length zp_strbuf_len,\n&36; text at &0600) onto the BASIC stack, length last.\n"
+    },
+    {
+      "addr": 48587,
+      "name": "unstack_string",
+      "title": "Pop a string off the BASIC stack",
+      "description": "Copy the string on top of the stack into the string buffer and drop it."
+    },
+    {
+      "addr": 48618,
+      "name": "unstack_integer",
+      "title": "Pop an integer from the BASIC stack",
+      "description": "Copy the four-byte integer on top of the BASIC stack into the\ninteger accumulator (zp_iwa) and drop it.\n",
+      "fall_through": true
+    },
+    {
+      "addr": 48639,
+      "name": "drop_stack_integer",
+      "title": "Drop an integer off the stack",
+      "description": "Advance the BASIC stack pointer by four bytes.",
+      "fall_through": true
+    },
+    {
+      "addr": 48653,
+      "name": "unstack_int_to_zp",
+      "title": "Pop a stacked integer into a zero-page variable",
+      "description": "Copy the four-byte integer on top of the BASIC stack into\nthe zero-page bytes at (X .. X+3), then drop it from the stack. The\n&BE0B entry uses X = &37 (the general work area)."
+    },
+    {
+      "addr": 48686,
+      "name": "reserve_stack",
+      "title": "Set the stack pointer and check for room",
+      "description": "Set the BASIC value-stack pointer to a new top (low byte in A,\nborrow already taken into the high byte) and check it has not run\ndown into the top of variable storage (zp_vartop). Raises \"No room\"\non collision; otherwise returns with the stack lowered.\n",
+      "on_entry": {
+        "A": "proposed new stack-pointer low byte",
+        "carry": "clear if the subtraction borrowed"
+      }
+    },
+    {
+      "addr": 48708,
+      "name": "iwa_store_zp",
+      "title": "Store the accumulator into a zero-page integer variable",
+      "description": "Copy IWA into a 4-byte zero-page integer variable."
+    },
+    {
+      "addr": 48738,
+      "name": "load_program",
+      "title": "Load a program from the filing system",
+      "description": "Used by LOAD and CHAIN to read a BASIC program into memory.",
+      "fall_through": true
+    },
+    {
+      "addr": 48751,
+      "name": "check_program",
+      "title": "Validate the program and set TOP",
+      "description": "Walk the lines from PAGE checking each is well-formed (CR-terminated, non-zero length), set TOP past the end; \"Bad program\" otherwise."
+    },
+    {
+      "addr": 49077,
+      "name": "eval_channel",
+      "title": "Evaluate a #channel argument",
+      "description": "Evaluate the #handle of a file operation, leaving it in IWA."
     }
   ],
   "banners": [
