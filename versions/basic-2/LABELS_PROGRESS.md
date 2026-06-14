@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — label-naming pass
 
-**STATUS: in progress — 554 auto-generated labels remaining (of 864).
+**STATUS: in progress — 397 auto-generated labels remaining (of 864).
 Goal: give every dasmos auto-named label (`cXXXX`, `loop_cXXXX`,
 `sub_cXXXX`, `lXXXX`) a semantically meaningful, globally unique name.**
 
@@ -94,13 +94,19 @@ label), so a clash is caught immediately.
 | 2026-06-14 | imul/TRACE/PROC/LOCAL/MODE/PLOT/VDU | 25 | 614 | a6b1165 |
 | 2026-06-14 | find/create var + lvalue | 29 | 585 | 1365841 |
 | 2026-06-14 | parse_var_ref + index_array | 31 | 554 | 23e4916 |
+| 2026-06-14 | line-number/stmt-end/IF | 27 | 527 | a937781 |
+| 2026-06-14 | decimal print/find/divide/compare | 32 | 495 | 8768244 |
+| 2026-06-14 | bitwise/relational/add-sub eval | 23 | 472 | ac2e15d |
+| 2026-06-14 | integer +/-/*/DIV operators | 29 | 443 | 0ff433b |
+| 2026-06-14 | eval_power + hex convert | 14 | 429 | 8e99038 |
+| 2026-06-14 | number_to_ascii | 32 | 397 | 425c2cb |
 
 ## Resume here
 
 Done through the inline assembler (&8063-&8831). The append +
 `driver sort -i` recipe is confirmed (byte-identical each batch).
 
-Next routine in address order: **decode_line_number (&9805)**, then
+Next routine in address order: **output_byte_decimal (&A055)** / parse_number (&A099), then
 eval_after_eq, expect_eq, check_end_of_statement (&9859, 12), stmt_if,
 print_line_number, find_program_line, iwa_divide, the iwa_* arithmetic,
 the eval_* operators, number_to_ascii (&9EE8, 32), parse_number, the FP
