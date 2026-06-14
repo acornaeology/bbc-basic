@@ -9342,7 +9342,7 @@
         133,
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "store &FF (not assembling)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_opt_flag",
@@ -9389,7 +9389,7 @@
         133,
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_opt_flag",
@@ -9515,7 +9515,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift the list bit into carry",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -9551,7 +9551,7 @@
         105,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "COUNT + 4,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#4"
@@ -9562,7 +9562,7 @@
         133,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "source column (&3F)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -9589,7 +9589,7 @@
         69,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "as two hex digits",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_hex_byte",
@@ -9616,7 +9616,7 @@
         98,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "as two hex digits",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cb562",
@@ -9653,7 +9653,7 @@
         16,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "not EQUS: use the byte count,",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c8536",
@@ -9666,7 +9666,7 @@
         164,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "EQUS: use the string length",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_strbuf_len",
@@ -9770,7 +9770,7 @@
         166,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "indent to the hex column",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_m2",
@@ -9805,7 +9805,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer space",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -9957,7 +9957,7 @@
         88,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "two more spaces,",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -9971,7 +9971,7 @@
         88,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -10212,7 +10212,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up (loop pre-increments)",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -10240,7 +10240,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read a character",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -10333,7 +10333,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -10383,7 +10383,7 @@
         201,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &07 (immediate buffer)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#7"
@@ -12073,7 +12073,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "OPT bit 0 (errors enabled)?",
+      "comment_inline": "errors enabled (bit 1)?",
       "type": "code",
       "mnemonic": "lsr"
     },

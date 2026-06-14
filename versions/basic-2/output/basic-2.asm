@@ -986,12 +986,12 @@ l848a = sub_c847b+15
 ; &84fd referenced 1 time by &850d
 .assembler_exit
     lda #&ff                                                          ; 84fd: a9 ff       ..       ; Leaving the assembler: OPT = BASIC mode
-    sta zp_opt_flag                                                   ; 84ff: 85 28       .(       ; ...
+    sta zp_opt_flag                                                   ; 84ff: 85 28       .(       ; store &FF (not assembling)
     jmp c8ba3                                                         ; 8501: 4c a3 8b    L..      ; resume execution
 ; &8504 referenced 1 time by &8b44
 .c8504
     lda #3                                                            ; 8504: a9 03       ..       ; Entering: default OPT 3
-    sta zp_opt_flag                                                   ; 8506: 85 28       .(       ; ...
+    sta zp_opt_flag                                                   ; 8506: 85 28       .(       ; store it
 ; &8508 referenced 1 time by &85a2
 .c8508
     jsr skip_spaces                                                   ; 8508: 20 97 8a     ..      ; Skip spaces
@@ -1002,19 +1002,19 @@ l848a = sub_c847b+15
     jsr asm_parse_mnemonic                                            ; 8514: 20 ba 85     ..      ; Assemble one instruction
     dec zp_text_ptr_off                                               ; 8517: c6 0a       ..       ; back up
     lda zp_opt_flag                                                   ; 8519: a5 28       .(       ; OPT listing bit set?
-    lsr a                                                             ; 851b: 4a          J        ; ...
+    lsr a                                                             ; 851b: 4a          J        ; shift the list bit into carry
     bcc c857e                                                         ; 851c: 90 60       .`       ; no: skip the listing
     lda zp_count                                                      ; 851e: a5 1e       ..       ; Column for the source text
-    adc #4                                                            ; 8520: 69 04       i.       ; ...
-    sta zp_fwb_m2                                                     ; 8522: 85 3f       .?       ; ...
+    adc #4                                                            ; 8520: 69 04       i.       ; COUNT + 4,
+    sta zp_fwb_m2                                                     ; 8522: 85 3f       .?       ; source column (&3F)
     lda zp_general_1                                                  ; 8524: a5 38       .8       ; Print P% high
-    jsr print_hex_byte                                                ; 8526: 20 45 b5     E.      ; ...
+    jsr print_hex_byte                                                ; 8526: 20 45 b5     E.      ; as two hex digits
     lda zp_general                                                    ; 8529: a5 37       .7       ; Print P% low
-    jsr sub_cb562                                                     ; 852b: 20 62 b5     b.      ; ...
+    jsr sub_cb562                                                     ; 852b: 20 62 b5     b.      ; as two hex digits
     ldx #&fc                                                          ; 852e: a2 fc       ..       ; Byte count
     ldy zp_fileblk                                                    ; 8530: a4 39       .9       ; String (EQUS) length?
-    bpl c8536                                                         ; 8532: 10 02       ..       ; ...
-    ldy zp_strbuf_len                                                 ; 8534: a4 36       .6       ; ...
+    bpl c8536                                                         ; 8532: 10 02       ..       ; not EQUS: use the byte count,
+    ldy zp_strbuf_len                                                 ; 8534: a4 36       .6       ; EQUS: use the string length
 ; &8536 referenced 1 time by &8532
 .c8536
     sty zp_general_1                                                  ; 8536: 84 38       .8       ; Bytes to list
@@ -1025,11 +1025,11 @@ l848a = sub_c847b+15
     inx                                                               ; 853c: e8          .        ; Count printed on this line
     bne c854c                                                         ; 853d: d0 0d       ..       ; still on the line
     jsr sub_cbc25                                                     ; 853f: 20 25 bc     %.      ; Newline and indent for a continuation
-    ldx zp_fwb_m2                                                     ; 8542: a6 3f       .?       ; ...
+    ldx zp_fwb_m2                                                     ; 8542: a6 3f       .?       ; indent to the hex column
 ; &8544 referenced 1 time by &8548
 .loop_c8544
     jsr print_space                                                   ; 8544: 20 65 b5     e.      ; Print a space
-    dex                                                               ; 8547: ca          .        ; ...
+    dex                                                               ; 8547: ca          .        ; one fewer space
     bne loop_c8544                                                    ; 8548: d0 fa       ..       ; loop
     ldx #&fd                                                          ; 854a: a2 fd       ..       ; reset the per-line count
 ; &854c referenced 1 time by &853d
@@ -1044,8 +1044,8 @@ l848a = sub_c847b+15
     inx                                                               ; 8556: e8          .        ; Pad to the source column
     bpl c8565                                                         ; 8557: 10 0c       ..       ; done
     jsr print_space                                                   ; 8559: 20 65 b5     e.      ; print a space
-    jsr print_char                                                    ; 855c: 20 58 b5     X.      ; ...
-    jsr print_char                                                    ; 855f: 20 58 b5     X.      ; ...
+    jsr print_char                                                    ; 855c: 20 58 b5     X.      ; two more spaces,
+    jsr print_char                                                    ; 855f: 20 58 b5     X.      ; (continued)
     jmp c8556                                                         ; 8562: 4c 56 85    LV.      ; loop
 ; &8565 referenced 1 time by &8557
 .c8565
@@ -1072,11 +1072,11 @@ l848a = sub_c847b+15
 ; &857e referenced 1 time by &851c
 .c857e
     ldy zp_text_ptr_off                                               ; 857e: a4 0a       ..       ; Advance to the next statement
-    dey                                                               ; 8580: 88          .        ; ...
+    dey                                                               ; 8580: 88          .        ; back up (loop pre-increments)
 ; &8581 referenced 1 time by &858a
 .loop_c8581
     iny                                                               ; 8581: c8          .        ; scan for the end
-    lda (zp_text_ptr),y                                               ; 8582: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 8582: b1 0b       ..       ; read a character
     cmp #&3a ; ':'                                                    ; 8584: c9 3a       .:       ; ':'?
     beq c858c                                                         ; 8586: f0 04       ..       ; yes
     cmp #&0d                                                          ; 8588: c9 0d       ..       ; end of line?
@@ -1085,11 +1085,11 @@ l848a = sub_c847b+15
 .c858c
     jsr c9859                                                         ; 858c: 20 59 98     Y.      ; Check Escape and advance
     dey                                                               ; 858f: 88          .        ; Re-read the terminator
-    lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..       ; read it
     cmp #&3a ; ':'                                                    ; 8592: c9 3a       .:       ; ':'?
     beq c85a2                                                         ; 8594: f0 0c       ..       ; yes: same line
     lda zp_text_ptr_1                                                 ; 8596: a5 0c       ..       ; at end of program memory?
-    cmp #7                                                            ; 8598: c9 07       ..       ; ...
+    cmp #7                                                            ; 8598: c9 07       ..       ; page &07 (immediate buffer)?
     bne c859f                                                         ; 859a: d0 03       ..       ; no: next line
     jmp immediate_loop                                                ; 859c: 4c f6 8a    L..      ; yes: immediate mode
 ; &859f referenced 1 time by &859a
@@ -1257,7 +1257,7 @@ l848a = sub_c847b+15
 ; &8691 referenced 2 times by &86b0, &86b5
 .c8691
     lda zp_opt_flag                                                   ; 8691: a5 28       .(       ; OPT setting  errors enabled?
-    lsr a                                                             ; 8693: 4a          J        ; OPT bit 0 (errors enabled)?
+    lsr a                                                             ; 8693: 4a          J        ; errors enabled (bit 1)?
     beq c86a5                                                         ; 8694: f0 0f       ..       ; no: ignore the range error
     brk                                                               ; 8696: 00          .        ; Out of range error
     equb &01                                                          ; 8697: 01          .     
