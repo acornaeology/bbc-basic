@@ -38,14 +38,31 @@
 **Expression evaluator**
 : The routine that parses and evaluates BASIC expressions, honouring operator precedence and handling integer, floating-point, and string operands. Results are returned on BASIC's internal stack or in the floating-point accumulator.
 
-**Floating-point accumulator** (FPA / FPB)
-: Zero-page working registers holding BASIC's 40-bit (5-byte) floating-point values during arithmetic. BASIC's real-number format is a sign-and-magnitude mantissa with a binary exponent. Two accumulators allow binary operations (add, multiply, …) between a working value and an operand.
+**Work accumulators** (FWA / FWB / IWA)
+: BASIC's main arithmetic registers in zero page. FWA (&2E-&35) and FWB (&3B-&42) hold 40-bit (5-byte) floating-point values; IWA (&2A-&2D) holds a 32-bit integer. Most operations work in FWA, with FWB supplying the second operand for binary operations (add, multiply, …).
+
+  The floating-point real-number format is a sign-and-magnitude mantissa with a binary exponent. In the accumulators it is held *unpacked* — sign, exponent and mantissa in separate bytes, plus extra overflow and rounding bytes for working precision — and *packed* back into five bytes when stored in a variable. The disassembly labels the fields `zp_fwa_*`, `zp_fwb_*` and `zp_iwa`.
+
+**FP temporaries** (TEMP1-TEMP4)
+: Four 5-byte *packed* floating-point scratch slots in low RAM (TEMP1 &046C, TEMP2 &0471, TEMP3 &0476, TEMP4 &047B). The maths routines stash intermediate values here — the base in `^`, the reduced angle in SIN/COS, a saved argument — while reusing FWA and FWB.
+
+**String work area** (SWA)
+: The buffer at &0600 where BASIC builds string results: the text of `STR$`, the digits produced converting a number to a string, a string popped off the stack for comparison, and so on. Its current length is held in `zp_strbuf_len` (&36).
 
 **Zero page**
-: The first 256 bytes of 6502 memory (&00-&FF), accessed by fast zero-page addressing modes. BASIC makes heavy use of zero page for the program/text pointers, the expression and GOSUB stacks, variable pointers, and the floating-point accumulators.
+: The first 256 bytes of 6502 memory (&00-&FF), accessed by fast zero-page addressing modes. BASIC makes heavy use of zero page for the program/text pointers, the expression and GOSUB stacks, variable pointers, and the work accumulators.
+
+**MSB / LSB**
+: Most-significant byte and least-significant byte of a multi-byte value. The 6502 stores addresses little-endian (LSB first), but several BASIC structures — the tokenised line-number reference and the packed floating-point mantissa — are held MSB-first.
+
+**CR / NUL**
+: Two control bytes used as terminators. CR (carriage return, &0D) ends a line of program text and a typed input line; NUL (&00) terminates an error message and a `$`-string (a string written directly to an address). A tokenised program line is CR-terminated.
 
 **LOMEM / HIMEM / PAGE / TOP**
 : BASIC's memory boundaries. PAGE is the start of the BASIC program; TOP is the address just past the program text; LOMEM is the start of variable storage (defaults to TOP); HIMEM is the top of memory available to BASIC (the stack grows down from here).
+
+**VARTOP**
+: The top of BASIC's variable storage (&02/&03) — the address just past the last allocated variable, where the next new variable is created. It starts at LOMEM and grows upward toward the BASIC stack; the two meeting raises "No room".
 
 **PROC / FN**
 : BASIC's named procedures (`PROC`) and functions (`FN`). Each can take parameters and declare LOCAL variables. Calls are tracked on BASIC's stack, which records return positions and saved local values.
@@ -59,5 +76,17 @@
 **OSWRCH / OSRDCH / OSBYTE / OSWORD**
 : Core MOS entry points BASIC uses constantly: OSWRCH (&FFEE) writes a character, OSRDCH (&FFE0) reads one, OSBYTE (&FFF4) and OSWORD (&FFF1) perform miscellaneous and word-sized OS functions selected by the accumulator.
 
+**OSCLI / OSFILE / OSFIND / OSARGS / OSBGET / OSBPUT**
+: The MOS command and filing-system calls. OSCLI (&FFF7) passes a `*` command line to the current filing system; OSFILE (&FFDD) loads or saves a whole file; OSFIND (&FFCE) opens or closes one; OSARGS (&FFDA) and OSBGET/OSBPUT (&FFD7/&FFD4) read or write an open file. OSHWM (read via OSBYTE &83) returns PAGE.
+
+**Vectors** (BRKV / WRCHV)
+: RAM indirection vectors the MOS routes calls through so a ROM can intercept them. BASIC installs its error handler in BRKV (&0202) on entry, and writes characters through WRCHV (&020E), the OSWRCH vector.
+
+**ESCFLG**
+: The MOS escape flag at &FF. Its top bit is set when Escape is pressed; BASIC polls it between statements and at the input prompt, acknowledges it via OSBYTE, and raises the "Escape" error.
+
 **Inline assembler**
 : BASIC's built-in 6502 assembler, invoked between `[` and `]`. It assembles mnemonics into memory at the address held in `P%`, allowing machine code to be written and assembled directly from a BASIC program.
+
+**Assembler directives** (OPT, EQUB/EQUW/EQUD/EQUS)
+: Pseudo-operations of the inline assembler. OPT sets the assembly options — bit 0 prints a listing, bit 1 enables error reporting, bit 2 assembles to the offset address `O%` instead of `P%`. EQUB/EQUW/EQUD/EQUS lay down a literal byte, word, double-word, or string in the assembled output.
