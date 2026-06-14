@@ -10847,17 +10847,17 @@ l848a = sub_c847b+15
 .stmt_input
     jsr skip_spaces                                                   ; ba44: 20 97 8a     ..      ; Next non-space character
     cmp #&23 ; '#'                                                    ; ba47: c9 23       .#       ; '#': INPUT# from a file
-    beq loop_cb9cf                                                    ; ba49: f0 84       ..       ; ...
+    beq loop_cb9cf                                                    ; ba49: f0 84       ..       ; go handle INPUT#
     cmp #&86                                                          ; ba4b: c9 86       ..       ; LINE token?
     beq cba52                                                         ; ba4d: f0 03       ..       ; yes: LINE mode (carry set)
     dec zp_text_ptr_off                                               ; ba4f: c6 0a       ..       ; no: step back, carry clear
-    clc                                                               ; ba51: 18          .        ; ...
+    clc                                                               ; ba51: 18          .        ; carry clear (not LINE)
 ; &ba52 referenced 1 time by &ba4d
 .cba52
     ror l004d                                                         ; ba52: 66 4d       fM       ; Record the LINE flag in bit 6
-    lsr l004d                                                         ; ba54: 46 4d       FM       ; ...
+    lsr l004d                                                         ; ba54: 46 4d       FM       ; shift it into bit 6
     lda #&ff                                                          ; ba56: a9 ff       ..       ; Prompt flag = -1
-    sta l004e                                                         ; ba58: 85 4e       .N       ; ...
+    sta l004e                                                         ; ba58: 85 4e       .N       ; store it (&4E)
 ; &ba5a referenced 4 times by &ba71, &ba75, &bad9, &bae3
 .cba5a
     jsr sub_c8e8a                                                     ; ba5a: 20 8a 8e     ..      ; Process a prompt item
@@ -10865,33 +10865,33 @@ l848a = sub_c847b+15
 ; &ba5f referenced 1 time by &ba62
 .loop_cba5f
     jsr sub_c8e8a                                                     ; ba5f: 20 8a 8e     ..      ; Process further prompt items
-    bcc loop_cba5f                                                    ; ba62: 90 fb       ..       ; ...
+    bcc loop_cba5f                                                    ; ba62: 90 fb       ..       ; more printed items: loop
     ldx #&ff                                                          ; ba64: a2 ff       ..       ; A printed item suppresses the ? prompt
-    stx l004e                                                         ; ba66: 86 4e       .N       ; ...
-    clc                                                               ; ba68: 18          .        ; ...
+    stx l004e                                                         ; ba66: 86 4e       .N       ; flag = -1 (printed),
+    clc                                                               ; ba68: 18          .        ; carry clear
 ; &ba69 referenced 1 time by &ba5d
 .cba69
     php                                                               ; ba69: 08          .        ; Preserve the item-seen flag
-    asl l004d                                                         ; ba6a: 06 4d       .M       ; ...
-    plp                                                               ; ba6c: 28          (        ; ...
-    ror l004d                                                         ; ba6d: 66 4d       fM       ; ...
+    asl l004d                                                         ; ba6a: 06 4d       .M       ; shift out the old bit,
+    plp                                                               ; ba6c: 28          (        ; recover the flag,
+    ror l004d                                                         ; ba6d: 66 4d       fM       ; rotate it into bit 7
     cmp #&2c ; ','                                                    ; ba6f: c9 2c       .,       ; ',' next item?
     beq cba5a                                                         ; ba71: f0 e7       ..       ; yes
     cmp #&3b ; ';'                                                    ; ba73: c9 3b       .;       ; ';' next item?
     beq cba5a                                                         ; ba75: f0 e3       ..       ; yes
     dec zp_text_ptr_off                                               ; ba77: c6 0a       ..       ; Back up to the variable
     lda l004d                                                         ; ba79: a5 4d       .M       ; Save the flags...
-    pha                                                               ; ba7b: 48          H        ; ...
-    lda l004e                                                         ; ba7c: a5 4e       .N       ; ...
-    pha                                                               ; ba7e: 48          H        ; ...
+    pha                                                               ; ba7b: 48          H        ; push &4D,
+    lda l004e                                                         ; ba7c: a5 4e       .N       ; &4E,
+    pha                                                               ; ba7e: 48          H        ; push it
     jsr parse_lvalue                                                  ; ba7f: 20 82 95     ..      ; Parse the target variable
     beq loop_cba3f                                                    ; ba82: f0 bb       ..       ; end of statement: done
     pla                                                               ; ba84: 68          h        ; Restore the flags
-    sta l004e                                                         ; ba85: 85 4e       .N       ; ...
-    pla                                                               ; ba87: 68          h        ; ...
-    sta l004d                                                         ; ba88: 85 4d       .M       ; ...
+    sta l004e                                                         ; ba85: 85 4e       .N       ; &4E,
+    pla                                                               ; ba87: 68          h        ; pull &4D,
+    sta l004d                                                         ; ba88: 85 4d       .M       ; store it
     lda zp_text_ptr2_off                                              ; ba8a: a5 1b       ..       ; Update the program pointer
-    sta zp_text_ptr_off                                               ; ba8c: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; ba8c: 85 0a       ..       ; from the PtrB offset
     php                                                               ; ba8e: 08          .        ; Save the LINE flag
     bit l004d                                                         ; ba8f: 24 4d       $M       ; Still reading the current input line?
     bvs cba99                                                         ; ba91: 70 06       p.       ; yes: no new prompt
@@ -10903,23 +10903,23 @@ l848a = sub_c847b+15
     bit l004d                                                         ; ba99: 24 4d       $M       ; LINE mode?
     bpl cbaa2                                                         ; ba9b: 10 05       ..       ; yes: no ? prompt
     lda #&3f ; '?'                                                    ; ba9d: a9 3f       .?       ; Print '?'
-    jsr print_char                                                    ; ba9f: 20 58 b5     X.      ; ...
+    jsr print_char                                                    ; ba9f: 20 58 b5     X.      ; do it
 ; &baa2 referenced 1 time by &ba9b
 .cbaa2
     jsr sub_cbbfc                                                     ; baa2: 20 fc bb     ..      ; Read an input line
     sty zp_strbuf_len                                                 ; baa5: 84 36       .6       ; Store its length
     asl l004d                                                         ; baa7: 06 4d       .M       ; Mark the input line as fresh
-    clc                                                               ; baa9: 18          .        ; ...
-    ror l004d                                                         ; baaa: 66 4d       fM       ; ...
+    clc                                                               ; baa9: 18          .        ; clear carry,
+    ror l004d                                                         ; baaa: 66 4d       fM       ; rotate into bit 7
     bit l004d                                                         ; baac: 24 4d       $M       ; LINE mode?
     bvs cbacd                                                         ; baae: 70 1d       p.       ; yes: take the whole line
 ; &bab0 referenced 1 time by &ba97
 .cbab0
     sta zp_text_ptr2_off                                              ; bab0: 85 1b       ..       ; Set the read offset
     lda #0                                                            ; bab2: a9 00       ..       ; Point at the input buffer (&0600)
-    sta zp_text_ptr2                                                  ; bab4: 85 19       ..       ; ...
-    lda #6                                                            ; bab6: a9 06       ..       ; ...
-    sta zp_text_ptr2_1                                                ; bab8: 85 1a       ..       ; ...
+    sta zp_text_ptr2                                                  ; bab4: 85 19       ..       ; PtrB low = 0,
+    lda #6                                                            ; bab6: a9 06       ..       ; page &06,
+    sta zp_text_ptr2_1                                                ; bab8: 85 1a       ..       ; PtrB high
     jsr read_string_literal                                           ; baba: 20 ad ad     ..      ; Read the field literal
 ; &babd referenced 1 time by &bac6
 .loop_cbabd
@@ -10932,7 +10932,7 @@ l848a = sub_c847b+15
 ; &baca referenced 1 time by &bac2
 .cbaca
     iny                                                               ; baca: c8          .        ; Note the next field offset
-    sty l004e                                                         ; bacb: 84 4e       .N       ; ...
+    sty l004e                                                         ; bacb: 84 4e       .N       ; store it (&4E)
 ; &bacd referenced 1 time by &baae
 .cbacd
     plp                                                               ; bacd: 28          (        ; Recover the LINE flag
@@ -10944,7 +10944,7 @@ l848a = sub_c847b+15
 ; &badc referenced 1 time by &bace
 .cbadc
     lda #0                                                            ; badc: a9 00       ..       ; LINE: string type
-    sta zp_var_type                                                   ; bade: 85 27       .'       ; ...
+    sta zp_var_type                                                   ; bade: 85 27       .'       ; type 0 (string)
     jsr sub_c8c21                                                     ; bae0: 20 21 8c     !.      ; assign the line as a string
     jmp cba5a                                                         ; bae3: 4c 5a ba    LZ.      ; next variable
 ; ***************************************************************************************

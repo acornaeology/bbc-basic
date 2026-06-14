@@ -100555,7 +100555,7 @@
         240,
         132
       ],
-      "comment_inline": "...",
+      "comment_inline": "go handle INPUT#",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_cb9cf",
@@ -100604,7 +100604,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear (not LINE)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -100636,7 +100636,7 @@
         70,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift it into bit 6",
       "type": "code",
       "mnemonic": "lsr",
       "operand": "l004d",
@@ -100660,7 +100660,7 @@
         133,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&4E)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -100735,7 +100735,7 @@
         144,
         251
       ],
-      "comment_inline": "...",
+      "comment_inline": "more printed items: loop",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "loop_cba5f",
@@ -100759,7 +100759,7 @@
         134,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "flag = -1 (printed),",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l004e",
@@ -100771,7 +100771,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry clear",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -100799,7 +100799,7 @@
         6,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "shift out the old bit,",
       "type": "code",
       "mnemonic": "asl",
       "operand": "l004d",
@@ -100811,7 +100811,7 @@
       "bytes": [
         40
       ],
-      "comment_inline": "...",
+      "comment_inline": "recover the flag,",
       "type": "code",
       "mnemonic": "plp"
     },
@@ -100821,7 +100821,7 @@
         102,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "rotate it into bit 7",
       "type": "code",
       "mnemonic": "ror",
       "operand": "l004d",
@@ -100907,7 +100907,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push &4D,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -100917,7 +100917,7 @@
         165,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "&4E,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -100929,7 +100929,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -100975,7 +100975,7 @@
         133,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "&4E,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -100987,7 +100987,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull &4D,",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -100997,7 +100997,7 @@
         133,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -101023,7 +101023,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from the PtrB offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -101155,7 +101155,7 @@
         88,
         181
       ],
-      "comment_inline": "...",
+      "comment_inline": "do it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_char",
@@ -101216,7 +101216,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry,",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -101226,7 +101226,7 @@
         102,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "rotate into bit 7",
       "type": "code",
       "mnemonic": "ror",
       "operand": "l004d",
@@ -101298,7 +101298,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrB low = 0,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -101311,7 +101311,7 @@
         169,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &06,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#6"
@@ -101322,7 +101322,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrB high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -101449,7 +101449,7 @@
         132,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it (&4E)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "l004e",
@@ -101569,7 +101569,7 @@
         133,
         39
       ],
-      "comment_inline": "...",
+      "comment_inline": "type 0 (string)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
