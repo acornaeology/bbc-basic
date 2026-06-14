@@ -115,3 +115,4 @@ placeholders goes first.
 | 2026-06-14 | depth 0 complete | find_program_line, pointer helpers, find/create_variable, unstack_string, iwa_load_var, rnd_step, +singletons & trailing blocks | 50 | 1649 | — |
 | 2026-06-14 | depth 1: encode/FP-to-int | encode_line_number (+2 high/low fixes), fwa_to_int2 | 43 | 1606 | — |
 | 2026-06-14 | depth 1: FP add/align | fwa_add_fwb_raw (+1 smaller/larger fix) | 23 | 1583 | — |
+| 2026-06-14 | depth 1: find_def | find_def (PROC/FN definition search + cache) | 30 | 1553 | — |
