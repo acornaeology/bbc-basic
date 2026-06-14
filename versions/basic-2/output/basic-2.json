@@ -59137,7 +59137,7 @@
         232
       ],
       "labels": [
-        "loop_ca055"
+        "obd_tens_loop"
       ],
       "comment_inline": "subtract 10...",
       "xref_summaries": [
@@ -59169,9 +59169,9 @@
       "comment_inline": "until it goes negative",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_ca055",
+      "operand": "obd_tens_loop",
       "target": 41045,
-      "target_label": "loop_ca055"
+      "target_label": "obd_tens_loop"
     },
     {
       "addr": 41050,
@@ -59211,9 +59211,9 @@
       "comment_inline": "no tens: skip",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca063",
+      "operand": "obd_units",
       "target": 41059,
-      "target_label": "ca063"
+      "target_label": "obd_units"
     },
     {
       "addr": 41056,
@@ -59235,7 +59235,7 @@
         104
       ],
       "labels": [
-        "ca063"
+        "obd_units"
       ],
       "comment_inline": "units digit",
       "xref_summaries": [
@@ -59368,7 +59368,7 @@
         24
       ],
       "labels": [
-        "ca072"
+        "make_real_result"
       ],
       "comment_inline": "set the rounding byte and test the sign",
       "xref_summaries": [
@@ -59561,9 +59561,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca0a0",
+      "operand": "pn_dup_point",
       "target": 41120,
-      "target_label": "ca0a0"
+      "target_label": "pn_dup_point"
     },
     {
       "addr": 41103,
@@ -59585,9 +59585,9 @@
       "comment_inline": "finish",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca072",
+      "operand": "make_real_result",
       "target": 41074,
-      "target_label": "ca072"
+      "target_label": "make_real_result"
     },
     {
       "addr": 41107,
@@ -59609,9 +59609,9 @@
       "comment_inline": "not a digit: finish",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "ca072",
+      "operand": "make_real_result",
       "target": 41074,
-      "target_label": "ca072"
+      "target_label": "make_real_result"
     },
     {
       "addr": 41111,
@@ -59632,7 +59632,7 @@
         200
       ],
       "labels": [
-        "ca099"
+        "pn_loop"
       ],
       "comment_inline": "next character",
       "xref_summaries": [
@@ -59684,9 +59684,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca0a8",
+      "operand": "pn_check_e",
       "target": 41128,
-      "target_label": "ca0a8"
+      "target_label": "pn_check_e"
     },
     {
       "addr": 41120,
@@ -59695,7 +59695,7 @@
         72
       ],
       "labels": [
-        "ca0a0"
+        "pn_dup_point"
       ],
       "comment_inline": "already had one?",
       "xref_summaries": [
@@ -59719,9 +59719,9 @@
       "comment_inline": "yes: end of the number",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca0e8",
+      "operand": "pn_store_offset",
       "target": 41192,
-      "target_label": "ca0e8"
+      "target_label": "pn_store_offset"
     },
     {
       "addr": 41124,
@@ -59745,9 +59745,9 @@
       "comment_inline": "next char",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41128,
@@ -59756,7 +59756,7 @@
         69
       ],
       "labels": [
-        "ca0a8"
+        "pn_check_e"
       ],
       "comment_inline": "'E' (exponent)?",
       "xref_summaries": [
@@ -59778,9 +59778,9 @@
       "comment_inline": "yes: scan the exponent",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca0e1",
+      "operand": "pn_scan_e",
       "target": 41185,
-      "target_label": "ca0e1"
+      "target_label": "pn_scan_e"
     },
     {
       "addr": 41132,
@@ -59802,9 +59802,9 @@
       "comment_inline": "finish",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca0e8",
+      "operand": "pn_store_offset",
       "target": 41192,
-      "target_label": "ca0e8"
+      "target_label": "pn_store_offset"
     },
     {
       "addr": 41136,
@@ -59826,9 +59826,9 @@
       "comment_inline": "not a digit: finish",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca0e8",
+      "operand": "pn_store_offset",
       "target": 41192,
-      "target_label": "ca0e8"
+      "target_label": "pn_store_offset"
     },
     {
       "addr": 41140,
@@ -59863,9 +59863,9 @@
       "comment_inline": "yes: add it",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca0c2",
+      "operand": "pn_check_point",
       "target": 41154,
-      "target_label": "ca0c2"
+      "target_label": "pn_check_point"
     },
     {
       "addr": 41146,
@@ -59889,9 +59889,9 @@
       "comment_inline": "yes: just skip the digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41150,
@@ -59915,9 +59915,9 @@
       "comment_inline": "skip this over-large digit",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41154,
@@ -59926,7 +59926,7 @@
         72
       ],
       "labels": [
-        "ca0c2"
+        "pn_check_point"
       ],
       "comment_inline": "had a decimal point?",
       "xref_summaries": [
@@ -59950,9 +59950,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca0c8",
+      "operand": "pn_mant_x10",
       "target": 41160,
-      "target_label": "ca0c8"
+      "target_label": "pn_mant_x10"
     },
     {
       "addr": 41158,
@@ -59975,7 +59975,7 @@
         161
       ],
       "labels": [
-        "ca0c8"
+        "pn_mant_x10"
       ],
       "comment_inline": "FWA mantissa *= 10",
       "xref_summaries": [
@@ -60025,9 +60025,9 @@
       "comment_inline": "no carry: next digit",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41169,
@@ -60051,9 +60051,9 @@
       "comment_inline": "absorbed in byte 4: next digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41173,
@@ -60077,9 +60077,9 @@
       "comment_inline": "absorbed: next digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41177,
@@ -60103,9 +60103,9 @@
       "comment_inline": "absorbed: next digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41181,
@@ -60129,9 +60129,9 @@
       "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca099",
+      "operand": "pn_loop",
       "target": 41113,
-      "target_label": "ca099"
+      "target_label": "pn_loop"
     },
     {
       "addr": 41185,
@@ -60141,7 +60141,7 @@
         161
       ],
       "labels": [
-        "ca0e1"
+        "pn_scan_e"
       ],
       "comment_inline": "scan the E exponent",
       "xref_summaries": [
@@ -60189,7 +60189,7 @@
         27
       ],
       "labels": [
-        "ca0e8"
+        "pn_store_offset"
       ],
       "comment_inline": "store the text offset",
       "xref_summaries": [
@@ -60241,9 +60241,9 @@
       "comment_inline": "no: return an integer",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca11f",
+      "operand": "pn_check_int",
       "target": 41247,
-      "target_label": "ca11f"
+      "target_label": "pn_check_int"
     },
     {
       "addr": 41200,
@@ -60268,9 +60268,9 @@
       "comment_inline": "yes: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca11b",
+      "operand": "pn_real_result",
       "target": 41243,
-      "target_label": "ca11b"
+      "target_label": "pn_real_result"
     },
     {
       "addr": 41205,
@@ -60279,7 +60279,7 @@
         168
       ],
       "labels": [
-        "loop_ca0f5"
+        "pn_set_exp_loop"
       ],
       "comment_inline": "Set the FWA exponent (40-bit mantissa)...",
       "xref_summaries": [
@@ -60378,9 +60378,9 @@
       "comment_inline": "negative: divide",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "ca111",
+      "operand": "pn_exp_div",
       "target": 41233,
-      "target_label": "ca111"
+      "target_label": "pn_exp_div"
     },
     {
       "addr": 41222,
@@ -60391,9 +60391,9 @@
       "comment_inline": "zero: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca118",
+      "operand": "pn_round",
       "target": 41240,
-      "target_label": "ca118"
+      "target_label": "pn_round"
     },
     {
       "addr": 41224,
@@ -60403,7 +60403,7 @@
         161
       ],
       "labels": [
-        "loop_ca108"
+        "pn_exp_mul_loop"
       ],
       "comment_inline": "positive: multiply by 10",
       "xref_summaries": [
@@ -60440,9 +60440,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca108",
+      "operand": "pn_exp_mul_loop",
       "target": 41224,
-      "target_label": "loop_ca108"
+      "target_label": "pn_exp_mul_loop"
     },
     {
       "addr": 41231,
@@ -60453,9 +60453,9 @@
       "comment_inline": "done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca118",
+      "operand": "pn_round",
       "target": 41240,
-      "target_label": "ca118"
+      "target_label": "pn_round"
     },
     {
       "addr": 41233,
@@ -60465,7 +60465,7 @@
         162
       ],
       "labels": [
-        "ca111"
+        "pn_exp_div"
       ],
       "comment_inline": "divide by 10",
       "xref_summaries": [
@@ -60503,9 +60503,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca111",
+      "operand": "pn_exp_div",
       "target": 41233,
-      "target_label": "ca111"
+      "target_label": "pn_exp_div"
     },
     {
       "addr": 41240,
@@ -60515,7 +60515,7 @@
         166
       ],
       "labels": [
-        "ca118"
+        "pn_round"
       ],
       "comment_inline": "round the result",
       "xref_summaries": [
@@ -60537,7 +60537,7 @@
         56
       ],
       "labels": [
-        "ca11b"
+        "pn_real_result"
       ],
       "comment_inline": "real result",
       "xref_summaries": [
@@ -60576,7 +60576,7 @@
         50
       ],
       "labels": [
-        "ca11f"
+        "pn_check_int"
       ],
       "comment_inline": "Integer: does it fit in 32 signed bits?",
       "xref_summaries": [
@@ -60637,9 +60637,9 @@
       "comment_inline": "yes: use a real instead",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca0f5",
+      "operand": "pn_set_exp_loop",
       "target": 41205,
-      "target_label": "loop_ca0f5"
+      "target_label": "pn_set_exp_loop"
     },
     {
       "addr": 41257,
@@ -60756,7 +60756,7 @@
         161
       ],
       "labels": [
-        "loop_ca139"
+        "pn_neg_exp_loop"
       ],
       "comment_inline": "negative exponent: scan the digits",
       "xref_summaries": [
@@ -60767,9 +60767,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca14b",
+      "operand": "pe_skip_sign",
       "target": 41291,
-      "target_label": "sub_ca14b"
+      "target_label": "pe_skip_sign"
     },
     {
       "addr": 41276,
@@ -60851,9 +60851,9 @@
       "comment_inline": "yes: negative exponent",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_ca139",
+      "operand": "pn_neg_exp_loop",
       "target": 41273,
-      "target_label": "loop_ca139"
+      "target_label": "pn_neg_exp_loop"
     },
     {
       "addr": 41287,
@@ -60875,9 +60875,9 @@
       "comment_inline": "no sign",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca14e",
+      "operand": "pe_digit",
       "target": 41294,
-      "target_label": "ca14e"
+      "target_label": "pe_digit"
     },
     {
       "addr": 41291,
@@ -60885,7 +60885,7 @@
         200
       ],
       "labels": [
-        "sub_ca14b"
+        "pe_skip_sign"
       ],
       "comment_inline": "skip the sign",
       "xref_summaries": [
@@ -60917,7 +60917,7 @@
         58
       ],
       "labels": [
-        "ca14e"
+        "pe_digit"
       ],
       "comment_inline": "a digit?",
       "xref_summaries": [
@@ -60939,9 +60939,9 @@
       "comment_inline": "no: exponent = 0",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca174",
+      "operand": "pe_no_exp",
       "target": 41332,
-      "target_label": "ca174"
+      "target_label": "pe_no_exp"
     },
     {
       "addr": 41298,
@@ -60963,9 +60963,9 @@
       "comment_inline": "not a digit: exponent = 0",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca174",
+      "operand": "pe_no_exp",
       "target": 41332,
-      "target_label": "ca174"
+      "target_label": "pe_no_exp"
     },
     {
       "addr": 41302,
@@ -61022,9 +61022,9 @@
       "comment_inline": "one digit only",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca170",
+      "operand": "pe_one_digit",
       "target": 41328,
-      "target_label": "ca170"
+      "target_label": "pe_one_digit"
     },
     {
       "addr": 41311,
@@ -61046,9 +61046,9 @@
       "comment_inline": "not a digit",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca170",
+      "operand": "pe_one_digit",
       "target": 41328,
-      "target_label": "ca170"
+      "target_label": "pe_one_digit"
     },
     {
       "addr": 41315,
@@ -61154,7 +61154,7 @@
         74
       ],
       "labels": [
-        "ca170"
+        "pe_one_digit"
       ],
       "comment_inline": "1-digit exponent",
       "xref_summaries": [
@@ -61195,7 +61195,7 @@
         0
       ],
       "labels": [
-        "ca174"
+        "pe_no_exp"
       ],
       "comment_inline": "no exponent: 0",
       "xref_summaries": [
