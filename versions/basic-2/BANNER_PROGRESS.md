@@ -1,13 +1,22 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 244 fully documented
-(desc + calling contract), 41 remaining (86 %). Inline-comment pass is
-COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
+**STATUS: COMPLETE — 285 ROM subroutine banners, 284 fully documented
+(desc + calling contract), 99 %. The one undocumented banner is
+fwa_compare_var (&A5FF), a FALL_THROUGH_ENTRY with no callers — a
+mid-instruction continuation, not a callable routine, so a contract
+would be meaningless. Inline-comment pass is COMPLETE (see
+ANNOTATION_PROGRESS.md); this follow-on banner pass is now COMPLETE.**
 
-Driver sorted into address order; shared stmt_*/fn_* contracts established
-and threaded through HANDLER_INFO (all ~112 table-generated handlers now
-carry a contract). Next: the FP/IWA primitives and small helpers
-(leaves-first worklist).
+Every banner's description was reviewed for accuracy and every callable
+ROM routine now carries a structured on_entry/on_exit contract naming
+its zero-page and register usage. The driver remains address-sorted
+(`fantasm driver sort --check` is clean) and reassembles byte-identical.
+
+Stale banners corrected along the way: iwa_from_ya ("sign-extended" →
+zero-extended), fn_to (TO P reads TOP), unstack_integer ("caller drops"
+→ falls through and drops), find_program_line (carry sense reversed),
+iwa_divide (operand roles; its inline comments still swap dividend/
+divisor — an inline-pass follow-up), fp_eval_cont_frac (A/Y not X/Y).
 
 ## The goal
 
@@ -280,31 +289,31 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | RND/stack/helpers | rnd_seed/integer/fraction/range, fwa_reciprocal, fwa_sub_var, stack_real/string, print_hex_byte, load_byte_var, encode_line_number | 11 | 59 | c4b3f45 |
 | 2026-06-14 | evaluator chain | eval_factor + levels 2-7 (shared contract via table) + eval_and_compare, eval_real, ensure_real | 10 | 49 | cb17bf0 |
 | 2026-06-14 | parsers + int divide | check_end_of_statement, expect_eq, skip_spaces_expect_comma, check_eq_star_bracket, eval_after_eq, eval_channel, iwa_divide, iwa_test_var; fixed iwa_divide operand roles | 8 | 41 | f1c5dc7 |
+| 2026-06-14 | inline assembler | asm_parse_mnemonic, asm_opcode_add4/8/16, assembler_exit | 5 | 36 | a48534d |
+| 2026-06-14 | assignment | parse_var_ref, parse_lvalue, assign_string, assign_number, unstack_value_to_var, try_variable_assignment | 6 | 30 | 85c1085 |
+| 2026-06-14 | program/loops | statement_loop, execute_line, immediate_loop, clear_vars_heap_stack, load_program, start_new_program, check_program, delete_program_line, find_line_target | 9 | 21 | e915886 |
+| 2026-06-14 | transcendental/print | parse_number, fp_eval_cont_frac, fwa_complement_half_pi, sin_cos_reduce, fwa_int_power, print_special_item, print_line_number, print_token, print_listo_indent | 9 | 12 | 254bb1c |
+| 2026-06-14 | final helpers | tokenise_line, read_string_literal, find_def, find_error_line, next_data_item, language_startup, stack_local, read_input_line, index_array, trace_line, stmt_listo | 11 | 1 | 781d56c |
+| 2026-06-14 | re-sort | driver back to canonical order | — | 1 | 2008518 |
 
 ## Resume here
 
-Done: driver sort (b8a29c5); shared stmt_*/fn_* contracts threaded
-through HANDLER_INFO (8ed2ace). The shared-contract dicts live just above
-`HANDLER_INFO` (driver ~line 77): `STMT_ON_ENTRY`/`STMT_ON_EXIT`,
-`FN_ON_ENTRY`/`FN_ON_EXIT`. A HANDLER_INFO entry may override either with
-an optional 3rd/4th tuple element (None = use the family default) — use
-this for the handful of non-standard handlers (e.g. `fn_to` is an error,
-`stmt_data` just skips the line) as you reach them.
+**The banner pass is COMPLETE** — 284/285 documented. Nothing remains in
+this pass. The shared-contract dicts live in the top constants block:
+`STMT_ON_ENTRY`/`STMT_ON_EXIT` and `FN_ON_ENTRY`/`FN_ON_EXIT` (above
+`HANDLER_INFO`) for the dispatched keyword handlers, and
+`EVAL_LEVEL_ON_ENTRY`/`EVAL_LEVEL_ON_EXIT` for the precedence-climbing
+evaluator levels. A HANDLER_INFO entry may override either family default
+with an optional 3rd/4th tuple element (None = use the default).
 
-Done so far (all committed): FP pack/unpack/move/mantissa primitives,
-FP pointer setters, small leaf helpers (byte/print/int-result), the
-BASIC value stack + typed loaders, and the line-number / program-walk
-helpers. Several stale banners corrected along the way (iwa_from_ya
-"sign-extended", fn_to, unstack_integer "caller drops", find_program_line
-carry sense) — keep checking descriptions against the code, not just
-filling contracts.
+Possible follow-ups, all out of this pass's scope:
 
-Next (107 remaining, leaves-first via `uv run tools/banner_status.py`):
-the variable-management routines (find_variable, create_variable,
-find_proc_fn), the number<->ASCII conversions (output_digit,
-parse_exponent, ascii/number families), imul16, the RND helpers
-(rnd_step, rnd_repeat, read_key_timed), usr_call, eval_after_eq, and the
-remaining mid-depth parsers/statement helpers. All hand-written
-`d.subroutine(...)` calls — edit in place. The stmt_*/fn_* table
-handlers already carry the shared contract; refine individual ones only
-where the shared default is wrong (e.g. stmt_data skips the line).
+1. **Inline-comment fix:** iwa_divide (&99BE) has ~5 inline comments that
+   swap "dividend"/"divisor"; the banner is correct, the inline labels
+   are not. A small inline-pass correction.
+2. **Optional promotions:** `fantasm audit undeclared 2` still lists
+   JSR'd routines with no banner (auto-named cXXXX). Promote only the
+   genuinely reusable ones, leaves-first, noting each in the batch log.
+3. **Consider** demoting fwa_compare_var (&A5FF) from `d.subroutine` to a
+   plain `d.label` — it is a fall-through point with no callers, not a
+   routine. Would make the count 284/284. Verify it stays byte-identical.
