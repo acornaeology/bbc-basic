@@ -3810,14 +3810,33 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Evaluate an expression as a real
 ;
-; Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.
+; Evaluate a factor at PtrB and ensure the result is real, converting an integer with
+; int_to_fwa.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the factor to evaluate
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the value as a real
+;     A: real type marker (negative)
+;     BRK: Type mismatch on a string
 ; &92fa referenced 11 times by &9e3c, &a6be, &a7b4, &a7fe, &a8da, &a907, &a98d, &a998, &aa91, &abb1, &abc2
 .eval_real
     jsr eval_factor                                                   ; 92fa: 20 ec ad     ..      ; Evaluate a factor
 ; ***************************************************************************************
 ; Coerce the result to a real
 ;
-; Type mismatch for a string, leave a real, or convert an integer to FWA.
+; Leave a real unchanged, convert an integer to FWA (int_to_fwa), or raise Type mismatch
+; for a string.
+;
+; On Entry:
+;     A: the value type (negative real, positive integer, 0 string)
+;     ZP_IWA / ZP_FWA: the value
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the value as a real
+;     A: real type marker (negative)
+;     BRK: Type mismatch on a string
 ; &92fd referenced 7 times by &9a59, &9d29, &9de6, &9df2, &9e36, &b852, &b870
 .ensure_real
     beq c92f7                                                         ; 92fd: f0 f8       ..       ; string?
@@ -5474,8 +5493,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Evaluate the next operand and compare
 ;
-; Stack the current value, evaluate the next arithmetic operand and compare the two
-; (integer, real or string), returning the ordering flags for the relational operators.
+; Stack the already-evaluated left value, evaluate the next arithmetic operand at PtrB,
+; then compare the two (integer, real or string), returning the ordering flags for the
+; relational operators.
+;
+; On Entry:
+;     A: the type of the left value (already evaluated)
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the left value
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the right operand
+;
+; On Exit:
+;     C: the ordering of left vs right
+;     Z: set if equal
+;     X: the next unconsumed operator token
 ; &9a9e referenced 1 time by &9baf
 .eval_and_compare
     beq c9ae7                                                         ; 9a9e: f0 47       .G       ; string: compare strings
@@ -5586,6 +5616,16 @@ l848a = sub_c847b+15
 ; Evaluator level 7: OR, EOR
 ;
 ; Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9b29 referenced 16 times by &8d39, &8deb, &92dd, &93fa, &9849, &ac1d, &ace2, &acf0, &ae56, &afcc, &afee, &b039, &b28e, &b4b1, &b84f, &b86d
 .eval_or_eor
     jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first
@@ -5640,6 +5680,16 @@ l848a = sub_c847b+15
 ; Evaluator level 6: AND
 ;
 ; Bitwise AND (&80) on integers.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9b72 referenced 1 time by &9b29
 .eval_and
     jsr eval_relational                                               ; 9b72: 20 9c 9b     ..      ; Evaluate a relational operand
@@ -5671,6 +5721,16 @@ l848a = sub_c847b+15
 ; Evaluator level 5: < <= = >= > <>
 ;
 ; The relational operators, yielding TRUE (-1) or FALSE (0).
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9b9c referenced 2 times by &9b72, &9b81
 .eval_relational
     jsr eval_add_sub                                                  ; 9b9c: 20 42 9c     B.      ; Evaluate a + - operand
@@ -5780,6 +5840,16 @@ l848a = sub_c847b+15
 ; Evaluator level 4: + -
 ;
 ; Addition and subtraction (numeric, or string concatenation).
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9c42 referenced 4 times by &9a53, &9aa5, &9aea, &9b9c
 .eval_add_sub
     jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..      ; Evaluate a * / DIV MOD operand
@@ -6072,6 +6142,16 @@ l848a = sub_c847b+15
 ; Evaluator level 3: * / DIV MOD
 ;
 ; Multiplication, division and the integer DIV and MOD operators.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9dd1 referenced 3 times by &9c42, &9c8e, &9ce4
 .eval_mul_div
     jsr eval_power                                                    ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
@@ -6145,6 +6225,16 @@ l848a = sub_c847b+15
 ;
 ; Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses
 ; repeated multiplication, otherwise x^y = x^int * exp(frac * ln x).
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the (sub)expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     X: the next unconsumed operator token (lookahead)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9e20 referenced 4 times by &9c18, &9d23, &9dd1, &9dec
 .eval_power
     jsr eval_factor                                                   ; 9e20: 20 ec ad     ..      ; Evaluate the base
@@ -9772,7 +9862,17 @@ l848a = sub_c847b+15
 ;
 ; Evaluate the highest-precedence level of an expression at PtrB: unary minus, unary plus
 ; and NOT; parenthesised sub-expressions; the ?, !, $ and | indirection operators; string
-; literals; and the built-in functions.
+; literals; and the built-in functions. Unlike the higher levels, it does not read the
+; trailing operator - the caller does that.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the factor to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the value, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the factor
 ; &adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83
 .eval_factor
     ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..       ; Next character

@@ -2165,14 +2165,31 @@
       "addr": 37626,
       "name": "eval_real",
       "title": "Evaluate an expression as a real",
-      "description": "Evaluate a factor and ensure the result is real, converting an integer with int_to_fwa.",
+      "description": "Evaluate a factor at PtrB and ensure the result is real, converting an integer with int_to_fwa.",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the factor to evaluate"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the value as a real",
+        "A": "real type marker (negative)",
+        "BRK": "Type mismatch on a string"
+      },
       "fall_through": true
     },
     {
       "addr": 37629,
       "name": "ensure_real",
       "title": "Coerce the result to a real",
-      "description": "Type mismatch for a string, leave a real, or convert an integer to FWA."
+      "description": "Leave a real unchanged, convert an integer to FWA (int_to_fwa), or raise Type mismatch for a string.",
+      "on_entry": {
+        "A": "the value type (negative real, positive integer, 0 string)",
+        "zp_iwa / zp_fwa": "the value"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the value as a real",
+        "A": "real type marker (negative)",
+        "BRK": "Type mismatch on a string"
+      }
     },
     {
       "addr": 37979,
@@ -2390,7 +2407,17 @@
       "addr": 39582,
       "name": "eval_and_compare",
       "title": "Evaluate the next operand and compare",
-      "description": "Stack the current value, evaluate the next arithmetic operand and compare the two (integer, real or string), returning the ordering flags for the relational operators.",
+      "description": "Stack the already-evaluated left value, evaluate the next arithmetic operand at PtrB, then compare the two (integer, real or string), returning the ordering flags for the relational operators.",
+      "on_entry": {
+        "A": "the type of the left value (already evaluated)",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the left value",
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the right operand"
+      },
+      "on_exit": {
+        "C": "the ordering of left vs right",
+        "Z": "set if equal",
+        "X": "the next unconsumed operator token"
+      },
       "fall_through": true
     },
     {
@@ -2416,6 +2443,16 @@
       "name": "eval_or_eor",
       "title": "Evaluator level 7: OR, EOR",
       "description": "Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      },
       "fall_through": true
     },
     {
@@ -2423,6 +2460,16 @@
       "name": "eval_and",
       "title": "Evaluator level 6: AND",
       "description": "Bitwise AND (&80) on integers.",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      },
       "fall_through": true
     },
     {
@@ -2430,6 +2477,16 @@
       "name": "eval_relational",
       "title": "Evaluator level 5: < <= = >= > <>",
       "description": "The relational operators, yielding TRUE (-1) or FALSE (0).",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      },
       "fall_through": true
     },
     {
@@ -2437,6 +2494,16 @@
       "name": "eval_add_sub",
       "title": "Evaluator level 4: + -",
       "description": "Addition and subtraction (numeric, or string concatenation).",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      },
       "fall_through": true
     },
     {
@@ -2444,6 +2511,16 @@
       "name": "eval_mul_div",
       "title": "Evaluator level 3: * / DIV MOD",
       "description": "Multiplication, division and the integer DIV and MOD operators.",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      },
       "fall_through": true
     },
     {
@@ -2520,7 +2597,17 @@
       "addr": 40480,
       "name": "eval_power",
       "title": "Expression Level 2 - the ^ operator",
-      "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x)."
+      "description": "Evaluate a factor, then for each ^ raise it to the power: an integer exponent uses repeated multiplication, otherwise x^y = x^int * exp(frac * ln x).",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the (sub)expression to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "X": "the next unconsumed operator token (lookahead)",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed text"
+      }
     },
     {
       "addr": 40671,
@@ -3316,7 +3403,16 @@
       "addr": 44524,
       "name": "eval_factor",
       "title": "Evaluate a factor (evaluator level 1)",
-      "description": "Evaluate the highest-precedence level of an expression at PtrB:\nunary minus, unary plus and NOT; parenthesised sub-expressions;\nthe ?, !, $ and | indirection operators; string literals; and the\nbuilt-in functions.\n"
+      "description": "Evaluate the highest-precedence level of an expression at PtrB:\nunary minus, unary plus and NOT; parenthesised sub-expressions;\nthe ?, !, $ and | indirection operators; string literals; and the\nbuilt-in functions. Unlike the higher levels, it does not read the\ntrailing operator - the caller does that.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the factor to evaluate",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa / zp_fwa / string_work (&0600)": "the value, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the factor"
+      }
     },
     {
       "addr": 44760,

@@ -2762,12 +2762,21 @@ d.comment(0x92f2, 'integer: return', align=Align.INLINE)
 d.comment(0x92f4, 'real: convert to integer', align=Align.INLINE)
 d.comment(0x92f7, 'Type mismatch error', align=Align.INLINE)
 d.subroutine(0x92fa, 'eval_real', title='Evaluate an expression as a real',
-             description='Evaluate a factor and ensure the result is real, '
-                         'converting an integer with int_to_fwa.')
+             description='Evaluate a factor at PtrB and ensure the result is '
+                         'real, converting an integer with int_to_fwa.',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the factor to evaluate'},
+             on_exit={'zp_fwa (&2E-&35)': 'the value as a real',
+                      'A': 'real type marker (negative)',
+                      'BRK': 'Type mismatch on a string'})
 d.comment(0x92fa, 'Evaluate a factor', align=Align.INLINE)
 d.subroutine(0x92fd, 'ensure_real', title='Coerce the result to a real',
-             description='Type mismatch for a string, leave a real, or '
-                         'convert an integer to FWA.')
+             description='Leave a real unchanged, convert an integer to FWA '
+                         '(int_to_fwa), or raise Type mismatch for a string.',
+             on_entry={'A': 'the value type (negative real, positive integer, 0 string)',
+                       'zp_iwa / zp_fwa': 'the value'},
+             on_exit={'zp_fwa (&2E-&35)': 'the value as a real',
+                      'A': 'real type marker (negative)',
+                      'BRK': 'Type mismatch on a string'})
 d.comment(0x92fd, 'string?', align=Align.INLINE)
 d.comment(0x92ff, 'real: return', align=Align.INLINE)
 d.comment(0x9301, 'integer: convert to real', align=Align.INLINE)
@@ -4027,10 +4036,16 @@ d.comment(0x9a9a, 'Type mismatch error', align=Align.INLINE)
 d.comment(0x9a9d, 'Current type', align=Align.INLINE)
 d.subroutine(0x9a9e, 'eval_and_compare',
              title='Evaluate the next operand and compare',
-             description='Stack the current value, evaluate the next '
-                         'arithmetic operand and compare the two (integer, '
-                         'real or string), returning the ordering flags for '
-                         'the relational operators.')
+             description='Stack the already-evaluated left value, evaluate the '
+                         'next arithmetic operand at PtrB, then compare the two '
+                         '(integer, real or string), returning the ordering '
+                         'flags for the relational operators.',
+             on_entry={'A': 'the type of the left value (already evaluated)',
+                       'zp_iwa / zp_fwa / string_work (&0600)': 'the left value',
+                       'zp_text_ptr2 (&19/&1A)': 'PtrB at the right operand'},
+             on_exit={'C': 'the ordering of left vs right',
+                      'Z': 'set if equal',
+                      'X': 'the next unconsumed operator token'})
 d.comment(0x9a9e, 'string: compare strings', align=Align.INLINE)
 d.comment(0x9aa0, 'float: compare floats', align=Align.INLINE)
 d.comment(0x9aa2, 'Stack the integer', align=Align.INLINE)
@@ -4140,6 +4155,19 @@ d.comment(0x9b27, '...to PtrB offset', align=Align.INLINE)
 # loop. Each level returns the next (unconsumed) operator token in X and
 # the result type in A / zp_var_type. Level 1 (eval_factor) handles
 # unary operators, parentheses, literals and functions.
+#
+# Shared contract for the precedence-climbing levels (2-7): read the
+# (sub)expression at PtrB and return a typed value plus the lookahead.
+EVAL_LEVEL_ON_ENTRY = {
+    'zp_text_ptr2 (&19/&1A)': 'PtrB at the (sub)expression to evaluate',
+    'zp_text_ptr2_off (&1B)': 'offset into the text',
+}
+EVAL_LEVEL_ON_EXIT = {
+    'A': 'result type: <0 = float in fwa, >0 = integer in iwa, 0 = string',
+    'zp_iwa / zp_fwa / string_work (&0600)': 'the value, selected by the type in A',
+    'X': 'the next unconsumed operator token (lookahead)',
+    'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
+}
 for _addr, _name, _title, _desc in [
     (0x9b29, 'eval_or_eor', 'Evaluator level 7: OR, EOR',
      'Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.'),
@@ -4152,7 +4180,8 @@ for _addr, _name, _title, _desc in [
     (0x9dd1, 'eval_mul_div', 'Evaluator level 3: * / DIV MOD',
      'Multiplication, division and the integer DIV and MOD operators.'),
 ]:
-    d.subroutine(_addr, _name, title=_title, description=_desc)
+    d.subroutine(_addr, _name, title=_title, description=_desc,
+                 on_entry=EVAL_LEVEL_ON_ENTRY, on_exit=EVAL_LEVEL_ON_EXIT)
 
 d.comment(0x9b29, 'Evaluate the higher-precedence (AND) operand first',
           align=Align.INLINE)
@@ -4615,7 +4644,8 @@ d.subroutine(0x9e20, 'eval_power',
              description='Evaluate a factor, then for each ^ raise it to the '
                          'power: an integer exponent uses repeated '
                          'multiplication, otherwise x^y = x^int * exp(frac * '
-                         'ln x).')
+                         'ln x).',
+             on_entry=EVAL_LEVEL_ON_ENTRY, on_exit=EVAL_LEVEL_ON_EXIT)
 # eval_power (&9E20): the ^ operator.
 d.comment(0x9e20, 'Evaluate the base', align=Align.INLINE)
 d.comment(0x9e23, 'Save the result type', align=Align.INLINE)
@@ -7190,8 +7220,15 @@ d.subroutine(
     description="""Evaluate the highest-precedence level of an expression at PtrB:
 unary minus, unary plus and NOT; parenthesised sub-expressions;
 the ?, !, $ and | indirection operators; string literals; and the
-built-in functions.
+built-in functions. Unlike the higher levels, it does not read the
+trailing operator - the caller does that.
 """,
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the factor to evaluate',
+              'zp_text_ptr2_off (&1B)': 'offset into the text'},
+    on_exit={'A': 'result type: <0 = float in fwa, >0 = integer in iwa, 0 = string',
+             'zp_iwa / zp_fwa / string_work (&0600)':
+                 'the value, selected by the type in A',
+             'zp_text_ptr2_off (&1B)': 'advanced past the factor'},
 )
 # eval_factor (&ADEC): expression Level 1 - the atom.
 d.comment(0xadec, 'Next character', align=Align.INLINE)
