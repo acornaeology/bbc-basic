@@ -2990,18 +2990,18 @@ l848a = sub_c847b+15
     bmi c8fe7                                                         ; 8fb5: 30 30       00       ; high bit set marks the end of program
     sta (zp_fwb_sign),y                                               ; 8fb7: 91 3b       .;       ; Store the old number in the table
     iny                                                               ; 8fb9: c8          .        ; low byte
-    lda (zp_general),y                                                ; 8fba: b1 37       .7       ; ...
+    lda (zp_general),y                                                ; 8fba: b1 37       .7       ; read the line number low
     sta (zp_fwb_sign),y                                               ; 8fbc: 91 3b       .;       ; (store)
     sec                                                               ; 8fbe: 38          8        ; Advance the table pointer by 2: low
-    tya                                                               ; 8fbf: 98          .        ; ...
-    adc zp_fwb_sign                                                   ; 8fc0: 65 3b       e;       ; ...
+    tya                                                               ; 8fbf: 98          .        ; offset to A,
+    adc zp_fwb_sign                                                   ; 8fc0: 65 3b       e;       ; - table pointer (carry adds 2)
     sta zp_fwb_sign                                                   ; 8fc2: 85 3b       .;       ; (store)
     tax                                                               ; 8fc4: aa          .        ; keep the low byte
     lda zp_fwb_ovf                                                    ; 8fc5: a5 3c       .<       ; table pointer high...
     adc #0                                                            ; 8fc7: 69 00       i.       ; - carry
     sta zp_fwb_ovf                                                    ; 8fc9: 85 3c       .<       ; (store)
     cpx zp_himem                                                      ; 8fcb: e4 06       ..       ; Has the table reached HIMEM?
-    sbc zp_himem_1                                                    ; 8fcd: e5 07       ..       ; ...
+    sbc zp_himem_1                                                    ; 8fcd: e5 07       ..       ; high byte vs HIMEM
     bcs c8fd6                                                         ; 8fcf: b0 05       ..       ; yes: no room for the table
     jsr advance_to_next_line                                          ; 8fd1: 20 9f 90     ..      ; Advance to the next program line
     bcc loop_c8fb1                                                    ; 8fd4: 90 db       ..       ; loop over all lines
@@ -3030,8 +3030,8 @@ l848a = sub_c847b+15
     iny                                                               ; 8ff6: c8          .        ; advance
     sta (zp_general),y                                                ; 8ff7: 91 37       .7       ; (into the line)
     clc                                                               ; 8ff9: 18          .        ; Add the step to the running number: low
-    lda zp_iwa                                                        ; 8ffa: a5 2a       .*       ; ...
-    adc zp_fileblk                                                    ; 8ffc: 65 39       e9       ; ...
+    lda zp_iwa                                                        ; 8ffa: a5 2a       .*       ; step low,
+    adc zp_fileblk                                                    ; 8ffc: 65 39       e9       ; - current number low
     sta zp_fileblk                                                    ; 8ffe: 85 39       .9       ; (store)
     lda #0                                                            ; 9000: a9 00       ..       ; high byte...
     adc l003a                                                         ; 9002: 65 3a       e:       ; - carry
@@ -3064,7 +3064,7 @@ l848a = sub_c847b+15
     ldy #3                                                            ; 902b: a0 03       ..       ; line length is at offset 3
     lda (zp_text_ptr),y                                               ; 902d: b1 0b       ..       ; get it
     clc                                                               ; 902f: 18          .        ; advance to the next line: low
-    adc zp_text_ptr                                                   ; 9030: 65 0b       e.       ; ...
+    adc zp_text_ptr                                                   ; 9030: 65 0b       e.       ; - text pointer low
     sta zp_text_ptr                                                   ; 9032: 85 0b       ..       ; (store)
     bcc c901a                                                         ; 9034: 90 e4       ..       ; loop
     inc zp_text_ptr_1                                                 ; 9036: e6 0c       ..       ; carry into high byte
@@ -3091,14 +3091,14 @@ l848a = sub_c847b+15
     lda (zp_general),y                                                ; 9056: b1 37       .7       ; Found: take the new number high
     sta zp_fwb_exp                                                    ; 9058: 85 3d       .=       ; (save)
     dey                                                               ; 905a: 88          .        ; new number low
-    lda (zp_general),y                                                ; 905b: b1 37       .7       ; ...
+    lda (zp_general),y                                                ; 905b: b1 37       .7       ; read it from the table
     sta zp_fwb_m1                                                     ; 905d: 85 3e       .>       ; (save)
     ldy zp_text_ptr_off                                               ; 905f: a4 0a       ..       ; position within the line
-    dey                                                               ; 9061: 88          .        ; ...
+    dey                                                               ; 9061: 88          .        ; back up to the &8D token
     lda zp_text_ptr                                                   ; 9062: a5 0b       ..       ; Point at the reference in the line: low
-    sta zp_general                                                    ; 9064: 85 37       .7       ; ...
+    sta zp_general                                                    ; 9064: 85 37       .7       ; reference pointer low
     lda zp_text_ptr_1                                                 ; 9066: a5 0c       ..       ; high
-    sta zp_general_1                                                  ; 9068: 85 38       .8       ; ...
+    sta zp_general_1                                                  ; 9068: 85 38       .8       ; reference pointer high
     jsr encode_line_number                                            ; 906a: 20 f5 88     ..      ; Re-encode the new line number in place
 ; &906d referenced 1 time by &909d
 .loop_c906d
@@ -3108,7 +3108,7 @@ l848a = sub_c847b+15
 .c9071
     jsr advance_to_next_line                                          ; 9071: 20 9f 90     ..      ; Next table entry: advance...
     lda zp_fwb_sign                                                   ; 9074: a5 3b       .;       ; ...the table pointer by 2
-    adc #2                                                            ; 9076: 69 02       i.       ; ...
+    adc #2                                                            ; 9076: 69 02       i.       ; low + 2
     sta zp_fwb_sign                                                   ; 9078: 85 3b       .;       ; (store)
     bcc c9043                                                         ; 907a: 90 c7       ..       ; loop
     inc zp_fwb_ovf                                                    ; 907c: e6 3c       .<       ; carry
@@ -3118,11 +3118,11 @@ l848a = sub_c847b+15
     jsr print_inline_string                                           ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
     equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  ...  ...  ...  print it
     iny                                                               ; 908d: c8          .        ; This line's number
-    lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..       ; ...
-    sta zp_iwa_1                                                      ; 9090: 85 2b       .+       ; ...
-    iny                                                               ; 9092: c8          .        ; ...
-    lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..       ; ...
-    sta zp_iwa                                                        ; 9095: 85 2a       .*       ; ...
+    lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..       ; high byte,
+    sta zp_iwa_1                                                      ; 9090: 85 2b       .+       ; store high,
+    iny                                                               ; 9092: c8          .        ; low byte,
+    lda (zp_text_ptr),y                                               ; 9093: b1 0b       ..       ; read it,
+    sta zp_iwa                                                        ; 9095: 85 2a       .*       ; store low
     jsr print_line_number                                             ; 9097: 20 1f 99     ..      ; print it
     jsr sub_cbc25                                                     ; 909a: 20 25 bc     %.      ; newline
     beq loop_c906d                                                    ; 909d: f0 ce       ..       ; loop

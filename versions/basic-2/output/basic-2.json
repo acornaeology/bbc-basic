@@ -27920,7 +27920,7 @@
         177,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "read the line number low",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -27954,7 +27954,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset to A,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -27964,7 +27964,7 @@
         101,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ table pointer (carry adds 2)",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fwb_sign",
@@ -28049,7 +28049,7 @@
         229,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte vs HIMEM",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_himem_1",
@@ -28335,7 +28335,7 @@
         165,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "step low,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa",
@@ -28348,7 +28348,7 @@
         101,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ current number low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_fileblk",
@@ -28703,7 +28703,7 @@
         101,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ text pointer low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -28998,7 +28998,7 @@
         177,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it from the table",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",
@@ -29036,7 +29036,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up to the &8D token",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -29059,7 +29059,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "reference pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -29085,7 +29085,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "reference pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -29184,7 +29184,7 @@
         105,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "low + 2",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#2"
@@ -29297,7 +29297,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -29310,7 +29310,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "store high,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -29322,7 +29322,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -29332,7 +29332,7 @@
         177,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr),y",
@@ -29345,7 +29345,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
