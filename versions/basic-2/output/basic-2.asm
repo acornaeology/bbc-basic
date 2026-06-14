@@ -5571,56 +5571,56 @@ l848a = sub_c847b+15
 ;     ZP_IWA: the product
 .iwa_mul
     lda zp_iwa_3                                                      ; 9d6d: a5 2d       .-       ; Save the right operand sign
-    pha                                                               ; 9d6f: 48          H        ; ...
+    pha                                                               ; 9d6f: 48          H        ; push it
     jsr iwa_abs                                                       ; 9d70: 20 71 ad     q.      ; take |right|
     ldx #&39 ; '9'                                                    ; 9d73: a2 39       .9       ; save it (via &39)
-    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; ...
+    jsr iwa_store_zp                                                  ; 9d75: 20 44 be     D.      ; store it as the multiplier
     jsr unstack_integer                                               ; 9d78: 20 ea bd     ..      ; unstack the left operand
     pla                                                               ; 9d7b: 68          h        ; recover the right operand sign
     eor zp_iwa_3                                                      ; 9d7c: 45 2d       E-       ; product sign = sign XOR sign
     sta zp_general                                                    ; 9d7e: 85 37       .7       ; (save it)
     jsr iwa_abs                                                       ; 9d80: 20 71 ad     q.      ; take |left|
     ldy #0                                                            ; 9d83: a0 00       ..       ; Clear the running product:
-    ldx #0                                                            ; 9d85: a2 00       ..       ; ...
-    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; ...
-    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; ...
+    ldx #0                                                            ; 9d85: a2 00       ..       ; byte 1 (in X),
+    sty zp_fwb_m2                                                     ; 9d87: 84 3f       .?       ; byte 2,
+    sty zp_fwb_m3                                                     ; 9d89: 84 40       .@       ; and byte 3
 ; &9d8b referenced 1 time by &9db2
 .loop_c9d8b
     lsr l003a                                                         ; 9d8b: 46 3a       F:       ; Shift the multiplier right: next bit
-    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; ...
+    ror zp_fileblk                                                    ; 9d8d: 66 39       f9       ; low byte; bit 0 -> carry
     bcc c9da6                                                         ; 9d8f: 90 15       ..       ; bit clear: skip the add
     clc                                                               ; 9d91: 18          .        ; bit set: add the multiplicand
     tya                                                               ; 9d92: 98          .        ; byte 0
-    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; ...
-    tay                                                               ; 9d95: a8          .        ; ...
+    adc zp_iwa                                                        ; 9d93: 65 2a       e*       ; - multiplicand byte 0,
+    tay                                                               ; 9d95: a8          .        ; back to product byte 0
     txa                                                               ; 9d96: 8a          .        ; byte 1
-    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; ...
-    tax                                                               ; 9d99: aa          .        ; ...
+    adc zp_iwa_1                                                      ; 9d97: 65 2b       e+       ; - byte 1,
+    tax                                                               ; 9d99: aa          .        ; back to product byte 1
     lda zp_fwb_m2                                                     ; 9d9a: a5 3f       .?       ; byte 2
-    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; ...
-    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; ...
+    adc zp_iwa_2                                                      ; 9d9c: 65 2c       e,       ; - byte 2,
+    sta zp_fwb_m2                                                     ; 9d9e: 85 3f       .?       ; back to product byte 2
     lda zp_fwb_m3                                                     ; 9da0: a5 40       .@       ; byte 3
-    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; ...
-    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; ...
+    adc zp_iwa_3                                                      ; 9da2: 65 2d       e-       ; - byte 3,
+    sta zp_fwb_m3                                                     ; 9da4: 85 40       .@       ; back to product byte 3
 ; &9da6 referenced 1 time by &9d8f
 .c9da6
     asl zp_iwa                                                        ; 9da6: 06 2a       .*       ; Shift the multiplicand left
-    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; ...
-    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; ...
-    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; ...
+    rol zp_iwa_1                                                      ; 9da8: 26 2b       &+       ; byte 1,
+    rol zp_iwa_2                                                      ; 9daa: 26 2c       &,       ; byte 2,
+    rol zp_iwa_3                                                      ; 9dac: 26 2d       &-       ; byte 3 (multiplicand now x2)
     lda zp_fileblk                                                    ; 9dae: a5 39       .9       ; more multiplier bits?
-    ora l003a                                                         ; 9db0: 05 3a       .:       ; ...
+    ora l003a                                                         ; 9db0: 05 3a       .:       ; OR in the high byte
     bne loop_c9d8b                                                    ; 9db2: d0 d7       ..       ; loop
     sty zp_fwb_exp                                                    ; 9db4: 84 3d       .=       ; store the product (low 2 bytes)
-    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; ...
+    stx zp_fwb_m1                                                     ; 9db6: 86 3e       .>       ; and byte 1 (bytes 2-3 already in place)
     lda zp_general                                                    ; 9db8: a5 37       .7       ; product sign
-    php                                                               ; 9dba: 08          .        ; ...
+    php                                                               ; 9dba: 08          .        ; save its N flag
 ; &9dbb referenced 1 time by &9e07
 .c9dbb
     ldx #&3d ; '='                                                    ; 9dbb: a2 3d       .=       ; load the product into IWA
 ; &9dbd referenced 1 time by &9e1a
 .c9dbd
-    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; ...
+    jsr iwa_load_zp                                                   ; 9dbd: 20 56 af     V.      ; copy &3D..&40 into IWA
     plp                                                               ; 9dc0: 28          (        ; Apply the sign
     bpl c9dc6                                                         ; 9dc1: 10 03       ..       ; positive: done
     jsr iwa_negate                                                    ; 9dc3: 20 93 ad     ..      ; negative: negate the product

@@ -51836,7 +51836,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -51872,7 +51872,7 @@
         68,
         190
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it as the multiplier",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "iwa_store_zp",
@@ -51959,7 +51959,7 @@
         162,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1 (in X),",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#0"
@@ -51970,7 +51970,7 @@
         132,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -51983,7 +51983,7 @@
         132,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "and byte 3",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -52018,7 +52018,7 @@
         102,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte; bit 0 -> carry",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fileblk",
@@ -52062,7 +52062,7 @@
         101,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ multiplicand byte 0,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -52074,7 +52074,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "back to product byte 0",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -52093,7 +52093,7 @@
         101,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ byte 1,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_1",
@@ -52105,7 +52105,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "back to product byte 1",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -52128,7 +52128,7 @@
         101,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ byte 2,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_2",
@@ -52141,7 +52141,7 @@
         133,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "back to product byte 2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -52167,7 +52167,7 @@
         101,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ byte 3,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa_3",
@@ -52180,7 +52180,7 @@
         133,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "back to product byte 3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -52215,7 +52215,7 @@
         38,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -52228,7 +52228,7 @@
         38,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_2",
@@ -52241,7 +52241,7 @@
         38,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3 (multiplicand now x2)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -52267,7 +52267,7 @@
         5,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR in the high byte",
       "type": "code",
       "mnemonic": "ora",
       "operand": "l003a",
@@ -52306,7 +52306,7 @@
         134,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "and byte 1 (bytes 2-3 already in place)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m1",
@@ -52331,7 +52331,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "save its N flag",
       "type": "code",
       "mnemonic": "php"
     },
@@ -52365,7 +52365,7 @@
       "labels": [
         "c9dbd"
       ],
-      "comment_inline": "...",
+      "comment_inline": "copy &3D..&40 into IWA",
       "xref_summaries": [
         "&9dbd referenced 1 time by &9e1a"
       ],
