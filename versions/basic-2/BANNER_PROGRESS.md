@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 226 fully documented
-(desc + calling contract), 59 remaining (79 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 244 fully documented
+(desc + calling contract), 41 remaining (86 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
 
 Driver sorted into address order; shared stmt_*/fn_* contracts established
@@ -278,6 +278,8 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | integer/RND/USR | iwa_inc, imul16, iwa_store_zp, unstack_int_to_zp, rnd_step, rnd_repeat, read_key_timed, usr_call | 8 | 86 | 48d054e |
 | 2026-06-14 | FP operators | add/sub/mul/div var + fwb, compare, round, negate, set_one, swap, to_int/to_int2, split_int_frac | 16 | 70 | d469dd8 |
 | 2026-06-14 | RND/stack/helpers | rnd_seed/integer/fraction/range, fwa_reciprocal, fwa_sub_var, stack_real/string, print_hex_byte, load_byte_var, encode_line_number | 11 | 59 | c4b3f45 |
+| 2026-06-14 | evaluator chain | eval_factor + levels 2-7 (shared contract via table) + eval_and_compare, eval_real, ensure_real | 10 | 49 | cb17bf0 |
+| 2026-06-14 | parsers + int divide | check_end_of_statement, expect_eq, skip_spaces_expect_comma, check_eq_star_bracket, eval_after_eq, eval_channel, iwa_divide, iwa_test_var; fixed iwa_divide operand roles | 8 | 41 | f1c5dc7 |
 
 ## Resume here
 
