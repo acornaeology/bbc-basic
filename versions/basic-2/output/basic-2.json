@@ -90050,7 +90050,7 @@
         132,
         8
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_erl",
@@ -90063,7 +90063,7 @@
         132,
         9
       ],
-      "comment_inline": "...",
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_erl_1",
@@ -90089,7 +90089,7 @@
         134,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_general_1",
@@ -90128,7 +90128,7 @@
         224,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "page 7 (the input line)?",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "#7"
@@ -90152,7 +90152,7 @@
         166,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "X = error position low",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr",
@@ -90225,7 +90225,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "error high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -90238,7 +90238,7 @@
         229,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the scan high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_general_1",
@@ -90378,7 +90378,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "error high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -90391,7 +90391,7 @@
         229,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the scan high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_general_1",
@@ -90504,7 +90504,7 @@
         133,
         22
       ],
-      "comment_inline": "...",
+      "comment_inline": "default handler &B433: low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -90517,7 +90517,7 @@
         169,
         180
       ],
-      "comment_inline": "...",
+      "comment_inline": "high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -90528,7 +90528,7 @@
         133,
         23
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -90563,7 +90563,7 @@
         133,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr",
@@ -90589,7 +90589,7 @@
         133,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -90625,7 +90625,7 @@
         134,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr_off",
@@ -90711,7 +90711,7 @@
       "bytes": [
         154
       ],
-      "comment_inline": "...",
+      "comment_inline": "S = &FF (empty the stack)",
       "type": "code",
       "mnemonic": "txs"
     },
@@ -102268,7 +102268,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(save)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -102294,7 +102294,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -102307,7 +102307,7 @@
         165,
         29
       ],
-      "comment_inline": "...",
+      "comment_inline": "high...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_data_ptr_1",
@@ -102320,7 +102320,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "(high)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -102344,7 +102344,7 @@
         132,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "(offset 0)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr2_off",
@@ -102538,7 +102538,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -102572,7 +102572,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "past the low byte",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -102594,7 +102594,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "X = length",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -102622,7 +102622,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -102691,7 +102691,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "add the length...",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -102701,7 +102701,7 @@
         101,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -102714,7 +102714,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -102727,7 +102727,7 @@
         144,
         226
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "cbb7a",
@@ -102740,7 +102740,7 @@
         230,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_1",

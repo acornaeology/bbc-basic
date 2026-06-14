@@ -9774,23 +9774,23 @@ l848a = sub_c847b+15
 ; &b3c5 referenced 1 time by &b402
 .find_error_line
     ldy #0                                                            ; b3c5: a0 00       ..       ; Clear ERL:
-    sty zp_erl                                                        ; b3c7: 84 08       ..       ; ...
-    sty zp_erl_1                                                      ; b3c9: 84 09       ..       ; ...
+    sty zp_erl                                                        ; b3c7: 84 08       ..       ; (low)
+    sty zp_erl_1                                                      ; b3c9: 84 09       ..       ; (high)
     ldx zp_page                                                       ; b3cb: a6 18       ..       ; Scan the program from PAGE: high
-    stx zp_general_1                                                  ; b3cd: 86 38       .8       ; ...
+    stx zp_general_1                                                  ; b3cd: 86 38       .8       ; (store)
     sty zp_general                                                    ; b3cf: 84 37       .7       ; low 0
     ldx zp_text_ptr_1                                                 ; b3d1: a6 0c       ..       ; past the error position?
-    cpx #7                                                            ; b3d3: e0 07       ..       ; ...
+    cpx #7                                                            ; b3d3: e0 07       ..       ; page 7 (the input line)?
     beq return_33                                                     ; b3d5: f0 2a       .*       ; reached it: done
-    ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..       ; ...
+    ldx zp_text_ptr                                                   ; b3d7: a6 0b       ..       ; X = error position low
 ; &b3d9 referenced 1 time by &b3ff
 .loop_cb3d9
     jsr read_via_ptr_general                                          ; b3d9: 20 42 89     B.      ; read a program byte
     cmp #&0d                                                          ; b3dc: c9 0d       ..       ; a line end (CR)?
     bne cb3f9                                                         ; b3de: d0 19       ..       ; no: keep scanning
     cpx zp_general                                                    ; b3e0: e4 37       .7       ; is this line past the error?
-    lda zp_text_ptr_1                                                 ; b3e2: a5 0c       ..       ; ...
-    sbc zp_general_1                                                  ; b3e4: e5 38       .8       ; ...
+    lda zp_text_ptr_1                                                 ; b3e2: a5 0c       ..       ; error high...
+    sbc zp_general_1                                                  ; b3e4: e5 38       .8       ; minus the scan high
     bcc return_33                                                     ; b3e6: 90 19       ..       ; yes: keep the previous line
     jsr read_via_ptr_general                                          ; b3e8: 20 42 89     B.      ; read the line number high byte
     ora #0                                                            ; b3eb: 09 00       ..       ; end of program?
@@ -9802,8 +9802,8 @@ l848a = sub_c847b+15
 ; &b3f9 referenced 1 time by &b3de
 .cb3f9
     cpx zp_general                                                    ; b3f9: e4 37       .7       ; still before the error?
-    lda zp_text_ptr_1                                                 ; b3fb: a5 0c       ..       ; ...
-    sbc zp_general_1                                                  ; b3fd: e5 38       .8       ; ...
+    lda zp_text_ptr_1                                                 ; b3fb: a5 0c       ..       ; error high...
+    sbc zp_general_1                                                  ; b3fd: e5 38       .8       ; minus the scan high
     bcs loop_cb3d9                                                    ; b3ff: b0 d8       ..       ; yes: scan the next line
 ; &b401 referenced 3 times by &b3d5, &b3e6, &b3ed
 .return_33
@@ -9814,25 +9814,25 @@ l848a = sub_c847b+15
     lda (zp_error_ptr),y                                              ; b407: b1 fd       ..       ; error number
     bne cb413                                                         ; b409: d0 08       ..       ; non-zero: an ON ERROR handler is active
     lda #&33 ; '3'                                                    ; b40b: a9 33       .3       ; no handler: reset to the default (ON ERROR OFF)
-    sta zp_error_vec                                                  ; b40d: 85 16       ..       ; ...
-    lda #&b4                                                          ; b40f: a9 b4       ..       ; ...
-    sta zp_error_vec_1                                                ; b411: 85 17       ..       ; ...
+    sta zp_error_vec                                                  ; b40d: 85 16       ..       ; default handler &B433: low,
+    lda #&b4                                                          ; b40f: a9 b4       ..       ; high...
+    sta zp_error_vec_1                                                ; b411: 85 17       ..       ; (store)
 ; &b413 referenced 1 time by &b409
 .cb413
     lda zp_error_vec                                                  ; b413: a5 16       ..       ; Point the program pointer at the handler code: low
-    sta zp_text_ptr                                                   ; b415: 85 0b       ..       ; ...
+    sta zp_text_ptr                                                   ; b415: 85 0b       ..       ; (low)
     lda zp_error_vec_1                                                ; b417: a5 17       ..       ; high
-    sta zp_text_ptr_1                                                 ; b419: 85 0c       ..       ; ...
+    sta zp_text_ptr_1                                                 ; b419: 85 0c       ..       ; (store)
     jsr sub_cbd3a                                                     ; b41b: 20 3a bd     :.      ; clear DATA and the stacks
     tax                                                               ; b41e: aa          .        ; offset 0
-    stx zp_text_ptr_off                                               ; b41f: 86 0a       ..       ; ...
+    stx zp_text_ptr_off                                               ; b41f: 86 0a       ..       ; (store)
     lda #osbyte_vdu_queue_size                                        ; b421: a9 da       ..       ; OSBYTE &DA: flush the VDU queue
     jsr osbyte                                                        ; b423: 20 f4 ff     ..      ; osbyte: vdu queue size
     lda #osbyte_acknowledge_escape                                    ; b426: a9 7e       .~       ; OSBYTE &7E: acknowledge any Escape
     jsr osbyte                                                        ; b428: 20 f4 ff     ..      ; Clear escape condition and perform escape effects
     ldx #&ff                                                          ; b42b: a2 ff       ..       ; reset the 6502 stack...
     stx zp_opt_flag                                                   ; b42d: 86 28       .(       ; OPT = &FF
-    txs                                                               ; b42f: 9a          .        ; ...
+    txs                                                               ; b42f: 9a          .        ; S = &FF (empty the stack)
     jmp c8ba3                                                         ; b430: 4c a3 8b    L..      ; enter the execution loop at the handler
     equb &f6, &3a, &e7, &9e, &f1                                      ; b433: f6 3a e7... .:....
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
@@ -11019,13 +11019,13 @@ l848a = sub_c847b+15
 ; &bb50 referenced 2 times by &bb26, &bb32
 .next_data_item
     lda zp_text_ptr2_off                                              ; bb50: a5 1b       ..       ; Save the program pointer
-    sta zp_text_ptr_off                                               ; bb52: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; bb52: 85 0a       ..       ; (save)
     lda zp_data_ptr                                                   ; bb54: a5 1c       ..       ; Point at the DATA position
-    sta zp_text_ptr2                                                  ; bb56: 85 19       ..       ; ...
-    lda zp_data_ptr_1                                                 ; bb58: a5 1d       ..       ; ...
-    sta zp_text_ptr2_1                                                ; bb5a: 85 1a       ..       ; ...
+    sta zp_text_ptr2                                                  ; bb56: 85 19       ..       ; (low)
+    lda zp_data_ptr_1                                                 ; bb58: a5 1d       ..       ; high...
+    sta zp_text_ptr2_1                                                ; bb5a: 85 1a       ..       ; (high)
     ldy #0                                                            ; bb5c: a0 00       ..       ; From offset 0
-    sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..       ; ...
+    sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..       ; (offset 0)
     jsr skip_spaces_ptr2                                              ; bb60: 20 8c 8a     ..      ; Next character
     cmp #&2c ; ','                                                    ; bb63: c9 2c       .,       ; ',' item separator?
     beq return_36                                                     ; bb65: f0 49       .I       ; yes: at the next item
@@ -11043,26 +11043,26 @@ l848a = sub_c847b+15
 ; &bb7a referenced 3 times by &bb6d, &bb96, &bb9a
 .cbb7a
     ldy zp_text_ptr2_off                                              ; bb7a: a4 1b       ..       ; Line marker
-    lda (zp_text_ptr2),y                                              ; bb7c: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; bb7c: b1 19       ..       ; read it
     bmi cbb9c                                                         ; bb7e: 30 1c       0.       ; end of program: Out of DATA
     iny                                                               ; bb80: c8          .        ; Skip the line number
-    iny                                                               ; bb81: c8          .        ; ...
+    iny                                                               ; bb81: c8          .        ; past the low byte
     lda (zp_text_ptr2),y                                              ; bb82: b1 19       ..       ; Line length
-    tax                                                               ; bb84: aa          .        ; ...
+    tax                                                               ; bb84: aa          .        ; X = length
 ; &bb85 referenced 1 time by &bb8a
 .loop_cbb85
     iny                                                               ; bb85: c8          .        ; Next character
-    lda (zp_text_ptr2),y                                              ; bb86: b1 19       ..       ; ...
+    lda (zp_text_ptr2),y                                              ; bb86: b1 19       ..       ; read it
     cmp #&20 ; ' '                                                    ; bb88: c9 20       .        ; space?
     beq loop_cbb85                                                    ; bb8a: f0 f9       ..       ; skip leading spaces
     cmp #&dc                                                          ; bb8c: c9 dc       ..       ; DATA token?
     beq cbbad                                                         ; bb8e: f0 1d       ..       ; yes: use this line
     txa                                                               ; bb90: 8a          .        ; Advance to the next line
-    clc                                                               ; bb91: 18          .        ; ...
-    adc zp_text_ptr2                                                  ; bb92: 65 19       e.       ; ...
-    sta zp_text_ptr2                                                  ; bb94: 85 19       ..       ; ...
-    bcc cbb7a                                                         ; bb96: 90 e2       ..       ; ...
-    inc zp_text_ptr2_1                                                ; bb98: e6 1a       ..       ; ...
+    clc                                                               ; bb91: 18          .        ; add the length...
+    adc zp_text_ptr2                                                  ; bb92: 65 19       e.       ; to the pointer low,
+    sta zp_text_ptr2                                                  ; bb94: 85 19       ..       ; (store)
+    bcc cbb7a                                                         ; bb96: 90 e2       ..       ; no carry
+    inc zp_text_ptr2_1                                                ; bb98: e6 1a       ..       ; carry into high
     bcs cbb7a                                                         ; bb9a: b0 de       ..       ; continue
 ; &bb9c referenced 1 time by &bb7e
 .cbb9c
