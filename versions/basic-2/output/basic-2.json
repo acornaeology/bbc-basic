@@ -26618,7 +26618,7 @@
       "labels": [
         "c8ee0"
       ],
-      "comment_inline": "...",
+      "comment_inline": "reset the block write offset",
       "xref_summaries": [
         "&8ee0 referenced 1 time by &8f09"
       ],
@@ -26689,7 +26689,7 @@
         213,
         149
       ],
-      "comment_inline": "...",
+      "comment_inline": "resolve it to an address",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c95d5",
@@ -26728,7 +26728,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance to the next slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26752,7 +26752,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -26764,7 +26764,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26788,7 +26788,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -26800,7 +26800,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -26824,7 +26824,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -26888,7 +26888,7 @@
         82,
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "error if more follows",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c9852",

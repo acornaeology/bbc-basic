@@ -2857,29 +2857,29 @@ l848a = sub_c847b+15
     sty string_work                                                   ; 8edd: 8c 00 06    ...      ; zero the parameter count
 ; &8ee0 referenced 1 time by &8f09
 .c8ee0
-    sty l06ff                                                         ; 8ee0: 8c ff 06    ...      ; ...
+    sty l06ff                                                         ; 8ee0: 8c ff 06    ...      ; reset the block write offset
     jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..      ; next parameter?
     cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,       ; a comma?
     bne c8f0c                                                         ; 8ee8: d0 22       ."       ; no: end of the parameters
     ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..       ; parse the parameter (a variable)
-    jsr sub_c95d5                                                     ; 8eec: 20 d5 95     ..      ; ...
+    jsr sub_c95d5                                                     ; 8eec: 20 d5 95     ..      ; resolve it to an address
     beq c8f1b                                                         ; 8eef: f0 2a       .*       ; bad parameter: error
     ldy l06ff                                                         ; 8ef1: ac ff 06    ...      ; append its address to the block:
-    iny                                                               ; 8ef4: c8          .        ; ...
+    iny                                                               ; 8ef4: c8          .        ; advance to the next slot
     lda zp_iwa                                                        ; 8ef5: a5 2a       .*       ; address low
-    sta string_work,y                                                 ; 8ef7: 99 00 06    ...      ; ...
-    iny                                                               ; 8efa: c8          .        ; ...
+    sta string_work,y                                                 ; 8ef7: 99 00 06    ...      ; store it
+    iny                                                               ; 8efa: c8          .        ; next slot
     lda zp_iwa_1                                                      ; 8efb: a5 2b       .+       ; address high
-    sta string_work,y                                                 ; 8efd: 99 00 06    ...      ; ...
-    iny                                                               ; 8f00: c8          .        ; ...
+    sta string_work,y                                                 ; 8efd: 99 00 06    ...      ; store it
+    iny                                                               ; 8f00: c8          .        ; next slot
     lda zp_iwa_2                                                      ; 8f01: a5 2c       .,       ; type
-    sta string_work,y                                                 ; 8f03: 99 00 06    ...      ; ...
+    sta string_work,y                                                 ; 8f03: 99 00 06    ...      ; store it
     inc string_work                                                   ; 8f06: ee 00 06    ...      ; one more parameter
     jmp c8ee0                                                         ; 8f09: 4c e0 8e    L..      ; next parameter
 ; &8f0c referenced 1 time by &8ee8
 .c8f0c
     dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..       ; Check for end of statement
-    jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.      ; ...
+    jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.      ; error if more follows
     jsr unstack_integer                                               ; 8f11: 20 ea bd     ..      ; pop the address into IWA
     jsr usr_call                                                      ; 8f14: 20 1e 8f     ..      ; set up registers and call the code
     cld                                                               ; 8f17: d8          .        ; clear decimal mode on return
