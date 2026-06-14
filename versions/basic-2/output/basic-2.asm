@@ -2648,13 +2648,13 @@ l848a = sub_c847b+15
 ; &8db5 referenced 1 time by &8db9
 .loop_c8db5
     jsr print_space                                                   ; 8db5: 20 65 b5     e.      ; print a space
-    iny                                                               ; 8db8: c8          .        ; ...
+    iny                                                               ; 8db8: c8          .        ; count up to zero
     bne loop_c8db5                                                    ; 8db9: d0 fa       ..       ; loop
 ; &8dbb referenced 3 times by &8da3, &8da9, &8dad
 .c8dbb
     clc                                                               ; 8dbb: 18          .        ; Prepare for decimal
     lda resint_at                                                     ; 8dbc: ad 00 04    ...      ; Take the field width from @% (&0400)
-    sta zp_print_bytes                                                ; 8dbf: 85 14       ..       ; ...
+    sta zp_print_bytes                                                ; 8dbf: 85 14       ..       ; as the print field width
 ; &8dc1 referenced 1 time by &8dd4
 .loop_c8dc1
     ror zp_print_flag                                                 ; 8dc1: 66 15       f.       ; Set the hex/dec flag (~ selects hex)
@@ -2678,30 +2678,30 @@ l848a = sub_c847b+15
     jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
     bcc c8dc3                                                         ; 8de1: 90 e0       ..       ; handled: next item
     lda zp_print_bytes                                                ; 8de3: a5 14       ..       ; Save the field width...
-    pha                                                               ; 8de5: 48          H        ; ...
+    pha                                                               ; 8de5: 48          H        ; push it
     lda zp_print_flag                                                 ; 8de6: a5 15       ..       ; ...and flags (the evaluator may PRINT)
-    pha                                                               ; 8de8: 48          H        ; ...
+    pha                                                               ; 8de8: 48          H        ; push it
     dec zp_text_ptr2_off                                              ; 8de9: c6 1b       ..       ; Back up to the item
     jsr eval_or_eor                                                   ; 8deb: 20 29 9b     ).      ; Evaluate the expression to print
     pla                                                               ; 8dee: 68          h        ; Restore the flags...
-    sta zp_print_flag                                                 ; 8def: 85 15       ..       ; ...
+    sta zp_print_flag                                                 ; 8def: 85 15       ..       ; store them
     pla                                                               ; 8df1: 68          h        ; ...and the field width
-    sta zp_print_bytes                                                ; 8df2: 85 14       ..       ; ...
+    sta zp_print_bytes                                                ; 8df2: 85 14       ..       ; store it
     lda zp_text_ptr2_off                                              ; 8df4: a5 1b       ..       ; Update the program pointer
-    sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..       ; ...
+    sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..       ; from PtrB offset (&1B)
     tya                                                               ; 8df8: 98          .        ; String item?
     beq c8e0e                                                         ; 8df9: f0 13       ..       ; A string value: print it directly
     jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..      ; A number: convert to an ASCII string
     lda zp_print_bytes                                                ; 8dfe: a5 14       ..       ; and right-justify it within the field width
     sec                                                               ; 8e00: 38          8        ; minus the string length
-    sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6       ; ...
+    sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6       ; width - string length = pad count
     bcc c8e0e                                                         ; 8e03: 90 09       ..       ; longer than the field: print as is
     beq c8e0e                                                         ; 8e05: f0 07       ..       ; equal: print as is
     tay                                                               ; 8e07: a8          .        ; spaces to pad with
 ; &8e08 referenced 1 time by &8e0c
 .loop_c8e08
     jsr print_space                                                   ; 8e08: 20 65 b5     e.      ; print a leading space
-    dey                                                               ; 8e0b: 88          .        ; ...
+    dey                                                               ; 8e0b: 88          .        ; one fewer pad space
     bne loop_c8e08                                                    ; 8e0c: d0 fa       ..       ; loop
 ; &8e0e referenced 3 times by &8df9, &8e03, &8e05
 .c8e0e
@@ -2713,7 +2713,7 @@ l848a = sub_c847b+15
     lda string_work,y                                                 ; 8e14: b9 00 06    ...      ; String character
     jsr print_char                                                    ; 8e17: 20 58 b5     X.      ; print it
     iny                                                               ; 8e1a: c8          .        ; next
-    cpy zp_strbuf_len                                                 ; 8e1b: c4 36       .6       ; ...
+    cpy zp_strbuf_len                                                 ; 8e1b: c4 36       .6       ; printed all characters?
     bne loop_c8e14                                                    ; 8e1d: d0 f5       ..       ; loop
     beq c8dc3                                                         ; 8e1f: f0 a2       ..       ; next item
 ; &8e21 referenced 1 time by &8e26
@@ -2724,13 +2724,13 @@ l848a = sub_c847b+15
     cmp #&2c ; ','                                                    ; 8e24: c9 2c       .,       ; ',' TAB(x,y) form?
     bne loop_c8e21                                                    ; 8e26: d0 f9       ..       ; no: TAB(x) or SPC
     lda zp_iwa                                                        ; 8e28: a5 2a       .*       ; Save the x coordinate
-    pha                                                               ; 8e2a: 48          H        ; ...
+    pha                                                               ; 8e2a: 48          H        ; push it
     jsr cae56                                                         ; 8e2b: 20 56 ae     V.      ; Evaluate y, expect )
     jsr coerce_to_integer                                             ; 8e2e: 20 f0 92     ..      ; coerce to integer
     lda #&1f                                                          ; 8e31: a9 1f       ..       ; VDU 31 (move cursor)
-    jsr oswrch                                                        ; 8e33: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 8e33: 20 ee ff     ..      ; send the VDU 31 control code
     pla                                                               ; 8e36: 68          h        ; x coordinate
-    jsr oswrch                                                        ; 8e37: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 8e37: 20 ee ff     ..      ; send the x coordinate
     jsr sub_c9456                                                     ; 8e3a: 20 56 94     V.      ; y coordinate
     jmp c8e6a                                                         ; 8e3d: 4c 6a 8e    Lj.      ; next item
 ; &8e40 referenced 1 time by &8e82
@@ -2740,15 +2740,15 @@ l848a = sub_c847b+15
     cmp #&29 ; ')'                                                    ; 8e46: c9 29       .)       ; ')'?
     bne loop_c8e24                                                    ; 8e48: d0 da       ..       ; no: TAB(x,y)
     lda zp_iwa                                                        ; 8e4a: a5 2a       .*       ; Spaces = x - COUNT
-    sbc zp_count                                                      ; 8e4c: e5 1e       ..       ; ...
+    sbc zp_count                                                      ; 8e4c: e5 1e       ..       ; subtract the current column
     beq c8e6a                                                         ; 8e4e: f0 1a       ..       ; already at column x: nothing to do
     tay                                                               ; 8e50: a8          .        ; count
     bcs c8e5f                                                         ; 8e51: b0 0c       ..       ; past column x: skip
     jsr sub_cbc25                                                     ; 8e53: 20 25 bc     %.      ; Newline to reach a fresh line
-    beq c8e5b                                                         ; 8e56: f0 03       ..       ; ...
+    beq c8e5b                                                         ; 8e56: f0 03       ..       ; fresh line: pad to column x
 ; &8e58 referenced 1 time by &8e86
 .loop_c8e58
-    jsr sub_c92e3                                                     ; 8e58: 20 e3 92     ..      ; ...
+    jsr sub_c92e3                                                     ; 8e58: 20 e3 92     ..      ; SPC(n): evaluate the count
 ; &8e5b referenced 1 time by &8e56
 .c8e5b
     ldy zp_iwa                                                        ; 8e5b: a4 2a       .*       ; spaces = x
@@ -2756,7 +2756,7 @@ l848a = sub_c847b+15
 ; &8e5f referenced 2 times by &8e51, &8e63
 .c8e5f
     jsr print_space                                                   ; 8e5f: 20 65 b5     e.      ; Print a space
-    dey                                                               ; 8e62: 88          .        ; ...
+    dey                                                               ; 8e62: 88          .        ; one fewer space
     bne c8e5f                                                         ; 8e63: d0 fa       ..       ; loop
     beq c8e6a                                                         ; 8e65: f0 03       ..       ; next item
 ; &8e67 referenced 1 time by &8e7e
@@ -2765,8 +2765,8 @@ l848a = sub_c847b+15
 ; &8e6a referenced 5 times by &8e3d, &8e4e, &8e5d, &8e65, &8eb9
 .c8e6a
     clc                                                               ; 8e6a: 18          .        ; Sync the program pointer
-    ldy zp_text_ptr2_off                                              ; 8e6b: a4 1b       ..       ; ...
-    sty zp_text_ptr_off                                               ; 8e6d: 84 0a       ..       ; ...
+    ldy zp_text_ptr2_off                                              ; 8e6b: a4 1b       ..       ; load PtrB offset (&1B),
+    sty zp_text_ptr_off                                               ; 8e6d: 84 0a       ..       ; store to PtrA offset (&0A)
     rts                                                               ; 8e6f: 60          `        ; Return
 ; ***************************************************************************************
 ; Handle the PRINT ' TAB and SPC items

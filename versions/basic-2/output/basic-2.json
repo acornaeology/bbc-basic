@@ -24664,7 +24664,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "count up to zero",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -24721,7 +24721,7 @@
         133,
         20
       ],
-      "comment_inline": "...",
+      "comment_inline": "as the print field width",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -24973,7 +24973,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -24995,7 +24995,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -25041,7 +25041,7 @@
         133,
         21
       ],
-      "comment_inline": "...",
+      "comment_inline": "store them",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -25063,7 +25063,7 @@
         133,
         20
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_bytes",
@@ -25089,7 +25089,7 @@
         133,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from PtrB offset (&1B)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_off",
@@ -25160,7 +25160,7 @@
         229,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "width - string length = pad count",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_strbuf_len",
@@ -25230,7 +25230,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer pad space",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -25347,7 +25347,7 @@
         196,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "printed all characters?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_strbuf_len",
@@ -25454,7 +25454,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -25504,7 +25504,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send the VDU 31 control code",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -25527,7 +25527,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send the x coordinate",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",
@@ -25642,7 +25642,7 @@
         229,
         30
       ],
-      "comment_inline": "...",
+      "comment_inline": "subtract the current column",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_count",
@@ -25704,7 +25704,7 @@
         240,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "fresh line: pad to column x",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c8e5b",
@@ -25721,7 +25721,7 @@
       "labels": [
         "loop_c8e58"
       ],
-      "comment_inline": "...",
+      "comment_inline": "SPC(n): evaluate the count",
       "xref_summaries": [
         "&8e58 referenced 1 time by &8e86"
       ],
@@ -25798,7 +25798,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer space",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -25879,7 +25879,7 @@
         164,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "load PtrB offset (&1B),",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_text_ptr2_off",
@@ -25892,7 +25892,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "store to PtrA offset (&0A)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
