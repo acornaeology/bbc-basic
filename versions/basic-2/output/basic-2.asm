@@ -2956,7 +2956,7 @@ oscli            = &fff7
     jsr oswrch                                                        ; 8e33: 20 ee ff     ..      ; send the VDU 31 control code
     pla                                                               ; 8e36: 68          h        ; x coordinate
     jsr oswrch                                                        ; 8e37: 20 ee ff     ..      ; send the x coordinate
-    jsr sub_c9456                                                     ; 8e3a: 20 56 94     V.      ; y coordinate
+    jsr vdu_send_byte                                                 ; 8e3a: 20 56 94     V.      ; y coordinate
     jmp print_sync                                                    ; 8e3d: 4c 6a 8e    Lj.      ; next item
 ; &8e40 referenced 1 time by &8e82
 .print_tab_x
@@ -3729,10 +3729,10 @@ oscli            = &fff7
     ldx #0                                                            ; 9236: a2 00       ..       ; Clear the running product (X:Y)
     ldy #0                                                            ; 9238: a0 00       ..       ; high in X, low in Y
 ; &923a referenced 1 time by &9253
-.loop_c923a
+.imul_loop
     lsr zp_fwb_m3                                                     ; 923a: 46 40       F@       ; Shift the multiplier right: next bit into carry
     ror zp_fwb_m2                                                     ; 923c: 66 3f       f?       ; low byte (next bit -> carry)
-    bcc c924b                                                         ; 923e: 90 0b       ..       ; bit clear: skip the add
+    bcc imul_double                                                   ; 923e: 90 0b       ..       ; bit clear: skip the add
     clc                                                               ; 9240: 18          .        ; bit set: add the multiplicand (IWA)
     tya                                                               ; 9241: 98          .        ; product low...
     adc zp_iwa                                                        ; 9242: 65 2a       e*       ; low
@@ -3740,19 +3740,19 @@ oscli            = &fff7
     txa                                                               ; 9245: 8a          .        ; product high...
     adc zp_iwa_1                                                      ; 9246: 65 2b       e+       ; high
     tax                                                               ; 9248: aa          .        ; (into X)
-    bcs c925a                                                         ; 9249: b0 0f       ..       ; overflow: Too big
+    bcs imul_overflow                                                 ; 9249: b0 0f       ..       ; overflow: Too big
 ; &924b referenced 1 time by &923e
-.c924b
+.imul_double
     asl zp_iwa                                                        ; 924b: 06 2a       .*       ; Double the multiplicand: low
     rol zp_iwa_1                                                      ; 924d: 26 2b       &+       ; high
     lda zp_fwb_m2                                                     ; 924f: a5 3f       .?       ; more multiplier bits?
     ora zp_fwb_m3                                                     ; 9251: 05 40       .@       ; any multiplier bits left?
-    bne loop_c923a                                                    ; 9253: d0 e5       ..       ; loop
+    bne imul_loop                                                     ; 9253: d0 e5       ..       ; loop
     sty zp_iwa                                                        ; 9255: 84 2a       .*       ; Store the product: low
     stx zp_iwa_1                                                      ; 9257: 86 2b       .+       ; high
     rts                                                               ; 9259: 60          `        ; Return
 ; &925a referenced 1 time by &9249
-.c925a
+.imul_overflow
     jmp bad_dim                                                       ; 925a: 4c 27 91    L'.      ; overflow error
 ; ***************************************************************************************
 ; HIMEM=
@@ -3796,7 +3796,7 @@ oscli            = &fff7
     sta zp_lomem_1                                                    ; 927a: 85 01       ..       ; LOMEM high
     sta zp_vartop_1                                                   ; 927c: 85 03       ..       ; VARTOP high
     jsr sub_cbd2f                                                     ; 927e: 20 2f bd     /.      ; Clear all dynamic variables
-    beq c928a                                                         ; 9281: f0 07       ..       ; Back to the execution loop
+    beq page_done                                                     ; 9281: f0 07       ..       ; Back to the execution loop
 ; ***************************************************************************************
 ; PAGE=
 ;
@@ -3814,7 +3814,7 @@ oscli            = &fff7
     lda zp_iwa_1                                                      ; 9286: a5 2b       .+       ; PAGE is a page number (the high byte)
     sta zp_page                                                       ; 9288: 85 18       ..       ; (store)
 ; &928a referenced 2 times by &9281, &9293
-.c928a
+.page_done
     jmp statement_loop                                                ; 928a: 4c 9b 8b    L..      ; Back to execution
 ; ***************************************************************************************
 ; CLEAR
@@ -3831,7 +3831,7 @@ oscli            = &fff7
 .stmt_clear
     jsr check_end_of_statement                                        ; 928d: 20 57 98     W.      ; Check the statement ends
     jsr clear_vars_heap_stack                                         ; 9290: 20 20 bd      .      ; Clear variables, heap and stack
-    beq c928a                                                         ; 9293: f0 f5       ..       ; next statement
+    beq page_done                                                     ; 9293: f0 f5       ..       ; next statement
 ; ***************************************************************************************
 ; TRACE
 ;
@@ -3846,38 +3846,38 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_trace
     jsr check_line_number                                             ; 9295: 20 df 97     ..      ; Line number following?
-    bcs c92a5                                                         ; 9298: b0 0b       ..       ; yes: TRACE to that line
+    bcs trace_check_end                                               ; 9298: b0 0b       ..       ; yes: TRACE to that line
     cmp #&ee                                                          ; 929a: c9 ee       ..       ; ON token?
-    beq c92b7                                                         ; 929c: f0 19       ..       ; yes
+    beq trace_on                                                      ; 929c: f0 19       ..       ; yes
     cmp #&87                                                          ; 929e: c9 87       ..       ; OFF token?
-    beq c92c0                                                         ; 92a0: f0 1e       ..       ; yes
+    beq trace_off                                                     ; 92a0: f0 1e       ..       ; yes
     jsr eval_expr_to_integer                                          ; 92a2: 20 21 88     !.      ; Evaluate the trace ceiling
 ; &92a5 referenced 1 time by &9298
-.c92a5
+.trace_check_end
     jsr check_end_of_statement                                        ; 92a5: 20 57 98     W.      ; check the statement ends
     lda zp_iwa                                                        ; 92a8: a5 2a       .*       ; Set the trace ceiling
     sta zp_trace_max                                                  ; 92aa: 85 21       .!       ; low byte,
     lda zp_iwa_1                                                      ; 92ac: a5 2b       .+       ; high byte,
 ; &92ae referenced 1 time by &92be
-.loop_c92ae
+.trace_ceiling_loop
     sta l0022                                                         ; 92ae: 85 22       ."       ; to &22
     lda #&ff                                                          ; 92b0: a9 ff       ..       ; TRACE on
 ; &92b2 referenced 1 time by &92c7
-.loop_c92b2
+.trace_set_flag
     sta zp_trace_flag                                                 ; 92b2: 85 20       .        ; Set the TRACE flag
     jmp statement_loop                                                ; 92b4: 4c 9b 8b    L..      ; next statement
 ; &92b7 referenced 1 time by &929c
-.c92b7
+.trace_on
     inc zp_text_ptr_off                                               ; 92b7: e6 0a       ..       ; TRACE ON: step past
     jsr check_end_of_statement                                        ; 92b9: 20 57 98     W.      ; check the statement ends
     lda #&ff                                                          ; 92bc: a9 ff       ..       ; ceiling = max
-    bne loop_c92ae                                                    ; 92be: d0 ee       ..       ; set it on
+    bne trace_ceiling_loop                                            ; 92be: d0 ee       ..       ; set it on
 ; &92c0 referenced 1 time by &92a0
-.c92c0
+.trace_off
     inc zp_text_ptr_off                                               ; 92c0: e6 0a       ..       ; TRACE OFF: step past
     jsr check_end_of_statement                                        ; 92c2: 20 57 98     W.      ; check the statement ends
     lda #0                                                            ; 92c5: a9 00       ..       ; flag = 0
-    beq loop_c92b2                                                    ; 92c7: f0 e9       ..       ; set it off
+    beq trace_set_flag                                                ; 92c7: f0 e9       ..       ; set it off
 ; ***************************************************************************************
 ; TIME=
 ;
@@ -3946,8 +3946,8 @@ oscli            = &fff7
 ; &92e3 referenced 10 times by &8e58, &95aa, &95b2, &9691, &ab33, &abd2, &acd1, &afad, &b3bd, &bfbc
 .eval_factor_integer
     jsr eval_factor                                                   ; 92e3: 20 ec ad     ..      ; Evaluate a factor
-    beq c92f7                                                         ; 92e6: f0 0f       ..       ; string: Type mismatch
-    bmi c92f4                                                         ; 92e8: 30 0a       0.       ; real: convert to integer
+    beq coerce_type_error                                             ; 92e6: f0 0f       ..       ; string: Type mismatch
+    bmi coerce_real                                                   ; 92e8: 30 0a       0.       ; real: convert to integer
 ; &92ea referenced 2 times by &92f2, &92ff
 .return_9
     rts                                                               ; 92ea: 60          `        ; Return
@@ -3995,13 +3995,13 @@ oscli            = &fff7
 ;     A: value type from zp_var_type (&27)
 ; &92f0 referenced 21 times by &8824, &8e2e, &92e0, &9688, &974a, &976f, &99bf, &99ce, &9b3e, &9b59, &9b6c, &9b7b, &9b85, &ab4d, &ad0c, &af0f, &afdd, &afff, &b05e, &b921, &b9a2
 .coerce_to_integer
-    beq c92f7                                                         ; 92f0: f0 05       ..       ; string?
+    beq coerce_type_error                                             ; 92f0: f0 05       ..       ; string?
     bpl return_9                                                      ; 92f2: 10 f6       ..       ; integer: return
 ; &92f4 referenced 1 time by &92e8
-.c92f4
+.coerce_real
     jmp fwa_to_int                                                    ; 92f4: 4c e4 a3    L..      ; real: convert to integer
 ; &92f7 referenced 3 times by &92e6, &92f0, &92fd
-.c92f7
+.coerce_type_error
     jmp err_type_mismatch                                             ; 92f7: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; Evaluate an expression as a real
@@ -4035,7 +4035,7 @@ oscli            = &fff7
 ;     BRK: Type mismatch on a string
 ; &92fd referenced 7 times by &9a59, &9d29, &9de6, &9df2, &9e36, &b852, &b870
 .ensure_real
-    beq c92f7                                                         ; 92fd: f0 f8       ..       ; string?
+    beq coerce_type_error                                             ; 92fd: f0 f8       ..       ; string?
     bmi return_9                                                      ; 92ff: 30 e9       0.       ; real: return
     jmp int_to_fwa                                                    ; 9301: 4c be a2    L..      ; integer: convert to real
 ; ***************************************************************************************
@@ -4063,11 +4063,11 @@ oscli            = &fff7
     jsr sub_c9852                                                     ; 9315: 20 52 98     R.      ; check the statement ends
     jmp statement_loop                                                ; 9318: 4c 9b 8b    L..      ; next statement
 ; &931b referenced 1 time by &9332
-.loop_c931b
+.proc_clear_loop
     ldy #3                                                            ; 931b: a0 03       ..       ; Clear the local string length
     lda #0                                                            ; 931d: a9 00       ..       ; zero,
     sta (zp_iwa),y                                                    ; 931f: 91 2a       .*       ; string length = 0 (offset 3)
-    beq c9341                                                         ; 9321: f0 1e       ..       ; always
+    beq local_bump                                                    ; 9321: f0 1e       ..       ; always
 ; ***************************************************************************************
 ; LOCAL
 ;
@@ -4084,19 +4084,19 @@ oscli            = &fff7
 .stmt_local
     tsx                                                               ; 9323: ba          .        ; LOCAL is only meaningful inside a PROC/FN
     cpx #&fc                                                          ; 9324: e0 fc       ..       ; inside a PROC/FN?
-    bcs c936b                                                         ; 9326: b0 43       .C       ; no: Not LOCAL error
+    bcs not_local_error                                               ; 9326: b0 43       .C       ; no: Not LOCAL error
     jsr parse_lvalue                                                  ; 9328: 20 82 95     ..      ; Parse the local variable
-    beq c9353                                                         ; 932b: f0 26       .&       ; not a variable: error
+    beq local_not_var                                                 ; 932b: f0 26       .&       ; not a variable: error
     jsr stack_local                                                   ; 932d: 20 0d b3     ..      ; Save the variable's value for restoration
     ldy zp_iwa_2                                                      ; 9330: a4 2c       .,       ; string variable?
-    bmi loop_c931b                                                    ; 9332: 30 e7       0.       ; yes: leave it cleared
+    bmi proc_clear_loop                                               ; 9332: 30 e7       0.       ; yes: leave it cleared
     jsr stack_integer                                                 ; 9334: 20 94 bd     ..      ; stack the variable address
     lda #0                                                            ; 9337: a9 00       ..       ; Initialise the local to zero / empty
     jsr int_result_a                                                  ; 9339: 20 d8 ae     ..      ; value zero
     sta zp_var_type                                                   ; 933c: 85 27       .'       ; integer type
     jsr assign_number                                                 ; 933e: 20 b4 b4     ..      ; assign it
 ; &9341 referenced 1 time by &9321
-.c9341
+.local_bump
     tsx                                                               ; 9341: ba          .        ; Bump the local count in the frame
     inc l0106,x                                                       ; 9342: fe 06 01    ...      ; at frame offset +6
     ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..       ; Sync the program pointer
@@ -4106,7 +4106,7 @@ oscli            = &fff7
     beq stmt_local                                                    ; 934e: f0 d3       ..       ; yes
     jmp stmt_backup_end                                               ; 9350: 4c 96 8b    L..      ; next statement
 ; &9353 referenced 1 time by &932b
-.c9353
+.local_not_var
     jmp stmt_check_end                                                ; 9353: 4c 98 8b    L..      ; not a variable: error
 ; ***************************************************************************************
 ; ENDPROC
@@ -4125,25 +4125,25 @@ oscli            = &fff7
 .stmt_endproc
     tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
     cpx #&fc                                                          ; 9357: e0 fc       ..       ; stack near empty (no PROC frame)?
-    bcs c9365                                                         ; 9359: b0 0a       ..       ; no frame: Not PROC error
+    bcs no_proc_error                                                 ; 9359: b0 0a       ..       ; no frame: Not PROC error
     lda l01ff                                                         ; 935b: ad ff 01    ...      ; Framed call token
     cmp #&f2                                                          ; 935e: c9 f2       ..       ; The framed call must be a PROC
-    bne c9365                                                         ; 9360: d0 03       ..       ; not PROC: error
+    bne no_proc_error                                                 ; 9360: d0 03       ..       ; not PROC: error
     jmp check_end_of_statement                                        ; 9362: 4c 57 98    LW.      ; Return to the caller, restoring locals
 ; &9365 referenced 2 times by &9359, &9360
-.c9365
+.no_proc_error
     brk                                                               ; 9365: 00          .        ; No PROC error
     equb &0d                                                          ; 9366: 0d          .     
     equs "No "                                                        ; 9367: 4e 6f 20    No    
     equb &f2                                                          ; 936a: f2          .     
 ; &936b referenced 1 time by &9326
-.c936b
+.not_local_error
     brk                                                               ; 936b: 00          .        ; Not LOCAL error
     equb &0c                                                          ; 936c: 0c          .     
     equs "Not "                                                       ; 936d: 4e 6f 74... Not...
     equb &ea                                                          ; 9371: ea          .     
 ; &9372 referenced 4 times by &93b2, &93b8, &93c6, &93cd
-.c9372
+.bad_statement
     brk                                                               ; 9372: 00          .        ; Bad statement error
     equb &19                                                          ; 9373: 19          .     
     equs "Bad "                                                       ; 9374: 42 61 64... Bad...
@@ -4168,7 +4168,7 @@ oscli            = &fff7
     jsr sub_c9852                                                     ; 9383: 20 52 98     R.      ; check the statement ends
     lda #&12                                                          ; 9386: a9 12       ..       ; VDU 18 (GCOL)
     jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; send it
-    jmp c93da                                                         ; 938b: 4c da 93    L..      ; send the mode and colour
+    jmp mode_send                                                     ; 938b: 4c da 93    L..      ; send the mode and colour
 ; ***************************************************************************************
 ; COLOUR
 ;
@@ -4186,7 +4186,7 @@ oscli            = &fff7
     pha                                                               ; 9390: 48          H        ; push it for later
     jsr eval_expr_to_integer                                          ; 9391: 20 21 88     !.      ; Evaluate the colour
     jsr check_end_of_statement                                        ; 9394: 20 57 98     W.      ; check the statement ends
-    jmp c93da                                                         ; 9397: 4c da 93    L..      ; send VDU 17 and the colour
+    jmp mode_send                                                     ; 9397: 4c da 93    L..      ; send VDU 17 and the colour
 ; ***************************************************************************************
 ; MODE
 ;
@@ -4206,38 +4206,38 @@ oscli            = &fff7
     jsr check_end_of_statement                                        ; 93a0: 20 57 98     W.      ; check the statement ends
     jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..      ; Read the high word of the machine address
     cpx #&ff                                                          ; 93a6: e0 ff       ..       ; not &xxFF: skip the memory test
-    bne c93d7                                                         ; 93a8: d0 2d       .-       ; addr not &xxFF: skip the check
+    bne mode_reset_col                                                ; 93a8: d0 2d       .-       ; addr not &xxFF: skip the check
     cpy #&ff                                                          ; 93aa: c0 ff       ..       ; not all ones: skip the memory test
-    bne c93d7                                                         ; 93ac: d0 29       .)       ; high byte &FF too: skip the check
+    bne mode_reset_col                                                ; 93ac: d0 29       .)       ; high byte &FF too: skip the check
     lda zp_stack_ptr                                                  ; 93ae: a5 04       ..       ; Stack not empty (STACK != HIMEM)?
     cmp zp_himem                                                      ; 93b0: c5 06       ..       ; STACK low vs HIMEM low
-    bne c9372                                                         ; 93b2: d0 be       ..       ; yes: Bad MODE
+    bne bad_statement                                                 ; 93b2: d0 be       ..       ; yes: Bad MODE
     lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..       ; STACK high,
     cmp zp_himem_1                                                    ; 93b6: c5 07       ..       ; vs HIMEM high
-    bne c9372                                                         ; 93b8: d0 b8       ..       ; Bad MODE
+    bne bad_statement                                                 ; 93b8: d0 b8       ..       ; Bad MODE
     ldx zp_iwa                                                        ; 93ba: a6 2a       .*       ; Top of RAM for this mode
     lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..       ; OSBYTE &85
     jsr osbyte                                                        ; 93be: 20 f4 ff     ..      ; Read top of user RAM for given screen mode
     cpx zp_vartop                                                     ; 93c1: e4 02       ..       ; below the variables?
     tya                                                               ; 93c3: 98          .        ; new top high,
     sbc zp_vartop_1                                                   ; 93c4: e5 03       ..       ; vs VARTOP high
-    bcc c9372                                                         ; 93c6: 90 aa       ..       ; yes: Bad MODE
+    bcc bad_statement                                                 ; 93c6: 90 aa       ..       ; yes: Bad MODE
     cpx zp_top                                                        ; 93c8: e4 12       ..       ; below the program top?
     tya                                                               ; 93ca: 98          .        ; new top high,
     sbc zp_top_1                                                      ; 93cb: e5 13       ..       ; vs TOP high
-    bcc c9372                                                         ; 93cd: 90 a3       ..       ; yes: Bad MODE
+    bcc bad_statement                                                 ; 93cd: 90 a3       ..       ; yes: Bad MODE
     stx zp_himem                                                      ; 93cf: 86 06       ..       ; Set HIMEM and STACK to the new top
     stx zp_stack_ptr                                                  ; 93d1: 86 04       ..       ; STACK low,
     sty zp_himem_1                                                    ; 93d3: 84 07       ..       ; HIMEM high,
     sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..       ; STACK high
 ; &93d7 referenced 2 times by &93a8, &93ac
-.c93d7
+.mode_reset_col
     jsr cbc28                                                         ; 93d7: 20 28 bc     (.      ; Reset the print column
 ; &93da referenced 2 times by &938b, &9397
-.c93da
+.mode_send
     pla                                                               ; 93da: 68          h        ; Send the stacked VDU byte
     jsr oswrch                                                        ; 93db: 20 ee ff     ..      ; send it
-    jsr sub_c9456                                                     ; 93de: 20 56 94     V.      ; Send the parameter
+    jsr vdu_send_byte                                                 ; 93de: 20 56 94     V.      ; Send the parameter
     jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
 ; MOVE
@@ -4253,7 +4253,7 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_move
     lda #4                                                            ; 93e4: a9 04       ..       ; MOVE is PLOT 4 (move the cursor, no draw)
-    bne c93ea                                                         ; 93e6: d0 02       ..       ; do the PLOT
+    bne draw_save_mode                                                ; 93e6: d0 02       ..       ; do the PLOT
 ; ***************************************************************************************
 ; DRAW
 ;
@@ -4269,10 +4269,10 @@ oscli            = &fff7
 .stmt_draw
     lda #5                                                            ; 93e8: a9 05       ..       ; DRAW is PLOT 5 (draw a line)
 ; &93ea referenced 1 time by &93e6
-.c93ea
+.draw_save_mode
     pha                                                               ; 93ea: 48          H        ; Save the plot mode
     jsr eval_expr                                                     ; 93eb: 20 1d 9b     ..      ; Evaluate the X coordinate
-    jmp c93fd                                                         ; 93ee: 4c fd 93    L..      ; evaluate Y and plot
+    jmp plot_coord                                                    ; 93ee: 4c fd 93    L..      ; evaluate Y and plot
 ; ***************************************************************************************
 ; PLOT
 ;
@@ -4292,7 +4292,7 @@ oscli            = &fff7
     jsr skip_spaces_expect_comma                                      ; 93f7: 20 ae 8a     ..      ; Step past the comma
     jsr eval_or_eor                                                   ; 93fa: 20 29 9b     ).      ; Evaluate the X coordinate
 ; &93fd referenced 1 time by &93ee
-.c93fd
+.plot_coord
     jsr coerce_var_to_integer                                         ; 93fd: 20 ee 92     ..      ; ensure integer
     jsr stack_integer                                                 ; 9400: 20 94 bd     ..      ; stack X
     jsr eval_comma_integer                                            ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
@@ -4306,12 +4306,12 @@ oscli            = &fff7
     jsr oswrch                                                        ; 9417: 20 ee ff     ..      ; send it
     lda zp_general_1                                                  ; 941a: a5 38       .8       ; Send X high
     jsr oswrch                                                        ; 941c: 20 ee ff     ..      ; send it
-    jsr sub_c9456                                                     ; 941f: 20 56 94     V.      ; Send Y low
+    jsr vdu_send_byte                                                 ; 941f: 20 56 94     V.      ; Send Y low
     lda zp_iwa_1                                                      ; 9422: a5 2b       .+       ; Send Y high
     jsr oswrch                                                        ; 9424: 20 ee ff     ..      ; send it
     jmp statement_loop                                                ; 9427: 4c 9b 8b    L..      ; next statement
 ; &942a referenced 1 time by &9451
-.loop_c942a
+.plot_send_hi
     lda zp_iwa_1                                                      ; 942a: a5 2b       .+       ; Send the high byte
     jsr oswrch                                                        ; 942c: 20 ee ff     ..      ; send it
 ; ***************************************************************************************
@@ -4330,27 +4330,27 @@ oscli            = &fff7
 .stmt_vdu
     jsr skip_spaces                                                   ; 942f: 20 97 8a     ..      ; Next character
 ; &9432 referenced 1 time by &944f
-.loop_c9432
+.vdu_loop
     cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:       ; ':' end of statement?
-    beq c9453                                                         ; 9434: f0 1d       ..       ; yes
+    beq vdu_done                                                      ; 9434: f0 1d       ..       ; yes
     cmp #&0d                                                          ; 9436: c9 0d       ..       ; end of line?
-    beq c9453                                                         ; 9438: f0 19       ..       ; yes
+    beq vdu_done                                                      ; 9438: f0 19       ..       ; yes
     cmp #&8b                                                          ; 943a: c9 8b       ..       ; ELSE?
-    beq c9453                                                         ; 943c: f0 15       ..       ; yes
+    beq vdu_done                                                      ; 943c: f0 15       ..       ; yes
     dec zp_text_ptr_off                                               ; 943e: c6 0a       ..       ; Back up to the value
     jsr eval_expr_to_integer                                          ; 9440: 20 21 88     !.      ; Evaluate it
-    jsr sub_c9456                                                     ; 9443: 20 56 94     V.      ; send the low byte
+    jsr vdu_send_byte                                                 ; 9443: 20 56 94     V.      ; send the low byte
     jsr skip_spaces                                                   ; 9446: 20 97 8a     ..      ; Next character
     cmp #&2c ; ','                                                    ; 9449: c9 2c       .,       ; ',' another byte?
     beq stmt_vdu                                                      ; 944b: f0 e2       ..       ; yes
     cmp #&3b ; ';'                                                    ; 944d: c9 3b       .;       ; ';' 16-bit value?
-    bne loop_c9432                                                    ; 944f: d0 e1       ..       ; no: check the statement ends
-    beq loop_c942a                                                    ; 9451: f0 d7       ..       ; yes: send the high byte too
+    bne vdu_loop                                                      ; 944f: d0 e1       ..       ; no: check the statement ends
+    beq plot_send_hi                                                  ; 9451: f0 d7       ..       ; yes: send the high byte too
 ; &9453 referenced 3 times by &9434, &9438, &943c
-.c9453
+.vdu_done
     jmp stmt_backup_end                                               ; 9453: 4c 96 8b    L..      ; next statement
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
-.sub_c9456
+.vdu_send_byte
     lda zp_iwa                                                        ; 9456: a5 2a       .*       ; Send the low byte to OSWRCH
     jmp (wrchv)                                                       ; 9458: 6c 0e 02    l..      ; jump through WRCHV (OSWRCH)
 ; ***************************************************************************************
@@ -14522,7 +14522,7 @@ save pydis_start, pydis_end
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
 ;     asm_mistake:                 4
-;     c9372:                       4
+;     bad_statement:               4
 ;     c9479:                       4
 ;     c94b3:                       4
 ;     c9641:                       4
@@ -14559,7 +14559,7 @@ save pydis_start, pydis_end
 ;     resint_p:                    4
 ;     return_23:                   4
 ;     stmt_check_end:              4
-;     sub_c9456:                   4
+;     vdu_send_byte:               4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
 ;     zp_data_ptr_1:               4
@@ -14573,8 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c92f7:                       3
-;     c9453:                       3
 ;     c961b:                       3
 ;     c9960:                       3
 ;     c99a4:                       3
@@ -14598,6 +14596,7 @@ save pydis_start, pydis_end
 ;     cbb07:                       3
 ;     cbb7a:                       3
 ;     check_subscript_bound:       3
+;     coerce_type_error:           3
 ;     create_variable:             3
 ;     dim_clear_loop:              3
 ;     dim_no_room:                 3
@@ -14638,6 +14637,7 @@ save pydis_start, pydis_end
 ;     sub_cbd3a:                   3
 ;     tok_skip_number_loop:        3
 ;     unstack_int_to_general:      3
+;     vdu_done:                    3
 ;     zp_erl:                      3
 ;     zp_erl_1:                    3
 ;     zp_error_ptr:                3
@@ -14660,10 +14660,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:            2
 ;     assign_string_to:            2
 ;     auto_loop:                   2
-;     c928a:                       2
-;     c9365:                       2
-;     c93d7:                       2
-;     c93da:                       2
 ;     c946f:                       2
 ;     c9501:                       2
 ;     c9556:                       2
@@ -14799,8 +14795,11 @@ save pydis_start, pydis_end
 ;     load_real_var:               2
 ;     mant_mul10:                  2
 ;     missing_quote:               2
+;     mode_reset_col:              2
+;     mode_send:                   2
 ;     next_data_item:              2
 ;     no_fn_error:                 2
+;     no_proc_error:               2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -14808,6 +14807,7 @@ save pydis_start, pydis_end
 ;     osfind:                      2
 ;     osrdch:                      2
 ;     output_digit:                2
+;     page_done:                   2
 ;     parse_dec_encode:            2
 ;     parse_dec_loop:              2
 ;     parse_line_range:            2
@@ -14950,17 +14950,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c924b:                       1
-;     c925a:                       1
-;     c92a5:                       1
-;     c92b7:                       1
-;     c92c0:                       1
-;     c92f4:                       1
-;     c9341:                       1
-;     c9353:                       1
-;     c936b:                       1
-;     c93ea:                       1
-;     c93fd:                       1
 ;     c949a:                       1
 ;     c94a7:                       1
 ;     c94d4:                       1
@@ -15254,6 +15243,7 @@ save pydis_start, pydis_end
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
 ;     cls_send:                    1
+;     coerce_real:                 1
 ;     data_scan_loop:              1
 ;     delete_loop:                 1
 ;     dim_after:                   1
@@ -15267,6 +15257,7 @@ save pydis_start, pydis_end
 ;     dim_name:                    1
 ;     dim_next_array:              1
 ;     dim_no_room_jmp:             1
+;     draw_save_mode:              1
 ;     encode_line_number:          1
 ;     err_no_gosub:                1
 ;     err_no_repeat:               1
@@ -15294,6 +15285,9 @@ save pydis_start, pydis_end
 ;     fwa_swap_var:                1
 ;     gosub_stack:                 1
 ;     gosub_stack_hi:              1
+;     imul_double:                 1
+;     imul_loop:                   1
+;     imul_overflow:               1
 ;     is_dot_or_digit:             1
 ;     iwa_div:                     1
 ;     iwa_mod:                     1
@@ -15334,15 +15328,11 @@ save pydis_start, pydis_end
 ;     let_numeric:                 1
 ;     load_byte_var:               1
 ;     load_string_var:             1
+;     local_bump:                  1
+;     local_not_var:               1
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c923a:                  1
-;     loop_c92ae:                  1
-;     loop_c92b2:                  1
-;     loop_c931b:                  1
-;     loop_c942a:                  1
-;     loop_c9432:                  1
 ;     loop_c9495:                  1
 ;     loop_c94cf:                  1
 ;     loop_c9507:                  1
@@ -15474,6 +15464,7 @@ save pydis_start, pydis_end
 ;     loop_cbecf:                  1
 ;     loop_cbfd9:                  1
 ;     loop_cbfec:                  1
+;     not_local_error:             1
 ;     osasci:                      1
 ;     osnewl:                      1
 ;     output_byte_decimal:         1
@@ -15481,6 +15472,8 @@ save pydis_start, pydis_end
 ;     parse_dec_shift_loop:        1
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
+;     plot_coord:                  1
+;     plot_send_hi:                1
 ;     point_general_page:          1
 ;     print_check_sep:             1
 ;     print_comma:                 1
@@ -15505,6 +15498,7 @@ save pydis_start, pydis_end
 ;     print_tab_error:             1
 ;     print_tab_x:                 1
 ;     print_tab_xy:                1
+;     proc_clear_loop:             1
 ;     range_backup:                1
 ;     renum_missing_line:          1
 ;     renum_no_space:              1
@@ -15604,6 +15598,11 @@ save pydis_start, pydis_end
 ;     tok_try_keyword:             1
 ;     tokenise_line:               1
 ;     tokenise_resume:             1
+;     trace_ceiling_loop:          1
+;     trace_check_end:             1
+;     trace_off:                   1
+;     trace_on:                    1
+;     trace_set_flag:              1
 ;     unstack_addr:                1
 ;     unstack_addr_copy:           1
 ;     unstack_addr_cr:             1
@@ -15613,29 +15612,12 @@ save pydis_start, pydis_end
 ;     unstack_str_setlen:          1
 ;     unstack_value_to_var:        1
 ;     validate_var_name:           1
+;     vdu_loop:                    1
 
 ; Automatically generated labels:
 ;     c883a
 ;     c8858
 ;     c886a
-;     c924b
-;     c925a
-;     c928a
-;     c92a5
-;     c92b7
-;     c92c0
-;     c92f4
-;     c92f7
-;     c9341
-;     c9353
-;     c9365
-;     c936b
-;     c9372
-;     c93d7
-;     c93da
-;     c93ea
-;     c93fd
-;     c9453
 ;     c946f
 ;     c9479
 ;     c949a
@@ -16118,12 +16100,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c923a
-;     loop_c92ae
-;     loop_c92b2
-;     loop_c931b
-;     loop_c942a
-;     loop_c9432
 ;     loop_c9495
 ;     loop_c94cf
 ;     loop_c9507
@@ -16298,7 +16274,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c9456
 ;     sub_c94ed
 ;     sub_c9539
 ;     sub_c95d5

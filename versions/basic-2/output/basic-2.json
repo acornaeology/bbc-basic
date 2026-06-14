@@ -27851,9 +27851,9 @@
       "comment_inline": "y coordinate",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9456",
+      "operand": "vdu_send_byte",
       "target": 37974,
-      "target_label": "sub_c9456"
+      "target_label": "vdu_send_byte"
     },
     {
       "addr": 36413,
@@ -34417,7 +34417,7 @@
         64
       ],
       "labels": [
-        "loop_c923a"
+        "imul_loop"
       ],
       "comment_inline": "Shift the multiplier right: next bit into carry",
       "xref_summaries": [
@@ -34454,9 +34454,9 @@
       "comment_inline": "bit clear: skip the add",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c924b",
+      "operand": "imul_double",
       "target": 37451,
-      "target_label": "c924b"
+      "target_label": "imul_double"
     },
     {
       "addr": 37440,
@@ -34538,9 +34538,9 @@
       "comment_inline": "overflow: Too big",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c925a",
+      "operand": "imul_overflow",
       "target": 37466,
-      "target_label": "c925a"
+      "target_label": "imul_overflow"
     },
     {
       "addr": 37451,
@@ -34549,7 +34549,7 @@
         42
       ],
       "labels": [
-        "c924b"
+        "imul_double"
       ],
       "comment_inline": "Double the multiplicand: low",
       "xref_summaries": [
@@ -34612,9 +34612,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c923a",
+      "operand": "imul_loop",
       "target": 37434,
-      "target_label": "loop_c923a"
+      "target_label": "imul_loop"
     },
     {
       "addr": 37461,
@@ -34659,7 +34659,7 @@
         145
       ],
       "labels": [
-        "c925a"
+        "imul_overflow"
       ],
       "comment_inline": "overflow error",
       "xref_summaries": [
@@ -34901,9 +34901,9 @@
       "comment_inline": "Back to the execution loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c928a",
+      "operand": "page_done",
       "target": 37514,
-      "target_label": "c928a"
+      "target_label": "page_done"
     },
     {
       "addr": 37507,
@@ -34956,7 +34956,7 @@
         139
       ],
       "labels": [
-        "c928a"
+        "page_done"
       ],
       "comment_inline": "Back to execution",
       "xref_summaries": [
@@ -35012,9 +35012,9 @@
       "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c928a",
+      "operand": "page_done",
       "target": 37514,
-      "target_label": "c928a"
+      "target_label": "page_done"
     },
     {
       "addr": 37525,
@@ -35042,9 +35042,9 @@
       "comment_inline": "yes: TRACE to that line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c92a5",
+      "operand": "trace_check_end",
       "target": 37541,
-      "target_label": "c92a5"
+      "target_label": "trace_check_end"
     },
     {
       "addr": 37530,
@@ -35066,9 +35066,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c92b7",
+      "operand": "trace_on",
       "target": 37559,
-      "target_label": "c92b7"
+      "target_label": "trace_on"
     },
     {
       "addr": 37534,
@@ -35090,9 +35090,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c92c0",
+      "operand": "trace_off",
       "target": 37568,
-      "target_label": "c92c0"
+      "target_label": "trace_off"
     },
     {
       "addr": 37538,
@@ -35116,7 +35116,7 @@
         152
       ],
       "labels": [
-        "c92a5"
+        "trace_check_end"
       ],
       "comment_inline": "check the statement ends",
       "xref_summaries": [
@@ -35177,7 +35177,7 @@
         34
       ],
       "labels": [
-        "loop_c92ae"
+        "trace_ceiling_loop"
       ],
       "comment_inline": "to &22",
       "xref_summaries": [
@@ -35210,7 +35210,7 @@
         32
       ],
       "labels": [
-        "loop_c92b2"
+        "trace_set_flag"
       ],
       "comment_inline": "Set the TRACE flag",
       "xref_summaries": [
@@ -35246,7 +35246,7 @@
         10
       ],
       "labels": [
-        "c92b7"
+        "trace_on"
       ],
       "comment_inline": "TRACE ON: step past",
       "xref_summaries": [
@@ -35295,9 +35295,9 @@
       "comment_inline": "set it on",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c92ae",
+      "operand": "trace_ceiling_loop",
       "target": 37550,
-      "target_label": "loop_c92ae"
+      "target_label": "trace_ceiling_loop"
     },
     {
       "addr": 37568,
@@ -35306,7 +35306,7 @@
         10
       ],
       "labels": [
-        "c92c0"
+        "trace_off"
       ],
       "comment_inline": "TRACE OFF: step past",
       "xref_summaries": [
@@ -35355,9 +35355,9 @@
       "comment_inline": "set it off",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c92b2",
+      "operand": "trace_set_flag",
       "target": 37554,
-      "target_label": "loop_c92b2"
+      "target_label": "trace_set_flag"
     },
     {
       "addr": 37577,
@@ -35561,9 +35561,9 @@
       "comment_inline": "string: Type mismatch",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c92f7",
+      "operand": "coerce_type_error",
       "target": 37623,
-      "target_label": "c92f7"
+      "target_label": "coerce_type_error"
     },
     {
       "addr": 37608,
@@ -35574,9 +35574,9 @@
       "comment_inline": "real: convert to integer",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c92f4",
+      "operand": "coerce_real",
       "target": 37620,
-      "target_label": "c92f4"
+      "target_label": "coerce_real"
     },
     {
       "addr": 37610,
@@ -35688,9 +35688,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c92f7",
+      "operand": "coerce_type_error",
       "target": 37623,
-      "target_label": "c92f7"
+      "target_label": "coerce_type_error"
     },
     {
       "addr": 37618,
@@ -35713,7 +35713,7 @@
         163
       ],
       "labels": [
-        "c92f4"
+        "coerce_real"
       ],
       "comment_inline": "real: convert to integer",
       "xref_summaries": [
@@ -35736,7 +35736,7 @@
         140
       ],
       "labels": [
-        "c92f7"
+        "coerce_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -35810,9 +35810,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c92f7",
+      "operand": "coerce_type_error",
       "target": 37623,
-      "target_label": "c92f7"
+      "target_label": "coerce_type_error"
     },
     {
       "addr": 37631,
@@ -35982,7 +35982,7 @@
         3
       ],
       "labels": [
-        "loop_c931b"
+        "proc_clear_loop"
       ],
       "comment_inline": "Clear the local string length",
       "xref_summaries": [
@@ -36028,9 +36028,9 @@
       "comment_inline": "always",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9341",
+      "operand": "local_bump",
       "target": 37697,
-      "target_label": "c9341"
+      "target_label": "local_bump"
     },
     {
       "addr": 37667,
@@ -36070,9 +36070,9 @@
       "comment_inline": "no: Not LOCAL error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c936b",
+      "operand": "not_local_error",
       "target": 37739,
-      "target_label": "c936b"
+      "target_label": "not_local_error"
     },
     {
       "addr": 37672,
@@ -36097,9 +36097,9 @@
       "comment_inline": "not a variable: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9353",
+      "operand": "local_not_var",
       "target": 37715,
-      "target_label": "c9353"
+      "target_label": "local_not_var"
     },
     {
       "addr": 37677,
@@ -36137,9 +36137,9 @@
       "comment_inline": "yes: leave it cleared",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c931b",
+      "operand": "proc_clear_loop",
       "target": 37659,
-      "target_label": "loop_c931b"
+      "target_label": "proc_clear_loop"
     },
     {
       "addr": 37684,
@@ -36213,7 +36213,7 @@
         186
       ],
       "labels": [
-        "c9341"
+        "local_bump"
       ],
       "comment_inline": "Bump the local count in the frame",
       "xref_summaries": [
@@ -36325,7 +36325,7 @@
         139
       ],
       "labels": [
-        "c9353"
+        "local_not_var"
       ],
       "comment_inline": "not a variable: error",
       "xref_summaries": [
@@ -36372,9 +36372,9 @@
       "comment_inline": "no frame: Not PROC error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9365",
+      "operand": "no_proc_error",
       "target": 37733,
-      "target_label": "c9365"
+      "target_label": "no_proc_error"
     },
     {
       "addr": 37723,
@@ -36410,9 +36410,9 @@
       "comment_inline": "not PROC: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9365",
+      "operand": "no_proc_error",
       "target": 37733,
-      "target_label": "c9365"
+      "target_label": "no_proc_error"
     },
     {
       "addr": 37730,
@@ -36434,7 +36434,7 @@
         0
       ],
       "labels": [
-        "c9365"
+        "no_proc_error"
       ],
       "comment_inline": "No PROC error",
       "xref_summaries": [
@@ -36483,7 +36483,7 @@
         0
       ],
       "labels": [
-        "c936b"
+        "not_local_error"
       ],
       "comment_inline": "Not LOCAL error",
       "xref_summaries": [
@@ -36532,7 +36532,7 @@
         0
       ],
       "labels": [
-        "c9372"
+        "bad_statement"
       ],
       "comment_inline": "Bad statement error",
       "xref_summaries": [
@@ -36682,9 +36682,9 @@
       "comment_inline": "send the mode and colour",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c93da",
+      "operand": "mode_send",
       "target": 37850,
-      "target_label": "c93da"
+      "target_label": "mode_send"
     },
     {
       "addr": 37774,
@@ -36747,9 +36747,9 @@
       "comment_inline": "send VDU 17 and the colour",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c93da",
+      "operand": "mode_send",
       "target": 37850,
-      "target_label": "c93da"
+      "target_label": "mode_send"
     },
     {
       "addr": 37786,
@@ -36836,9 +36836,9 @@
       "comment_inline": "addr not &xxFF: skip the check",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c93d7",
+      "operand": "mode_reset_col",
       "target": 37847,
-      "target_label": "c93d7"
+      "target_label": "mode_reset_col"
     },
     {
       "addr": 37802,
@@ -36860,9 +36860,9 @@
       "comment_inline": "high byte &FF too: skip the check",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c93d7",
+      "operand": "mode_reset_col",
       "target": 37847,
-      "target_label": "c93d7"
+      "target_label": "mode_reset_col"
     },
     {
       "addr": 37806,
@@ -36899,9 +36899,9 @@
       "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9372",
+      "operand": "bad_statement",
       "target": 37746,
-      "target_label": "c9372"
+      "target_label": "bad_statement"
     },
     {
       "addr": 37812,
@@ -36938,9 +36938,9 @@
       "comment_inline": "Bad MODE",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9372",
+      "operand": "bad_statement",
       "target": 37746,
-      "target_label": "c9372"
+      "target_label": "bad_statement"
     },
     {
       "addr": 37818,
@@ -37024,9 +37024,9 @@
       "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9372",
+      "operand": "bad_statement",
       "target": 37746,
-      "target_label": "c9372"
+      "target_label": "bad_statement"
     },
     {
       "addr": 37832,
@@ -37072,9 +37072,9 @@
       "comment_inline": "yes: Bad MODE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9372",
+      "operand": "bad_statement",
       "target": 37746,
-      "target_label": "c9372"
+      "target_label": "bad_statement"
     },
     {
       "addr": 37839,
@@ -37136,7 +37136,7 @@
         188
       ],
       "labels": [
-        "c93d7"
+        "mode_reset_col"
       ],
       "comment_inline": "Reset the print column",
       "xref_summaries": [
@@ -37158,7 +37158,7 @@
         104
       ],
       "labels": [
-        "c93da"
+        "mode_send"
       ],
       "comment_inline": "Send the stacked VDU byte",
       "xref_summaries": [
@@ -37195,9 +37195,9 @@
       "comment_inline": "Send the parameter",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9456",
+      "operand": "vdu_send_byte",
       "target": 37974,
-      "target_label": "sub_c9456"
+      "target_label": "vdu_send_byte"
     },
     {
       "addr": 37857,
@@ -37236,9 +37236,9 @@
       "comment_inline": "do the PLOT",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c93ea",
+      "operand": "draw_save_mode",
       "target": 37866,
-      "target_label": "c93ea"
+      "target_label": "draw_save_mode"
     },
     {
       "addr": 37864,
@@ -37260,7 +37260,7 @@
         72
       ],
       "labels": [
-        "c93ea"
+        "draw_save_mode"
       ],
       "comment_inline": "Save the plot mode",
       "xref_summaries": [
@@ -37296,9 +37296,9 @@
       "comment_inline": "evaluate Y and plot",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c93fd",
+      "operand": "plot_coord",
       "target": 37885,
-      "target_label": "c93fd"
+      "target_label": "plot_coord"
     },
     {
       "addr": 37873,
@@ -37375,7 +37375,7 @@
         146
       ],
       "labels": [
-        "c93fd"
+        "plot_coord"
       ],
       "comment_inline": "ensure integer",
       "xref_summaries": [
@@ -37558,9 +37558,9 @@
       "comment_inline": "Send Y low",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9456",
+      "operand": "vdu_send_byte",
       "target": 37974,
-      "target_label": "sub_c9456"
+      "target_label": "vdu_send_byte"
     },
     {
       "addr": 37922,
@@ -37610,7 +37610,7 @@
         43
       ],
       "labels": [
-        "loop_c942a"
+        "plot_send_hi"
       ],
       "comment_inline": "Send the high byte",
       "xref_summaries": [
@@ -37669,7 +37669,7 @@
         58
       ],
       "labels": [
-        "loop_c9432"
+        "vdu_loop"
       ],
       "comment_inline": "':' end of statement?",
       "xref_summaries": [
@@ -37691,9 +37691,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9453",
+      "operand": "vdu_done",
       "target": 37971,
-      "target_label": "c9453"
+      "target_label": "vdu_done"
     },
     {
       "addr": 37942,
@@ -37715,9 +37715,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9453",
+      "operand": "vdu_done",
       "target": 37971,
-      "target_label": "c9453"
+      "target_label": "vdu_done"
     },
     {
       "addr": 37946,
@@ -37739,9 +37739,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9453",
+      "operand": "vdu_done",
       "target": 37971,
-      "target_label": "c9453"
+      "target_label": "vdu_done"
     },
     {
       "addr": 37950,
@@ -37780,9 +37780,9 @@
       "comment_inline": "send the low byte",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9456",
+      "operand": "vdu_send_byte",
       "target": 37974,
-      "target_label": "sub_c9456"
+      "target_label": "vdu_send_byte"
     },
     {
       "addr": 37958,
@@ -37842,9 +37842,9 @@
       "comment_inline": "no: check the statement ends",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9432",
+      "operand": "vdu_loop",
       "target": 37938,
-      "target_label": "loop_c9432"
+      "target_label": "vdu_loop"
     },
     {
       "addr": 37969,
@@ -37855,9 +37855,9 @@
       "comment_inline": "yes: send the high byte too",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c942a",
+      "operand": "plot_send_hi",
       "target": 37930,
-      "target_label": "loop_c942a"
+      "target_label": "plot_send_hi"
     },
     {
       "addr": 37971,
@@ -37867,7 +37867,7 @@
         139
       ],
       "labels": [
-        "c9453"
+        "vdu_done"
       ],
       "comment_inline": "next statement",
       "xref_summaries": [
@@ -37891,7 +37891,7 @@
         42
       ],
       "labels": [
-        "sub_c9456"
+        "vdu_send_byte"
       ],
       "comment_inline": "Send the low byte to OSWRCH",
       "xref_summaries": [
