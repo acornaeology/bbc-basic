@@ -5918,49 +5918,49 @@ oscli            = &fff7
 .eval_or_eor
     jsr eval_and                                                      ; 9b29: 20 72 9b     r.      ; Evaluate the higher-precedence (AND) operand first
 ; &9b2c referenced 1 time by &9b53
-.loop_c9b2c
+.eval_or_loop
     cpx #&84                                                          ; 9b2c: e0 84       ..       ; Is the next operator OR or EOR at this level?
-    beq c9b3a                                                         ; 9b2e: f0 0a       ..       ; yes
+    beq do_or                                                         ; 9b2e: f0 0a       ..       ; yes
     cpx #&82                                                          ; 9b30: e0 82       ..       ; EOR token?
-    beq c9b55                                                         ; 9b32: f0 21       .!       ; yes
+    beq do_eor                                                        ; 9b32: f0 21       .!       ; yes
     dec zp_text_ptr2_off                                              ; 9b34: c6 1b       ..       ; neither: back up over the token
     tay                                                               ; 9b36: a8          .        ; set the result-type flags
     sta zp_var_type                                                   ; 9b37: 85 27       .'       ; store it
     rts                                                               ; 9b39: 60          `        ; Return
 ; &9b3a referenced 1 time by &9b2e
-.c9b3a
-    jsr sub_c9b6b                                                     ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
+.do_or
+    jsr coerce_left_int                                               ; 9b3a: 20 6b 9b     k.      ; OR: stack the left operand, evaluate the right
     tay                                                               ; 9b3d: a8          .        ; ensure the right operand is integer
     jsr coerce_to_integer                                             ; 9b3e: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b41: a0 03       ..       ; Four bytes
 ; &9b43 referenced 1 time by &9b4c
-.loop_c9b43
+.or_byte_loop
     lda (zp_stack_ptr),y                                              ; 9b43: b1 04       ..       ; stacked byte
     ora zp_iwa,y                                                      ; 9b45: 19 2a 00    .*.      ; OR with IWA
     sta zp_iwa,y                                                      ; 9b48: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b4b: 88          .        ; next byte
-    bpl loop_c9b43                                                    ; 9b4c: 10 f5       ..       ; until all four OR-ed
+    bpl or_byte_loop                                                  ; 9b4c: 10 f5       ..       ; until all four OR-ed
 ; &9b4e referenced 1 time by &9b69
-.loop_c9b4e
+.or_drop_stack
     jsr drop_stack_integer                                            ; 9b4e: 20 ff bd     ..      ; Drop the stacked operand
     lda #&40 ; '@'                                                    ; 9b51: a9 40       .@       ; Result type = integer
-    bne loop_c9b2c                                                    ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
+    bne eval_or_loop                                                  ; 9b53: d0 d7       ..       ; Loop to handle any further OR / EOR
 ; &9b55 referenced 1 time by &9b32
-.c9b55
-    jsr sub_c9b6b                                                     ; 9b55: 20 6b 9b     k.      ; EOR: stack the left operand, evaluate the right
+.do_eor
+    jsr coerce_left_int                                               ; 9b55: 20 6b 9b     k.      ; EOR: stack the left operand, evaluate the right
     tay                                                               ; 9b58: a8          .        ; ensure the right operand is integer
     jsr coerce_to_integer                                             ; 9b59: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b5c: a0 03       ..       ; Four bytes
 ; &9b5e referenced 1 time by &9b67
-.loop_c9b5e
+.eor_byte_loop
     lda (zp_stack_ptr),y                                              ; 9b5e: b1 04       ..       ; stacked byte
     eor zp_iwa,y                                                      ; 9b60: 59 2a 00    Y*.      ; EOR with IWA
     sta zp_iwa,y                                                      ; 9b63: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b66: 88          .        ; next byte
-    bpl loop_c9b5e                                                    ; 9b67: 10 f5       ..       ; until all four EOR-ed
-    bmi loop_c9b4e                                                    ; 9b69: 30 e3       0.       ; drop and loop
+    bpl eor_byte_loop                                                 ; 9b67: 10 f5       ..       ; until all four EOR-ed
+    bmi or_drop_stack                                                 ; 9b69: 30 e3       0.       ; drop and loop
 ; &9b6b referenced 2 times by &9b3a, &9b55
-.sub_c9b6b
+.coerce_left_int
     tay                                                               ; 9b6b: a8          .        ; Coerce the left operand to integer
     jsr coerce_to_integer                                             ; 9b6c: 20 f0 92     ..      ; coerce it
     jsr stack_integer                                                 ; 9b6f: 20 94 bd     ..      ; stack it
@@ -5982,12 +5982,12 @@ oscli            = &fff7
 .eval_and
     jsr eval_relational                                               ; 9b72: 20 9c 9b     ..      ; Evaluate a relational operand
 ; &9b75 referenced 1 time by &9b9a
-.loop_c9b75
+.eval_and_loop
     cpx #&80                                                          ; 9b75: e0 80       ..       ; Apply AND only if the next operator is AND
-    beq c9b7a                                                         ; 9b77: f0 01       ..       ; yes
+    beq do_and                                                        ; 9b77: f0 01       ..       ; yes
     rts                                                               ; 9b79: 60          `        ; no: return
 ; &9b7a referenced 1 time by &9b77
-.c9b7a
+.do_and
     tay                                                               ; 9b7a: a8          .        ; Coerce the left operand to integer
     jsr coerce_to_integer                                             ; 9b7b: 20 f0 92     ..      ; coerce it
     jsr stack_integer                                                 ; 9b7e: 20 94 bd     ..      ; stack it
@@ -5996,15 +5996,15 @@ oscli            = &fff7
     jsr coerce_to_integer                                             ; 9b85: 20 f0 92     ..      ; coerce it
     ldy #3                                                            ; 9b88: a0 03       ..       ; Four bytes
 ; &9b8a referenced 1 time by &9b93
-.loop_c9b8a
+.and_byte_loop
     lda (zp_stack_ptr),y                                              ; 9b8a: b1 04       ..       ; stacked byte
     and zp_iwa,y                                                      ; 9b8c: 39 2a 00    9*.      ; AND with IWA
     sta zp_iwa,y                                                      ; 9b8f: 99 2a 00    .*.      ; store back
     dey                                                               ; 9b92: 88          .        ; next byte
-    bpl loop_c9b8a                                                    ; 9b93: 10 f5       ..       ; until all four AND-ed
+    bpl and_byte_loop                                                 ; 9b93: 10 f5       ..       ; until all four AND-ed
     jsr drop_stack_integer                                            ; 9b95: 20 ff bd     ..      ; Drop the stacked operand
     lda #&40 ; '@'                                                    ; 9b98: a9 40       .@       ; Result type = integer
-    bne loop_c9b75                                                    ; 9b9a: d0 d9       ..       ; loop for further AND
+    bne eval_and_loop                                                 ; 9b9a: d0 d9       ..       ; loop for further AND
 ; ***************************************************************************************
 ; Evaluator level 5: < <= = >= > <>
 ;
@@ -6025,23 +6025,23 @@ oscli            = &fff7
     cpx #&3f ; '?'                                                    ; 9b9f: e0 3f       .?       ; next token past '>'?
     bcs return_18                                                     ; 9ba1: b0 04       ..       ; yes: not a comparison, return
     cpx #&3c ; '<'                                                    ; 9ba3: e0 3c       .<       ; before '<'?
-    bcs c9ba8                                                         ; 9ba5: b0 01       ..       ; a relational operator: handle it
+    bcs rel_lt_family                                                 ; 9ba5: b0 01       ..       ; a relational operator: handle it
 ; &9ba7 referenced 1 time by &9ba1
 .return_18
     rts                                                               ; 9ba7: 60          `        ; not a comparison: return
 ; &9ba8 referenced 1 time by &9ba5
-.c9ba8
-    beq c9bc0                                                         ; 9ba8: f0 16       ..       ; '<' family?
+.rel_lt_family
+    beq rel_lt                                                        ; 9ba8: f0 16       ..       ; '<' family?
     cpx #&3e ; '>'                                                    ; 9baa: e0 3e       .>       ; '>' family?
-    beq c9be8                                                         ; 9bac: f0 3a       .:       ; yes
+    beq rel_gt                                                        ; 9bac: f0 3a       .:       ; yes
     tax                                                               ; 9bae: aa          .        ; '=': compare for equality
     jsr eval_and_compare                                              ; 9baf: 20 9e 9a     ..      ; evaluate the right operand and compare
-    bne c9bb5                                                         ; 9bb2: d0 01       ..       ; not equal: result FALSE (0)
+    bne store_bool                                                    ; 9bb2: d0 01       ..       ; not equal: result FALSE (0)
 ; &9bb4 referenced 6 times by &9bd0, &9bd9, &9bdb, &9be4, &9bf6, &9bff
-.c9bb4
+.rel_true
     dey                                                               ; 9bb4: 88          .        ; equal: result TRUE (Y = &FF)
 ; &9bb5 referenced 7 times by &9bb2, &9bd2, &9bdd, &9be6, &9bf4, &9bf8, &9c01
-.c9bb5
+.store_bool
     sty zp_iwa                                                        ; 9bb5: 84 2a       .*       ; Store 0/-1 in all four IWA bytes
     sty zp_iwa_1                                                      ; 9bb7: 84 2b       .+       ; byte 1,
     sty zp_iwa_2                                                      ; 9bb9: 84 2c       .,       ; byte 2,
@@ -6049,55 +6049,55 @@ oscli            = &fff7
     lda #&40 ; '@'                                                    ; 9bbd: a9 40       .@       ; Result type = integer
     rts                                                               ; 9bbf: 60          `        ; Return
 ; &9bc0 referenced 1 time by &9ba8
-.c9bc0
+.rel_lt
     tax                                                               ; 9bc0: aa          .        ; '<' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9bc1: a4 1b       ..       ; Peek at the next source character
     lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..       ; read it
     cmp #&3d ; '='                                                    ; 9bc5: c9 3d       .=       ; '='? (<=)
-    beq c9bd4                                                         ; 9bc7: f0 0b       ..       ; yes
+    beq rel_le                                                        ; 9bc7: f0 0b       ..       ; yes
     cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>       ; '>'? (<>)
-    beq c9bdf                                                         ; 9bcb: f0 12       ..       ; yes
+    beq rel_ne                                                        ; 9bcb: f0 12       ..       ; yes
     jsr compare_values                                                ; 9bcd: 20 9d 9a     ..      ; plain "<": evaluate and compare
-    bcc c9bb4                                                         ; 9bd0: 90 e2       ..       ; less: TRUE
-    bcs c9bb5                                                         ; 9bd2: b0 e1       ..       ; not less: FALSE
+    bcc rel_true                                                      ; 9bd0: 90 e2       ..       ; less: TRUE
+    bcs store_bool                                                    ; 9bd2: b0 e1       ..       ; not less: FALSE
 ; &9bd4 referenced 1 time by &9bc7
-.c9bd4
+.rel_le
     inc zp_text_ptr2_off                                              ; 9bd4: e6 1b       ..       ; '<=': step past the '='
     jsr compare_values                                                ; 9bd6: 20 9d 9a     ..      ; evaluate and compare
-    beq c9bb4                                                         ; 9bd9: f0 d9       ..       ; equal: TRUE
-    bcc c9bb4                                                         ; 9bdb: 90 d7       ..       ; less: TRUE
-    bcs c9bb5                                                         ; 9bdd: b0 d6       ..       ; greater: FALSE
+    beq rel_true                                                      ; 9bd9: f0 d9       ..       ; equal: TRUE
+    bcc rel_true                                                      ; 9bdb: 90 d7       ..       ; less: TRUE
+    bcs store_bool                                                    ; 9bdd: b0 d6       ..       ; greater: FALSE
 ; &9bdf referenced 1 time by &9bcb
-.c9bdf
+.rel_ne
     inc zp_text_ptr2_off                                              ; 9bdf: e6 1b       ..       ; '<>': step past the '>'
     jsr compare_values                                                ; 9be1: 20 9d 9a     ..      ; evaluate and compare
-    bne c9bb4                                                         ; 9be4: d0 ce       ..       ; unequal: TRUE
-    beq c9bb5                                                         ; 9be6: f0 cd       ..       ; equal: FALSE
+    bne rel_true                                                      ; 9be4: d0 ce       ..       ; unequal: TRUE
+    beq store_bool                                                    ; 9be6: f0 cd       ..       ; equal: FALSE
 ; &9be8 referenced 1 time by &9bac
-.c9be8
+.rel_gt
     tax                                                               ; 9be8: aa          .        ; '>' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9be9: a4 1b       ..       ; Peek at the next source character
     lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; read it
     cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=       ; '='? (>=)
-    beq c9bfa                                                         ; 9bef: f0 09       ..       ; yes
+    beq rel_ge                                                        ; 9bef: f0 09       ..       ; yes
     jsr compare_values                                                ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
-    beq c9bb5                                                         ; 9bf4: f0 bf       ..       ; equal: FALSE
-    bcs c9bb4                                                         ; 9bf6: b0 bc       ..       ; greater: TRUE
-    bcc c9bb5                                                         ; 9bf8: 90 bb       ..       ; less: FALSE
+    beq store_bool                                                    ; 9bf4: f0 bf       ..       ; equal: FALSE
+    bcs rel_true                                                      ; 9bf6: b0 bc       ..       ; greater: TRUE
+    bcc store_bool                                                    ; 9bf8: 90 bb       ..       ; less: FALSE
 ; &9bfa referenced 1 time by &9bef
-.c9bfa
+.rel_ge
     inc zp_text_ptr2_off                                              ; 9bfa: e6 1b       ..       ; '>=': step past the '='
     jsr compare_values                                                ; 9bfc: 20 9d 9a     ..      ; evaluate and compare
-    bcs c9bb4                                                         ; 9bff: b0 b3       ..       ; greater or equal: TRUE
-    bcc c9bb5                                                         ; 9c01: 90 b2       ..       ; less: FALSE
+    bcs rel_true                                                      ; 9bff: b0 b3       ..       ; greater or equal: TRUE
+    bcc store_bool                                                    ; 9c01: 90 b2       ..       ; less: FALSE
 ; &9c03 referenced 2 times by &9c27, &b0fb
-.c9c03
+.string_too_long
     brk                                                               ; 9c03: 00          .        ; String too long error
     equb &13                                                          ; 9c04: 13          .     
     equs "String too long"                                            ; 9c05: 53 74 72... Str...
     equb &00                                                          ; 9c14: 00          .     
 ; &9c15 referenced 1 time by &9c4f
-.loop_c9c15
+.relstr_stack_loop
     jsr stack_string                                                  ; 9c15: 20 b2 bd     ..      ; Stack the left string
     jsr eval_power                                                    ; 9c18: 20 20 9e      .      ; Evaluate the right operand
     tay                                                               ; 9c1b: a8          .        ; type
@@ -6107,23 +6107,23 @@ oscli            = &fff7
     ldy #0                                                            ; 9c21: a0 00       ..       ; index the stacked left length
     lda (zp_stack_ptr),y                                              ; 9c23: b1 04       ..       ; left length
     adc zp_strbuf_len                                                 ; 9c25: 65 36       e6       ; plus the right length
-    bcs c9c03                                                         ; 9c27: b0 da       ..       ; over 255: error
+    bcs string_too_long                                               ; 9c27: b0 da       ..       ; over 255: error
     tax                                                               ; 9c29: aa          .        ; Save the new length
     pha                                                               ; 9c2a: 48          H        ; keep it on the stack
     ldy zp_strbuf_len                                                 ; 9c2b: a4 36       .6       ; Move the right string up
 ; &9c2d referenced 1 time by &9c35
-.loop_c9c2d
+.relstr_cmp_loop
     lda l05ff,y                                                       ; 9c2d: b9 ff 05    ...      ; right string byte (at Y)
     sta l05ff,x                                                       ; 9c30: 9d ff 05    ...      ; to the new tail (at X)
     dex                                                               ; 9c33: ca          .        ; back one destination
     dey                                                               ; 9c34: 88          .        ; back one source
-    bne loop_c9c2d                                                    ; 9c35: d0 f6       ..       ; loop
+    bne relstr_cmp_loop                                               ; 9c35: d0 f6       ..       ; loop
     jsr unstack_string                                                ; 9c37: 20 cb bd     ..      ; Prepend the left string
     pla                                                               ; 9c3a: 68          h        ; Set the new length
     sta zp_strbuf_len                                                 ; 9c3b: 85 36       .6       ; store it
     ldx zp_general                                                    ; 9c3d: a6 37       .7       ; restore the pending operator
     tya                                                               ; 9c3f: 98          .        ; string result
-    beq c9c45                                                         ; 9c40: f0 03       ..       ; loop for further + or -
+    beq addsub_check                                                  ; 9c40: f0 03       ..       ; loop for further + or -
 ; ***************************************************************************************
 ; Evaluator level 4: + -
 ;
@@ -6142,16 +6142,16 @@ oscli            = &fff7
 .eval_add_sub
     jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..      ; Evaluate a * / DIV MOD operand
 ; &9c45 referenced 4 times by &9c40, &9c82, &9c86, &9ca5
-.c9c45
+.addsub_check
     cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
-    beq c9c4e                                                         ; 9c47: f0 05       ..       ; yes: addition
+    beq do_add                                                        ; 9c47: f0 05       ..       ; yes: addition
     cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-       ; next operator "-"?
     beq c9cb5                                                         ; 9c4b: f0 68       .h       ; yes: subtraction
     rts                                                               ; 9c4d: 60          `        ; neither: expression complete
 ; &9c4e referenced 1 time by &9c47
-.c9c4e
+.do_add
     tay                                                               ; 9c4e: a8          .        ; Addition: type of the left operand
-    beq loop_c9c15                                                    ; 9c4f: f0 c4       ..       ; string: concatenate
+    beq relstr_stack_loop                                             ; 9c4f: f0 c4       ..       ; string: concatenate
     bmi c9c8b                                                         ; 9c51: 30 38       08       ; real: handle as float add
     jsr sub_c9dce                                                     ; 9c53: 20 ce 9d     ..      ; integer: stack it and evaluate the right operand
     tay                                                               ; 9c56: a8          .        ; Type of the right operand
@@ -6194,9 +6194,9 @@ oscli            = &fff7
     adc #4                                                            ; 9c7c: 69 04       i.       ; - 4,
     sta zp_stack_ptr                                                  ; 9c7e: 85 04       ..       ; store low,
     lda #&40 ; '@'                                                    ; 9c80: a9 40       .@       ; Result type = integer
-    bcc c9c45                                                         ; 9c82: 90 c1       ..       ; loop for further + or -
+    bcc addsub_check                                                  ; 9c82: 90 c1       ..       ; loop for further + or -
     inc zp_stack_ptr_1                                                ; 9c84: e6 05       ..       ; carry into the high byte,
-    bcs c9c45                                                         ; 9c86: b0 bd       ..       ; back for a further + or -
+    bcs addsub_check                                                  ; 9c86: b0 bd       ..       ; back for a further + or -
 ; &9c88 referenced 6 times by &9c1c, &9c57, &9c92, &9cb6, &9cbe, &9ce8
 .c9c88
     jmp err_type_mismatch                                             ; 9c88: 4c 0e 8c    L..      ; Type mismatch error
@@ -6217,7 +6217,7 @@ oscli            = &fff7
 .c9ca1
     ldx zp_var_type                                                   ; 9ca1: a6 27       .'       ; Restore the next character
     lda #&ff                                                          ; 9ca3: a9 ff       ..       ; Result type = real
-    bne c9c45                                                         ; 9ca5: d0 9e       ..       ; loop for further + or -
+    bne addsub_check                                                  ; 9ca5: d0 9e       ..       ; loop for further + or -
 ; &9ca7 referenced 1 time by &9c59
 .c9ca7
     stx zp_var_type                                                   ; 9ca7: 86 27       .'       ; Left int, right real: save the operator
@@ -11109,7 +11109,7 @@ oscli            = &fff7
     rts                                                               ; b0fa: 60          `        ; Return
 ; &b0fb referenced 1 time by &b0e9
 .cb0fb
-    jmp c9c03                                                         ; b0fb: 4c 03 9c    L..      ; String too long error
+    jmp string_too_long                                               ; b0fb: 4c 03 9c    L..      ; String too long error
 ; &b0fe referenced 1 time by &b11e
 .loop_cb0fe
     pla                                                               ; b0fe: 68          h        ; No such FN/PROC: restore the text pointer
@@ -14464,16 +14464,15 @@ save pydis_start, pydis_end
 ;     zp_print_bytes:                8
 ;     asm_emit:                      7
 ;     asm_opcode_add16:              7
-;     c9bb5:                         7
 ;     ensure_real:                   7
 ;     fwa_pack_var:                  7
 ;     fwb_unpack_var:                7
 ;     immediate_loop:                7
 ;     stmt_backup_end:               7
+;     store_bool:                    7
 ;     syntax_error:                  7
 ;     zp_count:                      7
 ;     assign_number:                 6
-;     c9bb4:                         6
 ;     c9c88:                         6
 ;     cae43:                         6
 ;     cb2b5:                         6
@@ -14486,6 +14485,7 @@ save pydis_start, pydis_end
 ;     osbget:                        6
 ;     osbput:                        6
 ;     point_fp_temp1:                6
+;     rel_true:                      6
 ;     unstack_string:                6
 ;     zp_error_vec:                  6
 ;     zp_error_vec_1:                6
@@ -14521,10 +14521,10 @@ save pydis_start, pydis_end
 ;     zp_gosub_level:                5
 ;     zp_repeat_level:               5
 ;     zp_trace_flag:                 5
+;     addsub_check:                  4
 ;     asm_mistake:                   4
 ;     assign_check_end:              4
 ;     bad_statement:                 4
-;     c9c45:                         4
 ;     ca46c:                         4
 ;     cb036:                         4
 ;     cb751:                         4
@@ -14661,7 +14661,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:              2
 ;     assign_string_to:              2
 ;     auto_loop:                     2
-;     c9c03:                         2
 ;     c9c9b:                         2
 ;     c9ca1:                         2
 ;     c9d39:                         2
@@ -14737,6 +14736,7 @@ save pydis_start, pydis_end
 ;     cbf82:                         2
 ;     cend_back:                     2
 ;     cmp_type_error:                2
+;     coerce_left_int:               2
 ;     createvar_chain:               2
 ;     decode_line_number:            2
 ;     delete_program_line:           2
@@ -14846,8 +14846,8 @@ save pydis_start, pydis_end
 ;     step_to_next_line:             2
 ;     stmt_data:                     2
 ;     stmt_eol:                      2
+;     string_too_long:               2
 ;     sub_c887c:                     2
-;     sub_c9b6b:                     2
 ;     sub_c9dce:                     2
 ;     sub_c9e1d:                     2
 ;     sub_cb4b1:                     2
@@ -14884,6 +14884,7 @@ save pydis_start, pydis_end
 ;     action_hi_by_token:            1
 ;     action_lo_by_token:            1
 ;     advance_vartop:                1
+;     and_byte_loop:                 1
 ;     ascii_to_number:               1
 ;     asm_abs_from_paren:            1
 ;     asm_acc_or_abs:                1
@@ -14951,16 +14952,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     c9b3a:                         1
-;     c9b55:                         1
-;     c9b7a:                         1
-;     c9ba8:                         1
-;     c9bc0:                         1
-;     c9bd4:                         1
-;     c9bdf:                         1
-;     c9be8:                         1
-;     c9bfa:                         1
-;     c9c4e:                         1
 ;     c9c77:                         1
 ;     c9c8b:                         1
 ;     c9ca7:                         1
@@ -15219,8 +15210,13 @@ save pydis_start, pydis_end
 ;     dim_name:                      1
 ;     dim_next_array:                1
 ;     dim_no_room_jmp:               1
+;     do_add:                        1
+;     do_and:                        1
+;     do_eor:                        1
+;     do_or:                         1
 ;     draw_save_mode:                1
 ;     encode_line_number:            1
+;     eor_byte_loop:                 1
 ;     err_no_gosub:                  1
 ;     err_no_repeat:                 1
 ;     err_no_such_line:              1
@@ -15228,6 +15224,8 @@ save pydis_start, pydis_end
 ;     err_too_many_repeats:          1
 ;     eval_and:                      1
 ;     eval_and_compare:              1
+;     eval_and_loop:                 1
+;     eval_or_loop:                  1
 ;     exec_assembler:                1
 ;     exec_dispatch:                 1
 ;     exec_immediate:                1
@@ -15320,14 +15318,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_c9b2c:                    1
-;     loop_c9b43:                    1
-;     loop_c9b4e:                    1
-;     loop_c9b5e:                    1
-;     loop_c9b75:                    1
-;     loop_c9b8a:                    1
-;     loop_c9c15:                    1
-;     loop_c9c2d:                    1
 ;     loop_c9d11:                    1
 ;     loop_c9d20:                    1
 ;     loop_c9d8b:                    1
@@ -15435,6 +15425,8 @@ save pydis_start, pydis_end
 ;     mistake_error:                 1
 ;     not_line_number:               1
 ;     not_local_error:               1
+;     or_byte_loop:                  1
+;     or_drop_stack:                 1
 ;     osasci:                        1
 ;     osnewl:                        1
 ;     output_byte_decimal:           1
@@ -15496,6 +15488,14 @@ save pydis_start, pydis_end
 ;     pvr_string_array:              1
 ;     pvr_word_indirect:             1
 ;     range_backup:                  1
+;     rel_ge:                        1
+;     rel_gt:                        1
+;     rel_le:                        1
+;     rel_lt:                        1
+;     rel_lt_family:                 1
+;     rel_ne:                        1
+;     relstr_cmp_loop:               1
+;     relstr_stack_loop:             1
 ;     renum_missing_line:            1
 ;     renum_no_space:                1
 ;     renum_pass1_loop:              1
@@ -15618,20 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c9b3a
-;     c9b55
-;     c9b7a
-;     c9ba8
-;     c9bb4
-;     c9bb5
-;     c9bc0
-;     c9bd4
-;     c9bdf
-;     c9be8
-;     c9bfa
-;     c9c03
-;     c9c45
-;     c9c4e
 ;     c9c77
 ;     c9c88
 ;     c9c8b
@@ -16016,14 +16002,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9b2c
-;     loop_c9b43
-;     loop_c9b4e
-;     loop_c9b5e
-;     loop_c9b75
-;     loop_c9b8a
-;     loop_c9c15
-;     loop_c9c2d
 ;     loop_c9d11
 ;     loop_c9d20
 ;     loop_c9d8b
@@ -16166,7 +16144,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c9b6b
 ;     sub_c9dce
 ;     sub_c9e1d
 ;     sub_ca14b

@@ -50320,7 +50320,7 @@
         132
       ],
       "labels": [
-        "loop_c9b2c"
+        "eval_or_loop"
       ],
       "comment_inline": "Is the next operator OR or EOR at this level?",
       "xref_summaries": [
@@ -50342,9 +50342,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9b3a",
+      "operand": "do_or",
       "target": 39738,
-      "target_label": "c9b3a"
+      "target_label": "do_or"
     },
     {
       "addr": 39728,
@@ -50366,9 +50366,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9b55",
+      "operand": "do_eor",
       "target": 39765,
-      "target_label": "c9b55"
+      "target_label": "do_eor"
     },
     {
       "addr": 39732,
@@ -50422,7 +50422,7 @@
         155
       ],
       "labels": [
-        "c9b3a"
+        "do_or"
       ],
       "comment_inline": "OR: stack the left operand, evaluate the right",
       "xref_summaries": [
@@ -50433,9 +50433,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b6b",
+      "operand": "coerce_left_int",
       "target": 39787,
-      "target_label": "sub_c9b6b"
+      "target_label": "coerce_left_int"
     },
     {
       "addr": 39741,
@@ -50478,7 +50478,7 @@
         4
       ],
       "labels": [
-        "loop_c9b43"
+        "or_byte_loop"
       ],
       "comment_inline": "stacked byte",
       "xref_summaries": [
@@ -50539,9 +50539,9 @@
       "comment_inline": "until all four OR-ed",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c9b43",
+      "operand": "or_byte_loop",
       "target": 39747,
-      "target_label": "loop_c9b43"
+      "target_label": "or_byte_loop"
     },
     {
       "addr": 39758,
@@ -50551,7 +50551,7 @@
         189
       ],
       "labels": [
-        "loop_c9b4e"
+        "or_drop_stack"
       ],
       "comment_inline": "Drop the stacked operand",
       "xref_summaries": [
@@ -50586,9 +50586,9 @@
       "comment_inline": "Loop to handle any further OR / EOR",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9b2c",
+      "operand": "eval_or_loop",
       "target": 39724,
-      "target_label": "loop_c9b2c"
+      "target_label": "eval_or_loop"
     },
     {
       "addr": 39765,
@@ -50598,7 +50598,7 @@
         155
       ],
       "labels": [
-        "c9b55"
+        "do_eor"
       ],
       "comment_inline": "EOR: stack the left operand, evaluate the right",
       "xref_summaries": [
@@ -50609,9 +50609,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9b6b",
+      "operand": "coerce_left_int",
       "target": 39787,
-      "target_label": "sub_c9b6b"
+      "target_label": "coerce_left_int"
     },
     {
       "addr": 39768,
@@ -50654,7 +50654,7 @@
         4
       ],
       "labels": [
-        "loop_c9b5e"
+        "eor_byte_loop"
       ],
       "comment_inline": "stacked byte",
       "xref_summaries": [
@@ -50715,9 +50715,9 @@
       "comment_inline": "until all four EOR-ed",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c9b5e",
+      "operand": "eor_byte_loop",
       "target": 39774,
-      "target_label": "loop_c9b5e"
+      "target_label": "eor_byte_loop"
     },
     {
       "addr": 39785,
@@ -50728,9 +50728,9 @@
       "comment_inline": "drop and loop",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9b4e",
+      "operand": "or_drop_stack",
       "target": 39758,
-      "target_label": "loop_c9b4e"
+      "target_label": "or_drop_stack"
     },
     {
       "addr": 39787,
@@ -50738,7 +50738,7 @@
         168
       ],
       "labels": [
-        "sub_c9b6b"
+        "coerce_left_int"
       ],
       "comment_inline": "Coerce the left operand to integer",
       "xref_summaries": [
@@ -50809,7 +50809,7 @@
         128
       ],
       "labels": [
-        "loop_c9b75"
+        "eval_and_loop"
       ],
       "comment_inline": "Apply AND only if the next operator is AND",
       "xref_summaries": [
@@ -50831,9 +50831,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9b7a",
+      "operand": "do_and",
       "target": 39802,
-      "target_label": "c9b7a"
+      "target_label": "do_and"
     },
     {
       "addr": 39801,
@@ -50850,7 +50850,7 @@
         168
       ],
       "labels": [
-        "c9b7a"
+        "do_and"
       ],
       "comment_inline": "Coerce the left operand to integer",
       "xref_summaries": [
@@ -50945,7 +50945,7 @@
         4
       ],
       "labels": [
-        "loop_c9b8a"
+        "and_byte_loop"
       ],
       "comment_inline": "stacked byte",
       "xref_summaries": [
@@ -51006,9 +51006,9 @@
       "comment_inline": "until all four AND-ed",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c9b8a",
+      "operand": "and_byte_loop",
       "target": 39818,
-      "target_label": "loop_c9b8a"
+      "target_label": "and_byte_loop"
     },
     {
       "addr": 39829,
@@ -51044,9 +51044,9 @@
       "comment_inline": "loop for further AND",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9b75",
+      "operand": "eval_and_loop",
       "target": 39797,
-      "target_label": "loop_c9b75"
+      "target_label": "eval_and_loop"
     },
     {
       "addr": 39836,
@@ -51116,9 +51116,9 @@
       "comment_inline": "a relational operator: handle it",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9ba8",
+      "operand": "rel_lt_family",
       "target": 39848,
-      "target_label": "c9ba8"
+      "target_label": "rel_lt_family"
     },
     {
       "addr": 39847,
@@ -51145,7 +51145,7 @@
         22
       ],
       "labels": [
-        "c9ba8"
+        "rel_lt_family"
       ],
       "comment_inline": "'<' family?",
       "xref_summaries": [
@@ -51156,9 +51156,9 @@
       ],
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bc0",
+      "operand": "rel_lt",
       "target": 39872,
-      "target_label": "c9bc0"
+      "target_label": "rel_lt"
     },
     {
       "addr": 39850,
@@ -51180,9 +51180,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9be8",
+      "operand": "rel_gt",
       "target": 39912,
-      "target_label": "c9be8"
+      "target_label": "rel_gt"
     },
     {
       "addr": 39854,
@@ -51216,9 +51216,9 @@
       "comment_inline": "not equal: result FALSE (0)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39860,
@@ -51226,7 +51226,7 @@
         136
       ],
       "labels": [
-        "c9bb4"
+        "rel_true"
       ],
       "comment_inline": "equal: result TRUE (Y = &FF)",
       "xref_summaries": [
@@ -51250,7 +51250,7 @@
         42
       ],
       "labels": [
-        "c9bb5"
+        "store_bool"
       ],
       "comment_inline": "Store 0/-1 in all four IWA bytes",
       "xref_summaries": [
@@ -51336,7 +51336,7 @@
         170
       ],
       "labels": [
-        "c9bc0"
+        "rel_lt"
       ],
       "comment_inline": "'<' family: discard the operator",
       "xref_summaries": [
@@ -51394,9 +51394,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bd4",
+      "operand": "rel_le",
       "target": 39892,
-      "target_label": "c9bd4"
+      "target_label": "rel_le"
     },
     {
       "addr": 39881,
@@ -51418,9 +51418,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bdf",
+      "operand": "rel_ne",
       "target": 39903,
-      "target_label": "c9bdf"
+      "target_label": "rel_ne"
     },
     {
       "addr": 39885,
@@ -51445,9 +51445,9 @@
       "comment_inline": "less: TRUE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39890,
@@ -51458,9 +51458,9 @@
       "comment_inline": "not less: FALSE",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39892,
@@ -51469,7 +51469,7 @@
         27
       ],
       "labels": [
-        "c9bd4"
+        "rel_le"
       ],
       "comment_inline": "'<=': step past the '='",
       "xref_summaries": [
@@ -51507,9 +51507,9 @@
       "comment_inline": "equal: TRUE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39899,
@@ -51520,9 +51520,9 @@
       "comment_inline": "less: TRUE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39901,
@@ -51533,9 +51533,9 @@
       "comment_inline": "greater: FALSE",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39903,
@@ -51544,7 +51544,7 @@
         27
       ],
       "labels": [
-        "c9bdf"
+        "rel_ne"
       ],
       "comment_inline": "'<>': step past the '>'",
       "xref_summaries": [
@@ -51582,9 +51582,9 @@
       "comment_inline": "unequal: TRUE",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39910,
@@ -51595,9 +51595,9 @@
       "comment_inline": "equal: FALSE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39912,
@@ -51605,7 +51605,7 @@
         170
       ],
       "labels": [
-        "c9be8"
+        "rel_gt"
       ],
       "comment_inline": "'>' family: discard the operator",
       "xref_summaries": [
@@ -51663,9 +51663,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bfa",
+      "operand": "rel_ge",
       "target": 39930,
-      "target_label": "c9bfa"
+      "target_label": "rel_ge"
     },
     {
       "addr": 39921,
@@ -51690,9 +51690,9 @@
       "comment_inline": "equal: FALSE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39926,
@@ -51703,9 +51703,9 @@
       "comment_inline": "greater: TRUE",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39928,
@@ -51716,9 +51716,9 @@
       "comment_inline": "less: FALSE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39930,
@@ -51727,7 +51727,7 @@
         27
       ],
       "labels": [
-        "c9bfa"
+        "rel_ge"
       ],
       "comment_inline": "'>=': step past the '='",
       "xref_summaries": [
@@ -51765,9 +51765,9 @@
       "comment_inline": "greater or equal: TRUE",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9bb4",
+      "operand": "rel_true",
       "target": 39860,
-      "target_label": "c9bb4"
+      "target_label": "rel_true"
     },
     {
       "addr": 39937,
@@ -51778,9 +51778,9 @@
       "comment_inline": "less: FALSE",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9bb5",
+      "operand": "store_bool",
       "target": 39861,
-      "target_label": "c9bb5"
+      "target_label": "store_bool"
     },
     {
       "addr": 39939,
@@ -51788,7 +51788,7 @@
         0
       ],
       "labels": [
-        "c9c03"
+        "string_too_long"
       ],
       "comment_inline": "String too long error",
       "xref_summaries": [
@@ -51851,7 +51851,7 @@
         189
       ],
       "labels": [
-        "loop_c9c15"
+        "relstr_stack_loop"
       ],
       "comment_inline": "Stack the left string",
       "xref_summaries": [
@@ -51970,9 +51970,9 @@
       "comment_inline": "over 255: error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9c03",
+      "operand": "string_too_long",
       "target": 39939,
-      "target_label": "c9c03"
+      "target_label": "string_too_long"
     },
     {
       "addr": 39977,
@@ -52013,7 +52013,7 @@
         5
       ],
       "labels": [
-        "loop_c9c2d"
+        "relstr_cmp_loop"
       ],
       "comment_inline": "right string byte (at Y)",
       "xref_summaries": [
@@ -52069,9 +52069,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9c2d",
+      "operand": "relstr_cmp_loop",
       "target": 39981,
-      "target_label": "loop_c9c2d"
+      "target_label": "relstr_cmp_loop"
     },
     {
       "addr": 39991,
@@ -52140,9 +52140,9 @@
       "comment_inline": "loop for further + or -",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c45",
+      "operand": "addsub_check",
       "target": 40005,
-      "target_label": "c9c45"
+      "target_label": "addsub_check"
     },
     {
       "addr": 40002,
@@ -52177,7 +52177,7 @@
         43
       ],
       "labels": [
-        "c9c45"
+        "addsub_check"
       ],
       "comment_inline": "Apply + or - if that is the next operator",
       "xref_summaries": [
@@ -52202,9 +52202,9 @@
       "comment_inline": "yes: addition",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9c4e",
+      "operand": "do_add",
       "target": 40014,
-      "target_label": "c9c4e"
+      "target_label": "do_add"
     },
     {
       "addr": 40009,
@@ -52245,7 +52245,7 @@
         168
       ],
       "labels": [
-        "c9c4e"
+        "do_add"
       ],
       "comment_inline": "Addition: type of the left operand",
       "xref_summaries": [
@@ -52266,9 +52266,9 @@
       "comment_inline": "string: concatenate",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9c15",
+      "operand": "relstr_stack_loop",
       "target": 39957,
-      "target_label": "loop_c9c15"
+      "target_label": "relstr_stack_loop"
     },
     {
       "addr": 40017,
@@ -52613,9 +52613,9 @@
       "comment_inline": "loop for further + or -",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9c45",
+      "operand": "addsub_check",
       "target": 40005,
-      "target_label": "c9c45"
+      "target_label": "addsub_check"
     },
     {
       "addr": 40068,
@@ -52639,9 +52639,9 @@
       "comment_inline": "back for a further + or -",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9c45",
+      "operand": "addsub_check",
       "target": 40005,
-      "target_label": "c9c45"
+      "target_label": "addsub_check"
     },
     {
       "addr": 40072,
@@ -52851,9 +52851,9 @@
       "comment_inline": "loop for further + or -",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9c45",
+      "operand": "addsub_check",
       "target": 40005,
-      "target_label": "c9c45"
+      "target_label": "addsub_check"
     },
     {
       "addr": 40103,
@@ -87500,9 +87500,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9c03",
+      "operand": "string_too_long",
       "target": 39939,
-      "target_label": "c9c03"
+      "target_label": "string_too_long"
     },
     {
       "addr": 45310,
