@@ -17792,7 +17792,7 @@
         200
       ],
       "labels": [
-        "c889d"
+        "parse_dec_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -17838,9 +17838,9 @@
       "comment_inline": "not a digit: done",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c88da",
+      "operand": "parse_dec_encode",
       "target": 35034,
-      "target_label": "c88da"
+      "target_label": "parse_dec_encode"
     },
     {
       "addr": 34980,
@@ -17862,9 +17862,9 @@
       "comment_inline": "not a digit: done",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c88da",
+      "operand": "parse_dec_encode",
       "target": 35034,
-      "target_label": "c88da"
+      "target_label": "parse_dec_encode"
     },
     {
       "addr": 34984,
@@ -17943,9 +17943,9 @@
       "comment_inline": "overflow",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c88d5",
+      "operand": "parse_dec_overflow",
       "target": 35029,
-      "target_label": "c88d5"
+      "target_label": "parse_dec_overflow"
     },
     {
       "addr": 34996,
@@ -17978,9 +17978,9 @@
       "comment_inline": "overflow",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c88d5",
+      "operand": "parse_dec_overflow",
       "target": 35029,
-      "target_label": "c88d5"
+      "target_label": "parse_dec_overflow"
     },
     {
       "addr": 35001,
@@ -18061,9 +18061,9 @@
       "comment_inline": "overflow",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c88d5",
+      "operand": "parse_dec_overflow",
       "target": 35029,
-      "target_label": "c88d5"
+      "target_label": "parse_dec_overflow"
     },
     {
       "addr": 35013,
@@ -18074,9 +18074,9 @@
       "comment_inline": "overflow",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c88d5",
+      "operand": "parse_dec_overflow",
       "target": 35029,
-      "target_label": "c88d5"
+      "target_label": "parse_dec_overflow"
     },
     {
       "addr": 35015,
@@ -18135,9 +18135,9 @@
       "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c889d",
+      "operand": "parse_dec_loop",
       "target": 34973,
-      "target_label": "c889d"
+      "target_label": "parse_dec_loop"
     },
     {
       "addr": 35024,
@@ -18161,9 +18161,9 @@
       "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c889d",
+      "operand": "parse_dec_loop",
       "target": 34973,
-      "target_label": "c889d"
+      "target_label": "parse_dec_loop"
     },
     {
       "addr": 35028,
@@ -18180,7 +18180,7 @@
         104
       ],
       "labels": [
-        "c88d5"
+        "parse_dec_overflow"
       ],
       "comment_inline": "Discard the saved digit",
       "xref_summaries": [
@@ -18230,7 +18230,7 @@
         136
       ],
       "labels": [
-        "c88da"
+        "parse_dec_encode"
       ],
       "comment_inline": "Back up",
       "xref_summaries": [
@@ -18349,7 +18349,7 @@
         55
       ],
       "labels": [
-        "loop_c88ec"
+        "parse_dec_shift_loop"
       ],
       "comment_inline": "Shift the bytes up",
       "xref_summaries": [
@@ -18395,9 +18395,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c88ec",
+      "operand": "parse_dec_shift_loop",
       "target": 35052,
-      "target_label": "loop_c88ec"
+      "target_label": "parse_dec_shift_loop"
     },
     {
       "addr": 35059,
@@ -18715,7 +18715,7 @@
         24
       ],
       "labels": [
-        "c8924"
+        "not_name_char"
       ],
       "comment_inline": "not a name character",
       "xref_summaries": [
@@ -18771,9 +18771,9 @@
       "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8924",
+      "operand": "not_name_char",
       "target": 35108,
-      "target_label": "c8924"
+      "target_label": "not_name_char"
     },
     {
       "addr": 35114,
@@ -18819,9 +18819,9 @@
       "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8924",
+      "operand": "not_name_char",
       "target": 35108,
-      "target_label": "c8924"
+      "target_label": "not_name_char"
     },
     {
       "addr": 35122,
@@ -18854,7 +18854,7 @@
         58
       ],
       "labels": [
-        "c8936"
+        "is_digit"
       ],
       "comment_inline": "above '9'?",
       "xref_summaries": [
@@ -18878,9 +18878,9 @@
       "comment_inline": "yes: no",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8924",
+      "operand": "not_name_char",
       "target": 35108,
-      "target_label": "c8924"
+      "target_label": "not_name_char"
     },
     {
       "addr": 35130,
@@ -18919,7 +18919,7 @@
         46
       ],
       "labels": [
-        "sub_c893d"
+        "is_dot_or_digit"
       ],
       "comment_inline": "'.'?",
       "xref_summaries": [
@@ -18941,9 +18941,9 @@
       "comment_inline": "no: test alphanumeric",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8936",
+      "operand": "is_digit",
       "target": 35126,
-      "target_label": "c8936"
+      "target_label": "is_digit"
     },
     {
       "addr": 35137,
@@ -19061,7 +19061,7 @@
         137
       ],
       "labels": [
-        "sub_c894b"
+        "general_next_byte"
       ],
       "comment_inline": "Advance the pointer...",
       "xref_summaries": [
@@ -19322,9 +19322,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c894b",
+      "operand": "general_next_byte",
       "target": 35147,
-      "target_label": "sub_c894b"
+      "target_label": "general_next_byte"
     },
     {
       "addr": 35181,
@@ -19336,9 +19336,9 @@
       "comment_inline": "a digit?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8936",
+      "operand": "is_digit",
       "target": 35126,
-      "target_label": "c8936"
+      "target_label": "is_digit"
     },
     {
       "addr": 35184,
@@ -19466,9 +19466,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c894b",
+      "operand": "general_next_byte",
       "target": 35147,
-      "target_label": "sub_c894b"
+      "target_label": "general_next_byte"
     },
     {
       "addr": 35203,
@@ -19734,9 +19734,9 @@
       "comment_inline": "a digit?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8936",
+      "operand": "is_digit",
       "target": 35126,
-      "target_label": "c8936"
+      "target_label": "is_digit"
     },
     {
       "addr": 35242,
@@ -19838,9 +19838,9 @@
       "comment_inline": "a digit or \".\"?",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c893d",
+      "operand": "is_dot_or_digit",
       "target": 35133,
-      "target_label": "sub_c893d"
+      "target_label": "is_dot_or_digit"
     },
     {
       "addr": 35258,
@@ -112454,9 +112454,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c894b",
+      "operand": "general_next_byte",
       "target": 35147,
-      "target_label": "sub_c894b"
+      "target_label": "general_next_byte"
     },
     {
       "addr": 49119,

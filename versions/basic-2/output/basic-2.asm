@@ -1674,47 +1674,47 @@ oscli            = &fff7
     sta zp_fwb_exp                                                    ; 8899: 85 3d       .=       ; Value low = digit
     sty zp_fwb_m1                                                     ; 889b: 84 3e       .>       ; Value high = 0
 ; &889d referenced 2 times by &88ce, &88d2
-.c889d
+.parse_dec_loop
     iny                                                               ; 889d: c8          .        ; Next character
     lda (zp_general),y                                                ; 889e: b1 37       .7       ; read it
     cmp #&3a ; ':'                                                    ; 88a0: c9 3a       .:       ; above 9?
-    bcs c88da                                                         ; 88a2: b0 36       .6       ; not a digit: done
+    bcs parse_dec_encode                                              ; 88a2: b0 36       .6       ; not a digit: done
     cmp #&30 ; '0'                                                    ; 88a4: c9 30       .0       ; below 0?
-    bcc c88da                                                         ; 88a6: 90 32       .2       ; not a digit: done
+    bcc parse_dec_encode                                              ; 88a6: 90 32       .2       ; not a digit: done
     and #&0f                                                          ; 88a8: 29 0f       ).       ; Digit value
     pha                                                               ; 88aa: 48          H        ; save it
     ldx zp_fwb_m1                                                     ; 88ab: a6 3e       .>       ; value high
     lda zp_fwb_exp                                                    ; 88ad: a5 3d       .=       ; value low
     asl a                                                             ; 88af: 0a          .        ; value * 2
     rol zp_fwb_m1                                                     ; 88b0: 26 3e       &>       ; into the high byte
-    bmi c88d5                                                         ; 88b2: 30 21       0!       ; overflow
+    bmi parse_dec_overflow                                            ; 88b2: 30 21       0!       ; overflow
     asl a                                                             ; 88b4: 0a          .        ; value * 4
     rol zp_fwb_m1                                                     ; 88b5: 26 3e       &>       ; into the high byte
-    bmi c88d5                                                         ; 88b7: 30 1c       0.       ; overflow
+    bmi parse_dec_overflow                                            ; 88b7: 30 1c       0.       ; overflow
     adc zp_fwb_exp                                                    ; 88b9: 65 3d       e=       ; - value = value * 5
     sta zp_fwb_exp                                                    ; 88bb: 85 3d       .=       ; store the low byte
     txa                                                               ; 88bd: 8a          .        ; now the high byte:
     adc zp_fwb_m1                                                     ; 88be: 65 3e       e>       ; - the x4 high byte (= x5)
     asl zp_fwb_exp                                                    ; 88c0: 06 3d       .=       ; - 2 = value * 10
     rol a                                                             ; 88c2: 2a          *        ; into the high byte
-    bmi c88d5                                                         ; 88c3: 30 10       0.       ; overflow
-    bcs c88d5                                                         ; 88c5: b0 0e       ..       ; overflow
+    bmi parse_dec_overflow                                            ; 88c3: 30 10       0.       ; overflow
+    bcs parse_dec_overflow                                            ; 88c5: b0 0e       ..       ; overflow
     sta zp_fwb_m1                                                     ; 88c7: 85 3e       .>       ; store the high byte
     pla                                                               ; 88c9: 68          h        ; Add the digit
     adc zp_fwb_exp                                                    ; 88ca: 65 3d       e=       ; add the digit to the low byte,
     sta zp_fwb_exp                                                    ; 88cc: 85 3d       .=       ; store it
-    bcc c889d                                                         ; 88ce: 90 cd       ..       ; next digit
+    bcc parse_dec_loop                                                ; 88ce: 90 cd       ..       ; next digit
     inc zp_fwb_m1                                                     ; 88d0: e6 3e       .>       ; carry into the high byte
-    bpl c889d                                                         ; 88d2: 10 c9       ..       ; next digit
+    bpl parse_dec_loop                                                ; 88d2: 10 c9       ..       ; next digit
     pha                                                               ; 88d4: 48          H        ; overflow marker
 ; &88d5 referenced 4 times by &88b2, &88b7, &88c3, &88c5
-.c88d5
+.parse_dec_overflow
     pla                                                               ; 88d5: 68          h        ; Discard the saved digit
     ldy #0                                                            ; 88d6: a0 00       ..       ; Offset 0
     sec                                                               ; 88d8: 38          8        ; flag a value was read
     rts                                                               ; 88d9: 60          `        ; Return
 ; &88da referenced 2 times by &88a2, &88a6
-.c88da
+.parse_dec_encode
     dey                                                               ; 88da: 88          .        ; Back up
     lda #&8d                                                          ; 88db: a9 8d       ..       ; Line-number token &8D
     jsr sub_c887c                                                     ; 88dd: 20 7c 88     |.      ; Make room for the 3 encoded bytes
@@ -1725,11 +1725,11 @@ oscli            = &fff7
     adc #0                                                            ; 88e8: 69 00       i.       ; - carry
     sta l003a                                                         ; 88ea: 85 3a       .:       ; dest high
 ; &88ec referenced 1 time by &88f1
-.loop_c88ec
+.parse_dec_shift_loop
     lda (zp_general),y                                                ; 88ec: b1 37       .7       ; Shift the bytes up
     sta (zp_fileblk),y                                                ; 88ee: 91 39       .9       ; up two bytes
     dey                                                               ; 88f0: 88          .        ; next
-    bne loop_c88ec                                                    ; 88f1: d0 f9       ..       ; loop
+    bne parse_dec_shift_loop                                          ; 88f1: d0 f9       ..       ; loop
     ldy #3                                                            ; 88f3: a0 03       ..       ; Three encoded bytes
 ; ***************************************************************************************
 ; Encode a 16-bit line number into 3 bytes
@@ -1773,7 +1773,7 @@ oscli            = &fff7
     jsr inc_ptr_general                                               ; 891f: 20 44 89     D.      ; (continued)
     ldy #0                                                            ; 8922: a0 00       ..       ; done: reset Y for the caller
 ; &8924 referenced 3 times by &8928, &8930, &8938
-.c8924
+.not_name_char
     clc                                                               ; 8924: 18          .        ; not a name character
     rts                                                               ; 8925: 60          `        ; return (carry clear)
 ; ***************************************************************************************
@@ -1793,25 +1793,25 @@ oscli            = &fff7
 ; &8926 referenced 5 times by &89cb, &89d4, &8a43, &8a74, &b167
 .is_alphanumeric
     cmp #&7b ; '{'                                                    ; 8926: c9 7b       .{       ; above 'z'?
-    bcs c8924                                                         ; 8928: b0 fa       ..       ; yes: no
+    bcs not_name_char                                                 ; 8928: b0 fa       ..       ; yes: no
     cmp #&5f ; '_'                                                    ; 892a: c9 5f       ._       ; '_' or above?
     bcs return_2                                                      ; 892c: b0 0e       ..       ; yes: name char
     cmp #&5b ; '['                                                    ; 892e: c9 5b       .[       ; '[' to '^'?
-    bcs c8924                                                         ; 8930: b0 f2       ..       ; yes: no
+    bcs not_name_char                                                 ; 8930: b0 f2       ..       ; yes: no
     cmp #&41 ; 'A'                                                    ; 8932: c9 41       .A       ; 'A' or above?
     bcs return_2                                                      ; 8934: b0 06       ..       ; yes: name char
 ; &8936 referenced 3 times by &893f, &896d, &89a7
-.c8936
+.is_digit
     cmp #&3a ; ':'                                                    ; 8936: c9 3a       .:       ; above '9'?
-    bcs c8924                                                         ; 8938: b0 ea       ..       ; yes: no
+    bcs not_name_char                                                 ; 8938: b0 ea       ..       ; yes: no
     cmp #&30 ; '0'                                                    ; 893a: c9 30       .0       ; digit?
 ; &893c referenced 2 times by &892c, &8934
 .return_2
     rts                                                               ; 893c: 60          `        ; carry set if so
 ; &893d referenced 1 time by &89b7
-.sub_c893d
+.is_dot_or_digit
     cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..       ; '.'?
-    bne c8936                                                         ; 893f: d0 f5       ..       ; no: test alphanumeric
+    bne is_digit                                                      ; 893f: d0 f5       ..       ; no: test alphanumeric
     rts                                                               ; 8941: 60          `        ; Return
 ; ***************************************************************************************
 ; Read a byte via the general pointer, then advance it
@@ -1854,7 +1854,7 @@ oscli            = &fff7
 .return_3
     rts                                                               ; 894a: 60          `        ; Return (shared)
 ; &894b referenced 3 times by &896a, &8980, &bfdc
-.sub_c894b
+.general_next_byte
     jsr inc_ptr_general                                               ; 894b: 20 44 89     D.      ; Advance the pointer...
     lda (zp_general),y                                                ; 894e: b1 37       .7       ; ...then read the next byte
     rts                                                               ; 8950: 60          `        ; Return the byte
@@ -1894,8 +1894,8 @@ oscli            = &fff7
     bne c897c                                                         ; 8968: d0 12       ..       ; not "&": check the other cases
 ; &896a referenced 2 times by &8970, &8978
 .c896a
-    jsr sub_c894b                                                     ; 896a: 20 4b 89     K.      ; Hex constant: advance and get a character
-    jsr c8936                                                         ; 896d: 20 36 89     6.      ; a digit?
+    jsr general_next_byte                                             ; 896a: 20 4b 89     K.      ; Hex constant: advance and get a character
+    jsr is_digit                                                      ; 896d: 20 36 89     6.      ; a digit?
     bcs c896a                                                         ; 8970: b0 f8       ..       ; yes: keep copying
     cmp #&41 ; 'A'                                                    ; 8972: c9 41       .A       ; below 'A'?
     bcc c8957                                                         ; 8974: 90 e1       ..       ; not hex: resume scanning
@@ -1908,7 +1908,7 @@ oscli            = &fff7
     bne c898c                                                         ; 897e: d0 0c       ..       ; not a quote: check for a colon
 ; &8980 referenced 1 time by &8989
 .loop_c8980
-    jsr sub_c894b                                                     ; 8980: 20 4b 89     K.      ; String literal: copy to the closing quote
+    jsr general_next_byte                                             ; 8980: 20 4b 89     K.      ; String literal: copy to the closing quote
     cmp #&22                                                          ; 8983: c9 22       ."       ; a quote?
     beq c8961                                                         ; 8985: f0 da       ..       ; yes: end of string
     cmp #&0d                                                          ; 8987: c9 0d       ..       ; CR (unterminated)?
@@ -1934,7 +1934,7 @@ oscli            = &fff7
 .c89a3
     cmp #&2e ; '.'                                                    ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?
     beq c89b5                                                         ; 89a5: f0 0e       ..       ; yes
-    jsr c8936                                                         ; 89a7: 20 36 89     6.      ; a digit?
+    jsr is_digit                                                      ; 89a7: 20 36 89     6.      ; a digit?
     bcc c89df                                                         ; 89aa: 90 33       .3       ; no: a letter or symbol
     ldx zp_fwb_ovf                                                    ; 89ac: a6 3c       .<       ; inside a quote?
     beq c89b5                                                         ; 89ae: f0 05       ..       ; no: a line number
@@ -1943,7 +1943,7 @@ oscli            = &fff7
 ; &89b5 referenced 3 times by &89a5, &89ae, &89bf
 .c89b5
     lda (zp_general),y                                                ; 89b5: b1 37       .7       ; Skip a number: read a character
-    jsr sub_c893d                                                     ; 89b7: 20 3d 89     =.      ; a digit or "."?
+    jsr is_dot_or_digit                                               ; 89b7: 20 3d 89     =.      ; a digit or "."?
     bcc c89c2                                                         ; 89ba: 90 06       ..       ; no: end of the number
     jsr inc_ptr_general                                               ; 89bc: 20 44 89     D.      ; advance
     jmp c89b5                                                         ; 89bf: 4c b5 89    L..      ; loop
@@ -14327,7 +14327,7 @@ oscli            = &fff7
     jsr osasci                                                        ; bfd9: 20 e3 ff     ..      ; Print the character
 ; &bfdc referenced 1 time by &bfd7
 .cbfdc
-    jsr sub_c894b                                                     ; bfdc: 20 4b 89     K.      ; Advance and fetch the next character
+    jsr general_next_byte                                             ; bfdc: 20 4b 89     K.      ; Advance and fetch the next character
     bpl loop_cbfd9                                                    ; bfdf: 10 f8       ..       ; Loop while bit 7 is clear
     jmp (zp_general)                                                  ; bfe1: 6c 37 00    l7.      ; Resume at the terminator (the next instruction)
 ; ***************************************************************************************
@@ -14522,7 +14522,6 @@ save pydis_start, pydis_end
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
 ;     asm_mistake:                 4
-;     c88d5:                       4
 ;     c8aa2:                       4
 ;     c8b98:                       4
 ;     c8d30:                       4
@@ -14554,6 +14553,7 @@ save pydis_start, pydis_end
 ;     l0045:                       4
 ;     l0046:                       4
 ;     l0441:                       4
+;     parse_dec_overflow:          4
 ;     point_fp_temp4:              4
 ;     read_via_ptr_general:        4
 ;     reserve_stack:               4
@@ -14573,8 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c8924:                       3
-;     c8936:                       3
 ;     c89b5:                       3
 ;     c8d7d:                       3
 ;     c8d80:                       3
@@ -14619,8 +14617,11 @@ save pydis_start, pydis_end
 ;     fwa_div10:                   3
 ;     fwa_int_power:               3
 ;     fwb_clear:                   3
+;     general_next_byte:           3
+;     is_digit:                    3
 ;     iwa_negate:                  3
 ;     l0401:                       3
+;     not_name_char:               3
 ;     parse_number:                3
 ;     point_fp_temp2:              3
 ;     print_line_number:           3
@@ -14635,7 +14636,6 @@ save pydis_start, pydis_end
 ;     return_8:                    3
 ;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
-;     sub_c894b:                   3
 ;     sub_cbd3a:                   3
 ;     unstack_int_to_general:      3
 ;     zp_erl:                      3
@@ -14655,8 +14655,6 @@ save pydis_start, pydis_end
 ;     asm_set_operand:             2
 ;     asm_three_byte:              2
 ;     asm_two_byte:                2
-;     c889d:                       2
-;     c88da:                       2
 ;     c896a:                       2
 ;     c89c2:                       2
 ;     c89d0:                       2
@@ -14828,6 +14826,8 @@ save pydis_start, pydis_end
 ;     osfind:                      2
 ;     osrdch:                      2
 ;     output_digit:                2
+;     parse_dec_encode:            2
+;     parse_dec_loop:              2
 ;     parse_var_ref:               2
 ;     point_const_half_pi:         2
 ;     point_fp_temp3:              2
@@ -15323,6 +15323,7 @@ save pydis_start, pydis_end
 ;     fwa_swap_var:                1
 ;     gosub_stack:                 1
 ;     gosub_stack_hi:              1
+;     is_dot_or_digit:             1
 ;     iwa_div:                     1
 ;     iwa_mod:                     1
 ;     iwa_store_var:               1
@@ -15362,7 +15363,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c88ec:                  1
 ;     loop_c8980:                  1
 ;     loop_c89cb:                  1
 ;     loop_c89fe:                  1
@@ -15538,6 +15538,7 @@ save pydis_start, pydis_end
 ;     osnewl:                      1
 ;     output_byte_decimal:         1
 ;     output_top_digit:            1
+;     parse_dec_shift_loop:        1
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
 ;     print_hex_digit:             1
@@ -15580,7 +15581,6 @@ save pydis_start, pydis_end
 ;     stmt_next:                   1
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
-;     sub_c893d:                   1
 ;     sub_c8955:                   1
 ;     sub_c8f9a:                   1
 ;     sub_c9231:                   1
@@ -15618,11 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c889d
-;     c88d5
-;     c88da
-;     c8924
-;     c8936
 ;     c8957
 ;     c8961
 ;     c8966
@@ -16223,7 +16218,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c88ec
 ;     loop_c8980
 ;     loop_c89cb
 ;     loop_c89fe
@@ -16437,8 +16431,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c893d
-;     sub_c894b
 ;     sub_c8955
 ;     sub_c8c21
 ;     sub_c8e8a
