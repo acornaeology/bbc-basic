@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 212 of 7,129 placeholders left (3.0 %);
+**STATUS: in progress — 175 of 7,129 placeholders left (2.5 %);
 depths 0–6 complete, depth 7 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,8 +27,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 6 complete. Depth 7 next: `stmt_for` (37), then
-`stmt_input` (25), `stmt_auto` (22), `find_line_target` (17), and the
+Depth 6 complete. Depth 7 next: `stmt_input` (25), then
+`stmt_auto` (22), `find_line_target` (17), `stmt_delete` (15), and the
 rest of depths 7–9. (Depth 8 has asm_parse_mnemonic (36); depth 9 has
 assembler_exit (17).)
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
@@ -259,4 +259,5 @@ placeholders goes first.
 | 2026-06-14 | depth 6: stmt_mode | stmt_mode (MODE: STACK==HIMEM check, OSBYTE &85 top-of-RAM, VARTOP/TOP room checks, set HIMEM/STACK, VDU 22) | 15 | 349 |
 | 2026-06-14 | depth 6: stmt_save | stmt_save (SAVE: build the OSFILE block - end=TOP, exec=&8023, start=PAGE, address high words) | 13 | 336 |
 | 2026-06-14 | depth 6 complete | parse_lvalue, stmt_data, iwa_div, stmt_old, stmt_trace, stmt_run, stmt_endproc, stmt_colour, stmt_return | 24 | 312 |
-| 2026-06-14 | depth 7: call_proc_fn | call_proc_fn (PROC/FN frame: copy 6502 stack to BASIC stack & back, push call context, name lookup, parameter binding + LOCAL save, arg/formal count match) | 100 | 212 | — |
+| 2026-06-14 | depth 7: call_proc_fn | call_proc_fn (PROC/FN frame: copy 6502 stack to BASIC stack & back, push call context, name lookup, parameter binding + LOCAL save, arg/formal count match) | 100 | 212 |
+| 2026-06-14 | depth 7: stmt_for | stmt_for (FOR: build 15-byte page-5 frame - var ptr/type, limit, step, body pointer; integer and real paths) | 37 | 175 | — |
