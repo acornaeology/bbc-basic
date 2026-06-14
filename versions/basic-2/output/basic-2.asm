@@ -1110,8 +1110,8 @@ oscli            = &fff7
 ; &85a5 referenced 1 time by &85d1
 .asm_define_label
     jsr parse_lvalue                                                  ; 85a5: 20 82 95     ..      ; Label: parse the variable
-    beq c8604                                                         ; 85a8: f0 5a       .Z       ; end: error
-    bcs c8604                                                         ; 85aa: b0 58       .X       ; indirection: error
+    beq asm_mistake                                                   ; 85a8: f0 5a       .Z       ; end: error
+    bcs asm_mistake                                                   ; 85aa: b0 58       .X       ; indirection: error
     jsr stack_integer                                                 ; 85ac: 20 94 bd     ..      ; stack the address
     jsr sub_cae3a                                                     ; 85af: 20 3a ae     :.      ; value = P%
     sta zp_var_type                                                   ; 85b2: 85 27       .'       ; integer type
@@ -1137,78 +1137,78 @@ oscli            = &fff7
     ldy #0                                                            ; 85bf: a0 00       ..       ; Clear the compacted value
     sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=       ; low byte (&3D)
     cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:       ; ':' end of statement?
-    beq c862b                                                         ; 85c5: f0 64       .d       ; yes: no instruction
+    beq asm_emit                                                      ; 85c5: f0 64       .d       ; yes: no instruction
     cmp #&0d                                                          ; 85c7: c9 0d       ..       ; end of line?
-    beq c862b                                                         ; 85c9: f0 60       .`       ; yes
+    beq asm_emit                                                      ; 85c9: f0 60       .`       ; yes
     cmp #&5c ; '\'                                                    ; 85cb: c9 5c       .\       ; comment?
-    beq c862b                                                         ; 85cd: f0 5c       .\       ; yes
+    beq asm_emit                                                      ; 85cd: f0 5c       .\       ; yes
     cmp #&2e ; '.'                                                    ; 85cf: c9 2e       ..       ; '.' label?
     beq asm_define_label                                              ; 85d1: f0 d2       ..       ; yes: define it
     dec zp_text_ptr_off                                               ; 85d3: c6 0a       ..       ; back up
 ; &85d5 referenced 1 time by &85ef
-.loop_c85d5
+.asm_mn_char_loop
     ldy zp_text_ptr_off                                               ; 85d5: a4 0a       ..       ; Next character
     inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..       ; advance the offset,
     lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..       ; read it
-    bmi c8607                                                         ; 85db: 30 2a       0*       ; token: tokenised AND/EOR/OR
+    bmi asm_logic_mnemonic                                            ; 85db: 30 2a       0*       ; token: tokenised AND/EOR/OR
     cmp #&20 ; ' '                                                    ; 85dd: c9 20       .        ; space?
-    beq c85f1                                                         ; 85df: f0 10       ..       ; skip it
+    beq asm_mn_search                                                 ; 85df: f0 10       ..       ; skip it
     ldy #5                                                            ; 85e1: a0 05       ..       ; Compact the character (5 bits)
     asl a                                                             ; 85e3: 0a          .        ; shift the char up by 3,
     asl a                                                             ; 85e4: 0a          .        ; (continued)
     asl a                                                             ; 85e5: 0a          .        ; (continued)
 ; &85e6 referenced 1 time by &85ec
-.loop_c85e6
+.asm_mn_pack_loop
     asl a                                                             ; 85e6: 0a          .        ; shift into the value
     rol zp_fwb_exp                                                    ; 85e7: 26 3d       &=       ; carry into &3D,
     rol zp_fwb_m1                                                     ; 85e9: 26 3e       &>       ; and &3E,
     dey                                                               ; 85eb: 88          .        ; next bit,
-    bne loop_c85e6                                                    ; 85ec: d0 f8       ..       ; all 5 bits
+    bne asm_mn_pack_loop                                              ; 85ec: d0 f8       ..       ; all 5 bits
     dex                                                               ; 85ee: ca          .        ; next character
-    bne loop_c85d5                                                    ; 85ef: d0 e4       ..       ; loop for three
+    bne asm_mn_char_loop                                              ; 85ef: d0 e4       ..       ; loop for three
 ; &85f1 referenced 1 time by &85df
-.c85f1
+.asm_mn_search
     ldx #&3a ; ':'                                                    ; 85f1: a2 3a       .:       ; Point to the end of the opcode table
     lda zp_fwb_exp                                                    ; 85f3: a5 3d       .=       ; Compacted mnemonic low byte
 ; &85f5 referenced 1 time by &8602
-.loop_c85f5
+.asm_mn_search_loop
     cmp asm_mnemonic_lo,x                                             ; 85f5: dd 50 84    .P.      ; Compare the low half
-    bne c8601                                                         ; 85f8: d0 07       ..       ; no match: next entry
+    bne asm_mn_search_next                                            ; 85f8: d0 07       ..       ; no match: next entry
     ldy asm_mnemonic_hi,x                                             ; 85fa: bc 8a 84    ...      ; High half
     cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; match the high half?
-    beq c8620                                                         ; 85ff: f0 1f       ..       ; matched
+    beq asm_got_opcode                                                ; 85ff: f0 1f       ..       ; matched
 ; &8601 referenced 1 time by &85f8
-.c8601
+.asm_mn_search_next
     dex                                                               ; 8601: ca          .        ; Next entry
-    bne loop_c85f5                                                    ; 8602: d0 f1       ..       ; loop
+    bne asm_mn_search_loop                                            ; 8602: d0 f1       ..       ; loop
 ; &8604 referenced 4 times by &85a8, &85aa, &8615, &861e
-.c8604
+.asm_mistake
     jmp c982a                                                         ; 8604: 4c 2a 98    L*.      ; not matched: Mistake
 ; &8607 referenced 1 time by &85db
-.c8607
+.asm_logic_mnemonic
     ldx #&22                                                          ; 8607: a2 22       ."       ; opcode index for AND
     cmp #&80                                                          ; 8609: c9 80       ..       ; tokenised AND?
-    beq c8620                                                         ; 860b: f0 13       ..       ; yes
+    beq asm_got_opcode                                                ; 860b: f0 13       ..       ; yes
     inx                                                               ; 860d: e8          .        ; EOR index
     cmp #&82                                                          ; 860e: c9 82       ..       ; tokenised EOR?
-    beq c8620                                                         ; 8610: f0 0e       ..       ; yes
+    beq asm_got_opcode                                                ; 8610: f0 0e       ..       ; yes
     inx                                                               ; 8612: e8          .        ; ORA index
     cmp #&84                                                          ; 8613: c9 84       ..       ; tokenised OR?
-    bne c8604                                                         ; 8615: d0 ed       ..       ; no: Mistake
+    bne asm_mistake                                                   ; 8615: d0 ed       ..       ; no: Mistake
     inc zp_text_ptr_off                                               ; 8617: e6 0a       ..       ; step past, expect 'A'
     iny                                                               ; 8619: c8          .        ; advance,
     lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..       ; read the next character
     cmp #&41 ; 'A'                                                    ; 861c: c9 41       .A       ; 'A'?
-    bne c8604                                                         ; 861e: d0 e4       ..       ; no: Mistake
+    bne asm_mistake                                                   ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
-.c8620
+.asm_got_opcode
     lda asm_base_opcode,x                                             ; 8620: bd c4 84    ...      ; Base opcode from the table
     sta zp_asm_opcode                                                 ; 8623: 85 29       .)       ; Save it
     ldy #1                                                            ; 8625: a0 01       ..       ; Assume a one-byte instruction
     cpx #&1a                                                          ; 8627: e0 1a       ..       ; index &1A+ takes an operand?
-    bcs c8673                                                         ; 8629: b0 48       .H       ; yes: parse the addressing mode
+    bcs asm_operand                                                   ; 8629: b0 48       .H       ; yes: parse the addressing mode
 ; &862b referenced 7 times by &85c5, &85c9, &85cd, &86aa, &879c, &881e, &8864
-.c862b
+.asm_emit
     lda resint_p                                                      ; 862b: ad 40 04    .@.      ; P% low -> destination
     sta zp_general                                                    ; 862e: 85 37       .7       ; to &37
     sty zp_fileblk                                                    ; 8630: 84 39       .9       ; Save the byte count
@@ -1216,48 +1216,48 @@ oscli            = &fff7
     cpx #4                                                            ; 8634: e0 04       ..       ; offset assembly (OPT >= 4)?
     ldx l0441                                                         ; 8636: ae 41 04    .A.      ; P% high
     stx zp_general_1                                                  ; 8639: 86 38       .8       ; to &38
-    bcc c8643                                                         ; 863b: 90 06       ..       ; no offset: assemble at P%
+    bcc asm_emit_dest                                                 ; 863b: 90 06       ..       ; no offset: assemble at P%
     lda resint_o                                                      ; 863d: ad 3c 04    .<.      ; offset: assemble at O% instead
     ldx l043d                                                         ; 8640: ae 3d 04    .=.      ; O% high
 ; &8643 referenced 1 time by &863b
-.c8643
+.asm_emit_dest
     sta l003a                                                         ; 8643: 85 3a       .:       ; Store the destination pointer
     stx zp_fwb_sign                                                   ; 8645: 86 3b       .;       ; high byte (&3B)
     tya                                                               ; 8647: 98          .        ; Any bytes to store?
     beq return_1                                                      ; 8648: f0 28       .(       ; none: done
-    bpl c8650                                                         ; 864a: 10 04       ..       ; positive count: store opcode bytes
+    bpl asm_emit_loop                                                 ; 864a: 10 04       ..       ; positive count: store opcode bytes
     ldy zp_strbuf_len                                                 ; 864c: a4 36       .6       ; EQUS: length from the string buffer
     beq return_1                                                      ; 864e: f0 22       ."       ; empty: done
 ; &8650 referenced 2 times by &864a, &8670
-.c8650
+.asm_emit_loop
     dey                                                               ; 8650: 88          .        ; Next byte index
     lda zp_asm_opcode,y                                               ; 8651: b9 29 00    .).      ; Opcode/operand byte
     bit zp_fileblk                                                    ; 8654: 24 39       $9       ; storing string (EQUS) bytes?
-    bpl c865b                                                         ; 8656: 10 03       ..       ; no: store the opcode byte
+    bpl asm_emit_store                                                ; 8656: 10 03       ..       ; no: store the opcode byte
     lda string_work,y                                                 ; 8658: b9 00 06    ...      ; yes: take it from the string buffer
 ; &865b referenced 1 time by &8656
-.c865b
+.asm_emit_store
     sta (l003a),y                                                     ; 865b: 91 3a       .:       ; Store the byte at the destination
     inc resint_p                                                      ; 865d: ee 40 04    .@.      ; Advance P%
-    bne c8665                                                         ; 8660: d0 03       ..       ; no carry,
+    bne asm_emit_advance                                              ; 8660: d0 03       ..       ; no carry,
     inc l0441                                                         ; 8662: ee 41 04    .A.      ; carry into P% high
 ; &8665 referenced 1 time by &8660
-.c8665
-    bcc c866f                                                         ; 8665: 90 08       ..       ; offset assembly?
+.asm_emit_advance
+    bcc asm_emit_more                                                 ; 8665: 90 08       ..       ; offset assembly?
     inc resint_o                                                      ; 8667: ee 3c 04    .<.      ; yes: advance O% too
-    bne c866f                                                         ; 866a: d0 03       ..       ; no carry,
+    bne asm_emit_more                                                 ; 866a: d0 03       ..       ; no carry,
     inc l043d                                                         ; 866c: ee 3d 04    .=.      ; carry into O% high
 ; &866f referenced 2 times by &8665, &866a
-.c866f
+.asm_emit_more
     tya                                                               ; 866f: 98          .        ; More bytes?
-    bne c8650                                                         ; 8670: d0 de       ..       ; loop
+    bne asm_emit_loop                                                 ; 8670: d0 de       ..       ; loop
 ; &8672 referenced 2 times by &8648, &864e
 .return_1
     rts                                                               ; 8672: 60          `        ; Return
 ; &8673 referenced 1 time by &8629
-.c8673
+.asm_operand
     cpx #&22                                                          ; 8673: e0 22       ."       ; index &22+ is not a branch?
-    bcs c86b7                                                         ; 8675: b0 40       .@       ; yes: other operand forms
+    bcs asm_mode_imm                                                  ; 8675: b0 40       .@       ; yes: other operand forms
     jsr eval_expr_to_integer                                          ; 8677: 20 21 88     !.      ; Evaluate the target address
     clc                                                               ; 867a: 18          .        ; Offset = target - (P% + 2)
     lda zp_iwa                                                        ; 867b: a5 2a       .*       ; target low,
@@ -1268,254 +1268,254 @@ oscli            = &fff7
     cpy #1                                                            ; 8686: c0 01       ..       ; offset >= 1?,
     dey                                                               ; 8688: 88          .        ; offset - 1 (for PC+2),
     sbc #0                                                            ; 8689: e9 00       ..       ; borrow into the high byte
-    beq c86b2                                                         ; 868b: f0 25       .%       ; in forward range?
+    beq asm_branch_back                                               ; 868b: f0 25       .%       ; in forward range?
     cmp #&ff                                                          ; 868d: c9 ff       ..       ; in backward range?
-    beq c86ad                                                         ; 868f: f0 1c       ..       ; high byte &FF: in range
+    beq asm_branch_fwd                                                ; 868f: f0 1c       ..       ; high byte &FF: in range
 ; &8691 referenced 2 times by &86b0, &86b5
-.c8691
+.asm_branch_range_err
     lda zp_opt_flag                                                   ; 8691: a5 28       .(       ; OPT setting  errors enabled?
     lsr a                                                             ; 8693: 4a          J        ; errors enabled (bit 1)?
-    beq c86a5                                                         ; 8694: f0 0f       ..       ; no: ignore the range error
+    beq asm_branch_ok                                                 ; 8694: f0 0f       ..       ; no: ignore the range error
     brk                                                               ; 8696: 00          .        ; Out of range error
     equb &01                                                          ; 8697: 01          .     
     equs "Out of range"                                               ; 8698: 4f 75 74... Out...
     equb &00                                                          ; 86a4: 00          .     
 ; &86a5 referenced 1 time by &8694
-.c86a5
+.asm_branch_ok
     tay                                                               ; 86a5: a8          .        ; Use the offset byte
 ; &86a6 referenced 2 times by &86ae, &86b3
-.c86a6
+.asm_set_operand
     sty zp_iwa                                                        ; 86a6: 84 2a       .*       ; as the operand
 ; &86a8 referenced 2 times by &86ca, &873c
-.c86a8
+.asm_two_byte
     ldy #2                                                            ; 86a8: a0 02       ..       ; Two-byte instruction
-    jmp c862b                                                         ; 86aa: 4c 2b 86    L+.      ; store it
+    jmp asm_emit                                                      ; 86aa: 4c 2b 86    L+.      ; store it
 ; &86ad referenced 1 time by &868f
-.c86ad
+.asm_branch_fwd
     tya                                                               ; 86ad: 98          .        ; forward: check the high byte
-    bmi c86a6                                                         ; 86ae: 30 f6       0.       ; in range
-    bpl c8691                                                         ; 86b0: 10 df       ..       ; out of range
+    bmi asm_set_operand                                               ; 86ae: 30 f6       0.       ; in range
+    bpl asm_branch_range_err                                          ; 86b0: 10 df       ..       ; out of range
 ; &86b2 referenced 1 time by &868b
-.c86b2
+.asm_branch_back
     tya                                                               ; 86b2: 98          .        ; backward: check the high byte
-    bpl c86a6                                                         ; 86b3: 10 f1       ..       ; in range
-    bmi c8691                                                         ; 86b5: 30 da       0.       ; out of range
+    bpl asm_set_operand                                               ; 86b3: 10 f1       ..       ; in range
+    bmi asm_branch_range_err                                          ; 86b5: 30 da       0.       ; out of range
 ; &86b7 referenced 1 time by &8675
-.c86b7
+.asm_mode_imm
     cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)       ; index &29+ : not immediate?
-    bcs c86d3                                                         ; 86b9: b0 18       ..       ; yes: indexed/absolute modes
+    bcs asm_mode_indirect                                             ; 86b9: b0 18       ..       ; yes: indexed/absolute modes
     jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..      ; Skip spaces
     cmp #&23 ; '#'                                                    ; 86be: c9 23       .#       ; '#' immediate prefix?
-    bne c86da                                                         ; 86c0: d0 18       ..       ; no: absolute
+    bne asm_try_indirect                                              ; 86c0: d0 18       ..       ; no: absolute
     jsr asm_opcode_add8                                               ; 86c2: 20 2f 88     /.      ; Immediate mode: adjust the opcode
 ; &86c5 referenced 2 times by &877d, &87c9
-.c86c5
+.asm_imm_eval
     jsr eval_expr_to_integer                                          ; 86c5: 20 21 88     !.      ; Evaluate the immediate value
 ; &86c8 referenced 2 times by &86f9, &870b
-.c86c8
+.asm_imm_byte
     lda zp_iwa_1                                                      ; 86c8: a5 2b       .+       ; high byte zero (fits in a byte)?
-    beq c86a8                                                         ; 86ca: f0 dc       ..       ; yes: two-byte instruction
+    beq asm_two_byte                                                  ; 86ca: f0 dc       ..       ; yes: two-byte instruction
 ; &86cc referenced 1 time by &880d
-.c86cc
+.asm_byte_error
     brk                                                               ; 86cc: 00          .        ; Byte error (value > 255)
     equb &02                                                          ; 86cd: 02          .     
     equs "Byte"                                                       ; 86ce: 42 79 74... Byt...
     equb &00                                                          ; 86d2: 00          .     
 ; &86d3 referenced 1 time by &86b9
-.c86d3
+.asm_mode_indirect
     cpx #&36 ; '6'                                                    ; 86d3: e0 36       .6       ; index &36 : the (zp),Y / (zp,X) group?
-    bne c873f                                                         ; 86d5: d0 68       .h       ; no: absolute/indexed group
+    bne asm_mode_class2                                               ; 86d5: d0 68       .h       ; no: absolute/indexed group
     jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..      ; Skip spaces
 ; &86da referenced 1 time by &86c0
-.c86da
+.asm_try_indirect
     cmp #&28 ; '('                                                    ; 86da: c9 28       .(       ; '(' opening an indirect mode?
-    bne c8715                                                         ; 86dc: d0 37       .7       ; no: absolute
+    bne asm_abs_from_paren                                            ; 86dc: d0 37       .7       ; no: absolute
     jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.      ; Evaluate the zero-page address
     jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)       ; ')' -> (zp),Y form
-    bne c86fb                                                         ; 86e6: d0 13       ..       ; no: try (zp,X)
+    bne asm_indirect_zpx                                              ; 86e6: d0 13       ..       ; no: try (zp,X)
     jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,       ; ','?
-    bne c870d                                                         ; 86ed: d0 1e       ..       ; no: Index error
+    bne asm_index_error                                               ; 86ed: d0 1e       ..       ; no: Index error
     jsr asm_opcode_add16                                              ; 86ef: 20 2c 88     ,.      ; adjust the opcode for (zp),Y
     jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..      ; Skip spaces
     cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y       ; 'Y'?
-    bne c870d                                                         ; 86f7: d0 14       ..       ; no: Index error
-    beq c86c8                                                         ; 86f9: f0 cd       ..       ; process as a two-byte instruction
+    bne asm_index_error                                               ; 86f7: d0 14       ..       ; no: Index error
+    beq asm_imm_byte                                                  ; 86f9: f0 cd       ..       ; process as a two-byte instruction
 ; &86fb referenced 1 time by &86e6
-.c86fb
+.asm_indirect_zpx
     cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,       ; ','?
-    bne c870d                                                         ; 86fd: d0 0e       ..       ; no: Index error
+    bne asm_index_error                                               ; 86fd: d0 0e       ..       ; no: Index error
     jsr skip_spaces                                                   ; 86ff: 20 97 8a     ..      ; Skip spaces
     cmp #&58 ; 'X'                                                    ; 8702: c9 58       .X       ; 'X'?
-    bne c870d                                                         ; 8704: d0 07       ..       ; no: Index error
+    bne asm_index_error                                               ; 8704: d0 07       ..       ; no: Index error
     jsr skip_spaces                                                   ; 8706: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 8709: c9 29       .)       ; ')'?
-    beq c86c8                                                         ; 870b: f0 bb       ..       ; yes: process
+    beq asm_imm_byte                                                  ; 870b: f0 bb       ..       ; yes: process
 ; &870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed
-.c870d
+.asm_index_error
     brk                                                               ; 870d: 00          .        ; Index error
     equb &03                                                          ; 870e: 03          .     
     equs "Index"                                                      ; 870f: 49 6e 64... Ind...
     equb &00                                                          ; 8714: 00          .     
 ; &8715 referenced 1 time by &86dc
-.c8715
+.asm_abs_from_paren
     dec zp_text_ptr_off                                               ; 8715: c6 0a       ..       ; Back up over the "("
     jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 871a: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 871d: c9 2c       .,       ; ','?
-    bne c8735                                                         ; 871f: d0 14       ..       ; no: process as absolute
+    bne asm_absolute                                                  ; 871f: d0 14       ..       ; no: process as absolute
     jsr asm_opcode_add16                                              ; 8721: 20 2c 88     ,.      ; adjust the opcode for absolute,X/,Y
     jsr skip_spaces                                                   ; 8724: 20 97 8a     ..      ; Skip spaces
     cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X       ; 'X'?
-    beq c8735                                                         ; 8729: f0 0a       ..       ; yes: abs,X
+    beq asm_absolute                                                  ; 8729: f0 0a       ..       ; yes: abs,X
     cmp #&59 ; 'Y'                                                    ; 872b: c9 59       .Y       ; 'Y'?
-    bne c870d                                                         ; 872d: d0 de       ..       ; no: Index error
+    bne asm_index_error                                               ; 872d: d0 de       ..       ; no: Index error
 ; &872f referenced 1 time by &873a
-.loop_c872f
+.asm_indexed_adjust
     jsr asm_opcode_add8                                               ; 872f: 20 2f 88     /.      ; Adjust the opcode for the indexed form
-    jmp c879a                                                         ; 8732: 4c 9a 87    L..      ; process the absolute operand
+    jmp asm_three_byte                                                ; 8732: 4c 9a 87    L..      ; process the absolute operand
 ; &8735 referenced 5 times by &871f, &8729, &8785, &87db, &87ea
-.c8735
+.asm_absolute
     jsr asm_opcode_add4                                               ; 8735: 20 32 88     2.      ; Adjust the opcode for absolute mode
 ; &8738 referenced 3 times by &8758, &8762, &8810
-.c8738
+.asm_zp_or_abs
     lda zp_iwa_1                                                      ; 8738: a5 2b       .+       ; address fits in zero page (high byte 0)?
-    bne loop_c872f                                                    ; 873a: d0 f3       ..       ; no: assemble as absolute (three bytes)
-    jmp c86a8                                                         ; 873c: 4c a8 86    L..      ; yes: assemble as two bytes
+    bne asm_indexed_adjust                                            ; 873a: d0 f3       ..       ; no: assemble as absolute (three bytes)
+    jmp asm_two_byte                                                  ; 873c: 4c a8 86    L..      ; yes: assemble as two bytes
 ; &873f referenced 1 time by &86d5
-.c873f
+.asm_mode_class2
     cpx #&2f ; '/'                                                    ; 873f: e0 2f       ./       ; index &2F+ : a different operand class?
-    bcs c876e                                                         ; 8741: b0 2b       .+       ; yes
+    bcs asm_mode_class3                                               ; 8741: b0 2b       .+       ; yes
     cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-       ; index &2D+ (accumulator-or-absolute)?
-    bcs c8750                                                         ; 8745: b0 09       ..       ; yes
+    bcs asm_acc_or_abs                                                ; 8745: b0 09       ..       ; yes
     jsr skip_spaces                                                   ; 8747: 20 97 8a     ..      ; Skip spaces
     cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A       ; 'A' (accumulator)?
-    beq c8767                                                         ; 874c: f0 19       ..       ; yes
+    beq asm_accumulator                                               ; 874c: f0 19       ..       ; yes
     dec zp_text_ptr_off                                               ; 874e: c6 0a       ..       ; Back up a character
 ; &8750 referenced 1 time by &8745
-.c8750
+.asm_acc_or_abs
     jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 8753: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8756: c9 2c       .,       ; ','?
-    bne c8738                                                         ; 8758: d0 de       ..       ; no: process
+    bne asm_zp_or_abs                                                 ; 8758: d0 de       ..       ; no: process
     jsr asm_opcode_add16                                              ; 875a: 20 2c 88     ,.      ; adjust the opcode for indexed mode
     jsr skip_spaces                                                   ; 875d: 20 97 8a     ..      ; Skip spaces
     cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X       ; 'X'?
-    beq c8738                                                         ; 8762: f0 d4       ..       ; yes: address,X
-    jmp c870d                                                         ; 8764: 4c 0d 87    L..      ; Index error
+    beq asm_zp_or_abs                                                 ; 8762: f0 d4       ..       ; yes: address,X
+    jmp asm_index_error                                               ; 8764: 4c 0d 87    L..      ; Index error
 ; &8767 referenced 1 time by &874c
-.c8767
+.asm_accumulator
     jsr asm_opcode_add4                                               ; 8767: 20 32 88     2.      ; Accumulator form: adjust the opcode
     ldy #1                                                            ; 876a: a0 01       ..       ; one byte
-    bne c879c                                                         ; 876c: d0 2e       ..       ; store it
+    bne asm_three_emit                                                ; 876c: d0 2e       ..       ; store it
 ; &876e referenced 1 time by &8741
-.c876e
+.asm_mode_class3
     cpx #&32 ; '2'                                                    ; 876e: e0 32       .2       ; index &32+ : implied/branch class?
-    bcs c8788                                                         ; 8770: b0 16       ..       ; yes
+    bcs asm_mode_noop                                                 ; 8770: b0 16       ..       ; yes
     cpx #&31 ; '1'                                                    ; 8772: e0 31       .1       ; index &31 (immediate-only)?
-    beq c8782                                                         ; 8774: f0 0c       ..       ; yes
+    beq asm_imm1_eval                                                 ; 8774: f0 0c       ..       ; yes
     jsr skip_spaces                                                   ; 8776: 20 97 8a     ..      ; Skip spaces
     cmp #&23 ; '#'                                                    ; 8779: c9 23       .#       ; '#' immediate?
-    bne c8780                                                         ; 877b: d0 03       ..       ; no: address
-    jmp c86c5                                                         ; 877d: 4c c5 86    L..      ; immediate
+    bne asm_imm1_backup                                               ; 877b: d0 03       ..       ; no: address
+    jmp asm_imm_eval                                                  ; 877d: 4c c5 86    L..      ; immediate
 ; &8780 referenced 1 time by &877b
-.c8780
+.asm_imm1_backup
     dec zp_text_ptr_off                                               ; 8780: c6 0a       ..       ; Back up a character
 ; &8782 referenced 1 time by &8774
-.c8782
+.asm_imm1_eval
     jsr eval_expr_to_integer                                          ; 8782: 20 21 88     !.      ; Evaluate the value
-    jmp c8735                                                         ; 8785: 4c 35 87    L5.      ; assemble as absolute
+    jmp asm_absolute                                                  ; 8785: 4c 35 87    L5.      ; assemble as absolute
 ; &8788 referenced 1 time by &8770
-.c8788
+.asm_mode_noop
     cpx #&33 ; '3'                                                    ; 8788: e0 33       .3       ; index &33 (no operand)?
-    beq c8797                                                         ; 878a: f0 0b       ..       ; yes
-    bcs c87b2                                                         ; 878c: b0 24       .$       ; index &34+ : other forms
+    beq asm_addr_eval                                                 ; 878a: f0 0b       ..       ; yes
+    bcs asm_mode_equ                                                  ; 878c: b0 24       .$       ; index &34+ : other forms
     jsr skip_spaces                                                   ; 878e: 20 97 8a     ..      ; Skip spaces
     cmp #&28 ; '('                                                    ; 8791: c9 28       .(       ; '(' indirect?
-    beq c879f                                                         ; 8793: f0 0a       ..       ; yes
+    beq asm_jmp_indirect                                              ; 8793: f0 0a       ..       ; yes
     dec zp_text_ptr_off                                               ; 8795: c6 0a       ..       ; Back up a character
 ; &8797 referenced 1 time by &878a
-.c8797
+.asm_addr_eval
     jsr eval_expr_to_integer                                          ; 8797: 20 21 88     !.      ; Evaluate the address
 ; &879a referenced 2 times by &8732, &87ad
-.c879a
+.asm_three_byte
     ldy #3                                                            ; 879a: a0 03       ..       ; Three-byte instruction
 ; &879c referenced 1 time by &876c
-.c879c
-    jmp c862b                                                         ; 879c: 4c 2b 86    L+.      ; store it
+.asm_three_emit
+    jmp asm_emit                                                      ; 879c: 4c 2b 86    L+.      ; store it
 ; &879f referenced 1 time by &8793
-.c879f
+.asm_jmp_indirect
     jsr asm_opcode_add16                                              ; 879f: 20 2c 88     ,.      ; Indirect: adjust the opcode
     jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; (continued)
     jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.      ; evaluate the address
     jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..      ; Skip spaces
     cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)       ; ')' to close?
-    beq c879a                                                         ; 87ad: f0 eb       ..       ; yes: three-byte instruction
-    jmp c870d                                                         ; 87af: 4c 0d 87    L..      ; Index error
+    beq asm_three_byte                                                ; 87ad: f0 eb       ..       ; yes: three-byte instruction
+    jmp asm_index_error                                               ; 87af: 4c 0d 87    L..      ; Index error
 ; &87b2 referenced 1 time by &878c
-.c87b2
+.asm_mode_equ
     cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9       ; index &39+ : EQU directives
-    bcs c8813                                                         ; 87b4: b0 5d       .]       ; yes
+    bcs asm_opt_directive                                             ; 87b4: b0 5d       .]       ; yes
     lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic
     eor #1                                                            ; 87b8: 49 01       I.       ; toggle bit 0
     and #&1f                                                          ; 87ba: 29 1f       ).       ; save it  index &37+ (two-register form)?
     pha                                                               ; 87bc: 48          H        ; Save the register
     cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7       ; yes
-    bcs c87f0                                                         ; 87bf: b0 2f       ./       ; two-register form?
+    bcs asm_equ_eval                                                  ; 87bf: b0 2f       ./       ; two-register form?
     jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..      ; '#' immediate?
     cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#       ; no: absolute
-    bne c87cc                                                         ; 87c6: d0 04       ..       ; discard the saved register, do immediate
+    bne asm_equ_backup                                                ; 87c6: d0 04       ..       ; discard the saved register, do immediate
     pla                                                               ; 87c8: 68          h        ; discard the register
-    jmp c86c5                                                         ; 87c9: 4c c5 86    L..      ; do immediate
+    jmp asm_imm_eval                                                  ; 87c9: 4c c5 86    L..      ; do immediate
 ; &87cc referenced 1 time by &87c6
-.c87cc
+.asm_equ_backup
     dec zp_text_ptr_off                                               ; 87cc: c6 0a       ..       ; Back up a character
     jsr eval_expr_to_integer                                          ; 87ce: 20 21 88     !.      ; Evaluate the address
     pla                                                               ; 87d1: 68          h        ; recover the register letter
     sta zp_general                                                    ; 87d2: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..      ; ',' index register?
     cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,       ; yes
-    beq c87de                                                         ; 87d9: f0 03       ..       ; no: assemble as absolute
-    jmp c8735                                                         ; 87db: 4c 35 87    L5.      ; process as absolute
+    beq asm_equ_index                                                 ; 87d9: f0 03       ..       ; no: assemble as absolute
+    jmp asm_absolute                                                  ; 87db: 4c 35 87    L5.      ; process as absolute
 ; &87de referenced 1 time by &87d9
-.c87de
+.asm_equ_index
     jsr skip_spaces                                                   ; 87de: 20 97 8a     ..      ; Index register letter
     and #&1f                                                          ; 87e1: 29 1f       ).       ; matches the expected register?
     cmp zp_general                                                    ; 87e3: c5 37       .7       ; no: Index error
-    bne c87ed                                                         ; 87e5: d0 06       ..       ; register mismatch?
+    bne asm_equ_index_err                                             ; 87e5: d0 06       ..       ; register mismatch?
     jsr asm_opcode_add16                                              ; 87e7: 20 2c 88     ,.      ; adjust the opcode for the indexed form
-    jmp c8735                                                         ; 87ea: 4c 35 87    L5.      ; assemble as absolute
+    jmp asm_absolute                                                  ; 87ea: 4c 35 87    L5.      ; assemble as absolute
 ; &87ed referenced 2 times by &87e5, &8804
-.c87ed
-    jmp c870d                                                         ; 87ed: 4c 0d 87    L..      ; Index error
+.asm_equ_index_err
+    jmp asm_index_error                                               ; 87ed: 4c 0d 87    L..      ; Index error
 ; &87f0 referenced 1 time by &87bf
-.c87f0
+.asm_equ_eval
     jsr eval_expr_to_integer                                          ; 87f0: 20 21 88     !.      ; Evaluate the address
     pla                                                               ; 87f3: 68          h        ; recover the register letter
     sta zp_general                                                    ; 87f4: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..      ; ',' index register?
     cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,       ; no: single operand
-    bne c8810                                                         ; 87fb: d0 13       ..       ; Index register letter
+    bne asm_force_zp                                                  ; 87fb: d0 13       ..       ; Index register letter
     jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..      ; read the index register letter
     and #&1f                                                          ; 8800: 29 1f       ).       ; matches?
     cmp zp_general                                                    ; 8802: c5 37       .7       ; no: Index error
-    bne c87ed                                                         ; 8804: d0 e7       ..       ; adjust the opcode for indexed mode
+    bne asm_equ_index_err                                             ; 8804: d0 e7       ..       ; adjust the opcode for indexed mode
     jsr asm_opcode_add16                                              ; 8806: 20 2c 88     ,.      ; high byte zero?
     lda zp_iwa_1                                                      ; 8809: a5 2b       .+       ; yes: continue
-    beq c8810                                                         ; 880b: f0 03       ..       ; Byte error (value > 255)
-    jmp c86cc                                                         ; 880d: 4c cc 86    L..      ; Byte error
+    beq asm_force_zp                                                  ; 880b: f0 03       ..       ; Byte error (value > 255)
+    jmp asm_byte_error                                                ; 880d: 4c cc 86    L..      ; Byte error
 ; &8810 referenced 2 times by &87fb, &880b
-.c8810
-    jmp c8738                                                         ; 8810: 4c 38 87    L8.      ; Assemble as zero-page
+.asm_force_zp
+    jmp asm_zp_or_abs                                                 ; 8810: 4c 38 87    L8.      ; Assemble as zero-page
 ; &8813 referenced 1 time by &87b4
-.c8813
+.asm_opt_directive
     bne c883a                                                         ; 8813: d0 25       .%       ; index &39 (OPT)?
     jsr eval_expr_to_integer                                          ; 8815: 20 21 88     !.      ; no: EQU directives  OPT: evaluate the new setting
     lda zp_iwa                                                        ; 8818: a5 2a       .*       ; OPT value
     sta zp_opt_flag                                                   ; 881a: 85 28       .(       ; store it as the OPT flag
     ldy #0                                                            ; 881c: a0 00       ..       ; no bytes to assemble
-    jmp c862b                                                         ; 881e: 4c 2b 86    L+.      ; finish
+    jmp asm_emit                                                      ; 881e: 4c 2b 86    L+.      ; finish
 ; ***************************************************************************************
 ; Evaluate an integer expression
 ;
@@ -1616,7 +1616,7 @@ oscli            = &fff7
     tay                                                               ; 8863: a8          .        ; into Y
 ; &8864 referenced 1 time by &887a
 .loop_c8864
-    jmp c862b                                                         ; 8864: 4c 2b 86    L+.      ; Assemble the bytes
+    jmp asm_emit                                                      ; 8864: 4c 2b 86    L+.      ; Assemble the bytes
 ; &8867 referenced 1 time by &8870
 .loop_c8867
     jmp err_type_mismatch                                             ; 8867: 4c 0e 8c    L..      ; String expected: Type mismatch
@@ -14449,7 +14449,7 @@ save pydis_start, pydis_end
 ;     sub_cbc25:                   9
 ;     zp_dp_flag:                  9
 ;     zp_print_flag:               9
-;     c870d:                       8
+;     asm_index_error:             8
 ;     c9127:                       8
 ;     c986d:                       8
 ;     ca099:                       8
@@ -14462,8 +14462,8 @@ save pydis_start, pydis_end
 ;     zp_himem:                    8
 ;     zp_himem_1:                  8
 ;     zp_print_bytes:              8
+;     asm_emit:                    7
 ;     asm_opcode_add16:            7
-;     c862b:                       7
 ;     c8b96:                       7
 ;     c982a:                       7
 ;     c9bb5:                       7
@@ -14492,7 +14492,7 @@ save pydis_start, pydis_end
 ;     zp_fp_temp:                  6
 ;     zp_lomem:                    6
 ;     zp_lomem_1:                  6
-;     c8735:                       5
+;     asm_absolute:                5
 ;     c8957:                       5
 ;     c8961:                       5
 ;     c8e6a:                       5
@@ -14521,7 +14521,7 @@ save pydis_start, pydis_end
 ;     zp_gosub_level:              5
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
-;     c8604:                       4
+;     asm_mistake:                 4
 ;     c88d5:                       4
 ;     c8aa2:                       4
 ;     c8b98:                       4
@@ -14567,11 +14567,11 @@ save pydis_start, pydis_end
 ;     zp_rnd_seed_2:               4
 ;     zp_rnd_seed_4:               4
 ;     advance_to_next_line:        3
+;     asm_got_opcode:              3
 ;     asm_opcode_add4:             3
 ;     asm_opcode_add8:             3
+;     asm_zp_or_abs:               3
 ;     assign_string:               3
-;     c8620:                       3
-;     c8738:                       3
 ;     c8858:                       3
 ;     c8924:                       3
 ;     c8936:                       3
@@ -14644,17 +14644,17 @@ save pydis_start, pydis_end
 ;     zp_listo:                    3
 ;     zp_rnd_seed_1:               3
 ;     zp_width:                    3
+;     asm_branch_range_err:        2
+;     asm_emit_loop:               2
+;     asm_emit_more:               2
+;     asm_equ_index_err:           2
+;     asm_force_zp:                2
+;     asm_imm_byte:                2
+;     asm_imm_eval:                2
 ;     asm_list_pad_loop:           2
-;     c8650:                       2
-;     c866f:                       2
-;     c8691:                       2
-;     c86a6:                       2
-;     c86a8:                       2
-;     c86c5:                       2
-;     c86c8:                       2
-;     c879a:                       2
-;     c87ed:                       2
-;     c8810:                       2
+;     asm_set_operand:             2
+;     asm_three_byte:              2
+;     asm_two_byte:                2
 ;     c889d:                       2
 ;     c88da:                       2
 ;     c896a:                       2
@@ -14884,10 +14884,29 @@ save pydis_start, pydis_end
 ;     action_hi_by_token:          1
 ;     action_lo_by_token:          1
 ;     ascii_to_number:             1
+;     asm_abs_from_paren:          1
+;     asm_acc_or_abs:              1
+;     asm_accumulator:             1
+;     asm_addr_eval:               1
 ;     asm_base_opcode:             1
+;     asm_branch_back:             1
+;     asm_branch_fwd:              1
+;     asm_branch_ok:               1
+;     asm_byte_error:              1
 ;     asm_continue:                1
 ;     asm_define_label:            1
+;     asm_emit_advance:            1
+;     asm_emit_dest:               1
+;     asm_emit_store:              1
 ;     asm_enter:                   1
+;     asm_equ_backup:              1
+;     asm_equ_eval:                1
+;     asm_equ_index:               1
+;     asm_imm1_backup:             1
+;     asm_imm1_eval:               1
+;     asm_indexed_adjust:          1
+;     asm_indirect_zpx:            1
+;     asm_jmp_indirect:            1
 ;     asm_list_byte:               1
 ;     asm_list_byte_loop:          1
 ;     asm_list_count:              1
@@ -14897,48 +14916,33 @@ save pydis_start, pydis_end
 ;     asm_list_src_end:            1
 ;     asm_list_src_loop:           1
 ;     asm_list_src_print:          1
+;     asm_logic_mnemonic:          1
 ;     asm_loop:                    1
+;     asm_mn_char_loop:            1
+;     asm_mn_pack_loop:            1
+;     asm_mn_search:               1
+;     asm_mn_search_loop:          1
+;     asm_mn_search_next:          1
 ;     asm_mnemonic_hi:             1
 ;     asm_mnemonic_lo:             1
+;     asm_mode_class2:             1
+;     asm_mode_class3:             1
+;     asm_mode_equ:                1
+;     asm_mode_imm:                1
+;     asm_mode_indirect:           1
+;     asm_mode_noop:               1
 ;     asm_next_line:               1
 ;     asm_next_statement:          1
+;     asm_operand:                 1
+;     asm_opt_directive:           1
 ;     asm_parse_mnemonic:          1
 ;     asm_scan_end_loop:           1
 ;     asm_stmt_end:                1
+;     asm_three_emit:              1
+;     asm_try_indirect:            1
 ;     assembler_exit:              1
 ;     brkv:                        1
 ;     brkv+1:                      1
-;     c85f1:                       1
-;     c8601:                       1
-;     c8607:                       1
-;     c8643:                       1
-;     c865b:                       1
-;     c8665:                       1
-;     c8673:                       1
-;     c86a5:                       1
-;     c86ad:                       1
-;     c86b2:                       1
-;     c86b7:                       1
-;     c86cc:                       1
-;     c86d3:                       1
-;     c86da:                       1
-;     c86fb:                       1
-;     c8715:                       1
-;     c873f:                       1
-;     c8750:                       1
-;     c8767:                       1
-;     c876e:                       1
-;     c8780:                       1
-;     c8782:                       1
-;     c8788:                       1
-;     c8797:                       1
-;     c879c:                       1
-;     c879f:                       1
-;     c87b2:                       1
-;     c87cc:                       1
-;     c87de:                       1
-;     c87f0:                       1
-;     c8813:                       1
 ;     c883a:                       1
 ;     c886a:                       1
 ;     c8966:                       1
@@ -15355,10 +15359,6 @@ save pydis_start, pydis_end
 ;     language_startup:            1
 ;     load_byte_var:               1
 ;     load_string_var:             1
-;     loop_c85d5:                  1
-;     loop_c85e6:                  1
-;     loop_c85f5:                  1
-;     loop_c872f:                  1
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
@@ -15615,53 +15615,6 @@ save pydis_start, pydis_end
 ;     validate_var_name:           1
 
 ; Automatically generated labels:
-;     c85f1
-;     c8601
-;     c8604
-;     c8607
-;     c8620
-;     c862b
-;     c8643
-;     c8650
-;     c865b
-;     c8665
-;     c866f
-;     c8673
-;     c8691
-;     c86a5
-;     c86a6
-;     c86a8
-;     c86ad
-;     c86b2
-;     c86b7
-;     c86c5
-;     c86c8
-;     c86cc
-;     c86d3
-;     c86da
-;     c86fb
-;     c870d
-;     c8715
-;     c8735
-;     c8738
-;     c873f
-;     c8750
-;     c8767
-;     c876e
-;     c8780
-;     c8782
-;     c8788
-;     c8797
-;     c879a
-;     c879c
-;     c879f
-;     c87b2
-;     c87cc
-;     c87de
-;     c87ed
-;     c87f0
-;     c8810
-;     c8813
 ;     c883a
 ;     c8858
 ;     c886a
@@ -16267,10 +16220,6 @@ save pydis_start, pydis_end
 ;     l06ff
 ;     l996b
 ;     l99b9
-;     loop_c85d5
-;     loop_c85e6
-;     loop_c85f5
-;     loop_c872f
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d

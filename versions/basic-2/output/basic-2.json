@@ -12800,9 +12800,9 @@
       "comment_inline": "end: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8604",
+      "operand": "asm_mistake",
       "target": 34308,
-      "target_label": "c8604"
+      "target_label": "asm_mistake"
     },
     {
       "addr": 34218,
@@ -12813,9 +12813,9 @@
       "comment_inline": "indirection: error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8604",
+      "operand": "asm_mistake",
       "target": 34308,
-      "target_label": "c8604"
+      "target_label": "asm_mistake"
     },
     {
       "addr": 34220,
@@ -12964,9 +12964,9 @@
       "comment_inline": "yes: no instruction",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34247,
@@ -12988,9 +12988,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34251,
@@ -13012,9 +13012,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34255,
@@ -13060,7 +13060,7 @@
         10
       ],
       "labels": [
-        "loop_c85d5"
+        "asm_mn_char_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -13110,9 +13110,9 @@
       "comment_inline": "token: tokenised AND/EOR/OR",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8607",
+      "operand": "asm_logic_mnemonic",
       "target": 34311,
-      "target_label": "c8607"
+      "target_label": "asm_logic_mnemonic"
     },
     {
       "addr": 34269,
@@ -13134,9 +13134,9 @@
       "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c85f1",
+      "operand": "asm_mn_search",
       "target": 34289,
-      "target_label": "c85f1"
+      "target_label": "asm_mn_search"
     },
     {
       "addr": 34273,
@@ -13182,7 +13182,7 @@
         10
       ],
       "labels": [
-        "loop_c85e6"
+        "asm_mn_pack_loop"
       ],
       "comment_inline": "shift into the value",
       "xref_summaries": [
@@ -13238,9 +13238,9 @@
       "comment_inline": "all 5 bits",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c85e6",
+      "operand": "asm_mn_pack_loop",
       "target": 34278,
-      "target_label": "loop_c85e6"
+      "target_label": "asm_mn_pack_loop"
     },
     {
       "addr": 34286,
@@ -13260,9 +13260,9 @@
       "comment_inline": "loop for three",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c85d5",
+      "operand": "asm_mn_char_loop",
       "target": 34261,
-      "target_label": "loop_c85d5"
+      "target_label": "asm_mn_char_loop"
     },
     {
       "addr": 34289,
@@ -13271,7 +13271,7 @@
         58
       ],
       "labels": [
-        "c85f1"
+        "asm_mn_search"
       ],
       "comment_inline": "Point to the end of the opcode table",
       "xref_summaries": [
@@ -13305,7 +13305,7 @@
         132
       ],
       "labels": [
-        "loop_c85f5"
+        "asm_mn_search_loop"
       ],
       "comment_inline": "Compare the low half",
       "xref_summaries": [
@@ -13329,9 +13329,9 @@
       "comment_inline": "no match: next entry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8601",
+      "operand": "asm_mn_search_next",
       "target": 34305,
-      "target_label": "c8601"
+      "target_label": "asm_mn_search_next"
     },
     {
       "addr": 34298,
@@ -13369,9 +13369,9 @@
       "comment_inline": "matched",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8620",
+      "operand": "asm_got_opcode",
       "target": 34336,
-      "target_label": "c8620"
+      "target_label": "asm_got_opcode"
     },
     {
       "addr": 34305,
@@ -13379,7 +13379,7 @@
         202
       ],
       "labels": [
-        "c8601"
+        "asm_mn_search_next"
       ],
       "comment_inline": "Next entry",
       "xref_summaries": [
@@ -13400,9 +13400,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c85f5",
+      "operand": "asm_mn_search_loop",
       "target": 34293,
-      "target_label": "loop_c85f5"
+      "target_label": "asm_mn_search_loop"
     },
     {
       "addr": 34308,
@@ -13412,7 +13412,7 @@
         152
       ],
       "labels": [
-        "c8604"
+        "asm_mistake"
       ],
       "comment_inline": "not matched: Mistake",
       "xref_summaries": [
@@ -13437,7 +13437,7 @@
         34
       ],
       "labels": [
-        "c8607"
+        "asm_logic_mnemonic"
       ],
       "comment_inline": "opcode index for AND",
       "xref_summaries": [
@@ -13470,9 +13470,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8620",
+      "operand": "asm_got_opcode",
       "target": 34336,
-      "target_label": "c8620"
+      "target_label": "asm_got_opcode"
     },
     {
       "addr": 34317,
@@ -13503,9 +13503,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8620",
+      "operand": "asm_got_opcode",
       "target": 34336,
-      "target_label": "c8620"
+      "target_label": "asm_got_opcode"
     },
     {
       "addr": 34322,
@@ -13536,9 +13536,9 @@
       "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8604",
+      "operand": "asm_mistake",
       "target": 34308,
-      "target_label": "c8604"
+      "target_label": "asm_mistake"
     },
     {
       "addr": 34327,
@@ -13595,9 +13595,9 @@
       "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8604",
+      "operand": "asm_mistake",
       "target": 34308,
-      "target_label": "c8604"
+      "target_label": "asm_mistake"
     },
     {
       "addr": 34336,
@@ -13607,7 +13607,7 @@
         132
       ],
       "labels": [
-        "c8620"
+        "asm_got_opcode"
       ],
       "comment_inline": "Base opcode from the table",
       "xref_summaries": [
@@ -13668,9 +13668,9 @@
       "comment_inline": "yes: parse the addressing mode",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8673",
+      "operand": "asm_operand",
       "target": 34419,
-      "target_label": "c8673"
+      "target_label": "asm_operand"
     },
     {
       "addr": 34347,
@@ -13680,7 +13680,7 @@
         4
       ],
       "labels": [
-        "c862b"
+        "asm_emit"
       ],
       "comment_inline": "P% low -> destination",
       "xref_summaries": [
@@ -13787,9 +13787,9 @@
       "comment_inline": "no offset: assemble at P%",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8643",
+      "operand": "asm_emit_dest",
       "target": 34371,
-      "target_label": "c8643"
+      "target_label": "asm_emit_dest"
     },
     {
       "addr": 34365,
@@ -13826,7 +13826,7 @@
         58
       ],
       "labels": [
-        "c8643"
+        "asm_emit_dest"
       ],
       "comment_inline": "Store the destination pointer",
       "xref_summaries": [
@@ -13885,9 +13885,9 @@
       "comment_inline": "positive count: store opcode bytes",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c8650",
+      "operand": "asm_emit_loop",
       "target": 34384,
-      "target_label": "c8650"
+      "target_label": "asm_emit_loop"
     },
     {
       "addr": 34380,
@@ -13921,7 +13921,7 @@
         136
       ],
       "labels": [
-        "c8650"
+        "asm_emit_loop"
       ],
       "comment_inline": "Next byte index",
       "xref_summaries": [
@@ -13970,9 +13970,9 @@
       "comment_inline": "no: store the opcode byte",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c865b",
+      "operand": "asm_emit_store",
       "target": 34395,
-      "target_label": "c865b"
+      "target_label": "asm_emit_store"
     },
     {
       "addr": 34392,
@@ -13995,7 +13995,7 @@
         58
       ],
       "labels": [
-        "c865b"
+        "asm_emit_store"
       ],
       "comment_inline": "Store the byte at the destination",
       "xref_summaries": [
@@ -14033,9 +14033,9 @@
       "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8665",
+      "operand": "asm_emit_advance",
       "target": 34405,
-      "target_label": "c8665"
+      "target_label": "asm_emit_advance"
     },
     {
       "addr": 34402,
@@ -14058,7 +14058,7 @@
         8
       ],
       "labels": [
-        "c8665"
+        "asm_emit_advance"
       ],
       "comment_inline": "offset assembly?",
       "xref_summaries": [
@@ -14069,9 +14069,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c866f",
+      "operand": "asm_emit_more",
       "target": 34415,
-      "target_label": "c866f"
+      "target_label": "asm_emit_more"
     },
     {
       "addr": 34407,
@@ -14096,9 +14096,9 @@
       "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c866f",
+      "operand": "asm_emit_more",
       "target": 34415,
-      "target_label": "c866f"
+      "target_label": "asm_emit_more"
     },
     {
       "addr": 34412,
@@ -14120,7 +14120,7 @@
         152
       ],
       "labels": [
-        "c866f"
+        "asm_emit_more"
       ],
       "comment_inline": "More bytes?",
       "xref_summaries": [
@@ -14142,9 +14142,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8650",
+      "operand": "asm_emit_loop",
       "target": 34384,
-      "target_label": "c8650"
+      "target_label": "asm_emit_loop"
     },
     {
       "addr": 34418,
@@ -14172,7 +14172,7 @@
         34
       ],
       "labels": [
-        "c8673"
+        "asm_operand"
       ],
       "comment_inline": "index &22+ is not a branch?",
       "xref_summaries": [
@@ -14194,9 +14194,9 @@
       "comment_inline": "yes: other operand forms",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c86b7",
+      "operand": "asm_mode_imm",
       "target": 34487,
-      "target_label": "c86b7"
+      "target_label": "asm_mode_imm"
     },
     {
       "addr": 34423,
@@ -14324,9 +14324,9 @@
       "comment_inline": "in forward range?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86b2",
+      "operand": "asm_branch_back",
       "target": 34482,
-      "target_label": "c86b2"
+      "target_label": "asm_branch_back"
     },
     {
       "addr": 34445,
@@ -14348,9 +14348,9 @@
       "comment_inline": "high byte &FF: in range",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86ad",
+      "operand": "asm_branch_fwd",
       "target": 34477,
-      "target_label": "c86ad"
+      "target_label": "asm_branch_fwd"
     },
     {
       "addr": 34449,
@@ -14359,7 +14359,7 @@
         40
       ],
       "labels": [
-        "c8691"
+        "asm_branch_range_err"
       ],
       "comment_inline": "OPT setting errors enabled?",
       "xref_summaries": [
@@ -14393,9 +14393,9 @@
       "comment_inline": "no: ignore the range error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86a5",
+      "operand": "asm_branch_ok",
       "target": 34469,
-      "target_label": "c86a5"
+      "target_label": "asm_branch_ok"
     },
     {
       "addr": 34454,
@@ -14451,7 +14451,7 @@
         168
       ],
       "labels": [
-        "c86a5"
+        "asm_branch_ok"
       ],
       "comment_inline": "Use the offset byte",
       "xref_summaries": [
@@ -14470,7 +14470,7 @@
         42
       ],
       "labels": [
-        "c86a6"
+        "asm_set_operand"
       ],
       "comment_inline": "as the operand",
       "xref_summaries": [
@@ -14493,7 +14493,7 @@
         2
       ],
       "labels": [
-        "c86a8"
+        "asm_two_byte"
       ],
       "comment_inline": "Two-byte instruction",
       "xref_summaries": [
@@ -14517,9 +14517,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34477,
@@ -14527,7 +14527,7 @@
         152
       ],
       "labels": [
-        "c86ad"
+        "asm_branch_fwd"
       ],
       "comment_inline": "forward: check the high byte",
       "xref_summaries": [
@@ -14548,9 +14548,9 @@
       "comment_inline": "in range",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c86a6",
+      "operand": "asm_set_operand",
       "target": 34470,
-      "target_label": "c86a6"
+      "target_label": "asm_set_operand"
     },
     {
       "addr": 34480,
@@ -14561,9 +14561,9 @@
       "comment_inline": "out of range",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c8691",
+      "operand": "asm_branch_range_err",
       "target": 34449,
-      "target_label": "c8691"
+      "target_label": "asm_branch_range_err"
     },
     {
       "addr": 34482,
@@ -14571,7 +14571,7 @@
         152
       ],
       "labels": [
-        "c86b2"
+        "asm_branch_back"
       ],
       "comment_inline": "backward: check the high byte",
       "xref_summaries": [
@@ -14592,9 +14592,9 @@
       "comment_inline": "in range",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c86a6",
+      "operand": "asm_set_operand",
       "target": 34470,
-      "target_label": "c86a6"
+      "target_label": "asm_set_operand"
     },
     {
       "addr": 34485,
@@ -14605,9 +14605,9 @@
       "comment_inline": "out of range",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8691",
+      "operand": "asm_branch_range_err",
       "target": 34449,
-      "target_label": "c8691"
+      "target_label": "asm_branch_range_err"
     },
     {
       "addr": 34487,
@@ -14616,7 +14616,7 @@
         41
       ],
       "labels": [
-        "c86b7"
+        "asm_mode_imm"
       ],
       "comment_inline": "index &29+ : not immediate?",
       "xref_summaries": [
@@ -14638,9 +14638,9 @@
       "comment_inline": "yes: indexed/absolute modes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c86d3",
+      "operand": "asm_mode_indirect",
       "target": 34515,
-      "target_label": "c86d3"
+      "target_label": "asm_mode_indirect"
     },
     {
       "addr": 34491,
@@ -14676,9 +14676,9 @@
       "comment_inline": "no: absolute",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c86da",
+      "operand": "asm_try_indirect",
       "target": 34522,
-      "target_label": "c86da"
+      "target_label": "asm_try_indirect"
     },
     {
       "addr": 34498,
@@ -14702,7 +14702,7 @@
         136
       ],
       "labels": [
-        "c86c5"
+        "asm_imm_eval"
       ],
       "comment_inline": "Evaluate the immediate value",
       "xref_summaries": [
@@ -14725,7 +14725,7 @@
         43
       ],
       "labels": [
-        "c86c8"
+        "asm_imm_byte"
       ],
       "comment_inline": "high byte zero (fits in a byte)?",
       "xref_summaries": [
@@ -14750,9 +14750,9 @@
       "comment_inline": "yes: two-byte instruction",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86a8",
+      "operand": "asm_two_byte",
       "target": 34472,
-      "target_label": "c86a8"
+      "target_label": "asm_two_byte"
     },
     {
       "addr": 34508,
@@ -14760,7 +14760,7 @@
         0
       ],
       "labels": [
-        "c86cc"
+        "asm_byte_error"
       ],
       "comment_inline": "Byte error (value > 255)",
       "xref_summaries": [
@@ -14810,7 +14810,7 @@
         54
       ],
       "labels": [
-        "c86d3"
+        "asm_mode_indirect"
       ],
       "comment_inline": "index &36 : the (zp),Y / (zp,X) group?",
       "xref_summaries": [
@@ -14832,9 +14832,9 @@
       "comment_inline": "no: absolute/indexed group",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c873f",
+      "operand": "asm_mode_class2",
       "target": 34623,
-      "target_label": "c873f"
+      "target_label": "asm_mode_class2"
     },
     {
       "addr": 34519,
@@ -14857,7 +14857,7 @@
         40
       ],
       "labels": [
-        "c86da"
+        "asm_try_indirect"
       ],
       "comment_inline": "'(' opening an indirect mode?",
       "xref_summaries": [
@@ -14879,9 +14879,9 @@
       "comment_inline": "no: absolute",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8715",
+      "operand": "asm_abs_from_paren",
       "target": 34581,
-      "target_label": "c8715"
+      "target_label": "asm_abs_from_paren"
     },
     {
       "addr": 34526,
@@ -14931,9 +14931,9 @@
       "comment_inline": "no: try (zp,X)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c86fb",
+      "operand": "asm_indirect_zpx",
       "target": 34555,
-      "target_label": "c86fb"
+      "target_label": "asm_indirect_zpx"
     },
     {
       "addr": 34536,
@@ -14969,9 +14969,9 @@
       "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34543,
@@ -15021,9 +15021,9 @@
       "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34553,
@@ -15034,9 +15034,9 @@
       "comment_inline": "process as a two-byte instruction",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86c8",
+      "operand": "asm_imm_byte",
       "target": 34504,
-      "target_label": "c86c8"
+      "target_label": "asm_imm_byte"
     },
     {
       "addr": 34555,
@@ -15045,7 +15045,7 @@
         44
       ],
       "labels": [
-        "c86fb"
+        "asm_indirect_zpx"
       ],
       "comment_inline": "','?",
       "xref_summaries": [
@@ -15067,9 +15067,9 @@
       "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34559,
@@ -15105,9 +15105,9 @@
       "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34566,
@@ -15143,9 +15143,9 @@
       "comment_inline": "yes: process",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c86c8",
+      "operand": "asm_imm_byte",
       "target": 34504,
-      "target_label": "c86c8"
+      "target_label": "asm_imm_byte"
     },
     {
       "addr": 34573,
@@ -15153,7 +15153,7 @@
         0
       ],
       "labels": [
-        "c870d"
+        "asm_index_error"
       ],
       "comment_inline": "Index error",
       "xref_summaries": [
@@ -15211,7 +15211,7 @@
         10
       ],
       "labels": [
-        "c8715"
+        "asm_abs_from_paren"
       ],
       "comment_inline": "Back up over the \"(\"",
       "xref_summaries": [
@@ -15274,9 +15274,9 @@
       "comment_inline": "no: process as absolute",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8735",
+      "operand": "asm_absolute",
       "target": 34613,
-      "target_label": "c8735"
+      "target_label": "asm_absolute"
     },
     {
       "addr": 34593,
@@ -15326,9 +15326,9 @@
       "comment_inline": "yes: abs,X",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8735",
+      "operand": "asm_absolute",
       "target": 34613,
-      "target_label": "c8735"
+      "target_label": "asm_absolute"
     },
     {
       "addr": 34603,
@@ -15350,9 +15350,9 @@
       "comment_inline": "no: Index error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34607,
@@ -15362,7 +15362,7 @@
         136
       ],
       "labels": [
-        "loop_c872f"
+        "asm_indexed_adjust"
       ],
       "comment_inline": "Adjust the opcode for the indexed form",
       "xref_summaries": [
@@ -15387,9 +15387,9 @@
       "comment_inline": "process the absolute operand",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c879a",
+      "operand": "asm_three_byte",
       "target": 34714,
-      "target_label": "c879a"
+      "target_label": "asm_three_byte"
     },
     {
       "addr": 34613,
@@ -15399,7 +15399,7 @@
         136
       ],
       "labels": [
-        "c8735"
+        "asm_absolute"
       ],
       "comment_inline": "Adjust the opcode for absolute mode",
       "xref_summaries": [
@@ -15425,7 +15425,7 @@
         43
       ],
       "labels": [
-        "c8738"
+        "asm_zp_or_abs"
       ],
       "comment_inline": "address fits in zero page (high byte 0)?",
       "xref_summaries": [
@@ -15451,9 +15451,9 @@
       "comment_inline": "no: assemble as absolute (three bytes)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c872f",
+      "operand": "asm_indexed_adjust",
       "target": 34607,
-      "target_label": "loop_c872f"
+      "target_label": "asm_indexed_adjust"
     },
     {
       "addr": 34620,
@@ -15465,9 +15465,9 @@
       "comment_inline": "yes: assemble as two bytes",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c86a8",
+      "operand": "asm_two_byte",
       "target": 34472,
-      "target_label": "c86a8"
+      "target_label": "asm_two_byte"
     },
     {
       "addr": 34623,
@@ -15476,7 +15476,7 @@
         47
       ],
       "labels": [
-        "c873f"
+        "asm_mode_class2"
       ],
       "comment_inline": "index &2F+ : a different operand class?",
       "xref_summaries": [
@@ -15498,9 +15498,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c876e",
+      "operand": "asm_mode_class3",
       "target": 34670,
-      "target_label": "c876e"
+      "target_label": "asm_mode_class3"
     },
     {
       "addr": 34627,
@@ -15522,9 +15522,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8750",
+      "operand": "asm_acc_or_abs",
       "target": 34640,
-      "target_label": "c8750"
+      "target_label": "asm_acc_or_abs"
     },
     {
       "addr": 34631,
@@ -15560,9 +15560,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8767",
+      "operand": "asm_accumulator",
       "target": 34663,
-      "target_label": "c8767"
+      "target_label": "asm_accumulator"
     },
     {
       "addr": 34638,
@@ -15585,7 +15585,7 @@
         136
       ],
       "labels": [
-        "c8750"
+        "asm_acc_or_abs"
       ],
       "comment_inline": "Evaluate the address",
       "xref_summaries": [
@@ -15634,9 +15634,9 @@
       "comment_inline": "no: process",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8738",
+      "operand": "asm_zp_or_abs",
       "target": 34616,
-      "target_label": "c8738"
+      "target_label": "asm_zp_or_abs"
     },
     {
       "addr": 34650,
@@ -15686,9 +15686,9 @@
       "comment_inline": "yes: address,X",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8738",
+      "operand": "asm_zp_or_abs",
       "target": 34616,
-      "target_label": "c8738"
+      "target_label": "asm_zp_or_abs"
     },
     {
       "addr": 34660,
@@ -15700,9 +15700,9 @@
       "comment_inline": "Index error",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34663,
@@ -15712,7 +15712,7 @@
         136
       ],
       "labels": [
-        "c8767"
+        "asm_accumulator"
       ],
       "comment_inline": "Accumulator form: adjust the opcode",
       "xref_summaries": [
@@ -15747,9 +15747,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c879c",
+      "operand": "asm_three_emit",
       "target": 34716,
-      "target_label": "c879c"
+      "target_label": "asm_three_emit"
     },
     {
       "addr": 34670,
@@ -15758,7 +15758,7 @@
         50
       ],
       "labels": [
-        "c876e"
+        "asm_mode_class3"
       ],
       "comment_inline": "index &32+ : implied/branch class?",
       "xref_summaries": [
@@ -15780,9 +15780,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8788",
+      "operand": "asm_mode_noop",
       "target": 34696,
-      "target_label": "c8788"
+      "target_label": "asm_mode_noop"
     },
     {
       "addr": 34674,
@@ -15804,9 +15804,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8782",
+      "operand": "asm_imm1_eval",
       "target": 34690,
-      "target_label": "c8782"
+      "target_label": "asm_imm1_eval"
     },
     {
       "addr": 34678,
@@ -15842,9 +15842,9 @@
       "comment_inline": "no: address",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8780",
+      "operand": "asm_imm1_backup",
       "target": 34688,
-      "target_label": "c8780"
+      "target_label": "asm_imm1_backup"
     },
     {
       "addr": 34685,
@@ -15856,9 +15856,9 @@
       "comment_inline": "immediate",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c86c5",
+      "operand": "asm_imm_eval",
       "target": 34501,
-      "target_label": "c86c5"
+      "target_label": "asm_imm_eval"
     },
     {
       "addr": 34688,
@@ -15867,7 +15867,7 @@
         10
       ],
       "labels": [
-        "c8780"
+        "asm_imm1_backup"
       ],
       "comment_inline": "Back up a character",
       "xref_summaries": [
@@ -15890,7 +15890,7 @@
         136
       ],
       "labels": [
-        "c8782"
+        "asm_imm1_eval"
       ],
       "comment_inline": "Evaluate the value",
       "xref_summaries": [
@@ -15915,9 +15915,9 @@
       "comment_inline": "assemble as absolute",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8735",
+      "operand": "asm_absolute",
       "target": 34613,
-      "target_label": "c8735"
+      "target_label": "asm_absolute"
     },
     {
       "addr": 34696,
@@ -15926,7 +15926,7 @@
         51
       ],
       "labels": [
-        "c8788"
+        "asm_mode_noop"
       ],
       "comment_inline": "index &33 (no operand)?",
       "xref_summaries": [
@@ -15948,9 +15948,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8797",
+      "operand": "asm_addr_eval",
       "target": 34711,
-      "target_label": "c8797"
+      "target_label": "asm_addr_eval"
     },
     {
       "addr": 34700,
@@ -15961,9 +15961,9 @@
       "comment_inline": "index &34+ : other forms",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c87b2",
+      "operand": "asm_mode_equ",
       "target": 34738,
-      "target_label": "c87b2"
+      "target_label": "asm_mode_equ"
     },
     {
       "addr": 34702,
@@ -15999,9 +15999,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c879f",
+      "operand": "asm_jmp_indirect",
       "target": 34719,
-      "target_label": "c879f"
+      "target_label": "asm_jmp_indirect"
     },
     {
       "addr": 34709,
@@ -16024,7 +16024,7 @@
         136
       ],
       "labels": [
-        "c8797"
+        "asm_addr_eval"
       ],
       "comment_inline": "Evaluate the address",
       "xref_summaries": [
@@ -16046,7 +16046,7 @@
         3
       ],
       "labels": [
-        "c879a"
+        "asm_three_byte"
       ],
       "comment_inline": "Three-byte instruction",
       "xref_summaries": [
@@ -16068,7 +16068,7 @@
         134
       ],
       "labels": [
-        "c879c"
+        "asm_three_emit"
       ],
       "comment_inline": "store it",
       "xref_summaries": [
@@ -16079,9 +16079,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34719,
@@ -16091,7 +16091,7 @@
         136
       ],
       "labels": [
-        "c879f"
+        "asm_jmp_indirect"
       ],
       "comment_inline": "Indirect: adjust the opcode",
       "xref_summaries": [
@@ -16168,9 +16168,9 @@
       "comment_inline": "yes: three-byte instruction",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c879a",
+      "operand": "asm_three_byte",
       "target": 34714,
-      "target_label": "c879a"
+      "target_label": "asm_three_byte"
     },
     {
       "addr": 34735,
@@ -16182,9 +16182,9 @@
       "comment_inline": "Index error",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34738,
@@ -16193,7 +16193,7 @@
         57
       ],
       "labels": [
-        "c87b2"
+        "asm_mode_equ"
       ],
       "comment_inline": "index &39+ : EQU directives",
       "xref_summaries": [
@@ -16215,9 +16215,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8813",
+      "operand": "asm_opt_directive",
       "target": 34835,
-      "target_label": "c8813"
+      "target_label": "asm_opt_directive"
     },
     {
       "addr": 34742,
@@ -16283,9 +16283,9 @@
       "comment_inline": "two-register form?",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c87f0",
+      "operand": "asm_equ_eval",
       "target": 34800,
-      "target_label": "c87f0"
+      "target_label": "asm_equ_eval"
     },
     {
       "addr": 34753,
@@ -16321,9 +16321,9 @@
       "comment_inline": "discard the saved register, do immediate",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c87cc",
+      "operand": "asm_equ_backup",
       "target": 34764,
-      "target_label": "c87cc"
+      "target_label": "asm_equ_backup"
     },
     {
       "addr": 34760,
@@ -16344,9 +16344,9 @@
       "comment_inline": "do immediate",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c86c5",
+      "operand": "asm_imm_eval",
       "target": 34501,
-      "target_label": "c86c5"
+      "target_label": "asm_imm_eval"
     },
     {
       "addr": 34764,
@@ -16355,7 +16355,7 @@
         10
       ],
       "labels": [
-        "c87cc"
+        "asm_equ_backup"
       ],
       "comment_inline": "Back up a character",
       "xref_summaries": [
@@ -16440,9 +16440,9 @@
       "comment_inline": "no: assemble as absolute",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c87de",
+      "operand": "asm_equ_index",
       "target": 34782,
-      "target_label": "c87de"
+      "target_label": "asm_equ_index"
     },
     {
       "addr": 34779,
@@ -16454,9 +16454,9 @@
       "comment_inline": "process as absolute",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8735",
+      "operand": "asm_absolute",
       "target": 34613,
-      "target_label": "c8735"
+      "target_label": "asm_absolute"
     },
     {
       "addr": 34782,
@@ -16466,7 +16466,7 @@
         138
       ],
       "labels": [
-        "c87de"
+        "asm_equ_index"
       ],
       "comment_inline": "Index register letter",
       "xref_summaries": [
@@ -16514,9 +16514,9 @@
       "comment_inline": "register mismatch?",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c87ed",
+      "operand": "asm_equ_index_err",
       "target": 34797,
-      "target_label": "c87ed"
+      "target_label": "asm_equ_index_err"
     },
     {
       "addr": 34791,
@@ -16542,9 +16542,9 @@
       "comment_inline": "assemble as absolute",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8735",
+      "operand": "asm_absolute",
       "target": 34613,
-      "target_label": "c8735"
+      "target_label": "asm_absolute"
     },
     {
       "addr": 34797,
@@ -16554,7 +16554,7 @@
         135
       ],
       "labels": [
-        "c87ed"
+        "asm_equ_index_err"
       ],
       "comment_inline": "Index error",
       "xref_summaries": [
@@ -16566,9 +16566,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c870d",
+      "operand": "asm_index_error",
       "target": 34573,
-      "target_label": "c870d"
+      "target_label": "asm_index_error"
     },
     {
       "addr": 34800,
@@ -16578,7 +16578,7 @@
         136
       ],
       "labels": [
-        "c87f0"
+        "asm_equ_eval"
       ],
       "comment_inline": "Evaluate the address",
       "xref_summaries": [
@@ -16649,9 +16649,9 @@
       "comment_inline": "Index register letter",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8810",
+      "operand": "asm_force_zp",
       "target": 34832,
-      "target_label": "c8810"
+      "target_label": "asm_force_zp"
     },
     {
       "addr": 34813,
@@ -16700,9 +16700,9 @@
       "comment_inline": "adjust the opcode for indexed mode",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c87ed",
+      "operand": "asm_equ_index_err",
       "target": 34797,
-      "target_label": "c87ed"
+      "target_label": "asm_equ_index_err"
     },
     {
       "addr": 34822,
@@ -16740,9 +16740,9 @@
       "comment_inline": "Byte error (value > 255)",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8810",
+      "operand": "asm_force_zp",
       "target": 34832,
-      "target_label": "c8810"
+      "target_label": "asm_force_zp"
     },
     {
       "addr": 34829,
@@ -16754,9 +16754,9 @@
       "comment_inline": "Byte error",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c86cc",
+      "operand": "asm_byte_error",
       "target": 34508,
-      "target_label": "c86cc"
+      "target_label": "asm_byte_error"
     },
     {
       "addr": 34832,
@@ -16766,7 +16766,7 @@
         135
       ],
       "labels": [
-        "c8810"
+        "asm_force_zp"
       ],
       "comment_inline": "Assemble as zero-page",
       "xref_summaries": [
@@ -16778,9 +16778,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8738",
+      "operand": "asm_zp_or_abs",
       "target": 34616,
-      "target_label": "c8738"
+      "target_label": "asm_zp_or_abs"
     },
     {
       "addr": 34835,
@@ -16789,7 +16789,7 @@
         37
       ],
       "labels": [
-        "c8813"
+        "asm_opt_directive"
       ],
       "comment_inline": "index &39 (OPT)?",
       "xref_summaries": [
@@ -16865,9 +16865,9 @@
       "comment_inline": "finish",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34849,
@@ -17387,9 +17387,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c862b",
+      "operand": "asm_emit",
       "target": 34347,
-      "target_label": "c862b"
+      "target_label": "asm_emit"
     },
     {
       "addr": 34919,
