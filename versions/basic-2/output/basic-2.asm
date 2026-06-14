@@ -6527,39 +6527,39 @@ oscli            = &fff7
 .eval_power
     jsr eval_factor                                                   ; 9e20: 20 ec ad     ..      ; Evaluate the base
 ; &9e23 referenced 2 times by &9e57, &9e86
-.c9e23
+.pow_result
     pha                                                               ; 9e23: 48          H        ; Save the result type
 ; &9e24 referenced 1 time by &9e2c
-.loop_c9e24
+.pow_op_loop
     ldy zp_text_ptr2_off                                              ; 9e24: a4 1b       ..       ; Next character
     inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..       ; advance the offset
     lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..       ; read it
     cmp #&20 ; ' '                                                    ; 9e2a: c9 20       .        ; space?
-    beq loop_c9e24                                                    ; 9e2c: f0 f6       ..       ; skip it
+    beq pow_op_loop                                                   ; 9e2c: f0 f6       ..       ; skip it
     tax                                                               ; 9e2e: aa          .        ; keep the operator
     pla                                                               ; 9e2f: 68          h        ; restore the type
     cpx #&5e ; '^'                                                    ; 9e30: e0 5e       .^       ; '^'?
-    beq c9e35                                                         ; 9e32: f0 01       ..       ; yes
+    beq pow_apply                                                     ; 9e32: f0 01       ..       ; yes
     rts                                                               ; 9e34: 60          `        ; no: return
 ; &9e35 referenced 1 time by &9e32
-.c9e35
+.pow_apply
     tay                                                               ; 9e35: a8          .        ; Ensure the base is real
     jsr ensure_real                                                   ; 9e36: 20 fd 92     ..      ; convert if integer
     jsr stack_real                                                    ; 9e39: 20 51 bd     Q.      ; stack the base
     jsr eval_real                                                     ; 9e3c: 20 fa 92     ..      ; evaluate the exponent as a real
     lda zp_fwa_exp                                                    ; 9e3f: a5 30       .0       ; Exponent magnitude
     cmp #&87                                                          ; 9e41: c9 87       ..       ; large (>= 2^7)?
-    bcs c9e88                                                         ; 9e43: b0 43       .C       ; yes: use exp(y*ln x)
+    bcs pow_large                                                     ; 9e43: b0 43       .C       ; yes: use exp(y*ln x)
     jsr fp_split_int_frac                                             ; 9e45: 20 86 a4     ..      ; Split into integer and fractional parts
-    bne c9e59                                                         ; 9e48: d0 0f       ..       ; fractional part nonzero?
+    bne pow_frac                                                      ; 9e48: d0 0f       ..       ; fractional part nonzero?
     jsr unstack_real                                                  ; 9e4a: 20 7e bd     ~.      ; no: integer power - unstack the base
     jsr fwa_unpack_var                                                ; 9e4d: 20 b5 a3     ..      ; load it into FWA
     lda l004a                                                         ; 9e50: a5 4a       .J       ; integer exponent
     jsr fwa_int_power                                                 ; 9e52: 20 12 ab     ..      ; FWA = base ^ int
     lda #&ff                                                          ; 9e55: a9 ff       ..       ; real result
-    bne c9e23                                                         ; 9e57: d0 ca       ..       ; continue
+    bne pow_result                                                    ; 9e57: d0 ca       ..       ; continue
 ; &9e59 referenced 1 time by &9e48
-.c9e59
+.pow_frac
     jsr fwa_pack_temp3                                                ; 9e59: 20 81 a3     ..      ; Fractional exponent: save the fraction
     lda zp_stack_ptr                                                  ; 9e5c: a5 04       ..       ; point at the stacked base
     sta zp_fp_ptr                                                     ; 9e5e: 85 4b       .K       ; low byte
@@ -6569,7 +6569,7 @@ oscli            = &fff7
     lda l004a                                                         ; 9e67: a5 4a       .J       ; integer part of the exponent
     jsr fwa_int_power                                                 ; 9e69: 20 12 ab     ..      ; FWA = base ^ int
 ; &9e6c referenced 1 time by &9e8e
-.loop_c9e6c
+.pow_combine
     jsr fwa_pack_temp2                                                ; 9e6c: 20 7d a3     }.      ; save base^int in TEMP2
     jsr unstack_real                                                  ; 9e6f: 20 7e bd     ~.      ; unstack the base
     jsr fwa_unpack_var                                                ; 9e72: 20 b5 a3     ..      ; load it into FWA
@@ -6579,23 +6579,23 @@ oscli            = &fff7
     jsr point_fp_temp2                                                ; 9e7e: 20 ed a7     ..      ; point at base^int
     jsr fwa_mul_var                                                   ; 9e81: 20 56 a6     V.      ; FWA = base^int * base^frac
     lda #&ff                                                          ; 9e84: a9 ff       ..       ; real result
-    bne c9e23                                                         ; 9e86: d0 9b       ..       ; continue
+    bne pow_result                                                    ; 9e86: d0 9b       ..       ; continue
 ; &9e88 referenced 1 time by &9e43
-.c9e88
+.pow_large
     jsr fwa_pack_temp3                                                ; 9e88: 20 81 a3     ..      ; Large exponent: x^y = exp(y * ln x)
     jsr fwa_set_one                                                   ; 9e8b: 20 99 a6     ..      ; base^int = 1 (no integer part)
-    bne loop_c9e6c                                                    ; 9e8e: d0 dc       ..       ; evaluate it
+    bne pow_combine                                                   ; 9e8e: d0 dc       ..       ; evaluate it
 ; &9e90 referenced 1 time by &9f07
-.loop_c9e90
+.hex_convert
     tya                                                               ; 9e90: 98          .        ; Real?
-    bpl c9e96                                                         ; 9e91: 10 03       ..       ; no
+    bpl hex_expand                                                    ; 9e91: 10 03       ..       ; no
     jsr fwa_to_int                                                    ; 9e93: 20 e4 a3     ..      ; convert to integer
 ; &9e96 referenced 1 time by &9e91
-.c9e96
+.hex_expand
     ldx #0                                                            ; 9e96: a2 00       ..       ; Expand 4 bytes into 8 nibbles
     ldy #0                                                            ; 9e98: a0 00       ..       ; byte index = 0
 ; &9e9a referenced 1 time by &9eae
-.loop_c9e9a
+.hex_expand_loop
     lda zp_iwa,y                                                      ; 9e9a: b9 2a 00    .*.      ; Byte
     pha                                                               ; 9e9d: 48          H        ; save it
     and #&0f                                                          ; 9e9e: 29 0f       ).       ; low nibble
@@ -6610,40 +6610,40 @@ oscli            = &fff7
     inx                                                               ; 9eaa: e8          .        ; next nibble slot
     iny                                                               ; 9eab: c8          .        ; next byte
     cpy #4                                                            ; 9eac: c0 04       ..       ; all four bytes?
-    bne loop_c9e9a                                                    ; 9eae: d0 ea       ..       ; no: continue
+    bne hex_expand_loop                                               ; 9eae: d0 ea       ..       ; no: continue
 ; &9eb0 referenced 1 time by &9eb5
-.loop_c9eb0
+.hex_skip_zeros
     dex                                                               ; 9eb0: ca          .        ; Skip leading zero nibbles
-    beq c9eb7                                                         ; 9eb1: f0 04       ..       ; all zero: output one zero
+    beq hex_digit_loop                                                ; 9eb1: f0 04       ..       ; all zero: output one zero
     lda zp_fwb_m2,x                                                   ; 9eb3: b5 3f       .?       ; this nibble zero?
-    beq loop_c9eb0                                                    ; 9eb5: f0 f9       ..       ; yes: skip it
+    beq hex_skip_zeros                                                ; 9eb5: f0 f9       ..       ; yes: skip it
 ; &9eb7 referenced 2 times by &9eb1, &9ec5
-.c9eb7
+.hex_digit_loop
     lda zp_fwb_m2,x                                                   ; 9eb7: b5 3f       .?       ; Next nibble
     cmp #&0a                                                          ; 9eb9: c9 0a       ..       ; above 9?
-    bcc c9ebf                                                         ; 9ebb: 90 02       ..       ; no
+    bcc hex_to_ascii                                                  ; 9ebb: 90 02       ..       ; no
     adc #6                                                            ; 9ebd: 69 06       i.       ; adjust for A-F
 ; &9ebf referenced 1 time by &9ebb
-.c9ebf
+.hex_to_ascii
     adc #&30 ; '0'                                                    ; 9ebf: 69 30       i0       ; to ASCII
     jsr output_char                                                   ; 9ec1: 20 66 a0     f.      ; output the digit
     dex                                                               ; 9ec4: ca          .        ; next
-    bpl c9eb7                                                         ; 9ec5: 10 f0       ..       ; loop
+    bpl hex_digit_loop                                                ; 9ec5: 10 f0       ..       ; loop
     rts                                                               ; 9ec7: 60          `        ; Return
 ; &9ec8 referenced 1 time by &9f12
-.loop_c9ec8
-    bpl c9ed1                                                         ; 9ec8: 10 07       ..       ; positive?
+.num_sign
+    bpl num_normalize_loop                                            ; 9ec8: 10 07       ..       ; positive?
     lda #&2d ; '-'                                                    ; 9eca: a9 2d       .-       ; negative: output '-'
     sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..       ; also clears the sign bit (bit 7 = 0)
     jsr output_char                                                   ; 9ece: 20 66 a0     f.      ; print it
 ; &9ed1 referenced 3 times by &9ec8, &9edc, &9f36
-.c9ed1
+.num_normalize_loop
     lda zp_fwa_exp                                                    ; 9ed1: a5 30       .0       ; Exponent
     cmp #&81                                                          ; 9ed3: c9 81       ..       ; > = 1?
     bcs c9f25                                                         ; 9ed5: b0 4e       .N       ; yes: output the integer part
     jsr fwa_mul10                                                     ; 9ed7: 20 f4 a1     ..      ; < 1: multiply by 10
     dec zp_dec_exp                                                    ; 9eda: c6 49       .I       ; decrement the decimal exponent
-    jmp c9ed1                                                         ; 9edc: 4c d1 9e    L..      ; loop
+    jmp num_normalize_loop                                            ; 9edc: 4c d1 9e    L..      ; loop
 ; ***************************************************************************************
 ; Convert the current value to an ASCII number
 ;
@@ -6688,14 +6688,14 @@ oscli            = &fff7
     sta zp_strbuf_len                                                 ; 9f01: 85 36       .6       ; (length = 0)
     sta zp_dec_exp                                                    ; 9f03: 85 49       .I       ; decimal exponent = 0 (&49)
     bit zp_print_flag                                                 ; 9f05: 24 15       $.       ; hex mode (radix flag bit 7)?
-    bmi loop_c9e90                                                    ; 9f07: 30 87       0.       ; yes: hex conversion
+    bmi hex_convert                                                   ; 9f07: 30 87       0.       ; yes: hex conversion
     tya                                                               ; 9f09: 98          .        ; an integer value?
     bmi c9f0f                                                         ; 9f0a: 30 03       0.       ; already a real
     jsr int_to_fwa                                                    ; 9f0c: 20 be a2     ..      ; convert the integer to a real
 ; &9f0f referenced 1 time by &9f0a
 .c9f0f
     jsr fwa_sign                                                      ; 9f0f: 20 da a1     ..      ; sign of the value
-    bne loop_c9ec8                                                    ; 9f12: d0 b4       ..       ; non-zero: format it
+    bne num_sign                                                      ; 9f12: d0 b4       ..       ; non-zero: format it
     lda zp_general                                                    ; 9f14: a5 37       .7       ; zero, not General format?
     bne c9f1d                                                         ; 9f16: d0 05       ..       ; fixed/exponential zero
     lda #&30 ; '0'                                                    ; 9f18: a9 30       .0       ; output a single '0'
@@ -6721,7 +6721,7 @@ oscli            = &fff7
 ; &9f34 referenced 1 time by &9f23
 .c9f34
     inc zp_dec_exp                                                    ; 9f34: e6 49       .I       ; count one decimal place up
-    jmp c9ed1                                                         ; 9f36: 4c d1 9e    L..      ; check the magnitude again
+    jmp num_normalize_loop                                            ; 9f36: 4c d1 9e    L..      ; check the magnitude again
 ; &9f39 referenced 2 times by &9f27, &9f2f
 .c9f39
     lda zp_fwa_rnd                                                    ; 9f39: a5 35       .5       ; Save FWA in TEMP1 (a fraction in [1,10)):
@@ -14573,7 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:                 3
 ;     assign_string:                 3
 ;     c8858:                         3
-;     c9ed1:                         3
 ;     ca0e8:                         3
 ;     ca387:                         3
 ;     ca590:                         3
@@ -14613,6 +14612,7 @@ save pydis_start, pydis_end
 ;     mul_conv_right:                3
 ;     muldiv_check:                  3
 ;     not_name_char:                 3
+;     num_normalize_loop:            3
 ;     parse_number:                  3
 ;     plnum_print_loop:              3
 ;     point_fp_temp2:                3
@@ -14663,8 +14663,6 @@ save pydis_start, pydis_end
 ;     assign_str_store:              2
 ;     assign_string_to:              2
 ;     auto_loop:                     2
-;     c9e23:                         2
-;     c9eb7:                         2
 ;     c9ef9:                         2
 ;     c9efb:                         2
 ;     c9f39:                         2
@@ -14764,6 +14762,7 @@ save pydis_start, pydis_end
 ;     fwa_sub_var:                   2
 ;     fwa_unpack_temp1:              2
 ;     fwb_half_fwa:                  2
+;     hex_digit_loop:                2
 ;     if_then_line:                  2
 ;     imul16:                        2
 ;     index_array:                   2
@@ -14809,6 +14808,7 @@ save pydis_start, pydis_end
 ;     point_fp_temp3:                2
 ;     point_half_pi_hi:              2
 ;     point_half_pi_lo:              2
+;     pow_result:                    2
 ;     pow_stack_eval:                2
 ;     print_hex_byte:                2
 ;     print_inline_char:             2
@@ -14954,11 +14954,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     c9e35:                         1
-;     c9e59:                         1
-;     c9e88:                         1
-;     c9e96:                         1
-;     c9ebf:                         1
 ;     c9ee8:                         1
 ;     c9ef5:                         1
 ;     c9f0f:                         1
@@ -15240,6 +15235,11 @@ save pydis_start, pydis_end
 ;     fwa_swap_var:                  1
 ;     gosub_stack:                   1
 ;     gosub_stack_hi:                1
+;     hex_convert:                   1
+;     hex_expand:                    1
+;     hex_expand_loop:               1
+;     hex_skip_zeros:                1
+;     hex_to_ascii:                  1
 ;     iadd_store_drop:               1
 ;     idiv_next_bit:                 1
 ;     idiv_norm_loop:                1
@@ -15312,12 +15312,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_c9e24:                    1
-;     loop_c9e6c:                    1
-;     loop_c9e90:                    1
-;     loop_c9e9a:                    1
-;     loop_c9eb0:                    1
-;     loop_c9ec8:                    1
 ;     loop_c9f20:                    1
 ;     loop_c9f6b:                    1
 ;     loop_c9f7e:                    1
@@ -15421,6 +15415,7 @@ save pydis_start, pydis_end
 ;     mul_right_signed:              1
 ;     not_line_number:               1
 ;     not_local_error:               1
+;     num_sign:                      1
 ;     or_byte_loop:                  1
 ;     or_drop_stack:                 1
 ;     osasci:                        1
@@ -15440,6 +15435,11 @@ save pydis_start, pydis_end
 ;     plot_coord:                    1
 ;     plot_send_hi:                  1
 ;     point_general_page:            1
+;     pow_apply:                     1
+;     pow_combine:                   1
+;     pow_frac:                      1
+;     pow_large:                     1
+;     pow_op_loop:                   1
 ;     powers_of_ten_hi:              1
 ;     powers_of_ten_lo:              1
 ;     print_check_sep:               1
@@ -15618,14 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c9e23
-;     c9e35
-;     c9e59
-;     c9e88
-;     c9e96
-;     c9eb7
-;     c9ebf
-;     c9ed1
 ;     c9ee8
 ;     c9ef5
 ;     c9ef9
@@ -15979,12 +15971,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9e24
-;     loop_c9e6c
-;     loop_c9e90
-;     loop_c9e9a
-;     loop_c9eb0
-;     loop_c9ec8
 ;     loop_c9f20
 ;     loop_c9f6b
 ;     loop_c9f7e

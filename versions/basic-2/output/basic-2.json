@@ -55343,7 +55343,7 @@
         72
       ],
       "labels": [
-        "c9e23"
+        "pow_result"
       ],
       "comment_inline": "Save the result type",
       "xref_summaries": [
@@ -55363,7 +55363,7 @@
         27
       ],
       "labels": [
-        "loop_c9e24"
+        "pow_op_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -55424,9 +55424,9 @@
       "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9e24",
+      "operand": "pow_op_loop",
       "target": 40484,
-      "target_label": "loop_c9e24"
+      "target_label": "pow_op_loop"
     },
     {
       "addr": 40494,
@@ -55466,9 +55466,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9e35",
+      "operand": "pow_apply",
       "target": 40501,
-      "target_label": "c9e35"
+      "target_label": "pow_apply"
     },
     {
       "addr": 40500,
@@ -55485,7 +55485,7 @@
         168
       ],
       "labels": [
-        "c9e35"
+        "pow_apply"
       ],
       "comment_inline": "Ensure the base is real",
       "xref_summaries": [
@@ -55572,9 +55572,9 @@
       "comment_inline": "yes: use exp(y*ln x)",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9e88",
+      "operand": "pow_large",
       "target": 40584,
-      "target_label": "c9e88"
+      "target_label": "pow_large"
     },
     {
       "addr": 40517,
@@ -55599,9 +55599,9 @@
       "comment_inline": "fractional part nonzero?",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9e59",
+      "operand": "pow_frac",
       "target": 40537,
-      "target_label": "c9e59"
+      "target_label": "pow_frac"
     },
     {
       "addr": 40522,
@@ -55678,9 +55678,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9e23",
+      "operand": "pow_result",
       "target": 40483,
-      "target_label": "c9e23"
+      "target_label": "pow_result"
     },
     {
       "addr": 40537,
@@ -55690,7 +55690,7 @@
         163
       ],
       "labels": [
-        "c9e59"
+        "pow_frac"
       ],
       "comment_inline": "Fractional exponent: save the fraction",
       "xref_summaries": [
@@ -55806,7 +55806,7 @@
         163
       ],
       "labels": [
-        "loop_c9e6c"
+        "pow_combine"
       ],
       "comment_inline": "save base^int in TEMP2",
       "xref_summaries": [
@@ -55939,9 +55939,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9e23",
+      "operand": "pow_result",
       "target": 40483,
-      "target_label": "c9e23"
+      "target_label": "pow_result"
     },
     {
       "addr": 40584,
@@ -55951,7 +55951,7 @@
         163
       ],
       "labels": [
-        "c9e88"
+        "pow_large"
       ],
       "comment_inline": "Large exponent: x^y = exp(y * ln x)",
       "xref_summaries": [
@@ -55989,9 +55989,9 @@
       "comment_inline": "evaluate it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9e6c",
+      "operand": "pow_combine",
       "target": 40556,
-      "target_label": "loop_c9e6c"
+      "target_label": "pow_combine"
     },
     {
       "addr": 40592,
@@ -55999,7 +55999,7 @@
         152
       ],
       "labels": [
-        "loop_c9e90"
+        "hex_convert"
       ],
       "comment_inline": "Real?",
       "xref_summaries": [
@@ -56020,9 +56020,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c9e96",
+      "operand": "hex_expand",
       "target": 40598,
-      "target_label": "c9e96"
+      "target_label": "hex_expand"
     },
     {
       "addr": 40595,
@@ -56045,7 +56045,7 @@
         0
       ],
       "labels": [
-        "c9e96"
+        "hex_expand"
       ],
       "comment_inline": "Expand 4 bytes into 8 nibbles",
       "xref_summaries": [
@@ -56077,7 +56077,7 @@
         0
       ],
       "labels": [
-        "loop_c9e9a"
+        "hex_expand_loop"
       ],
       "comment_inline": "Byte",
       "xref_summaries": [
@@ -56230,9 +56230,9 @@
       "comment_inline": "no: continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9e9a",
+      "operand": "hex_expand_loop",
       "target": 40602,
-      "target_label": "loop_c9e9a"
+      "target_label": "hex_expand_loop"
     },
     {
       "addr": 40624,
@@ -56240,7 +56240,7 @@
         202
       ],
       "labels": [
-        "loop_c9eb0"
+        "hex_skip_zeros"
       ],
       "comment_inline": "Skip leading zero nibbles",
       "xref_summaries": [
@@ -56261,9 +56261,9 @@
       "comment_inline": "all zero: output one zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9eb7",
+      "operand": "hex_digit_loop",
       "target": 40631,
-      "target_label": "c9eb7"
+      "target_label": "hex_digit_loop"
     },
     {
       "addr": 40627,
@@ -56287,9 +56287,9 @@
       "comment_inline": "yes: skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c9eb0",
+      "operand": "hex_skip_zeros",
       "target": 40624,
-      "target_label": "loop_c9eb0"
+      "target_label": "hex_skip_zeros"
     },
     {
       "addr": 40631,
@@ -56298,7 +56298,7 @@
         63
       ],
       "labels": [
-        "c9eb7"
+        "hex_digit_loop"
       ],
       "comment_inline": "Next nibble",
       "xref_summaries": [
@@ -56334,9 +56334,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9ebf",
+      "operand": "hex_to_ascii",
       "target": 40639,
-      "target_label": "c9ebf"
+      "target_label": "hex_to_ascii"
     },
     {
       "addr": 40637,
@@ -56356,7 +56356,7 @@
         48
       ],
       "labels": [
-        "c9ebf"
+        "hex_to_ascii"
       ],
       "comment_inline": "to ASCII",
       "xref_summaries": [
@@ -56401,9 +56401,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c9eb7",
+      "operand": "hex_digit_loop",
       "target": 40631,
-      "target_label": "c9eb7"
+      "target_label": "hex_digit_loop"
     },
     {
       "addr": 40647,
@@ -56421,7 +56421,7 @@
         7
       ],
       "labels": [
-        "loop_c9ec8"
+        "num_sign"
       ],
       "comment_inline": "positive?",
       "xref_summaries": [
@@ -56432,9 +56432,9 @@
       ],
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c9ed1",
+      "operand": "num_normalize_loop",
       "target": 40657,
-      "target_label": "c9ed1"
+      "target_label": "num_normalize_loop"
     },
     {
       "addr": 40650,
@@ -56481,7 +56481,7 @@
         48
       ],
       "labels": [
-        "c9ed1"
+        "num_normalize_loop"
       ],
       "comment_inline": "Exponent",
       "xref_summaries": [
@@ -56559,9 +56559,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9ed1",
+      "operand": "num_normalize_loop",
       "target": 40657,
-      "target_label": "c9ed1"
+      "target_label": "num_normalize_loop"
     },
     {
       "addr": 40671,
@@ -56857,9 +56857,9 @@
       "comment_inline": "yes: hex conversion",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_c9e90",
+      "operand": "hex_convert",
       "target": 40592,
-      "target_label": "loop_c9e90"
+      "target_label": "hex_convert"
     },
     {
       "addr": 40713,
@@ -56929,9 +56929,9 @@
       "comment_inline": "non-zero: format it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9ec8",
+      "operand": "num_sign",
       "target": 40648,
-      "target_label": "loop_c9ec8"
+      "target_label": "num_sign"
     },
     {
       "addr": 40724,
@@ -57181,9 +57181,9 @@
       "comment_inline": "check the magnitude again",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9ed1",
+      "operand": "num_normalize_loop",
       "target": 40657,
-      "target_label": "c9ed1"
+      "target_label": "num_normalize_loop"
     },
     {
       "addr": 40761,
