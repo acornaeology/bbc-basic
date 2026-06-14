@@ -2402,19 +2402,50 @@
       "addr": 41336,
       "name": "fwa_acc_fwb",
       "title": "Add FWB into FWA",
-      "description": "FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10)."
+      "description": "Add the FWB mantissa (rnd, m4-m1) into the FWA mantissa with a single carry chain. Mantissa-only: exponents must already be aligned by the caller. Used by multiply, *10 and /10.",
+      "on_entry": {
+        "zp_fwa (&31-&35)": "mantissa + rnd of accumulator A",
+        "zp_fwb (&3E-&42)": "mantissa + rnd of accumulator B",
+        "C": "clear (it is the carry-in to the addition)"
+      },
+      "on_exit": {
+        "zp_fwa (&31-&35)": "the summed mantissa",
+        "C": "carry out of the mantissa MSB (overflow)",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 41367,
       "name": "mant_mul10",
       "title": "Multiply the FWA mantissa by 10",
-      "description": "Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions."
+      "description": "Multiply the FWA mantissa (m1-m4 and the rounding byte) by ten as x4 + x1 = x5 then x2, leaving the exponent untouched. Used by the number<->ASCII conversions, which track the decimal point separately.",
+      "on_entry": {
+        "zp_fwa (&31-&35)": "the mantissa to scale"
+      },
+      "on_exit": {
+        "zp_fwa (&31-&35)": "the mantissa times ten",
+        "C": "carry out of the mantissa MSB",
+        "A": "preserved",
+        "Y": "preserved",
+        "X": "corrupted (holds the original m4)"
+      }
     },
     {
       "addr": 41434,
       "name": "fwa_sign",
       "title": "Get the sign of the FP accumulator",
-      "description": "Determine the sign of the floating-point accumulator:\nzero, positive or negative (Z set when FWA is zero). Tests the\nmantissa bytes (&31-&35) and the sign.\n"
+      "description": "Determine the sign of the floating-point accumulator by\nOR-ing the mantissa and rounding bytes (&31-&35) to test for zero, then\nreading the sign byte. Forces a clean zero (sign, exponent and overflow\nbyte cleared) when the mantissa is empty.\n",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the floating-point accumulator A"
+      },
+      "on_exit": {
+        "A": "+1 positive, 0 zero, &FF negative",
+        "N": "set when FWA is negative",
+        "Z": "set when FWA is zero",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 41460,
@@ -2426,14 +2457,29 @@
       "addr": 41502,
       "name": "fwb_copy_from_fwa",
       "title": "FWB = FWA",
-      "description": "Copy FWA into FWB.",
+      "description": "Copy all ten bytes of FWA into FWB.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the floating-point accumulator A"
+      },
+      "on_exit": {
+        "zp_fwb (&3B-&42)": "a copy of FWA",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41538,
       "name": "fwb_div2",
       "title": "Divide FWB by two",
-      "description": "Shift the FWB mantissa right one bit (FWB = FWB / 2)."
+      "description": "Shift the FWB mantissa right one bit (FWB = FWB / 2). Leaves the exponent alone, so the result is left de-normalised; used to align exponents before adding.",
+      "on_entry": {
+        "zp_fwb (&3B-&42)": "the floating-point accumulator B"
+      },
+      "on_exit": {
+        "zp_fwb": "mantissa shifted right one bit (rnd byte included)",
+        "X": "preserved",
+        "C": "the bit shifted out of the rnd byte"
+      }
     },
     {
       "addr": 41549,
@@ -2446,7 +2492,17 @@
       "addr": 41636,
       "name": "fwa_round_carry",
       "title": "Add to the rounding byte and ripple the carry up",
-      "description": "Add A to the FWA rounding byte, then propagate any carry up\nthrough the mantissa (m4 -> m1). A carry out of the top renormalises\nthe exponent (and may overflow). Used to round the mantissa up.\n"
+      "description": "Add A (plus the carry-in) to the FWA rounding byte, then\npropagate any carry up through the mantissa (m4 -> m1). A carry out of\nthe top renormalises the exponent (shift right, exponent + 1) and may\nset the overflow byte. Used to round the mantissa up.\n",
+      "on_entry": {
+        "A": "the rounding increment to add to the rnd byte",
+        "C": "carry-in to the addition",
+        "zp_fwa (&31-&35)": "the mantissa + rnd to round"
+      },
+      "on_exit": {
+        "zp_fwa (&30-&35)": "the rounded mantissa (exponent may step up)",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 41662,
@@ -2464,54 +2520,115 @@
       "addr": 41731,
       "name": "fwa_normalise",
       "title": "Normalise FWA",
-      "description": "Normalise the floating-point accumulator.",
+      "description": "Shift the FWA mantissa left until bit 7 of the MSB is set, decrementing the exponent by 8 per whole-byte shift and by 1 per bit, so the implied leading 1 is restored. An all-zero mantissa is forced to a clean zero. Underflow is handled via the overflow byte.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "an unnormalised accumulator"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "normalised (mantissa MSB bit 7 set) or a clean zero"
+      },
       "fall_through": true
     },
     {
       "addr": 41806,
       "name": "fwb_unpack_var",
       "title": "Unpack a fp variable into FWB",
-      "description": "Unpack the fp variable at (&4B/&4C) into FWB."
+      "description": "Expand the packed five-byte float addressed by zp_fp_ptr into the unpacked FWB accumulator: split the sign out of the mantissa MSB, restore the implied leading 1 (unless the value is zero), and clear the overflow and rounding bytes.",
+      "on_entry": {
+        "(zp_fp_ptr) (&4B/&4C)": "a packed five-byte float"
+      },
+      "on_exit": {
+        "zp_fwb (&3B-&42)": "the unpacked value",
+        "X": "preserved"
+      }
     },
     {
       "addr": 41853,
       "name": "fwa_pack_temp2",
       "title": "Pack FWA into TEMP2",
-      "description": "Pack FWA into the floating-point temporary at &0471.",
+      "description": "Point zp_fp_ptr at FP TEMP2 (&0471), then pack FWA into it via fwa_pack_var.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to store"
+      },
+      "on_exit": {
+        "(&0471)": "FWA packed into five bytes",
+        "zp_fp_ptr (&4B/&4C)": "= &0471",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41857,
       "name": "fwa_pack_temp3",
       "title": "Pack FWA into TEMP3",
-      "description": "Pack FWA into the floating-point temporary at &0476.",
+      "description": "Point zp_fp_ptr at FP TEMP3 (&0476), then pack FWA into it via fwa_pack_var.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to store"
+      },
+      "on_exit": {
+        "(&0476)": "FWA packed into five bytes",
+        "zp_fp_ptr (&4B/&4C)": "= &0476",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41861,
       "name": "fwa_pack_temp1",
       "title": "Pack FWA into TEMP1",
-      "description": "Pack FWA into the floating-point temporary at &046C.",
+      "description": "Point zp_fp_ptr at FP TEMP1 (&046C), then pack FWA into it via fwa_pack_var.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to store"
+      },
+      "on_exit": {
+        "(&046C)": "FWA packed into five bytes",
+        "zp_fp_ptr (&4B/&4C)": "= &046C",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41869,
       "name": "fwa_pack_var",
       "title": "Pack FWA into a fp variable",
-      "description": "Pack FWA into the five-byte fp variable at (&4B/&4C)."
+      "description": "Compress the unpacked FWA accumulator into the packed five-byte form addressed by zp_fp_ptr: exponent, then the sign folded into bit 7 of the mantissa MSB (the implied leading 1 is dropped), then mantissa bytes 2-4.",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "the value to store",
+        "zp_fp_ptr (&4B/&4C)": "where to write the five bytes"
+      },
+      "on_exit": {
+        "(zp_fp_ptr)": "the packed five-byte float",
+        "zp_fwa_sign (&2E)": "reduced to its sign bit",
+        "X": "preserved"
+      }
     },
     {
       "addr": 41906,
       "name": "fwa_unpack_temp1",
       "title": "Unpack TEMP1 into FWA",
-      "description": "Unpack the floating-point temporary at &046C into FWA.",
+      "description": "Point zp_fp_ptr at FP TEMP1 (&046C), then unpack it into FWA via fwa_unpack_var.",
+      "on_entry": {
+        "(&046C)": "a packed five-byte float"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the unpacked value",
+        "zp_fp_ptr (&4B/&4C)": "= &046C",
+        "X": "preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 41909,
       "name": "fwa_unpack_var",
       "title": "Unpack a floating-point variable into FWA",
-      "description": "Unpack the packed five-byte floating-point value addressed by\n(&4B/&4C) into the floating-point accumulator (FWA).\n"
+      "description": "Expand the packed five-byte float addressed by zp_fp_ptr into\nthe unpacked FWA accumulator: split the sign out of the mantissa MSB,\nrestore the implied leading 1 (unless the value is zero), and clear the\noverflow and rounding bytes.\n",
+      "on_entry": {
+        "(zp_fp_ptr) (&4B/&4C)": "a packed five-byte float"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "the unpacked value",
+        "X": "preserved"
+      }
     },
     {
       "addr": 41956,
@@ -2529,7 +2646,13 @@
       "addr": 42067,
       "name": "fwb_clear",
       "title": "FWB = 0",
-      "description": "Set the second floating-point accumulator to zero."
+      "description": "Zero every byte of FWB. Exponent 0 is the special encoding for the value zero.",
+      "on_exit": {
+        "zp_fwb (&3B-&42)": "0.0",
+        "A": "0",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 42118,
@@ -2554,7 +2677,14 @@
       "addr": 42204,
       "name": "fwa_copy_from_fwb",
       "title": "FWA = FWB",
-      "description": "Copy FWB into FWA."
+      "description": "Copy all ten bytes of FWB into FWA.",
+      "on_entry": {
+        "zp_fwb (&3B-&42)": "the floating-point accumulator B"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "a copy of FWB",
+        "X": "preserved"
+      }
     },
     {
       "addr": 42237,
@@ -2613,7 +2743,13 @@
       "addr": 42630,
       "name": "fwa_clear",
       "title": "FWA = 0",
-      "description": "Set the floating-point accumulator to zero."
+      "description": "Zero every byte of FWA. Exponent 0 is the special encoding for the value zero.",
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "0.0",
+        "A": "0",
+        "X": "preserved",
+        "Y": "preserved"
+      }
     },
     {
       "addr": 42649,

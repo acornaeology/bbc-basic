@@ -4977,7 +4977,16 @@ d.comment(0xa177, 'Return', align=Align.INLINE)
 # fwa_acc_fwb (&A178): FWA mantissa += FWB mantissa
 d.comment(0xa178, 'Add the mantissas: rounding byte', align=Align.INLINE)
 d.subroutine(0xa178, 'fwa_acc_fwb', title='Add FWB into FWA',
-             description='FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10).')
+             description='Add the FWB mantissa (rnd, m4-m1) into the FWA '
+                         'mantissa with a single carry chain. Mantissa-only: '
+                         'exponents must already be aligned by the caller. Used '
+                         'by multiply, *10 and /10.',
+             on_entry={'zp_fwa (&31-&35)': 'mantissa + rnd of accumulator A',
+                       'zp_fwb (&3E-&42)': 'mantissa + rnd of accumulator B',
+                       'C': 'clear (it is the carry-in to the addition)'},
+             on_exit={'zp_fwa (&31-&35)': 'the summed mantissa',
+                      'C': 'carry out of the mantissa MSB (overflow)',
+                      'X': 'preserved', 'Y': 'preserved'})
 
 d.comment(0xa17a, '+ FWB rounding', align=Align.INLINE)
 d.comment(0xa17c, '(store)', align=Align.INLINE)
@@ -4995,7 +5004,15 @@ d.comment(0xa192, '- FWB m1', align=Align.INLINE)
 d.comment(0xa194, '(store)', align=Align.INLINE)
 d.comment(0xa196, 'Return (carry = overflow)', align=Align.INLINE)
 d.subroutine(0xa197, 'mant_mul10', title='Multiply the FWA mantissa by 10',
-             description='Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions.')
+             description='Multiply the FWA mantissa (m1-m4 and the rounding '
+                         'byte) by ten as x4 + x1 = x5 then x2, leaving the '
+                         'exponent untouched. Used by the number<->ASCII '
+                         'conversions, which track the decimal point separately.',
+             on_entry={'zp_fwa (&31-&35)': 'the mantissa to scale'},
+             on_exit={'zp_fwa (&31-&35)': 'the mantissa times ten',
+                      'C': 'carry out of the mantissa MSB',
+                      'A': 'preserved', 'Y': 'preserved',
+                      'X': 'corrupted (holds the original m4)'})
 
 # mant_mul10 (&A197): x4 + x1 = x5, then x2
 d.comment(0xa197, 'Save A', align=Align.INLINE)
@@ -5042,10 +5059,17 @@ d.comment(0xa1d9, 'Return', align=Align.INLINE)
 d.subroutine(
     0xa1da, 'fwa_sign',
     title='Get the sign of the FP accumulator',
-    description="""Determine the sign of the floating-point accumulator:
-zero, positive or negative (Z set when FWA is zero). Tests the
-mantissa bytes (&31-&35) and the sign.
+    description="""Determine the sign of the floating-point accumulator by
+OR-ing the mantissa and rounding bytes (&31-&35) to test for zero, then
+reading the sign byte. Forces a clean zero (sign, exponent and overflow
+byte cleared) when the mantissa is empty.
 """,
+    on_entry={'zp_fwa (&2E-&35)': 'the floating-point accumulator A'},
+    on_exit={
+        'A': '+1 positive, 0 zero, &FF negative',
+        'N': 'set when FWA is negative', 'Z': 'set when FWA is zero',
+        'X': 'preserved', 'Y': 'preserved',
+    },
 )
 # ======================================================================
 # Inline comments, added bottom-up from the call-graph leaves. The aim
@@ -5102,7 +5126,9 @@ d.comment(0xa21b, 'exponent overflow', align=Align.INLINE)
 d.comment(0xa21d, 'Return', align=Align.INLINE)
 
 d.subroutine(0xa21e, 'fwb_copy_from_fwa', title='FWB = FWA',
-             description='Copy FWA into FWB.')
+             description='Copy all ten bytes of FWA into FWB.',
+             on_entry={'zp_fwa (&2E-&35)': 'the floating-point accumulator A'},
+             on_exit={'zp_fwb (&3B-&42)': 'a copy of FWA', 'X': 'preserved'})
 # fwb_copy_from_fwa (&A21E): FWB = FWA
 d.comment(0xa21e, "Copy FWA's sign...", align=Align.INLINE)
 d.comment(0xa220, '...into FWB', align=Align.INLINE)
@@ -5126,7 +5152,12 @@ d.label(0xa23f, 'fwb_half_fwa')   # FWB = FWA, then halve it
 d.comment(0xa23f, 'FWB = FWA, then halve it', align=Align.INLINE)
 # fwb_half_fwa (&A23F) / fwb_div2 (&A242): FWB = FWA / 2, and FWB >>= 1
 d.subroutine(0xa242, 'fwb_div2', title='Divide FWB by two',
-             description='Shift the FWB mantissa right one bit (FWB = FWB / 2).')
+             description='Shift the FWB mantissa right one bit (FWB = FWB / 2). '
+                         'Leaves the exponent alone, so the result is left '
+                         'de-normalised; used to align exponents before adding.',
+             on_entry={'zp_fwb (&3B-&42)': 'the floating-point accumulator B'},
+             on_exit={'zp_fwb': 'mantissa shifted right one bit (rnd byte included)',
+                      'X': 'preserved', 'C': 'the bit shifted out of the rnd byte'})
 d.comment(0xa242, 'Shift FWB right one bit (/2): mantissa MSB', align=Align.INLINE)
 d.comment(0xa244, 'byte 2', align=Align.INLINE)
 d.comment(0xa246, 'byte 3', align=Align.INLINE)
@@ -5192,10 +5223,16 @@ d.comment(0xa2a2, 'next bit...', align=Align.INLINE)
 d.subroutine(
     0xa2a4, 'fwa_round_carry',
     title='Add to the rounding byte and ripple the carry up',
-    description="""Add A to the FWA rounding byte, then propagate any carry up
-through the mantissa (m4 -> m1). A carry out of the top renormalises
-the exponent (and may overflow). Used to round the mantissa up.
+    description="""Add A (plus the carry-in) to the FWA rounding byte, then
+propagate any carry up through the mantissa (m4 -> m1). A carry out of
+the top renormalises the exponent (shift right, exponent + 1) and may
+set the overflow byte. Used to round the mantissa up.
 """,
+    on_entry={'A': 'the rounding increment to add to the rnd byte',
+              'C': 'carry-in to the addition',
+              'zp_fwa (&31-&35)': 'the mantissa + rnd to round'},
+    on_exit={'zp_fwa (&30-&35)': 'the rounded mantissa (exponent may step up)',
+             'X': 'preserved', 'Y': 'preserved'},
 )
 # fwa_round_carry (&A2A4): add A to rounding, ripple carry up the mantissa
 d.comment(0xa2a4, 'Add the round increment to the rounding byte',
@@ -5260,7 +5297,14 @@ d.comment(0xa2ff, 'Exponent &88 (= 8): an 8-bit value', align=Align.INLINE)
 d.comment(0xa301, '(store; falls into normalise)', align=Align.INLINE)
 
 d.subroutine(0xa303, 'fwa_normalise', title='Normalise FWA',
-             description='Normalise the floating-point accumulator.')
+             description='Shift the FWA mantissa left until bit 7 of the MSB is '
+                         'set, decrementing the exponent by 8 per whole-byte '
+                         'shift and by 1 per bit, so the implied leading 1 is '
+                         'restored. An all-zero mantissa is forced to a clean '
+                         'zero. Underflow is handled via the overflow byte.',
+             on_entry={'zp_fwa (&2E-&35)': 'an unnormalised accumulator'},
+             on_exit={'zp_fwa (&2E-&35)': 'normalised (mantissa MSB bit 7 set) '
+                                          'or a clean zero'})
 # fwa_normalise (&A303): shift the mantissa left until bit 7 of m1 is set
 d.comment(0xa303, 'Mantissa MSB...', align=Align.INLINE)
 # --- fwa_normalise: shift the mantissa until bit 7 of m1 is set -------
@@ -5308,7 +5352,13 @@ d.comment(0xa34a, 'Borrow into the overflow byte', align=Align.INLINE)
 d.comment(0xa34c, 'Continue the bit-shift loop', align=Align.INLINE)
 
 d.subroutine(0xa34e, 'fwb_unpack_var', title='Unpack a fp variable into FWB',
-             description='Unpack the fp variable at (&4B/&4C) into FWB.')
+             description='Expand the packed five-byte float addressed by '
+                         'zp_fp_ptr into the unpacked FWB accumulator: split '
+                         'the sign out of the mantissa MSB, restore the implied '
+                         'leading 1 (unless the value is zero), and clear the '
+                         'overflow and rounding bytes.',
+             on_entry={'(zp_fp_ptr) (&4B/&4C)': 'a packed five-byte float'},
+             on_exit={'zp_fwb (&3B-&42)': 'the unpacked value', 'X': 'preserved'})
 
 # fwb_unpack_var (&A34E): unpack the 5-byte value at (zp_fp_ptr) into FWB
 d.comment(0xa34e, 'Copy the packed value, exponent last', align=Align.INLINE)
@@ -5339,17 +5389,29 @@ d.comment(0xa37a, 'Store the true mantissa MSB', align=Align.INLINE)
 d.comment(0xa37c, 'FWB now holds the unpacked value', align=Align.INLINE)
 
 d.subroutine(0xa37d, 'fwa_pack_temp2', title='Pack FWA into TEMP2',
-             description='Pack FWA into the floating-point temporary at &0471.')
+             description='Point zp_fp_ptr at FP TEMP2 (&0471), then pack FWA '
+                         'into it via fwa_pack_var.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to store'},
+             on_exit={'(&0471)': 'FWA packed into five bytes',
+                      'zp_fp_ptr (&4B/&4C)': '= &0471', 'X': 'preserved'})
 # fwa_pack_temp2/3 (&A37D/&A381): point at FP TEMP2/TEMP3, then pack
 d.comment(0xa37d, 'Point at FP TEMP2 (&0471): low byte', align=Align.INLINE)
 d.comment(0xa37f, 'join the common pack code', align=Align.INLINE)
 d.subroutine(0xa381, 'fwa_pack_temp3', title='Pack FWA into TEMP3',
-             description='Pack FWA into the floating-point temporary at &0476.')
+             description='Point zp_fp_ptr at FP TEMP3 (&0476), then pack FWA '
+                         'into it via fwa_pack_var.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to store'},
+             on_exit={'(&0476)': 'FWA packed into five bytes',
+                      'zp_fp_ptr (&4B/&4C)': '= &0476', 'X': 'preserved'})
 d.comment(0xa381, 'Point at FP TEMP3 (&0476): low byte', align=Align.INLINE)
 d.comment(0xa383, 'join the common pack code', align=Align.INLINE)
 
 d.subroutine(0xa385, 'fwa_pack_temp1', title='Pack FWA into TEMP1',
-             description='Pack FWA into the floating-point temporary at &046C.')
+             description='Point zp_fp_ptr at FP TEMP1 (&046C), then pack FWA '
+                         'into it via fwa_pack_var.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to store'},
+             on_exit={'(&046C)': 'FWA packed into five bytes',
+                      'zp_fp_ptr (&4B/&4C)': '= &046C', 'X': 'preserved'})
 # fwa_pack_temp1/2/3 (&A385/&A37D/&A381): point at an FP temp, then pack
 d.comment(0xa385, 'Point at FP TEMP1 (&046C): low byte', align=Align.INLINE)
 d.comment(0xa387, 'set the fp-variable pointer', align=Align.INLINE)
@@ -5357,7 +5419,15 @@ d.comment(0xa389, 'high byte &04', align=Align.INLINE)
 d.comment(0xa38b, 'then fall into fwa_pack_var', align=Align.INLINE)
 # Pack / unpack between the accumulator and 5-byte stored form.
 d.subroutine(0xa38d, 'fwa_pack_var', title='Pack FWA into a fp variable',
-             description='Pack FWA into the five-byte fp variable at (&4B/&4C).')
+             description='Compress the unpacked FWA accumulator into the packed '
+                         'five-byte form addressed by zp_fp_ptr: exponent, then '
+                         'the sign folded into bit 7 of the mantissa MSB (the '
+                         'implied leading 1 is dropped), then mantissa bytes 2-4.',
+             on_entry={'zp_fwa (&2E-&35)': 'the value to store',
+                       'zp_fp_ptr (&4B/&4C)': 'where to write the five bytes'},
+             on_exit={'(zp_fp_ptr)': 'the packed five-byte float',
+                      'zp_fwa_sign (&2E)': 'reduced to its sign bit',
+                      'X': 'preserved'})
 # fwa_pack_var (&A38D): pack FWA into the 5-byte value at (zp_fp_ptr)
 d.comment(0xa38d, 'Write packed bytes from offset 0', align=Align.INLINE)
 d.comment(0xa38f, 'Packed byte 0 is the exponent', align=Align.INLINE)
@@ -5385,16 +5455,24 @@ d.comment(0xa3af, 'Packed byte 4', align=Align.INLINE)
 d.comment(0xa3b1, 'The 5-byte packed value is stored', align=Align.INLINE)
 
 d.subroutine(0xa3b2, 'fwa_unpack_temp1', title='Unpack TEMP1 into FWA',
-             description='Unpack the floating-point temporary at &046C into FWA.')
+             description='Point zp_fp_ptr at FP TEMP1 (&046C), then unpack it '
+                         'into FWA via fwa_unpack_var.',
+             on_entry={'(&046C)': 'a packed five-byte float'},
+             on_exit={'zp_fwa (&2E-&35)': 'the unpacked value',
+                      'zp_fp_ptr (&4B/&4C)': '= &046C', 'X': 'preserved'})
 d.comment(0xa3b2, 'Point at FP TEMP1, then unpack it into FWA',
           align=Align.INLINE)
 
 d.subroutine(
     0xa3b5, 'fwa_unpack_var',
     title='Unpack a floating-point variable into FWA',
-    description="""Unpack the packed five-byte floating-point value addressed by
-(&4B/&4C) into the floating-point accumulator (FWA).
+    description="""Expand the packed five-byte float addressed by zp_fp_ptr into
+the unpacked FWA accumulator: split the sign out of the mantissa MSB,
+restore the implied leading 1 (unless the value is zero), and clear the
+overflow and rounding bytes.
 """,
+    on_entry={'(zp_fp_ptr) (&4B/&4C)': 'a packed five-byte float'},
+    on_exit={'zp_fwa (&2E-&35)': 'the unpacked value', 'X': 'preserved'},
 )
 # --- fwa_unpack_var: packed 5-byte -> unpacked 8-byte FWA ------------
 d.comment(0xa3b5, 'Copy the packed value, exponent last',
@@ -5506,7 +5584,10 @@ d.comment(0xa450, 'Magnitude too large: Too big error', align=Align.INLINE)
 
 # FWB helpers.
 d.subroutine(0xa453, 'fwb_clear', title='FWB = 0',
-             description='Set the second floating-point accumulator to zero.')
+             description='Zero every byte of FWB. Exponent 0 is the special '
+                         'encoding for the value zero.',
+             on_exit={'zp_fwb (&3B-&42)': '0.0', 'A': '0',
+                      'X': 'preserved', 'Y': 'preserved'})
 # fwb_clear (&A453): zero the second FP accumulator.
 d.comment(0xa453, 'Zero every byte of FWB', align=Align.INLINE)
 d.comment(0xa455, '...sign', align=Align.INLINE)
@@ -5593,7 +5674,9 @@ d.subroutine(0xa4d6, 'fwa_swap_var', title='Swap FWA and a fp variable',
 d.comment(0xa4d6, 'FWB = the fp variable', align=Align.INLINE)
 d.comment(0xa4d9, 'Store FWA into the variable; FWA = old variable', align=Align.INLINE)
 d.subroutine(0xa4dc, 'fwa_copy_from_fwb', title='FWA = FWB',
-             description='Copy FWB into FWA.')
+             description='Copy all ten bytes of FWB into FWA.',
+             on_entry={'zp_fwb (&3B-&42)': 'the floating-point accumulator B'},
+             on_exit={'zp_fwa (&2E-&35)': 'a copy of FWB', 'X': 'preserved'})
 # fwa_copy_from_fwb (&A4DC): FWA = FWB
 d.comment(0xa4dc, "Copy FWB's sign...", align=Align.INLINE)
 d.comment(0xa4de, '...into FWA', align=Align.INLINE)
@@ -5864,7 +5947,10 @@ d.comment(0xa684, 'Overflowed the exponent range: Too big', align=Align.INLINE)
 # the primitives the maths functions and real arithmetic build on.
 # ----------------------------------------------------------------------
 d.subroutine(0xa686, 'fwa_clear', title='FWA = 0',
-             description='Set the floating-point accumulator to zero.')
+             description='Zero every byte of FWA. Exponent 0 is the special '
+                         'encoding for the value zero.',
+             on_exit={'zp_fwa (&2E-&35)': '0.0', 'A': '0',
+                      'X': 'preserved', 'Y': 'preserved'})
 # fwa_clear (&A686): FWA = 0.0
 d.comment(0xa686, 'Zero to write into every field', align=Align.INLINE)
 d.comment(0xa688, 'Clear the sign', align=Align.INLINE)

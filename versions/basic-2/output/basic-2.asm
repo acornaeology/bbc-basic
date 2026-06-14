@@ -6571,7 +6571,20 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Add FWB into FWA
 ;
-; FWA = FWA + FWB on the aligned mantissas (used by multiply, *10 and /10).
+; Add the FWB mantissa (rnd, m4-m1) into the FWA mantissa with a single carry chain.
+; Mantissa-only: exponents must already be aligned by the caller. Used by multiply, *10
+; and /10.
+;
+; On Entry:
+;     ZP_FWA (&31-&35): mantissa + rnd of accumulator A
+;     ZP_FWB (&3E-&42): mantissa + rnd of accumulator B
+;     C: clear (it is the carry-in to the addition)
+;
+; On Exit:
+;     ZP_FWA (&31-&35): the summed mantissa
+;     C: carry out of the mantissa MSB (overflow)
+;     X: preserved
+;     Y: preserved
 ; &a178 referenced 2 times by &a208, &a64f
 .fwa_acc_fwb
     lda zp_fwa_rnd                                                    ; a178: a5 35       .5       ; Add the mantissas: rounding byte
@@ -6593,7 +6606,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Multiply the FWA mantissa by 10
 ;
-; Mantissa-only x10 (x4 + x1, then x2) used by the number<->ASCII conversions.
+; Multiply the FWA mantissa (m1-m4 and the rounding byte) by ten as x4 + x1 = x5 then x2,
+; leaving the exponent untouched. Used by the number<->ASCII conversions, which track the
+; decimal point separately.
+;
+; On Entry:
+;     ZP_FWA (&31-&35): the mantissa to scale
+;
+; On Exit:
+;     ZP_FWA (&31-&35): the mantissa times ten
+;     C: carry out of the mantissa MSB
+;     A: preserved
+;     Y: preserved
+;     X: corrupted (holds the original m4)
 ; &a197 referenced 2 times by &a04f, &a0c8
 .mant_mul10
     pha                                                               ; a197: 48          H        ; Save A
@@ -6639,8 +6664,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Get the sign of the FP accumulator
 ;
-; Determine the sign of the floating-point accumulator: zero, positive or negative (Z set
-; when FWA is zero). Tests the mantissa bytes (&31-&35) and the sign.
+; Determine the sign of the floating-point accumulator by OR-ing the mantissa and
+; rounding bytes (&31-&35) to test for zero, then reading the sign byte. Forces a clean
+; zero (sign, exponent and overflow byte cleared) when the mantissa is empty.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the floating-point accumulator A
+;
+; On Exit:
+;     A: +1 positive, 0 zero, &FF negative
+;     N: set when FWA is negative
+;     Z: set when FWA is zero
+;     X: preserved
+;     Y: preserved
 ; &a1da referenced 17 times by &9f0f, &a075, &a0f0, &a405, &a48e, &a50b, &a606, &a6ad, &a6e7, &a7b7, &a801, &a8dd, &a8f0, &a90a, &ab7f, &ad77, &ad7e
 .fwa_sign
     lda zp_fwa_m1                                                     ; a1da: a5 31       .1       ; OR the mantissa and rounding bytes to test for zero
@@ -6698,7 +6734,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWB = FWA
 ;
-; Copy FWA into FWB.
+; Copy all ten bytes of FWA into FWB.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the floating-point accumulator A
+;
+; On Exit:
+;     ZP_FWB (&3B-&42): a copy of FWA
+;     X: preserved
 ; &a21e referenced 5 times by &9a44, &a1ff, &a23f, &a3f8, &a6b2
 .fwb_copy_from_fwa
     lda zp_fwa_sign                                                   ; a21e: a5 2e       ..       ; Copy FWA's sign...
@@ -6724,7 +6767,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Divide FWB by two
 ;
-; Shift the FWB mantissa right one bit (FWB = FWB / 2).
+; Shift the FWB mantissa right one bit (FWB = FWB / 2). Leaves the exponent alone, so the
+; result is left de-normalised; used to align exponents before adding.
+;
+; On Entry:
+;     ZP_FWB (&3B-&42): the floating-point accumulator B
+;
+; On Exit:
+;     ZP_FWB: mantissa shifted right one bit (rnd byte included)
+;     X: preserved
+;     C: the bit shifted out of the rnd byte
 ; &a242 referenced 5 times by &a202, &a205, &a261, &a264, &a267
 .fwb_div2
     lsr zp_fwb_m1                                                     ; a242: 46 3e       F>       ; Shift FWB right one bit (/2): mantissa MSB
@@ -6790,9 +6842,19 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Add to the rounding byte and ripple the carry up
 ;
-; Add A to the FWA rounding byte, then propagate any carry up through the mantissa (m4 ->
-; m1). A carry out of the top renormalises the exponent (and may overflow). Used to round
-; the mantissa up.
+; Add A (plus the carry-in) to the FWA rounding byte, then propagate any carry up through
+; the mantissa (m4 -> m1). A carry out of the top renormalises the exponent (shift right,
+; exponent + 1) and may set the overflow byte. Used to round the mantissa up.
+;
+; On Entry:
+;     A: the rounding increment to add to the rnd byte
+;     C: carry-in to the addition
+;     ZP_FWA (&31-&35): the mantissa + rnd to round
+;
+; On Exit:
+;     ZP_FWA (&30-&35): the rounded mantissa (exponent may step up)
+;     X: preserved
+;     Y: preserved
 ; &a2a4 referenced 1 time by &a666
 .fwa_round_carry
     adc zp_fwa_rnd                                                    ; a2a4: 65 35       e5       ; Add the round increment to the rounding byte
@@ -6866,7 +6928,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Normalise FWA
 ;
-; Normalise the floating-point accumulator.
+; Shift the FWA mantissa left until bit 7 of the MSB is set, decrementing the exponent by
+; 8 per whole-byte shift and by 1 per bit, so the implied leading 1 is restored. An
+; all-zero mantissa is forced to a clean zero. Underflow is handled via the overflow
+; byte.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): an unnormalised accumulator
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): normalised (mantissa MSB bit 7 set) or a clean zero
 ; &a303 referenced 8 times by &a0ff, &a2e3, &a4b3, &a5dc, &a602, &a659, &aa0e, &af33
 .fwa_normalise
     lda zp_fwa_m1                                                     ; a303: a5 31       .1       ; Mantissa MSB...
@@ -6916,7 +6987,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Unpack a fp variable into FWB
 ;
-; Unpack the fp variable at (&4B/&4C) into FWB.
+; Expand the packed five-byte float addressed by zp_fp_ptr into the unpacked FWB
+; accumulator: split the sign out of the mantissa MSB, restore the implied leading 1
+; (unless the value is zero), and clear the overflow and rounding bytes.
+;
+; On Entry:
+;     (ZP_FP_PTR) (&4B/&4C): a packed five-byte float
+;
+; On Exit:
+;     ZP_FWB (&3B-&42): the unpacked value
+;     X: preserved
 ; &a34e referenced 7 times by &9a5f, &9f74, &a4d6, &a500, &a60b, &a6ec, &a9df
 .fwb_unpack_var
     ldy #4                                                            ; a34e: a0 04       ..       ; Copy the packed value, exponent last
@@ -6950,7 +7030,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Pack FWA into TEMP2
 ;
-; Pack FWA into the floating-point temporary at &0471.
+; Point zp_fp_ptr at FP TEMP2 (&0471), then pack FWA into it via fwa_pack_var.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to store
+;
+; On Exit:
+;     (&0471): FWA packed into five bytes
+;     ZP_FP_PTR (&4B/&4C): = &0471
+;     X: preserved
 ; &a37d referenced 2 times by &9e6c, &aa11
 .fwa_pack_temp2
     lda #&71 ; 'q'                                                    ; a37d: a9 71       .q       ; Point at FP TEMP2 (&0471): low byte
@@ -6958,7 +7046,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Pack FWA into TEMP3
 ;
-; Pack FWA into the floating-point temporary at &0476.
+; Point zp_fp_ptr at FP TEMP3 (&0476), then pack FWA into it via fwa_pack_var.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to store
+;
+; On Exit:
+;     (&0476): FWA packed into five bytes
+;     ZP_FP_PTR (&4B/&4C): = &0476
+;     X: preserved
 ; &a381 referenced 6 times by &9e59, &9e88, &a8ea, &a93c, &a9c3, &aabe
 .fwa_pack_temp3
     lda #&76 ; 'v'                                                    ; a381: a9 76       .v       ; Point at FP TEMP3 (&0476): low byte
@@ -6966,7 +7062,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Pack FWA into TEMP1
 ;
-; Pack FWA into the floating-point temporary at &046C.
+; Point zp_fp_ptr at FP TEMP1 (&046C), then pack FWA into it via fwa_pack_var.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to store
+;
+; On Exit:
+;     (&046C): FWA packed into five bytes
+;     ZP_FP_PTR (&4B/&4C): = &046C
+;     X: preserved
 ; &a385 referenced 9 times by &8d3c, &9f3d, &a6a5, &a7be, &a84b, &a89b, &a9b1, &a9d9, &ab1f
 .fwa_pack_temp1
     lda #&6c ; 'l'                                                    ; a385: a9 6c       .l       ; Point at FP TEMP1 (&046C): low byte
@@ -6978,7 +7082,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Pack FWA into a fp variable
 ;
-; Pack FWA into the five-byte fp variable at (&4B/&4C).
+; Compress the unpacked FWA accumulator into the packed five-byte form addressed by
+; zp_fp_ptr: exponent, then the sign folded into bit 7 of the mantissa MSB (the implied
+; leading 1 is dropped), then mantissa bytes 2-4.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): the value to store
+;     ZP_FP_PTR (&4B/&4C): where to write the five bytes
+;
+; On Exit:
+;     (ZP_FP_PTR): the packed five-byte float
+;     ZP_FWA_SIGN (&2E): reduced to its sign bit
+;     X: preserved
 ; &a38d referenced 7 times by &a4d9, &a6ca, &a7cf, &a9b7, &aa20, &b860, &b882
 .fwa_pack_var
     ldy #0                                                            ; a38d: a0 00       ..       ; Write packed bytes from offset 0
@@ -7005,15 +7120,31 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Unpack TEMP1 into FWA
 ;
-; Unpack the floating-point temporary at &046C into FWA.
+; Point zp_fp_ptr at FP TEMP1 (&046C), then unpack it into FWA via fwa_unpack_var.
+;
+; On Entry:
+;     (&046C): a packed five-byte float
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the unpacked value
+;     ZP_FP_PTR (&4B/&4C): = &046C
+;     X: preserved
 ; &a3b2 referenced 2 times by &aa35, &ba36
 .fwa_unpack_temp1
     jsr point_fp_temp1                                                ; a3b2: 20 f5 a7     ..      ; Point at FP TEMP1, then unpack it into FWA
 ; ***************************************************************************************
 ; Unpack a floating-point variable into FWA
 ;
-; Unpack the packed five-byte floating-point value addressed by (&4B/&4C) into the
-; floating-point accumulator (FWA).
+; Expand the packed five-byte float addressed by zp_fp_ptr into the unpacked FWA
+; accumulator: split the sign out of the mantissa MSB, restore the implied leading 1
+; (unless the value is zero), and clear the overflow and rounding bytes.
+;
+; On Entry:
+;     (ZP_FP_PTR) (&4B/&4C): a packed five-byte float
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): the unpacked value
+;     X: preserved
 ; &a3b5 referenced 10 times by &9a4a, &9e4d, &9e64, &9e72, &a6b5, &a8b2, &a901, &aa26, &aac9, &b2ea
 .fwa_unpack_var
     ldy #4                                                            ; a3b5: a0 04       ..       ; Copy the packed value, exponent last
@@ -7122,7 +7253,13 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWB = 0
 ;
-; Set the second floating-point accumulator to zero.
+; Zero every byte of FWB. Exponent 0 is the special encoding for the value zero.
+;
+; On Exit:
+;     ZP_FWB (&3B-&42): 0.0
+;     A: 0
+;     X: preserved
+;     Y: preserved
 ; &a453 referenced 3 times by &a402, &a814, &a93f
 .fwb_clear
     lda #0                                                            ; a453: a9 00       ..       ; Zero every byte of FWB
@@ -7233,7 +7370,14 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = FWB
 ;
-; Copy FWB into FWA.
+; Copy all ten bytes of FWB into FWA.
+;
+; On Entry:
+;     ZP_FWB (&3B-&42): the floating-point accumulator B
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): a copy of FWB
+;     X: preserved
 ; &a4dc referenced 2 times by &a50e, &a559
 .fwa_copy_from_fwb
     lda zp_fwb_sign                                                   ; a4dc: a5 3b       .;       ; Copy FWB's sign...
@@ -7555,7 +7699,13 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; FWA = 0
 ;
-; Set the floating-point accumulator to zero.
+; Zero every byte of FWA. Exponent 0 is the special encoding for the value zero.
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): 0.0
+;     A: 0
+;     X: preserved
+;     Y: preserved
 ; &a686 referenced 8 times by &9f5c, &9fa0, &a2ee, &a3fb, &a5b4, &a610, &a699, &aaa6
 .fwa_clear
     lda #0                                                            ; a686: a9 00       ..       ; Zero to write into every field
