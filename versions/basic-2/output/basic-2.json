@@ -11666,9 +11666,9 @@
       "comment_inline": "resume execution",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 34052,
@@ -21624,7 +21624,7 @@
         0
       ],
       "labels": [
-        "c8aa2"
+        "missing_comma"
       ],
       "comment_inline": "BRK error block (\"Missing ,\") follows",
       "xref_summaries": [
@@ -21722,9 +21722,9 @@
       "comment_inline": "Missing: \"Missing ,\" error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8aa2",
+      "operand": "missing_comma",
       "target": 35490,
-      "target_label": "c8aa2"
+      "target_label": "missing_comma"
     },
     {
       "addr": 35509,
@@ -21838,9 +21838,9 @@
       "comment_inline": "clear heap and return to immediate mode",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 35528,
@@ -22119,7 +22119,7 @@
         189
       ],
       "labels": [
-        "c8af3"
+        "clear_then_immediate"
       ],
       "comment_inline": "Clear variables, heap and stack",
       "xref_summaries": [
@@ -22516,9 +22516,9 @@
       "comment_inline": "no line number: execute it",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8b38",
+      "operand": "exec_dispatch",
       "target": 35640,
-      "target_label": "c8b38"
+      "target_label": "exec_dispatch"
     },
     {
       "addr": 35634,
@@ -22544,9 +22544,9 @@
       "comment_inline": "inserted: immediate loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 35640,
@@ -22556,7 +22556,7 @@
         138
       ],
       "labels": [
-        "c8b38"
+        "exec_dispatch"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -22616,7 +22616,7 @@
         138
       ],
       "labels": [
-        "loop_c8b41"
+        "exec_immediate"
       ],
       "comment_inline": "Back to immediate mode",
       "xref_summaries": [
@@ -22639,7 +22639,7 @@
         133
       ],
       "labels": [
-        "loop_c8b44"
+        "exec_assembler"
       ],
       "comment_inline": "Enter the assembler",
       "xref_summaries": [
@@ -22660,7 +22660,7 @@
         186
       ],
       "labels": [
-        "loop_c8b47"
+        "fn_return"
       ],
       "comment_inline": "Inside a function call?",
       "xref_summaries": [
@@ -22692,9 +22692,9 @@
       "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8b59",
+      "operand": "no_fn_error",
       "target": 35673,
-      "target_label": "c8b59"
+      "target_label": "no_fn_error"
     },
     {
       "addr": 35660,
@@ -22730,9 +22730,9 @@
       "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8b59",
+      "operand": "no_fn_error",
       "target": 35673,
-      "target_label": "c8b59"
+      "target_label": "no_fn_error"
     },
     {
       "addr": 35667,
@@ -22768,7 +22768,7 @@
         0
       ],
       "labels": [
-        "c8b59"
+        "no_fn_error"
       ],
       "comment_inline": "No FN error",
       "xref_summaries": [
@@ -22877,9 +22877,9 @@
       "comment_inline": "\"=\": return a value from a function",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c8b47",
+      "operand": "fn_return",
       "target": 35655,
-      "target_label": "loop_c8b47"
+      "target_label": "fn_return"
     },
     {
       "addr": 35689,
@@ -22925,9 +22925,9 @@
       "comment_inline": "\"[\": enter the assembler",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c8b44",
+      "operand": "exec_assembler",
       "target": 35652,
-      "target_label": "loop_c8b44"
+      "target_label": "exec_assembler"
     },
     {
       "addr": 35697,
@@ -22938,9 +22938,9 @@
       "comment_inline": "otherwise check for end of statement",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 35699,
@@ -23054,7 +23054,7 @@
         200
       ],
       "labels": [
-        "loop_c8b82"
+        "data_scan_loop"
       ],
       "comment_inline": "Scan to the end of line",
       "xref_summaries": [
@@ -23088,9 +23088,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8b82",
+      "operand": "data_scan_loop",
       "target": 35714,
-      "target_label": "loop_c8b82"
+      "target_label": "data_scan_loop"
     },
     {
       "addr": 35719,
@@ -23099,7 +23099,7 @@
         139
       ],
       "labels": [
-        "c8b87"
+        "stmt_eol"
       ],
       "comment_inline": "ELSE?",
       "xref_summaries": [
@@ -23159,9 +23159,9 @@
       "comment_inline": "yes: immediate mode",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c8b41",
+      "operand": "exec_immediate",
       "target": 35649,
-      "target_label": "loop_c8b41"
+      "target_label": "exec_immediate"
     },
     {
       "addr": 35729,
@@ -23186,9 +23186,9 @@
       "comment_inline": "more: next statement",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 35734,
@@ -23197,7 +23197,7 @@
         10
       ],
       "labels": [
-        "c8b96"
+        "stmt_backup_end"
       ],
       "comment_inline": "Back up",
       "xref_summaries": [
@@ -23226,7 +23226,7 @@
         152
       ],
       "labels": [
-        "c8b98"
+        "stmt_check_end"
       ],
       "comment_inline": "check the statement ends",
       "xref_summaries": [
@@ -23319,9 +23319,9 @@
       "comment_inline": "Not a colon: check for ELSE / end of line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8b87",
+      "operand": "stmt_eol",
       "target": 35719,
-      "target_label": "c8b87"
+      "target_label": "stmt_eol"
     },
     {
       "addr": 35747,
@@ -23330,7 +23330,7 @@
         10
       ],
       "labels": [
-        "c8ba3"
+        "next_statement"
       ],
       "comment_inline": "Skip spaces to the next statement",
       "xref_summaries": [
@@ -23400,9 +23400,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 35757,
@@ -23613,9 +23613,9 @@
       "comment_inline": "Existing variable: do the assignment",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8be9",
+      "operand": "let_assign",
       "target": 35817,
-      "target_label": "c8be9"
+      "target_label": "let_assign"
     },
     {
       "addr": 35790,
@@ -23704,9 +23704,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8bdf",
+      "operand": "assign_new_var",
       "target": 35807,
-      "target_label": "c8bdf"
+      "target_label": "assign_new_var"
     },
     {
       "addr": 35806,
@@ -23725,7 +23725,7 @@
         149
       ],
       "labels": [
-        "c8bdf"
+        "assign_new_var"
       ],
       "comment_inline": "Evaluate and store the value",
       "xref_summaries": [
@@ -23779,9 +23779,9 @@
       "comment_inline": "end of statement: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8c0b",
+      "operand": "let_mistake",
       "target": 35851,
-      "target_label": "c8c0b"
+      "target_label": "let_mistake"
     },
     {
       "addr": 35817,
@@ -23790,7 +23790,7 @@
         16
       ],
       "labels": [
-        "c8be9"
+        "let_assign"
       ],
       "comment_inline": "numeric target?",
       "xref_summaries": [
@@ -23801,9 +23801,9 @@
       ],
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8bfb",
+      "operand": "let_numeric",
       "target": 35835,
-      "target_label": "c8bfb"
+      "target_label": "let_numeric"
     },
     {
       "addr": 35819,
@@ -23895,7 +23895,7 @@
         189
       ],
       "labels": [
-        "c8bfb"
+        "let_numeric"
       ],
       "comment_inline": "Stack the destination address",
       "xref_summaries": [
@@ -23986,7 +23986,7 @@
         152
       ],
       "labels": [
-        "c8c0b"
+        "let_mistake"
       ],
       "comment_inline": "Mistake (syntax) error",
       "xref_summaries": [
@@ -26569,9 +26569,9 @@
       "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b98",
+      "operand": "stmt_check_end",
       "target": 35736,
-      "target_label": "c8b98"
+      "target_label": "stmt_check_end"
     },
     {
       "addr": 36221,
@@ -26619,9 +26619,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 36227,
@@ -27706,9 +27706,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8aa2",
+      "operand": "missing_comma",
       "target": 35490,
-      "target_label": "c8aa2"
+      "target_label": "missing_comma"
     },
     {
       "addr": 36388,
@@ -29705,9 +29705,9 @@
       "comment_inline": "done: immediate mode",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 36713,
@@ -31089,9 +31089,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 36925,
@@ -32086,9 +32086,9 @@
       "comment_inline": "overflow: stop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 37084,
@@ -34139,9 +34139,9 @@
       "comment_inline": "no: next statement",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 37397,
@@ -36313,9 +36313,9 @@
       "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 37715,
@@ -36336,9 +36336,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b98",
+      "operand": "stmt_check_end",
       "target": 35736,
-      "target_label": "c8b98"
+      "target_label": "stmt_check_end"
     },
     {
       "addr": 37718,
@@ -37880,9 +37880,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 37974,
@@ -46274,9 +46274,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 39137,
@@ -46525,9 +46525,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b87",
+      "operand": "stmt_eol",
       "target": 35719,
-      "target_label": "c8b87"
+      "target_label": "stmt_eol"
     },
     {
       "addr": 39173,
@@ -80656,9 +80656,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8aa2",
+      "operand": "missing_comma",
       "target": 35490,
-      "target_label": "c8aa2"
+      "target_label": "missing_comma"
     },
     {
       "addr": 44294,
@@ -86195,9 +86195,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8aa2",
+      "operand": "missing_comma",
       "target": 35490,
-      "target_label": "c8aa2"
+      "target_label": "missing_comma"
     },
     {
       "addr": 45113,
@@ -89318,9 +89318,9 @@
       "comment_inline": "Execute the body",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 45582,
@@ -93031,9 +93031,9 @@
       "comment_inline": "enter the execution loop at the handler",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 46131,
@@ -98237,9 +98237,9 @@
       "comment_inline": "jump back to the loop body",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 46929,
@@ -98767,9 +98767,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 47012,
@@ -99690,9 +99690,9 @@
       "comment_inline": "Continue execution",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 47183,
@@ -100559,9 +100559,9 @@
       "comment_inline": "execute from there",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 47332,
@@ -102046,9 +102046,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b98",
+      "operand": "stmt_check_end",
       "target": 35736,
-      "target_label": "c8b98"
+      "target_label": "stmt_check_end"
     },
     {
       "addr": 47567,
@@ -102823,9 +102823,9 @@
       "comment_inline": "done",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b98",
+      "operand": "stmt_check_end",
       "target": 35736,
-      "target_label": "c8b98"
+      "target_label": "stmt_check_end"
     },
     {
       "addr": 47684,
@@ -104250,9 +104250,9 @@
       "comment_inline": "next statement",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8b96",
+      "operand": "stmt_backup_end",
       "target": 35734,
-      "target_label": "c8b96"
+      "target_label": "stmt_backup_end"
     },
     {
       "addr": 47903,
@@ -105595,9 +105595,9 @@
       "comment_inline": "Continue execution",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8ba3",
+      "operand": "next_statement",
       "target": 35747,
-      "target_label": "c8ba3"
+      "target_label": "next_statement"
     },
     {
       "addr": 48124,
@@ -111361,9 +111361,9 @@
       "comment_inline": "Back to the immediate loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8af3",
+      "operand": "clear_then_immediate",
       "target": 35571,
-      "target_label": "c8af3"
+      "target_label": "clear_then_immediate"
     },
     {
       "addr": 48938,

@@ -996,7 +996,7 @@ oscli            = &fff7
 .assembler_exit
     lda #&ff                                                          ; 84fd: a9 ff       ..       ; Leaving the assembler: OPT = BASIC mode
     sta zp_opt_flag                                                   ; 84ff: 85 28       .(       ; store &FF (not assembling)
-    jmp c8ba3                                                         ; 8501: 4c a3 8b    L..      ; resume execution
+    jmp next_statement                                                ; 8501: 4c a3 8b    L..      ; resume execution
 ; &8504 referenced 1 time by &8b44
 .asm_enter
     lda #3                                                            ; 8504: a9 03       ..       ; Entering: default OPT 3
@@ -2146,7 +2146,7 @@ oscli            = &fff7
     beq skip_spaces                                                   ; 8a9f: f0 f6       ..       ; Space: keep skipping
     rts                                                               ; 8aa1: 60          `        ; Return the first non-space character
 ; &8aa2 referenced 4 times by &8ab3, &8e21, &ad03, &b036
-.c8aa2
+.missing_comma
     brk                                                               ; 8aa2: 00          .        ; BRK error block ("Missing ,") follows
     equb &05                                                          ; 8aa3: 05          .     
     equs "Missing ,"                                                  ; 8aa4: 4d 69 73... Mis...
@@ -2168,7 +2168,7 @@ oscli            = &fff7
 .skip_spaces_expect_comma
     jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..      ; Skip spaces at PtrB
     cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,       ; Require a comma
-    bne c8aa2                                                         ; 8ab3: d0 ed       ..       ; Missing: "Missing ," error
+    bne missing_comma                                                 ; 8ab3: d0 ed       ..       ; Missing: "Missing ," error
     rts                                                               ; 8ab5: 60          `        ; Return
 ; ***************************************************************************************
 ; OLD
@@ -2190,7 +2190,7 @@ oscli            = &fff7
     sta zp_general                                                    ; 8abf: 85 37       .7       ; to &37
     sta (zp_general),y                                                ; 8ac1: 91 37       .7       ; Remove the end marker
     jsr check_program                                                 ; 8ac3: 20 6f be     o.      ; Re-check the program and set TOP
-    bne c8af3                                                         ; 8ac6: d0 2b       .+       ; clear heap and return to immediate mode
+    bne clear_then_immediate                                          ; 8ac6: d0 2b       .+       ; clear heap and return to immediate mode
 ; ***************************************************************************************
 ; END
 ;
@@ -2266,7 +2266,7 @@ oscli            = &fff7
     iny                                                               ; 8af0: c8          .        ; TOP = PAGE + 2
     sty zp_top                                                        ; 8af1: 84 12       ..       ; (store)
 ; &8af3 referenced 6 times by &8ac6, &8b35, &8f66, &903a, &90d9, &bf27
-.c8af3
+.clear_then_immediate
     jsr clear_vars_heap_stack                                         ; 8af3: 20 20 bd      .      ; Clear variables, heap and stack
 ; ***************************************************************************************
 ; Immediate ("> ") loop
@@ -2323,33 +2323,33 @@ oscli            = &fff7
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
     jsr tok_scan                                                      ; 8b2a: 20 57 89     W.      ; Tokenise the line
     jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
-    bcc c8b38                                                         ; 8b30: 90 06       ..       ; no line number: execute it
+    bcc exec_dispatch                                                 ; 8b30: 90 06       ..       ; no line number: execute it
     jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
-    jmp c8af3                                                         ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
+    jmp clear_then_immediate                                          ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
 ; &8b38 referenced 1 time by &8b30
-.c8b38
+.exec_dispatch
     jsr skip_spaces                                                   ; 8b38: 20 97 8a     ..      ; Skip spaces
     cmp #&c6                                                          ; 8b3b: c9 c6       ..       ; Token >= &C6 is a command: dispatch it
     bcs dispatch_token                                                ; 8b3d: b0 72       .r       ; command token: dispatch it
     bcc try_variable_assignment                                       ; 8b3f: 90 7e       .~       ; Otherwise treat it as a variable assignment
 ; &8b41 referenced 1 time by &8b8f
-.loop_c8b41
+.exec_immediate
     jmp immediate_loop                                                ; 8b41: 4c f6 8a    L..      ; Back to immediate mode
 ; &8b44 referenced 1 time by &8b6f
-.loop_c8b44
+.exec_assembler
     jmp asm_enter                                                     ; 8b44: 4c 04 85    L..      ; Enter the assembler
 ; &8b47 referenced 1 time by &8b67
-.loop_c8b47
+.fn_return
     tsx                                                               ; 8b47: ba          .        ; Inside a function call?
     cpx #&fc                                                          ; 8b48: e0 fc       ..       ; stack near empty (no FN frame)?
-    bcs c8b59                                                         ; 8b4a: b0 0d       ..       ; no: error
+    bcs no_fn_error                                                   ; 8b4a: b0 0d       ..       ; no: error
     lda l01ff                                                         ; 8b4c: ad ff 01    ...      ; Pushed token
     cmp #&a4                                                          ; 8b4f: c9 a4       ..       ; FN?
-    bne c8b59                                                         ; 8b51: d0 06       ..       ; no: error
+    bne no_fn_error                                                   ; 8b51: d0 06       ..       ; no: error
     jsr eval_expr                                                     ; 8b53: 20 1d 9b     ..      ; Evaluate the return value
     jmp c984c                                                         ; 8b56: 4c 4c 98    LL.      ; check end, return from the function
 ; &8b59 referenced 2 times by &8b4a, &8b51
-.c8b59
+.no_fn_error
     brk                                                               ; 8b59: 00          .        ; No FN error
     equb &07                                                          ; 8b5a: 07          .     
     equs "No "                                                        ; 8b5b: 4e 6f 20    No    
@@ -2373,12 +2373,12 @@ oscli            = &fff7
     dey                                                               ; 8b62: 88          .        ; one character back
     lda (zp_text_ptr),y                                               ; 8b63: b1 0b       ..       ; fetch it
     cmp #&3d ; '='                                                    ; 8b65: c9 3d       .=       ; "=" returns a value from a function (FN)
-    beq loop_c8b47                                                    ; 8b67: f0 de       ..       ; "=": return a value from a function
+    beq fn_return                                                     ; 8b67: f0 de       ..       ; "=": return a value from a function
     cmp #&2a ; '*'                                                    ; 8b69: c9 2a       .*       ; "*" passes the rest of the line to OSCLI
     beq exec_star_command                                             ; 8b6b: f0 06       ..       ; "*": an embedded OSCLI command
     cmp #&5b ; '['                                                    ; 8b6d: c9 5b       .[       ; "[" enters the inline assembler
-    beq loop_c8b44                                                    ; 8b6f: f0 d3       ..       ; "[": enter the assembler
-    bne c8b96                                                         ; 8b71: d0 23       .#       ; otherwise check for end of statement
+    beq exec_assembler                                                ; 8b6f: f0 d3       ..       ; "[": enter the assembler
+    bne stmt_backup_end                                               ; 8b71: d0 23       .#       ; otherwise check for end of statement
 ; &8b73 referenced 1 time by &8b6b
 .exec_star_command
     jsr c986d                                                         ; 8b73: 20 6d 98     m.      ; Point PtrA at the command text
@@ -2405,24 +2405,24 @@ oscli            = &fff7
     ldy zp_text_ptr_off                                               ; 8b7f: a4 0a       ..       ; Line offset
     dey                                                               ; 8b81: 88          .        ; back up one (the loop pre-increments)
 ; &8b82 referenced 1 time by &8b85
-.loop_c8b82
+.data_scan_loop
     iny                                                               ; 8b82: c8          .        ; Scan to the end of line
     cmp (zp_text_ptr),y                                               ; 8b83: d1 0b       ..       ; reached the CR?
-    bne loop_c8b82                                                    ; 8b85: d0 fb       ..       ; no: keep scanning
+    bne data_scan_loop                                                ; 8b85: d0 fb       ..       ; no: keep scanning
 ; &8b87 referenced 2 times by &8ba1, &9902
-.c8b87
+.stmt_eol
     cmp #&8b                                                          ; 8b87: c9 8b       ..       ; ELSE?
     beq stmt_data                                                     ; 8b89: f0 f2       ..       ; yes: skip to end of line
     lda zp_text_ptr_1                                                 ; 8b8b: a5 0c       ..       ; In the command buffer?
     cmp #7                                                            ; 8b8d: c9 07       ..       ; page &07 (command buffer)?
-    beq loop_c8b41                                                    ; 8b8f: f0 b0       ..       ; yes: immediate mode
+    beq exec_immediate                                                ; 8b8f: f0 b0       ..       ; yes: immediate mode
     jsr sub_c9890                                                     ; 8b91: 20 90 98     ..      ; Check for end of program, step past CR
-    bne c8ba3                                                         ; 8b94: d0 0d       ..       ; more: next statement
+    bne next_statement                                                ; 8b94: d0 0d       ..       ; more: next statement
 ; &8b96 referenced 7 times by &8b71, &8d80, &9212, &9350, &9453, &b7a1, &bb1c
-.c8b96
+.stmt_backup_end
     dec zp_text_ptr_off                                               ; 8b96: c6 0a       ..       ; Back up
 ; &8b98 referenced 4 times by &8d7a, &9353, &b9cc, &ba41
-.c8b98
+.stmt_check_end
     jsr check_end_of_statement                                        ; 8b98: 20 57 98     W.      ; check the statement ends
 ; ***************************************************************************************
 ; Statement execution loop
@@ -2443,14 +2443,14 @@ oscli            = &fff7
     ldy #0                                                            ; 8b9b: a0 00       ..       ; Fetch the next character of the statement
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..       ; Get the current character
     cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
-    bne c8b87                                                         ; 8ba1: d0 e4       ..       ; Not a colon: check for ELSE / end of line
+    bne stmt_eol                                                      ; 8ba1: d0 e4       ..       ; Not a colon: check for ELSE / end of line
 ; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
-.c8ba3
+.next_statement
     ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..       ; Skip spaces to the next statement
     inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..       ; advance past the colon
     lda (zp_text_ptr),y                                               ; 8ba7: b1 0b       ..       ; Get the next character
     cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .        ; Skip spaces
-    beq c8ba3                                                         ; 8bab: f0 f6       ..       ; loop
+    beq next_statement                                                ; 8bab: f0 f6       ..       ; loop
     cmp #&cf                                                          ; 8bad: c9 cf       ..       ; Below &CF: a variable assignment, not a command
     bcc try_variable_assignment                                       ; 8baf: 90 0e       ..       ; Below &CF: a variable assignment
 ; ***************************************************************************************
@@ -2492,17 +2492,17 @@ oscli            = &fff7
     stx zp_text_ptr2_1                                                ; 8bc5: 86 1a       ..       ; (store)
     sty zp_text_ptr2_off                                              ; 8bc7: 84 1b       ..       ; offset
     jsr sub_c95dd                                                     ; 8bc9: 20 dd 95     ..      ; Parse a variable / indirection reference
-    bne c8be9                                                         ; 8bcc: d0 1b       ..       ; Existing variable: do the assignment
+    bne let_assign                                                    ; 8bcc: d0 1b       ..       ; Existing variable: do the assignment
     bcs check_eq_star_bracket                                         ; 8bce: b0 90       ..       ; Not a variable: try =, * or [
     stx zp_text_ptr2_off                                              ; 8bd0: 86 1b       ..       ; New variable: position for "="
     jsr expect_eq                                                     ; 8bd2: 20 41 98     A.      ; Require "="
     jsr create_variable                                               ; 8bd5: 20 fc 94     ..      ; Create the new variable
     ldx #5                                                            ; 8bd8: a2 05       ..       ; Type 5 = floating point
     cpx zp_iwa_2                                                      ; 8bda: e4 2c       .,       ; Is the destination a float?
-    bne c8bdf                                                         ; 8bdc: d0 01       ..       ; no
+    bne assign_new_var                                                ; 8bdc: d0 01       ..       ; no
     inx                                                               ; 8bde: e8          .        ; X = 6
 ; &8bdf referenced 1 time by &8bdc
-.c8bdf
+.assign_new_var
     jsr clear_value_bytes                                             ; 8bdf: 20 31 95     1.      ; Evaluate and store the value
     dec zp_text_ptr_off                                               ; 8be2: c6 0a       ..       ; Step back, continue
 ; ***************************************************************************************
@@ -2519,10 +2519,10 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_let
     jsr parse_lvalue                                                  ; 8be4: 20 82 95     ..      ; Parse the variable being assigned
-    beq c8c0b                                                         ; 8be7: f0 22       ."       ; end of statement: error
+    beq let_mistake                                                   ; 8be7: f0 22       ."       ; end of statement: error
 ; &8be9 referenced 1 time by &8bcc
-.c8be9
-    bcc c8bfb                                                         ; 8be9: 90 10       ..       ; numeric target?
+.let_assign
+    bcc let_numeric                                                   ; 8be9: 90 10       ..       ; numeric target?
     jsr stack_integer                                                 ; 8beb: 20 94 bd     ..      ; Stack the destination address
     jsr eval_after_eq                                                 ; 8bee: 20 13 98     ..      ; Expect "=" and evaluate the right-hand side
     lda zp_var_type                                                   ; 8bf1: a5 27       .'       ; value type
@@ -2530,7 +2530,7 @@ oscli            = &fff7
     jsr assign_string                                                 ; 8bf5: 20 1e 8c     ..      ; Store the string
     jmp statement_loop                                                ; 8bf8: 4c 9b 8b    L..      ; next statement
 ; &8bfb referenced 1 time by &8be9
-.c8bfb
+.let_numeric
     jsr stack_integer                                                 ; 8bfb: 20 94 bd     ..      ; Stack the destination address
     jsr eval_after_eq                                                 ; 8bfe: 20 13 98     ..      ; Expect "=" and evaluate
     lda zp_var_type                                                   ; 8c01: a5 27       .'       ; value type
@@ -2538,7 +2538,7 @@ oscli            = &fff7
     jsr assign_number                                                 ; 8c05: 20 b4 b4     ..      ; Store the number
     jmp statement_loop                                                ; 8c08: 4c 9b 8b    L..      ; next statement
 ; &8c0b referenced 1 time by &8be7
-.c8c0b
+.let_mistake
     jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96
 .err_type_mismatch
@@ -2820,13 +2820,13 @@ oscli            = &fff7
 .c8d77
     pla                                                               ; 8d77: 68          h        ; Recover the handle
     sty zp_text_ptr_off                                               ; 8d78: 84 0a       ..       ; sync the pointer
-    jmp c8b98                                                         ; 8d7a: 4c 98 8b    L..      ; next statement
+    jmp stmt_check_end                                                ; 8d7a: 4c 98 8b    L..      ; next statement
 ; &8d7d referenced 3 times by &8dc8, &8dcc, &8dd0
 .c8d7d
     jsr sub_cbc25                                                     ; 8d7d: 20 25 bc     %.      ; Print a newline
 ; &8d80 referenced 3 times by &8d8e, &8d92, &8d96
 .c8d80
-    jmp c8b96                                                         ; 8d80: 4c 96 8b    L..      ; next statement
+    jmp stmt_backup_end                                               ; 8d80: 4c 96 8b    L..      ; next statement
 ; &8d83 referenced 1 time by &8ddc
 .loop_c8d83
     lda #0                                                            ; 8d83: a9 00       ..       ; Semicolon: clear the field width...
@@ -2943,7 +2943,7 @@ oscli            = &fff7
     beq c8dc3                                                         ; 8e1f: f0 a2       ..       ; next item
 ; &8e21 referenced 1 time by &8e26
 .loop_c8e21
-    jmp c8aa2                                                         ; 8e21: 4c a2 8a    L..      ; Missing , error
+    jmp missing_comma                                                 ; 8e21: 4c a2 8a    L..      ; Missing , error
 ; &8e24 referenced 1 time by &8e48
 .loop_c8e24
     cmp #&2c ; ','                                                    ; 8e24: c9 2c       .,       ; ',' TAB(x,y) form?
@@ -3208,7 +3208,7 @@ oscli            = &fff7
     lda l003a                                                         ; 8f60: a5 3a       .:       ; end high,
     sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; - line high
     bcs loop_c8f53                                                    ; 8f64: b0 ed       ..       ; no: delete the next
-    jmp c8af3                                                         ; 8f66: 4c f3 8a    L..      ; done: immediate mode
+    jmp clear_then_immediate                                          ; 8f66: 4c f3 8a    L..      ; done: immediate mode
 ; &8f69 referenced 2 times by &8fa3, &90ac
 .sub_c8f69
     lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
@@ -3355,7 +3355,7 @@ oscli            = &fff7
     bcs c901a                                                         ; 9038: b0 e0       ..       ; loop
 ; &903a referenced 2 times by &9018, &9029
 .c903a
-    jmp c8af3                                                         ; 903a: 4c f3 8a    L..      ; Done: back to the immediate loop
+    jmp clear_then_immediate                                          ; 903a: 4c f3 8a    L..      ; Done: back to the immediate loop
 ; &903d referenced 1 time by &9020
 .c903d
     jsr decode_line_number                                            ; 903d: 20 eb 97     ..      ; Decode the &8D-encoded line number
@@ -3473,7 +3473,7 @@ oscli            = &fff7
     bcc c90b5                                                         ; 90d3: 90 e0       ..       ; no carry: loop,
     inc zp_iwa_1                                                      ; 90d5: e6 2b       .+       ; carry into the high byte
     bpl c90b5                                                         ; 90d7: 10 dc       ..       ; still in range: loop
-    jmp c8af3                                                         ; 90d9: 4c f3 8a    L..      ; overflow: stop
+    jmp clear_then_immediate                                          ; 90d9: 4c f3 8a    L..      ; overflow: stop
 ; &90dc referenced 1 time by &9106
 .loop_c90dc
     jmp c9218                                                         ; 90dc: 4c 18 92    L..      ; No room error
@@ -3670,7 +3670,7 @@ oscli            = &fff7
     jsr skip_spaces                                                   ; 920b: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 920e: c9 2c       .,       ; ',' another array?
     beq c9215                                                         ; 9210: f0 03       ..       ; yes
-    jmp c8b96                                                         ; 9212: 4c 96 8b    L..      ; no: next statement
+    jmp stmt_backup_end                                               ; 9212: 4c 96 8b    L..      ; no: next statement
 ; &9215 referenced 1 time by &9210
 .c9215
     jmp stmt_dim                                                      ; 9215: 4c 2f 91    L/.      ; DIM the next array
@@ -4104,10 +4104,10 @@ oscli            = &fff7
     jsr skip_spaces                                                   ; 9349: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
     beq stmt_local                                                    ; 934e: f0 d3       ..       ; yes
-    jmp c8b96                                                         ; 9350: 4c 96 8b    L..      ; next statement
+    jmp stmt_backup_end                                               ; 9350: 4c 96 8b    L..      ; next statement
 ; &9353 referenced 1 time by &932b
 .c9353
-    jmp c8b98                                                         ; 9353: 4c 98 8b    L..      ; not a variable: error
+    jmp stmt_check_end                                                ; 9353: 4c 98 8b    L..      ; not a variable: error
 ; ***************************************************************************************
 ; ENDPROC
 ;
@@ -4348,7 +4348,7 @@ oscli            = &fff7
     beq loop_c942a                                                    ; 9451: f0 d7       ..       ; yes: send the high byte too
 ; &9453 referenced 3 times by &9434, &9438, &943c
 .c9453
-    jmp c8b96                                                         ; 9453: 4c 96 8b    L..      ; next statement
+    jmp stmt_backup_end                                               ; 9453: 4c 96 8b    L..      ; next statement
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
 .sub_c9456
     lda zp_iwa                                                        ; 9456: a5 2a       .*       ; Send the low byte to OSWRCH
@@ -5405,7 +5405,7 @@ oscli            = &fff7
     beq c98e1                                                         ; 98dc: f0 03       ..       ; yes
 ; &98de referenced 1 time by &98e6
 .loop_c98de
-    jmp c8ba3                                                         ; 98de: 4c a3 8b    L..      ; no THEN: execute the statement that follows
+    jmp next_statement                                                ; 98de: 4c a3 8b    L..      ; no THEN: execute the statement that follows
 ; &98e1 referenced 1 time by &98dc
 .c98e1
     inc zp_text_ptr_off                                               ; 98e1: e6 0a       ..       ; Step past THEN
@@ -5431,7 +5431,7 @@ oscli            = &fff7
     beq c98e3                                                         ; 9900: f0 e1       ..       ; execute what follows ELSE
 ; &9902 referenced 1 time by &98f7
 .c9902
-    jmp c8b87                                                         ; 9902: 4c 87 8b    L..      ; No ELSE: continue at the next line
+    jmp stmt_eol                                                      ; 9902: 4c 87 8b    L..      ; No ELSE: continue at the next line
 ; ***************************************************************************************
 ; Print [line] when TRACE is active
 ;
@@ -9954,7 +9954,7 @@ oscli            = &fff7
     beq cad06                                                         ; ad01: f0 03       ..       ; yes: a start position follows
 ; &ad03 referenced 1 time by &ace9
 .cad03
-    jmp c8aa2                                                         ; ad03: 4c a2 8a    L..      ; Missing , error
+    jmp missing_comma                                                 ; ad03: 4c a2 8a    L..      ; Missing , error
 ; &ad06 referenced 1 time by &ad01
 .cad06
     jsr stack_string                                                  ; ad06: 20 b2 bd     ..      ; Stack the search string
@@ -10942,7 +10942,7 @@ oscli            = &fff7
     jmp err_type_mismatch                                             ; b033: 4c 0e 8c    L..      ; Type mismatch (shared)
 ; &b036 referenced 4 times by &afd3, &aff5, &b040, &b059
 .cb036
-    jmp c8aa2                                                         ; b036: 4c a2 8a    L..      ; Missing , error (shared)
+    jmp missing_comma                                                 ; b036: 4c a2 8a    L..      ; Missing , error (shared)
 ; ***************************************************************************************
 ; MID$
 ;
@@ -11328,7 +11328,7 @@ oscli            = &fff7
     pha                                                               ; b207: 48          H        ; push low,
     lda zp_text_ptr2_1                                                ; b208: a5 1a       ..       ; high byte,
     pha                                                               ; b20a: 48          H        ; push high
-    jsr c8ba3                                                         ; b20b: 20 a3 8b     ..      ; Execute the body
+    jsr next_statement                                                ; b20b: 20 a3 8b     ..      ; Execute the body
     pla                                                               ; b20e: 68          h        ; Restore the parser pointer
     sta zp_text_ptr2_1                                                ; b20f: 85 1a       ..       ; high byte,
     pla                                                               ; b211: 68          h        ; pull low,
@@ -11769,7 +11769,7 @@ oscli            = &fff7
     ldx #&ff                                                          ; b42b: a2 ff       ..       ; reset the 6502 stack...
     stx zp_opt_flag                                                   ; b42d: 86 28       .(       ; OPT = &FF
     txs                                                               ; b42f: 9a          .        ; S = &FF (empty the stack)
-    jmp c8ba3                                                         ; b430: 4c a3 8b    L..      ; enter the execution loop at the handler
+    jmp next_statement                                                ; b430: 4c a3 8b    L..      ; enter the execution loop at the handler
     equb &f6, &3a, &e7, &9e, &f1                                      ; b433: f6 3a e7... .:....
     equb &22, " at line ", &22, ";"                                   ; b438: 22 20 61... " a...
     equb &9e, &3a, &e0, &8b, &f1, &3a, &e0, &0d                       ; b444: 9e 3a e0... .:....
@@ -12442,7 +12442,7 @@ oscli            = &fff7
     sty zp_text_ptr                                                   ; b747: 84 0b       ..       ; (text pointer)
     sta zp_text_ptr_1                                                 ; b749: 85 0c       ..       ; text pointer high
     jsr c9877                                                         ; b74b: 20 77 98     w.      ; restore the offset
-    jmp c8ba3                                                         ; b74e: 4c a3 8b    L..      ; jump back to the loop body
+    jmp next_statement                                                ; b74e: 4c a3 8b    L..      ; jump back to the loop body
 ; &b751 referenced 4 times by &b73d, &b73f, &b79b, &b79f
 .cb751
     lda zp_for_level                                                  ; b751: a5 26       .&       ; Exit: pop the FOR frame:
@@ -12489,7 +12489,7 @@ oscli            = &fff7
     bcs cb751                                                         ; b79f: b0 b0       ..       ; past: exit
 ; &b7a1 referenced 1 time by &b761
 .cb7a1
-    jmp c8b96                                                         ; b7a1: 4c 96 8b    L..      ; End of statement
+    jmp stmt_backup_end                                               ; b7a1: 4c 96 8b    L..      ; End of statement
 ; &b7a4 referenced 2 times by &b7c7, &b7c9
 .cb7a4
     brk                                                               ; b7a4: 00          .        ; No FOR error block
@@ -12581,7 +12581,7 @@ oscli            = &fff7
     tya                                                               ; b847: 98          .        ; level to A,
     adc #&0f                                                          ; b848: 69 0f       i.       ; - 15,
     sta zp_for_level                                                  ; b84a: 85 26       .&       ; store it
-    jmp c8ba3                                                         ; b84c: 4c a3 8b    L..      ; Continue execution
+    jmp next_statement                                                ; b84c: 4c a3 8b    L..      ; Continue execution
 ; &b84f referenced 1 time by &b7f3
 .cb84f
     jsr eval_or_eor                                                   ; b84f: 20 29 9b     ).      ; Evaluate the limit
@@ -12697,7 +12697,7 @@ oscli            = &fff7
 .cb8dd
     sty zp_text_ptr                                                   ; b8dd: 84 0b       ..       ; Point the interpreter at the destination line
     sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..       ; PtrA high
-    jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..      ; execute from there
+    jmp next_statement                                                ; b8e1: 4c a3 8b    L..      ; execute from there
 ; &b8e4 referenced 1 time by &b8f7
 .loop_cb8e4
     jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.      ; Check the statement ends
@@ -12868,7 +12868,7 @@ oscli            = &fff7
 ; &b9ca referenced 1 time by &b9df
 .loop_cb9ca
     sty zp_text_ptr_off                                               ; b9ca: 84 0a       ..       ; Sync the pointer
-    jmp c8b98                                                         ; b9cc: 4c 98 8b    L..      ; check the statement ends
+    jmp stmt_check_end                                                ; b9cc: 4c 98 8b    L..      ; check the statement ends
 ; &b9cf referenced 1 time by &ba49
 .loop_cb9cf
     dec zp_text_ptr_off                                               ; b9cf: c6 0a       ..       ; Back up over "#"
@@ -12943,7 +12943,7 @@ oscli            = &fff7
 .loop_cba3f
     pla                                                               ; ba3f: 68          h        ; Drop the stacked values
     pla                                                               ; ba40: 68          h        ; (continued)
-    jmp c8b98                                                         ; ba41: 4c 98 8b    L..      ; done
+    jmp stmt_check_end                                                ; ba41: 4c 98 8b    L..      ; done
 ; ***************************************************************************************
 ; INPUT
 ;
@@ -13101,7 +13101,7 @@ oscli            = &fff7
     jsr skip_spaces                                                   ; bb15: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; bb18: c9 2c       .,       ; ','?
     beq stmt_read                                                     ; bb1a: f0 03       ..       ; yes: READ
-    jmp c8b96                                                         ; bb1c: 4c 96 8b    L..      ; next statement
+    jmp stmt_backup_end                                               ; bb1c: 4c 96 8b    L..      ; next statement
 ; ***************************************************************************************
 ; READ
 ;
@@ -13276,7 +13276,7 @@ oscli            = &fff7
     lda zp_text_ptr_1                                                 ; bbf2: a5 0c       ..       ; high
     sta repeat_stack_hi,x                                             ; bbf4: 9d b8 05    ...      ; (store)
     inc zp_repeat_level                                               ; bbf7: e6 24       .$       ; One more REPEAT outstanding
-    jmp c8ba3                                                         ; bbf9: 4c a3 8b    L..      ; Continue execution
+    jmp next_statement                                                ; bbf9: 4c a3 8b    L..      ; Continue execution
 ; &bbfc referenced 1 time by &baa2
 .sub_cbbfc
     ldy #0                                                            ; bbfc: a0 00       ..       ; Point at the string buffer (&0600): low
@@ -14074,7 +14074,7 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_load
     jsr load_program                                                  ; bf24: 20 62 be     b.      ; Load the named program
-    jmp c8af3                                                         ; bf27: 4c f3 8a    L..      ; Back to the immediate loop
+    jmp clear_then_immediate                                          ; bf27: 4c f3 8a    L..      ; Back to the immediate loop
 ; ***************************************************************************************
 ; CHAIN
 ;
@@ -14437,11 +14437,11 @@ save pydis_start, pydis_end
 ;     output_char:                11
 ;     unstack_real:               11
 ;     zp_opt_flag:                11
-;     c8ba3:                      10
 ;     check_line_number:          10
 ;     eval_factor_integer:        10
 ;     fwa_add_var:                10
 ;     fwa_unpack_var:             10
+;     next_statement:             10
 ;     fwa_pack_temp1:              9
 ;     parse_lvalue:                9
 ;     print_space:                 9
@@ -14464,22 +14464,22 @@ save pydis_start, pydis_end
 ;     zp_print_bytes:              8
 ;     asm_emit:                    7
 ;     asm_opcode_add16:            7
-;     c8b96:                       7
 ;     c982a:                       7
 ;     c9bb5:                       7
 ;     ensure_real:                 7
 ;     fwa_pack_var:                7
 ;     fwb_unpack_var:              7
 ;     immediate_loop:              7
+;     stmt_backup_end:             7
 ;     zp_count:                    7
 ;     assign_number:               6
-;     c8af3:                       6
 ;     c9bb4:                       6
 ;     c9c88:                       6
 ;     cae43:                       6
 ;     cb2b5:                       6
 ;     cbddc:                       6
 ;     check_program:               6
+;     clear_then_immediate:        6
 ;     coerce_var_to_integer:       6
 ;     fwa_pack_temp3:              6
 ;     fwa_set_one:                 6
@@ -14522,8 +14522,6 @@ save pydis_start, pydis_end
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
 ;     asm_mistake:                 4
-;     c8aa2:                       4
-;     c8b98:                       4
 ;     c8d30:                       4
 ;     c9372:                       4
 ;     c9479:                       4
@@ -14553,12 +14551,14 @@ save pydis_start, pydis_end
 ;     l0045:                       4
 ;     l0046:                       4
 ;     l0441:                       4
+;     missing_comma:               4
 ;     parse_dec_overflow:          4
 ;     point_fp_temp4:              4
 ;     read_via_ptr_general:        4
 ;     reserve_stack:               4
 ;     resint_p:                    4
 ;     return_23:                   4
+;     stmt_check_end:              4
 ;     sub_c9456:                   4
 ;     zp_asm_opcode:               4
 ;     zp_data_ptr:                 4
@@ -14655,8 +14655,6 @@ save pydis_start, pydis_end
 ;     asm_set_operand:             2
 ;     asm_three_byte:              2
 ;     asm_two_byte:                2
-;     c8b59:                       2
-;     c8b87:                       2
 ;     c8c43:                       2
 ;     c8c5f:                       2
 ;     c8c84:                       2
@@ -14810,6 +14808,7 @@ save pydis_start, pydis_end
 ;     load_real_var:               2
 ;     mant_mul10:                  2
 ;     next_data_item:              2
+;     no_fn_error:                 2
 ;     number_to_ascii:             2
 ;     osargs:                      2
 ;     oscli:                       2
@@ -14847,6 +14846,7 @@ save pydis_start, pydis_end
 ;     stack_local:                 2
 ;     stack_value:                 2
 ;     stmt_data:                   2
+;     stmt_eol:                    2
 ;     sub_c887c:                   2
 ;     sub_c8c21:                   2
 ;     sub_c8e8a:                   2
@@ -14941,15 +14941,11 @@ save pydis_start, pydis_end
 ;     asm_three_emit:              1
 ;     asm_try_indirect:            1
 ;     assembler_exit:              1
+;     assign_new_var:              1
 ;     brkv:                        1
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c8b38:                       1
-;     c8bdf:                       1
-;     c8be9:                       1
-;     c8bfb:                       1
-;     c8c0b:                       1
 ;     c8ca2:                       1
 ;     c8cb4:                       1
 ;     c8ce5:                       1
@@ -15281,6 +15277,7 @@ save pydis_start, pydis_end
 ;     cbfdc:                       1
 ;     cbff6:                       1
 ;     check_eq_star_bracket:       1
+;     data_scan_loop:              1
 ;     encode_line_number:          1
 ;     err_no_gosub:                1
 ;     err_no_repeat:               1
@@ -15289,6 +15286,9 @@ save pydis_start, pydis_end
 ;     err_too_many_repeats:        1
 ;     eval_and:                    1
 ;     eval_and_compare:            1
+;     exec_assembler:              1
+;     exec_dispatch:               1
+;     exec_immediate:              1
 ;     exec_star_command:           1
 ;     execute_line:                1
 ;     find_def:                    1
@@ -15296,6 +15296,7 @@ save pydis_start, pydis_end
 ;     find_proc_fn:                1
 ;     fn_asn:                      1
 ;     fn_ln:                       1
+;     fn_return:                   1
 ;     for_stack:                   1
 ;     fp_compare:                  1
 ;     fp_mantissas_add:            1
@@ -15339,15 +15340,14 @@ save pydis_start, pydis_end
 ;     l99b9:                       1
 ;     lang_install_brkv:           1
 ;     language_startup:            1
+;     let_assign:                  1
+;     let_mistake:                 1
+;     let_numeric:                 1
 ;     load_byte_var:               1
 ;     load_string_var:             1
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c8b41:                  1
-;     loop_c8b44:                  1
-;     loop_c8b47:                  1
-;     loop_c8b82:                  1
 ;     loop_c8c97:                  1
 ;     loop_c8ca9:                  1
 ;     loop_c8cdd:                  1
@@ -15618,18 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c8aa2
-;     c8af3
-;     c8b38
-;     c8b59
-;     c8b87
-;     c8b96
-;     c8b98
-;     c8ba3
-;     c8bdf
-;     c8be9
-;     c8bfb
-;     c8c0b
 ;     c8c43
 ;     c8c5f
 ;     c8c84
@@ -16187,10 +16175,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c8b41
-;     loop_c8b44
-;     loop_c8b47
-;     loop_c8b82
 ;     loop_c8c97
 ;     loop_c8ca9
 ;     loop_c8cdd

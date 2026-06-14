@@ -1668,6 +1668,7 @@ d.comment(0x8a9d, 'Loop while the character is a space', align=Align.INLINE)
 d.comment(0x8a9f, 'Space: keep skipping', align=Align.INLINE)
 d.comment(0x8aa1, 'Return the first non-space character', align=Align.INLINE)
 d.comment(0x8aa2, 'BRK error block ("Missing ,") follows', align=Align.INLINE)
+d.label(0x8aa2, 'missing_comma')
 d.subroutine(
     0x8aae, 'skip_spaces_expect_comma',
     title='Skip spaces and require a comma',
@@ -1733,6 +1734,7 @@ d.comment(0x8af0, 'TOP = PAGE + 2', align=Align.INLINE)
 d.comment(0x8af1, '(store)', align=Align.INLINE)
 d.comment(0x8af3, 'Clear variables, heap and stack', align=Align.INLINE)
 
+d.label(0x8af3, 'clear_then_immediate')
 d.subroutine(
     0x8af6, 'immediate_loop',
     title='Immediate ("> ") loop',
@@ -1795,13 +1797,17 @@ d.comment(0x8b30, 'no line number: execute it', align=Align.INLINE)
 d.comment(0x8b32, 'Numbered line: insert it into the program', align=Align.INLINE)
 d.comment(0x8b35, 'inserted: immediate loop', align=Align.INLINE)
 d.comment(0x8b38, 'Skip spaces', align=Align.INLINE)
+d.label(0x8b38, 'exec_dispatch')
 d.comment(0x8b3b, 'Token >= &C6 is a command: dispatch it', align=Align.INLINE)
 d.comment(0x8b3d, 'command token: dispatch it', align=Align.INLINE)
 d.comment(0x8b3f, 'Otherwise treat it as a variable assignment',
           align=Align.INLINE)
 d.comment(0x8b41, 'Back to immediate mode', align=Align.INLINE)
+d.label(0x8b41, 'exec_immediate')
 d.comment(0x8b44, 'Enter the assembler', align=Align.INLINE)
+d.label(0x8b44, 'exec_assembler')
 d.comment(0x8b47, 'Inside a function call?', align=Align.INLINE)
+d.label(0x8b47, 'fn_return')
 d.comment(0x8b48, 'stack near empty (no FN frame)?', align=Align.INLINE)
 d.comment(0x8b4a, 'no: error', align=Align.INLINE)
 d.comment(0x8b4c, 'Pushed token', align=Align.INLINE)
@@ -1810,6 +1816,7 @@ d.comment(0x8b51, 'no: error', align=Align.INLINE)
 d.comment(0x8b53, 'Evaluate the return value', align=Align.INLINE)
 d.comment(0x8b56, 'check end, return from the function', align=Align.INLINE)
 d.comment(0x8b59, 'No FN error', align=Align.INLINE)
+d.label(0x8b59, 'no_fn_error')
 d.subroutine(
     0x8b60, 'check_eq_star_bracket',
     title='Check for =, * and [ statements',
@@ -1845,9 +1852,11 @@ d.comment(0x8b7d, 'CR', align=Align.INLINE)
 d.comment(0x8b7f, 'Line offset', align=Align.INLINE)
 d.comment(0x8b81, 'back up one (the loop pre-increments)', align=Align.INLINE)
 d.comment(0x8b82, 'Scan to the end of line', align=Align.INLINE)
+d.label(0x8b82, 'data_scan_loop')
 d.comment(0x8b83, 'reached the CR?', align=Align.INLINE)
 d.comment(0x8b85, 'no: keep scanning', align=Align.INLINE)
 d.comment(0x8b87, 'ELSE?', align=Align.INLINE)
+d.label(0x8b87, 'stmt_eol')
 d.comment(0x8b89, 'yes: skip to end of line', align=Align.INLINE)
 d.comment(0x8b8b, 'In the command buffer?', align=Align.INLINE)
 d.comment(0x8b8d, 'page &07 (command buffer)?', align=Align.INLINE)
@@ -1856,7 +1865,9 @@ d.comment(0x8b91, 'Check for end of program, step past CR', align=Align.INLINE)
 d.comment(0x8b94, 'more: next statement', align=Align.INLINE)
 
 d.comment(0x8b96, 'Back up', align=Align.INLINE)
+d.label(0x8b96, 'stmt_backup_end')
 d.comment(0x8b98, 'check the statement ends', align=Align.INLINE)
+d.label(0x8b98, 'stmt_check_end')
 d.subroutine(
     0x8b9b, 'statement_loop',
     title='Statement execution loop',
@@ -1876,6 +1887,7 @@ d.comment(0x8b9d, 'Get the current character', align=Align.INLINE)
 d.comment(0x8b9f, 'A colon separates statements on a line', align=Align.INLINE)
 d.comment(0x8ba1, 'Not a colon: check for ELSE / end of line', align=Align.INLINE)
 d.comment(0x8ba3, 'Skip spaces to the next statement', align=Align.INLINE)
+d.label(0x8ba3, 'next_statement')
 d.comment(0x8ba5, 'advance past the colon', align=Align.INLINE)
 d.comment(0x8ba7, 'Get the next character', align=Align.INLINE)
 d.comment(0x8ba9, 'Skip spaces', align=Align.INLINE)
@@ -1932,12 +1944,14 @@ d.comment(0x8bda, 'Is the destination a float?', align=Align.INLINE)
 d.comment(0x8bdc, 'no', align=Align.INLINE)
 d.comment(0x8bde, 'X = 6', align=Align.INLINE)
 d.comment(0x8bdf, 'Evaluate and store the value', align=Align.INLINE)
+d.label(0x8bdf, 'assign_new_var')
 d.comment(0x8be2, 'Step back, continue', align=Align.INLINE)
 
 d.comment(0x8be4, 'Parse the variable being assigned', align=Align.INLINE)
 # stmt_let (&8BE4) remaining gaps.
 d.comment(0x8be7, 'end of statement: error', align=Align.INLINE)
 d.comment(0x8be9, 'numeric target?', align=Align.INLINE)
+d.label(0x8be9, 'let_assign')
 d.comment(0x8beb, 'Stack the destination address', align=Align.INLINE)
 d.comment(0x8bee, 'Expect "=" and evaluate the right-hand side',
           align=Align.INLINE)
@@ -1946,12 +1960,15 @@ d.comment(0x8bf3, 'A string variable needs a string value', align=Align.INLINE)
 d.comment(0x8bf5, 'Store the string', align=Align.INLINE)
 d.comment(0x8bf8, 'next statement', align=Align.INLINE)
 d.comment(0x8bfb, 'Stack the destination address', align=Align.INLINE)
+d.label(0x8bfb, 'let_numeric')
 d.comment(0x8bfe, 'Expect "=" and evaluate', align=Align.INLINE)
 d.comment(0x8c01, 'value type', align=Align.INLINE)
 d.comment(0x8c03, 'A numeric variable needs a numeric value', align=Align.INLINE)
 d.comment(0x8c05, 'Store the number', align=Align.INLINE)
 d.comment(0x8c08, 'next statement', align=Align.INLINE)
 d.comment(0x8c0b, 'Mistake (syntax) error', align=Align.INLINE)
+
+d.label(0x8c0b, 'let_mistake')
 
 d.label(0x8c0e, 'err_type_mismatch')   # BRK error block: "Type mismatch"
 d.comment(0x8c0e, 'Type mismatch error', align=Align.INLINE)
