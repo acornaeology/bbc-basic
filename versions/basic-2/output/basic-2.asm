@@ -672,7 +672,7 @@ oscli            = &fff7
     equb &b5, &00                                                     ; 82da: b5 00       ..    
     equs "SQR"                                                        ; 82dc: 53 51 52    SQR   
 ; &82df referenced 1 time by &8bb2
-.l82df
+.action_lo_by_token
     equb &b6, &00                                                     ; 82df: b6 00       ..    
     equs "SPC"                                                        ; 82e1: 53 50 43    SPC   
     equb &89, &00                                                     ; 82e4: 89 00       ..    
@@ -708,11 +708,10 @@ oscli            = &fff7
     equb &bc, &01                                                     ; 8345: bc 01       ..    
     equs "WIDTH"                                                      ; 8347: 57 49 44... WID...
     equb &fe, &02                                                     ; 834c: fe 02       ..    
-.sub_c834e
+    equs "PAG"                                                        ; 834e: 50 41 47    PAG   
 ; &8351 referenced 1 time by &8bb7
-l8351 = sub_c834e+3
-    equs "PAGE"                                                       ; 834e: 50 41 47... PAG...
-    equb &d0, &00                                                     ; 8352: d0 00       ..    
+.action_hi_by_token
+    equb &45, &d0, &00                                                ; 8351: 45 d0 00    E..   
     equs "PTR"                                                        ; 8354: 50 54 52    PTR   
     equb &cf, &00                                                     ; 8357: cf 00       ..    
     equs "TIME"                                                       ; 8359: 54 49 4d... TIM...
@@ -951,7 +950,7 @@ l8351 = sub_c834e+3
     equb >(stmt_until)                                                ; 844e: bb          .     
     equb >(stmt_width)                                                ; 844f: b4          .     
 ; &8450 referenced 1 time by &85f5
-.l8450
+.asm_mnemonic_lo
     equb >(stmt_oscli)                                                ; 8450: be          .     
     equb &4b, &83, &84, &89, &96, &b8, &b9, &d8, &d9, &f0, &01, &10   ; 8451: 4b 83 84... K.....
     equb &81, &90, &89, &93, &a3, &a4, &a9                            ; 845d: 81 90 89... ......
@@ -960,11 +959,11 @@ l8351 = sub_c834e+3
     equs "!cs"                                                        ; 8469: 21 63 73    !cs   
     equb &b1, &a9, &c5, &0c, &c3, &d3, &c4, &f2, &41, &83, &b0, &81   ; 846c: b1 a9 c5... ......
     equs "Clr"                                                        ; 8478: 43 6c 72    Clr   
-.sub_c847b
-; &848a referenced 1 time by &85fa
-l848a = sub_c847b+15
     equb &ec, &f2, &a3, &c3, &18, &19, &34, &b0, &72, &98, &99, &81   ; 847b: ec f2 a3... ......
-    equb &98, &99, &14, &35, &0a, &0d, &0d, &0d, &0d, &10, &10        ; 8487: 98 99 14... ......
+    equb &98, &99, &14                                                ; 8487: 98 99 14    ...   
+; &848a referenced 1 time by &85fa
+.asm_mnemonic_hi
+    equb &35, &0a, &0d, &0d, &0d, &0d, &10, &10                       ; 848a: 35 0a 0d... 5.....
     equs "%%9AAAAJJLLLPPRSSS"                                         ; 8492: 25 25 39... %%9...
     equb &08, &08, &08, &09, &09, &0a, &0a, &0a, &05, &15, &3e, &04   ; 84a4: 08 08 08... ......
     equb &0d, &30, &4c, &06                                           ; 84b0: 0d 30 4c... .0L...
@@ -972,7 +971,7 @@ l848a = sub_c847b+15
     equb &10, &25, &0e, &0e, &09                                      ; 84b7: 10 25 0e... .%....
     equs ")*00NNN>"                                                   ; 84bc: 29 2a 30... )*0...
 ; &84c4 referenced 1 time by &8620
-.l84c4
+.asm_base_opcode
     equb &16, &00, &18, &d8, &58, &b8, &ca, &88, &e8, &c8, &ea, &48   ; 84c4: 16 00 18... ......
     equb &08                                                          ; 84d0: 08          .     
     equs "h(@`8"                                                      ; 84d1: 68 28 40... h(@...
@@ -1173,9 +1172,9 @@ l848a = sub_c847b+15
     lda zp_fwb_exp                                                    ; 85f3: a5 3d       .=       ; Compacted mnemonic low byte
 ; &85f5 referenced 1 time by &8602
 .loop_c85f5
-    cmp l8450,x                                                       ; 85f5: dd 50 84    .P.      ; Compare the low half
+    cmp asm_mnemonic_lo,x                                             ; 85f5: dd 50 84    .P.      ; Compare the low half
     bne c8601                                                         ; 85f8: d0 07       ..       ; no match: next entry
-    ldy l848a,x                                                       ; 85fa: bc 8a 84    ...      ; High half
+    ldy asm_mnemonic_hi,x                                             ; 85fa: bc 8a 84    ...      ; High half
     cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; match the high half?
     beq c8620                                                         ; 85ff: f0 1f       ..       ; matched
 ; &8601 referenced 1 time by &85f8
@@ -1203,7 +1202,7 @@ l848a = sub_c847b+15
     bne c8604                                                         ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
 .c8620
-    lda l84c4,x                                                       ; 8620: bd c4 84    ...      ; Base opcode from the table
+    lda asm_base_opcode,x                                             ; 8620: bd c4 84    ...      ; Base opcode from the table
     sta zp_asm_opcode                                                 ; 8623: 85 29       .)       ; Save it
     ldy #1                                                            ; 8625: a0 01       ..       ; Assume a one-byte instruction
     cpx #&1a                                                          ; 8627: e0 1a       ..       ; index &1A+ takes an operand?
@@ -2466,9 +2465,9 @@ l848a = sub_c847b+15
 ; &8bb1 referenced 2 times by &8b3d, &ae0d
 .dispatch_token
     tax                                                               ; 8bb1: aa          .        ; Token to X for indexing
-    lda l82df,x                                                       ; 8bb2: bd df 82    ...      ; Handler low byte = action_table_lo[token - &8E]
+    lda action_lo_by_token,x                                          ; 8bb2: bd df 82    ...      ; Handler low byte = action_table_lo[token - &8E]
     sta zp_general                                                    ; 8bb5: 85 37       .7       ; Store the handler low byte
-    lda l8351,x                                                       ; 8bb7: bd 51 83    .Q.      ; Handler high byte from action_table_hi
+    lda action_hi_by_token,x                                          ; 8bb7: bd 51 83    .Q.      ; Handler high byte from action_table_hi
     sta zp_general_1                                                  ; 8bba: 85 38       .8       ; Store the handler high byte
     jmp (zp_general)                                                  ; 8bbc: 6c 37 00    l7.      ; Jump to the keyword handler
 ; ***************************************************************************************
@@ -14882,7 +14881,10 @@ save pydis_start, pydis_end
 ;     wrchv:                       2
 ;     zp_rnd_seed_3:               2
 ;     zp_trace_max:                2
+;     action_hi_by_token:          1
+;     action_lo_by_token:          1
 ;     ascii_to_number:             1
+;     asm_base_opcode:             1
 ;     asm_continue:                1
 ;     asm_define_label:            1
 ;     asm_enter:                   1
@@ -14896,6 +14898,8 @@ save pydis_start, pydis_end
 ;     asm_list_src_loop:           1
 ;     asm_list_src_print:          1
 ;     asm_loop:                    1
+;     asm_mnemonic_hi:             1
+;     asm_mnemonic_lo:             1
 ;     asm_next_line:               1
 ;     asm_next_statement:          1
 ;     asm_parse_mnemonic:          1
@@ -15345,11 +15349,6 @@ save pydis_start, pydis_end
 ;     l05b7:                       1
 ;     l05cb:                       1
 ;     l05e5:                       1
-;     l82df:                       1
-;     l8351:                       1
-;     l8450:                       1
-;     l848a:                       1
-;     l84c4:                       1
 ;     l996b:                       1
 ;     l99b9:                       1
 ;     lang_install_brkv:           1
@@ -16266,11 +16265,6 @@ save pydis_start, pydis_end
 ;     l05e5
 ;     l05ff
 ;     l06ff
-;     l82df
-;     l8351
-;     l8450
-;     l848a
-;     l84c4
 ;     l996b
 ;     l99b9
 ;     loop_c85d5
@@ -16492,8 +16486,6 @@ save pydis_start, pydis_end
 ;     return_7
 ;     return_8
 ;     return_9
-;     sub_c834e
-;     sub_c847b
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c893d
@@ -16558,7 +16550,7 @@ save pydis_start, pydis_end
 ;     Data                     = 1959 bytes (12%)
 ;
 ;     Number of instructions   = 7133
-;     Number of data bytes     = 943 bytes
+;     Number of data bytes     = 944 bytes
 ;     Number of data words     = 0 bytes
-;     Number of string bytes   = 1016 bytes
+;     Number of string bytes   = 1015 bytes
 ;     Number of strings        = 186

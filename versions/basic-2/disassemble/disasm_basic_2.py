@@ -635,6 +635,12 @@ for _i in range(NUM_DISPATCH_TOKENS):
         d.subroutine(_target, _name, on_entry=_on_entry, on_exit=_on_exit)
     _declared_handlers[_target] = _name
 
+d.label(0x82df, 'action_lo_by_token')
+d.label(0x8351, 'action_hi_by_token')
+d.label(0x8450, 'asm_mnemonic_lo')
+d.label(0x848a, 'asm_mnemonic_hi')
+d.label(0x84c4, 'asm_base_opcode')
+
 d.subroutine(
     0x84fd, 'assembler_exit',
     title='Finish the inline assembler',

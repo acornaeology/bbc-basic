@@ -7628,7 +7628,7 @@
         0
       ],
       "labels": [
-        "l82df"
+        "action_lo_by_token"
       ],
       "xref_summaries": [
         "&82df referenced 1 time by &8bb2"
@@ -8048,31 +8048,30 @@
       "bytes": [
         80,
         65,
-        71,
-        69
-      ],
-      "labels": [
-        "sub_c834e"
-      ],
-      "sub_labels": {
-        "33617": [
-          "l8351"
-        ]
-      },
-      "xref_summaries": [
-        "&8351 referenced 1 time by &8bb7"
+        71
       ],
       "type": "string",
-      "string": "PAGE"
+      "string": "PAG"
     },
     {
-      "addr": 33618,
+      "addr": 33617,
       "bytes": [
+        69,
         208,
         0
       ],
+      "labels": [
+        "action_hi_by_token"
+      ],
+      "xref_summaries": [
+        "&8351 referenced 1 time by &8bb7"
+      ],
+      "references": [
+        35767
+      ],
       "type": "byte",
       "values": [
+        69,
         208,
         0
       ]
@@ -11133,7 +11132,7 @@
         190
       ],
       "labels": [
-        "l8450"
+        "asm_mnemonic_lo"
       ],
       "xref_summaries": [
         "&8450 referenced 1 time by &85f5"
@@ -11286,26 +11285,7 @@
         129,
         152,
         153,
-        20,
-        53,
-        10,
-        13,
-        13,
-        13,
-        13,
-        16,
-        16
-      ],
-      "labels": [
-        "sub_c847b"
-      ],
-      "sub_labels": {
-        "33930": [
-          "l848a"
-        ]
-      },
-      "xref_summaries": [
-        "&848a referenced 1 time by &85fa"
+        20
       ],
       "type": "byte",
       "values": [
@@ -11323,7 +11303,32 @@
         129,
         152,
         153,
-        20,
+        20
+      ]
+    },
+    {
+      "addr": 33930,
+      "bytes": [
+        53,
+        10,
+        13,
+        13,
+        13,
+        13,
+        16,
+        16
+      ],
+      "labels": [
+        "asm_mnemonic_hi"
+      ],
+      "xref_summaries": [
+        "&848a referenced 1 time by &85fa"
+      ],
+      "references": [
+        34298
+      ],
+      "type": "byte",
+      "values": [
         53,
         10,
         13,
@@ -11460,7 +11465,7 @@
         8
       ],
       "labels": [
-        "l84c4"
+        "asm_base_opcode"
       ],
       "xref_summaries": [
         "&84c4 referenced 1 time by &8620"
@@ -13311,9 +13316,9 @@
       ],
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l8450,x",
+      "operand": "asm_mnemonic_lo,x",
       "target": 33872,
-      "target_label": "l8450"
+      "target_label": "asm_mnemonic_lo"
     },
     {
       "addr": 34296,
@@ -13338,9 +13343,9 @@
       "comment_inline": "High half",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l848a,x",
+      "operand": "asm_mnemonic_hi,x",
       "target": 33930,
-      "target_label": "l848a"
+      "target_label": "asm_mnemonic_hi"
     },
     {
       "addr": 34301,
@@ -13615,9 +13620,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l84c4,x",
+      "operand": "asm_base_opcode,x",
       "target": 33988,
-      "target_label": "l84c4"
+      "target_label": "asm_base_opcode"
     },
     {
       "addr": 34339,
@@ -23452,9 +23457,9 @@
       "comment_inline": "Handler low byte = action_table_lo[token - &8E]",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l82df,x",
+      "operand": "action_lo_by_token,x",
       "target": 33503,
-      "target_label": "l82df"
+      "target_label": "action_lo_by_token"
     },
     {
       "addr": 35765,
@@ -23479,9 +23484,9 @@
       "comment_inline": "Handler high byte from action_table_hi",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l8351,x",
+      "operand": "action_hi_by_token,x",
       "target": 33617,
-      "target_label": "l8351"
+      "target_label": "action_hi_by_token"
     },
     {
       "addr": 35770,
