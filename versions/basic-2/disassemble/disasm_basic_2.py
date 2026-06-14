@@ -74,11 +74,49 @@ KEYWORD_HANDLERS = {
     0xff: 'oscli',
 }
 
+# Shared calling conventions for the dispatched handlers.
+#
+# Every keyword handler is reached through the indirect jump in
+# dispatch_token (&8BB1): the token in A indexes the action-address
+# table, the handler address is placed in zp_general (&37/&38) and
+# JMP (&0037) enters the handler. The two families therefore share an
+# entry/exit contract, established once here and applied to every
+# table-generated banner; an individual HANDLER_INFO entry may override
+# either dict (see below).
+#
+# stmt_* handlers run from statement_loop (&8B9B) / execute_line, reading
+# the program through PtrA (zp_text_ptr, &0B/&0C; offset &0A). They run
+# the statement and rejoin the interpreter loop without returning a value.
+STMT_ON_ENTRY = {
+    'A': 'the statement keyword token (>= &C6)',
+    'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+    'zp_text_ptr_off (&0A)': 'offset just past the keyword token',
+}
+STMT_ON_EXIT = {
+    'control': 'rejoins statement_loop; no value, registers not preserved',
+}
+# fn_* handlers run from eval_factor (&ADEC) while evaluating an
+# expression, reading through PtrB (zp_text_ptr2, &19/&1A; offset &1B).
+# They consume their argument(s) and return a typed result.
+FN_ON_ENTRY = {
+    'A': 'the function keyword token (&8E-&C5)',
+    'zp_text_ptr2 (&19/&1A)': 'the expression text pointer (PtrB)',
+    'zp_text_ptr2_off (&1B)': 'offset just past the function token',
+}
+FN_ON_EXIT = {
+    'A': 'result type: <0 = float in fwa, >0 = integer in iwa, 0 = string',
+    'zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)':
+        'the result, selected by the type in A',
+    'zp_text_ptr2_off (&1B)': 'advanced past the consumed argument(s)',
+}
+
 # Optional (title, description) for individual handlers, attached when
-# the handler is declared below. The mathematical functions (Pharo
-# ch. 5) each evaluate their argument into the floating-point
-# accumulator then fall into a pure routine (argument already in FWA)
-# a few bytes later, whose address is noted.
+# the handler is declared below. An entry may also carry on_entry /
+# on_exit as a 3rd / 4th tuple element to override the shared family
+# contract above (None = use the family default). The mathematical
+# functions (Pharo ch. 5) each evaluate their argument into the
+# floating-point accumulator then fall into a pure routine (argument
+# already in FWA) a few bytes later, whose address is noted.
 HANDLER_INFO = {
     'fn_sin': ('SIN', 'FWA = sin(FWA), argument in radians. '
                       'Pure routine at &A99B.'),
@@ -557,11 +595,21 @@ for _i in range(NUM_DISPATCH_TOKENS):
     if _target in _declared_handlers:
         continue
     _name = ('fn_' if _token <= 0xc5 else 'stmt_') + _base
+    _is_fn = _name.startswith('fn_')
     _info = HANDLER_INFO.get(_name)
+    # Apply the shared family contract, allowing per-entry overrides via
+    # the optional 3rd / 4th tuple elements (None = use the default).
+    _on_entry = FN_ON_ENTRY if _is_fn else STMT_ON_ENTRY
+    _on_exit = FN_ON_EXIT if _is_fn else STMT_ON_EXIT
+    if _info and len(_info) >= 3 and _info[2] is not None:
+        _on_entry = _info[2]
+    if _info and len(_info) >= 4 and _info[3] is not None:
+        _on_exit = _info[3]
     if _info:
-        d.subroutine(_target, _name, title=_info[0], description=_info[1])
+        d.subroutine(_target, _name, title=_info[0], description=_info[1],
+                     on_entry=_on_entry, on_exit=_on_exit)
     else:
-        d.subroutine(_target, _name)
+        d.subroutine(_target, _name, on_entry=_on_entry, on_exit=_on_exit)
     _declared_handlers[_target] = _name
 
 d.subroutine(

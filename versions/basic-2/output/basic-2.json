@@ -171,37 +171,97 @@
       "name": "fn_openin",
       "title": "OPENIN",
       "description": "Open a file for input, returning its channel (0 if not found). OPENIN string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 48967,
       "name": "fn_ptr",
       "title": "=PTR",
-      "description": "Read the sequential pointer of an open file. PTR#channel."
+      "description": "Read the sequential pointer of an open file. PTR#channel.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44736,
       "name": "fn_page",
       "title": "=PAGE",
-      "description": "Read PAGE, the start of the BASIC program. PAGE."
+      "description": "Read PAGE, the start of the BASIC program. PAGE.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44724,
       "name": "fn_time",
       "title": "=TIME",
-      "description": "Read the centisecond elapsed-time clock. TIME."
+      "description": "Read the centisecond elapsed-time clock. TIME.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44796,
       "name": "fn_lomem",
       "title": "=LOMEM",
-      "description": "Read LOMEM, the start of variable storage. LOMEM."
+      "description": "Read LOMEM, the start of variable storage. LOMEM.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44803,
       "name": "fn_himem",
       "title": "=HIMEM",
       "description": "Read HIMEM, the top of memory for BASIC. HIMEM.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
@@ -209,250 +269,650 @@
       "name": "fn_abs",
       "title": "ABS",
       "description": "Absolute value of a number. ABS numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 43220,
       "name": "fn_acs",
       "title": "ACS",
-      "description": "FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927."
+      "description": "FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43827,
       "name": "fn_adval",
       "title": "ADVAL",
-      "description": "Read an analogue (A/D) channel or a buffer status. ADVAL numeric."
+      "description": "Read an analogue (A/D) channel or a buffer status. ADVAL numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44190,
       "name": "fn_asc",
       "title": "ASC",
-      "description": "ASCII code of the first character of a string, or -1 if empty. ASC string."
+      "description": "ASCII code of the first character of a string, or -1 if empty. ASC string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43226,
       "name": "fn_asn",
       "title": "ASN",
-      "description": "FWA = arcsin(FWA), result in radians. Pure routine at &A8DD."
+      "description": "FWA = arcsin(FWA), result in radians. Pure routine at &A8DD.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43271,
       "name": "fn_atn",
       "title": "ATN",
       "description": "FWA = arctan(FWA), result in radians. Pure routine at &A90A.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 49007,
       "name": "fn_bget",
       "title": "BGET",
-      "description": "Read a byte from an open file. BGET#channel."
+      "description": "Read a byte from an open file. BGET#channel.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43405,
       "name": "fn_cos",
       "title": "COS",
-      "description": "FWA = cos(FWA), argument in radians. Pure routine at &A990."
+      "description": "FWA = cos(FWA), argument in radians. Pure routine at &A990.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44791,
       "name": "fn_count",
       "title": "COUNT",
-      "description": "Characters printed since the last newline. COUNT."
+      "description": "Characters printed since the last newline. COUNT.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43970,
       "name": "fn_deg",
       "title": "DEG",
       "description": "FWA = FWA radians expressed in degrees. Pure routine at &ABC5.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 44959,
       "name": "fn_erl",
       "title": "ERL",
-      "description": "Line number where the last error occurred. ERL."
+      "description": "Line number where the last error occurred. ERL.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44966,
       "name": "fn_err",
       "title": "ERR",
-      "description": "Error number of the last error. ERR."
+      "description": "Error number of the last error. ERR.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44009,
       "name": "fn_eval",
       "title": "EVAL",
-      "description": "Evaluate a string as a BASIC expression. EVAL string."
+      "description": "Evaluate a string as a BASIC expression. EVAL string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43665,
       "name": "fn_exp",
       "title": "EXP",
-      "description": "FWA = e to the power FWA. Pure routine at &AA94."
+      "description": "FWA = e to the power FWA. Pure routine at &AA94.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 48966,
       "name": "fn_ext",
       "title": "EXT",
       "description": "Length (extent) of an open file. EXT#channel.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 44746,
       "name": "fn_false",
       "title": "FALSE",
-      "description": "The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive."
+      "description": "The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45461,
       "name": "fn_fn",
       "title": "FN",
       "description": "Call a user-defined function and return its value. FNname[(params)].",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 44985,
       "name": "fn_get",
       "title": "GET",
-      "description": "Wait for a key and return its ASCII code. GET."
+      "description": "Wait for a key and return its ASCII code. GET.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44205,
       "name": "fn_inkey",
       "title": "INKEY",
-      "description": "Read a key within a time limit, test a key, or read the machine ID. INKEY numeric."
+      "description": "Read a key within a time limit, test a key, or read the machine ID. INKEY numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44258,
       "name": "fn_instr",
       "title": "INSTR",
-      "description": "Position of one string within another, optionally from a start. INSTR(a$, b$ [,n])."
+      "description": "Position of one string within another, optionally from a start. INSTR(a$, b$ [,n]).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44152,
       "name": "fn_int",
       "title": "INT",
-      "description": "Integer part (floor) of a number. INT numeric."
+      "description": "Integer part (floor) of a number. INT numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44753,
       "name": "fn_len",
       "title": "LEN",
       "description": "Length of a string. LEN string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 43006,
       "name": "fn_ln",
       "title": "LN",
-      "description": "FWA = natural log of FWA. Pure routine at &A801."
+      "description": "FWA = natural log of FWA. Pure routine at &A801.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43944,
       "name": "fn_log",
       "title": "LOG",
       "description": "FWA = base-10 log of FWA. Pure routine at &ABAB.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 44241,
       "name": "fn_not",
       "title": "NOT",
-      "description": "Bitwise NOT (one's complement) of an integer. NOT numeric."
+      "description": "Bitwise NOT (one's complement) of an integer. NOT numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 49024,
       "name": "fn_openup",
       "title": "OPENUP",
-      "description": "Open a file for update (read and write), returning its channel. OPENUP string."
+      "description": "Open a file for update (read and write), returning its channel. OPENUP string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 49020,
       "name": "fn_openout",
       "title": "OPENOUT",
       "description": "Create a file for output, returning its channel. OPENOUT string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 43979,
       "name": "fn_pi",
       "title": "PI",
-      "description": "FWA = pi (3.14159265). Takes no argument."
+      "description": "FWA = pi (3.14159265). Takes no argument.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43841,
       "name": "fn_point",
       "title": "POINT",
-      "description": "Logical colour of a graphics point. POINT(x, y)."
+      "description": "Logical colour of a graphics point. POINT(x, y).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43885,
       "name": "fn_pos",
       "title": "POS",
-      "description": "Horizontal text-cursor position in the window. POS."
+      "description": "Horizontal text-cursor position in the window. POS.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43953,
       "name": "fn_rad",
       "title": "RAD",
-      "description": "FWA = FWA degrees expressed in radians. Pure routine at &ABB4."
+      "description": "FWA = FWA degrees expressed in radians. Pure routine at &ABB4.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44873,
       "name": "fn_rnd",
       "title": "RND",
       "description": "Random number; the form depends on the argument (see rnd_*). RND[(numeric)].",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 43912,
       "name": "fn_sgn",
       "title": "SGN",
-      "description": "Sign of a number: -1, 0 or +1. SGN numeric."
+      "description": "Sign of a number: -1, 0 or +1. SGN numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43416,
       "name": "fn_sin",
       "title": "SIN",
-      "description": "FWA = sin(FWA), argument in radians. Pure routine at &A99B."
+      "description": "FWA = sin(FWA), argument in radians. Pure routine at &A99B.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 42932,
       "name": "fn_sqr",
       "title": "SQR",
-      "description": "FWA = square root of FWA. Pure routine at &A7B7."
+      "description": "FWA = square root of FWA. Pure routine at &A7B7.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 42686,
       "name": "fn_tan",
       "title": "TAN",
-      "description": "FWA = tan(FWA), argument in radians. Pure routine at &A6C1."
+      "description": "FWA = tan(FWA), argument in radians. Pure routine at &A6C1.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44764,
       "name": "fn_to",
       "title": "TO",
       "description": "The TO keyword of FOR. It has no standalone action; reaching it as a statement token is an error.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 44228,
       "name": "fn_true",
       "title": "TRUE",
-      "description": "The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive."
+      "description": "The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 43986,
       "name": "fn_usr",
       "title": "USR",
-      "description": "Call machine code and return the result registers packed into a value. USR address."
+      "description": "Call machine code and return the result registers packed into a value. USR address.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44079,
       "name": "fn_val",
       "title": "VAL",
       "description": "Number parsed from the start of a string. VAL string.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
@@ -460,92 +920,232 @@
       "name": "fn_vpos",
       "title": "VPOS",
       "description": "Vertical text-cursor position in the window. VPOS.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 46013,
       "name": "fn_chrs",
       "title": "CHR$",
-      "description": "One-character string for an ASCII code. CHR$ numeric."
+      "description": "One-character string for an ASCII code. CHR$ numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44991,
       "name": "fn_gets",
       "title": "GET$",
-      "description": "Read a key as a one-character string, or a byte / line from a file. GET$[#channel]."
+      "description": "Read a key as a one-character string, or a byte / line from a file. GET$[#channel].",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45094,
       "name": "fn_inkeys",
       "title": "INKEY$",
-      "description": "Read a key within a time limit as a string. INKEY$ numeric."
+      "description": "Read a key within a time limit as a string. INKEY$ numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45004,
       "name": "fn_lefts",
       "title": "LEFT$",
-      "description": "Leftmost n characters of a string. LEFT$(string, n)."
+      "description": "Leftmost n characters of a string. LEFT$(string, n).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45113,
       "name": "fn_mids",
       "title": "MID$",
-      "description": "Substring from a start position. MID$(string, start [,length])."
+      "description": "Substring from a start position. MID$(string, start [,length]).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45038,
       "name": "fn_rights",
       "title": "RIGHT$",
-      "description": "Rightmost n characters of a string. RIGHT$(string, n)."
+      "description": "Rightmost n characters of a string. RIGHT$(string, n).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45204,
       "name": "fn_strs",
       "title": "STR$",
-      "description": "String form of a number (STR$~ for hex). STR$[~] numeric."
+      "description": "String form of a number (STR$~ for hex). STR$[~] numeric.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 45250,
       "name": "fn_strings",
       "title": "STRING$",
-      "description": "A string repeated n times. STRING$(n, string)."
+      "description": "A string repeated n times. STRING$(n, string).",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      }
     },
     {
       "addr": 44216,
       "name": "fn_eof",
       "title": "EOF",
       "description": "TRUE when at the end of an open file. EOF#channel.",
+      "on_entry": {
+        "A": "the function keyword token (&8E-&C5)",
+        "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
+        "zp_text_ptr2_off (&1B)": "offset just past the function token"
+      },
+      "on_exit": {
+        "A": "result type: <0 = float in fwa, >0 = integer in iwa, 0 = string",
+        "zp_iwa (&2A-&2D) / zp_fwa (&2E-&35) / string_work (&0600)": "the result, selected by the type in A",
+        "zp_text_ptr2_off (&1B)": "advanced past the consumed argument(s)"
+      },
       "fall_through": true
     },
     {
       "addr": 37036,
       "name": "stmt_auto",
       "title": "AUTO",
-      "description": "Generate line numbers automatically during program entry until Escape. AUTO [start[,step]]."
+      "description": "Generate line numbers automatically during program entry until Escape. AUTO [start[,step]].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 36657,
       "name": "stmt_delete",
       "title": "DELETE",
-      "description": "Delete a range of program lines. DELETE start, end."
+      "description": "Delete a range of program lines. DELETE start, end.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 48932,
       "name": "stmt_load",
       "title": "LOAD",
-      "description": "Load a BASIC program without running it. LOAD string."
+      "description": "Load a BASIC program without running it. LOAD string.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 46492,
       "name": "stmt_list",
       "title": "LIST",
-      "description": "List program lines, de-tokenising them. LIST [start[,end]]."
+      "description": "List program lines, de-tokenising them. LIST [start[,end]].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 35546,
       "name": "stmt_new",
       "title": "NEW",
       "description": "Clear the current program and its variables. NEW.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
@@ -553,6 +1153,14 @@
       "name": "stmt_old",
       "title": "OLD",
       "description": "Recover the program cleared by NEW, if memory is intact. OLD.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
@@ -560,31 +1168,71 @@
       "name": "stmt_renumber",
       "title": "RENUMBER",
       "description": "Renumber program lines and fix up line references. RENUMBER [start[,step]].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 48883,
       "name": "stmt_save",
       "title": "SAVE",
-      "description": "Save the current program to the filing system. SAVE string."
+      "description": "Save the current program to the filing system. SAVE string.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 48944,
       "name": "stmt_ptr",
       "title": "PTR#=",
-      "description": "Set the sequential pointer of an open file. PTR#channel = position."
+      "description": "Set the sequential pointer of an open file. PTR#channel = position.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37507,
       "name": "stmt_page",
       "title": "PAGE=",
-      "description": "Set PAGE, the start of the BASIC program. PAGE = address."
+      "description": "Set PAGE, the start of the BASIC program. PAGE = address.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37577,
       "name": "stmt_time",
       "title": "TIME=",
       "description": "Set the centisecond elapsed-time clock. TIME = value.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
@@ -592,44 +1240,100 @@
       "name": "stmt_lomem",
       "title": "LOMEM=",
       "description": "Set LOMEM, the start of variable storage. LOMEM = address.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 37469,
       "name": "stmt_himem",
       "title": "HIMEM=",
-      "description": "Set HIMEM, the top of memory available to BASIC. HIMEM = address."
+      "description": "Set HIMEM, the top of memory available to BASIC. HIMEM = address.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 46156,
       "name": "stmt_sound",
       "title": "SOUND",
       "description": "Make a sound on a channel. SOUND channel, amplitude, pitch, duration.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 48984,
       "name": "stmt_bput",
       "title": "BPUT",
-      "description": "Write a byte to an open file. BPUT#channel, value."
+      "description": "Write a byte to an open file. BPUT#channel, value.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 36562,
       "name": "stmt_call",
       "title": "CALL",
-      "description": "Call machine code, passing the resident integer variables and an optional parameter block. CALL address [,params...]."
+      "description": "Call machine code, passing the resident integer variables and an optional parameter block. CALL address [,params...].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 48938,
       "name": "stmt_chain",
       "title": "CHAIN",
-      "description": "Load a BASIC program and run it. CHAIN string."
+      "description": "Load a BASIC program and run it. CHAIN string.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37517,
       "name": "stmt_clear",
       "title": "CLEAR",
       "description": "Discard all variables and the stack. CLEAR.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
@@ -637,6 +1341,14 @@
       "name": "stmt_close",
       "title": "CLOSE",
       "description": "Close an open file, or all files with #0. CLOSE#channel.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
@@ -644,225 +1356,513 @@
       "name": "stmt_clg",
       "title": "CLG",
       "description": "Clear the graphics window to the graphics background colour. CLG.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 36548,
       "name": "stmt_cls",
       "title": "CLS",
-      "description": "Clear the text window to the text background colour. CLS."
+      "description": "Clear the text window to the text background colour. CLS.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 35709,
       "name": "stmt_data",
       "title": "DATA / DEF / REM / ELSE",
       "description": "Skip to the end of the line. DATA introduces inline data (read by READ), DEF a PROC/FN definition, REM a comment, and ELSE the alternative of a taken IF: none execute inline, so all four share this skip-to-end handler.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 37167,
       "name": "stmt_dim",
       "title": "DIM",
-      "description": "Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size."
+      "description": "Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37864,
       "name": "stmt_draw",
       "title": "DRAW",
-      "description": "Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y."
+      "description": "Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 35528,
       "name": "stmt_end",
       "title": "END",
       "description": "End the program and return to the immediate prompt. END.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 37718,
       "name": "stmt_endproc",
       "title": "ENDPROC",
-      "description": "Return from a procedure, restoring LOCAL values, the caller's text pointer and the saved 6502/value stacks. It does NOT tidy the FOR/REPEAT/GOSUB stacks, so ENDPROC from inside a loop leaks that loop's frame. ENDPROC."
+      "description": "Return from a procedure, restoring LOCAL values, the caller's text pointer and the saved 6502/value stacks. It does NOT tidy the FOR/REPEAT/GOSUB stacks, so ENDPROC from inside a loop leaks that loop's frame. ENDPROC.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 46194,
       "name": "stmt_envelope",
       "title": "ENVELOPE",
-      "description": "Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters)."
+      "description": "Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters).",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47044,
       "name": "stmt_for",
       "title": "FOR",
-      "description": "Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO limit [STEP step]."
+      "description": "Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO limit [STEP step].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47240,
       "name": "stmt_gosub",
       "title": "GOSUB",
-      "description": "Call a subroutine at a line number, stacking the return position. GOSUB line."
+      "description": "Call a subroutine at a line number, stacking the return position. GOSUB line.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47308,
       "name": "stmt_goto",
       "title": "GOTO",
-      "description": "Jump to a line number. GOTO line."
+      "description": "Jump to a line number. GOTO line.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37754,
       "name": "stmt_gcol",
       "title": "GCOL",
-      "description": "Set the graphics colour and plotting action. GCOL action, colour."
+      "description": "Set the graphics colour and plotting action. GCOL action, colour.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 39106,
       "name": "stmt_if",
       "title": "IF",
-      "description": "Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE or the end of the line. IF expr [THEN] ... [ELSE ...]."
+      "description": "Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE or the end of the line. IF expr [THEN] ... [ELSE ...].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47684,
       "name": "stmt_input",
       "title": "INPUT",
-      "description": "Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt] var,..."
+      "description": "Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt] var,...",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 35812,
       "name": "stmt_let",
       "title": "LET",
-      "description": "Assign an expression to a variable; the LET keyword is optional. [LET] var = expr."
+      "description": "Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37667,
       "name": "stmt_local",
       "title": "LOCAL",
-      "description": "Make variables local to the current PROC/FN, stacking their old values. LOCAL var,..."
+      "description": "Make variables local to the current PROC/FN, stacking their old values. LOCAL var,...",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37786,
       "name": "stmt_mode",
       "title": "MODE",
-      "description": "Select a screen mode, resetting the display. MODE n."
+      "description": "Select a screen mode, resetting the display. MODE n.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37860,
       "name": "stmt_move",
       "title": "MOVE",
       "description": "Move the graphics cursor without drawing (PLOT 4). MOVE x, y.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 46741,
       "name": "stmt_next",
       "title": "NEXT",
-      "description": "End a FOR loop: update the counter and loop back unless the limit is passed. NEXT [var,...]."
+      "description": "End a FOR loop: update the counter and loop back unless the limit is passed. NEXT [var,...].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47381,
       "name": "stmt_on",
       "title": "ON",
-      "description": "ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list | ON ERROR stmts."
+      "description": "ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list | ON ERROR stmts.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37935,
       "name": "stmt_vdu",
       "title": "VDU",
-      "description": "Send bytes to the VDU drivers; \";\" sends a 16-bit word. VDU n[,|;]..."
+      "description": "Send bytes to the VDU drivers; \";\" sends a 16-bit word. VDU n[,|;]...",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37873,
       "name": "stmt_plot",
       "title": "PLOT",
       "description": "Plot a point, line or shape with a given mode. PLOT mode, x, y.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 36250,
       "name": "stmt_print",
       "title": "PRINT",
-      "description": "Print expressions to the screen, or a file with #, with formatting controlled by @% and separators. PRINT [~][items][;][,]."
+      "description": "Print expressions to the screen, or a file with #, with formatting controlled by @% and separators. PRINT [~][items][;][,].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37636,
       "name": "stmt_proc",
       "title": "PROC",
       "description": "Call a named procedure, stacking parameters and the return position. PROCname[(params)].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 47903,
       "name": "stmt_read",
       "title": "READ",
-      "description": "Read values from DATA statements into variables. READ var,..."
+      "description": "Read values from DATA statements into variables. READ var,...",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 48100,
       "name": "stmt_repeat",
       "title": "REPEAT",
       "description": "Begin a REPEAT...UNTIL loop, stacking the loop position. REPEAT.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 49124,
       "name": "stmt_report",
       "title": "REPORT",
-      "description": "Print the message for the last error. REPORT."
+      "description": "Print the message for the last error. REPORT.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47846,
       "name": "stmt_restore",
       "title": "RESTORE",
-      "description": "Reset the DATA pointer, optionally to a given line. RESTORE [line]."
+      "description": "Reset the DATA pointer, optionally to a given line. RESTORE [line].",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 47286,
       "name": "stmt_return",
       "title": "RETURN",
-      "description": "Return from a GOSUB to the stacked return position. RETURN."
+      "description": "Return from a GOSUB to the stacked return position. RETURN.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 48401,
       "name": "stmt_run",
       "title": "RUN",
-      "description": "Run the current program from the start. RUN."
+      "description": "Run the current program from the start. RUN.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 35536,
       "name": "stmt_stop",
       "title": "STOP",
-      "description": "Stop the program, reporting \"STOP at line nnnn\". STOP."
+      "description": "Stop the program, reporting \"STOP at line nnnn\". STOP.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37774,
       "name": "stmt_colour",
       "title": "COLOUR",
-      "description": "Select the text colour or redefine a logical colour. COLOUR n."
+      "description": "Select the text colour or redefine a logical colour. COLOUR n.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 37525,
       "name": "stmt_trace",
       "title": "TRACE",
       "description": "Trace executed line numbers for debugging. TRACE ON | OFF | line.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 48049,
       "name": "stmt_until",
       "title": "UNTIL",
-      "description": "End a REPEAT loop: loop back unless the condition is true. UNTIL expr."
+      "description": "End a REPEAT loop: loop back unless the condition is true. UNTIL expr.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 46240,
       "name": "stmt_width",
       "title": "WIDTH",
       "description": "Set the output line width for PRINT. WIDTH n.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      },
       "fall_through": true
     },
     {
       "addr": 48834,
       "name": "stmt_oscli",
       "title": "OSCLI",
-      "description": "Pass a string to the OS command-line interpreter. OSCLI string."
+      "description": "Pass a string to the OS command-line interpreter. OSCLI string.",
+      "on_entry": {
+        "A": "the statement keyword token (>= &C6)",
+        "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword token"
+      },
+      "on_exit": {
+        "control": "rejoins statement_loop; no value, registers not preserved"
+      }
     },
     {
       "addr": 34045,

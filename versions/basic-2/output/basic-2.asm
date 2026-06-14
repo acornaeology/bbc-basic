@@ -2064,6 +2064,14 @@ l848a = sub_c847b+15
 ; OLD
 ;
 ; Recover the program cleared by NEW, if memory is intact. OLD.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_old
     jsr check_end_of_statement                                        ; 8ab6: 20 57 98     W.      ; Check the statement ends
     lda zp_page                                                       ; 8ab9: a5 18       ..       ; Point at PAGE
@@ -2077,6 +2085,14 @@ l848a = sub_c847b+15
 ; END
 ;
 ; End the program and return to the immediate prompt. END.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_end
     jsr check_end_of_statement                                        ; 8ac8: 20 57 98     W.      ; Check the statement ends
     jsr check_program                                                 ; 8acb: 20 6f be     o.      ; Check the program
@@ -2085,6 +2101,14 @@ l848a = sub_c847b+15
 ; STOP
 ;
 ; Stop the program, reporting "STOP at line nnnn". STOP.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_stop
     jsr check_end_of_statement                                        ; 8ad0: 20 57 98     W.      ; Check the statement ends
     brk                                                               ; 8ad3: 00          .        ; STOP error
@@ -2095,6 +2119,14 @@ l848a = sub_c847b+15
 ; NEW
 ;
 ; Clear the current program and its variables. NEW.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_new
     jsr check_end_of_statement                                        ; 8ada: 20 57 98     W.      ; Check the statement ends
 ; ***************************************************************************************
@@ -2223,6 +2255,14 @@ l848a = sub_c847b+15
 ; Skip to the end of the line. DATA introduces inline data (read by READ), DEF a PROC/FN
 ; definition, REM a comment, and ELSE the alternative of a taken IF: none execute inline,
 ; so all four share this skip-to-end handler.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &8b7d referenced 2 times by &8b89, &b907
 .stmt_data
     lda #&0d                                                          ; 8b7d: a9 0d       ..       ; CR
@@ -2317,6 +2357,14 @@ l848a = sub_c847b+15
 ; LET
 ;
 ; Assign an expression to a variable; the LET keyword is optional. [LET] var = expr.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_let
     jsr parse_lvalue                                                  ; 8be4: 20 82 95     ..      ; Parse the variable being assigned
     beq c8c0b                                                         ; 8be7: f0 22       ."       ; end of statement: error
@@ -2628,6 +2676,14 @@ l848a = sub_c847b+15
 ;
 ; Print expressions to the screen, or a file with #, with formatting controlled by @% and
 ; separators. PRINT [~][items][;][,].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_print
     jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..      ; Next non-space character
     cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
@@ -2828,6 +2884,14 @@ l848a = sub_c847b+15
 ; CLG
 ;
 ; Clear the graphics window to the graphics background colour. CLG.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_clg
     jsr check_end_of_statement                                        ; 8ebd: 20 57 98     W.      ; Check the statement ends
     lda #&10                                                          ; 8ec0: a9 10       ..       ; VDU 16 (clear graphics)
@@ -2836,6 +2900,14 @@ l848a = sub_c847b+15
 ; CLS
 ;
 ; Clear the text window to the text background colour. CLS.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_cls
     jsr check_end_of_statement                                        ; 8ec4: 20 57 98     W.      ; Check the statement ends
     jsr cbc28                                                         ; 8ec7: 20 28 bc     (.      ; Reset the print column
@@ -2849,6 +2921,14 @@ l848a = sub_c847b+15
 ;
 ; Call machine code, passing the resident integer variables and an optional parameter
 ; block. CALL address [,params...].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_call
     jsr eval_expr                                                     ; 8ed2: 20 1d 9b     ..      ; Evaluate the call address
     jsr sub_c92ee                                                     ; 8ed5: 20 ee 92     ..      ; coerce to an integer
@@ -2907,6 +2987,14 @@ l848a = sub_c847b+15
 ; DELETE
 ;
 ; Delete a range of program lines. DELETE start, end.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_delete
     jsr check_line_number                                             ; 8f31: 20 df 97     ..      ; Read the start line number
     bcc c8f2e                                                         ; 8f34: 90 f8       ..       ; none: Syntax error
@@ -2971,6 +3059,14 @@ l848a = sub_c847b+15
 ; RENUMBER
 ;
 ; Renumber program lines and fix up line references. RENUMBER [start[,step]].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; RENUMBER in three passes. Pass 1 records every line's
 ; original number in a table built upwards from the heap (via
 ; &3B/&3C), erroring if it reaches HIMEM. Pass 2 writes the new
@@ -3147,6 +3243,14 @@ l848a = sub_c847b+15
 ;
 ; Generate line numbers automatically during program entry until Escape. AUTO
 ; [start[,step]].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_auto
     jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.      ; Parse the start and increment
     lda zp_iwa                                                        ; 90af: a5 2a       .*       ; Save the increment
@@ -3220,6 +3324,14 @@ l848a = sub_c847b+15
 ; DIM
 ;
 ; Dimension an array, or reserve a block of bytes. DIM var(subscripts) | DIM var size.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &912f referenced 1 time by &9215
 .stmt_dim
     jsr skip_spaces                                                   ; 912f: 20 97 8a     ..      ; Skip spaces
@@ -3427,6 +3539,14 @@ l848a = sub_c847b+15
 ; HIMEM=
 ;
 ; Set HIMEM, the top of memory available to BASIC. HIMEM = address.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_himem
     jsr sub_c92eb                                                     ; 925d: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa                                                        ; 9260: a5 2a       .*       ; Set HIMEM and the stack: low
@@ -3440,6 +3560,14 @@ l848a = sub_c847b+15
 ; LOMEM=
 ;
 ; Set LOMEM, the start of variable storage. LOMEM = address.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_lomem
     jsr sub_c92eb                                                     ; 926f: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa                                                        ; 9272: a5 2a       .*       ; Set LOMEM (and empty the variables): low byte
@@ -3454,6 +3582,14 @@ l848a = sub_c847b+15
 ; PAGE=
 ;
 ; Set PAGE, the start of the BASIC program. PAGE = address.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_page
     jsr sub_c92eb                                                     ; 9283: 20 eb 92     ..      ; Step past "=", evaluate an integer
     lda zp_iwa_1                                                      ; 9286: a5 2b       .+       ; PAGE is a page number (the high byte)
@@ -3465,6 +3601,14 @@ l848a = sub_c847b+15
 ; CLEAR
 ;
 ; Discard all variables and the stack. CLEAR.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_clear
     jsr check_end_of_statement                                        ; 928d: 20 57 98     W.      ; Check the statement ends
     jsr clear_vars_heap_stack                                         ; 9290: 20 20 bd      .      ; Clear variables, heap and stack
@@ -3473,6 +3617,14 @@ l848a = sub_c847b+15
 ; TRACE
 ;
 ; Trace executed line numbers for debugging. TRACE ON | OFF | line.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_trace
     jsr check_line_number                                             ; 9295: 20 df 97     ..      ; Line number following?
     bcs c92a5                                                         ; 9298: b0 0b       ..       ; yes: TRACE to that line
@@ -3511,6 +3663,14 @@ l848a = sub_c847b+15
 ; TIME=
 ;
 ; Set the centisecond elapsed-time clock. TIME = value.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_time
     jsr sub_c92eb                                                     ; 92c9: 20 eb 92     ..      ; Step past "=", evaluate the value
     ldx #<(zp_iwa)                                                    ; 92cc: a2 2a       .*       ; Point at IWA
@@ -3580,6 +3740,14 @@ l848a = sub_c847b+15
 ;
 ; Call a named procedure, stacking parameters and the return position.
 ; PROCname[(params)].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_proc
     lda zp_text_ptr                                                   ; 9304: a5 0b       ..       ; Remember the call site in PtrB
     sta zp_text_ptr2                                                  ; 9306: 85 19       ..       ; PtrA low to PtrB,
@@ -3601,6 +3769,14 @@ l848a = sub_c847b+15
 ; LOCAL
 ;
 ; Make variables local to the current PROC/FN, stacking their old values. LOCAL var,...
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &9323 referenced 1 time by &934e
 .stmt_local
     tsx                                                               ; 9323: ba          .        ; LOCAL is only meaningful inside a PROC/FN
@@ -3635,6 +3811,14 @@ l848a = sub_c847b+15
 ; Return from a procedure, restoring LOCAL values, the caller's text pointer and the
 ; saved 6502/value stacks. It does NOT tidy the FOR/REPEAT/GOSUB stacks, so ENDPROC from
 ; inside a loop leaks that loop's frame. ENDPROC.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_endproc
     tsx                                                               ; 9356: ba          .        ; ENDPROC needs a PROC frame on the stack
     cpx #&fc                                                          ; 9357: e0 fc       ..       ; stack near empty (no PROC frame)?
@@ -3665,6 +3849,14 @@ l848a = sub_c847b+15
 ; GCOL
 ;
 ; Set the graphics colour and plotting action. GCOL action, colour.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_gcol
     jsr eval_expr_to_integer                                          ; 937a: 20 21 88     !.      ; Evaluate the GCOL mode
     lda zp_iwa                                                        ; 937d: a5 2a       .*       ; save it
@@ -3678,6 +3870,14 @@ l848a = sub_c847b+15
 ; COLOUR
 ;
 ; Select the text colour or redefine a logical colour. COLOUR n.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_colour
     lda #&11                                                          ; 938e: a9 11       ..       ; VDU 17 (COLOUR)
     pha                                                               ; 9390: 48          H        ; push it for later
@@ -3688,6 +3888,14 @@ l848a = sub_c847b+15
 ; MODE
 ;
 ; Select a screen mode, resetting the display. MODE n.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_mode
     lda #&16                                                          ; 939a: a9 16       ..       ; VDU 22 (MODE)
     pha                                                               ; 939c: 48          H        ; push it for later
@@ -3732,6 +3940,14 @@ l848a = sub_c847b+15
 ; MOVE
 ;
 ; Move the graphics cursor without drawing (PLOT 4). MOVE x, y.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_move
     lda #4                                                            ; 93e4: a9 04       ..       ; MOVE is PLOT 4 (move the cursor, no draw)
     bne c93ea                                                         ; 93e6: d0 02       ..       ; do the PLOT
@@ -3739,6 +3955,14 @@ l848a = sub_c847b+15
 ; DRAW
 ;
 ; Draw a line from the graphics cursor to a point (PLOT 5). DRAW x, y.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_draw
     lda #5                                                            ; 93e8: a9 05       ..       ; DRAW is PLOT 5 (draw a line)
 ; &93ea referenced 1 time by &93e6
@@ -3750,6 +3974,14 @@ l848a = sub_c847b+15
 ; PLOT
 ;
 ; Plot a point, line or shape with a given mode. PLOT mode, x, y.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_plot
     jsr eval_expr_to_integer                                          ; 93f1: 20 21 88     !.      ; Evaluate the plot mode
     lda zp_iwa                                                        ; 93f4: a5 2a       .*       ; save it
@@ -3783,6 +4015,14 @@ l848a = sub_c847b+15
 ; VDU
 ;
 ; Send bytes to the VDU drivers; ";" sends a 16-bit word. VDU n[,|;]...
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &942f referenced 1 time by &944b
 .stmt_vdu
     jsr skip_spaces                                                   ; 942f: 20 97 8a     ..      ; Next character
@@ -4702,6 +4942,14 @@ l848a = sub_c847b+15
 ;
 ; Conditional execution: evaluate the expression and run the THEN part, else skip to ELSE
 ; or the end of the line. IF expr [THEN] ... [ELSE ...].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_if
     jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..      ; Evaluate the condition
     beq loop_c98bf                                                    ; 98c5: f0 f8       ..       ; string: handle elsewhere
@@ -7363,6 +7611,16 @@ l848a = sub_c847b+15
 ; TAN
 ;
 ; FWA = tan(FWA), argument in radians. Pure routine at &A6C1.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_tan
     jsr eval_real                                                     ; a6be: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a6c1: 20 d3 a9     ..      ; Compute the trig kernel
@@ -7519,6 +7777,16 @@ l848a = sub_c847b+15
 ; SQR
 ;
 ; FWA = square root of FWA. Pure routine at &A7B7.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_sqr
     jsr eval_real                                                     ; a7b4: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a7b7 referenced 1 time by &a9c0
@@ -7583,6 +7851,16 @@ l848a = sub_c847b+15
 ; LN
 ;
 ; FWA = natural log of FWA. Pure routine at &A801.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 ; &a7fe referenced 1 time by &aba8
 .fn_ln
     jsr eval_real                                                     ; a7fe: 20 fa 92     ..      ; Evaluate the argument as a real
@@ -7699,6 +7977,16 @@ l848a = sub_c847b+15
 ; ACS
 ;
 ; FWA = arccos(FWA), result in radians. Computed as arcsin then adjusted at &A927.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_acs
     jsr fn_asn                                                        ; a8d4: 20 da a8     ..      ; Compute asn(x)
     jmp fwa_complement_half_pi                                        ; a8d7: 4c 27 a9    L'.      ; Result = pi/2 - asn(x)
@@ -7706,6 +7994,16 @@ l848a = sub_c847b+15
 ; ASN
 ;
 ; FWA = arcsin(FWA), result in radians. Pure routine at &A8DD.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 ; &a8da referenced 1 time by &a8d4
 .fn_asn
     jsr eval_real                                                     ; a8da: 20 fa 92     ..      ; Evaluate the argument as a real
@@ -7735,6 +8033,16 @@ l848a = sub_c847b+15
 ; ATN
 ;
 ; FWA = arctan(FWA), result in radians. Pure routine at &A90A.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_atn
     jsr eval_real                                                     ; a907: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &a90a referenced 1 time by &a8fb
@@ -7802,6 +8110,16 @@ l848a = sub_c847b+15
 ; COS
 ;
 ; FWA = cos(FWA), argument in radians. Pure routine at &A990.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_cos
     jsr eval_real                                                     ; a98d: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a990: 20 d3 a9     ..      ; Compute the SIN/COS kernel
@@ -7811,6 +8129,16 @@ l848a = sub_c847b+15
 ; SIN
 ;
 ; FWA = sin(FWA), argument in radians. Pure routine at &A99B.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_sin
     jsr eval_real                                                     ; a998: 20 fa 92     ..      ; Evaluate the argument as a real
     jsr sin_cos_reduce                                                ; a99b: 20 d3 a9     ..      ; Range-reduce: leaves the angle in FWA, quadrant in &4A
@@ -7939,6 +8267,16 @@ l848a = sub_c847b+15
 ; EXP
 ;
 ; FWA = e to the power FWA. Pure routine at &AA94.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_exp
     jsr eval_real                                                     ; aa91: 20 fa 92     ..      ; Evaluate the argument as a real
 ; &aa94 referenced 1 time by &9e7b
@@ -8034,6 +8372,16 @@ l848a = sub_c847b+15
 ; ADVAL
 ;
 ; Read an analogue (A/D) channel or a buffer status. ADVAL numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_adval
     jsr sub_c92e3                                                     ; ab33: 20 e3 92     ..      ; Evaluate the integer argument
     ldx zp_iwa                                                        ; ab36: a6 2a       .*       ; X = the channel / buffer number
@@ -8045,6 +8393,16 @@ l848a = sub_c847b+15
 ; POINT
 ;
 ; Logical colour of a graphics point. POINT(x, y).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_point
     jsr sub_c92dd                                                     ; ab41: 20 dd 92     ..      ; Evaluate x
     jsr stack_integer                                                 ; ab44: 20 94 bd     ..      ; stack it
@@ -8070,6 +8428,16 @@ l848a = sub_c847b+15
 ; POS
 ;
 ; Horizontal text-cursor position in the window. POS.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_pos
     lda #osbyte_read_text_cursor_pos                                  ; ab6d: a9 86       ..       ; OSBYTE &86: read the text cursor position
     jsr osbyte                                                        ; ab6f: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
@@ -8079,6 +8447,16 @@ l848a = sub_c847b+15
 ; VPOS
 ;
 ; Vertical text-cursor position in the window. VPOS.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_vpos
     lda #osbyte_read_text_cursor_pos                                  ; ab76: a9 86       ..       ; OSBYTE &86: read the cursor position
     jsr osbyte                                                        ; ab78: 20 f4 ff     ..      ; Read input cursor position (Sets X=POS and Y=VPOS)
@@ -8094,6 +8472,16 @@ l848a = sub_c847b+15
 ; SGN
 ;
 ; Sign of a number: -1, 0 or +1. SGN numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_sgn
     jsr eval_factor                                                   ; ab88: 20 ec ad     ..      ; Evaluate the argument
     beq cabe6                                                         ; ab8b: f0 59       .Y       ; string: error
@@ -8122,6 +8510,16 @@ l848a = sub_c847b+15
 ; LOG
 ;
 ; FWA = base-10 log of FWA. Pure routine at &ABAB.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_log
     jsr fn_ln                                                         ; aba8: 20 fe a7     ..      ; FWA = ln(x)
     ldy #&69 ; 'i'                                                    ; abab: a0 69       .i       ; Point at the constant log10(e): low byte
@@ -8131,6 +8529,16 @@ l848a = sub_c847b+15
 ; RAD
 ;
 ; FWA = FWA degrees expressed in radians. Pure routine at &ABB4.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_rad
     jsr eval_real                                                     ; abb1: 20 fa 92     ..      ; Evaluate the argument as a real
     ldy #&68 ; 'h'                                                    ; abb4: a0 68       .h       ; Point at the constant pi/180: low byte
@@ -8146,6 +8554,16 @@ l848a = sub_c847b+15
 ; DEG
 ;
 ; FWA = FWA radians expressed in degrees. Pure routine at &ABC5.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_deg
     jsr eval_real                                                     ; abc2: 20 fa 92     ..      ; Evaluate the argument as a real
     ldy #&6d ; 'm'                                                    ; abc5: a0 6d       .m       ; Point at the constant 180/pi: low byte
@@ -8155,6 +8573,16 @@ l848a = sub_c847b+15
 ; PI
 ;
 ; FWA = pi (3.14159265). Takes no argument.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_pi
     jsr ca8fe                                                         ; abcb: 20 fe a8     ..      ; Load the constant pi/2 into FWA
     inc zp_fwa_exp                                                    ; abce: e6 30       .0       ; Double it (exponent + 1) to get pi
@@ -8164,6 +8592,16 @@ l848a = sub_c847b+15
 ; USR
 ;
 ; Call machine code and return the result registers packed into a value. USR address.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_usr
     jsr sub_c92e3                                                     ; abd2: 20 e3 92     ..      ; Evaluate the address argument as an integer
     jsr usr_call                                                      ; abd5: 20 1e 8f     ..      ; Set up registers and call the code
@@ -8183,6 +8621,16 @@ l848a = sub_c847b+15
 ; EVAL
 ;
 ; Evaluate a string as a BASIC expression. EVAL string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_eval
     jsr eval_factor                                                   ; abe9: 20 ec ad     ..      ; Evaluate the argument string
     bne cabe6                                                         ; abec: d0 f8       ..       ; not a string: error
@@ -8229,6 +8677,16 @@ l848a = sub_c847b+15
 ; VAL
 ;
 ; Number parsed from the start of a string. VAL string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_val
     jsr eval_factor                                                   ; ac2f: 20 ec ad     ..      ; Evaluate the argument
     bne cac9b                                                         ; ac32: d0 67       .g       ; not a string: error
@@ -8289,6 +8747,16 @@ l848a = sub_c847b+15
 ; INT
 ;
 ; Integer part (floor) of a number. INT numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_int
     jsr eval_factor                                                   ; ac78: 20 ec ad     ..      ; Evaluate the argument
     beq cac9b                                                         ; ac7b: f0 1e       ..       ; string: error
@@ -8318,6 +8786,16 @@ l848a = sub_c847b+15
 ; ASC
 ;
 ; ASCII code of the first character of a string, or -1 if empty. ASC string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_asc
     jsr eval_factor                                                   ; ac9e: 20 ec ad     ..      ; Evaluate the string
     bne cac9b                                                         ; aca1: d0 f8       ..       ; not a string: error
@@ -8331,6 +8809,16 @@ l848a = sub_c847b+15
 ; INKEY
 ;
 ; Read a key within a time limit, test a key, or read the machine ID. INKEY numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_inkey
     jsr read_key_timed                                                ; acad: 20 ad af     ..      ; Read a key within the time limit
     cpy #0                                                            ; acb0: c0 00       ..       ; timed out?
@@ -8341,6 +8829,16 @@ l848a = sub_c847b+15
 ; EOF
 ;
 ; TRUE when at the end of an open file. EOF#channel.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_eof
     jsr eval_channel                                                  ; acb8: 20 b5 bf     ..      ; Evaluate the channel number
     tax                                                               ; acbb: aa          .        ; Channel to X
@@ -8352,6 +8850,16 @@ l848a = sub_c847b+15
 ; TRUE
 ;
 ; The constant TRUE (-1). Sets IWA = -1; this is also the ineg1 integer primitive.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 ; &acc4 referenced 3 times by &ab9d, &aca5, &acb2
 .fn_true
     lda #&ff                                                          ; acc4: a9 ff       ..       ; TRUE is -1: load &FF into every IWA byte
@@ -8365,6 +8873,16 @@ l848a = sub_c847b+15
 ; NOT
 ;
 ; Bitwise NOT (one's complement) of an integer. NOT numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_not
     jsr sub_c92e3                                                     ; acd1: 20 e3 92     ..      ; Evaluate the argument as an integer
     ldx #3                                                            ; acd4: a2 03       ..       ; Complement all four IWA bytes
@@ -8381,6 +8899,16 @@ l848a = sub_c847b+15
 ; INSTR
 ;
 ; Position of one string within another, optionally from a start. INSTR(a$, b$ [,n]).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_instr
     jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).      ; Evaluate the searched string
     bne cac9b                                                         ; ace5: d0 b4       ..       ; not a string: Type mismatch
@@ -8475,6 +9003,16 @@ l848a = sub_c847b+15
 ; ABS
 ;
 ; Absolute value of a number. ABS numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_abs
     jsr eval_factor                                                   ; ad6a: 20 ec ad     ..      ; Evaluate the argument
     beq cad67                                                         ; ad6d: f0 f8       ..       ; zero: return it
@@ -8746,6 +9284,16 @@ l848a = sub_c847b+15
 ; =TIME
 ;
 ; Read the centisecond elapsed-time clock. TIME.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_time
     ldx #<(zp_iwa)                                                    ; aeb4: a2 2a       .*       ; Point OSWORD at IWA: low byte
     ldy #>(zp_iwa)                                                    ; aeb6: a0 00       ..       ; high byte
@@ -8757,6 +9305,16 @@ l848a = sub_c847b+15
 ; =PAGE
 ;
 ; Read PAGE, the start of the BASIC program. PAGE.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_page
     lda #0                                                            ; aec0: a9 00       ..       ; PAGE low byte is always 0...
     ldy zp_page                                                       ; aec2: a4 18       ..       ; ...high byte is the page number
@@ -8768,6 +9326,16 @@ l848a = sub_c847b+15
 ; FALSE
 ;
 ; The constant FALSE (0). Sets IWA = 0; this is also the izero integer primitive.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_false
     lda #0                                                            ; aeca: a9 00       ..       ; FALSE is 0
     beq int_result_a                                                  ; aecc: f0 0a       ..       ; Return 0 as an integer
@@ -8778,6 +9346,16 @@ l848a = sub_c847b+15
 ; LEN
 ;
 ; Length of a string. LEN string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_len
     jsr eval_factor                                                   ; aed1: 20 ec ad     ..      ; Evaluate the string
     bne loop_caece                                                    ; aed4: d0 f8       ..       ; not a string: error
@@ -8796,6 +9374,16 @@ l848a = sub_c847b+15
 ;
 ; The TO keyword of FOR. It has no standalone action; reaching it as a statement token is
 ; an error.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_to
     ldy zp_text_ptr2_off                                              ; aedc: a4 1b       ..       ; Look at the character after TO
     lda (zp_text_ptr2),y                                              ; aede: b1 19       ..       ; (get it)
@@ -8828,6 +9416,16 @@ l848a = sub_c847b+15
 ; COUNT
 ;
 ; Characters printed since the last newline. COUNT.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_count
     lda zp_count                                                      ; aef7: a5 1e       ..       ; COUNT: characters printed since the last newline
     jmp int_result_a                                                  ; aef9: 4c d8 ae    L..      ; Return it as an integer
@@ -8835,6 +9433,16 @@ l848a = sub_c847b+15
 ; =LOMEM
 ;
 ; Read LOMEM, the start of variable storage. LOMEM.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_lomem
     lda zp_lomem                                                      ; aefc: a5 00       ..       ; LOMEM low byte
     ldy zp_lomem_1                                                    ; aefe: a4 01       ..       ; high byte
@@ -8843,6 +9451,16 @@ l848a = sub_c847b+15
 ; =HIMEM
 ;
 ; Read HIMEM, the top of memory for BASIC. HIMEM.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_himem
     lda zp_himem                                                      ; af03: a5 06       ..       ; HIMEM low
     ldy zp_himem_1                                                    ; af05: a4 07       ..       ; HIMEM high
@@ -8896,6 +9514,16 @@ l848a = sub_c847b+15
 ; RND
 ;
 ; Random number; the form depends on the argument (see rnd_*). RND[(numeric)].
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_rnd
     ldy zp_text_ptr2_off                                              ; af49: a4 1b       ..       ; Look at the character after RND
     lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..       ; (get it)
@@ -8994,6 +9622,16 @@ l848a = sub_c847b+15
 ; ERL
 ;
 ; Line number where the last error occurred. ERL.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_erl
     ldy zp_erl_1                                                      ; af9f: a4 09       ..       ; ERL high byte
     lda zp_erl                                                        ; afa1: a5 08       ..       ; low byte
@@ -9002,6 +9640,16 @@ l848a = sub_c847b+15
 ; ERR
 ;
 ; Error number of the last error. ERR.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_err
     ldy #0                                                            ; afa6: a0 00       ..       ; Read the error number...
     lda (zp_error_ptr),y                                              ; afa8: b1 fd       ..       ; ...from the error block (&FD)
@@ -9021,6 +9669,16 @@ l848a = sub_c847b+15
 ; GET
 ;
 ; Wait for a key and return its ASCII code. GET.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_get
     jsr osrdch                                                        ; afb9: 20 e0 ff     ..      ; X=ASCII code typed (positive timeout) or internal key number EOR 128 (negative scan) / Y=0 if a key was pressed, Y=&FF on time-out, Y=&1B on Escape
     jmp int_result_a                                                  ; afbc: 4c d8 ae    L..      ; Return the key code as an integer
@@ -9028,6 +9686,16 @@ l848a = sub_c847b+15
 ; GET$
 ;
 ; Read a key as a one-character string, or a byte / line from a file. GET$[#channel].
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_gets
     jsr osrdch                                                        ; afbf: 20 e0 ff     ..      ; Wait for a key
 ; &afc2 referenced 2 times by &b02c, &b3c2
@@ -9041,6 +9709,16 @@ l848a = sub_c847b+15
 ; LEFT$
 ;
 ; Leftmost n characters of a string. LEFT$(string, n).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_lefts
     jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).      ; Evaluate the source string
     bne cb033                                                         ; afcf: d0 62       .b       ; not a string: Type mismatch
@@ -9063,6 +9741,16 @@ l848a = sub_c847b+15
 ; RIGHT$
 ;
 ; Rightmost n characters of a string. RIGHT$(string, n).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_rights
     jsr eval_or_eor                                                   ; afee: 20 29 9b     ).      ; Evaluate the source string
     bne cb033                                                         ; aff1: d0 40       .@       ; not a string: Type mismatch
@@ -9101,6 +9789,16 @@ l848a = sub_c847b+15
 ; INKEY$
 ;
 ; Read a key within a time limit as a string. INKEY$ numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_inkeys
     jsr read_key_timed                                                ; b026: 20 ad af     ..      ; Read a key within the time limit
     txa                                                               ; b029: 8a          .        ; X holds the key
@@ -9121,6 +9819,16 @@ l848a = sub_c847b+15
 ; MID$
 ;
 ; Substring from a start position. MID$(string, start [,length]).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_mids
     jsr eval_or_eor                                                   ; b039: 20 29 9b     ).      ; Evaluate the source string
     bne cb033                                                         ; b03c: d0 f5       ..       ; not a string: Type mismatch
@@ -9181,6 +9889,16 @@ l848a = sub_c847b+15
 ; STR$
 ;
 ; String form of a number (STR$~ for hex). STR$[~] numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_strs
     jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..      ; Next character
     ldy #&ff                                                          ; b097: a0 ff       ..       ; assume hex
@@ -9215,6 +9933,16 @@ l848a = sub_c847b+15
 ; STRING$
 ;
 ; A string repeated n times. STRING$(n, string).
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_strings
     jsr sub_c92dd                                                     ; b0c2: 20 dd 92     ..      ; Evaluate the count (n) as an integer
     jsr stack_integer                                                 ; b0c5: 20 94 bd     ..      ; stack it
@@ -9357,6 +10085,16 @@ l848a = sub_c847b+15
 ; FN
 ;
 ; Call a user-defined function and return its value. FNname[(params)].
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_fn
     lda #&a4                                                          ; b195: a9 a4       ..       ; FN token: enter via the PROC/FN call mechanism
 ; ***************************************************************************************
@@ -9762,6 +10500,16 @@ l848a = sub_c847b+15
 ; CHR$
 ;
 ; One-character string for an ASCII code. CHR$ numeric.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_chrs
     jsr sub_c92e3                                                     ; b3bd: 20 e3 92     ..      ; Evaluate the integer argument
 ; &b3c0 referenced 1 time by &b3a9
@@ -9842,6 +10590,14 @@ l848a = sub_c847b+15
 ; SOUND
 ;
 ; Make a sound on a channel. SOUND channel, amplitude, pitch, duration.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_sound
     jsr eval_expr_to_integer                                          ; b44c: 20 21 88     !.      ; Evaluate the first parameter
     ldx #3                                                            ; b44f: a2 03       ..       ; three more
@@ -9870,6 +10626,14 @@ l848a = sub_c847b+15
 ; ENVELOPE
 ;
 ; Define a pitch/amplitude envelope for SOUND. ENVELOPE n,t,... (14 parameters).
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_envelope
     jsr eval_expr_to_integer                                          ; b472: 20 21 88     !.      ; Evaluate the first parameter
     ldx #&0d                                                          ; b475: a2 0d       ..       ; 13 more
@@ -9904,6 +10668,14 @@ l848a = sub_c847b+15
 ; WIDTH
 ;
 ; Set the output line width for PRINT. WIDTH n.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_width
     jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.      ; Evaluate the width
     jsr sub_c9852                                                     ; b4a3: 20 52 98     R.      ; check the statement ends
@@ -10130,6 +10902,14 @@ l848a = sub_c847b+15
 ; LIST
 ;
 ; List program lines, de-tokenising them. LIST [start[,end]].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_list
     iny                                                               ; b59c: c8          .        ; Peek at the next character
     lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..       ; read it
@@ -10287,6 +11067,14 @@ l848a = sub_c847b+15
 ;
 ; End a FOR loop: update the counter and loop back unless the limit is passed. NEXT
 ; [var,...].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &b695 referenced 1 time by &b763
 .stmt_next
     jsr parse_var_ref                                                 ; b695: 20 c9 95     ..      ; Parse the optional control variable
@@ -10453,6 +11241,14 @@ l848a = sub_c847b+15
 ;
 ; Begin a counted loop, stacking the control variable, limit and step. FOR var = start TO
 ; limit [STEP step].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_for
     jsr parse_lvalue                                                  ; b7c4: 20 82 95     ..      ; Parse the control variable (numvar =)
     beq cb7a4                                                         ; b7c7: f0 db       ..       ; not a variable: error
@@ -10550,6 +11346,14 @@ l848a = sub_c847b+15
 ; GOSUB
 ;
 ; Call a subroutine at a line number, stacking the return position. GOSUB line.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_gosub
     jsr find_line_target                                              ; b888: 20 9a b9     ..      ; Resolve the destination line
 ; &b88b referenced 1 time by &b97a
@@ -10578,6 +11382,14 @@ l848a = sub_c847b+15
 ; RETURN
 ;
 ; Return from a GOSUB to the stacked return position. RETURN.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_return
     jsr check_end_of_statement                                        ; b8b6: 20 57 98     W.      ; Check the statement ends
     ldx zp_gosub_level                                                ; b8b9: a6 25       .%       ; RETURN with nothing on the GOSUB stack: error
@@ -10592,6 +11404,14 @@ l848a = sub_c847b+15
 ; GOTO
 ;
 ; Jump to a line number. GOTO line.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_goto
     jsr find_line_target                                              ; b8cc: 20 9a b9     ..      ; Resolve the destination line
     jsr check_end_of_statement                                        ; b8cf: 20 57 98     W.      ; check the statement ends
@@ -10641,6 +11461,14 @@ l848a = sub_c847b+15
 ;
 ; ON expr GOTO/GOSUB computed jump, or ON ERROR error trapping. ON expr GOTO/GOSUB list |
 ; ON ERROR stmts.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_on
     jsr skip_spaces                                                   ; b915: 20 97 8a     ..      ; Next character
     cmp #&85                                                          ; b918: c9 85       ..       ; ERROR token?
@@ -10844,6 +11672,14 @@ l848a = sub_c847b+15
 ;
 ; Read values from the keyboard, or a file with #, into variables. INPUT [LINE] [prompt]
 ; var,...
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_input
     jsr skip_spaces                                                   ; ba44: 20 97 8a     ..      ; Next non-space character
     cmp #&23 ; '#'                                                    ; ba47: c9 23       .#       ; '#': INPUT# from a file
@@ -10951,6 +11787,14 @@ l848a = sub_c847b+15
 ; RESTORE
 ;
 ; Reset the DATA pointer, optionally to a given line. RESTORE [line].
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_restore
     ldy #0                                                            ; bae6: a0 00       ..       ; DATA pointer = PAGE
     sty zp_fwb_exp                                                    ; bae8: 84 3d       .=       ; low byte 0 (&3D),
@@ -10985,6 +11829,14 @@ l848a = sub_c847b+15
 ; READ
 ;
 ; Read values from DATA statements into variables. READ var,...
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 ; &bb1f referenced 1 time by &bb1a
 .stmt_read
     jsr parse_lvalue                                                  ; bb1f: 20 82 95     ..      ; Parse the target variable
@@ -11086,6 +11938,14 @@ l848a = sub_c847b+15
 ; UNTIL
 ;
 ; End a REPEAT loop: loop back unless the condition is true. UNTIL expr.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_until
     jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..      ; Evaluate the UNTIL condition
     jsr c984c                                                         ; bbb4: 20 4c 98     L.      ; Check for end of statement
@@ -11113,6 +11973,14 @@ l848a = sub_c847b+15
 ; REPEAT
 ;
 ; Begin a REPEAT...UNTIL loop, stacking the loop position. REPEAT.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_repeat
     ldx zp_repeat_level                                               ; bbe4: a6 24       .$       ; Index the REPEAT stack
     cpx #&14                                                          ; bbe6: e0 14       ..       ; At most 20 nested REPEATs
@@ -11324,6 +12192,14 @@ l848a = sub_c847b+15
 ; RUN
 ;
 ; Run the current program from the start. RUN.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_run
     jsr check_end_of_statement                                        ; bd11: 20 57 98     W.      ; Check the statement ends
 ; &bd14 referenced 1 time by &bf2d
@@ -11706,6 +12582,14 @@ l848a = sub_c847b+15
 ; OSCLI
 ;
 ; Pass a string to the OS command-line interpreter. OSCLI string.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_oscli
     jsr sub_cbed2                                                     ; bec2: 20 d2 be     ..      ; Evaluate the command string, CR-terminate it
     ldx #0                                                            ; bec5: a2 00       ..       ; XY -> the string (&0600): low
@@ -11740,6 +12624,14 @@ l848a = sub_c847b+15
 ; SAVE
 ;
 ; Save the current program to the filing system. SAVE string.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_save
     jsr check_program                                                 ; bef3: 20 6f be     o.      ; Check the program, set TOP
     lda zp_top                                                        ; bef6: a5 12       ..       ; End address = TOP
@@ -11768,6 +12660,14 @@ l848a = sub_c847b+15
 ; LOAD
 ;
 ; Load a BASIC program without running it. LOAD string.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_load
     jsr load_program                                                  ; bf24: 20 62 be     b.      ; Load the named program
     jmp c8af3                                                         ; bf27: 4c f3 8a    L..      ; Back to the immediate loop
@@ -11775,6 +12675,14 @@ l848a = sub_c847b+15
 ; CHAIN
 ;
 ; Load a BASIC program and run it. CHAIN string.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_chain
     jsr load_program                                                  ; bf2a: 20 62 be     b.      ; Load the named program
     jmp cbd14                                                         ; bf2d: 4c 14 bd    L..      ; then RUN it
@@ -11782,6 +12690,14 @@ l848a = sub_c847b+15
 ; PTR#=
 ;
 ; Set the sequential pointer of an open file. PTR#channel = position.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_ptr
     jsr sub_cbfa9                                                     ; bf30: 20 a9 bf     ..      ; Evaluate the #handle
     pha                                                               ; bf33: 48          H        ; save it
@@ -11797,12 +12713,32 @@ l848a = sub_c847b+15
 ; EXT
 ;
 ; Length (extent) of an open file. EXT#channel.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_ext
     sec                                                               ; bf46: 38          8        ; Carry set selects EXT (otherwise PTR)
 ; ***************************************************************************************
 ; =PTR
 ;
 ; Read the sequential pointer of an open file. PTR#channel.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_ptr
     lda #0                                                            ; bf47: a9 00       ..       ; Build the OSARGS sub-function from the carry...
     rol a                                                             ; bf49: 2a          *        ; ...0 = PTR, non-zero = EXT
@@ -11818,6 +12754,14 @@ l848a = sub_c847b+15
 ; BPUT
 ;
 ; Write a byte to an open file. BPUT#channel, value.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_bput
     jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..      ; Evaluate the #handle
     pha                                                               ; bf5b: 48          H        ; save it
@@ -11833,6 +12777,16 @@ l848a = sub_c847b+15
 ; BGET
 ;
 ; Read a byte from an open file. BGET#channel.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_bget
     jsr eval_channel                                                  ; bf6f: 20 b5 bf     ..      ; Evaluate the #handle
     jsr osbget                                                        ; bf72: 20 d7 ff     ..      ; OSBGET: read a byte from the channel
@@ -11841,6 +12795,16 @@ l848a = sub_c847b+15
 ; OPENIN
 ;
 ; Open a file for input, returning its channel (0 if not found). OPENIN string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_openin
     lda #&40 ; '@'                                                    ; bf78: a9 40       .@       ; OSFIND &40: open an existing file for input
     bne cbf82                                                         ; bf7a: d0 06       ..       ; do the open
@@ -11848,6 +12812,16 @@ l848a = sub_c847b+15
 ; OPENOUT
 ;
 ; Create a file for output, returning its channel. OPENOUT string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_openout
     lda #&80                                                          ; bf7c: a9 80       ..       ; OSFIND &80: create a file for output
     bne cbf82                                                         ; bf7e: d0 02       ..       ; do the open
@@ -11855,6 +12829,16 @@ l848a = sub_c847b+15
 ; OPENUP
 ;
 ; Open a file for update (read and write), returning its channel. OPENUP string.
+;
+; On Entry:
+;     A: the function keyword token (&8E-&C5)
+;     ZP_TEXT_PTR2 (&19/&1A): the expression text pointer (PtrB)
+;     ZP_TEXT_PTR2_OFF (&1B): offset just past the function token
+;
+; On Exit:
+;     A: result type: <0 = float in fwa, >0 = integer in iwa, 0 = string
+;     ZP_IWA (&2A-&2D) / ZP_FWA (&2E-&35) / STRING_WORK (&0600): the result, selected by the type in A
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_openup
     lda #&c0                                                          ; bf80: a9 c0       ..       ; OPENUP action &C0
 ; &bf82 referenced 2 times by &bf7a, &bf7e
@@ -11875,6 +12859,14 @@ l848a = sub_c847b+15
 ; CLOSE
 ;
 ; Close an open file, or all files with #0. CLOSE#channel.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_close
     jsr sub_cbfa9                                                     ; bf99: 20 a9 bf     ..      ; Evaluate the #handle
     jsr sub_c9852                                                     ; bf9c: 20 52 98     R.      ; Check for end of statement
@@ -11928,6 +12920,14 @@ l848a = sub_c847b+15
 ; REPORT
 ;
 ; Print the message for the last error. REPORT.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_report
     jsr check_end_of_statement                                        ; bfe4: 20 57 98     W.      ; Check the statement ends
     jsr sub_cbc25                                                     ; bfe7: 20 25 bc     %.      ; Newline
