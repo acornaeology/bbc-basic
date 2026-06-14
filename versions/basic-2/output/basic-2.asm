@@ -3396,17 +3396,17 @@ l848a = sub_c847b+15
 ; &9236 referenced 2 times by &91c1, &9736
 .imul16
     ldx #0                                                            ; 9236: a2 00       ..       ; Clear the running product (X:Y)
-    ldy #0                                                            ; 9238: a0 00       ..       ; ...
+    ldy #0                                                            ; 9238: a0 00       ..       ; high in X, low in Y
 ; &923a referenced 1 time by &9253
 .loop_c923a
     lsr zp_fwb_m3                                                     ; 923a: 46 40       F@       ; Shift the multiplier right: next bit into carry
-    ror zp_fwb_m2                                                     ; 923c: 66 3f       f?       ; ...
+    ror zp_fwb_m2                                                     ; 923c: 66 3f       f?       ; low byte (next bit -> carry)
     bcc c924b                                                         ; 923e: 90 0b       ..       ; bit clear: skip the add
     clc                                                               ; 9240: 18          .        ; bit set: add the multiplicand (IWA)
-    tya                                                               ; 9241: 98          .        ; ...
+    tya                                                               ; 9241: 98          .        ; product low...
     adc zp_iwa                                                        ; 9242: 65 2a       e*       ; low
     tay                                                               ; 9244: a8          .        ; (into Y)
-    txa                                                               ; 9245: 8a          .        ; ...
+    txa                                                               ; 9245: 8a          .        ; product high...
     adc zp_iwa_1                                                      ; 9246: 65 2b       e+       ; high
     tax                                                               ; 9248: aa          .        ; (into X)
     bcs c925a                                                         ; 9249: b0 0f       ..       ; overflow: Too big
@@ -3415,7 +3415,7 @@ l848a = sub_c847b+15
     asl zp_iwa                                                        ; 924b: 06 2a       .*       ; Double the multiplicand: low
     rol zp_iwa_1                                                      ; 924d: 26 2b       &+       ; high
     lda zp_fwb_m2                                                     ; 924f: a5 3f       .?       ; more multiplier bits?
-    ora zp_fwb_m3                                                     ; 9251: 05 40       .@       ; ...
+    ora zp_fwb_m3                                                     ; 9251: 05 40       .@       ; any multiplier bits left?
     bne loop_c923a                                                    ; 9253: d0 e5       ..       ; loop
     sty zp_iwa                                                        ; 9255: 84 2a       .*       ; Store the product: low
     stx zp_iwa_1                                                      ; 9257: 86 2b       .+       ; high
@@ -4477,15 +4477,15 @@ l848a = sub_c847b+15
 ; &97ba referenced 3 times by &971c, &975a, &977a
 .check_subscript_bound
     lda zp_iwa_1                                                      ; 97ba: a5 2b       .+       ; Top bits of the subscript
-    and #&c0                                                          ; 97bc: 29 c0       ).       ; ...
+    and #&c0                                                          ; 97bc: 29 c0       ).       ; keep just bits 6-7
     ora zp_iwa_2                                                      ; 97be: 05 2c       .,       ; combine with the high bytes...
     ora zp_iwa_3                                                      ; 97c0: 05 2d       .-       ; ...
     bne c97d1                                                         ; 97c2: d0 0d       ..       ; negative or huge: Subscript
     lda zp_iwa                                                        ; 97c4: a5 2a       .*       ; Compare against the dimension extent
-    cmp (zp_general),y                                                ; 97c6: d1 37       .7       ; ...
-    iny                                                               ; 97c8: c8          .        ; ...
-    lda zp_iwa_1                                                      ; 97c9: a5 2b       .+       ; ...
-    sbc (zp_general),y                                                ; 97cb: f1 37       .7       ; ...
+    cmp (zp_general),y                                                ; 97c6: d1 37       .7       ; subscript low vs extent low
+    iny                                                               ; 97c8: c8          .        ; next extent byte
+    lda zp_iwa_1                                                      ; 97c9: a5 2b       .+       ; subscript high...
+    sbc (zp_general),y                                                ; 97cb: f1 37       .7       ; minus the extent high
     bcs c97d1                                                         ; 97cd: b0 02       ..       ; not less than the extent: Subscript
     iny                                                               ; 97cf: c8          .        ; advance past the extent
     rts                                                               ; 97d0: 60          `        ; Return
@@ -9719,20 +9719,20 @@ l848a = sub_c847b+15
     cpy #&80                                                          ; b384: c0 80       ..       ; $-string (absolute address)?
     beq cb3a7                                                         ; b386: f0 1f       ..       ; yes
     ldy #3                                                            ; b388: a0 03       ..       ; normal string: length at offset 3
-    lda (zp_iwa),y                                                    ; b38a: b1 2a       .*       ; ...
+    lda (zp_iwa),y                                                    ; b38a: b1 2a       .*       ; read it
     sta zp_strbuf_len                                                 ; b38c: 85 36       .6       ; string length
     beq return_32                                                     ; b38e: f0 16       ..       ; empty: done
     ldy #1                                                            ; b390: a0 01       ..       ; string pointer high
-    lda (zp_iwa),y                                                    ; b392: b1 2a       .*       ; ...
-    sta zp_general_1                                                  ; b394: 85 38       .8       ; ...
+    lda (zp_iwa),y                                                    ; b392: b1 2a       .*       ; read it
+    sta zp_general_1                                                  ; b394: 85 38       .8       ; into the source pointer (high)
     dey                                                               ; b396: 88          .        ; low
-    lda (zp_iwa),y                                                    ; b397: b1 2a       .*       ; ...
-    sta zp_general                                                    ; b399: 85 37       .7       ; ...
+    lda (zp_iwa),y                                                    ; b397: b1 2a       .*       ; read it
+    sta zp_general                                                    ; b399: 85 37       .7       ; and the low byte
     ldy zp_strbuf_len                                                 ; b39b: a4 36       .6       ; copy into the buffer:
 ; &b39d referenced 1 time by &b3a4
 .loop_cb39d
     dey                                                               ; b39d: 88          .        ; char...
-    lda (zp_general),y                                                ; b39e: b1 37       .7       ; ...
+    lda (zp_general),y                                                ; b39e: b1 37       .7       ; read it
     sta string_work,y                                                 ; b3a0: 99 00 06    ...      ; -> buffer
     tya                                                               ; b3a3: 98          .        ; count
     bne loop_cb39d                                                    ; b3a4: d0 f7       ..       ; loop
@@ -9743,7 +9743,7 @@ l848a = sub_c847b+15
 .cb3a7
     lda zp_iwa_1                                                      ; b3a7: a5 2b       .+       ; $-string: copy until CR
     beq cb3c0                                                         ; b3a9: f0 15       ..       ; null pointer: empty
-    ldy #0                                                            ; b3ab: a0 00       ..       ; ...
+    ldy #0                                                            ; b3ab: a0 00       ..       ; from the start
 ; &b3ad referenced 1 time by &b3b7
 .loop_cb3ad
     lda (zp_iwa),y                                                    ; b3ad: b1 2a       .*       ; char...
@@ -9752,7 +9752,7 @@ l848a = sub_c847b+15
     beq cb3ba                                                         ; b3b4: f0 04       ..       ; yes: end
     iny                                                               ; b3b6: c8          .        ; next
     bne loop_cb3ad                                                    ; b3b7: d0 f4       ..       ; loop
-    tya                                                               ; b3b9: 98          .        ; ...
+    tya                                                               ; b3b9: 98          .        ; ran 256 chars without CR: length 0
 ; &b3ba referenced 1 time by &b3b4
 .cb3ba
     sty zp_strbuf_len                                                 ; b3ba: 84 36       .6       ; set the length
