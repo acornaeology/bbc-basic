@@ -3619,9 +3619,9 @@ l848a = sub_c847b+15
 ; &9341 referenced 1 time by &9321
 .c9341
     tsx                                                               ; 9341: ba          .        ; Bump the local count in the frame
-    inc l0106,x                                                       ; 9342: fe 06 01    ...      ; ...
+    inc l0106,x                                                       ; 9342: fe 06 01    ...      ; at frame offset +6
     ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..       ; Sync the program pointer
-    sty zp_text_ptr_off                                               ; 9347: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 9347: 84 0a       ..       ; from the PtrB offset
     jsr skip_spaces                                                   ; 9349: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
     beq stmt_local                                                    ; 934e: f0 d3       ..       ; yes
@@ -11004,12 +11004,12 @@ l848a = sub_c847b+15
 ; &bb40 referenced 1 time by &bb2f
 .cbb40
     clc                                                               ; bb40: 18          .        ; Advance the DATA pointer past the item
-    lda zp_text_ptr2_off                                              ; bb41: a5 1b       ..       ; ...
-    adc zp_text_ptr2                                                  ; bb43: 65 19       e.       ; ...
-    sta zp_data_ptr                                                   ; bb45: 85 1c       ..       ; ...
-    lda zp_text_ptr2_1                                                ; bb47: a5 1a       ..       ; ...
-    adc #0                                                            ; bb49: 69 00       i.       ; ...
-    sta zp_data_ptr_1                                                 ; bb4b: 85 1d       ..       ; ...
+    lda zp_text_ptr2_off                                              ; bb41: a5 1b       ..       ; PtrB offset,
+    adc zp_text_ptr2                                                  ; bb43: 65 19       e.       ; - PtrB low,
+    sta zp_data_ptr                                                   ; bb45: 85 1c       ..       ; DATA pointer low,
+    lda zp_text_ptr2_1                                                ; bb47: a5 1a       ..       ; PtrB high,
+    adc #0                                                            ; bb49: 69 00       i.       ; - carry,
+    sta zp_data_ptr_1                                                 ; bb4b: 85 1d       ..       ; DATA pointer high
     jmp cbb15                                                         ; bb4d: 4c 15 bb    L..      ; next variable
 ; ***************************************************************************************
 ; Advance the DATA pointer to the next item

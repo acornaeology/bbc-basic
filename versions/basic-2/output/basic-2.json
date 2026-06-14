@@ -33925,7 +33925,7 @@
         6,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "at frame offset +6",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l0106,x",
@@ -33951,7 +33951,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "from the PtrB offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -102155,7 +102155,7 @@
         165,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrB offset,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_off",
@@ -102168,7 +102168,7 @@
         101,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ PtrB low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr2",
@@ -102181,7 +102181,7 @@
         133,
         28
       ],
-      "comment_inline": "...",
+      "comment_inline": "DATA pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr",
@@ -102194,7 +102194,7 @@
         165,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrB high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr2_1",
@@ -102207,7 +102207,7 @@
         105,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ carry,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -102218,7 +102218,7 @@
         133,
         29
       ],
-      "comment_inline": "...",
+      "comment_inline": "DATA pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr_1",
