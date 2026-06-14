@@ -71597,7 +71597,7 @@
         177,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(l004d),y",
@@ -71636,7 +71636,7 @@
         208,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bne",
       "operand": "ca8aa",
@@ -71649,7 +71649,7 @@
         230,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "else bump the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "l004e",
@@ -71684,7 +71684,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte -> fp_ptr",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -71697,7 +71697,7 @@
         165,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -71710,7 +71710,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "-> fp_ptr+1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -71796,7 +71796,7 @@
         105,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte + 5",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#5"
@@ -71807,7 +71807,7 @@
         133,
         77
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the table pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004d",
@@ -71820,7 +71820,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "and the fp pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -71833,7 +71833,7 @@
         165,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -71846,7 +71846,7 @@
         105,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "plus any carry",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#0"
@@ -71857,7 +71857,7 @@
         133,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the table pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l004e",
@@ -71870,7 +71870,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "and the fp pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",

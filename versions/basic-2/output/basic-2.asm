@@ -7665,17 +7665,17 @@ l848a = sub_c847b+15
     sty l004e                                                         ; a899: 84 4e       .N       ; ...and high
     jsr fwa_pack_temp1                                                ; a89b: 20 85 a3     ..      ; Stash the argument in TEMP1
     ldy #0                                                            ; a89e: a0 00       ..       ; First table byte is the coefficient count
-    lda (l004d),y                                                     ; a8a0: b1 4d       .M       ; ...
+    lda (l004d),y                                                     ; a8a0: b1 4d       .M       ; read it
     sta zp_dp_flag                                                    ; a8a2: 85 48       .H       ; use it as the loop counter
     inc l004d                                                         ; a8a4: e6 4d       .M       ; Advance past the count byte to coefficient 0
-    bne ca8aa                                                         ; a8a6: d0 02       ..       ; ...
-    inc l004e                                                         ; a8a8: e6 4e       .N       ; ...
+    bne ca8aa                                                         ; a8a6: d0 02       ..       ; no carry into the high byte
+    inc l004e                                                         ; a8a8: e6 4e       .N       ; else bump the high byte
 ; &a8aa referenced 1 time by &a8a6
 .ca8aa
     lda l004d                                                         ; a8aa: a5 4d       .M       ; Point the fp pointer at the first coefficient
-    sta zp_fp_ptr                                                     ; a8ac: 85 4b       .K       ; ...
-    lda l004e                                                         ; a8ae: a5 4e       .N       ; ...
-    sta zp_fp_ptr_1                                                   ; a8b0: 85 4c       .L       ; ...
+    sta zp_fp_ptr                                                     ; a8ac: 85 4b       .K       ; low byte -> fp_ptr
+    lda l004e                                                         ; a8ae: a5 4e       .N       ; high byte
+    sta zp_fp_ptr_1                                                   ; a8b0: 85 4c       .L       ; -> fp_ptr+1
     jsr fwa_unpack_var                                                ; a8b2: 20 b5 a3     ..      ; FWA = coefficient 0
 ; &a8b5 referenced 1 time by &a8d1
 .loop_ca8b5
@@ -7683,13 +7683,13 @@ l848a = sub_c847b+15
     jsr fwa_rdiv_var                                                  ; a8b8: 20 ad a6     ..      ; FWA = arg / FWA
     clc                                                               ; a8bb: 18          .        ; Advance the pointer to the next coefficient
     lda l004d                                                         ; a8bc: a5 4d       .M       ; ...(five bytes per coefficient)
-    adc #5                                                            ; a8be: 69 05       i.       ; ...
-    sta l004d                                                         ; a8c0: 85 4d       .M       ; ...
-    sta zp_fp_ptr                                                     ; a8c2: 85 4b       .K       ; ...
-    lda l004e                                                         ; a8c4: a5 4e       .N       ; ...
-    adc #0                                                            ; a8c6: 69 00       i.       ; ...
-    sta l004e                                                         ; a8c8: 85 4e       .N       ; ...
-    sta zp_fp_ptr_1                                                   ; a8ca: 85 4c       .L       ; ...
+    adc #5                                                            ; a8be: 69 05       i.       ; low byte + 5
+    sta l004d                                                         ; a8c0: 85 4d       .M       ; store the table pointer low
+    sta zp_fp_ptr                                                     ; a8c2: 85 4b       .K       ; and the fp pointer low
+    lda l004e                                                         ; a8c4: a5 4e       .N       ; high byte
+    adc #0                                                            ; a8c6: 69 00       i.       ; plus any carry
+    sta l004e                                                         ; a8c8: 85 4e       .N       ; store the table pointer high
+    sta zp_fp_ptr_1                                                   ; a8ca: 85 4c       .L       ; and the fp pointer high
     jsr fwa_add_var                                                   ; a8cc: 20 00 a5     ..      ; FWA = FWA + next coefficient
     dec zp_dp_flag                                                    ; a8cf: c6 48       .H       ; One coefficient done
     bne loop_ca8b5                                                    ; a8d1: d0 e2       ..       ; loop until the table is exhausted
