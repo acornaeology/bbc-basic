@@ -93,17 +93,73 @@ Two sanctioned idioms — never leave a continuation as `...`:
    **done** when its placeholder count hits 0; the driver is the single
    source of truth, so this is fully resumable. Worst offenders surface
    first within each call-graph depth (leaves first).
-2. `uv run fantasm asm extract 2 <name>` — read it in context (callers
-   and callees shown).
-3. `uv run tools/show_routine.py <name>` — per-line view with JGH
-   cross-reference.
-4. Understand the whole routine, then replace each `...` with intent.
-   Rename `loop_cXXXX` / `cXXXX` / `return_N` auto-labels to semantic
-   names as understanding firms up.
-5. `uv run fantasm verify 2` (byte-identical), `lint 2 <driver>`,
-   `comments check 2` — all clean before commit.
+2. `uv run tools/annotation_status.py --addrs <name>` — the placeholder
+   addresses in that routine's **owned range** (up to the next
+   subroutine, so trailing un-named blocks are included), each with the
+   nearest preceding lead comment. This is the token-efficient way to
+   locate work.
+3. `uv run fantasm asm extract 2 <name>` (or an address range) — read it
+   in context. Pull only the windows you need. (Note: `show_routine.py`
+   and the density metric count `...` as "commented" — don't trust them
+   for what's left; `annotation_status.py` is the honest measure.)
+4. Understand the whole routine, then replace each `...` with intent
+   (see *Applying edits* below). Rename `loop_cXXXX` / `cXXXX` /
+   `return_N` auto-labels to semantic names as understanding firms up.
+   If an existing (non-placeholder) lead is wrong, fix it — verify
+   against the branch logic first.
+5. `uv run fantasm disassemble 2`, then `verify 2` (byte-identical),
+   `lint 2 <driver>`, `comments check 2` — all clean before commit.
 6. Commit per batch (a coherent cluster of routines), then re-run the
    status tool and log below.
+
+## Applying edits
+
+Edit the driver `versions/basic-2/disassemble/disasm_basic_2.py` by
+rewriting the placeholder comment strings. Each placeholder is a single
+line `d.comment(0xADDR, '...', align=Align.INLINE)`. The reliable way is
+a Python script that regex-replaces by address, asserting exactly one
+match per address (catches typos and addresses that aren't actually
+placeholders):
+
+```python
+import re
+from pathlib import Path
+drv = Path("versions/basic-2/disassemble/disasm_basic_2.py")
+src = drv.read_text()
+
+# addr -> new comment text (only addresses that currently hold '...')
+edits = {
+    0xb017: 'Read a kept char from the tail (at X)',
+    0xb01a: 'Pack it down to the front (at Y)',
+    # ...
+}
+for addr, new in edits.items():
+    pat = re.compile(r"(d\.comment\(0x%x,\s*)'\.\.\.'" % addr)
+    if len(pat.findall(src)) != 1:
+        raise SystemExit(f"expected 1 placeholder at 0x{addr:x}, found {len(pat.findall(src))}")
+    src = pat.sub(lambda m: m.group(1) + repr(new), src, count=1)
+
+drv.write_text(src)
+print(f"applied {len(edits)} edits")
+```
+
+To **correct an existing (non-placeholder) lead** — e.g. a swapped
+high/low label — match its current text instead of `'...'`:
+
+```python
+corrections = {
+    0x88f5: ('Byte 2 = low | &40', 'Byte 2 = line-number high | &40'),
+}
+for addr, (old, new) in corrections.items():
+    pat = re.compile(r"(d\.comment\(0x%x,\s*)'%s'" % (addr, re.escape(old)))
+    if len(pat.findall(src)) != 1:
+        raise SystemExit(f"correction miss 0x{addr:x}")
+    src = pat.sub(lambda m: m.group(1) + repr(new), src, count=1)
+```
+
+`repr(new)` handles quoting, so comment text may contain `"`, `&`, etc.
+freely. Run via `uv run python - <<'PY' ... PY`. Don't hand-edit the
+generated `.asm`/`.json`; they are rebuilt by `fantasm disassemble`.
 
 ## Ordering
 
