@@ -118,3 +118,4 @@ placeholders goes first.
 | 2026-06-14 | depth 1: find_def | find_def (PROC/FN definition search + cache) | 30 | 1553 | — |
 | 2026-06-14 | depth 1: FP divide | fp_divide (restoring long division, 32-bit + 7 guard bits) | 70 | 1483 | — |
 | 2026-06-14 | depth 1: assign_string | assign_string (string store: reuse/extend/grow allocation) | 47 | 1436 | — |
+| 2026-06-14 | depth 1: FP arithmetic cluster | fwa_mul_var_raw, fp_compare, int_to_fwa, fwa_mul10, fwa_div10, small_int_to_fwa, fwa_round, fwa_negate, iwa_inc | 33 | 1403 | — |

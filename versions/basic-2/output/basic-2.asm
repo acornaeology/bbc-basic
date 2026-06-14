@@ -3388,7 +3388,7 @@ l848a = sub_c847b+15
 ; &9231 referenced 1 time by &91a6
 .sub_c9231
     ldx #&3f ; '?'                                                    ; 9231: a2 3f       .?       ; Unstack the multiplier (into &3F area)
-    jsr unstack_int_to_zp                                             ; 9233: 20 0d be     ..      ; ...
+    jsr unstack_int_to_zp                                             ; 9233: 20 0d be     ..      ; into the &3F area
 ; ***************************************************************************************
 ; 16-bit integer multiply (IWA * FWB)
 ;
@@ -5000,26 +5000,26 @@ l848a = sub_c847b+15
     ldx zp_var_type                                                   ; 9a62: a6 27       .'       ; Restore the operator
     ldy #0                                                            ; 9a64: a0 00       ..       ; assume equal
     lda zp_fwb_sign                                                   ; 9a66: a5 3b       .;       ; FWB sign
-    and #&80                                                          ; 9a68: 29 80       ).       ; ...
-    sta zp_fwb_sign                                                   ; 9a6a: 85 3b       .;       ; ...
+    and #&80                                                          ; 9a68: 29 80       ).       ; keep the sign bit
+    sta zp_fwb_sign                                                   ; 9a6a: 85 3b       .;       ; (store)
     lda zp_fwa_sign                                                   ; 9a6c: a5 2e       ..       ; FWA sign
-    and #&80                                                          ; 9a6e: 29 80       ).       ; ...
+    and #&80                                                          ; 9a6e: 29 80       ).       ; keep the sign bit
     cmp zp_fwb_sign                                                   ; 9a70: c5 3b       .;       ; signs differ?
     bne return_17                                                     ; 9a72: d0 1e       ..       ; yes: unequal
     lda zp_fwb_exp                                                    ; 9a74: a5 3d       .=       ; Compare exponents
-    cmp zp_fwa_exp                                                    ; 9a76: c5 30       .0       ; ...
+    cmp zp_fwa_exp                                                    ; 9a76: c5 30       .0       ; vs FWA exp
     bne c9a93                                                         ; 9a78: d0 19       ..       ; differ
     lda zp_fwb_m1                                                     ; 9a7a: a5 3e       .>       ; Compare mantissa byte 1
-    cmp zp_fwa_m1                                                     ; 9a7c: c5 31       .1       ; ...
+    cmp zp_fwa_m1                                                     ; 9a7c: c5 31       .1       ; vs FWA m1
     bne c9a93                                                         ; 9a7e: d0 13       ..       ; differ
     lda zp_fwb_m2                                                     ; 9a80: a5 3f       .?       ; byte 2
-    cmp zp_fwa_m2                                                     ; 9a82: c5 32       .2       ; ...
+    cmp zp_fwa_m2                                                     ; 9a82: c5 32       .2       ; vs FWA m2
     bne c9a93                                                         ; 9a84: d0 0d       ..       ; differ
     lda zp_fwb_m3                                                     ; 9a86: a5 40       .@       ; byte 3
-    cmp zp_fwa_m3                                                     ; 9a88: c5 33       .3       ; ...
+    cmp zp_fwa_m3                                                     ; 9a88: c5 33       .3       ; vs FWA m3
     bne c9a93                                                         ; 9a8a: d0 07       ..       ; differ
     lda zp_fwb_m4                                                     ; 9a8c: a5 41       .A       ; byte 4
-    cmp zp_fwa_m4                                                     ; 9a8e: c5 34       .4       ; ...
+    cmp zp_fwa_m4                                                     ; 9a8e: c5 34       .4       ; vs FWA m4
     bne c9a93                                                         ; 9a90: d0 01       ..       ; differ
 ; &9a92 referenced 1 time by &9a72
 .return_17
@@ -6419,8 +6419,8 @@ l848a = sub_c847b+15
 ; &a1f4 referenced 2 times by &9ed7, &a108
 .fwa_mul10
     clc                                                               ; a1f4: 18          .        ; x*8: add 3 to the exponent
-    lda zp_fwa_exp                                                    ; a1f5: a5 30       .0       ; ...
-    adc #3                                                            ; a1f7: 69 03       i.       ; ...
+    lda zp_fwa_exp                                                    ; a1f5: a5 30       .0       ; exponent...
+    adc #3                                                            ; a1f7: 69 03       i.       ; - 3
     sta zp_fwa_exp                                                    ; a1f9: 85 30       .0       ; (store)
     bcc ca1ff                                                         ; a1fb: 90 02       ..       ; no carry
     inc zp_fwa_ovf                                                    ; a1fd: e6 2f       ./       ; carry into overflow
@@ -6536,8 +6536,8 @@ l848a = sub_c847b+15
     rol a                                                             ; a29b: 2a          *        ; ...into the carry
     jsr ca208                                                         ; a29c: 20 08 a2     ..      ; accumulate this term
     lda zp_fwa_m2                                                     ; a29f: a5 32       .2       ; continue propagating the shifted mantissa bits
-    rol a                                                             ; a2a1: 2a          *        ; ...
-    lda zp_fwa_m1                                                     ; a2a2: a5 31       .1       ; ...
+    rol a                                                             ; a2a1: 2a          *        ; ...into the carry
+    lda zp_fwa_m1                                                     ; a2a2: a5 31       .1       ; next bit...
 ; ***************************************************************************************
 ; Add to the rounding byte and ripple the carry up
 ;
@@ -6568,7 +6568,7 @@ l848a = sub_c847b+15
 ; &a2be referenced 12 times by &9301, &9a41, &9c98, &9caf, &9cee, &9d02, &9d0e, &9d17, &9d1d, &9f0c, &af24, &b4e6
 .int_to_fwa
     ldx #0                                                            ; a2be: a2 00       ..       ; Clear the rounding...
-    stx zp_fwa_rnd                                                    ; a2c0: 86 35       .5       ; ...
+    stx zp_fwa_rnd                                                    ; a2c0: 86 35       .5       ; (rnd = 0)
     stx zp_fwa_ovf                                                    ; a2c2: 86 2f       ./       ; ...and overflow bytes
     lda zp_iwa_3                                                      ; a2c4: a5 2d       .-       ; Sign of IWA (top byte)
     bpl ca2cd                                                         ; a2c6: 10 05       ..       ; positive: sign byte = 0
@@ -6579,11 +6579,11 @@ l848a = sub_c847b+15
     stx zp_fwa_sign                                                   ; a2cd: 86 2e       ..       ; (store the sign)
     lda zp_iwa                                                        ; a2cf: a5 2a       .*       ; Copy IWA into the mantissa (MSB first):
     sta zp_fwa_m4                                                     ; a2d1: 85 34       .4       ; byte 0 -> m4
-    lda zp_iwa_1                                                      ; a2d3: a5 2b       .+       ; ...
+    lda zp_iwa_1                                                      ; a2d3: a5 2b       .+       ; read it
     sta zp_fwa_m3                                                     ; a2d5: 85 33       .3       ; byte 1 -> m3
-    lda zp_iwa_2                                                      ; a2d7: a5 2c       .,       ; ...
+    lda zp_iwa_2                                                      ; a2d7: a5 2c       .,       ; read it
     sta zp_fwa_m2                                                     ; a2d9: 85 32       .2       ; byte 2 -> m2
-    lda zp_iwa_3                                                      ; a2db: a5 2d       .-       ; ...
+    lda zp_iwa_3                                                      ; a2db: a5 2d       .-       ; read it
     sta zp_fwa_m1                                                     ; a2dd: 85 31       .1       ; byte 3 -> m1 (MSB)
     lda #&a0                                                          ; a2df: a9 a0       ..       ; Exponent &A0 (= 32): a 32-bit integer
     sta zp_fwa_exp                                                    ; a2e1: 85 30       .0       ; (store)
@@ -6606,8 +6606,8 @@ l848a = sub_c847b+15
     beq return_23                                                     ; a2f2: f0 f8       ..       ; zero: done
     bpl ca2fd                                                         ; a2f4: 10 07       ..       ; positive
     sta zp_fwa_sign                                                   ; a2f6: 85 2e       ..       ; negative: set the sign...
-    lda #0                                                            ; a2f8: a9 00       ..       ; ...
-    sec                                                               ; a2fa: 38          8        ; ...
+    lda #0                                                            ; a2f8: a9 00       ..       ; 0...
+    sec                                                               ; a2fa: 38          8        ; minus the value:
     sbc zp_fwa_sign                                                   ; a2fb: e5 2e       ..       ; ...and negate the value
 ; &a2fd referenced 1 time by &a2f4
 .ca2fd
@@ -7217,11 +7217,11 @@ l848a = sub_c847b+15
 ; &a613 referenced 1 time by &a60e
 .ca613
     clc                                                               ; a613: 18          .        ; Add the exponents:
-    lda zp_fwa_exp                                                    ; a614: a5 30       .0       ; ...
-    adc zp_fwb_exp                                                    ; a616: 65 3d       e=       ; ...
+    lda zp_fwa_exp                                                    ; a614: a5 30       .0       ; FWA exp...
+    adc zp_fwb_exp                                                    ; a616: 65 3d       e=       ; - FWB exp
     bcc ca61d                                                         ; a618: 90 03       ..       ; no carry
     inc zp_fwa_ovf                                                    ; a61a: e6 2f       ./       ; carry into overflow
-    clc                                                               ; a61c: 18          .        ; ...
+    clc                                                               ; a61c: 18          .        ; (clear carry)
 ; &a61d referenced 1 time by &a618
 .ca61d
     sbc #&7f                                                          ; a61d: e9 7f       ..       ; remove the excess-128 bias (added twice)
@@ -7231,7 +7231,7 @@ l848a = sub_c847b+15
 ; &a625 referenced 1 time by &a621
 .ca625
     ldx #5                                                            ; a625: a2 05       ..       ; Move FWA aside as the multiplicand and clear FWA:
-    ldy #0                                                            ; a627: a0 00       ..       ; ...
+    ldy #0                                                            ; a627: a0 00       ..       ; Y = 0 (to clear FWA with)
 ; &a629 referenced 1 time by &a630
 .loop_ca629
     lda zp_fwa_exp,x                                                  ; a629: b5 30       .0       ; copy a FWA byte...
@@ -7240,20 +7240,20 @@ l848a = sub_c847b+15
     dex                                                               ; a62f: ca          .        ; count
     bne loop_ca629                                                    ; a630: d0 f7       ..       ; loop
     lda zp_fwa_sign                                                   ; a632: a5 2e       ..       ; Product sign = FWA sign XOR FWB sign:
-    eor zp_fwb_sign                                                   ; a634: 45 3b       E;       ; ...
+    eor zp_fwb_sign                                                   ; a634: 45 3b       E;       ; XOR FWB sign
     sta zp_fwa_sign                                                   ; a636: 85 2e       ..       ; (store)
     ldy #&20 ; ' '                                                    ; a638: a0 20       .        ; 32 iterations, one per multiplier bit
 ; &a63a referenced 1 time by &a653
 .loop_ca63a
     lsr zp_fwb_m1                                                     ; a63a: 46 3e       F>       ; Shift the multiplier right: next bit into carry
-    ror zp_fwb_m2                                                     ; a63c: 66 3f       f?       ; ...
-    ror zp_fwb_m3                                                     ; a63e: 66 40       f@       ; ...
-    ror zp_fwb_m4                                                     ; a640: 66 41       fA       ; ...
-    ror zp_fwb_rnd                                                    ; a642: 66 42       fB       ; ...
+    ror zp_fwb_m2                                                     ; a63c: 66 3f       f?       ; m2,
+    ror zp_fwb_m3                                                     ; a63e: 66 40       f@       ; m3,
+    ror zp_fwb_m4                                                     ; a640: 66 41       fA       ; m4,
+    ror zp_fwb_rnd                                                    ; a642: 66 42       fB       ; rnd
     asl l0046                                                         ; a644: 06 46       .F       ; Shift the running product left (&43-&46):
-    rol l0045                                                         ; a646: 26 45       &E       ; ...
-    rol l0044                                                         ; a648: 26 44       &D       ; ...
-    rol zp_fp_temp                                                    ; a64a: 26 43       &C       ; ...
+    rol l0045                                                         ; a646: 26 45       &E       ; through &45,
+    rol l0044                                                         ; a648: 26 44       &D       ; &44,
+    rol zp_fp_temp                                                    ; a64a: 26 43       &C       ; &43 (high)
     bcc ca652                                                         ; a64c: 90 04       ..       ; multiplier bit clear: skip the add
     clc                                                               ; a64e: 18          .        ; bit set: add the multiplicand
     jsr fwa_acc_fwb                                                   ; a64f: 20 78 a1     x.      ; FWA += FWB
@@ -7294,7 +7294,7 @@ l848a = sub_c847b+15
 ; &a676 referenced 1 time by &a662
 .ca676
     lda zp_fwa_m4                                                     ; a676: a5 34       .4       ; Exactly half: force the mantissa LSB
-    ora #1                                                            ; a678: 09 01       ..       ; ...
+    ora #1                                                            ; a678: 09 01       ..       ; set the LSB
     sta zp_fwa_m4                                                     ; a67a: 85 34       .4       ; (store)
 ; &a67c referenced 2 times by &a660, &a669
 .ca67c
@@ -8510,7 +8510,7 @@ l848a = sub_c847b+15
 ; &ad83 referenced 1 time by &ad7c
 .cad83
     lda zp_fwa_sign                                                   ; ad83: a5 2e       ..       ; Toggle the sign bit...
-    eor #&80                                                          ; ad85: 49 80       I.       ; ...
+    eor #&80                                                          ; ad85: 49 80       I.       ; flip bit 7
     sta zp_fwa_sign                                                   ; ad87: 85 2e       ..       ; (store)
 ; &ad89 referenced 2 times by &ad7a, &ad81
 .cad89
