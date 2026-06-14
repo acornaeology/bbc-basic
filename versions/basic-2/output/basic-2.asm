@@ -3150,25 +3150,25 @@ l848a = sub_c847b+15
 .stmt_auto
     jsr sub_c8f69                                                     ; 90ac: 20 69 8f     i.      ; Parse the start and increment
     lda zp_iwa                                                        ; 90af: a5 2a       .*       ; Save the increment
-    pha                                                               ; 90b1: 48          H        ; ...
+    pha                                                               ; 90b1: 48          H        ; push it
     jsr unstack_integer                                               ; 90b2: 20 ea bd     ..      ; Recover the start line
 ; &90b5 referenced 2 times by &90d3, &90d7
 .c90b5
     jsr stack_integer                                                 ; 90b5: 20 94 bd     ..      ; Stack the line number
     jsr sub_c9923                                                     ; 90b8: 20 23 99     #.      ; Print it
     lda #&20 ; ' '                                                    ; 90bb: a9 20       .        ; Print a space and read a line
-    jsr read_input_line                                               ; 90bd: 20 02 bc     ..      ; ...
+    jsr read_input_line                                               ; 90bd: 20 02 bc     ..      ; do it
     jsr unstack_integer                                               ; 90c0: 20 ea bd     ..      ; Pop the line number
     jsr tokenise_line                                                 ; 90c3: 20 51 89     Q.      ; Tokenise the line
     jsr sub_cbc8d                                                     ; 90c6: 20 8d bc     ..      ; Insert it into the program
     jsr clear_vars_heap_stack                                         ; 90c9: 20 20 bd      .      ; Clear variables and heap
     pla                                                               ; 90cc: 68          h        ; Increment
-    pha                                                               ; 90cd: 48          H        ; ...
+    pha                                                               ; 90cd: 48          H        ; keep it stacked
     clc                                                               ; 90ce: 18          .        ; Next line number = line + increment
-    adc zp_iwa                                                        ; 90cf: 65 2a       e*       ; ...
-    sta zp_iwa                                                        ; 90d1: 85 2a       .*       ; ...
-    bcc c90b5                                                         ; 90d3: 90 e0       ..       ; ...
-    inc zp_iwa_1                                                      ; 90d5: e6 2b       .+       ; ...
+    adc zp_iwa                                                        ; 90cf: 65 2a       e*       ; - current line low,
+    sta zp_iwa                                                        ; 90d1: 85 2a       .*       ; store low,
+    bcc c90b5                                                         ; 90d3: 90 e0       ..       ; no carry: loop,
+    inc zp_iwa_1                                                      ; 90d5: e6 2b       .+       ; carry into the high byte
     bpl c90b5                                                         ; 90d7: 10 dc       ..       ; still in range: loop
     jmp c8af3                                                         ; 90d9: 4c f3 8a    L..      ; overflow: stop
 ; &90dc referenced 1 time by &9106
@@ -3184,29 +3184,29 @@ l848a = sub_c847b+15
     jsr sub_c92dd                                                     ; 90eb: 20 dd 92     ..      ; Evaluate the size
     jsr iwa_inc                                                       ; 90ee: 20 22 92     ".      ; n + 1 bytes
     lda zp_iwa_3                                                      ; 90f1: a5 2d       .-       ; fits in 16 bits?
-    ora zp_iwa_2                                                      ; 90f3: 05 2c       .,       ; ...
+    ora zp_iwa_2                                                      ; 90f3: 05 2c       .,       ; OR byte 2 (any => > 65535)
     bne c9127                                                         ; 90f5: d0 30       .0       ; no: Bad DIM
     clc                                                               ; 90f7: 18          .        ; New top = top + size
-    lda zp_iwa                                                        ; 90f8: a5 2a       .*       ; ...
-    adc zp_vartop                                                     ; 90fa: 65 02       e.       ; ...
-    tay                                                               ; 90fc: a8          .        ; ...
-    lda zp_iwa_1                                                      ; 90fd: a5 2b       .+       ; ...
-    adc zp_vartop_1                                                   ; 90ff: 65 03       e.       ; ...
-    tax                                                               ; 9101: aa          .        ; ...
+    lda zp_iwa                                                        ; 90f8: a5 2a       .*       ; size low,
+    adc zp_vartop                                                     ; 90fa: 65 02       e.       ; - VARTOP low,
+    tay                                                               ; 90fc: a8          .        ; new top low in Y,
+    lda zp_iwa_1                                                      ; 90fd: a5 2b       .+       ; size high,
+    adc zp_vartop_1                                                   ; 90ff: 65 03       e.       ; - VARTOP high,
+    tax                                                               ; 9101: aa          .        ; new top high in X
     cpy zp_stack_ptr                                                  ; 9102: c4 04       ..       ; collides with the stack?
-    sbc zp_stack_ptr_1                                                ; 9104: e5 05       ..       ; ...
+    sbc zp_stack_ptr_1                                                ; 9104: e5 05       ..       ; high byte vs the stack
     bcs loop_c90dc                                                    ; 9106: b0 d4       ..       ; yes: No room
     lda zp_vartop                                                     ; 9108: a5 02       ..       ; Block address = old top
-    sta zp_iwa                                                        ; 910a: 85 2a       .*       ; ...
-    lda zp_vartop_1                                                   ; 910c: a5 03       ..       ; ...
-    sta zp_iwa_1                                                      ; 910e: 85 2b       .+       ; ...
+    sta zp_iwa                                                        ; 910a: 85 2a       .*       ; address low,
+    lda zp_vartop_1                                                   ; 910c: a5 03       ..       ; high byte,
+    sta zp_iwa_1                                                      ; 910e: 85 2b       .+       ; address high
     sty zp_vartop                                                     ; 9110: 84 02       ..       ; Commit the new top
-    stx zp_vartop_1                                                   ; 9112: 86 03       ..       ; ...
+    stx zp_vartop_1                                                   ; 9112: 86 03       ..       ; high byte
     lda #0                                                            ; 9114: a9 00       ..       ; Result is the address
-    sta zp_iwa_2                                                      ; 9116: 85 2c       .,       ; ...
-    sta zp_iwa_3                                                      ; 9118: 85 2d       .-       ; ...
+    sta zp_iwa_2                                                      ; 9116: 85 2c       .,       ; clear byte 2,
+    sta zp_iwa_3                                                      ; 9118: 85 2d       .-       ; and byte 3
     lda #&40 ; '@'                                                    ; 911a: a9 40       .@       ; integer type
-    sta zp_var_type                                                   ; 911c: 85 27       .'       ; ...
+    sta zp_var_type                                                   ; 911c: 85 27       .'       ; set the type
     jsr assign_number                                                 ; 911e: 20 b4 b4     ..      ; assign the address to the variable
     jsr sub_c8827                                                     ; 9121: 20 27 88     '.      ; sync the pointer
     jmp c920b                                                         ; 9124: 4c 0b 92    L..      ; continue
