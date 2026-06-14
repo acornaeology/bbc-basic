@@ -72463,7 +72463,7 @@
         0,
         165
       ],
-      "comment_inline": "...",
+      "comment_inline": "add the high part of pi/2",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -72477,7 +72477,7 @@
         76,
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "point at the low part",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "point_half_pi_lo",
@@ -72491,7 +72491,7 @@
         0,
         165
       ],
-      "comment_inline": "...",
+      "comment_inline": "add the low part",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_add_var",
@@ -72505,7 +72505,7 @@
         126,
         173
       ],
-      "comment_inline": "...",
+      "comment_inline": "negate: result is pi/2 - FWA (tail)",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "fwa_negate",
@@ -72593,7 +72593,7 @@
         169,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "the constant &80",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&80"
@@ -72604,7 +72604,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "exponent,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -72617,7 +72617,7 @@
         133,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "mantissa top byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -72630,7 +72630,7 @@
         133,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "and sign byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_sign",
@@ -72680,7 +72680,7 @@
         151,
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "evaluate the fraction",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fp_eval_cont_frac",

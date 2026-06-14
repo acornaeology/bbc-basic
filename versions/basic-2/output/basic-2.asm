@@ -7764,10 +7764,10 @@ l848a = sub_c847b+15
 ; &a927 referenced 1 time by &a8d7
 .fwa_complement_half_pi
     jsr point_half_pi_hi                                              ; a927: 20 48 aa     H.      ; atn(x) = pi/2 - atn(1/x)
-    jsr fwa_add_var                                                   ; a92a: 20 00 a5     ..      ; ...
-    jsr point_half_pi_lo                                              ; a92d: 20 4c aa     L.      ; ...
-    jsr fwa_add_var                                                   ; a930: 20 00 a5     ..      ; ...
-    jmp fwa_negate                                                    ; a933: 4c 7e ad    L~.      ; ...
+    jsr fwa_add_var                                                   ; a92a: 20 00 a5     ..      ; add the high part of pi/2
+    jsr point_half_pi_lo                                              ; a92d: 20 4c aa     L.      ; point at the low part
+    jsr fwa_add_var                                                   ; a930: 20 00 a5     ..      ; add the low part
+    jmp fwa_negate                                                    ; a933: 4c 7e ad    L~.      ; negate: result is pi/2 - FWA (tail)
 ; &a936 referenced 2 times by &a91f, &a924
 .ca936
     lda zp_fwa_exp                                                    ; a936: a5 30       .0       ; Exponent of the (reduced) argument
@@ -7775,14 +7775,14 @@ l848a = sub_c847b+15
     bcc ca904                                                         ; a93a: 90 c8       ..       ; yes: atn(x) = x to working precision
     jsr fwa_pack_temp3                                                ; a93c: 20 81 a3     ..      ; Save the argument x in TEMP3
     jsr fwb_clear                                                     ; a93f: 20 53 a4     S.      ; Set FWB = 1...
-    lda #&80                                                          ; a942: a9 80       ..       ; ...
-    sta zp_fwb_exp                                                    ; a944: 85 3d       .=       ; ...
-    sta zp_fwb_m1                                                     ; a946: 85 3e       .>       ; ...
-    sta zp_fwb_sign                                                   ; a948: 85 3b       .;       ; ...
+    lda #&80                                                          ; a942: a9 80       ..       ; the constant &80
+    sta zp_fwb_exp                                                    ; a944: 85 3d       .=       ; exponent,
+    sta zp_fwb_m1                                                     ; a946: 85 3e       .>       ; mantissa top byte,
+    sta zp_fwb_sign                                                   ; a948: 85 3b       .;       ; and sign byte
     jsr fwa_add_fwb                                                   ; a94a: 20 05 a5     ..      ; Add it to the argument
     lda #&5a ; 'Z'                                                    ; a94d: a9 5a       .Z       ; Evaluate the arctan continued fraction
     ldy #&a9                                                          ; a94f: a0 a9       ..       ; (coefficients at &A95A)
-    jsr fp_eval_cont_frac                                             ; a951: 20 97 a8     ..      ; ...
+    jsr fp_eval_cont_frac                                             ; a951: 20 97 a8     ..      ; evaluate the fraction
     jsr caad1                                                         ; a954: 20 d1 aa     ..      ; Scale by x (in TEMP3): atn(x) = x * P
     lda #&ff                                                          ; a957: a9 ff       ..       ; real result
     rts                                                               ; a959: 60          `        ; Return
