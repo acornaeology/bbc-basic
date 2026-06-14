@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 1,096 of 7,129 placeholders left (15.4 %);
+**STATUS: in progress — 1,087 of 7,129 placeholders left (15.2 %);
 depths 0, 1 and 2 complete.** Inline-comment *density* is 100 %, but that
 number is hollow: a first pass met the coverage target by emitting a
 literal `...` placeholder wherever it had nothing to say. At the start
@@ -9,8 +9,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 3 next:
-`read_input_line` (9), `print_special_item` (5), `stmt_if` (5),
-`fwa_int_power` (4), then the rest of depths 3–8. Per routine:
+`print_special_item` (5), `stmt_if` (5), `fwa_int_power` (4), then the
+rest of depth 3 and on to depth 4 (index_array 62, eval_power 23, ...). Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -201,3 +201,4 @@ placeholders goes first.
 | 2026-06-14 | depth 3: ascii_to_number | ascii_to_number (VAL/tokenise: NUL-terminate SWA, save/repoint PtrB at &0600) | 10 | 1115 | — |
 | 2026-06-14 | depth 3: print_token | print_token (de-tokenise: scan keyword table at &8071, match token byte, advance entry) | 10 | 1105 | — |
 | 2026-06-14 | depth 3: fwa_complement_half_pi | fwa_complement_half_pi (pi/2 - FWA two-part; ATN core: FWB build, arctan continued fraction) | 9 | 1096 | — |
+| 2026-06-14 | depth 3: read_input_line | read_input_line (prompt + OSWORD 0 read line: build the param block at &37) | 9 | 1087 | — |

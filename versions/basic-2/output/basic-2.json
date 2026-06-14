@@ -103378,7 +103378,7 @@
         169,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &07",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#7"
@@ -103392,7 +103392,7 @@
       "labels": [
         "cbc09"
       ],
-      "comment_inline": "...",
+      "comment_inline": "address low = &00",
       "xref_summaries": [
         "&bc09 referenced 1 time by &bc00"
       ],
@@ -103411,7 +103411,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "address high = &07",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -103435,7 +103435,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -103459,7 +103459,7 @@
         133,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "l003a",
@@ -103483,7 +103483,7 @@
         132,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -103495,7 +103495,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "Y wraps back to 0",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -103515,7 +103515,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = 0: OSWORD read line",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -103620,7 +103620,7 @@
         133,
         30
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_count",

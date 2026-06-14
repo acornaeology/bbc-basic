@@ -11136,20 +11136,20 @@ l848a = sub_c847b+15
 .read_input_line
     jsr print_char                                                    ; bc02: 20 58 b5     X.      ; Print the prompt character
     ldy #0                                                            ; bc05: a0 00       ..       ; Input buffer at &0700
-    lda #7                                                            ; bc07: a9 07       ..       ; ...
+    lda #7                                                            ; bc07: a9 07       ..       ; high byte &07
 ; &bc09 referenced 1 time by &bc00
 .cbc09
-    sty zp_general                                                    ; bc09: 84 37       .7       ; ...
-    sta zp_general_1                                                  ; bc0b: 85 38       .8       ; ...
+    sty zp_general                                                    ; bc09: 84 37       .7       ; address low = &00
+    sta zp_general_1                                                  ; bc0b: 85 38       .8       ; address high = &07
     lda #&ee                                                          ; bc0d: a9 ee       ..       ; Max length 238
-    sta zp_fileblk                                                    ; bc0f: 85 39       .9       ; ...
+    sta zp_fileblk                                                    ; bc0f: 85 39       .9       ; store it
     lda #&20 ; ' '                                                    ; bc11: a9 20       .        ; Lowest accepted character
-    sta l003a                                                         ; bc13: 85 3a       .:       ; ...
+    sta l003a                                                         ; bc13: 85 3a       .:       ; store it
     ldy #&ff                                                          ; bc15: a0 ff       ..       ; Highest accepted character (&FF)
-    sty zp_fwb_sign                                                   ; bc17: 84 3b       .;       ; ...
-    iny                                                               ; bc19: c8          .        ; ...
+    sty zp_fwb_sign                                                   ; bc17: 84 3b       .;       ; store it
+    iny                                                               ; bc19: c8          .        ; Y wraps back to 0
     ldx #&37 ; '7'                                                    ; bc1a: a2 37       .7       ; Point at the OSWORD block
-    tya                                                               ; bc1c: 98          .        ; ...
+    tya                                                               ; bc1c: 98          .        ; A = 0: OSWORD read line
     jsr osword                                                        ; bc1d: 20 f1 ff     ..      ; Read a line
     bcc cbc28                                                         ; bc20: 90 06       ..       ; ok: reset the column
     jmp c9838                                                         ; bc22: 4c 38 98    L8.      ; Escape: raise it
@@ -11159,7 +11159,7 @@ l848a = sub_c847b+15
 ; &bc28 referenced 4 times by &8ec7, &93d7, &b55f, &bc20
 .cbc28
     lda #0                                                            ; bc28: a9 00       ..       ; Reset the column to 0
-    sta zp_count                                                      ; bc2a: 85 1e       ..       ; ...
+    sta zp_count                                                      ; bc2a: 85 1e       ..       ; store it
     rts                                                               ; bc2c: 60          `        ; Return
 ; ***************************************************************************************
 ; Delete a program line and close the gap
