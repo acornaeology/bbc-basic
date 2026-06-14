@@ -3582,11 +3582,11 @@ l848a = sub_c847b+15
 ; PROCname[(params)].
 .stmt_proc
     lda zp_text_ptr                                                   ; 9304: a5 0b       ..       ; Remember the call site in PtrB
-    sta zp_text_ptr2                                                  ; 9306: 85 19       ..       ; ...
-    lda zp_text_ptr_1                                                 ; 9308: a5 0c       ..       ; ...
-    sta zp_text_ptr2_1                                                ; 930a: 85 1a       ..       ; ...
-    lda zp_text_ptr_off                                               ; 930c: a5 0a       ..       ; ...
-    sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..       ; ...
+    sta zp_text_ptr2                                                  ; 9306: 85 19       ..       ; PtrA low to PtrB,
+    lda zp_text_ptr_1                                                 ; 9308: a5 0c       ..       ; high byte,
+    sta zp_text_ptr2_1                                                ; 930a: 85 1a       ..       ; to PtrB high,
+    lda zp_text_ptr_off                                               ; 930c: a5 0a       ..       ; offset,
+    sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..       ; to PtrB offset
     lda #&f2                                                          ; 9310: a9 f2       ..       ; Enter the procedure (PROC token &F2)
     jsr call_proc_fn                                                  ; 9312: 20 97 b1     ..      ; call it
     jsr sub_c9852                                                     ; 9315: 20 52 98     R.      ; check the statement ends
@@ -3594,8 +3594,8 @@ l848a = sub_c847b+15
 ; &931b referenced 1 time by &9332
 .loop_c931b
     ldy #3                                                            ; 931b: a0 03       ..       ; Clear the local string length
-    lda #0                                                            ; 931d: a9 00       ..       ; ...
-    sta (zp_iwa),y                                                    ; 931f: 91 2a       .*       ; ...
+    lda #0                                                            ; 931d: a9 00       ..       ; zero,
+    sta (zp_iwa),y                                                    ; 931f: 91 2a       .*       ; string length = 0 (offset 3)
     beq c9341                                                         ; 9321: f0 1e       ..       ; always
 ; ***************************************************************************************
 ; LOCAL
@@ -10559,9 +10559,9 @@ l848a = sub_c847b+15
     cpy #&1a                                                          ; b890: c0 1a       ..       ; At most 26 nested GOSUBs
     bcs err_too_many_gosubs                                           ; b892: b0 0e       ..       ; too many: error
     lda zp_text_ptr                                                   ; b894: a5 0b       ..       ; Push the return position (text pointer)
-    sta gosub_stack,y                                                 ; b896: 99 cc 05    ...      ; ...
+    sta gosub_stack,y                                                 ; b896: 99 cc 05    ...      ; low byte
     lda zp_text_ptr_1                                                 ; b899: a5 0c       ..       ; return position high byte
-    sta gosub_stack_hi,y                                              ; b89b: 99 e6 05    ...      ; ...
+    sta gosub_stack_hi,y                                              ; b89b: 99 e6 05    ...      ; store it
     inc zp_gosub_level                                                ; b89e: e6 25       .%       ; one more nesting level
     bcc cb8d2                                                         ; b8a0: 90 30       .0       ; jump to the line
 ; &b8a2 referenced 1 time by &b892
@@ -10603,19 +10603,19 @@ l848a = sub_c847b+15
 ; &b8d9 referenced 1 time by &b8d4
 .cb8d9
     ldy zp_fwb_exp                                                    ; b8d9: a4 3d       .=       ; Destination line pointer
-    lda zp_fwb_m1                                                     ; b8db: a5 3e       .>       ; ...
+    lda zp_fwb_m1                                                     ; b8db: a5 3e       .>       ; high byte
 ; &b8dd referenced 1 time by &bbd3
 .cb8dd
     sty zp_text_ptr                                                   ; b8dd: 84 0b       ..       ; Point the interpreter at the destination line
-    sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..       ; ...
+    sta zp_text_ptr_1                                                 ; b8df: 85 0c       ..       ; PtrA high
     jmp c8ba3                                                         ; b8e1: 4c a3 8b    L..      ; execute from there
 ; &b8e4 referenced 1 time by &b8f7
 .loop_cb8e4
     jsr check_end_of_statement                                        ; b8e4: 20 57 98     W.      ; Check the statement ends
     lda #&33 ; '3'                                                    ; b8e7: a9 33       .3       ; Restore the default error handler
-    sta zp_error_vec                                                  ; b8e9: 85 16       ..       ; ...
-    lda #&b4                                                          ; b8eb: a9 b4       ..       ; ...
-    sta zp_error_vec_1                                                ; b8ed: 85 17       ..       ; ...
+    sta zp_error_vec                                                  ; b8e9: 85 16       ..       ; low byte = &33,
+    lda #&b4                                                          ; b8eb: a9 b4       ..       ; high byte = &B4,
+    sta zp_error_vec_1                                                ; b8ed: 85 17       ..       ; handler at &B433
     jmp statement_loop                                                ; b8ef: 4c 9b 8b    L..      ; next statement
 ; &b8f2 referenced 1 time by &b91a
 .loop_cb8f2
@@ -10623,12 +10623,12 @@ l848a = sub_c847b+15
     cmp #&87                                                          ; b8f5: c9 87       ..       ; OFF token?
     beq loop_cb8e4                                                    ; b8f7: f0 eb       ..       ; yes: ON ERROR OFF
     ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..       ; Point at the handler statement
-    dey                                                               ; b8fb: 88          .        ; ...
-    jsr c986d                                                         ; b8fc: 20 6d 98     m.      ; ...
+    dey                                                               ; b8fb: 88          .        ; back up,
+    jsr c986d                                                         ; b8fc: 20 6d 98     m.      ; check Escape
     lda zp_text_ptr                                                   ; b8ff: a5 0b       ..       ; Set the error handler to this line
-    sta zp_error_vec                                                  ; b901: 85 16       ..       ; ...
-    lda zp_text_ptr_1                                                 ; b903: a5 0c       ..       ; ...
-    sta zp_error_vec_1                                                ; b905: 85 17       ..       ; ...
+    sta zp_error_vec                                                  ; b901: 85 16       ..       ; low byte,
+    lda zp_text_ptr_1                                                 ; b903: a5 0c       ..       ; high byte,
+    sta zp_error_vec_1                                                ; b905: 85 17       ..       ; store it
     jmp stmt_data                                                     ; b907: 4c 7d 8b    L}.      ; skip the rest of the line
 ; &b90a referenced 1 time by &b92f
 .loop_cb90a
@@ -10649,8 +10649,8 @@ l848a = sub_c847b+15
     jsr eval_expr                                                     ; b91e: 20 1d 9b     ..      ; Evaluate the selector
     jsr coerce_to_integer                                             ; b921: 20 f0 92     ..      ; coerce to integer
     ldy zp_text_ptr2_off                                              ; b924: a4 1b       ..       ; Advance past it
-    iny                                                               ; b926: c8          .        ; ...
-    sty zp_text_ptr_off                                               ; b927: 84 0a       ..       ; ...
+    iny                                                               ; b926: c8          .        ; past the token,
+    sty zp_text_ptr_off                                               ; b927: 84 0a       ..       ; sync the offset
     cpx #&e5                                                          ; b929: e0 e5       ..       ; GOTO token?
     beq cb931                                                         ; b92b: f0 04       ..       ; yes
     cpx #&e4                                                          ; b92d: e0 e4       ..       ; GOSUB token?
@@ -10658,10 +10658,10 @@ l848a = sub_c847b+15
 ; &b931 referenced 1 time by &b92b
 .cb931
     txa                                                               ; b931: 8a          .        ; Save the GOTO/GOSUB token
-    pha                                                               ; b932: 48          H        ; ...
+    pha                                                               ; b932: 48          H        ; push it
     lda zp_iwa_1                                                      ; b933: a5 2b       .+       ; Selector > 255?
-    ora zp_iwa_2                                                      ; b935: 05 2c       .,       ; ...
-    ora zp_iwa_3                                                      ; b937: 05 2d       .-       ; ...
+    ora zp_iwa_2                                                      ; b935: 05 2c       .,       ; OR byte 2,
+    ora zp_iwa_3                                                      ; b937: 05 2d       .-       ; byte 3 (any => > 255)
     bne cb97d                                                         ; b939: d0 42       .B       ; yes: out of range
     ldx zp_iwa                                                        ; b93b: a6 2a       .*       ; Selector zero?
     beq cb97d                                                         ; b93d: f0 3e       .>       ; yes: out of range
@@ -10671,7 +10671,7 @@ l848a = sub_c847b+15
 ; &b944 referenced 2 times by &b955, &b958
 .cb944
     lda (zp_text_ptr),y                                               ; b944: b1 0b       ..       ; Next character
-    iny                                                               ; b946: c8          .        ; ...
+    iny                                                               ; b946: c8          .        ; advance
     cmp #&0d                                                          ; b947: c9 0d       ..       ; end of line?
     beq cb97d                                                         ; b949: f0 32       .2       ; yes: out of range
     cmp #&3a ; ':'                                                    ; b94b: c9 3a       .:       ; ':' end of statement?
@@ -10697,7 +10697,7 @@ l848a = sub_c847b+15
 ; &b96c referenced 1 time by &b975
 .loop_cb96c
     lda (zp_text_ptr),y                                               ; b96c: b1 0b       ..       ; Next character
-    iny                                                               ; b96e: c8          .        ; ...
+    iny                                                               ; b96e: c8          .        ; advance
     cmp #&0d                                                          ; b96f: c9 0d       ..       ; end of line?
     beq cb977                                                         ; b971: f0 04       ..       ; yes: return point here
     cmp #&3a ; ':'                                                    ; b973: c9 3a       .:       ; ':' separator?
@@ -10705,7 +10705,7 @@ l848a = sub_c847b+15
 ; &b977 referenced 1 time by &b971
 .cb977
     dey                                                               ; b977: 88          .        ; Set the return index
-    sty zp_text_ptr_off                                               ; b978: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; b978: 84 0a       ..       ; save it
     jmp cb88b                                                         ; b97a: 4c 8b b8    L..      ; do the GOSUB
 ; &b97d referenced 5 times by &b939, &b93d, &b949, &b94d, &b951
 .cb97d
@@ -10714,7 +10714,7 @@ l848a = sub_c847b+15
 ; &b980 referenced 1 time by &b989
 .loop_cb980
     lda (zp_text_ptr),y                                               ; b980: b1 0b       ..       ; Next character
-    iny                                                               ; b982: c8          .        ; ...
+    iny                                                               ; b982: c8          .        ; advance
     cmp #&8b                                                          ; b983: c9 8b       ..       ; ELSE?
     beq cb995                                                         ; b985: f0 0e       ..       ; yes: use it
     cmp #&0d                                                          ; b987: c9 0d       ..       ; end of line?
@@ -10953,9 +10953,9 @@ l848a = sub_c847b+15
 ; Reset the DATA pointer, optionally to a given line. RESTORE [line].
 .stmt_restore
     ldy #0                                                            ; bae6: a0 00       ..       ; DATA pointer = PAGE
-    sty zp_fwb_exp                                                    ; bae8: 84 3d       .=       ; ...
-    ldy zp_page                                                       ; baea: a4 18       ..       ; ...
-    sty zp_fwb_m1                                                     ; baec: 84 3e       .>       ; ...
+    sty zp_fwb_exp                                                    ; bae8: 84 3d       .=       ; low byte 0 (&3D),
+    ldy zp_page                                                       ; baea: a4 18       ..       ; PAGE,
+    sty zp_fwb_m1                                                     ; baec: 84 3e       .>       ; high byte (&3E)
     jsr skip_spaces                                                   ; baee: 20 97 8a     ..      ; Skip spaces
     dec zp_text_ptr_off                                               ; baf1: c6 0a       ..       ; back up
     cmp #&3a ; ':'                                                    ; baf3: c9 3a       .:       ; ':' end?
@@ -10966,14 +10966,14 @@ l848a = sub_c847b+15
     beq cbb07                                                         ; bafd: f0 08       ..       ; yes
     jsr find_line_target                                              ; baff: 20 9a b9     ..      ; Find the given line
     ldy #1                                                            ; bb02: a0 01       ..       ; point at it
-    jsr sub_cbe55                                                     ; bb04: 20 55 be     U.      ; ...
+    jsr sub_cbe55                                                     ; bb04: 20 55 be     U.      ; set the pointer to the line
 ; &bb07 referenced 3 times by &baf5, &baf9, &bafd
 .cbb07
     jsr check_end_of_statement                                        ; bb07: 20 57 98     W.      ; Check the statement ends
     lda zp_fwb_exp                                                    ; bb0a: a5 3d       .=       ; Set the DATA pointer
-    sta zp_data_ptr                                                   ; bb0c: 85 1c       ..       ; ...
-    lda zp_fwb_m1                                                     ; bb0e: a5 3e       .>       ; ...
-    sta zp_data_ptr_1                                                 ; bb10: 85 1d       ..       ; ...
+    sta zp_data_ptr                                                   ; bb0c: 85 1c       ..       ; low byte (&1C),
+    lda zp_fwb_m1                                                     ; bb0e: a5 3e       .>       ; high byte,
+    sta zp_data_ptr_1                                                 ; bb10: 85 1d       ..       ; high (&1D)
     jmp statement_loop                                                ; bb12: 4c 9b 8b    L..      ; next statement
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .cbb15

@@ -33556,7 +33556,7 @@
         133,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrA low to PtrB,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2",
@@ -33569,7 +33569,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -33582,7 +33582,7 @@
         133,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "to PtrB high,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_1",
@@ -33595,7 +33595,7 @@
         165,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_off",
@@ -33608,7 +33608,7 @@
         133,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "to PtrB offset",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr2_off",
@@ -33694,7 +33694,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "zero,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -33705,7 +33705,7 @@
         145,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "string length = 0 (offset 3)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_iwa),y",
@@ -97819,7 +97819,7 @@
         204,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "gosub_stack,y",
@@ -97846,7 +97846,7 @@
         230,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "gosub_stack_hi,y",
@@ -98201,7 +98201,7 @@
         165,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -98236,7 +98236,7 @@
         133,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "PtrA high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -98297,7 +98297,7 @@
         133,
         22
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte = &33,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -98310,7 +98310,7 @@
         169,
         180
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte = &B4,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&b4"
@@ -98321,7 +98321,7 @@
         133,
         23
       ],
-      "comment_inline": "...",
+      "comment_inline": "handler at &B433",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -98407,7 +98407,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up,",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -98418,7 +98418,7 @@
         109,
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "check Escape",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c986d",
@@ -98444,7 +98444,7 @@
         133,
         22
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec",
@@ -98457,7 +98457,7 @@
         165,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_text_ptr_1",
@@ -98470,7 +98470,7 @@
         133,
         23
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_error_vec_1",
@@ -98645,7 +98645,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "past the token,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -98655,7 +98655,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "sync the offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -98733,7 +98733,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -98756,7 +98756,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR byte 2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -98769,7 +98769,7 @@
         5,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3 (any => > 255)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -98878,7 +98878,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99146,7 +99146,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -99222,7 +99222,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -99305,7 +99305,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -101624,7 +101624,7 @@
         132,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte 0 (&3D),",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_exp",
@@ -101637,7 +101637,7 @@
         164,
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "PAGE,",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_page",
@@ -101650,7 +101650,7 @@
         132,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte (&3E)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -101788,7 +101788,7 @@
         85,
         190
       ],
-      "comment_inline": "...",
+      "comment_inline": "set the pointer to the line",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_cbe55",
@@ -101839,7 +101839,7 @@
         133,
         28
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte (&1C),",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr",
@@ -101852,7 +101852,7 @@
         165,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -101865,7 +101865,7 @@
         133,
         29
       ],
-      "comment_inline": "...",
+      "comment_inline": "high (&1D)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_data_ptr_1",
