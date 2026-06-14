@@ -2839,7 +2839,7 @@ oscli            = &fff7
     beq print_done                                                    ; 8d92: f0 ec       ..       ; yes
     cmp #&8b                                                          ; 8d94: c9 8b       ..       ; ELSE?
     beq print_done                                                    ; 8d96: f0 e8       ..       ; yes
-    bne c8dd2                                                         ; 8d98: d0 38       .8       ; otherwise continue the print loop
+    bne print_check_sep                                               ; 8d98: d0 38       .8       ; otherwise continue the print loop
 ; ***************************************************************************************
 ; PRINT
 ;
@@ -2858,33 +2858,33 @@ oscli            = &fff7
     cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
     beq print_file                                                    ; 8d9f: f0 8a       ..       ; '#': PRINT# to a file
     dec zp_text_ptr_off                                               ; 8da1: c6 0a       ..       ; Back up over the character
-    jmp c8dbb                                                         ; 8da3: 4c bb 8d    L..      ; enter the print loop
+    jmp print_item                                                    ; 8da3: 4c bb 8d    L..      ; enter the print loop
 ; &8da6 referenced 1 time by &8dd8
-.loop_c8da6
+.print_comma
     lda resint_at                                                     ; 8da6: ad 00 04    ...      ; Comma: pad with spaces to the next @% field
-    beq c8dbb                                                         ; 8da9: f0 10       ..       ; zero: no padding
+    beq print_item                                                    ; 8da9: f0 10       ..       ; zero: no padding
     lda zp_count                                                      ; 8dab: a5 1e       ..       ; Current column (COUNT)
 ; &8dad referenced 1 time by &8db2
-.loop_c8dad
-    beq c8dbb                                                         ; 8dad: f0 0c       ..       ; at column 0: no padding
+.print_field_loop
+    beq print_item                                                    ; 8dad: f0 0c       ..       ; at column 0: no padding
     sbc resint_at                                                     ; 8daf: ed 00 04    ...      ; reduce by the field width...
-    bcs loop_c8dad                                                    ; 8db2: b0 f9       ..       ; ...until COUNT mod width
+    bcs print_field_loop                                              ; 8db2: b0 f9       ..       ; ...until COUNT mod width
     tay                                                               ; 8db4: a8          .        ; spaces needed to the next field
 ; &8db5 referenced 1 time by &8db9
-.loop_c8db5
+.print_pad_loop
     jsr print_space                                                   ; 8db5: 20 65 b5     e.      ; print a space
     iny                                                               ; 8db8: c8          .        ; count up to zero
-    bne loop_c8db5                                                    ; 8db9: d0 fa       ..       ; loop
+    bne print_pad_loop                                                ; 8db9: d0 fa       ..       ; loop
 ; &8dbb referenced 3 times by &8da3, &8da9, &8dad
-.c8dbb
+.print_item
     clc                                                               ; 8dbb: 18          .        ; Prepare for decimal
     lda resint_at                                                     ; 8dbc: ad 00 04    ...      ; Take the field width from @% (&0400)
     sta zp_print_bytes                                                ; 8dbf: 85 14       ..       ; as the print field width
 ; &8dc1 referenced 1 time by &8dd4
-.loop_c8dc1
+.print_set_hex
     ror zp_print_flag                                                 ; 8dc1: 66 15       f.       ; Set the hex/dec flag (~ selects hex)
 ; &8dc3 referenced 3 times by &8de1, &8e10, &8e1f
-.c8dc3
+.print_next
     jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..      ; Next non-space character
     cmp #&3a ; ':'                                                    ; 8dc6: c9 3a       .:       ; ':' end of statement?
     beq print_newline                                                 ; 8dc8: f0 b3       ..       ; yes
@@ -2893,15 +2893,15 @@ oscli            = &fff7
     cmp #&8b                                                          ; 8dce: c9 8b       ..       ; ELSE?
     beq print_newline                                                 ; 8dd0: f0 ab       ..       ; yes
 ; &8dd2 referenced 1 time by &8d98
-.c8dd2
+.print_check_sep
     cmp #&7e ; '~'                                                    ; 8dd2: c9 7e       .~       ; '~' hex mode?
-    beq loop_c8dc1                                                    ; 8dd4: f0 eb       ..       ; yes: set the flag
+    beq print_set_hex                                                 ; 8dd4: f0 eb       ..       ; yes: set the flag
     cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
-    beq loop_c8da6                                                    ; 8dd8: f0 cc       ..       ; yes
+    beq print_comma                                                   ; 8dd8: f0 cc       ..       ; yes
     cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
     beq print_semicolon                                               ; 8ddc: f0 a5       ..       ; yes
     jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
-    bcc c8dc3                                                         ; 8de1: 90 e0       ..       ; handled: next item
+    bcc print_next                                                    ; 8de1: 90 e0       ..       ; handled: next item
     lda zp_print_bytes                                                ; 8de3: a5 14       ..       ; Save the field width...
     pha                                                               ; 8de5: 48          H        ; push it
     lda zp_print_flag                                                 ; 8de6: a5 15       ..       ; ...and flags (the evaluator may PRINT)
@@ -2915,39 +2915,39 @@ oscli            = &fff7
     lda zp_text_ptr2_off                                              ; 8df4: a5 1b       ..       ; Update the program pointer
     sta zp_text_ptr_off                                               ; 8df6: 85 0a       ..       ; from PtrB offset (&1B)
     tya                                                               ; 8df8: 98          .        ; String item?
-    beq c8e0e                                                         ; 8df9: f0 13       ..       ; A string value: print it directly
+    beq print_string                                                  ; 8df9: f0 13       ..       ; A string value: print it directly
     jsr number_to_ascii                                               ; 8dfb: 20 df 9e     ..      ; A number: convert to an ASCII string
     lda zp_print_bytes                                                ; 8dfe: a5 14       ..       ; and right-justify it within the field width
     sec                                                               ; 8e00: 38          8        ; minus the string length
     sbc zp_strbuf_len                                                 ; 8e01: e5 36       .6       ; width - string length = pad count
-    bcc c8e0e                                                         ; 8e03: 90 09       ..       ; longer than the field: print as is
-    beq c8e0e                                                         ; 8e05: f0 07       ..       ; equal: print as is
+    bcc print_string                                                  ; 8e03: 90 09       ..       ; longer than the field: print as is
+    beq print_string                                                  ; 8e05: f0 07       ..       ; equal: print as is
     tay                                                               ; 8e07: a8          .        ; spaces to pad with
 ; &8e08 referenced 1 time by &8e0c
-.loop_c8e08
+.print_num_pad
     jsr print_space                                                   ; 8e08: 20 65 b5     e.      ; print a leading space
     dey                                                               ; 8e0b: 88          .        ; one fewer pad space
-    bne loop_c8e08                                                    ; 8e0c: d0 fa       ..       ; loop
+    bne print_num_pad                                                 ; 8e0c: d0 fa       ..       ; loop
 ; &8e0e referenced 3 times by &8df9, &8e03, &8e05
-.c8e0e
+.print_string
     lda zp_strbuf_len                                                 ; 8e0e: a5 36       .6       ; String length
-    beq c8dc3                                                         ; 8e10: f0 b1       ..       ; empty: next item
+    beq print_next                                                    ; 8e10: f0 b1       ..       ; empty: next item
     ldy #0                                                            ; 8e12: a0 00       ..       ; From the start
 ; &8e14 referenced 1 time by &8e1d
-.loop_c8e14
+.print_string_loop
     lda string_work,y                                                 ; 8e14: b9 00 06    ...      ; String character
     jsr print_char                                                    ; 8e17: 20 58 b5     X.      ; print it
     iny                                                               ; 8e1a: c8          .        ; next
     cpy zp_strbuf_len                                                 ; 8e1b: c4 36       .6       ; printed all characters?
-    bne loop_c8e14                                                    ; 8e1d: d0 f5       ..       ; loop
-    beq c8dc3                                                         ; 8e1f: f0 a2       ..       ; next item
+    bne print_string_loop                                             ; 8e1d: d0 f5       ..       ; loop
+    beq print_next                                                    ; 8e1f: f0 a2       ..       ; next item
 ; &8e21 referenced 1 time by &8e26
-.loop_c8e21
+.print_tab_error
     jmp missing_comma                                                 ; 8e21: 4c a2 8a    L..      ; Missing , error
 ; &8e24 referenced 1 time by &8e48
-.loop_c8e24
+.print_tab_xy
     cmp #&2c ; ','                                                    ; 8e24: c9 2c       .,       ; ',' TAB(x,y) form?
-    bne loop_c8e21                                                    ; 8e26: d0 f9       ..       ; no: TAB(x) or SPC
+    bne print_tab_error                                               ; 8e26: d0 f9       ..       ; no: TAB(x) or SPC
     lda zp_iwa                                                        ; 8e28: a5 2a       .*       ; Save the x coordinate
     pha                                                               ; 8e2a: 48          H        ; push it
     jsr cae56                                                         ; 8e2b: 20 56 ae     V.      ; Evaluate y, expect )
@@ -2957,38 +2957,38 @@ oscli            = &fff7
     pla                                                               ; 8e36: 68          h        ; x coordinate
     jsr oswrch                                                        ; 8e37: 20 ee ff     ..      ; send the x coordinate
     jsr sub_c9456                                                     ; 8e3a: 20 56 94     V.      ; y coordinate
-    jmp c8e6a                                                         ; 8e3d: 4c 6a 8e    Lj.      ; next item
+    jmp print_sync                                                    ; 8e3d: 4c 6a 8e    Lj.      ; next item
 ; &8e40 referenced 1 time by &8e82
-.loop_c8e40
+.print_tab_x
     jsr eval_expr_integer                                             ; 8e40: 20 dd 92     ..      ; TAB(x): evaluate x
     jsr skip_spaces_ptr2                                              ; 8e43: 20 8c 8a     ..      ; skip spaces
     cmp #&29 ; ')'                                                    ; 8e46: c9 29       .)       ; ')'?
-    bne loop_c8e24                                                    ; 8e48: d0 da       ..       ; no: TAB(x,y)
+    bne print_tab_xy                                                  ; 8e48: d0 da       ..       ; no: TAB(x,y)
     lda zp_iwa                                                        ; 8e4a: a5 2a       .*       ; Spaces = x - COUNT
     sbc zp_count                                                      ; 8e4c: e5 1e       ..       ; subtract the current column
-    beq c8e6a                                                         ; 8e4e: f0 1a       ..       ; already at column x: nothing to do
+    beq print_sync                                                    ; 8e4e: f0 1a       ..       ; already at column x: nothing to do
     tay                                                               ; 8e50: a8          .        ; count
-    bcs c8e5f                                                         ; 8e51: b0 0c       ..       ; past column x: skip
+    bcs print_spc_loop                                                ; 8e51: b0 0c       ..       ; past column x: skip
     jsr sub_cbc25                                                     ; 8e53: 20 25 bc     %.      ; Newline to reach a fresh line
-    beq c8e5b                                                         ; 8e56: f0 03       ..       ; fresh line: pad to column x
+    beq print_spc_count                                               ; 8e56: f0 03       ..       ; fresh line: pad to column x
 ; &8e58 referenced 1 time by &8e86
-.loop_c8e58
+.print_spc
     jsr eval_factor_integer                                           ; 8e58: 20 e3 92     ..      ; SPC(n): evaluate the count
 ; &8e5b referenced 1 time by &8e56
-.c8e5b
+.print_spc_count
     ldy zp_iwa                                                        ; 8e5b: a4 2a       .*       ; spaces = x
-    beq c8e6a                                                         ; 8e5d: f0 0b       ..       ; none
+    beq print_sync                                                    ; 8e5d: f0 0b       ..       ; none
 ; &8e5f referenced 2 times by &8e51, &8e63
-.c8e5f
+.print_spc_loop
     jsr print_space                                                   ; 8e5f: 20 65 b5     e.      ; Print a space
     dey                                                               ; 8e62: 88          .        ; one fewer space
-    bne c8e5f                                                         ; 8e63: d0 fa       ..       ; loop
-    beq c8e6a                                                         ; 8e65: f0 03       ..       ; next item
+    bne print_spc_loop                                                ; 8e63: d0 fa       ..       ; loop
+    beq print_sync                                                    ; 8e65: f0 03       ..       ; next item
 ; &8e67 referenced 1 time by &8e7e
-.loop_c8e67
+.print_spc_newline
     jsr sub_cbc25                                                     ; 8e67: 20 25 bc     %.      ; SPC: print a newline
 ; &8e6a referenced 5 times by &8e3d, &8e4e, &8e5d, &8e65, &8eb9
-.c8e6a
+.print_sync
     clc                                                               ; 8e6a: 18          .        ; Sync the program pointer
     ldy zp_text_ptr2_off                                              ; 8e6b: a4 1b       ..       ; load PtrB offset (&1B),
     sty zp_text_ptr_off                                               ; 8e6d: 84 0a       ..       ; store to PtrA offset (&0A)
@@ -3016,47 +3016,47 @@ oscli            = &fff7
     ldx zp_text_ptr_off                                               ; 8e78: a6 0a       ..       ; offset
     stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..       ; store it
     cmp #&27                                                          ; 8e7c: c9 27       .'       ; an apostrophe?
-    beq loop_c8e67                                                    ; 8e7e: f0 e7       ..       ; yes: force a newline
+    beq print_spc_newline                                             ; 8e7e: f0 e7       ..       ; yes: force a newline
     cmp #&8a                                                          ; 8e80: c9 8a       ..       ; TAB token?
-    beq loop_c8e40                                                    ; 8e82: f0 bc       ..       ; yes: handle TAB
+    beq print_tab_x                                                   ; 8e82: f0 bc       ..       ; yes: handle TAB
     cmp #&89                                                          ; 8e84: c9 89       ..       ; SPC token?
-    beq loop_c8e58                                                    ; 8e86: f0 d0       ..       ; yes: handle SPC
+    beq print_spc                                                     ; 8e86: f0 d0       ..       ; yes: handle SPC
     sec                                                               ; 8e88: 38          8        ; none: not consumed (carry set)
 ; &8e89 referenced 1 time by &8e90
 .return_6
     rts                                                               ; 8e89: 60          `        ; Return
 ; &8e8a referenced 2 times by &ba5a, &ba5f
-.sub_c8e8a
+.print_special_skip
     jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..      ; Skip spaces, then handle a special item
     jsr print_special_item                                            ; 8e8d: 20 70 8e     p.      ; handle it
     bcc return_6                                                      ; 8e90: 90 f7       ..       ; consumed: done
     cmp #&22                                                          ; 8e92: c9 22       ."       ; a string literal (quote)?
-    beq c8ea7                                                         ; 8e94: f0 11       ..       ; yes: print it inline
+    beq print_inline_loop                                             ; 8e94: f0 11       ..       ; yes: print it inline
     sec                                                               ; 8e96: 38          8        ; not consumed
     rts                                                               ; 8e97: 60          `        ; Return
 ; &8e98 referenced 2 times by &8eac, &ade9
-.c8e98
+.missing_quote
     brk                                                               ; 8e98: 00          .        ; Missing " error block
     equb &09                                                          ; 8e99: 09          .     
     equs "Missing ", &22                                              ; 8e9a: 4d 69 73... Mis...
     equb &00                                                          ; 8ea3: 00          .     
 ; &8ea4 referenced 2 times by &8eb0, &8ebb
-.c8ea4
+.print_inline_char
     jsr print_char                                                    ; 8ea4: 20 58 b5     X.      ; print a character
 ; &8ea7 referenced 1 time by &8e94
-.c8ea7
+.print_inline_loop
     iny                                                               ; 8ea7: c8          .        ; Print the inline string: advance
     lda (zp_text_ptr2),y                                              ; 8ea8: b1 19       ..       ; char
     cmp #&0d                                                          ; 8eaa: c9 0d       ..       ; CR (unterminated)?
-    beq c8e98                                                         ; 8eac: f0 ea       ..       ; Missing " error
+    beq missing_quote                                                 ; 8eac: f0 ea       ..       ; Missing " error
     cmp #&22                                                          ; 8eae: c9 22       ."       ; a quote?
-    bne c8ea4                                                         ; 8eb0: d0 f2       ..       ; no: print it
+    bne print_inline_char                                             ; 8eb0: d0 f2       ..       ; no: print it
     iny                                                               ; 8eb2: c8          .        ; advance
     sty zp_text_ptr2_off                                              ; 8eb3: 84 1b       ..       ; update the offset
     lda (zp_text_ptr2),y                                              ; 8eb5: b1 19       ..       ; doubled ""?
     cmp #&22                                                          ; 8eb7: c9 22       ."       ; is it another quote?
-    bne c8e6a                                                         ; 8eb9: d0 af       ..       ; no: end of the string
-    beq c8ea4                                                         ; 8ebb: f0 e7       ..       ; yes: print one quote
+    bne print_sync                                                    ; 8eb9: d0 af       ..       ; no: end of the string
+    beq print_inline_char                                             ; 8ebb: f0 e7       ..       ; yes: print one quote
 ; ***************************************************************************************
 ; CLG
 ;
@@ -10188,7 +10188,7 @@ oscli            = &fff7
     rts                                                               ; ade8: 60          `        ; Return the string
 ; &ade9 referenced 1 time by &add0
 .cade9
-    jmp c8e98                                                         ; ade9: 4c 98 8e    L..      ; Missing " error
+    jmp missing_quote                                                 ; ade9: 4c 98 8e    L..      ; Missing " error
 ; ***************************************************************************************
 ; Evaluate a factor (evaluator level 1)
 ;
@@ -12973,11 +12973,11 @@ oscli            = &fff7
     sta l004e                                                         ; ba58: 85 4e       .N       ; store it (&4E)
 ; &ba5a referenced 4 times by &ba71, &ba75, &bad9, &bae3
 .cba5a
-    jsr sub_c8e8a                                                     ; ba5a: 20 8a 8e     ..      ; Process a prompt item
+    jsr print_special_skip                                            ; ba5a: 20 8a 8e     ..      ; Process a prompt item
     bcs cba69                                                         ; ba5d: b0 0a       ..       ; none found: parse a variable
 ; &ba5f referenced 1 time by &ba62
 .loop_cba5f
-    jsr sub_c8e8a                                                     ; ba5f: 20 8a 8e     ..      ; Process further prompt items
+    jsr print_special_skip                                            ; ba5f: 20 8a 8e     ..      ; Process further prompt items
     bcc loop_cba5f                                                    ; ba62: 90 fb       ..       ; more printed items: loop
     ldx #&ff                                                          ; ba64: a2 ff       ..       ; A printed item suppresses the ? prompt
     stx l004e                                                         ; ba66: 86 4e       .N       ; flag = -1 (printed),
@@ -14493,7 +14493,6 @@ save pydis_start, pydis_end
 ;     zp_lomem:                    6
 ;     zp_lomem_1:                  6
 ;     asm_absolute:                5
-;     c8e6a:                       5
 ;     c9a93:                       5
 ;     c9fe6:                       5
 ;     ca208:                       5
@@ -14510,6 +14509,7 @@ save pydis_start, pydis_end
 ;     iwa_store_zp:                5
 ;     l0044:                       5
 ;     osword:                      5
+;     print_sync:                  5
 ;     resint_at:                   5
 ;     return_22:                   5
 ;     skip_spaces_expect_comma:    5
@@ -14573,9 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c8dbb:                       3
-;     c8dc3:                       3
-;     c8e0e:                       3
 ;     c8f2e:                       3
 ;     c91fc:                       3
 ;     c9218:                       3
@@ -14622,9 +14619,12 @@ save pydis_start, pydis_end
 ;     parse_number:                3
 ;     point_fp_temp2:              3
 ;     print_done:                  3
+;     print_item:                  3
 ;     print_line_number:           3
 ;     print_listo_indent:          3
 ;     print_newline:               3
+;     print_next:                  3
+;     print_string:                3
 ;     print_token:                 3
 ;     return_12:                   3
 ;     return_19:                   3
@@ -14659,9 +14659,6 @@ save pydis_start, pydis_end
 ;     assign_str_alloc_size:       2
 ;     assign_str_store:            2
 ;     assign_string_to:            2
-;     c8e5f:                       2
-;     c8e98:                       2
-;     c8ea4:                       2
 ;     c8fdf:                       2
 ;     c901a:                       2
 ;     c901c:                       2
@@ -14807,6 +14804,7 @@ save pydis_start, pydis_end
 ;     load_program:                2
 ;     load_real_var:               2
 ;     mant_mul10:                  2
+;     missing_quote:               2
 ;     next_data_item:              2
 ;     no_fn_error:                 2
 ;     number_to_ascii:             2
@@ -14824,8 +14822,11 @@ save pydis_start, pydis_end
 ;     point_half_pi_hi:            2
 ;     point_half_pi_lo:            2
 ;     print_hex_byte:              2
+;     print_inline_char:           2
 ;     print_inline_string:         2
+;     print_spc_loop:              2
 ;     print_special_item:          2
+;     print_special_skip:          2
 ;     read_input_line:             2
 ;     read_key_timed:              2
 ;     read_string_literal:         2
@@ -14848,7 +14849,6 @@ save pydis_start, pydis_end
 ;     stmt_data:                   2
 ;     stmt_eol:                    2
 ;     sub_c887c:                   2
-;     sub_c8e8a:                   2
 ;     sub_c8f69:                   2
 ;     sub_c8f92:                   2
 ;     sub_c95dd:                   2
@@ -14950,9 +14950,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c8dd2:                       1
-;     c8e5b:                       1
-;     c8ea7:                       1
 ;     c8ecc:                       1
 ;     c8ee0:                       1
 ;     c8f0c:                       1
@@ -15343,17 +15340,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c8da6:                  1
-;     loop_c8dad:                  1
-;     loop_c8db5:                  1
-;     loop_c8dc1:                  1
-;     loop_c8e08:                  1
-;     loop_c8e14:                  1
-;     loop_c8e21:                  1
-;     loop_c8e24:                  1
-;     loop_c8e40:                  1
-;     loop_c8e58:                  1
-;     loop_c8e67:                  1
 ;     loop_c8f53:                  1
 ;     loop_c8fb1:                  1
 ;     loop_c8fea:                  1
@@ -15504,6 +15490,9 @@ save pydis_start, pydis_end
 ;     parse_dec_shift_loop:        1
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
+;     print_check_sep:             1
+;     print_comma:                 1
+;     print_field_loop:            1
 ;     print_file:                  1
 ;     print_file_done:             1
 ;     print_file_int_loop:         1
@@ -15512,7 +15501,18 @@ save pydis_start, pydis_end
 ;     print_file_str:              1
 ;     print_file_str_loop:         1
 ;     print_hex_digit:             1
+;     print_inline_loop:           1
+;     print_num_pad:               1
+;     print_pad_loop:              1
 ;     print_semicolon:             1
+;     print_set_hex:               1
+;     print_spc:                   1
+;     print_spc_count:             1
+;     print_spc_newline:           1
+;     print_string_loop:           1
+;     print_tab_error:             1
+;     print_tab_x:                 1
+;     print_tab_xy:                1
 ;     repeat_stack:                1
 ;     repeat_stack_hi:             1
 ;     resint_a:                    1
@@ -15618,16 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c8dbb
-;     c8dc3
-;     c8dd2
-;     c8e0e
-;     c8e5b
-;     c8e5f
-;     c8e6a
-;     c8e98
-;     c8ea4
-;     c8ea7
 ;     c8ecc
 ;     c8ee0
 ;     c8f0c
@@ -16159,17 +16149,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c8da6
-;     loop_c8dad
-;     loop_c8db5
-;     loop_c8dc1
-;     loop_c8e08
-;     loop_c8e14
-;     loop_c8e21
-;     loop_c8e24
-;     loop_c8e40
-;     loop_c8e58
-;     loop_c8e67
 ;     loop_c8f53
 ;     loop_c8fb1
 ;     loop_c8fea
@@ -16355,7 +16334,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c8e8a
 ;     sub_c8f69
 ;     sub_c8f92
 ;     sub_c8f9a
