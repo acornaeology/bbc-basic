@@ -9848,23 +9848,23 @@ l848a = sub_c847b+15
 ; &b451 referenced 1 time by &b45f
 .loop_cb451
     lda zp_iwa                                                        ; b451: a5 2a       .*       ; Stack the 16-bit value
-    pha                                                               ; b453: 48          H        ; ...
-    lda zp_iwa_1                                                      ; b454: a5 2b       .+       ; ...
-    pha                                                               ; b456: 48          H        ; ...
+    pha                                                               ; b453: 48          H        ; push low,
+    lda zp_iwa_1                                                      ; b454: a5 2b       .+       ; high,
+    pha                                                               ; b456: 48          H        ; push high
     txa                                                               ; b457: 8a          .        ; save the counter
-    pha                                                               ; b458: 48          H        ; ...
+    pha                                                               ; b458: 48          H        ; push it
     jsr sub_c92da                                                     ; b459: 20 da 92     ..      ; step past the comma, evaluate the next
     pla                                                               ; b45c: 68          h        ; restore the counter
-    tax                                                               ; b45d: aa          .        ; ...
-    dex                                                               ; b45e: ca          .        ; ...
+    tax                                                               ; b45d: aa          .        ; into X,
+    dex                                                               ; b45e: ca          .        ; one fewer parameter
     bne loop_cb451                                                    ; b45f: d0 f0       ..       ; loop
     jsr sub_c9852                                                     ; b461: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b464: a5 2a       .*       ; Last value to the block end
-    sta zp_fwb_exp                                                    ; b466: 85 3d       .=       ; ...
-    lda zp_iwa_1                                                      ; b468: a5 2b       .+       ; ...
-    sta zp_fwb_m1                                                     ; b46a: 85 3e       .>       ; ...
+    sta zp_fwb_exp                                                    ; b466: 85 3d       .=       ; low byte to &3D,
+    lda zp_iwa_1                                                      ; b468: a5 2b       .+       ; high,
+    sta zp_fwb_m1                                                     ; b46a: 85 3e       .>       ; high byte to &3E
     ldy #7                                                            ; b46c: a0 07       ..       ; OSWORD 7, 6 bytes
-    ldx #5                                                            ; b46e: a2 05       ..       ; ...
+    ldx #5                                                            ; b46e: a2 05       ..       ; 6-byte block (X=5)
     bne cb48f                                                         ; b470: d0 1d       ..       ; pop into the block and call
 ; ***************************************************************************************
 ; ENVELOPE

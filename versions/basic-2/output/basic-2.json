@@ -90845,7 +90845,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push low,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90855,7 +90855,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -90867,7 +90867,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push high",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90885,7 +90885,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -90917,7 +90917,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "into X,",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -90926,7 +90926,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer parameter",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -90976,7 +90976,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte to &3D,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -90989,7 +90989,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -91002,7 +91002,7 @@
         133,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte to &3E",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -91026,7 +91026,7 @@
         162,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "6-byte block (X=5)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#5"
