@@ -9130,9 +9130,9 @@ l848a = sub_c847b+15
     inc zp_text_ptr2_off                                              ; b045: e6 1b       ..       ; step past
     jsr sub_c92dd                                                     ; b047: 20 dd 92     ..      ; Evaluate the start position
     lda zp_iwa                                                        ; b04a: a5 2a       .*       ; Save it
-    pha                                                               ; b04c: 48          H        ; ...
+    pha                                                               ; b04c: 48          H        ; push the start position
     lda #&ff                                                          ; b04d: a9 ff       ..       ; Default length = 255
-    sta zp_iwa                                                        ; b04f: 85 2a       .*       ; ...
+    sta zp_iwa                                                        ; b04f: 85 2a       .*       ; as the length
     inc zp_text_ptr2_off                                              ; b051: e6 1b       ..       ; step past
     cpx #&29 ; ')'                                                    ; b053: e0 29       .)       ; ')' (no length given)?
     beq cb061                                                         ; b055: f0 0a       ..       ; yes: use the default
@@ -9144,21 +9144,21 @@ l848a = sub_c847b+15
 .cb061
     jsr unstack_string                                                ; b061: 20 cb bd     ..      ; Restore the string
     pla                                                               ; b064: 68          h        ; Start position
-    tay                                                               ; b065: a8          .        ; ...
-    clc                                                               ; b066: 18          .        ; ...
+    tay                                                               ; b065: a8          .        ; into Y (also tests for 0),
+    clc                                                               ; b066: 18          .        ; clear carry for the compare
     beq cb06f                                                         ; b067: f0 06       ..       ; position 0: treat as 1
     sbc zp_strbuf_len                                                 ; b069: e5 36       .6       ; past the end?
     bcs cb02e                                                         ; b06b: b0 c1       ..       ; yes: empty string
     dey                                                               ; b06d: 88          .        ; Zero-based start = p - 1
-    tya                                                               ; b06e: 98          .        ; ...
+    tya                                                               ; b06e: 98          .        ; A = start - 1
 ; &b06f referenced 1 time by &b067
 .cb06f
     sta zp_iwa_2                                                      ; b06f: 85 2c       .,       ; Save the start offset
-    tax                                                               ; b071: aa          .        ; ...
+    tax                                                               ; b071: aa          .        ; also into X (source index)
     ldy #0                                                            ; b072: a0 00       ..       ; Destination index
     lda zp_strbuf_len                                                 ; b074: a5 36       .6       ; Available = length - start
-    sec                                                               ; b076: 38          8        ; ...
-    sbc zp_iwa_2                                                      ; b077: e5 2c       .,       ; ...
+    sec                                                               ; b076: 38          8        ; set carry,
+    sbc zp_iwa_2                                                      ; b077: e5 2c       .,       ; length - start offset
     cmp zp_iwa                                                        ; b079: c5 2a       .*       ; more than requested?
     bcs cb07f                                                         ; b07b: b0 02       ..       ; no: use the available count
     sta zp_iwa                                                        ; b07d: 85 2a       .*       ; clamp the length
@@ -9169,10 +9169,10 @@ l848a = sub_c847b+15
 ; &b083 referenced 1 time by &b08d
 .loop_cb083
     lda string_work,x                                                 ; b083: bd 00 06    ...      ; Copy the substring to the front
-    sta string_work,y                                                 ; b086: 99 00 06    ...      ; ...
-    iny                                                               ; b089: c8          .        ; ...
-    inx                                                               ; b08a: e8          .        ; ...
-    cpy zp_iwa                                                        ; b08b: c4 2a       .*       ; ...
+    sta string_work,y                                                 ; b086: 99 00 06    ...      ; to the front,
+    iny                                                               ; b089: c8          .        ; next dest,
+    inx                                                               ; b08a: e8          .        ; next source,
+    cpy zp_iwa                                                        ; b08b: c4 2a       .*       ; copied the requested length?
     bne loop_cb083                                                    ; b08d: d0 f4       ..       ; loop
     sty zp_strbuf_len                                                 ; b08f: 84 36       .6       ; Set the result length
     lda #0                                                            ; b091: a9 00       ..       ; String result

@@ -84006,7 +84006,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push the start position",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -84027,7 +84027,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "as the length",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -84160,7 +84160,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y (also tests for 0),",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -84169,7 +84169,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry for the compare",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -84226,7 +84226,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = start - 1",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -84257,7 +84257,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "also into X (source index)",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -84290,7 +84290,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry,",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -84300,7 +84300,7 @@
         229,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "length - start offset",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -84411,7 +84411,7 @@
         0,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the front,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "string_work,y",
@@ -84423,7 +84423,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next dest,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -84432,7 +84432,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "next source,",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -84442,7 +84442,7 @@
         196,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "copied the requested length?",
       "type": "code",
       "mnemonic": "cpy",
       "operand": "zp_iwa",
