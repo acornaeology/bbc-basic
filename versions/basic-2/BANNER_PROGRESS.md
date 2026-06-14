@@ -1,8 +1,13 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: not started — 285 ROM subroutine banners, 20 fully documented
-(desc + calling contract), 265 remaining (7 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 131 fully documented
+(desc + calling contract), 154 remaining (45 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
+
+Driver sorted into address order; shared stmt_*/fn_* contracts established
+and threaded through HANDLER_INFO (all ~112 table-generated handlers now
+carry a contract). Next: the FP/IWA primitives and small helpers
+(leaves-first worklist).
 
 ## The goal
 
@@ -262,14 +267,21 @@ no emojis in commit messages; never `git push`; prefer
 | Date | Batch | Routines | Contracts added | Remaining | Commit |
 |------|-------|----------|-----------------|-----------|--------|
 | 2026-06-14 | setup | banner_status.py tool + this tracker | — | 265 | — |
+| 2026-06-14 | driver sort | (whole driver) address-ordered | — | 265 | b8a29c5 |
+| 2026-06-14 | shared contracts | ~112 table-generated stmt_*/fn_* handlers | 111 | 154 | 8ed2ace |
 
 ## Resume here
 
-Nothing done yet beyond setup. Suggested order:
-1. (optional but recommended) `fantasm driver sort -i` + verify + commit.
-2. Establish the `stmt_*` and `fn_*` shared contracts; decide how to
-   thread on_entry/on_exit through `HANDLER_INFO`.
-3. Work the `banner_status.py` worklist leaves-first: the FP/IWA
-   primitives and small helpers first (their contracts are crisp and set
-   the vocabulary), then the parsers and statement/function handlers.
+Done: driver sort (b8a29c5); shared stmt_*/fn_* contracts threaded
+through HANDLER_INFO (8ed2ace). The shared-contract dicts live just above
+`HANDLER_INFO` (driver ~line 77): `STMT_ON_ENTRY`/`STMT_ON_EXIT`,
+`FN_ON_ENTRY`/`FN_ON_EXIT`. A HANDLER_INFO entry may override either with
+an optional 3rd/4th tuple element (None = use the family default) — use
+this for the handful of non-standard handlers (e.g. `fn_to` is an error,
+`stmt_data` just skips the line) as you reach them.
+
+Next: work the `banner_status.py` worklist leaves-first — the FP/IWA
+primitives and small helpers (their contracts are crisp and set the
+vocabulary), then parsers, then any remaining hand-written banners.
+These are all hand-written `d.subroutine(...)` calls — edit in place.
 Run `uv run tools/banner_status.py` for the live list.
