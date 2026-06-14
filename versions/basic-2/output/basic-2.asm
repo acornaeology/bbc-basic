@@ -1659,16 +1659,16 @@ l848a = sub_c847b+15
     lda #&8d                                                          ; 88db: a9 8d       ..       ; Line-number token &8D
     jsr sub_c887c                                                     ; 88dd: 20 7c 88     |.      ; Make room for the 3 encoded bytes
     lda zp_general                                                    ; 88e0: a5 37       .7       ; Destination = source + 2
-    adc #2                                                            ; 88e2: 69 02       i.       ; ...
-    sta zp_fileblk                                                    ; 88e4: 85 39       .9       ; ...
-    lda zp_general_1                                                  ; 88e6: a5 38       .8       ; ...
-    adc #0                                                            ; 88e8: 69 00       i.       ; ...
-    sta l003a                                                         ; 88ea: 85 3a       .:       ; ...
+    adc #2                                                            ; 88e2: 69 02       i.       ; source low + 2
+    sta zp_fileblk                                                    ; 88e4: 85 39       .9       ; dest low
+    lda zp_general_1                                                  ; 88e6: a5 38       .8       ; source high...
+    adc #0                                                            ; 88e8: 69 00       i.       ; - carry
+    sta l003a                                                         ; 88ea: 85 3a       .:       ; dest high
 ; &88ec referenced 1 time by &88f1
 .loop_c88ec
     lda (zp_general),y                                                ; 88ec: b1 37       .7       ; Shift the bytes up
-    sta (zp_fileblk),y                                                ; 88ee: 91 39       .9       ; ...
-    dey                                                               ; 88f0: 88          .        ; ...
+    sta (zp_fileblk),y                                                ; 88ee: 91 39       .9       ; up two bytes
+    dey                                                               ; 88f0: 88          .        ; next
     bne loop_c88ec                                                    ; 88f1: d0 f9       ..       ; loop
     ldy #3                                                            ; 88f3: a0 03       ..       ; Three encoded bytes
 ; ***************************************************************************************
@@ -2202,7 +2202,7 @@ l848a = sub_c847b+15
 ; &8b60 referenced 1 time by &8bce
 .check_eq_star_bracket
     ldy zp_text_ptr_off                                               ; 8b60: a4 0a       ..       ; Step back to the introducing character
-    dey                                                               ; 8b62: 88          .        ; ...
+    dey                                                               ; 8b62: 88          .        ; one character back
     lda (zp_text_ptr),y                                               ; 8b63: b1 0b       ..       ; fetch it
     cmp #&3d ; '='                                                    ; 8b65: c9 3d       .=       ; "=" returns a value from a function (FN)
     beq loop_c8b47                                                    ; 8b67: f0 de       ..       ; "=": return a value from a function
@@ -3881,7 +3881,7 @@ l848a = sub_c847b+15
     cpy zp_fileblk                                                    ; 949e: c4 39       .9       ; reached the end of the search name?
     bne loop_c9495                                                    ; 94a0: d0 f3       ..       ; no: keep comparing
     iny                                                               ; 94a2: c8          .        ; does the entry name end here too?
-    lda (l003a),y                                                     ; 94a3: b1 3a       .:       ; ...
+    lda (l003a),y                                                     ; 94a3: b1 3a       .:       ; read the stored name char
     bne c94b3                                                         ; 94a5: d0 0c       ..       ; entry name is longer: no match
 ; &94a7 referenced 1 time by &9493
 .c94a7
@@ -3924,12 +3924,12 @@ l848a = sub_c847b+15
     cpy zp_fileblk                                                    ; 94d8: c4 39       .9       ; end of the search name?
     bne loop_c94cf                                                    ; 94da: d0 f3       ..       ; no: keep comparing
     iny                                                               ; 94dc: c8          .        ; does the entry name end here too?
-    lda (zp_fwb_ovf),y                                                ; 94dd: b1 3c       .<       ; ...
+    lda (zp_fwb_ovf),y                                                ; 94dd: b1 3c       .<       ; read the stored name char
     bne c9479                                                         ; 94df: d0 98       ..       ; entry name is longer: no match
 ; &94e1 referenced 1 time by &94cd
 .c94e1
     tya                                                               ; 94e1: 98          .        ; value pointer = node + name length: low
-    adc zp_fwb_ovf                                                    ; 94e2: 65 3c       e<       ; ...
+    adc zp_fwb_ovf                                                    ; 94e2: 65 3c       e<       ; plus the node low
     sta zp_iwa                                                        ; 94e4: 85 2a       .*       ; (IWA low)
     lda zp_fwb_exp                                                    ; 94e6: a5 3d       .=       ; node high...
     adc #0                                                            ; 94e8: 69 00       i.       ; - carry
@@ -3965,7 +3965,7 @@ l848a = sub_c847b+15
     beq c9516                                                         ; 9509: f0 0b       ..       ; zero: found the end, append here
     tax                                                               ; 950b: aa          .        ; save it
     dey                                                               ; 950c: 88          .        ; link low
-    lda (l003a),y                                                     ; 950d: b1 3a       .:       ; ...
+    lda (l003a),y                                                     ; 950d: b1 3a       .:       ; read it
     sta l003a                                                         ; 950f: 85 3a       .:       ; follow the link: low
     stx zp_fwb_sign                                                   ; 9511: 86 3b       .;       ; high
     iny                                                               ; 9513: c8          .        ; advance
@@ -3975,10 +3975,10 @@ l848a = sub_c847b+15
     lda zp_vartop_1                                                   ; 9516: a5 03       ..       ; Link the new entry (at VARTOP): high...
     sta (l003a),y                                                     ; 9518: 91 3a       .:       ; ...into the previous link
     lda zp_vartop                                                     ; 951a: a5 02       ..       ; low...
-    dey                                                               ; 951c: 88          .        ; ...
+    dey                                                               ; 951c: 88          .        ; point at the low link byte
     sta (l003a),y                                                     ; 951d: 91 3a       .:       ; (store)
     tya                                                               ; 951f: 98          .        ; the new entry header
-    iny                                                               ; 9520: c8          .        ; ...
+    iny                                                               ; 9520: c8          .        ; next entry byte
     sta (zp_vartop),y                                                 ; 9521: 91 02       ..       ; (store)
     cpy zp_fileblk                                                    ; 9523: c4 39       .9       ; name length reached?
     beq return_11                                                     ; 9525: f0 31       .1       ; done
@@ -4479,7 +4479,7 @@ l848a = sub_c847b+15
     lda zp_iwa_1                                                      ; 97ba: a5 2b       .+       ; Top bits of the subscript
     and #&c0                                                          ; 97bc: 29 c0       ).       ; keep just bits 6-7
     ora zp_iwa_2                                                      ; 97be: 05 2c       .,       ; combine with the high bytes...
-    ora zp_iwa_3                                                      ; 97c0: 05 2d       .-       ; ...
+    ora zp_iwa_3                                                      ; 97c0: 05 2d       .-       ; and byte 3
     bne c97d1                                                         ; 97c2: d0 0d       ..       ; negative or huge: Subscript
     lda zp_iwa                                                        ; 97c4: a5 2a       .*       ; Compare against the dimension extent
     cmp (zp_general),y                                                ; 97c6: d1 37       .7       ; subscript low vs extent low
@@ -4506,7 +4506,7 @@ l848a = sub_c847b+15
 ; &97df referenced 10 times by &8b2d, &8f31, &8f40, &8f6e, &8f80, &9295, &98e3, &b5ac, &b5d8, &b99a
 .check_line_number
     ldy zp_text_ptr_off                                               ; 97df: a4 0a       ..       ; Next character
-    lda (zp_text_ptr),y                                               ; 97e1: b1 0b       ..       ; ...
+    lda (zp_text_ptr),y                                               ; 97e1: b1 0b       ..       ; read it
     cmp #&20 ; ' '                                                    ; 97e3: c9 20       .        ; space?
     beq loop_c97dd                                                    ; 97e5: f0 f6       ..       ; skip it
     cmp #&8d                                                          ; 97e7: c9 8d       ..       ; line-number token?
@@ -4543,11 +4543,11 @@ l848a = sub_c847b+15
 ; &9807 referenced 1 time by &92eb
 .sub_c9807
     lda zp_text_ptr                                                   ; 9807: a5 0b       ..       ; Copy PtrA to PtrB
-    sta zp_text_ptr2                                                  ; 9809: 85 19       ..       ; ...
-    lda zp_text_ptr_1                                                 ; 980b: a5 0c       ..       ; ...
-    sta zp_text_ptr2_1                                                ; 980d: 85 1a       ..       ; ...
-    lda zp_text_ptr_off                                               ; 980f: a5 0a       ..       ; ...
-    sta zp_text_ptr2_off                                              ; 9811: 85 1b       ..       ; ...
+    sta zp_text_ptr2                                                  ; 9809: 85 19       ..       ; (low)
+    lda zp_text_ptr_1                                                 ; 980b: a5 0c       ..       ; high...
+    sta zp_text_ptr2_1                                                ; 980d: 85 1a       ..       ; (high)
+    lda zp_text_ptr_off                                               ; 980f: a5 0a       ..       ; offset...
+    sta zp_text_ptr2_off                                              ; 9811: 85 1b       ..       ; (offset)
 ; ***************************************************************************************
 ; Expect "=" then evaluate the right-hand side
 ;
@@ -4556,8 +4556,8 @@ l848a = sub_c847b+15
 ; &9813 referenced 4 times by &8bee, &8bfe, &981b, &bf34
 .eval_after_eq
     ldy zp_text_ptr2_off                                              ; 9813: a4 1b       ..       ; Next character
-    inc zp_text_ptr2_off                                              ; 9815: e6 1b       ..       ; ...
-    lda (zp_text_ptr2),y                                              ; 9817: b1 19       ..       ; ...
+    inc zp_text_ptr2_off                                              ; 9815: e6 1b       ..       ; and advance
+    lda (zp_text_ptr2),y                                              ; 9817: b1 19       ..       ; read it
     cmp #&20 ; ' '                                                    ; 9819: c9 20       .        ; space?
     beq eval_after_eq                                                 ; 981b: f0 f6       ..       ; skip it
     cmp #&3d ; '='                                                    ; 981d: c9 3d       .=       ; "="?
@@ -4840,37 +4840,37 @@ l848a = sub_c847b+15
 ; &9970 referenced 3 times by &b5ec, &b9af, &bc2d
 .find_program_line
     ldy #0                                                            ; 9970: a0 00       ..       ; Pointer low = 0
-    sty zp_fwb_exp                                                    ; 9972: 84 3d       .=       ; ...
+    sty zp_fwb_exp                                                    ; 9972: 84 3d       .=       ; scratch pointer in fwb_exp/m1
     lda zp_page                                                       ; 9974: a5 18       ..       ; Pointer high = PAGE
-    sta zp_fwb_m1                                                     ; 9976: 85 3e       .>       ; ...
+    sta zp_fwb_m1                                                     ; 9976: 85 3e       .>       ; pointer high
 ; &9978 referenced 2 times by &9988, &998c
 .c9978
     ldy #1                                                            ; 9978: a0 01       ..       ; This line's number: high byte
-    lda (zp_fwb_exp),y                                                ; 997a: b1 3d       .=       ; ...
+    lda (zp_fwb_exp),y                                                ; 997a: b1 3d       .=       ; read it
     cmp zp_iwa_1                                                      ; 997c: c5 2b       .+       ; vs the target high byte
     bcs c998e                                                         ; 997e: b0 0e       ..       ; > =: a candidate
 ; &9980 referenced 1 time by &9996
 .loop_c9980
     ldy #3                                                            ; 9980: a0 03       ..       ; Line length
-    lda (zp_fwb_exp),y                                                ; 9982: b1 3d       .=       ; ...
+    lda (zp_fwb_exp),y                                                ; 9982: b1 3d       .=       ; read it
     adc zp_fwb_exp                                                    ; 9984: 65 3d       e=       ; Advance to the next line
-    sta zp_fwb_exp                                                    ; 9986: 85 3d       .=       ; ...
-    bcc c9978                                                         ; 9988: 90 ee       ..       ; ...
-    inc zp_fwb_m1                                                     ; 998a: e6 3e       .>       ; ...
+    sta zp_fwb_exp                                                    ; 9986: 85 3d       .=       ; pointer low
+    bcc c9978                                                         ; 9988: 90 ee       ..       ; no carry: same page
+    inc zp_fwb_m1                                                     ; 998a: e6 3e       .>       ; carry into the pointer high
     bcs c9978                                                         ; 998c: b0 ea       ..       ; continue
 ; &998e referenced 1 time by &997e
 .c998e
     bne c99a4                                                         ; 998e: d0 14       ..       ; high byte greater: found (not exact)
     ldy #2                                                            ; 9990: a0 02       ..       ; This line's number: low byte
-    lda (zp_fwb_exp),y                                                ; 9992: b1 3d       .=       ; ...
+    lda (zp_fwb_exp),y                                                ; 9992: b1 3d       .=       ; read it
     cmp zp_iwa                                                        ; 9994: c5 2a       .*       ; vs the target low byte
     bcc loop_c9980                                                    ; 9996: 90 e8       ..       ; less: next line
     bne c99a4                                                         ; 9998: d0 0a       ..       ; greater: found (not exact)
     tya                                                               ; 999a: 98          .        ; Exact match: leave the pointer at this line
-    adc zp_fwb_exp                                                    ; 999b: 65 3d       e=       ; ...
-    sta zp_fwb_exp                                                    ; 999d: 85 3d       .=       ; ...
-    bcc c99a4                                                         ; 999f: 90 03       ..       ; ...
-    inc zp_fwb_m1                                                     ; 99a1: e6 3e       .>       ; ...
+    adc zp_fwb_exp                                                    ; 999b: 65 3d       e=       ; point at the line number
+    sta zp_fwb_exp                                                    ; 999d: 85 3d       .=       ; (store)
+    bcc c99a4                                                         ; 999f: 90 03       ..       ; no carry
+    inc zp_fwb_m1                                                     ; 99a1: e6 3e       .>       ; carry into the pointer high
     clc                                                               ; 99a3: 18          .        ; flag the exact match (carry clear)
 ; &99a4 referenced 3 times by &998e, &9998, &999f
 .c99a4
@@ -7554,19 +7554,19 @@ l848a = sub_c847b+15
 ; &a7e9 referenced 4 times by &a6c7, &a6d2, &a6de, &a83f
 .point_fp_temp4
     lda #&7b ; '{'                                                    ; a7e9: a9 7b       .{       ; TEMP4 low (&7B)
-    bne ca7f7                                                         ; a7eb: d0 0a       ..       ; ...
+    bne ca7f7                                                         ; a7eb: d0 0a       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP2 (&0471)
 ; &a7ed referenced 3 times by &9e7e, &a7cc, &aa23
 .point_fp_temp2
     lda #&71 ; 'q'                                                    ; a7ed: a9 71       .q       ; TEMP2 low (&71)
-    bne ca7f7                                                         ; a7ef: d0 06       ..       ; ...
+    bne ca7f7                                                         ; a7ef: d0 06       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP3 (&0476)
 ; &a7f1 referenced 2 times by &a8f5, &aad1
 .point_fp_temp3
     lda #&76 ; 'v'                                                    ; a7f1: a9 76       .v       ; TEMP3 low (&76)
-    bne ca7f7                                                         ; a7f3: d0 02       ..       ; ...
+    bne ca7f7                                                         ; a7f3: d0 02       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Point zp_fp_ptr at FP TEMP1 (&046C)
 ; &a7f5 referenced 6 times by &9f71, &a3b2, &a860, &a8b5, &aa1a, &aa2f
@@ -7576,7 +7576,7 @@ l848a = sub_c847b+15
 .ca7f7
     sta zp_fp_ptr                                                     ; a7f7: 85 4b       .K       ; set the pointer low
     lda #4                                                            ; a7f9: a9 04       ..       ; high &04
-    sta zp_fp_ptr_1                                                   ; a7fb: 85 4c       .L       ; ...
+    sta zp_fp_ptr_1                                                   ; a7fb: 85 4c       .L       ; pointer high
     rts                                                               ; a7fd: 60          `        ; Return
 ; ***************************************************************************************
 ; LN
@@ -7914,7 +7914,7 @@ l848a = sub_c847b+15
 .caa4e
     sta zp_fp_ptr                                                     ; aa4e: 85 4b       .K       ; Set the fp pointer low
     lda #&aa                                                          ; aa50: a9 aa       ..       ; high &AA
-    sta zp_fp_ptr_1                                                   ; aa52: 85 4c       .L       ; ...
+    sta zp_fp_ptr_1                                                   ; aa52: 85 4c       .L       ; pointer high
     rts                                                               ; aa54: 60          `        ; Return
 ; ***************************************************************************************
 ; Point the fp pointer at the pi/2 constant (&AA63)
@@ -8537,7 +8537,7 @@ l848a = sub_c847b+15
 ; &ad93 referenced 3 times by &9dc3, &a2c8, &ad73
 .iwa_negate
     sec                                                               ; ad93: 38          8        ; Negate IWA: compute 0 - IWA
-    lda #0                                                            ; ad94: a9 00       ..       ; ...
+    lda #0                                                            ; ad94: a9 00       ..       ; from zero
     tay                                                               ; ad96: a8          .        ; Y = 0 for the subtractions
     sbc zp_iwa                                                        ; ad97: e5 2a       .*       ; byte 0
     sta zp_iwa                                                        ; ad99: 85 2a       .*       ; (store)
@@ -8977,7 +8977,7 @@ l848a = sub_c847b+15
 .loop_caf89
     lda zp_rnd_seed_2                                                 ; af89: a5 0f       ..       ; Byte 2 holds register bits 16-23
     lsr a                                                             ; af8b: 4a          J        ; Shift right so bit 19 (tap 20)...
-    lsr a                                                             ; af8c: 4a          J        ; ...
+    lsr a                                                             ; af8c: 4a          J        ; shifting it down
     lsr a                                                             ; af8d: 4a          J        ; ...reaches bit 0
     eor zp_rnd_seed_4                                                 ; af8e: 45 11       E.       ; EOR byte 4 to bring in bit 32: bit19 XOR bit32
     ror a                                                             ; af90: 6a          j        ; Rotate the feedback bit into carry
@@ -9659,11 +9659,11 @@ l848a = sub_c847b+15
 ;     X: preserved
 .iwa_load_var
     ldy #3                                                            ; b336: a0 03       ..       ; Load a 4-byte integer (MSB first): byte 3
-    lda (zp_iwa),y                                                    ; b338: b1 2a       .*       ; ...
+    lda (zp_iwa),y                                                    ; b338: b1 2a       .*       ; read it
     sta zp_iwa_3                                                      ; b33a: 85 2d       .-       ; (into IWA)
     dey                                                               ; b33c: 88          .        ; next
     lda (zp_iwa),y                                                    ; b33d: b1 2a       .*       ; byte 2
-    sta zp_iwa_2                                                      ; b33f: 85 2c       .,       ; ...
+    sta zp_iwa_2                                                      ; b33f: 85 2c       .,       ; (into IWA)
     dey                                                               ; b341: 88          .        ; next
     lda (zp_iwa),y                                                    ; b342: b1 2a       .*       ; byte 1
     tax                                                               ; b344: aa          .        ; (keep in X)
@@ -11127,7 +11127,7 @@ l848a = sub_c847b+15
 .sub_cbbfc
     ldy #0                                                            ; bbfc: a0 00       ..       ; Point at the string buffer (&0600): low
     lda #6                                                            ; bbfe: a9 06       ..       ; high
-    bne cbc09                                                         ; bc00: d0 07       ..       ; ...
+    bne cbc09                                                         ; bc00: d0 07       ..       ; set it (shared tail)
 ; ***************************************************************************************
 ; Print the prompt and read a line
 ;
@@ -11348,7 +11348,7 @@ l848a = sub_c847b+15
 ; &bd2f referenced 1 time by &927e
 .sub_cbd2f
     ldx #&80                                                          ; bd2f: a2 80       ..       ; Clear the variable table (&0480-&04FF):
-    lda #0                                                            ; bd31: a9 00       ..       ; ...
+    lda #0                                                            ; bd31: a9 00       ..       ; zero byte
 ; &bd33 referenced 1 time by &bd37
 .loop_cbd33
     sta l047f,x                                                       ; bd33: 9d 7f 04    ...      ; clear a byte
@@ -11483,7 +11483,7 @@ l848a = sub_c847b+15
 ; &bdcb referenced 6 times by &9c37, &ad0f, &afe0, &b002, &b061, &b2fd
 .unstack_string
     ldy #0                                                            ; bdcb: a0 00       ..       ; Pop a string: read its length
-    lda (zp_stack_ptr),y                                              ; bdcd: b1 04       ..       ; ...
+    lda (zp_stack_ptr),y                                              ; bdcd: b1 04       ..       ; read it
     sta zp_strbuf_len                                                 ; bdcf: 85 36       .6       ; (store)
     beq cbddc                                                         ; bdd1: f0 09       ..       ; zero length: just drop the length
     tay                                                               ; bdd3: a8          .        ; Y = length
@@ -11496,8 +11496,8 @@ l848a = sub_c847b+15
 ; &bddc referenced 6 times by &8ceb, &9b16, &ac20, &ad39, &ad52, &bdd1
 .cbddc
     ldy #0                                                            ; bddc: a0 00       ..       ; Drop the string: get its length
-    lda (zp_stack_ptr),y                                              ; bdde: b1 04       ..       ; ...
-    sec                                                               ; bde0: 38          8        ; ...
+    lda (zp_stack_ptr),y                                              ; bdde: b1 04       ..       ; read it
+    sec                                                               ; bde0: 38          8        ; so the +1 covers the length byte
 ; &bde1 referenced 1 time by &8d28
 .cbde1
     adc zp_stack_ptr                                                  ; bde1: 65 04       e.       ; advance the stack pointer past it: low
@@ -11634,7 +11634,7 @@ l848a = sub_c847b+15
 ; &be62 referenced 2 times by &bf24, &bf2a
 .load_program
     jsr sub_cbedd                                                     ; be62: 20 dd be     ..      ; Set the OSFILE load address to PAGE
-    tay                                                               ; be65: a8          .        ; ...
+    tay                                                               ; be65: a8          .        ; Y = 0 (for the exec address)
     lda #osfile_load                                                  ; be66: a9 ff       ..       ; OSFILE &FF: load the named file
     sty zp_fwb_exp                                                    ; be68: 84 3d       .=       ; exec address = 0 (load to the given address)
     ldx #&37 ; '7'                                                    ; be6a: a2 37       .7       ; control block at &37

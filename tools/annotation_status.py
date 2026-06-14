@@ -49,6 +49,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true", help="show subroutines with no placeholders too")
     ap.add_argument("--table", action="store_true", help="emit a markdown tracker table")
+    ap.add_argument("--addrs", metavar="NAME|ADDR", help="list placeholder addresses in one subroutine's owned range (with the nearest preceding lead comment), for targeted extraction")
     args = ap.parse_args()
 
     data = json.loads(JSON_FILEPATH.read_text())
@@ -56,6 +57,33 @@ def main() -> None:
     sub_addrs = [s["addr"] for s in subs]
     sub_names = {s["addr"]: s["name"] for s in subs}
     depths = load_depths()
+
+    if args.addrs:
+        target = args.addrs
+        if target.lower().startswith(("0x", "&", "$")):
+            start = int(target.lstrip("&$").replace("0x", "").replace("0X", ""), 16)
+        else:
+            start = next((s["addr"] for s in subs if s["name"] == target), None)
+            if start is None:
+                raise SystemExit(f"no subroutine named {target!r}")
+        idx = sub_addrs.index(start)
+        end = sub_addrs[idx + 1] if idx + 1 < len(sub_addrs) else 1 << 16
+        lead = ""
+        for it in sorted([i for i in data["items"] if i.get("type") == "code"], key=lambda i: i["addr"]):
+            a = it["addr"]
+            ci = (it.get("comment_inline") or "").strip()
+            if a < start:
+                if ci and ci != "...":
+                    lead = ci
+                continue
+            if a >= end:
+                break
+            op = f"{it['mnemonic']} {it.get('operand','')}".strip()
+            if ci == "...":
+                print(f"  &{a:04X}  {op:22}  <- lead: {lead}")
+            elif ci:
+                lead = ci
+        return
 
     # Per-subroutine tallies.
     total = {a: 0 for a in sub_addrs}

@@ -112,3 +112,4 @@ placeholders goes first.
 | 2026-06-14 | leaves: number parsing | parse_decimal_u16, decode_line_number, parse_exponent | 29 | 1745 | — |
 | 2026-06-14 | leaves: FP load/unpack | fwa_acc_fwb, fwb_unpack_var, fwb_clear/negate, load_real_var, clear_value_bytes | 28 | 1717 | — |
 | 2026-06-14 | leaves: string load, subscript, imul16 | load_string_var, check_subscript_bound, imul16 | 18 | 1699 | — |
+| 2026-06-14 | depth 0 complete | find_program_line, pointer helpers, find/create_variable, unstack_string, iwa_load_var, rnd_step, +singletons & trailing blocks | 50 | 1649 | — |
