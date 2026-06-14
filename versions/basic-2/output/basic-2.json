@@ -30343,7 +30343,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "Clear carry for the add",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -30353,7 +30353,7 @@
         101,
         11
       ],
-      "comment_inline": "...",
+      "comment_inline": "Name offset + text pointer low",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_text_ptr",
@@ -30366,7 +30366,7 @@
         166,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "Text pointer high in X",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_text_ptr_1",
@@ -30379,7 +30379,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "No carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c913c",
@@ -30391,7 +30391,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "Carry into the high byte",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -30400,7 +30400,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "Clear carry to back up by one",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -30413,7 +30413,7 @@
       "labels": [
         "c913c"
       ],
-      "comment_inline": "...",
+      "comment_inline": "Back up one byte (validate reads from offset 1): low",
       "xref_summaries": [
         "&913c referenced 1 time by &9138"
       ],
@@ -30430,7 +30430,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "&37 = name pointer low",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -30442,7 +30442,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "High byte",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -30452,7 +30452,7 @@
         233,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "Back up one byte: high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#0"
@@ -30463,7 +30463,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "&38 = name pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -30487,7 +30487,7 @@
         134,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "Stash it as the element size (zp_fwb_m2)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m2",
@@ -30653,7 +30653,7 @@
       "bytes": [
         232
       ],
-      "comment_inline": "...",
+      "comment_inline": "Count the suffix char in the name length too",
       "type": "code",
       "mnemonic": "inx"
     },
@@ -30746,7 +30746,7 @@
         134,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "Save the name offset too (&0a)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr_off",
@@ -30812,7 +30812,7 @@
         49,
         149
       ],
-      "comment_inline": "...",
+      "comment_inline": "Zero the value byte",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "clear_value_bytes",
@@ -30837,7 +30837,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "Push it for the post-loop multiply",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -30847,7 +30847,7 @@
         169,
         1
       ],
-      "comment_inline": "Dimension count starts at 1",
+      "comment_inline": "Descriptor write offset starts at 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -30857,7 +30857,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "Push the descriptor write offset",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -30931,7 +30931,7 @@
         41,
         192
       ],
-      "comment_inline": "...",
+      "comment_inline": "Isolate the top 2 bits of the bound high byte",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&c0"
@@ -30942,7 +30942,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR in byte 2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -30955,7 +30955,7 @@
         5,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "and byte 3 (any set => bound > 16383)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -31003,7 +31003,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "into Y as the descriptor write index",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -31026,7 +31026,7 @@
         145,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "extent low byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -31038,7 +31038,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance to the high byte,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -31048,7 +31048,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "extent high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -31061,7 +31061,7 @@
         145,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -31073,7 +31073,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance past the extent",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -31091,7 +31091,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "Push the updated descriptor offset",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -31193,7 +31193,7 @@
       "labels": [
         "c91b7"
       ],
-      "comment_inline": "Recover the element size",
+      "comment_inline": "Recover the data offset (1 + 2*dims)",
       "xref_summaries": [
         "&91b7 referenced 1 time by &91b2"
       ],
@@ -31209,7 +31209,7 @@
         133,
         21
       ],
-      "comment_inline": "...",
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_print_flag",
@@ -31221,7 +31221,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "Recover the element size",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -31231,7 +31231,7 @@
         133,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "as the multiplier low byte",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2",
@@ -31244,7 +31244,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "element size high = 0",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -31255,7 +31255,7 @@
         133,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "(16-bit element size in zp_fwb_m2/m3)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m3",
@@ -31282,7 +31282,7 @@
         160,
         0
       ],
-      "comment_inline": "Store the dimension count in the descriptor",
+      "comment_inline": "Store the data offset in descriptor byte 0",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#0"
@@ -31293,7 +31293,7 @@
         165,
         21
       ],
-      "comment_inline": "...",
+      "comment_inline": "the saved offset (1 + 2*dims)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_print_flag",
@@ -31306,7 +31306,7 @@
         145,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "into descriptor byte 0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_vartop),y",
@@ -31332,7 +31332,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "total size low = header + data,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -31345,7 +31345,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c91d2",
@@ -31358,7 +31358,7 @@
         230,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the total size high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_iwa_1",
@@ -31393,7 +31393,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte to &38,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -31406,7 +31406,7 @@
         165,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_vartop",
@@ -31419,7 +31419,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to &37 (saved old top)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -31441,7 +31441,7 @@
         101,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ total size low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_iwa",
@@ -31453,7 +31453,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top low held in Y,",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -31463,7 +31463,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -31476,7 +31476,7 @@
         101,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ total size high",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_vartop_1",
@@ -31501,7 +31501,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top high in X",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -31524,7 +31524,7 @@
         229,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte vs stack high (16-bit compare)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_stack_ptr_1",
@@ -31563,7 +31563,7 @@
         134,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_vartop_1",
@@ -31589,7 +31589,7 @@
         101,
         21
       ],
-      "comment_inline": "...",
+      "comment_inline": "skip the descriptor header to the data,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_print_flag",
@@ -31601,7 +31601,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "data start offset in Y,",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -31611,7 +31611,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "zero byte to fill with,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -31622,7 +31622,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low = 0 (Y carries the offset)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -31635,7 +31635,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no page crossing",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c91fc",
@@ -31648,7 +31648,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "step the pointer to the next page",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -31684,7 +31684,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte,",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -31694,7 +31694,7 @@
         208,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no page wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9203",
@@ -31707,7 +31707,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "cross into the next page",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -31742,7 +31742,7 @@
         208,
         245
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte not at top yet: keep zeroing",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c91fc",
@@ -31755,7 +31755,7 @@
         228,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "compare the page to the new top page",
       "type": "code",
       "mnemonic": "cpx",
       "operand": "zp_general_1",
@@ -31768,7 +31768,7 @@
         208,
         241
       ],
-      "comment_inline": "loop",
+      "comment_inline": "not there yet: keep zeroing",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c91fc",
