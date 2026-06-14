@@ -116,7 +116,7 @@ zp_fwa_ovf       = &2f
 zp_fwa_exp       = &30
 ; &30 referenced 55 times by &9a76, &9e3f, &9ed1, &9f65, &9f7e, &9f8e, &a0f7, &a1ef, &a1f5, &a1f9, &a217, &a226, &a24e, &a252, &a2e1, &a2e8, &a301, &a311, &a32e, &a346, &a38f, &a3cd, &a3fe, &a40c, &a418, &a44c, &a486, &a49d, &a4e6, &a513, &a555, &a58e, &a614, &a61f, &a629, &a62d, &a68c, &a6a1, &a6f8, &a703, &a7c1, &a7c6, &a7e0, &a820, &a82e, &a91b, &a936, &a9d3, &a9ff, &aa94, &abce, &af76, &b36b, &b4eb, &bd5b
 zp_fwa_m1        = &31
-; &31 referenced 72 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &af7a, &b37f, &b4f6, &b5dd, &b612, &bd66
+; &31 referenced 73 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a600, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &af7a, &b37f, &b4f6, &b5dd, &b612, &bd66
 zp_fwa_m2        = &32
 ; &32 referenced 61 times by &9a82, &9f86, &a07f, &a0d9, &a11f, &a18a, &a18e, &a19d, &a1aa, &a1b3, &a1c6, &a1c8, &a1d3, &a1dc, &a20f, &a22e, &a275, &a291, &a29f, &a2b2, &a2d9, &a307, &a319, &a31f, &a340, &a3a2, &a3c3, &a3d5, &a3eb, &a42e, &a434, &a43e, &a47b, &a47d, &a4be, &a4ee, &a56c, &a572, &a581, &a59c, &a5ce, &a5d0, &a5f6, &a5fa, &a690, &a714, &a732, &a736, &a74b, &a75c, &a77a, &a77e, &a78d, &a7a0, &a9f7, &b361, &b373, &b4ff, &b5e1, &b616, &bd6f
 zp_fwa_m3        = &33
@@ -142,7 +142,7 @@ zp_fwb_ovf       = &3c
 zp_fwb_exp       = &3d
 ; &3d referenced 65 times by &85c1, &85e7, &85f3, &87b6, &8899, &88ad, &88b9, &88bb, &88c0, &88ca, &88cc, &88fc, &8905, &8909, &8911, &8a3b, &8a49, &8a5c, &9058, &9486, &94b3, &94e6, &9972, &997a, &9982, &9984, &9986, &9992, &999b, &999d, &99e0, &9a09, &9a12, &9a2f, &9a74, &9db4, &a228, &a36a, &a459, &a4e4, &a515, &a553, &a58c, &a616, &a6fa, &a81e, &a944, &a9e6, &b154, &b466, &b5ef, &b8d9, &bae8, &bb0a, &bc32, &bc38, &bcea, &bcf6, &bcfb, &bd00, &bd0a, &be57, &be59, &be68, &bf00
 zp_fwb_m1        = &3e
-; &3e referenced 55 times by &85e9, &85fd, &889b, &88ab, &88b0, &88b5, &88be, &88c7, &88d0, &88f5, &890b, &905d, &9976, &998a, &99a1, &99e2, &9a0b, &9a17, &9a2c, &9a7a, &9db6, &a192, &a22c, &a242, &a26f, &a289, &a37a, &a422, &a428, &a444, &a45b, &a4e8, &a534, &a538, &a543, &a598, &a5d2, &a63a, &a710, &a73a, &a758, &a782, &a81b, &a946, &ac88, &b46a, &b5f3, &b8db, &baec, &bb0e, &bc3c, &bc44, &bced, &be5d, &bf04
+; &3e referenced 56 times by &85e9, &85fd, &889b, &88ab, &88b0, &88b5, &88be, &88c7, &88d0, &88f5, &890b, &905d, &9976, &998a, &99a1, &99e2, &9a0b, &9a17, &9a2c, &9a7a, &9db6, &a192, &a22c, &a242, &a26f, &a289, &a37a, &a422, &a428, &a444, &a45b, &a4e8, &a534, &a538, &a543, &a598, &a5d2, &a5fe, &a63a, &a710, &a73a, &a758, &a782, &a81b, &a946, &ac88, &b46a, &b5f3, &b8db, &baec, &bb0e, &bc3c, &bc44, &bced, &be5d, &bf04
 zp_fwb_m2        = &3f
 ; &3f referenced 55 times by &8522, &8542, &9147, &915e, &917c, &91bb, &923c, &924f, &9723, &992b, &993f, &994b, &9960, &99e4, &9a0d, &9a1c, &9a29, &9a80, &9d87, &9d9a, &9d9e, &9ea0, &9ea8, &9eb3, &9eb7, &a18c, &a230, &a244, &a273, &a28b, &a35c, &a36e, &a41e, &a424, &a446, &a45d, &a4ec, &a530, &a536, &a545, &a59e, &a5cc, &a5f8, &a63c, &a716, &a734, &a75e, &a77c, &ac8a, &b21a, &b222, &bca6, &bca8, &bcfe, &bf0d
 zp_fwb_m3        = &40
@@ -316,8 +316,6 @@ string_work      = &0600
 l06ff            = &06ff
 ; &06ff referenced 2 times by &8ee0, &8ef1
 line_input_buf   = &0700
-l3185            = &3185
-; &3185 referenced 1 time by &a5ff
 osfind           = &ffce
 ; &ffce referenced 2 times by &bf90, &bfa3
 osbput           = &ffd4
@@ -8262,13 +8260,8 @@ l848a = sub_c847b+15
     sbc zp_fwb_m2                                                     ; a5f8: e5 3f       .?       ; - FWB m2,
     sta zp_fwa_m2                                                     ; a5fa: 85 32       .2       ; (store)
     lda zp_fwa_m1                                                     ; a5fc: a5 31       .1       ; m1
-    equb &e5                                                          ; a5fe: e5          .     
-; ***************************************************************************************
-; Compare FWA with a fp variable
-;
-; Test the fp variable operand against FWA.
-.fwa_compare_var
-    rol l3185,x                                                       ; a5ff: 3e 85 31    >.1      ; Shift the comparison result, then normalise
+    sbc zp_fwb_m1                                                     ; a5fe: e5 3e       .>       ; - FWB m1,
+    sta zp_fwa_m1                                                     ; a600: 85 31       .1       ; (store)
     jmp fwa_normalise                                                 ; a602: 4c 03 a3    L..      ; normalise the difference
 ; &a605 referenced 1 time by &a609
 .return_27
@@ -14314,7 +14307,7 @@ save pydis_start, pydis_end
 ;     zp_text_ptr2_off:           90
 ;     zp_stack_ptr:               85
 ;     zp_text_ptr:                77
-;     zp_fwa_m1:                  72
+;     zp_fwa_m1:                  73
 ;     zp_iwa_2:                   70
 ;     zp_general_1:               66
 ;     zp_fwb_exp:                 65
@@ -14324,8 +14317,8 @@ save pydis_start, pydis_end
 ;     zp_iwa_3:                   61
 ;     zp_fwb_sign:                59
 ;     zp_fwa_m3:                  58
+;     zp_fwb_m1:                  56
 ;     zp_fwa_exp:                 55
-;     zp_fwb_m1:                  55
 ;     zp_fwb_m2:                  55
 ;     zp_strbuf_len:              52
 ;     skip_spaces:                48
@@ -15282,7 +15275,6 @@ save pydis_start, pydis_end
 ;     l05b7:                       1
 ;     l05cb:                       1
 ;     l05e5:                       1
-;     l3185:                       1
 ;     l82df:                       1
 ;     l8351:                       1
 ;     l8450:                       1
@@ -16222,7 +16214,6 @@ save pydis_start, pydis_end
 ;     l05e5
 ;     l05ff
 ;     l06ff
-;     l3185
 ;     l82df
 ;     l8351
 ;     l8450
@@ -16522,11 +16513,11 @@ save pydis_start, pydis_end
 
 ; Stats:
 ;     Total size (Code + Data) = 16384 bytes
-;     Code                     = 14424 bytes (88%)
-;     Data                     = 1960 bytes (12%)
+;     Code                     = 14425 bytes (88%)
+;     Data                     = 1959 bytes (12%)
 ;
-;     Number of instructions   = 7132
-;     Number of data bytes     = 944 bytes
+;     Number of instructions   = 7133
+;     Number of data bytes     = 943 bytes
 ;     Number of data words     = 0 bytes
 ;     Number of string bytes   = 1016 bytes
 ;     Number of strings        = 186

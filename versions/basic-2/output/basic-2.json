@@ -3331,14 +3331,7 @@
       },
       "on_exit": {
         "zp_fwa (&2E-&35)": "the sum, normalised but unrounded"
-      },
-      "fall_through": true
-    },
-    {
-      "addr": 42495,
-      "name": "fwa_compare_var",
-      "title": "Compare FWA with a fp variable",
-      "description": "Test the fp variable operand against FWA."
+      }
     },
     {
       "addr": 42502,
@@ -4531,7 +4524,6 @@
     "string_work": 1536,
     "l06ff": 1791,
     "line_input_buf": 1792,
-    "l3185": 12677,
     "fred_hard_drive_0": 64576,
     "fred_hard_drive_1": 64577,
     "fred_hard_drive_2": 64578,
@@ -69387,29 +69379,28 @@
     {
       "addr": 42494,
       "bytes": [
-        229
+        229,
+        62
       ],
-      "type": "byte",
-      "values": [
-        229
-      ]
+      "comment_inline": "- FWB m1,",
+      "type": "code",
+      "mnemonic": "sbc",
+      "operand": "zp_fwb_m1",
+      "target": 62,
+      "target_label": "zp_fwb_m1"
     },
     {
-      "addr": 42495,
+      "addr": 42496,
       "bytes": [
-        62,
         133,
         49
       ],
-      "labels": [
-        "fwa_compare_var"
-      ],
-      "comment_inline": "Shift the comparison result, then normalise",
+      "comment_inline": "(store)",
       "type": "code",
-      "mnemonic": "rol",
-      "operand": "l3185,x",
-      "target": 12677,
-      "target_label": "l3185"
+      "mnemonic": "sta",
+      "operand": "zp_fwa_m1",
+      "target": 49,
+      "target_label": "zp_fwa_m1"
     },
     {
       "addr": 42498,

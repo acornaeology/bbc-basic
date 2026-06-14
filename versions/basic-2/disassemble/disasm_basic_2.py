@@ -6216,11 +6216,8 @@ d.comment(0xa5f6, 'm2', align=Align.INLINE)
 d.comment(0xa5f8, '- FWB m2,', align=Align.INLINE)
 d.comment(0xa5fa, '(store)', align=Align.INLINE)
 d.comment(0xa5fc, 'm1', align=Align.INLINE)
-
-d.subroutine(0xa5ff, 'fwa_compare_var', title='Compare FWA with a fp variable',
-             description='Test the fp variable operand against FWA.')
-# fwa_compare_var (&A5FF): compare FWA with the fp variable
-d.comment(0xa5ff, 'Shift the comparison result, then normalise', align=Align.INLINE)
+d.comment(0xa5fe, '- FWB m1,', align=Align.INLINE)
+d.comment(0xa600, '(store)', align=Align.INLINE)
 d.comment(0xa602, 'normalise the difference', align=Align.INLINE)
 d.comment(0xa605, 'Return', align=Align.INLINE)
 d.subroutine(0xa606, 'fwa_mul_var_raw', title='FWA = FWA * fp var (raw)',
