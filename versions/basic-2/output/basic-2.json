@@ -12841,9 +12841,9 @@
       "comment_inline": "value = P%",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cae3a",
+      "operand": "factor_pcounter",
       "target": 44602,
-      "target_label": "sub_cae3a"
+      "target_label": "factor_pcounter"
     },
     {
       "addr": 34226,
@@ -27775,9 +27775,9 @@
       "comment_inline": "Evaluate y, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 36398,
@@ -29272,9 +29272,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 36638,
@@ -43363,9 +43363,9 @@
       "comment_inline": "Evaluate the final subscript",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 38730,
@@ -43596,9 +43596,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 38767,
@@ -77819,9 +77819,9 @@
       "comment_inline": "Evaluate y, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 43853,
@@ -79703,9 +79703,9 @@
       "comment_inline": "real: negate it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cad8f",
+      "operand": "fneg_zero",
       "target": 44431,
-      "target_label": "sub_cad8f"
+      "target_label": "fneg_zero"
     },
     {
       "addr": 44147,
@@ -80693,9 +80693,9 @@
       "comment_inline": "Evaluate the start, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 44300,
@@ -81409,9 +81409,9 @@
       "comment_inline": "real: clear the sign",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cad77",
+      "operand": "abs_real",
       "target": 44407,
-      "target_label": "cad77"
+      "target_label": "abs_real"
     },
     {
       "addr": 44401,
@@ -81460,9 +81460,9 @@
       "comment_inline": "Positive: leave it",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cadaa",
+      "operand": "ineg_done",
       "target": 44458,
-      "target_label": "cadaa"
+      "target_label": "ineg_done"
     },
     {
       "addr": 44407,
@@ -81472,7 +81472,7 @@
         161
       ],
       "labels": [
-        "cad77"
+        "abs_real"
       ],
       "comment_inline": "ABS of a real: get the sign",
       "xref_summaries": [
@@ -81496,9 +81496,9 @@
       "comment_inline": "positive/zero: done",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cad89",
+      "operand": "fneg_done",
       "target": 44425,
-      "target_label": "cad89"
+      "target_label": "fneg_done"
     },
     {
       "addr": 44412,
@@ -81509,9 +81509,9 @@
       "comment_inline": "negative: clear the sign",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cad83",
+      "operand": "fneg_toggle",
       "target": 44419,
-      "target_label": "cad83"
+      "target_label": "fneg_toggle"
     },
     {
       "addr": 44414,
@@ -81549,9 +81549,9 @@
       "comment_inline": "zero: nothing to negate",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cad89",
+      "operand": "fneg_done",
       "target": 44425,
-      "target_label": "cad89"
+      "target_label": "fneg_done"
     },
     {
       "addr": 44419,
@@ -81560,7 +81560,7 @@
         46
       ],
       "labels": [
-        "cad83"
+        "fneg_toggle"
       ],
       "comment_inline": "Toggle the sign bit...",
       "xref_summaries": [
@@ -81606,7 +81606,7 @@
         255
       ],
       "labels": [
-        "cad89"
+        "fneg_done"
       ],
       "comment_inline": "real result type",
       "xref_summaries": [
@@ -81637,7 +81637,7 @@
         174
       ],
       "labels": [
-        "loop_cad8c"
+        "unary_minus"
       ],
       "comment_inline": "Unary minus: evaluate the operand",
       "xref_summaries": [
@@ -81648,9 +81648,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_cae02",
+      "operand": "factor_unary_plus",
       "target": 44546,
-      "target_label": "sub_cae02"
+      "target_label": "factor_unary_plus"
     },
     {
       "addr": 44431,
@@ -81659,7 +81659,7 @@
         214
       ],
       "labels": [
-        "sub_cad8f"
+        "fneg_zero"
       ],
       "comment_inline": "zero: leave it",
       "xref_summaries": [
@@ -81865,7 +81865,7 @@
         64
       ],
       "labels": [
-        "cadaa"
+        "ineg_done"
       ],
       "comment_inline": "integer result",
       "xref_summaries": [
@@ -81931,9 +81931,9 @@
       "comment_inline": "quoted string",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cadc9",
+      "operand": "rsl_quoted",
       "target": 44489,
-      "target_label": "cadc9"
+      "target_label": "rsl_quoted"
     },
     {
       "addr": 44468,
@@ -81953,7 +81953,7 @@
         25
       ],
       "labels": [
-        "loop_cadb6"
+        "rsl_unquoted_loop"
       ],
       "comment_inline": "char",
       "xref_summaries": [
@@ -82020,9 +82020,9 @@
       "comment_inline": "end",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cadc5",
+      "operand": "rsl_unquoted_end",
       "target": 44485,
-      "target_label": "cadc5"
+      "target_label": "rsl_unquoted_end"
     },
     {
       "addr": 44481,
@@ -82044,9 +82044,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cadb6",
+      "operand": "rsl_unquoted_loop",
       "target": 44470,
-      "target_label": "loop_cadb6"
+      "target_label": "rsl_unquoted_loop"
     },
     {
       "addr": 44485,
@@ -82054,7 +82054,7 @@
         136
       ],
       "labels": [
-        "cadc5"
+        "rsl_unquoted_end"
       ],
       "comment_inline": "step back",
       "xref_summaries": [
@@ -82076,9 +82076,9 @@
       "comment_inline": "finish",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cade1",
+      "operand": "rsl_drop_trail",
       "target": 44513,
-      "target_label": "cade1"
+      "target_label": "rsl_drop_trail"
     },
     {
       "addr": 44489,
@@ -82087,7 +82087,7 @@
         0
       ],
       "labels": [
-        "cadc9"
+        "rsl_quoted"
       ],
       "comment_inline": "Quoted: read until the closing quote",
       "xref_summaries": [
@@ -82107,7 +82107,7 @@
         200
       ],
       "labels": [
-        "loop_cadcb"
+        "rsl_quoted_adv"
       ],
       "comment_inline": "advance",
       "xref_summaries": [
@@ -82126,7 +82126,7 @@
         25
       ],
       "labels": [
-        "loop_cadcc"
+        "rsl_quoted_loop"
       ],
       "comment_inline": "char",
       "xref_summaries": [
@@ -82161,9 +82161,9 @@
       "comment_inline": "Missing \" error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cade9",
+      "operand": "rsl_missing_quote",
       "target": 44521,
-      "target_label": "cade9"
+      "target_label": "rsl_missing_quote"
     },
     {
       "addr": 44498,
@@ -82217,9 +82217,9 @@
       "comment_inline": "no: keep copying",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cadcc",
+      "operand": "rsl_quoted_loop",
       "target": 44492,
-      "target_label": "loop_cadcc"
+      "target_label": "rsl_quoted_loop"
     },
     {
       "addr": 44507,
@@ -82254,9 +82254,9 @@
       "comment_inline": "yes: keep it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cadcb",
+      "operand": "rsl_quoted_adv",
       "target": 44491,
-      "target_label": "loop_cadcb"
+      "target_label": "rsl_quoted_adv"
     },
     {
       "addr": 44513,
@@ -82264,7 +82264,7 @@
         202
       ],
       "labels": [
-        "cade1"
+        "rsl_drop_trail"
       ],
       "comment_inline": "drop the trailing character",
       "xref_summaries": [
@@ -82330,7 +82330,7 @@
         142
       ],
       "labels": [
-        "cade9"
+        "rsl_missing_quote"
       ],
       "comment_inline": "Missing \" error",
       "xref_summaries": [
@@ -82449,9 +82449,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cad8c",
+      "operand": "unary_minus",
       "target": 44428,
-      "target_label": "loop_cad8c"
+      "target_label": "unary_minus"
     },
     {
       "addr": 44538,
@@ -82473,9 +82473,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cadc9",
+      "operand": "rsl_quoted",
       "target": 44489,
-      "target_label": "cadc9"
+      "target_label": "rsl_quoted"
     },
     {
       "addr": 44542,
@@ -82497,9 +82497,9 @@
       "comment_inline": "no: classify the token",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cae05",
+      "operand": "factor_classify",
       "target": 44549,
-      "target_label": "cae05"
+      "target_label": "factor_classify"
     },
     {
       "addr": 44546,
@@ -82509,7 +82509,7 @@
         138
       ],
       "labels": [
-        "sub_cae02"
+        "factor_unary_plus"
       ],
       "comment_inline": "unary plus: re-read the next character",
       "xref_summaries": [
@@ -82531,7 +82531,7 @@
         142
       ],
       "labels": [
-        "cae05"
+        "factor_classify"
       ],
       "comment_inline": "below the lowest function token?",
       "xref_summaries": [
@@ -82553,9 +82553,9 @@
       "comment_inline": "yes: indirection, number or variable",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cae10",
+      "operand": "factor_indirect",
       "target": 44560,
-      "target_label": "cae10"
+      "target_label": "factor_indirect"
     },
     {
       "addr": 44553,
@@ -82577,9 +82577,9 @@
       "comment_inline": "yes: No such variable",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 44557,
@@ -82602,7 +82602,7 @@
         63
       ],
       "labels": [
-        "cae10"
+        "factor_indirect"
       ],
       "comment_inline": "'?' (byte indirection) or higher?",
       "xref_summaries": [
@@ -82624,9 +82624,9 @@
       "comment_inline": "yes: variable or indirection",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cae20",
+      "operand": "factor_name",
       "target": 44576,
-      "target_label": "cae20"
+      "target_label": "factor_name"
     },
     {
       "addr": 44564,
@@ -82648,9 +82648,9 @@
       "comment_inline": "yes: a number",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cae2a",
+      "operand": "factor_number",
       "target": 44586,
-      "target_label": "cae2a"
+      "target_label": "factor_number"
     },
     {
       "addr": 44568,
@@ -82672,9 +82672,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cae6d",
+      "operand": "factor_hex",
       "target": 44653,
-      "target_label": "cae6d"
+      "target_label": "factor_hex"
     },
     {
       "addr": 44572,
@@ -82696,9 +82696,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 44576,
@@ -82707,7 +82707,7 @@
         27
       ],
       "labels": [
-        "cae20"
+        "factor_name"
       ],
       "comment_inline": "Back up to the name",
       "xref_summaries": [
@@ -82745,9 +82745,9 @@
       "comment_inline": "undefined: handle below",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cae30",
+      "operand": "factor_undefined",
       "target": 44592,
-      "target_label": "cae30"
+      "target_label": "factor_undefined"
     },
     {
       "addr": 44583,
@@ -82771,7 +82771,7 @@
         160
       ],
       "labels": [
-        "cae2a"
+        "factor_number"
       ],
       "comment_inline": "Parse the decimal number",
       "xref_summaries": [
@@ -82795,9 +82795,9 @@
       "comment_inline": "ok Return",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 44591,
@@ -82815,7 +82815,7 @@
         40
       ],
       "labels": [
-        "cae30"
+        "factor_undefined"
       ],
       "comment_inline": "Undefined: OPT flag",
       "xref_summaries": [
@@ -82850,9 +82850,9 @@
       "comment_inline": "no: No such variable",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 44598,
@@ -82863,9 +82863,9 @@
       "comment_inline": "bad name: No such variable",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 44600,
@@ -82888,7 +82888,7 @@
         4
       ],
       "labels": [
-        "sub_cae3a"
+        "factor_pcounter"
       ],
       "comment_inline": "Use P% as the value",
       "xref_summaries": [
@@ -82937,7 +82937,7 @@
         0
       ],
       "labels": [
-        "cae43"
+        "no_such_variable"
       ],
       "comment_inline": "No such variable error",
       "xref_summaries": [
@@ -83005,7 +83005,7 @@
         155
       ],
       "labels": [
-        "cae56"
+        "eval_subexpr"
       ],
       "comment_inline": "Sub-expression: evaluate it",
       "xref_summaries": [
@@ -83063,9 +83063,9 @@
       "comment_inline": "no: Missing )",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cae61",
+      "operand": "missing_paren",
       "target": 44641,
-      "target_label": "cae61"
+      "target_label": "missing_paren"
     },
     {
       "addr": 44639,
@@ -83091,7 +83091,7 @@
         0
       ],
       "labels": [
-        "cae61"
+        "missing_paren"
       ],
       "comment_inline": "Missing ) error",
       "xref_summaries": [
@@ -83146,7 +83146,7 @@
         0
       ],
       "labels": [
-        "cae6d"
+        "factor_hex"
       ],
       "comment_inline": "Hex number: clear IWA",
       "xref_summaries": [
@@ -83231,7 +83231,7 @@
         25
       ],
       "labels": [
-        "loop_cae79"
+        "factor_hex_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -83266,9 +83266,9 @@
       "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "caea2",
+      "operand": "factor_hex_check",
       "target": 44706,
-      "target_label": "caea2"
+      "target_label": "factor_hex_check"
     },
     {
       "addr": 44671,
@@ -83290,9 +83290,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cae8d",
+      "operand": "factor_hex_nibble",
       "target": 44685,
-      "target_label": "cae8d"
+      "target_label": "factor_hex_nibble"
     },
     {
       "addr": 44675,
@@ -83325,9 +83325,9 @@
       "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "caea2",
+      "operand": "factor_hex_check",
       "target": 44706,
-      "target_label": "caea2"
+      "target_label": "factor_hex_check"
     },
     {
       "addr": 44681,
@@ -83349,9 +83349,9 @@
       "comment_inline": "yes: end of number",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "caea2",
+      "operand": "factor_hex_check",
       "target": 44706,
-      "target_label": "caea2"
+      "target_label": "factor_hex_check"
     },
     {
       "addr": 44685,
@@ -83359,7 +83359,7 @@
         10
       ],
       "labels": [
-        "cae8d"
+        "factor_hex_nibble"
       ],
       "comment_inline": "Shift the digit into the high nibble",
       "xref_summaries": [
@@ -83415,7 +83415,7 @@
         10
       ],
       "labels": [
-        "loop_cae93"
+        "factor_hex_shift"
       ],
       "comment_inline": "Shift one bit into IWA",
       "xref_summaries": [
@@ -83497,9 +83497,9 @@
       "comment_inline": "next bit",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_cae93",
+      "operand": "factor_hex_shift",
       "target": 44691,
-      "target_label": "loop_cae93"
+      "target_label": "factor_hex_shift"
     },
     {
       "addr": 44703,
@@ -83519,9 +83519,9 @@
       "comment_inline": "next digit",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cae79",
+      "operand": "factor_hex_loop",
       "target": 44665,
-      "target_label": "loop_cae79"
+      "target_label": "factor_hex_loop"
     },
     {
       "addr": 44706,
@@ -83529,7 +83529,7 @@
         138
       ],
       "labels": [
-        "caea2"
+        "factor_hex_check"
       ],
       "comment_inline": "Any digits seen?",
       "xref_summaries": [
@@ -83552,9 +83552,9 @@
       "comment_inline": "no: Bad HEX",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "caeaa",
+      "operand": "bad_hex",
       "target": 44714,
-      "target_label": "caeaa"
+      "target_label": "bad_hex"
     },
     {
       "addr": 44709,
@@ -83595,7 +83595,7 @@
         0
       ],
       "labels": [
-        "caeaa"
+        "bad_hex"
       ],
       "comment_inline": "Bad HEX error",
       "xref_summaries": [
@@ -83771,9 +83771,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cae43",
+      "operand": "no_such_variable",
       "target": 44611,
-      "target_label": "cae43"
+      "target_label": "no_such_variable"
     },
     {
       "addr": 44746,
@@ -84260,9 +84260,9 @@
       "comment_inline": "Evaluate the argument expression",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 44815,
@@ -85579,9 +85579,9 @@
       "comment_inline": "Evaluate the count, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 45021,
@@ -85783,9 +85783,9 @@
       "comment_inline": "Evaluate the count, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 45055,
@@ -86411,9 +86411,9 @@
       "comment_inline": "Evaluate the length, expect )",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 45150,
@@ -87158,9 +87158,9 @@
       "comment_inline": "evaluate the string s$",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "cae56",
+      "operand": "eval_subexpr",
       "target": 44630,
-      "target_label": "cae56"
+      "target_label": "eval_subexpr"
     },
     {
       "addr": 45262,
