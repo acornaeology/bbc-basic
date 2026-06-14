@@ -17,33 +17,33 @@ osbyte_read_high_order_address       = &82
 osfind_close                         = &00
 
 ; Memory locations
-zp_lomem          = &00
+zp_lomem          = &00  ; LOMEM: the start of variable storage. Defaults to TOP when a program is run and grows upward as variables are created (tracked by VARTOP); settable with LOMEM=.
 ; &00 referenced 6 times by &9274, &aefc, &af56, &bd22, &be20, &be46
 zp_lomem_1        = &01
 ; &01 referenced 6 times by &927a, &aefe, &af5a, &bd28, &be1b, &be4a
-zp_vartop         = &02
+zp_vartop         = &02  ; VARTOP: the address just past the last allocated variable — where the next new variable goes. Runs from LOMEM up toward zp_stack_ptr; the two meeting is "No room".
 ; &02 referenced 28 times by &8c2f, &8c4c, &8c61, &8c6f, &90fa, &9108, &9110, &919c, &91a1, &91c8, &91d6, &91eb, &9203, &9276, &93c1, &951a, &9521, &952a, &9534, &953b, &9556, &af5e, &b17d, &b182, &bd24, &be16, &be3c, &be4e
 zp_vartop_1       = &03
 ; &03 referenced 20 times by &8c33, &8c53, &8c64, &8c71, &90ff, &910c, &9112, &91d2, &91e0, &91ed, &927c, &93c4, &9516, &953f, &9541, &af62, &bd2a, &be11, &be36, &be52
-zp_stack_ptr      = &04
+zp_stack_ptr      = &04  ; Pointer to the top of BASIC's value stack, which grows downward from HIMEM. The stack carries expression temporaries, strings pushed during evaluation, and — across a PROC/FN call — a saved copy of the 6502 hardware stack. "No room" is raised if it descends to meet VARTOP.
 ; &04 referenced 85 times by &8c68, &8ccb, &8cdd, &8ce5, &8cf0, &8cf6, &8d05, &8d0e, &8d13, &8d18, &8d21, &9102, &91e5, &9264, &93ae, &93d1, &9549, &9ab6, &9abd, &9ac4, &9acb, &9add, &9adf, &9af6, &9b08, &9b43, &9b5e, &9b8a, &9c23, &9c5e, &9c65, &9c6c, &9c73, &9c7a, &9c7e, &9cc5, &9ccc, &9cd3, &9cda, &9e5c, &ac03, &ad21, &ad2a, &b19c, &b1a4, &b1ab, &b232, &b238, &b242, &b244, &bd40, &bd51, &bd5d, &bd6c, &bd71, &bd76, &bd7b, &bd7e, &bd85, &bd94, &bda0, &bda5, &bdaa, &bdaf, &bdb3, &bdc1, &bdc8, &bdcd, &bdd4, &bdde, &bde1, &bde3, &bdec, &bdf1, &bdf6, &bdfb, &be00, &be04, &be0f, &be14, &be19, &be1e, &be23, &be27, &be2e
 zp_stack_ptr_1    = &05
 ; &05 referenced 21 times by &8c6b, &9104, &91e7, &926a, &93b4, &93d5, &9543, &9ae3, &9c84, &9e60, &ac05, &ad26, &b248, &bd44, &bd87, &bd8d, &bde7, &be08, &be2b, &be32, &be34
-zp_himem          = &06
+zp_himem          = &06  ; HIMEM: the top of memory available to BASIC. The value stack (zp_stack_ptr) grows down from here; settable with HIMEM=. Read from the MOS (OSBYTE &84) at startup.
 ; &06 referenced 8 times by &8028, &8fcb, &9262, &93b0, &93cf, &af03, &bcbc, &bd3e
 zp_himem_1        = &07
 ; &07 referenced 8 times by &802a, &8fcd, &9268, &93b6, &93d3, &af05, &bcc0, &bd42
-zp_erl            = &08
+zp_erl            = &08  ; ERL: the line number in which the last error occurred, set by the error handler and read by the ERL function (0 in immediate mode).
 ; &08 referenced 3 times by &afa1, &b3c7, &b3f4
 zp_erl_1          = &09
 ; &09 referenced 3 times by &af9f, &b3c9, &b3ef
-zp_text_ptr_off   = &0a
+zp_text_ptr_off   = &0a  ; PtrA offset: the offset of the next character within the program line addressed by zp_text_ptr. The interpreter reads the tokenised program through this pointer/offset pair.
 ; &0a referenced 92 times by &8512, &8517, &8577, &857e, &85d3, &85d5, &85d7, &8617, &8715, &874e, &8780, &8795, &87cc, &8829, &883c, &883e, &8a97, &8a99, &8b28, &8b60, &8b7f, &8b96, &8ba3, &8ba5, &8be2, &8d2b, &8d78, &8da1, &8df6, &8e6d, &8e78, &8f8b, &8f8d, &905f, &906d, &90df, &9149, &916d, &92b7, &92c0, &930c, &9347, &943e, &95d1, &97dd, &97df, &9801, &980f, &9857, &9879, &98b9, &98ce, &98e1, &98f1, &98fe, &9b25, &b13d, &b1b5, &b1f7, &b200, &b22d, &b25d, &b41f, &b58a, &b5cb, &b5d6, &b60d, &b637, &b65c, &b75a, &b81f, &b875, &b8f9, &b91c, &b927, &b942, &b95a, &b96a, &b978, &b97d, &b995, &b9a7, &b9ca, &b9cf, &b9d6, &b9eb, &ba4f, &ba77, &ba8c, &baf1, &bb52, &bfa9
-zp_text_ptr       = &0b
+zp_text_ptr       = &0b  ; PtrA: the primary program/text pointer — the base address of the line currently being interpreted. Combined with zp_text_ptr_off to fetch tokens.
 ; &0b referenced 77 times by &8567, &8582, &8590, &85d9, &861a, &8840, &8a9b, &8afc, &8b1e, &8b63, &8b76, &8b83, &8b9d, &8ba7, &8bbf, &8e70, &9013, &9016, &901c, &9027, &902d, &9030, &9032, &9062, &908e, &9093, &9134, &9304, &95c9, &97e1, &97ec, &97f4, &97fc, &9807, &985b, &986f, &9871, &9884, &9891, &989c, &98a0, &98af, &98b1, &98f3, &9b1d, &b102, &b118, &b11c, &b123, &b12f, &b132, &b134, &b145, &b17b, &b1b8, &b1ed, &b22a, &b2bc, &b3d7, &b415, &b59d, &b5f1, &b602, &b607, &b639, &b747, &b83c, &b894, &b8c5, &b8dd, &b8ff, &b944, &b96c, &b980, &bbed, &bd1b, &bfad
 zp_text_ptr_1     = &0c
 ; &0c referenced 41 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b3d1, &b3e2, &b3fb, &b419, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
-zp_rnd_seed       = &0d
+zp_rnd_seed       = &0d  ; RND state: the 33-bit linear-feedback shift register behind RND. &0D-&10 are a little-endian 32-bit value (bits 0-31); bit 0 of &11 is bit 32. Advanced 32 steps per RND call; reseeded by RND(-n).
 ; &0d referenced 4 times by &804d, &8059, &af78, &af91
 zp_rnd_seed_1     = &0e
 ; &0e referenced 3 times by &804f, &805d, &af93
@@ -53,55 +53,55 @@ zp_rnd_seed_3     = &10
 ; &10 referenced 2 times by &8053, &af97
 zp_rnd_seed_4     = &11
 ; &11 referenced 4 times by &804b, &af46, &af8e, &af99
-zp_top            = &12
+zp_top            = &12  ; TOP: the address just past the end of the tokenised program text (and the default for LOMEM). Read by the TOP pseudo-variable and set when the program is edited.
 ; &12 referenced 21 times by &8ae5, &8ae9, &8aee, &8af1, &8f92, &93c8, &aee6, &bc3a, &bc57, &bc6f, &bc8a, &bcaa, &bcbe, &bd20, &be75, &be79, &be80, &be86, &be93, &be95, &bef6
 zp_top_1          = &13
 ; &13 referenced 15 times by &8ae1, &8f96, &93cb, &aee8, &bc42, &bc62, &bc6b, &bc84, &bcae, &bcb7, &bcc2, &bd26, &be71, &be99, &befa
-zp_print_bytes    = &14
+zp_print_bytes    = &14  ; Print field width: the @%-derived field width used while formatting a number for PRINT, counting the characters emitted so far in the current field.
 ; &14 referenced 8 times by &8d85, &8dbf, &8de3, &8df2, &8dfe, &9925, &9951, &b660
-zp_print_flag     = &15
+zp_print_flag     = &15  ; Number-base flag for output: 0 selects decimal, negative selects hexadecimal (set by STR$~ and PRINT ~).
 ; &15 referenced 9 times by &8d87, &8dc1, &8de6, &8def, &91b8, &91c6, &91f1, &9f05, &b0aa
-zp_error_vec      = &16
+zp_error_vec      = &16  ; ON ERROR handler address: where the interpreter jumps when an error is trapped. Reset to the default handler (&B433) at the start of each statement line; set by ON ERROR.
 ; &16 referenced 6 times by &8b00, &8b0d, &b40d, &b413, &b8e9, &b901
 zp_error_vec_1    = &17
 ; &17 referenced 6 times by &8b04, &8b11, &b411, &b417, &b8ed, &b905
-zp_page           = &18
+zp_page           = &18  ; PAGE high byte: the start of the BASIC program as a page number (PAGE = this × 256). Read from OSHWM at startup; the PAGE pseudo-variable exposes it.
 ; &18 referenced 16 times by &8031, &8ab9, &8adf, &8f9a, &900d, &9288, &9974, &aec2, &b112, &b3cb, &baea, &bd17, &bd3a, &be6f, &bee3, &bf06
-zp_text_ptr2      = &19
+zp_text_ptr2      = &19  ; PtrB: the secondary text pointer, used by the expression evaluator and the tokeniser while zp_text_ptr (PtrA) is preserved. Paired with zp_text_ptr2_off.
 ; &19 referenced 48 times by &8a90, &8bc1, &8e72, &8ea8, &8eb5, &9306, &95cb, &95d7, &95ee, &95f9, &9606, &9663, &9809, &9817, &9b1f, &9bc3, &9beb, &9e28, &a09a, &a141, &a14c, &a159, &abfa, &ac08, &ac2a, &ac3b, &ac4a, &adb6, &adcc, &addb, &adf0, &ae79, &aede, &af4b, &b1c2, &b205, &b212, &b250, &b263, &bab4, &bb43, &bb56, &bb7c, &bb82, &bb86, &bb92, &bb94, &bfaf
 zp_text_ptr2_1    = &1a
 ; &1a referenced 22 times by &8bc5, &8e76, &930a, &95cf, &9608, &980d, &9b23, &abfd, &ac0f, &ac27, &ac3e, &ac4e, &b1c4, &b208, &b20f, &b253, &b260, &bab8, &bb47, &bb5a, &bb98, &bfb3
-zp_text_ptr2_off  = &1b
+zp_text_ptr2_off  = &1b  ; PtrB offset: the offset of the next character for the secondary text pointer zp_text_ptr2.
 ; &1b referenced 90 times by &8827, &8a8c, &8a8e, &8bc7, &8bd0, &8de9, &8df4, &8e6b, &8e7a, &8eb3, &8eea, &8f0c, &930e, &9345, &95a8, &95b0, &95d5, &9603, &9617, &965f, &9661, &966e, &9683, &96c1, &96e4, &9705, &9811, &9813, &9815, &984d, &9852, &98cc, &9b27, &9b34, &9bc1, &9bd4, &9bdf, &9be9, &9bfa, &9e24, &9e26, &a0e8, &ac00, &ac18, &ac24, &ac41, &ac46, &ac5e, &ac69, &aceb, &acf9, &ade4, &adec, &adee, &ae20, &ae38, &ae59, &ae77, &aea5, &aedc, &aee4, &af0a, &af49, &afd5, &aff7, &b045, &b051, &b09f, &b1be, &b1dc, &b202, &b215, &b24d, &b25b, &b266, &b758, &b81d, &b873, &b924, &b9a5, &b9d4, &b9e9, &ba8a, &bab0, &bb41, &bb50, &bb5e, &bb7a, &bbae, &bfab
-zp_data_ptr       = &1c
+zp_data_ptr       = &1c  ; DATA pointer: the address of the next DATA item to be READ. Set to the program start by RESTORE (or a line by RESTORE n) and advanced as items are read.
 ; &1c referenced 4 times by &bb0c, &bb45, &bb54, &bd4e
 zp_data_ptr_1     = &1d
 ; &1d referenced 4 times by &bb10, &bb4b, &bb58, &bd3c
-zp_count          = &1e
+zp_count          = &1e  ; COUNT: the number of characters printed since the last newline (the print column). Used for , field alignment and the WIDTH auto-newline; read by the COUNT function.
 ; &1e referenced 7 times by &851e, &8dab, &8e4c, &aef7, &b56a, &b572, &bc2a
-zp_listo          = &1f
+zp_listo          = &1f  ; LISTO flags: the listing-indent options set by LISTO n. Control whether LIST indents FOR/REPEAT bodies and spaces tokens.
 ; &1f referenced 3 times by &8035, &b577, &b597
-zp_trace_flag     = &20
+zp_trace_flag     = &20  ; TRACE flag: &00 = tracing off, &FF = on (TRACE ON/TRACE OFF). When on, executed line numbers are printed in brackets up to zp_trace_max.
 ; &20 referenced 5 times by &8ae7, &92b2, &9895, &b405, &b8d2
-zp_trace_max      = &21
+zp_trace_max      = &21  ; TRACE ceiling: the highest line number that TRACE reports (TRACE n). Lines above it are not traced.
 ; &21 referenced 2 times by &92aa, &9907
 zp_trace_max_1    = &22
 ; &22 referenced 2 times by &92ae, &990b
-zp_width          = &23
+zp_width          = &23  ; WIDTH: the print line width for the auto-newline (WIDTH n). &FF (the default) means no automatic wrap; compared against zp_count.
 ; &23 referenced 3 times by &803e, &b4a9, &b568
-zp_repeat_level   = &24
+zp_repeat_level   = &24  ; REPEAT stack depth: how many REPEAT loops are open, indexing repeat_stack. Not saved across a PROC/FN call, so leaving a loop via ENDPROC/GOTO leaks its entry.
 ; &24 referenced 5 times by &bbba, &bbc8, &bbe4, &bbf7, &bd48
-zp_gosub_level    = &25
+zp_gosub_level    = &25  ; GOSUB stack depth: how many GOSUB calls are open, indexing gosub_stack. Not saved across a PROC/FN call.
 ; &25 referenced 5 times by &b88e, &b89e, &b8b9, &b8bd, &bd4c
-zp_for_level      = &26
+zp_for_level      = &26  ; FOR stack depth: how many FOR loops are open (×15 gives the byte offset into for_stack). Not saved across a PROC/FN call.
 ; &26 referenced 15 times by &b69a, &b6a5, &b6c3, &b751, &b756, &b769, &b782, &b7d4, &b7f8, &b821, &b83a, &b84a, &b855, &b877, &bd4a
-zp_var_type       = &27
+zp_var_type       = &27  ; Value type of the most recently fetched/evaluated value: 0 = string, positive (&40) = integer, negative = real. Drives the type dispatch throughout the evaluator.
 ; &27 referenced 41 times by &85b2, &8bf1, &8c01, &8d41, &911c, &92ee, &933c, &99cb, &9a39, &9a56, &9a62, &9b37, &9c94, &9ca1, &9ca7, &9cea, &9cfa, &9d26, &9d34, &9d55, &9dc6, &9def, &9dfb, &9f3b, &9f77, &ac2c, &ac73, &b197, &b1b2, &b24a, &b294, &b2dc, &b2e3, &b4bd, &b4e0, &b784, &b9f9, &b9fe, &ba19, &bade, &bb3b
-zp_opt_flag       = &28
+zp_opt_flag       = &28  ; Inline-assembler OPT flags (OPT n): bit 0 prints a listing, bit 1 enables error reporting, bit 2 assembles to the offset address O% instead of P%. &FF outside [ ] marks "not assembling".
 ; &28 referenced 11 times by &84ff, &8506, &8519, &8632, &8691, &881a, &886a, &8873, &8b15, &ae30, &b42d
-zp_asm_opcode     = &29
+zp_asm_opcode     = &29  ; Inline assembler: the opcode byte being built for the instruction currently being assembled, before its operand bytes are appended.
 ; &29 referenced 4 times by &8623, &8651, &8832, &8837
-zp_iwa            = &2a
+zp_iwa            = &2a  ; IWA — the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable’s value during a fetch.
 ; &2a referenced 188 times by &867b, &86a6, &8818, &8c29, &8c46, &8c4a, &8c51, &8c5c, &8c76, &8c7d, &8c82, &8c88, &8c8e, &8c93, &8cac, &8cb4, &8d4d, &8e28, &8e4a, &8e5b, &8ef5, &8f2b, &8f48, &8f5e, &8f87, &8ffa, &9052, &9095, &90af, &90cf, &90d1, &90f8, &910a, &919a, &91ca, &91cc, &91db, &9222, &9242, &924b, &9255, &9260, &9272, &92a8, &931f, &937d, &93ba, &93f4, &9456, &94aa, &94e4, &95e7, &968e, &9696, &9698, &96e9, &96f1, &972a, &972e, &9760, &9762, &9786, &9788, &978c, &9790, &9792, &979b, &979f, &97a4, &97a6, &97af, &97b1, &97c4, &97f6, &98d0, &9905, &992e, &993d, &9994, &99ea, &9a14, &9ab8, &9aba, &9ad3, &9b45, &9b48, &9b60, &9b63, &9b8c, &9b8f, &9bb5, &9c60, &9c62, &9cc7, &9cc9, &9d93, &9da6, &9e9a, &a12b, &a2cf, &a3f5, &ab36, &ab50, &ab95, &abd8, &acc6, &acd6, &acda, &acf7, &ad14, &ad1a, &ad4d, &ad59, &ad97, &ad99, &ae6f, &ae94, &aeea, &af1c, &af58, &afb2, &afe3, &b008, &b00f, &b01f, &b04a, &b04f, &b079, &b07d, &b07f, &b08b, &b0d7, &b0db, &b0ef, &b1eb, &b1f0, &b270, &b2ce, &b338, &b33d, &b342, &b346, &b348, &b34f, &b355, &b35a, &b35f, &b364, &b369, &b38a, &b392, &b397, &b3ad, &b3c0, &b451, &b464, &b477, &b487, &b4a6, &b4c8, &b595, &b5b5, &b5db, &b609, &b60f, &b6a9, &b6da, &b6ea, &b6ef, &b6f4, &b6f9, &b6fe, &b703, &b708, &b70d, &b777, &b7fa, &b823, &b93b, &ba24, &bbbe, &bcf9, &bdad, &bdfd, &be44, &bf67, &bf9f, &bfbf
 zp_iwa_1          = &2b
 ; &2b referenced 112 times by &8681, &86c8, &8738, &8809, &8efb, &8f4c, &8f62, &8f83, &904c, &9090, &90d5, &90fd, &910e, &918b, &919f, &91d0, &91de, &9226, &9246, &924d, &9257, &9266, &9278, &9286, &92ac, &9422, &942a, &94b0, &94ea, &95b5, &95eb, &968b, &969b, &969d, &96ec, &9730, &9734, &9766, &9768, &9784, &978a, &978e, &9795, &9797, &979d, &97a1, &97aa, &97b5, &97b7, &97ba, &97c9, &97fe, &98d2, &9909, &9934, &993b, &997c, &99ec, &9a19, &9abf, &9ac1, &9ad5, &9bb7, &9c67, &9c69, &9cce, &9cd0, &9d4e, &9d69, &9d97, &9da8, &a12f, &a2d3, &a3f1, &ab53, &ab93, &abda, &acc8, &ad37, &ad5b, &ad9c, &ad9e, &ae71, &ae96, &aeec, &af18, &af5c, &afb4, &b26d, &b2d1, &b34a, &b3a7, &b454, &b468, &b4d0, &b5b9, &b5df, &b604, &b614, &b6b0, &b6df, &b77b, &b7ff, &b828, &b933, &b9a9, &b9ad, &bbc0, &bcf4, &bda8, &bdf8, &be48
@@ -109,7 +109,7 @@ zp_iwa_2          = &2c
 ; &2c referenced 70 times by &8bda, &8c21, &8c31, &8c80, &8c95, &8c9a, &8f01, &90f3, &9116, &918f, &922a, &9330, &958e, &95bb, &95f7, &9601, &964c, &96a0, &96b4, &96c5, &96cc, &96d3, &96e6, &977e, &97be, &98d4, &99ee, &9a1e, &9ac6, &9ac8, &9ad7, &9bb9, &9c6e, &9c70, &9cd5, &9cd7, &9d43, &9d5e, &9d9c, &9daa, &a133, &a2d7, &a3ed, &ab5d, &ab91, &abdc, &acca, &ada1, &ada3, &ae73, &ae98, &aef0, &af16, &af60, &b06f, &b077, &b26a, &b2d4, &b30d, &b32c, &b33f, &b4d5, &b6b7, &b804, &b82d, &b935, &bbc2, &bda3, &bdf3, &be4c
 zp_iwa_3          = &2d
 ; &2d referenced 61 times by &8c35, &8c57, &8c79, &8c90, &90f1, &9118, &9191, &922e, &96fd, &971f, &973e, &97c0, &98d6, &99c2, &99d4, &99e8, &9a23, &9aad, &9ab1, &9ad1, &9bbb, &9c75, &9c77, &9cdc, &9d41, &9d5c, &9d6d, &9d7c, &9da2, &9dac, &a121, &a2c4, &a2db, &a3e9, &ab5a, &ab8f, &ab99, &abe0, &accc, &ad1e, &ad2d, &ad71, &ada6, &ada8, &ae75, &ae9a, &aef2, &af12, &af64, &b296, &b2d8, &b2f9, &b33a, &b4da, &b809, &b832, &b937, &bbc4, &bd9e, &bdee, &be50
-zp_fwa_sign       = &2e
+zp_fwa_sign       = &2e  ; FWA — floating-point work accumulator A (&2E-&35): sign (&2E), overflow/guard (&2F), excess-128 exponent (&30), 32-bit mantissa MSB-first (&31-&34) and a rounding byte (&35). The main register for real arithmetic; see zp_fwb_sign.
 ; &2e referenced 48 times by &92d0, &9a6c, &9ecc, &a0fd, &a1e6, &a1ed, &a21e, &a2cd, &a2e6, &a2f6, &a2fb, &a394, &a398, &a39e, &a3c8, &a3d3, &a3dd, &a468, &a4a3, &a4a5, &a4de, &a590, &a5da, &a632, &a636, &a688, &a6f1, &a6f5, &a8e2, &a911, &a918, &a9e2, &aa07, &aaa2, &ab66, &ac7f, &ad83, &ad87, &af6e, &b366, &b371, &b37b, &b4f0, &b4f4, &b4fa, &bd60, &bd64, &bd6a
 zp_fwa_ovf        = &2f
 ; &2f referenced 20 times by &a0fb, &a1f1, &a1fd, &a21b, &a222, &a256, &a2c2, &a2ea, &a332, &a34a, &a3d1, &a4e2, &a61a, &a623, &a680, &a68a, &a6fe, &a707, &af70, &b36f
@@ -125,17 +125,17 @@ zp_fwa_m4         = &34
 ; &34 referenced 61 times by &9a8e, &9f8a, &a083, &a0d1, &a12d, &a17e, &a182, &a198, &a1a6, &a1af, &a1bc, &a1be, &a1cf, &a1e0, &a213, &a236, &a27d, &a299, &a2aa, &a2d1, &a30b, &a321, &a327, &a33c, &a3ac, &a3b9, &a3d9, &a3f3, &a426, &a42c, &a442, &a46f, &a471, &a494, &a4b6, &a4f6, &a564, &a56a, &a585, &a5a8, &a5c2, &a5c4, &a5ea, &a5ee, &a676, &a67a, &a694, &a720, &a726, &a72a, &a747, &a768, &a76e, &a772, &a789, &a798, &a9f1, &b357, &b377, &b509, &bd79
 zp_fwa_rnd        = &35
 ; &35 referenced 42 times by &9f39, &9f8c, &a073, &a085, &a097, &a0cb, &a0cd, &a129, &a178, &a17c, &a1a3, &a1b7, &a1b9, &a1cd, &a1e2, &a215, &a23a, &a281, &a2a4, &a2a6, &a2c0, &a30d, &a325, &a329, &a33a, &a3cf, &a4fa, &a566, &a587, &a5ae, &a5bc, &a5be, &a5e4, &a5e8, &a65c, &a67e, &a696, &a787, &a794, &aa03, &af72, &b36d
-zp_strbuf_len     = &36
+zp_strbuf_len     = &36  ; Length of the string currently in the string work area at string_work.
 ; &36 referenced 52 times by &8534, &864c, &8c2b, &8c37, &8c86, &8c9d, &8d64, &8e01, &8e0e, &8e1b, &9af2, &9afa, &9b13, &9c25, &9c2b, &9c3b, &9f01, &a000, &a00f, &a068, &a06f, &abee, &abf0, &ac34, &aca3, &ad31, &ad3e, &ade2, &aed6, &afc7, &afe5, &afe9, &b005, &b011, &b030, &b069, &b074, &b08f, &b0d3, &b0eb, &b0f3, &b0f8, &b38c, &b39b, &b3ba, &ba05, &baa5, &bdb5, &bdba, &bdc6, &bdcf, &beba
-zp_general        = &37
+zp_general        = &37  ; General-purpose work pointer (&37-&3A). Reused widely — the tokeniser/line scanner, the variable-chain walk, the program editor — as a scratch 16-bit pointer.
 ; &37 referenced 142 times by &8529, &862e, &87d2, &87e3, &87f4, &8802, &887f, &888b, &8890, &889e, &88e0, &88ec, &88f9, &8902, &8917, &8942, &8944, &894e, &8957, &89b5, &89d2, &8a03, &8a07, &8a32, &8a41, &8a72, &8abf, &8ac1, &8b20, &8bb5, &8bbc, &8cd0, &8cd7, &8ce9, &8cf9, &8d07, &8d10, &8d15, &8d1a, &8d23, &8fa0, &8fb3, &8fba, &8fec, &8ff2, &8ff7, &9045, &9056, &905b, &9064, &90a0, &90a2, &90a4, &913e, &9162, &91d8, &91ef, &91f6, &91fc, &9415, &945d, &946b, &949a, &94d4, &94ef, &94fe, &9528, &955b, &9610, &961b, &9651, &96b6, &9716, &9721, &9726, &973c, &9751, &9776, &97ad, &97c6, &97cb, &994f, &9955, &99d6, &9af0, &9b19, &9c1f, &9c3d, &9d7e, &9db8, &9e15, &9ee8, &9f14, &9f44, &9f5a, &9faf, &9fc3, &9ff8, &a02b, &ac0a, &ad23, &ad42, &ad5f, &b0b1, &b15c, &b1cc, &b399, &b39e, &b3cf, &b3e0, &b3f9, &b490, &b4ca, &b4d3, &b4d8, &b4dd, &b4ed, &b4fc, &b501, &b506, &b50b, &b50e, &b525, &b6f1, &b710, &b716, &b72a, &b779, &b7da, &bc09, &bc36, &bc48, &bc4b, &bc4d, &bc55, &bc6d, &bc88, &bcb5, &bcd8, &beb4, &bfd0, &bfe1
 zp_general_1      = &38
 ; &38 referenced 66 times by &8524, &8536, &8552, &8639, &8886, &88e6, &8948, &8abb, &8b24, &8bba, &8f9c, &9068, &90a8, &9143, &91d4, &91fa, &9201, &9207, &941a, &9615, &9713, &9719, &974e, &9773, &97b3, &99d2, &9e04, &9efb, &9f42, &9f4e, &9f56, &9f67, &9f98, &9fa9, &9fab, &9fb7, &9ff4, &ac11, &ad28, &ad63, &b1d1, &b394, &b3cd, &b3e4, &b3fd, &b516, &b521, &b52c, &b52e, &b538, &b6fb, &b718, &b71d, &b72c, &b77d, &b7df, &bc0b, &bc40, &bc51, &bc60, &bc69, &bc86, &bcb9, &bcdf, &beb8, &bfd3
-zp_fileblk        = &39
+zp_fileblk        = &39  ; Filing-system control block (&39 onward): the OSFILE / load-save parameter block. Filing is not active during arithmetic, so this overlaps the FP workspace below (zp_fwb_sign onward).
 ; &39 referenced 62 times by &8530, &8630, &8654, &8881, &888e, &88e4, &88ee, &89f2, &89f8, &89ff, &8a0e, &8a19, &8a1d, &8a28, &8a2a, &8a39, &8cc1, &8cd4, &8cdf, &8d0a, &8d1d, &8f4a, &8f5c, &8ff4, &8ffc, &8ffe, &916b, &948e, &949e, &94c8, &94d8, &9523, &952c, &9654, &96a7, &96b1, &96ca, &972c, &975e, &99f7, &9a01, &9af8, &9b11, &9d8d, &9dae, &9e0d, &b160, &b1df, &b4b7, &b4cc, &b51a, &b532, &b705, &b71f, &b724, &b72e, &b7e4, &bc0f, &bcac, &bcd6, &bce3, &bee1
 zp_fileblk_1      = &3a
 ; &3a referenced 45 times by &854c, &8643, &865b, &8888, &88ea, &89f6, &8a21, &8a2e, &8cdb, &8f4e, &8f60, &8ff0, &9002, &9006, &9472, &947f, &9484, &9489, &9496, &94a3, &94a8, &94bb, &9501, &9507, &950d, &950f, &9518, &951d, &9551, &9732, &9764, &99f9, &9a03, &9aff, &9b03, &9d8b, &9db0, &9e0f, &b51c, &b542, &bc13, &bcb0, &bcdd, &bce5, &bee5
-zp_fwb_sign       = &3b
+zp_fwb_sign       = &3b  ; FWB — floating-point work accumulator B (&3B-&42), same layout as zp_fwa_sign. Supplies the second operand for binary floating-point operations (add, multiply, divide).
 ; &3b referenced 59 times by &8645, &8953, &8990, &899e, &89c4, &89e5, &8a4d, &8a62, &8a69, &8b26, &8f94, &8fb7, &8fbc, &8fc0, &8fc2, &9049, &9050, &9074, &9078, &9477, &9479, &94ac, &94c0, &9505, &9511, &99fb, &9a05, &9a66, &9a6a, &9a70, &9a94, &9e11, &a066, &a06d, &a220, &a361, &a36c, &a376, &a455, &a4dc, &a592, &a5d8, &a634, &a6f3, &a819, &a948, &a9e4, &ac15, &b5a5, &b629, &b66c, &b672, &b676, &bc17, &bc8d, &bc9a, &bc9f, &bd08, &beec
 zp_fwb_ovf        = &3c
 ; &3c referenced 39 times by &8955, &8992, &89ac, &89c6, &89e7, &8a64, &8a6b, &8a84, &8b17, &8f98, &8fc5, &8fc9, &907c, &9481, &94b9, &94be, &94c3, &94d0, &94dd, &94e2, &9710, &9758, &99fd, &9a07, &9e13, &a224, &a366, &a457, &a4e0, &b14f, &b15a, &b165, &b5a7, &b630, &b67c, &b682, &b686, &bc94, &beee
@@ -151,7 +151,7 @@ zp_fwb_m4         = &41
 ; &41 referenced 25 times by &9a8c, &a180, &a238, &a248, &a27b, &a293, &a352, &a372, &a41c, &a44a, &a461, &a4f4, &a528, &a52e, &a549, &a5aa, &a5c0, &a5ec, &a640, &a722, &a728, &a76a, &a770, &ac8e, &bf19
 zp_fwb_rnd        = &42
 ; &42 referenced 17 times by &9f79, &a17a, &a23c, &a24a, &a27f, &a297, &a364, &a463, &a4f8, &a52a, &a54b, &a5b0, &a5ba, &a5e6, &a62b, &a642, &bf08
-zp_fp_temp        = &43
+zp_fp_temp        = &43  ; Floating-point temporary / scratch (&43-&47). Holds spill bytes for the FP routines and serves as the quotient build area for integer DIV/MOD.
 ; &43 referenced 6 times by &a164, &a16d, &a64a, &a745, &a7a2, &bf11
 zp_fp_temp_1      = &44
 ; &44 referenced 5 times by &a648, &a743, &a79e, &b489, &bf13
@@ -161,25 +161,25 @@ zp_fp_temp_3      = &46
 ; &46 referenced 4 times by &a644, &a73f, &a796, &befc
 zp_fp_temp_4      = &47
 ; &47 referenced 1 time by &bf15
-zp_dp_flag        = &48
+zp_dp_flag        = &48  ; Decimal-point-seen flag, set while parsing a number literal so a second . is rejected and the fractional digits are scaled.
 ; &48 referenced 9 times by &a087, &a0a0, &a0a4, &a0ba, &a0c2, &a0ec, &a8a2, &a8cf, &bf17
-zp_dec_exp        = &49
+zp_dec_exp        = &49  ; Decimal exponent accumulated while parsing the E part of a real literal.
 ; &49 referenced 21 times by &9eda, &9f03, &9f34, &9f4a, &9fa5, &9fb3, &9fbd, &9fdb, &a011, &a01a, &a026, &a031, &a089, &a0be, &a0c6, &a0e4, &a0e6, &a0ea, &a102, &a10b, &a114
-zp_int_exp        = &4a
+zp_int_exp        = &4a  ; Integer-part / exponent scratch: holds the integer exponent during number parsing and the integer part of a value in EXP and the int/fraction split.
 ; &4a referenced 20 times by &9e50, &9e67, &a156, &a166, &a16a, &a170, &a48c, &a496, &a4a9, &a4ae, &a6c4, &a6cd, &a6d9, &a7ca, &a7e2, &a993, &a99e, &a9aa, &a9f3, &aacc
-zp_fp_ptr         = &4b
+zp_fp_ptr         = &4b  ; Pointer to a packed 5-byte floating-point value (a variable or an FP temporary) for the pack/unpack routines.
 ; &4b referenced 31 times by &9e5e, &a350, &a355, &a35a, &a35f, &a368, &a387, &a391, &a3a0, &a3a5, &a3aa, &a3af, &a3b7, &a3bc, &a3c1, &a3c6, &a3cb, &a7d4, &a7db, &a7f7, &a857, &a8ac, &a8c2, &aa4e, &aac3, &abb8, &b76e, &b789, &b85a, &b87c, &bd81
 zp_fp_ptr_1       = &4c
 ; &4c referenced 14 times by &9e62, &a38b, &a7fb, &a85b, &a8b0, &a8ca, &aa52, &aac7, &abba, &b772, &b78d, &b85e, &b880, &bd89
-zp_coeff_ptr      = &4d
+zp_coeff_ptr      = &4d  ; Pointer to the current coefficient table, used while evaluating the continued-fraction approximations in the trig functions.
 ; &4d referenced 28 times by &a897, &a8a0, &a8a4, &a8aa, &a8bc, &a8c0, &b2ad, &b2b1, &b303, &b622, &b645, &b647, &b651, &b9d8, &b9e1, &b9ee, &b9f4, &ba52, &ba54, &ba6a, &ba6d, &ba79, &ba88, &ba8f, &ba99, &baa7, &baaa, &baac
 zp_coeff_ptr_1    = &4e
 ; &4e referenced 18 times by &9efd, &9f40, &9fa7, &9fe6, &9feb, &a899, &a8a8, &a8ae, &a8c4, &a8c8, &b2af, &b307, &ba58, &ba66, &ba7c, &ba85, &ba93, &bacb
-zp_error_ptr      = &fd
+zp_error_ptr      = &fd  ; Pointer to the error block currently being reported (the bytes after a BRK): the error number and message the handler is processing.
 ; &fd referenced 3 times by &afa8, &b407, &bfec
-zp_escflg         = &ff
+zp_escflg         = &ff  ; ESCFLG — the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the "Escape" error.
 ; &ff referenced 1 time by &987b
-hw_stack          = &0100
+hw_stack          = &0100  ; The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.
 ; &0100 referenced 2 times by &b1a8, &b23a
 frame_local_count = &0106
 ; &0106 referenced 1 time by &9342
@@ -189,7 +189,7 @@ brkv              = &0202
 ; &0202 referenced 1 time by &8065
 wrchv             = &020e
 ; &020e referenced 2 times by &9458, &b574
-resint_at         = &0400
+resint_at         = &0400  ; The resident integer variables, four bytes each: @% here at &0400, then A%-Z% at &0404-&046B. @% sets the PRINT/STR$ number format. Two slots double as the inline assembler's counters — O% (the 'O' slot, &043C) is the offset-assembly address and P% (the 'P' slot, &0440) the program counter.
 ; &0400 referenced 5 times by &8042, &8da6, &8daf, &8dbc, &946f
 resint_at_1       = &0401
 ; &0401 referenced 3 times by &8046, &9474, &9eea
@@ -233,14 +233,16 @@ resint_x          = &0460
 resint_y          = &0464
 ; &0464 referenced 1 time by &8f28
 resint_z          = &0468
-fp_temp1          = &046c
+fp_temp1          = &046c  ; Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing FWA / FWB.
+; &046c referenced 2 times by &8d59, &ba30
+fp_temps          = &046c  ; Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing FWA / FWB.
 ; &046c referenced 2 times by &8d59, &ba30
 fp_temp2          = &0471
 fp_temp3          = &0476
 fp_temp4          = &047b
 var_table_base    = &047f
 ; &047f referenced 1 time by &bd33
-var_ptr_table     = &0480
+var_ptr_table     = &0480  ; The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, _, @), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.
 for_var_lo        = &04f1
 ; &04f1 referenced 2 times by &b6ab, &b6d7
 for_var_hi        = &04f2
@@ -267,7 +269,7 @@ for_loopback_lo   = &04fe
 ; &04fe referenced 1 time by &b741
 for_loopback_hi   = &04ff
 ; &04ff referenced 1 time by &b744
-for_stack         = &0500
+for_stack         = &0500  ; The FOR stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in zp_for_level). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by FOR, consulted and updated by NEXT.
 ; &0500 referenced 1 time by &b7dc
 for_set_ptr_hi    = &0501
 ; &0501 referenced 1 time by &b7e1
@@ -295,27 +297,27 @@ for_set_loop_hi   = &050e
 ; &050e referenced 1 time by &b843
 repeat_loop_lo    = &05a3
 ; &05a3 referenced 1 time by &bbcd
-repeat_stack      = &05a4
+repeat_stack      = &05a4  ; REPEAT loop-start text pointers, low bytes — up to 20 nested (depth in zp_repeat_level); high bytes in repeat_stack_hi. UNTIL reloads the pointer to re-test its condition.
 ; &05a4 referenced 1 time by &bbef
 repeat_loop_hi    = &05b7
 ; &05b7 referenced 1 time by &bbd0
-repeat_stack_hi   = &05b8
+repeat_stack_hi   = &05b8  ; High bytes of the REPEAT loop-start pointers; low bytes in repeat_stack.
 ; &05b8 referenced 1 time by &bbf4
 gosub_return_lo   = &05cb
 ; &05cb referenced 1 time by &b8bf
-gosub_stack       = &05cc
+gosub_stack       = &05cc  ; GOSUB return text pointers, low bytes — up to 26 nested (depth in zp_gosub_level); high bytes in gosub_stack_hi. RETURN pops the top entry.
 ; &05cc referenced 1 time by &b896
 gosub_return_hi   = &05e5
 ; &05e5 referenced 1 time by &b8c2
-gosub_stack_hi    = &05e6
+gosub_stack_hi    = &05e6  ; High bytes of the GOSUB return pointers; low bytes in gosub_stack.
 ; &05e6 referenced 1 time by &b89b
 strbuf_base       = &05ff
 ; &05ff referenced 8 times by &8d6c, &9b0a, &9c2d, &9c30, &abf4, &ba0d, &bdbe, &bdd6
-string_work       = &0600
+string_work       = &0600  ; The string work area / CALL parameter block. BASIC builds string results here — the text of STR$, the digits of a number conversion, a popped string for comparison — with the length in zp_strbuf_len. CALL also assembles its parameter block here.
 ; &0600 referenced 27 times by &8658, &8c97, &8ca9, &8cb1, &8e14, &8edd, &8ef7, &8efd, &8f03, &8f06, &a003, &a06a, &ac38, &aca7, &ad44, &adb8, &add3, &afc2, &b017, &b01a, &b083, &b086, &b0e1, &b0e4, &b3a0, &b3af, &bebe
 call_block_base   = &06ff
 ; &06ff referenced 2 times by &8ee0, &8ef1
-line_input_buf    = &0700
+line_input_buf    = &0700  ; The line input buffer. The line editor reads a typed line (at the > prompt or for INPUT) into here via OSWORD 0; the tokeniser then processes it in place.
 osfind            = &ffce
 ; &ffce referenced 2 times by &bf90, &bfa3
 osbput            = &ffd4
@@ -14711,6 +14713,7 @@ save pydis_start, pydis_end
 ;     fp_div_zero:                   2
 ;     fp_split_int_frac:             2
 ;     fp_temp1:                      2
+;     fp_temps:                      2
 ;     fpl_check_high:                2
 ;     fti2_exp:                      2
 ;     fti2_shift_loop:               2

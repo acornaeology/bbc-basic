@@ -4549,6 +4549,7 @@
     "resint_y": 1124,
     "resint_z": 1128,
     "fp_temp1": 1132,
+    "fp_temps": 1132,
     "fp_temp2": 1137,
     "fp_temp3": 1142,
     "fp_temp4": 1147,
@@ -4677,7 +4678,424 @@
     "osbyte": 65524,
     "oscli": 65527
   },
-  "memory_map": [],
+  "memory_map": [
+    {
+      "addr": 0,
+      "name": "zp_lomem",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "LOMEM: the start of variable storage. Defaults to [`TOP`](address:0012) when a program is run and grows upward as variables are created (tracked by [`VARTOP`](address:0002)); settable with `LOMEM=`."
+    },
+    {
+      "addr": 2,
+      "name": "zp_vartop",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "VARTOP: the address just past the last allocated variable \u2014 where the next new variable goes. Runs from [`LOMEM`](address:0000) up toward [`zp_stack_ptr`](address:0004); the two meeting is \"No room\"."
+    },
+    {
+      "addr": 4,
+      "name": "zp_stack_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Pointer to the top of BASIC's value stack, which grows\ndownward from [`HIMEM`](address:0006). The stack carries expression\ntemporaries, strings pushed during evaluation, and \u2014 across a PROC/FN\ncall \u2014 a saved copy of the 6502 hardware stack. \"No room\" is raised if\nit descends to meet [`VARTOP`](address:0002)."
+    },
+    {
+      "addr": 6,
+      "name": "zp_himem",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "HIMEM: the top of memory available to BASIC. The value stack ([`zp_stack_ptr`](address:0004)) grows down from here; settable with `HIMEM=`. Read from the MOS (OSBYTE &84) at startup."
+    },
+    {
+      "addr": 8,
+      "name": "zp_erl",
+      "length": 2,
+      "group": "zero_page",
+      "access": "r",
+      "description": "ERL: the line number in which the last error occurred, set by the error handler and read by the `ERL` function (0 in immediate mode)."
+    },
+    {
+      "addr": 10,
+      "name": "zp_text_ptr_off",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "PtrA offset: the offset of the next character within the program line addressed by [`zp_text_ptr`](address:000b). The interpreter reads the tokenised program through this pointer/offset pair."
+    },
+    {
+      "addr": 11,
+      "name": "zp_text_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "PtrA: the primary program/text pointer \u2014 the base address of the line currently being interpreted. Combined with [`zp_text_ptr_off`](address:000a) to fetch tokens."
+    },
+    {
+      "addr": 13,
+      "name": "zp_rnd_seed",
+      "length": 5,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "RND state: the 33-bit linear-feedback shift register behind `RND`. &0D-&10 are a little-endian 32-bit value (bits 0-31); bit 0 of &11 is bit 32. Advanced 32 steps per `RND` call; reseeded by `RND(-n)`."
+    },
+    {
+      "addr": 18,
+      "name": "zp_top",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "TOP: the address just past the end of the tokenised program text (and the default for [`LOMEM`](address:0000)). Read by the `TOP` pseudo-variable and set when the program is edited."
+    },
+    {
+      "addr": 20,
+      "name": "zp_print_bytes",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Print field width: the @%-derived field width used while formatting a number for `PRINT`, counting the characters emitted so far in the current field."
+    },
+    {
+      "addr": 21,
+      "name": "zp_print_flag",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Number-base flag for output: 0 selects decimal, negative selects hexadecimal (set by `STR$~` and `PRINT ~`)."
+    },
+    {
+      "addr": 22,
+      "name": "zp_error_vec",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "`ON ERROR` handler address: where the interpreter jumps when an error is trapped. Reset to the default handler (&B433) at the start of each statement line; set by `ON ERROR`."
+    },
+    {
+      "addr": 24,
+      "name": "zp_page",
+      "length": 1,
+      "group": "zero_page",
+      "access": "r",
+      "description": "PAGE high byte: the start of the BASIC program as a page number (PAGE = this \u00d7 256). Read from OSHWM at startup; the `PAGE` pseudo-variable exposes it."
+    },
+    {
+      "addr": 25,
+      "name": "zp_text_ptr2",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "PtrB: the secondary text pointer, used by the expression evaluator and the tokeniser while [`zp_text_ptr`](address:000b) (PtrA) is preserved. Paired with [`zp_text_ptr2_off`](address:001b)."
+    },
+    {
+      "addr": 27,
+      "name": "zp_text_ptr2_off",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "PtrB offset: the offset of the next character for the secondary text pointer [`zp_text_ptr2`](address:0019)."
+    },
+    {
+      "addr": 28,
+      "name": "zp_data_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "DATA pointer: the address of the next `DATA` item to be `READ`. Set to the program start by `RESTORE` (or a line by `RESTORE n`) and advanced as items are read."
+    },
+    {
+      "addr": 30,
+      "name": "zp_count",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "COUNT: the number of characters printed since the last newline (the print column). Used for `,` field alignment and the `WIDTH` auto-newline; read by the `COUNT` function."
+    },
+    {
+      "addr": 31,
+      "name": "zp_listo",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "LISTO flags: the listing-indent options set by `LISTO n`. Control whether `LIST` indents `FOR`/`REPEAT` bodies and spaces tokens."
+    },
+    {
+      "addr": 32,
+      "name": "zp_trace_flag",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "TRACE flag: &00 = tracing off, &FF = on (`TRACE ON`/`TRACE OFF`). When on, executed line numbers are printed in brackets up to [`zp_trace_max`](address:0021)."
+    },
+    {
+      "addr": 33,
+      "name": "zp_trace_max",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "TRACE ceiling: the highest line number that `TRACE` reports (`TRACE n`). Lines above it are not traced."
+    },
+    {
+      "addr": 35,
+      "name": "zp_width",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "WIDTH: the print line width for the auto-newline (`WIDTH n`). &FF (the default) means no automatic wrap; compared against [`zp_count`](address:001e)."
+    },
+    {
+      "addr": 36,
+      "name": "zp_repeat_level",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "REPEAT stack depth: how many `REPEAT` loops are open, indexing [`repeat_stack`](address:05a4). Not saved across a PROC/FN call, so leaving a loop via `ENDPROC`/`GOTO` leaks its entry."
+    },
+    {
+      "addr": 37,
+      "name": "zp_gosub_level",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "GOSUB stack depth: how many `GOSUB` calls are open, indexing [`gosub_stack`](address:05cc). Not saved across a PROC/FN call."
+    },
+    {
+      "addr": 38,
+      "name": "zp_for_level",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "FOR stack depth: how many `FOR` loops are open (\u00d715 gives the byte offset into [`for_stack`](address:0500)). Not saved across a PROC/FN call."
+    },
+    {
+      "addr": 39,
+      "name": "zp_var_type",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Value type of the most recently fetched/evaluated value: 0 = string, positive (&40) = integer, negative = real. Drives the type dispatch throughout the evaluator."
+    },
+    {
+      "addr": 40,
+      "name": "zp_opt_flag",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Inline-assembler OPT flags (`OPT n`): bit 0 prints a listing, bit 1 enables error reporting, bit 2 assembles to the offset address O% instead of P%. &FF outside `[ ]` marks \"not assembling\"."
+    },
+    {
+      "addr": 41,
+      "name": "zp_asm_opcode",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Inline assembler: the opcode byte being built for the instruction currently being assembled, before its operand bytes are appended."
+    },
+    {
+      "addr": 42,
+      "name": "zp_iwa",
+      "length": 4,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "IWA \u2014 the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable\u2019s value during a fetch."
+    },
+    {
+      "addr": 46,
+      "name": "zp_fwa_sign",
+      "length": 8,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "FWA \u2014 floating-point work accumulator A (&2E-&35): sign (&2E), overflow/guard (&2F), excess-128 exponent (&30), 32-bit mantissa MSB-first (&31-&34) and a rounding byte (&35). The main register for real arithmetic; see [`zp_fwb_sign`](address:003b)."
+    },
+    {
+      "addr": 54,
+      "name": "zp_strbuf_len",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Length of the string currently in the string work area at [`string_work`](address:0600)."
+    },
+    {
+      "addr": 55,
+      "name": "zp_general",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "General-purpose work pointer (&37-&3A). Reused widely \u2014 the tokeniser/line scanner, the variable-chain walk, the program editor \u2014 as a scratch 16-bit pointer."
+    },
+    {
+      "addr": 57,
+      "name": "zp_fileblk",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Filing-system control block (&39 onward): the OSFILE / load-save parameter block. Filing is not active during arithmetic, so this overlaps the FP workspace below ([`zp_fwb_sign`](address:003b) onward)."
+    },
+    {
+      "addr": 59,
+      "name": "zp_fwb_sign",
+      "length": 8,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "FWB \u2014 floating-point work accumulator B (&3B-&42), same layout as [`zp_fwa_sign`](address:002e). Supplies the second operand for binary floating-point operations (add, multiply, divide)."
+    },
+    {
+      "addr": 67,
+      "name": "zp_fp_temp",
+      "length": 5,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Floating-point temporary / scratch (&43-&47). Holds spill bytes for the FP routines and serves as the quotient build area for integer `DIV`/`MOD`."
+    },
+    {
+      "addr": 72,
+      "name": "zp_dp_flag",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Decimal-point-seen flag, set while parsing a number literal so a second `.` is rejected and the fractional digits are scaled."
+    },
+    {
+      "addr": 73,
+      "name": "zp_dec_exp",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Decimal exponent accumulated while parsing the `E` part of a real literal."
+    },
+    {
+      "addr": 74,
+      "name": "zp_int_exp",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Integer-part / exponent scratch: holds the integer exponent during number parsing and the integer part of a value in `EXP` and the int/fraction split."
+    },
+    {
+      "addr": 75,
+      "name": "zp_fp_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Pointer to a packed 5-byte floating-point value (a variable or an FP temporary) for the pack/unpack routines."
+    },
+    {
+      "addr": 77,
+      "name": "zp_coeff_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Pointer to the current coefficient table, used while evaluating the continued-fraction approximations in the trig functions."
+    },
+    {
+      "addr": 253,
+      "name": "zp_error_ptr",
+      "length": 2,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "Pointer to the error block currently being reported (the bytes after a `BRK`): the error number and message the handler is processing."
+    },
+    {
+      "addr": 255,
+      "name": "zp_escflg",
+      "length": 1,
+      "group": "zero_page",
+      "access": "rw",
+      "description": "ESCFLG \u2014 the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the \"Escape\" error."
+    },
+    {
+      "addr": 256,
+      "name": "hw_stack",
+      "length": 256,
+      "group": "stack_6502",
+      "access": "rw",
+      "description": "The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table."
+    },
+    {
+      "addr": 1024,
+      "name": "resint_at",
+      "length": 108,
+      "group": "resident_vars",
+      "access": "rw",
+      "description": "The resident integer variables, four bytes each: @% here at &0400, then A%-Z% at &0404-&046B. @% sets the `PRINT`/`STR$` number format. Two slots double as the inline assembler's counters \u2014 O% (the 'O' slot, &043C) is the offset-assembly address and P% (the 'P' slot, &0440) the program counter."
+    },
+    {
+      "addr": 1132,
+      "name": "fp_temp1",
+      "length": 20,
+      "group": "resident_vars",
+      "access": "rw",
+      "description": "Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing [`FWA`](address:002e) / [`FWB`](address:003b)."
+    },
+    {
+      "addr": 1152,
+      "name": "var_ptr_table",
+      "length": 128,
+      "group": "resident_vars",
+      "access": "rw",
+      "description": "The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, `_`, `@`), addressed as &0400 + 2\u00d7char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head."
+    },
+    {
+      "addr": 1280,
+      "name": "for_stack",
+      "length": 150,
+      "group": "basic_stacks",
+      "access": "rw",
+      "description": "The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer \u2014 pushed by `FOR`, consulted and updated by `NEXT`."
+    },
+    {
+      "addr": 1444,
+      "name": "repeat_stack",
+      "length": 20,
+      "group": "basic_stacks",
+      "access": "rw",
+      "description": "`REPEAT` loop-start text pointers, low bytes \u2014 up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition."
+    },
+    {
+      "addr": 1464,
+      "name": "repeat_stack_hi",
+      "length": 20,
+      "group": "basic_stacks",
+      "access": "rw",
+      "description": "High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4)."
+    },
+    {
+      "addr": 1484,
+      "name": "gosub_stack",
+      "length": 26,
+      "group": "basic_stacks",
+      "access": "rw",
+      "description": "`GOSUB` return text pointers, low bytes \u2014 up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry."
+    },
+    {
+      "addr": 1510,
+      "name": "gosub_stack_hi",
+      "length": 26,
+      "group": "basic_stacks",
+      "access": "rw",
+      "description": "High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc)."
+    },
+    {
+      "addr": 1536,
+      "name": "string_work",
+      "length": 256,
+      "group": "buffers",
+      "access": "rw",
+      "description": "The string work area / `CALL` parameter block. BASIC builds string results here \u2014 the text of `STR$`, the digits of a number conversion, a popped string for comparison \u2014 with the length in [`zp_strbuf_len`](address:0036). `CALL` also assembles its parameter block here."
+    },
+    {
+      "addr": 1792,
+      "name": "line_input_buf",
+      "length": 256,
+      "group": "buffers",
+      "access": "rw",
+      "description": "The line input buffer. The line editor reads a typed line (at the `>` prompt or for `INPUT`) into here via OSWORD 0; the tokeniser then processes it in place."
+    }
+  ],
   "items": [
     {
       "addr": 32768,

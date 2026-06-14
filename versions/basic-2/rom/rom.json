@@ -1,5 +1,12 @@
 {
     "title": "Acorn BBC BASIC II",
+    "memory_map_groups": {
+        "zero_page": "Zero page",
+        "stack_6502": "6502 hardware stack",
+        "resident_vars": "Resident integers & FP workspace",
+        "basic_stacks": "FOR / REPEAT / GOSUB stacks",
+        "buffers": "String and line buffers"
+    },
     "size": 16384,
     "md5": "2cc67be4624df4dc66617742571a8e3d",
     "sha256": "45bd55dc0f6f0f8f1fe9e2481de7def206565eec8f600ba3068b849ca4132079",

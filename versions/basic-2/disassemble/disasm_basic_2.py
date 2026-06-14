@@ -398,63 +398,96 @@ d.use_environment('bbc_basic_6502')
 # Zero page (Pharo ch. 7.1 "Zero Page Dedicated Locations"). All
 # two-byte pointers are stored low byte first.
 # ----------------------------------------------------------------------
-d.label(0x0000, 'zp_lomem')           # Start of BASIC variables
+d.label(0x0000, 'zp_lomem', length=2, group='zero_page', access='rw',
+        description="""LOMEM: the start of variable storage. Defaults to [`TOP`](address:0012) when a program is run and grows upward as variables are created (tracked by [`VARTOP`](address:0002)); settable with `LOMEM=`.""")
 d.label(0x0001, 'zp_lomem_1')
 for _i in range(1, 5):
     d.label(0x046c + 5 * (_i - 1), f'fp_temp{_i}')  # FP TEMP1..TEMP4
-d.label(0x0002, 'zp_vartop')          # End of BASIC variables (heap top)
+d.label(0x0002, 'zp_vartop', length=2, group='zero_page', access='rw',
+        description="""VARTOP: the address just past the last allocated variable — where the next new variable goes. Runs from [`LOMEM`](address:0000) up toward [`zp_stack_ptr`](address:0004); the two meeting is "No room".""")
 d.label(0x0003, 'zp_vartop_1')
-d.label(0x0004, 'zp_stack_ptr')       # Top of the BASIC value stack
+d.label(0x0004, 'zp_stack_ptr', length=2, group='zero_page', access='rw',
+        description="""Pointer to the top of BASIC's value stack, which grows
+downward from [`HIMEM`](address:0006). The stack carries expression
+temporaries, strings pushed during evaluation, and — across a PROC/FN
+call — a saved copy of the 6502 hardware stack. "No room" is raised if
+it descends to meet [`VARTOP`](address:0002).""")
 d.label(0x0005, 'zp_stack_ptr_1')
-d.label(0x0006, 'zp_himem')           # Start of screen / top of BASIC
+d.label(0x0006, 'zp_himem', length=2, group='zero_page', access='rw',
+        description="""HIMEM: the top of memory available to BASIC. The value stack ([`zp_stack_ptr`](address:0004)) grows down from here; settable with `HIMEM=`. Read from the MOS (OSBYTE &84) at startup.""")
 d.label(0x0007, 'zp_himem_1')
-d.label(0x0008, 'zp_erl')             # Line number that last errored
+d.label(0x0008, 'zp_erl', length=2, group='zero_page', access='r',
+        description="""ERL: the line number in which the last error occurred, set by the error handler and read by the `ERL` function (0 in immediate mode).""")
 d.label(0x0009, 'zp_erl_1')
-d.label(0x000a, 'zp_text_ptr_off')    # Offset into current text line
-d.label(0x000b, 'zp_text_ptr')        # Start of current text line
+d.label(0x000a, 'zp_text_ptr_off', length=1, group='zero_page', access='rw',
+        description="""PtrA offset: the offset of the next character within the program line addressed by [`zp_text_ptr`](address:000b). The interpreter reads the tokenised program through this pointer/offset pair.""")
+d.label(0x000b, 'zp_text_ptr', length=2, group='zero_page', access='rw',
+        description="""PtrA: the primary program/text pointer — the base address of the line currently being interpreted. Combined with [`zp_text_ptr_off`](address:000a) to fetch tokens.""")
 d.label(0x000c, 'zp_text_ptr_1')
 # RND work area (&0D-&11): a 33-bit LFSR state. &0D-&10 are a 32-bit
 # little-endian value (bits 0-31); bit 0 of &11 is bit 32. See rnd_step.
-d.label(0x000d, 'zp_rnd_seed')        # LFSR bits 0-7
+d.label(0x000d, 'zp_rnd_seed', length=5, group='zero_page', access='rw',
+        description="""RND state: the 33-bit linear-feedback shift register behind `RND`. &0D-&10 are a little-endian 32-bit value (bits 0-31); bit 0 of &11 is bit 32. Advanced 32 steps per `RND` call; reseeded by `RND(-n)`.""")
 d.label(0x000e, 'zp_rnd_seed_1')      # LFSR bits 8-15
 d.label(0x000f, 'zp_rnd_seed_2')      # LFSR bits 16-23
 d.label(0x0010, 'zp_rnd_seed_3')      # LFSR bits 24-31
 d.label(0x0011, 'zp_rnd_seed_4')      # LFSR bit 32 (in bit 0; overflow)
-d.label(0x0012, 'zp_top')             # End of program (excl. variables)
+d.label(0x0012, 'zp_top', length=2, group='zero_page', access='rw',
+        description="""TOP: the address just past the end of the tokenised program text (and the default for [`LOMEM`](address:0000)). Read by the `TOP` pseudo-variable and set when the program is edited.""")
 d.label(0x0013, 'zp_top_1')
-d.label(0x0014, 'zp_print_bytes')     # Bytes in current print field
-d.label(0x0015, 'zp_print_flag')      # 0 = decimal, -ve = hexadecimal
-d.label(0x0016, 'zp_error_vec')       # Address of BASIC error routine
+d.label(0x0014, 'zp_print_bytes', length=1, group='zero_page', access='rw',
+        description="""Print field width: the @%-derived field width used while formatting a number for `PRINT`, counting the characters emitted so far in the current field.""")
+d.label(0x0015, 'zp_print_flag', length=1, group='zero_page', access='rw',
+        description="""Number-base flag for output: 0 selects decimal, negative selects hexadecimal (set by `STR$~` and `PRINT ~`).""")
+d.label(0x0016, 'zp_error_vec', length=2, group='zero_page', access='rw',
+        description="""`ON ERROR` handler address: where the interpreter jumps when an error is trapped. Reset to the default handler (&B433) at the start of each statement line; set by `ON ERROR`.""")
 d.label(0x0017, 'zp_error_vec_1')
-d.label(0x0018, 'zp_page')            # PAGE DIV 256 (program start page)
-d.label(0x0019, 'zp_text_ptr2')       # Secondary text pointer
+d.label(0x0018, 'zp_page', length=1, group='zero_page', access='r',
+        description="""PAGE high byte: the start of the BASIC program as a page number (PAGE = this × 256). Read from OSHWM at startup; the `PAGE` pseudo-variable exposes it.""")
+d.label(0x0019, 'zp_text_ptr2', length=2, group='zero_page', access='rw',
+        description="""PtrB: the secondary text pointer, used by the expression evaluator and the tokeniser while [`zp_text_ptr`](address:000b) (PtrA) is preserved. Paired with [`zp_text_ptr2_off`](address:001b).""")
 d.label(0x001a, 'zp_text_ptr2_1')
-d.label(0x001b, 'zp_text_ptr2_off')   # Secondary text-pointer offset
-d.label(0x001c, 'zp_data_ptr')        # Pointer to next DATA item
+d.label(0x001b, 'zp_text_ptr2_off', length=1, group='zero_page', access='rw',
+        description="""PtrB offset: the offset of the next character for the secondary text pointer [`zp_text_ptr2`](address:0019).""")
+d.label(0x001c, 'zp_data_ptr', length=2, group='zero_page', access='rw',
+        description="""DATA pointer: the address of the next `DATA` item to be `READ`. Set to the program start by `RESTORE` (or a line by `RESTORE n`) and advanced as items are read.""")
 d.label(0x001d, 'zp_data_ptr_1')
-d.label(0x001e, 'zp_count')           # Bytes printed since last newline
-d.label(0x001f, 'zp_listo')           # LISTO flag
-d.label(0x0020, 'zp_trace_flag')      # &00 = trace off, &FF = trace on
-d.label(0x0021, 'zp_trace_max')       # Maximum TRACE line number
+d.label(0x001e, 'zp_count', length=1, group='zero_page', access='rw',
+        description="""COUNT: the number of characters printed since the last newline (the print column). Used for `,` field alignment and the `WIDTH` auto-newline; read by the `COUNT` function.""")
+d.label(0x001f, 'zp_listo', length=1, group='zero_page', access='rw',
+        description="""LISTO flags: the listing-indent options set by `LISTO n`. Control whether `LIST` indents `FOR`/`REPEAT` bodies and spaces tokens.""")
+d.label(0x0020, 'zp_trace_flag', length=1, group='zero_page', access='rw',
+        description="""TRACE flag: &00 = tracing off, &FF = on (`TRACE ON`/`TRACE OFF`). When on, executed line numbers are printed in brackets up to [`zp_trace_max`](address:0021).""")
+d.label(0x0021, 'zp_trace_max', length=2, group='zero_page', access='rw',
+        description="""TRACE ceiling: the highest line number that `TRACE` reports (`TRACE n`). Lines above it are not traced.""")
 # workspace / zero-page and FOR/REPEAT/GOSUB frame-field labels
 d.label(0x0022, 'zp_trace_max_1')
-d.label(0x0023, 'zp_width')           # WIDTH setting
-d.label(0x0024, 'zp_repeat_level')    # REPEAT stack depth; not saved by PROC
-d.label(0x0025, 'zp_gosub_level')     # GOSUB stack depth; not saved by PROC
-d.label(0x0026, 'zp_for_level')       # FOR stack depth (x15); not saved by PROC
-d.label(0x0027, 'zp_var_type')        # Type of the value just fetched
-d.label(0x0028, 'zp_opt_flag')        # bit0 list, bit1 errors, bit2 reloc
-d.label(0x0029, 'zp_asm_opcode')      # Assembler: opcode byte
+d.label(0x0023, 'zp_width', length=1, group='zero_page', access='rw',
+        description="""WIDTH: the print line width for the auto-newline (`WIDTH n`). &FF (the default) means no automatic wrap; compared against [`zp_count`](address:001e).""")
+d.label(0x0024, 'zp_repeat_level', length=1, group='zero_page', access='rw',
+        description="""REPEAT stack depth: how many `REPEAT` loops are open, indexing [`repeat_stack`](address:05a4). Not saved across a PROC/FN call, so leaving a loop via `ENDPROC`/`GOTO` leaks its entry.""")
+d.label(0x0025, 'zp_gosub_level', length=1, group='zero_page', access='rw',
+        description="""GOSUB stack depth: how many `GOSUB` calls are open, indexing [`gosub_stack`](address:05cc). Not saved across a PROC/FN call.""")
+d.label(0x0026, 'zp_for_level', length=1, group='zero_page', access='rw',
+        description="""FOR stack depth: how many `FOR` loops are open (×15 gives the byte offset into [`for_stack`](address:0500)). Not saved across a PROC/FN call.""")
+d.label(0x0027, 'zp_var_type', length=1, group='zero_page', access='rw',
+        description="""Value type of the most recently fetched/evaluated value: 0 = string, positive (&40) = integer, negative = real. Drives the type dispatch throughout the evaluator.""")
+d.label(0x0028, 'zp_opt_flag', length=1, group='zero_page', access='rw',
+        description="""Inline-assembler OPT flags (`OPT n`): bit 0 prints a listing, bit 1 enables error reporting, bit 2 assembles to the offset address O% instead of P%. &FF outside `[ ]` marks "not assembling".""")
+d.label(0x0029, 'zp_asm_opcode', length=1, group='zero_page', access='rw',
+        description="""Inline assembler: the opcode byte being built for the instruction currently being assembled, before its operand bytes are appended.""")
 
 # Zero page (Pharo ch. 7.2 "Zero Page Multiple Use Locations"). These
 # overlap by design; the labels mark each region's primary use.
 # Integer work area / accumulator (IWA): 32-bit signed, little-endian.
-d.label(0x002a, 'zp_iwa')             # IWA byte 0 (least significant)
+d.label(0x002a, 'zp_iwa', length=4, group='zero_page', access='rw',
+        description="""IWA — the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable’s value during a fetch.""")
 d.label(0x002b, 'zp_iwa_1')
 d.label(0x002c, 'zp_iwa_2')
 d.label(0x002d, 'zp_iwa_3')           # IWA byte 3 (most significant)
 # Floating point work area A (FWA), the unpacked 8-byte accumulator.
-d.label(0x002e, 'zp_fwa_sign')        # Sign (bit 7 set = negative)
+d.label(0x002e, 'zp_fwa_sign', length=8, group='zero_page', access='rw',
+        description="""FWA — floating-point work accumulator A (&2E-&35): sign (&2E), overflow/guard (&2F), excess-128 exponent (&30), 32-bit mantissa MSB-first (&31-&34) and a rounding byte (&35). The main register for real arithmetic; see [`zp_fwb_sign`](address:003b).""")
 d.label(0x002f, 'zp_fwa_ovf')         # Overflow / guard byte
 d.label(0x0030, 'zp_fwa_exp')         # Exponent (excess-128; 0 = value 0)
 d.label(0x0031, 'zp_fwa_m1')          # Mantissa MSB (normalised: bit 7 = 1)
@@ -462,13 +495,17 @@ d.label(0x0032, 'zp_fwa_m2')
 d.label(0x0033, 'zp_fwa_m3')
 d.label(0x0034, 'zp_fwa_m4')          # Mantissa LSB
 d.label(0x0035, 'zp_fwa_rnd')         # Rounding byte (extra precision)
-d.label(0x0036, 'zp_strbuf_len')      # Length of the string buffer
-d.label(0x0037, 'zp_general')         # General work area (&37-&3A)
+d.label(0x0036, 'zp_strbuf_len', length=1, group='zero_page', access='rw',
+        description="""Length of the string currently in the string work area at [`string_work`](address:0600).""")
+d.label(0x0037, 'zp_general', length=2, group='zero_page', access='rw',
+        description="""General-purpose work pointer (&37-&3A). Reused widely — the tokeniser/line scanner, the variable-chain walk, the program editor — as a scratch 16-bit pointer.""")
 d.label(0x0038, 'zp_general_1')       # general pointer high byte
-d.label(0x0039, 'zp_fileblk')         # LOAD/SAVE control block (&39-&44)
+d.label(0x0039, 'zp_fileblk', length=2, group='zero_page', access='rw',
+        description="""Filing-system control block (&39 onward): the OSFILE / load-save parameter block. Filing is not active during arithmetic, so this overlaps the FP workspace below ([`zp_fwb_sign`](address:003b) onward).""")
 d.label(0x003a, 'zp_fileblk_1')
 # Floating point work area B (FWB), same layout as FWA.
-d.label(0x003b, 'zp_fwb_sign')
+d.label(0x003b, 'zp_fwb_sign', length=8, group='zero_page', access='rw',
+        description="""FWB — floating-point work accumulator B (&3B-&42), same layout as [`zp_fwa_sign`](address:002e). Supplies the second operand for binary floating-point operations (add, multiply, divide).""")
 d.label(0x003c, 'zp_fwb_ovf')
 d.label(0x003d, 'zp_fwb_exp')
 d.label(0x003e, 'zp_fwb_m1')
@@ -476,28 +513,38 @@ d.label(0x003f, 'zp_fwb_m2')
 d.label(0x0040, 'zp_fwb_m3')
 d.label(0x0041, 'zp_fwb_m4')
 d.label(0x0042, 'zp_fwb_rnd')
-d.label(0x0043, 'zp_fp_temp')         # Floating point temporary area
+d.label(0x0043, 'zp_fp_temp', length=5, group='zero_page', access='rw',
+        description="""Floating-point temporary / scratch (&43-&47). Holds spill bytes for the FP routines and serves as the quotient build area for integer `DIV`/`MOD`.""")
 d.label(0x0044, 'zp_fp_temp_1')
 d.label(0x0045, 'zp_fp_temp_2')
 d.label(0x0046, 'zp_fp_temp_3')
 d.label(0x0047, 'zp_fp_temp_4')
-d.label(0x0048, 'zp_dp_flag')         # decimal-point-seen flag (conversion)
-d.label(0x0049, 'zp_dec_exp')         # decimal exponent (conversion)
-d.label(0x004a, 'zp_int_exp')
-d.label(0x004b, 'zp_fp_ptr')          # Pointer to a packed fp variable
+d.label(0x0048, 'zp_dp_flag', length=1, group='zero_page', access='rw',
+        description="""Decimal-point-seen flag, set while parsing a number literal so a second `.` is rejected and the fractional digits are scaled.""")
+d.label(0x0049, 'zp_dec_exp', length=1, group='zero_page', access='rw',
+        description="""Decimal exponent accumulated while parsing the `E` part of a real literal.""")
+d.label(0x004a, 'zp_int_exp', length=1, group='zero_page', access='rw',
+        description="""Integer-part / exponent scratch: holds the integer exponent during number parsing and the integer part of a value in `EXP` and the int/fraction split.""")
+d.label(0x004b, 'zp_fp_ptr', length=2, group='zero_page', access='rw',
+        description="""Pointer to a packed 5-byte floating-point value (a variable or an FP temporary) for the pack/unpack routines.""")
 d.label(0x004c, 'zp_fp_ptr_1')        # (high byte; used by the FP routines)
-d.label(0x004d, 'zp_coeff_ptr')
+d.label(0x004d, 'zp_coeff_ptr', length=2, group='zero_page', access='rw',
+        description="""Pointer to the current coefficient table, used while evaluating the continued-fraction approximations in the trig functions.""")
 d.label(0x004e, 'zp_coeff_ptr_1')
-d.label(0x00fd, 'zp_error_ptr')       # Pointer to the current error block
+d.label(0x00fd, 'zp_error_ptr', length=2, group='zero_page', access='rw',
+        description="""Pointer to the error block currently being reported (the bytes after a `BRK`): the error number and message the handler is processing.""")
 
-d.label(0x00ff, 'zp_escflg')
-d.label(0x0100, 'hw_stack')
+d.label(0x00ff, 'zp_escflg', length=1, group='zero_page', access='rw',
+        description="""ESCFLG — the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the "Escape" error.""")
+d.label(0x0100, 'hw_stack', length=256, group='stack_6502', access='rw',
+        description="""The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.""")
 d.label(0x0106, 'frame_local_count')
 d.label(0x01ff, 'hw_stack_top')
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
 # ----------------------------------------------------------------------
-d.label(0x0400, 'resint_at')          # @% print-format resident integer
+d.label(0x0400, 'resint_at', length=108, group='resident_vars', access='rw',
+        description="""The resident integer variables, four bytes each: @% here at &0400, then A%-Z% at &0404-&046B. @% sets the `PRINT`/`STR$` number format. Two slots double as the inline assembler's counters — O% (the 'O' slot, &043C) is the offset-assembly address and P% (the 'P' slot, &0440) the program counter.""")
 d.label(0x0401, 'resint_at_1')
 d.label(0x0402, 'resint_at_2')
 d.label(0x0403, 'resint_at_3')
@@ -505,8 +552,12 @@ for _i, _name in enumerate('abcdefghijklmnopqrstuvwxyz'):
     d.label(0x0404 + 4 * _i, f'resint_{_name}')  # A%..Z%
 d.label(0x043d, 'resint_o_1')
 d.label(0x0441, 'resint_p_1')
+d.label(0x046c, 'fp_temps', length=20, group='resident_vars', access='rw',
+        description="""Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing [`FWA`](address:002e) / [`FWB`](address:003b).""")
+
 d.label(0x047f, 'var_table_base')
-d.label(0x0480, 'var_ptr_table')      # Variable lookup table (by initial)
+d.label(0x0480, 'var_ptr_table', length=128, group='resident_vars', access='rw',
+        description="""The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, `_`, `@`), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.""")
 d.label(0x04f1, 'for_var_lo')
 d.label(0x04f2, 'for_var_hi')
 d.label(0x04f3, 'for_type')
@@ -528,7 +579,8 @@ d.label(0x04ff, 'for_loopback_hi')
 # These are distinct from the 6502 hardware stack and the BASIC value
 # stack, and -- unlike those two -- are NOT saved/restored across a
 # PROC/FN call. See call_proc_fn (&B197).
-d.label(0x0500, 'for_stack')          # FOR stack (&0500-&0595, 10 frames)
+d.label(0x0500, 'for_stack', length=150, group='basic_stacks', access='rw',
+        description="""The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by `FOR`, consulted and updated by `NEXT`.""")
 d.label(0x0501, 'for_set_ptr_hi')
 d.label(0x0502, 'for_set_type')
 d.label(0x0503, 'for_set_step0')
@@ -542,18 +594,24 @@ d.label(0x050b, 'for_set_limit3')
 d.label(0x050d, 'for_set_loop_lo')
 d.label(0x050e, 'for_set_loop_hi')
 d.label(0x05a3, 'repeat_loop_lo')
-d.label(0x05a4, 'repeat_stack')       # REPEAT loop-start ptrs (low bytes)
+d.label(0x05a4, 'repeat_stack', length=20, group='basic_stacks', access='rw',
+        description="""`REPEAT` loop-start text pointers, low bytes — up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition.""")
 d.label(0x05b7, 'repeat_loop_hi')
-d.label(0x05b8, 'repeat_stack_hi')    # REPEAT loop-start ptrs (high bytes)
+d.label(0x05b8, 'repeat_stack_hi', length=20, group='basic_stacks', access='rw',
+        description="""High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4).""")
 d.label(0x05cb, 'gosub_return_lo')
-d.label(0x05cc, 'gosub_stack')        # GOSUB return ptrs (low bytes)
+d.label(0x05cc, 'gosub_stack', length=26, group='basic_stacks', access='rw',
+        description="""`GOSUB` return text pointers, low bytes — up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry.""")
 d.label(0x05e5, 'gosub_return_hi')
-d.label(0x05e6, 'gosub_stack_hi')     # GOSUB return ptrs (high bytes)
+d.label(0x05e6, 'gosub_stack_hi', length=26, group='basic_stacks', access='rw',
+        description="""High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc).""")
 d.label(0x05ff, 'strbuf_base')
-d.label(0x0600, 'string_work')        # String work area / CALL block
+d.label(0x0600, 'string_work', length=256, group='buffers', access='rw',
+        description="""The string work area / `CALL` parameter block. BASIC builds string results here — the text of `STR$`, the digits of a number conversion, a popped string for comparison — with the length in [`zp_strbuf_len`](address:0036). `CALL` also assembles its parameter block here.""")
 d.label(0x06ff, 'call_block_base')
 
-d.label(0x0700, 'line_input_buf')     # Line input buffer
+d.label(0x0700, 'line_input_buf', length=256, group='buffers', access='rw',
+        description="""The line input buffer. The line editor reads a typed line (at the `>` prompt or for `INPUT`) into here via OSWORD 0; the tokeniser then processes it in place.""")
 
 # language_entry (&8000): the ROM language entry point.
 d.comment(0x8000, 'A=1: language start?', align=Align.INLINE)
