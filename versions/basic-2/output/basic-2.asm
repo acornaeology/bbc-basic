@@ -1860,7 +1860,7 @@ l848a = sub_c847b+15
     ldy #0                                                            ; 89d0: a0 00       ..       ; Read the next name character:
 ; &89d2 referenced 2 times by &89dc, &89fa
 .c89d2
-    lda (zp_general),y                                                ; 89d2: b1 37       .7       ; ...
+    lda (zp_general),y                                                ; 89d2: b1 37       .7       ; read it
     jsr is_alphanumeric                                               ; 89d4: 20 26 89     &.      ; alphanumeric?
     bcc c89c2                                                         ; 89d7: 90 e9       ..       ; no: end of the name
     jsr inc_ptr_general                                               ; 89d9: 20 44 89     D.      ; advance
@@ -1872,8 +1872,8 @@ l848a = sub_c847b+15
 ; &89e3 referenced 2 times by &89a0, &89ce
 .c89e3
     ldx #&ff                                                          ; 89e3: a2 ff       ..       ; Not a keyword: middle of statement
-    stx zp_fwb_sign                                                   ; 89e5: 86 3b       .;       ; ...
-    sty zp_fwb_ovf                                                    ; 89e7: 84 3c       .<       ; ...
+    stx zp_fwb_sign                                                   ; 89e5: 86 3b       .;       ; set mid-statement,
+    sty zp_fwb_ovf                                                    ; 89e7: 84 3c       .<       ; clear quote
 ; &89e9 referenced 1 time by &89b3
 .c89e9
     jmp c8961                                                         ; 89e9: 4c 61 89    La.      ; continue scanning
@@ -1882,9 +1882,9 @@ l848a = sub_c847b+15
     cmp #&58 ; 'X'                                                    ; 89ec: c9 58       .X       ; 'X' or above?
     bcs loop_c89cb                                                    ; 89ee: b0 db       ..       ; nothing starts with X/Y/Z: skip the name
     ldx #&71 ; 'q'                                                    ; 89f0: a2 71       .q       ; Point at the keyword table (&8071): low
-    stx zp_fileblk                                                    ; 89f2: 86 39       .9       ; ...
+    stx zp_fileblk                                                    ; 89f2: 86 39       .9       ; (store)
     ldx #&80                                                          ; 89f4: a2 80       ..       ; high &80
-    stx l003a                                                         ; 89f6: 86 3a       .:       ; ...
+    stx l003a                                                         ; 89f6: 86 3a       .:       ; (store)
 ; &89f8 referenced 1 time by &8a34
 .c89f8
     cmp (zp_fileblk),y                                                ; 89f8: d1 39       .9       ; Compare the first letter with this entry
@@ -1898,12 +1898,12 @@ l848a = sub_c847b+15
     cmp (zp_general),y                                                ; 8a03: d1 37       .7       ; compare with the line
     beq loop_c89fe                                                    ; 8a05: f0 f7       ..       ; match: next character
     lda (zp_general),y                                                ; 8a07: b1 37       .7       ; mismatch: a "." abbreviation?
-    cmp #&2e ; '.'                                                    ; 8a09: c9 2e       ..       ; ...
+    cmp #&2e ; '.'                                                    ; 8a09: c9 2e       ..       ; is it "."?
     beq c8a18                                                         ; 8a0b: f0 0b       ..       ; yes: accept the abbreviation
 ; &8a0d referenced 2 times by &89fc, &8a10
 .c8a0d
     iny                                                               ; 8a0d: c8          .        ; Skip to the next entry: past the name
-    lda (zp_fileblk),y                                                ; 8a0e: b1 39       .9       ; ...
+    lda (zp_fileblk),y                                                ; 8a0e: b1 39       .9       ; read it
     bpl c8a0d                                                         ; 8a10: 10 fb       ..       ; until the token byte (bit 7 set)
     cmp #&fe                                                          ; 8a12: c9 fe       ..       ; end of the table?
     bne c8a25                                                         ; 8a14: d0 0f       ..       ; no
@@ -1913,20 +1913,20 @@ l848a = sub_c847b+15
     iny                                                               ; 8a18: c8          .        ; Abbreviation: skip to this entry's token
 ; &8a19 referenced 2 times by &8a1f, &8a23
 .c8a19
-    lda (zp_fileblk),y                                                ; 8a19: b1 39       .9       ; ...
+    lda (zp_fileblk),y                                                ; 8a19: b1 39       .9       ; read it
     bmi c8a37                                                         ; 8a1b: 30 1a       0.       ; token byte: got it
     inc zp_fileblk                                                    ; 8a1d: e6 39       .9       ; advance the table pointer
-    bne c8a19                                                         ; 8a1f: d0 f8       ..       ; ...
+    bne c8a19                                                         ; 8a1f: d0 f8       ..       ; no wrap
     inc l003a                                                         ; 8a21: e6 3a       .:       ; carry into high
     bne c8a19                                                         ; 8a23: d0 f4       ..       ; loop
 ; &8a25 referenced 1 time by &8a14
 .c8a25
     sec                                                               ; 8a25: 38          8        ; Advance past this entry to the next:
-    iny                                                               ; 8a26: c8          .        ; ...
-    tya                                                               ; 8a27: 98          .        ; ...
+    iny                                                               ; 8a26: c8          .        ; (include the token byte)
+    tya                                                               ; 8a27: 98          .        ; offset...
     adc zp_fileblk                                                    ; 8a28: 65 39       e9       ; low
-    sta zp_fileblk                                                    ; 8a2a: 85 39       .9       ; ...
-    bcc c8a30                                                         ; 8a2c: 90 02       ..       ; ...
+    sta zp_fileblk                                                    ; 8a2a: 85 39       .9       ; (store)
+    bcc c8a30                                                         ; 8a2c: 90 02       ..       ; no carry
     inc l003a                                                         ; 8a2e: e6 3a       .:       ; carry into high
 ; &8a30 referenced 1 time by &8a2c
 .c8a30
@@ -1939,11 +1939,11 @@ l848a = sub_c847b+15
     iny                                                               ; 8a38: c8          .        ; the flag byte follows
     lda (zp_fileblk),y                                                ; 8a39: b1 39       .9       ; get the token flag
     sta zp_fwb_exp                                                    ; 8a3b: 85 3d       .=       ; (save it in &3D)
-    dey                                                               ; 8a3d: 88          .        ; ...
+    dey                                                               ; 8a3d: 88          .        ; back up Y
     lsr a                                                             ; 8a3e: 4a          J        ; flag bit 0: conditional tokenisation?
     bcc c8a48                                                         ; 8a3f: 90 07       ..       ; no
     lda (zp_general),y                                                ; 8a41: b1 37       .7       ; a letter follows?
-    jsr is_alphanumeric                                               ; 8a43: 20 26 89     &.      ; ...
+    jsr is_alphanumeric                                               ; 8a43: 20 26 89     &.      ; test it
     bcs c89d0                                                         ; 8a46: b0 88       ..       ; yes: keep it as a name, not a token
 ; &8a48 referenced 1 time by &8a3f
 .c8a48
@@ -1952,14 +1952,14 @@ l848a = sub_c847b+15
     bvc c8a54                                                         ; 8a4b: 50 07       P.       ; no
     ldx zp_fwb_sign                                                   ; 8a4d: a6 3b       .;       ; at the start of a statement?
     bne c8a54                                                         ; 8a4f: d0 03       ..       ; no
-    clc                                                               ; 8a51: 18          .        ; ...
+    clc                                                               ; 8a51: 18          .        ; (clear carry)
     adc #&40 ; '@'                                                    ; 8a52: 69 40       i@       ; assignment form: token + &40
 ; &8a54 referenced 2 times by &8a4b, &8a4f
 .c8a54
     dey                                                               ; 8a54: 88          .        ; Write the token over the keyword
-    jsr sub_c887c                                                     ; 8a55: 20 7c 88     |.      ; ...
+    jsr sub_c887c                                                     ; 8a55: 20 7c 88     |.      ; overwrite the keyword
     ldy #0                                                            ; 8a58: a0 00       ..       ; reset Y
-    ldx #&ff                                                          ; 8a5a: a2 ff       ..       ; ...
+    ldx #&ff                                                          ; 8a5a: a2 ff       ..       ; X = &FF (mid-statement marker)
     lda zp_fwb_exp                                                    ; 8a5c: a5 3d       .=       ; Apply the state-change flags:
     lsr a                                                             ; 8a5e: 4a          J        ; bit 0 (already used)
     lsr a                                                             ; 8a5f: 4a          J        ; bit 1: enter middle-of-statement?
@@ -1987,7 +1987,7 @@ l848a = sub_c847b+15
     jmp c8a72                                                         ; 8a7c: 4c 72 8a    Lr.      ; loop
 ; &8a7f referenced 1 time by &8a77
 .c8a7f
-    dey                                                               ; 8a7f: 88          .        ; ...
+    dey                                                               ; 8a7f: 88          .        ; step back
     pla                                                               ; 8a80: 68          h        ; restore A
 ; &8a81 referenced 1 time by &8a6e
 .c8a81

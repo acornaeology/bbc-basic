@@ -17703,7 +17703,7 @@
       "labels": [
         "c89d2"
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "xref_summaries": [
         "&89d2 referenced 2 times by &89dc, &89fa"
       ],
@@ -17832,7 +17832,7 @@
         134,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "set mid-statement,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_sign",
@@ -17845,7 +17845,7 @@
         132,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear quote",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -17925,7 +17925,7 @@
         134,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fileblk",
@@ -17949,7 +17949,7 @@
         134,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "stx",
       "operand": "l003a",
@@ -18093,7 +18093,7 @@
         201,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "is it \".\"?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2e"
@@ -18136,7 +18136,7 @@
         177,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_fileblk),y",
@@ -18220,7 +18220,7 @@
       "labels": [
         "c8a19"
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "xref_summaries": [
         "&8a19 referenced 2 times by &8a1f, &8a23"
       ],
@@ -18266,7 +18266,7 @@
         208,
         248
       ],
-      "comment_inline": "...",
+      "comment_inline": "no wrap",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c8a19",
@@ -18322,7 +18322,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "(include the token byte)",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -18331,7 +18331,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "offset...",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -18354,7 +18354,7 @@
         133,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fileblk",
@@ -18367,7 +18367,7 @@
         144,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
       "operand": "c8a30",
@@ -18493,7 +18493,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "back up Y",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -18539,7 +18539,7 @@
         38,
         137
       ],
-      "comment_inline": "...",
+      "comment_inline": "test it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "is_alphanumeric",
@@ -18634,7 +18634,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "(clear carry)",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -18675,7 +18675,7 @@
         124,
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "overwrite the keyword",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "sub_c887c",
@@ -18699,7 +18699,7 @@
         162,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "X = &FF (mid-statement marker)",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "#&ff"
@@ -18965,7 +18965,7 @@
       "labels": [
         "c8a7f"
       ],
-      "comment_inline": "...",
+      "comment_inline": "step back",
       "xref_summaries": [
         "&8a7f referenced 1 time by &8a77"
       ],
