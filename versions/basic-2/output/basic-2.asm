@@ -1875,189 +1875,189 @@ oscli            = &fff7
     ldy #0                                                            ; 8951: a0 00       ..       ; Tokeniser state (&3B/&3C): start of statement
     sty zp_fwb_sign                                                   ; 8953: 84 3b       .;       ; Start-of-statement flag (&3B)
 ; &8955 referenced 1 time by &ac1a
-.sub_c8955
+.tokenise_resume
     sty zp_fwb_ovf                                                    ; 8955: 84 3c       .<       ; Clear the quote flag (&3C)
 ; &8957 referenced 5 times by &8964, &8974, &897a, &89c8, &8b2a
-.c8957
+.tok_scan
     lda (zp_general),y                                                ; 8957: b1 37       .7       ; Scan the next source character
     cmp #&0d                                                          ; 8959: c9 0d       ..       ; CR: end of line
     beq return_3                                                      ; 895b: f0 ed       ..       ; Carriage return ends the line
     cmp #&20 ; ' '                                                    ; 895d: c9 20       .        ; space: skip it
-    bne c8966                                                         ; 895f: d0 05       ..       ; Skip spaces
+    bne tok_check_hex                                                 ; 895f: d0 05       ..       ; Skip spaces
 ; &8961 referenced 5 times by &8985, &8994, &8998, &89e9, &8a89
-.c8961
+.tok_advance
     jsr inc_ptr_general                                               ; 8961: 20 44 89     D.      ; advance and read the next character
-    bne c8957                                                         ; 8964: d0 f1       ..       ; loop
+    bne tok_scan                                                      ; 8964: d0 f1       ..       ; loop
 ; &8966 referenced 1 time by &895f
-.c8966
+.tok_check_hex
     cmp #&26 ; '&'                                                    ; 8966: c9 26       .&       ; An "&" introduces a hex constant: copy it unchanged
-    bne c897c                                                         ; 8968: d0 12       ..       ; not "&": check the other cases
+    bne tok_check_string                                              ; 8968: d0 12       ..       ; not "&": check the other cases
 ; &896a referenced 2 times by &8970, &8978
-.c896a
+.tok_hex_loop
     jsr general_next_byte                                             ; 896a: 20 4b 89     K.      ; Hex constant: advance and get a character
     jsr is_digit                                                      ; 896d: 20 36 89     6.      ; a digit?
-    bcs c896a                                                         ; 8970: b0 f8       ..       ; yes: keep copying
+    bcs tok_hex_loop                                                  ; 8970: b0 f8       ..       ; yes: keep copying
     cmp #&41 ; 'A'                                                    ; 8972: c9 41       .A       ; below 'A'?
-    bcc c8957                                                         ; 8974: 90 e1       ..       ; not hex: resume scanning
+    bcc tok_scan                                                      ; 8974: 90 e1       ..       ; not hex: resume scanning
     cmp #&47 ; 'G'                                                    ; 8976: c9 47       .G       ; 'A'..'F'?
-    bcc c896a                                                         ; 8978: 90 f0       ..       ; hex letter: keep copying
-    bcs c8957                                                         ; 897a: b0 db       ..       ; past F: resume
+    bcc tok_hex_loop                                                  ; 8978: 90 f0       ..       ; hex letter: keep copying
+    bcs tok_scan                                                      ; 897a: b0 db       ..       ; past F: resume
 ; &897c referenced 1 time by &8968
-.c897c
+.tok_check_string
     cmp #&22                                                          ; 897c: c9 22       ."       ; A quote starts a string literal: copy it verbatim
-    bne c898c                                                         ; 897e: d0 0c       ..       ; not a quote: check for a colon
+    bne tok_check_colon                                               ; 897e: d0 0c       ..       ; not a quote: check for a colon
 ; &8980 referenced 1 time by &8989
-.loop_c8980
+.tok_string_loop
     jsr general_next_byte                                             ; 8980: 20 4b 89     K.      ; String literal: copy to the closing quote
     cmp #&22                                                          ; 8983: c9 22       ."       ; a quote?
-    beq c8961                                                         ; 8985: f0 da       ..       ; yes: end of string
+    beq tok_advance                                                   ; 8985: f0 da       ..       ; yes: end of string
     cmp #&0d                                                          ; 8987: c9 0d       ..       ; CR (unterminated)?
-    bne loop_c8980                                                    ; 8989: d0 f5       ..       ; no: keep copying
+    bne tok_string_loop                                               ; 8989: d0 f5       ..       ; no: keep copying
     rts                                                               ; 898b: 60          `        ; Return
 ; &898c referenced 1 time by &897e
-.c898c
+.tok_check_colon
     cmp #&3a ; ':'                                                    ; 898c: c9 3a       .:       ; A colon starts a new statement: reset the state
-    bne c8996                                                         ; 898e: d0 06       ..       ; not a colon: check for a comma
+    bne tok_check_comma_star                                          ; 898e: d0 06       ..       ; not a colon: check for a comma
     sty zp_fwb_sign                                                   ; 8990: 84 3b       .;       ; Colon: back to start-of-statement
     sty zp_fwb_ovf                                                    ; 8992: 84 3c       .<       ; clear the quote flag
-    beq c8961                                                         ; 8994: f0 cb       ..       ; continue
+    beq tok_advance                                                   ; 8994: f0 cb       ..       ; continue
 ; &8996 referenced 1 time by &898e
-.c8996
+.tok_check_comma_star
     cmp #&2c ; ','                                                    ; 8996: c9 2c       .,       ; a comma?
-    beq c8961                                                         ; 8998: f0 c7       ..       ; yes: skip it
+    beq tok_advance                                                   ; 8998: f0 c7       ..       ; yes: skip it
     cmp #&2a ; '*'                                                    ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
-    bne c89a3                                                         ; 899c: d0 05       ..       ; not "*": try a keyword or name
+    bne tok_check_number                                              ; 899c: d0 05       ..       ; not "*": try a keyword or name
     lda zp_fwb_sign                                                   ; 899e: a5 3b       .;       ; at the start of a statement?
-    bne c89e3                                                         ; 89a0: d0 41       .A       ; yes: "*command", skip the rest of the line
+    bne tok_not_keyword                                               ; 89a0: d0 41       .A       ; yes: "*command", skip the rest of the line
     rts                                                               ; 89a2: 60          `        ; Return
 ; &89a3 referenced 1 time by &899c
-.c89a3
+.tok_check_number
     cmp #&2e ; '.'                                                    ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?
-    beq c89b5                                                         ; 89a5: f0 0e       ..       ; yes
+    beq tok_skip_number_loop                                          ; 89a5: f0 0e       ..       ; yes
     jsr is_digit                                                      ; 89a7: 20 36 89     6.      ; a digit?
-    bcc c89df                                                         ; 89aa: 90 33       .3       ; no: a letter or symbol
+    bcc tok_check_letter                                              ; 89aa: 90 33       .3       ; no: a letter or symbol
     ldx zp_fwb_ovf                                                    ; 89ac: a6 3c       .<       ; inside a quote?
-    beq c89b5                                                         ; 89ae: f0 05       ..       ; no: a line number
+    beq tok_skip_number_loop                                          ; 89ae: f0 05       ..       ; no: a line number
     jsr parse_decimal_u16                                             ; 89b0: 20 97 88     ..      ; tokenise the line number
-    bcc c89e9                                                         ; 89b3: 90 34       .4       ; continue
+    bcc tok_continue                                                  ; 89b3: 90 34       .4       ; continue
 ; &89b5 referenced 3 times by &89a5, &89ae, &89bf
-.c89b5
+.tok_skip_number_loop
     lda (zp_general),y                                                ; 89b5: b1 37       .7       ; Skip a number: read a character
     jsr is_dot_or_digit                                               ; 89b7: 20 3d 89     =.      ; a digit or "."?
-    bcc c89c2                                                         ; 89ba: 90 06       ..       ; no: end of the number
+    bcc tok_resume_mid                                                ; 89ba: 90 06       ..       ; no: end of the number
     jsr inc_ptr_general                                               ; 89bc: 20 44 89     D.      ; advance
-    jmp c89b5                                                         ; 89bf: 4c b5 89    L..      ; loop
+    jmp tok_skip_number_loop                                          ; 89bf: 4c b5 89    L..      ; loop
 ; &89c2 referenced 2 times by &89ba, &89d7
-.c89c2
+.tok_resume_mid
     ldx #&ff                                                          ; 89c2: a2 ff       ..       ; Now in the middle of a statement:
     stx zp_fwb_sign                                                   ; 89c4: 86 3b       .;       ; set the flag
     sty zp_fwb_ovf                                                    ; 89c6: 84 3c       .<       ; clear the quote flag
-    jmp c8957                                                         ; 89c8: 4c 57 89    LW.      ; resume scanning
+    jmp tok_scan                                                      ; 89c8: 4c 57 89    LW.      ; resume scanning
 ; &89cb referenced 1 time by &89ee
-.loop_c89cb
+.tok_skip_name
     jsr is_alphanumeric                                               ; 89cb: 20 26 89     &.      ; Skip a variable name: alphanumeric?
-    bcc c89e3                                                         ; 89ce: 90 13       ..       ; no: not a name
+    bcc tok_not_keyword                                               ; 89ce: 90 13       ..       ; no: not a name
 ; &89d0 referenced 2 times by &8a16, &8a46
-.c89d0
+.tok_name
     ldy #0                                                            ; 89d0: a0 00       ..       ; Read the next name character:
 ; &89d2 referenced 2 times by &89dc, &89fa
-.c89d2
+.tok_name_loop
     lda (zp_general),y                                                ; 89d2: b1 37       .7       ; read it
     jsr is_alphanumeric                                               ; 89d4: 20 26 89     &.      ; alphanumeric?
-    bcc c89c2                                                         ; 89d7: 90 e9       ..       ; no: end of the name
+    bcc tok_resume_mid                                                ; 89d7: 90 e9       ..       ; no: end of the name
     jsr inc_ptr_general                                               ; 89d9: 20 44 89     D.      ; advance
-    jmp c89d2                                                         ; 89dc: 4c d2 89    L..      ; loop
+    jmp tok_name_loop                                                 ; 89dc: 4c d2 89    L..      ; loop
 ; &89df referenced 1 time by &89aa
-.c89df
+.tok_check_letter
     cmp #&41 ; 'A'                                                    ; 89df: c9 41       .A       ; a letter ('A'+)?
-    bcs c89ec                                                         ; 89e1: b0 09       ..       ; yes: try to match a keyword
+    bcs tok_try_keyword                                               ; 89e1: b0 09       ..       ; yes: try to match a keyword
 ; &89e3 referenced 2 times by &89a0, &89ce
-.c89e3
+.tok_not_keyword
     ldx #&ff                                                          ; 89e3: a2 ff       ..       ; Not a keyword: middle of statement
     stx zp_fwb_sign                                                   ; 89e5: 86 3b       .;       ; set mid-statement,
     sty zp_fwb_ovf                                                    ; 89e7: 84 3c       .<       ; clear quote
 ; &89e9 referenced 1 time by &89b3
-.c89e9
-    jmp c8961                                                         ; 89e9: 4c 61 89    La.      ; continue scanning
+.tok_continue
+    jmp tok_advance                                                   ; 89e9: 4c 61 89    La.      ; continue scanning
 ; &89ec referenced 1 time by &89e1
-.c89ec
+.tok_try_keyword
     cmp #&58 ; 'X'                                                    ; 89ec: c9 58       .X       ; 'X' or above?
-    bcs loop_c89cb                                                    ; 89ee: b0 db       ..       ; nothing starts with X/Y/Z: skip the name
+    bcs tok_skip_name                                                 ; 89ee: b0 db       ..       ; nothing starts with X/Y/Z: skip the name
     ldx #&71 ; 'q'                                                    ; 89f0: a2 71       .q       ; Point at the keyword table (&8071): low
     stx zp_fileblk                                                    ; 89f2: 86 39       .9       ; (store)
     ldx #&80                                                          ; 89f4: a2 80       ..       ; high &80
     stx l003a                                                         ; 89f6: 86 3a       .:       ; (store)
 ; &89f8 referenced 1 time by &8a34
-.c89f8
+.tok_kw_entry
     cmp (zp_fileblk),y                                                ; 89f8: d1 39       .9       ; Compare the first letter with this entry
-    bcc c89d2                                                         ; 89fa: 90 d6       ..       ; entry past our letter: not a keyword
-    bne c8a0d                                                         ; 89fc: d0 0f       ..       ; first letter differs: next entry
+    bcc tok_name_loop                                                 ; 89fa: 90 d6       ..       ; entry past our letter: not a keyword
+    bne tok_kw_check_end                                              ; 89fc: d0 0f       ..       ; first letter differs: next entry
 ; &89fe referenced 1 time by &8a05
-.loop_c89fe
+.tok_kw_match_loop
     iny                                                               ; 89fe: c8          .        ; matches: compare the rest of the keyword
     lda (zp_fileblk),y                                                ; 89ff: b1 39       .9       ; entry char (bit 7 = the token)
-    bmi c8a37                                                         ; 8a01: 30 34       04       ; whole keyword matched: got a token
+    bmi tok_kw_found                                                  ; 8a01: 30 34       04       ; whole keyword matched: got a token
     cmp (zp_general),y                                                ; 8a03: d1 37       .7       ; compare with the line
-    beq loop_c89fe                                                    ; 8a05: f0 f7       ..       ; match: next character
+    beq tok_kw_match_loop                                             ; 8a05: f0 f7       ..       ; match: next character
     lda (zp_general),y                                                ; 8a07: b1 37       .7       ; mismatch: a "." abbreviation?
     cmp #&2e ; '.'                                                    ; 8a09: c9 2e       ..       ; is it "."?
-    beq c8a18                                                         ; 8a0b: f0 0b       ..       ; yes: accept the abbreviation
+    beq tok_kw_abbrev                                                 ; 8a0b: f0 0b       ..       ; yes: accept the abbreviation
 ; &8a0d referenced 2 times by &89fc, &8a10
-.c8a0d
+.tok_kw_check_end
     iny                                                               ; 8a0d: c8          .        ; Skip to the next entry: past the name
     lda (zp_fileblk),y                                                ; 8a0e: b1 39       .9       ; read it
-    bpl c8a0d                                                         ; 8a10: 10 fb       ..       ; until the token byte (bit 7 set)
+    bpl tok_kw_check_end                                              ; 8a10: 10 fb       ..       ; until the token byte (bit 7 set)
     cmp #&fe                                                          ; 8a12: c9 fe       ..       ; end of the table?
-    bne c8a25                                                         ; 8a14: d0 0f       ..       ; no
-    bcs c89d0                                                         ; 8a16: b0 b8       ..       ; end: not a keyword (skip the name)
+    bne tok_kw_next_entry                                             ; 8a14: d0 0f       ..       ; no
+    bcs tok_name                                                      ; 8a16: b0 b8       ..       ; end: not a keyword (skip the name)
 ; &8a18 referenced 1 time by &8a0b
-.c8a18
+.tok_kw_abbrev
     iny                                                               ; 8a18: c8          .        ; Abbreviation: skip to this entry's token
 ; &8a19 referenced 2 times by &8a1f, &8a23
-.c8a19
+.tok_kw_skip_loop
     lda (zp_fileblk),y                                                ; 8a19: b1 39       .9       ; read it
-    bmi c8a37                                                         ; 8a1b: 30 1a       0.       ; token byte: got it
+    bmi tok_kw_found                                                  ; 8a1b: 30 1a       0.       ; token byte: got it
     inc zp_fileblk                                                    ; 8a1d: e6 39       .9       ; advance the table pointer
-    bne c8a19                                                         ; 8a1f: d0 f8       ..       ; no wrap
+    bne tok_kw_skip_loop                                              ; 8a1f: d0 f8       ..       ; no wrap
     inc l003a                                                         ; 8a21: e6 3a       .:       ; carry into high
-    bne c8a19                                                         ; 8a23: d0 f4       ..       ; loop
+    bne tok_kw_skip_loop                                              ; 8a23: d0 f4       ..       ; loop
 ; &8a25 referenced 1 time by &8a14
-.c8a25
+.tok_kw_next_entry
     sec                                                               ; 8a25: 38          8        ; Advance past this entry to the next:
     iny                                                               ; 8a26: c8          .        ; (include the token byte)
     tya                                                               ; 8a27: 98          .        ; offset...
     adc zp_fileblk                                                    ; 8a28: 65 39       e9       ; low
     sta zp_fileblk                                                    ; 8a2a: 85 39       .9       ; (store)
-    bcc c8a30                                                         ; 8a2c: 90 02       ..       ; no carry
+    bcc tok_kw_retry                                                  ; 8a2c: 90 02       ..       ; no carry
     inc l003a                                                         ; 8a2e: e6 3a       .:       ; carry into high
 ; &8a30 referenced 1 time by &8a2c
-.c8a30
+.tok_kw_retry
     ldy #0                                                            ; 8a30: a0 00       ..       ; reset Y
     lda (zp_general),y                                                ; 8a32: b1 37       .7       ; re-read the first letter
-    jmp c89f8                                                         ; 8a34: 4c f8 89    L..      ; try the next entry
+    jmp tok_kw_entry                                                  ; 8a34: 4c f8 89    L..      ; try the next entry
 ; &8a37 referenced 2 times by &8a01, &8a1b
-.c8a37
+.tok_kw_found
     tax                                                               ; 8a37: aa          .        ; Token byte found: keep it in X
     iny                                                               ; 8a38: c8          .        ; the flag byte follows
     lda (zp_fileblk),y                                                ; 8a39: b1 39       .9       ; get the token flag
     sta zp_fwb_exp                                                    ; 8a3b: 85 3d       .=       ; (save it in &3D)
     dey                                                               ; 8a3d: 88          .        ; back up Y
     lsr a                                                             ; 8a3e: 4a          J        ; flag bit 0: conditional tokenisation?
-    bcc c8a48                                                         ; 8a3f: 90 07       ..       ; no
+    bcc tok_emit_token                                                ; 8a3f: 90 07       ..       ; no
     lda (zp_general),y                                                ; 8a41: b1 37       .7       ; a letter follows?
     jsr is_alphanumeric                                               ; 8a43: 20 26 89     &.      ; test it
-    bcs c89d0                                                         ; 8a46: b0 88       ..       ; yes: keep it as a name, not a token
+    bcs tok_name                                                      ; 8a46: b0 88       ..       ; yes: keep it as a name, not a token
 ; &8a48 referenced 1 time by &8a3f
-.c8a48
+.tok_emit_token
     txa                                                               ; 8a48: 8a          .        ; Emit the token: A = token byte
     bit zp_fwb_exp                                                    ; 8a49: 24 3d       $=       ; flag bit 6: pseudo-variable?
-    bvc c8a54                                                         ; 8a4b: 50 07       P.       ; no
+    bvc tok_write_token                                               ; 8a4b: 50 07       P.       ; no
     ldx zp_fwb_sign                                                   ; 8a4d: a6 3b       .;       ; at the start of a statement?
-    bne c8a54                                                         ; 8a4f: d0 03       ..       ; no
+    bne tok_write_token                                               ; 8a4f: d0 03       ..       ; no
     clc                                                               ; 8a51: 18          .        ; (clear carry)
     adc #&40 ; '@'                                                    ; 8a52: 69 40       i@       ; assignment form: token + &40
 ; &8a54 referenced 2 times by &8a4b, &8a4f
-.c8a54
+.tok_write_token
     dey                                                               ; 8a54: 88          .        ; Write the token over the keyword
     jsr sub_c887c                                                     ; 8a55: 20 7c 88     |.      ; overwrite the keyword
     ldy #0                                                            ; 8a58: a0 00       ..       ; reset Y
@@ -2065,42 +2065,42 @@ oscli            = &fff7
     lda zp_fwb_exp                                                    ; 8a5c: a5 3d       .=       ; Apply the state-change flags:
     lsr a                                                             ; 8a5e: 4a          J        ; bit 0 (already used)
     lsr a                                                             ; 8a5f: 4a          J        ; bit 1: enter middle-of-statement?
-    bcc c8a66                                                         ; 8a60: 90 04       ..       ; no
+    bcc tok_flag_start_stmt                                           ; 8a60: 90 04       ..       ; no
     stx zp_fwb_sign                                                   ; 8a62: 86 3b       .;       ; set middle-of-statement
     sty zp_fwb_ovf                                                    ; 8a64: 84 3c       .<       ; clear quote
 ; &8a66 referenced 1 time by &8a60
-.c8a66
+.tok_flag_start_stmt
     lsr a                                                             ; 8a66: 4a          J        ; bit 2: enter start-of-statement?
-    bcc c8a6d                                                         ; 8a67: 90 04       ..       ; no
+    bcc tok_flag_fnproc                                               ; 8a67: 90 04       ..       ; no
     sty zp_fwb_sign                                                   ; 8a69: 84 3b       .;       ; set start-of-statement
     sty zp_fwb_ovf                                                    ; 8a6b: 84 3c       .<       ; clear quote
 ; &8a6d referenced 1 time by &8a67
-.c8a6d
+.tok_flag_fnproc
     lsr a                                                             ; 8a6d: 4a          J        ; bit 3: FN/PROC (do not tokenise the name)?
-    bcc c8a81                                                         ; 8a6e: 90 11       ..       ; no
+    bcc tok_flag_linenum                                              ; 8a6e: 90 11       ..       ; no
     pha                                                               ; 8a70: 48          H        ; save A
     iny                                                               ; 8a71: c8          .        ; skip the FN/PROC name untokenised:
 ; &8a72 referenced 1 time by &8a7c
-.c8a72
+.tok_skip_fnproc_loop
     lda (zp_general),y                                                ; 8a72: b1 37       .7       ; char
     jsr is_alphanumeric                                               ; 8a74: 20 26 89     &.      ; alphanumeric?
-    bcc c8a7f                                                         ; 8a77: 90 06       ..       ; no: end of the name
+    bcc tok_skip_fnproc_done                                          ; 8a77: 90 06       ..       ; no: end of the name
     jsr inc_ptr_general                                               ; 8a79: 20 44 89     D.      ; advance
-    jmp c8a72                                                         ; 8a7c: 4c 72 8a    Lr.      ; loop
+    jmp tok_skip_fnproc_loop                                          ; 8a7c: 4c 72 8a    Lr.      ; loop
 ; &8a7f referenced 1 time by &8a77
-.c8a7f
+.tok_skip_fnproc_done
     dey                                                               ; 8a7f: 88          .        ; step back
     pla                                                               ; 8a80: 68          h        ; restore A
 ; &8a81 referenced 1 time by &8a6e
-.c8a81
+.tok_flag_linenum
     lsr a                                                             ; 8a81: 4a          J        ; bit 4: start a line number?
-    bcc c8a86                                                         ; 8a82: 90 02       ..       ; no
+    bcc tok_flag_skipline                                             ; 8a82: 90 02       ..       ; no
     stx zp_fwb_ovf                                                    ; 8a84: 86 3c       .<       ; set the line-number flag
 ; &8a86 referenced 1 time by &8a82
-.c8a86
+.tok_flag_skipline
     lsr a                                                             ; 8a86: 4a          J        ; bit 5: skip the rest of the line (REM/DATA)?
     bcs return_4                                                      ; 8a87: b0 0d       ..       ; yes: stop tokenising
-    jmp c8961                                                         ; 8a89: 4c 61 89    La.      ; continue scanning
+    jmp tok_advance                                                   ; 8a89: 4c 61 89    La.      ; continue scanning
 ; ***************************************************************************************
 ; Skip spaces at the secondary text pointer
 ;
@@ -2321,7 +2321,7 @@ oscli            = &fff7
     sta zp_general_1                                                  ; 8b24: 85 38       .8       ; store it
     sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; clear the quote flag
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
-    jsr c8957                                                         ; 8b2a: 20 57 89     W.      ; Tokenise the line
+    jsr tok_scan                                                      ; 8b2a: 20 57 89     W.      ; Tokenise the line
     jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
     bcc c8b38                                                         ; 8b30: 90 06       ..       ; no line number: execute it
     jsr sub_cbc8d                                                     ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
@@ -9687,7 +9687,7 @@ oscli            = &fff7
     sty zp_fwb_sign                                                   ; ac15: 84 3b       .;       ; store the quote flag (&3B)
     iny                                                               ; ac17: c8          .        ; Offset back to the start
     sty zp_text_ptr2_off                                              ; ac18: 84 1b       ..       ; offset = 0 (start of string)
-    jsr sub_c8955                                                     ; ac1a: 20 55 89     U.      ; Tokenise the stacked string
+    jsr tokenise_resume                                               ; ac1a: 20 55 89     U.      ; Tokenise the stacked string
     jsr eval_or_eor                                                   ; ac1d: 20 29 9b     ).      ; Evaluate the expression
     jsr cbddc                                                         ; ac20: 20 dc bd     ..      ; Drop the stacked string
 ; &ac23 referenced 1 time by &ac75
@@ -14493,8 +14493,6 @@ save pydis_start, pydis_end
 ;     zp_lomem:                    6
 ;     zp_lomem_1:                  6
 ;     asm_absolute:                5
-;     c8957:                       5
-;     c8961:                       5
 ;     c8e6a:                       5
 ;     c9a93:                       5
 ;     c9fe6:                       5
@@ -14517,6 +14515,8 @@ save pydis_start, pydis_end
 ;     skip_spaces_expect_comma:    5
 ;     sub_c9a9d:                   5
 ;     sub_cbfa9:                   5
+;     tok_advance:                 5
+;     tok_scan:                    5
 ;     unstack_int_to_zp:           5
 ;     zp_gosub_level:              5
 ;     zp_repeat_level:             5
@@ -14573,7 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c89b5:                       3
 ;     c8d7d:                       3
 ;     c8d80:                       3
 ;     c8dbb:                       3
@@ -14637,6 +14636,7 @@ save pydis_start, pydis_end
 ;     sin_cos_reduce:              3
 ;     sub_c8827:                   3
 ;     sub_cbd3a:                   3
+;     tok_skip_number_loop:        3
 ;     unstack_int_to_general:      3
 ;     zp_erl:                      3
 ;     zp_erl_1:                    3
@@ -14655,15 +14655,6 @@ save pydis_start, pydis_end
 ;     asm_set_operand:             2
 ;     asm_three_byte:              2
 ;     asm_two_byte:                2
-;     c896a:                       2
-;     c89c2:                       2
-;     c89d0:                       2
-;     c89d2:                       2
-;     c89e3:                       2
-;     c8a0d:                       2
-;     c8a19:                       2
-;     c8a37:                       2
-;     c8a54:                       2
 ;     c8b59:                       2
 ;     c8b87:                       2
 ;     c8c43:                       2
@@ -14875,6 +14866,15 @@ save pydis_start, pydis_end
 ;     sub_cbeba:                   2
 ;     sub_cbed2:                   2
 ;     sub_cbedd:                   2
+;     tok_hex_loop:                2
+;     tok_kw_check_end:            2
+;     tok_kw_found:                2
+;     tok_kw_skip_loop:            2
+;     tok_name:                    2
+;     tok_name_loop:               2
+;     tok_not_keyword:             2
+;     tok_resume_mid:              2
+;     tok_write_token:             2
 ;     trace_line:                  2
 ;     try_variable_assignment:     2
 ;     usr_call:                    2
@@ -14945,25 +14945,6 @@ save pydis_start, pydis_end
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c8966:                       1
-;     c897c:                       1
-;     c898c:                       1
-;     c8996:                       1
-;     c89a3:                       1
-;     c89df:                       1
-;     c89e9:                       1
-;     c89ec:                       1
-;     c89f8:                       1
-;     c8a18:                       1
-;     c8a25:                       1
-;     c8a30:                       1
-;     c8a48:                       1
-;     c8a66:                       1
-;     c8a6d:                       1
-;     c8a72:                       1
-;     c8a7f:                       1
-;     c8a81:                       1
-;     c8a86:                       1
 ;     c8b38:                       1
 ;     c8bdf:                       1
 ;     c8be9:                       1
@@ -15363,9 +15344,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c8980:                  1
-;     loop_c89cb:                  1
-;     loop_c89fe:                  1
 ;     loop_c8b41:                  1
 ;     loop_c8b44:                  1
 ;     loop_c8b47:                  1
@@ -15581,7 +15559,6 @@ save pydis_start, pydis_end
 ;     stmt_next:                   1
 ;     stmt_read:                   1
 ;     stmt_vdu:                    1
-;     sub_c8955:                   1
 ;     sub_c8f9a:                   1
 ;     sub_c9231:                   1
 ;     sub_c94ed:                   1
@@ -15610,7 +15587,30 @@ save pydis_start, pydis_end
 ;     sub_cbe93:                   1
 ;     sub_cbeb2:                   1
 ;     sub_cbee7:                   1
+;     tok_check_colon:             1
+;     tok_check_comma_star:        1
+;     tok_check_hex:               1
+;     tok_check_letter:            1
+;     tok_check_number:            1
+;     tok_check_string:            1
+;     tok_continue:                1
+;     tok_emit_token:              1
+;     tok_flag_fnproc:             1
+;     tok_flag_linenum:            1
+;     tok_flag_skipline:           1
+;     tok_flag_start_stmt:         1
+;     tok_kw_abbrev:               1
+;     tok_kw_entry:                1
+;     tok_kw_match_loop:           1
+;     tok_kw_next_entry:           1
+;     tok_kw_retry:                1
+;     tok_skip_fnproc_done:        1
+;     tok_skip_fnproc_loop:        1
+;     tok_skip_name:               1
+;     tok_string_loop:             1
+;     tok_try_keyword:             1
 ;     tokenise_line:               1
+;     tokenise_resume:             1
 ;     unstack_value_to_var:        1
 ;     validate_var_name:           1
 
@@ -15618,37 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c8957
-;     c8961
-;     c8966
-;     c896a
-;     c897c
-;     c898c
-;     c8996
-;     c89a3
-;     c89b5
-;     c89c2
-;     c89d0
-;     c89d2
-;     c89df
-;     c89e3
-;     c89e9
-;     c89ec
-;     c89f8
-;     c8a0d
-;     c8a18
-;     c8a19
-;     c8a25
-;     c8a30
-;     c8a37
-;     c8a48
-;     c8a54
-;     c8a66
-;     c8a6d
-;     c8a72
-;     c8a7f
-;     c8a81
-;     c8a86
 ;     c8aa2
 ;     c8af3
 ;     c8b38
@@ -16218,9 +16187,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c8980
-;     loop_c89cb
-;     loop_c89fe
 ;     loop_c8b41
 ;     loop_c8b44
 ;     loop_c8b47
@@ -16431,7 +16397,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c8955
 ;     sub_c8c21
 ;     sub_c8e8a
 ;     sub_c8f69

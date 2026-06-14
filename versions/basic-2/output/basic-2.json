@@ -19140,7 +19140,7 @@
         60
       ],
       "labels": [
-        "sub_c8955"
+        "tokenise_resume"
       ],
       "comment_inline": "Clear the quote flag (&3C)",
       "xref_summaries": [
@@ -19162,7 +19162,7 @@
         55
       ],
       "labels": [
-        "c8957"
+        "tok_scan"
       ],
       "comment_inline": "Scan the next source character",
       "xref_summaries": [
@@ -19225,9 +19225,9 @@
       "comment_inline": "Skip spaces",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8966",
+      "operand": "tok_check_hex",
       "target": 35174,
-      "target_label": "c8966"
+      "target_label": "tok_check_hex"
     },
     {
       "addr": 35169,
@@ -19237,7 +19237,7 @@
         137
       ],
       "labels": [
-        "c8961"
+        "tok_advance"
       ],
       "comment_inline": "advance and read the next character",
       "xref_summaries": [
@@ -19265,9 +19265,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8957",
+      "operand": "tok_scan",
       "target": 35159,
-      "target_label": "c8957"
+      "target_label": "tok_scan"
     },
     {
       "addr": 35174,
@@ -19276,7 +19276,7 @@
         38
       ],
       "labels": [
-        "c8966"
+        "tok_check_hex"
       ],
       "comment_inline": "An \"&\" introduces a hex constant: copy it unchanged",
       "xref_summaries": [
@@ -19298,9 +19298,9 @@
       "comment_inline": "not \"&\": check the other cases",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c897c",
+      "operand": "tok_check_string",
       "target": 35196,
-      "target_label": "c897c"
+      "target_label": "tok_check_string"
     },
     {
       "addr": 35178,
@@ -19310,7 +19310,7 @@
         137
       ],
       "labels": [
-        "c896a"
+        "tok_hex_loop"
       ],
       "comment_inline": "Hex constant: advance and get a character",
       "xref_summaries": [
@@ -19349,9 +19349,9 @@
       "comment_inline": "yes: keep copying",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c896a",
+      "operand": "tok_hex_loop",
       "target": 35178,
-      "target_label": "c896a"
+      "target_label": "tok_hex_loop"
     },
     {
       "addr": 35186,
@@ -19373,9 +19373,9 @@
       "comment_inline": "not hex: resume scanning",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8957",
+      "operand": "tok_scan",
       "target": 35159,
-      "target_label": "c8957"
+      "target_label": "tok_scan"
     },
     {
       "addr": 35190,
@@ -19397,9 +19397,9 @@
       "comment_inline": "hex letter: keep copying",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c896a",
+      "operand": "tok_hex_loop",
       "target": 35178,
-      "target_label": "c896a"
+      "target_label": "tok_hex_loop"
     },
     {
       "addr": 35194,
@@ -19410,9 +19410,9 @@
       "comment_inline": "past F: resume",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8957",
+      "operand": "tok_scan",
       "target": 35159,
-      "target_label": "c8957"
+      "target_label": "tok_scan"
     },
     {
       "addr": 35196,
@@ -19421,7 +19421,7 @@
         34
       ],
       "labels": [
-        "c897c"
+        "tok_check_string"
       ],
       "comment_inline": "A quote starts a string literal: copy it verbatim",
       "xref_summaries": [
@@ -19443,9 +19443,9 @@
       "comment_inline": "not a quote: check for a colon",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c898c",
+      "operand": "tok_check_colon",
       "target": 35212,
-      "target_label": "c898c"
+      "target_label": "tok_check_colon"
     },
     {
       "addr": 35200,
@@ -19455,7 +19455,7 @@
         137
       ],
       "labels": [
-        "loop_c8980"
+        "tok_string_loop"
       ],
       "comment_inline": "String literal: copy to the closing quote",
       "xref_summaries": [
@@ -19490,9 +19490,9 @@
       "comment_inline": "yes: end of string",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8961",
+      "operand": "tok_advance",
       "target": 35169,
-      "target_label": "c8961"
+      "target_label": "tok_advance"
     },
     {
       "addr": 35207,
@@ -19514,9 +19514,9 @@
       "comment_inline": "no: keep copying",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8980",
+      "operand": "tok_string_loop",
       "target": 35200,
-      "target_label": "loop_c8980"
+      "target_label": "tok_string_loop"
     },
     {
       "addr": 35211,
@@ -19534,7 +19534,7 @@
         58
       ],
       "labels": [
-        "c898c"
+        "tok_check_colon"
       ],
       "comment_inline": "A colon starts a new statement: reset the state",
       "xref_summaries": [
@@ -19556,9 +19556,9 @@
       "comment_inline": "not a colon: check for a comma",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8996",
+      "operand": "tok_check_comma_star",
       "target": 35222,
-      "target_label": "c8996"
+      "target_label": "tok_check_comma_star"
     },
     {
       "addr": 35216,
@@ -19595,9 +19595,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8961",
+      "operand": "tok_advance",
       "target": 35169,
-      "target_label": "c8961"
+      "target_label": "tok_advance"
     },
     {
       "addr": 35222,
@@ -19606,7 +19606,7 @@
         44
       ],
       "labels": [
-        "c8996"
+        "tok_check_comma_star"
       ],
       "comment_inline": "a comma?",
       "xref_summaries": [
@@ -19628,9 +19628,9 @@
       "comment_inline": "yes: skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8961",
+      "operand": "tok_advance",
       "target": 35169,
-      "target_label": "c8961"
+      "target_label": "tok_advance"
     },
     {
       "addr": 35226,
@@ -19652,9 +19652,9 @@
       "comment_inline": "not \"*\": try a keyword or name",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c89a3",
+      "operand": "tok_check_number",
       "target": 35235,
-      "target_label": "c89a3"
+      "target_label": "tok_check_number"
     },
     {
       "addr": 35230,
@@ -19678,9 +19678,9 @@
       "comment_inline": "yes: \"*command\", skip the rest of the line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c89e3",
+      "operand": "tok_not_keyword",
       "target": 35299,
-      "target_label": "c89e3"
+      "target_label": "tok_not_keyword"
     },
     {
       "addr": 35234,
@@ -19698,7 +19698,7 @@
         46
       ],
       "labels": [
-        "c89a3"
+        "tok_check_number"
       ],
       "comment_inline": "a \".\" (abbreviation dot)?",
       "xref_summaries": [
@@ -19720,9 +19720,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c89b5",
+      "operand": "tok_skip_number_loop",
       "target": 35253,
-      "target_label": "c89b5"
+      "target_label": "tok_skip_number_loop"
     },
     {
       "addr": 35239,
@@ -19747,9 +19747,9 @@
       "comment_inline": "no: a letter or symbol",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89df",
+      "operand": "tok_check_letter",
       "target": 35295,
-      "target_label": "c89df"
+      "target_label": "tok_check_letter"
     },
     {
       "addr": 35244,
@@ -19773,9 +19773,9 @@
       "comment_inline": "no: a line number",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c89b5",
+      "operand": "tok_skip_number_loop",
       "target": 35253,
-      "target_label": "c89b5"
+      "target_label": "tok_skip_number_loop"
     },
     {
       "addr": 35248,
@@ -19800,9 +19800,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89e9",
+      "operand": "tok_continue",
       "target": 35305,
-      "target_label": "c89e9"
+      "target_label": "tok_continue"
     },
     {
       "addr": 35253,
@@ -19811,7 +19811,7 @@
         55
       ],
       "labels": [
-        "c89b5"
+        "tok_skip_number_loop"
       ],
       "comment_inline": "Skip a number: read a character",
       "xref_summaries": [
@@ -19851,9 +19851,9 @@
       "comment_inline": "no: end of the number",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89c2",
+      "operand": "tok_resume_mid",
       "target": 35266,
-      "target_label": "c89c2"
+      "target_label": "tok_resume_mid"
     },
     {
       "addr": 35260,
@@ -19879,9 +19879,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c89b5",
+      "operand": "tok_skip_number_loop",
       "target": 35253,
-      "target_label": "c89b5"
+      "target_label": "tok_skip_number_loop"
     },
     {
       "addr": 35266,
@@ -19890,7 +19890,7 @@
         255
       ],
       "labels": [
-        "c89c2"
+        "tok_resume_mid"
       ],
       "comment_inline": "Now in the middle of a statement:",
       "xref_summaries": [
@@ -19940,9 +19940,9 @@
       "comment_inline": "resume scanning",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8957",
+      "operand": "tok_scan",
       "target": 35159,
-      "target_label": "c8957"
+      "target_label": "tok_scan"
     },
     {
       "addr": 35275,
@@ -19952,7 +19952,7 @@
         137
       ],
       "labels": [
-        "loop_c89cb"
+        "tok_skip_name"
       ],
       "comment_inline": "Skip a variable name: alphanumeric?",
       "xref_summaries": [
@@ -19976,9 +19976,9 @@
       "comment_inline": "no: not a name",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89e3",
+      "operand": "tok_not_keyword",
       "target": 35299,
-      "target_label": "c89e3"
+      "target_label": "tok_not_keyword"
     },
     {
       "addr": 35280,
@@ -19987,7 +19987,7 @@
         0
       ],
       "labels": [
-        "c89d0"
+        "tok_name"
       ],
       "comment_inline": "Read the next name character:",
       "xref_summaries": [
@@ -20008,7 +20008,7 @@
         55
       ],
       "labels": [
-        "c89d2"
+        "tok_name_loop"
       ],
       "comment_inline": "read it",
       "xref_summaries": [
@@ -20047,9 +20047,9 @@
       "comment_inline": "no: end of the name",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89c2",
+      "operand": "tok_resume_mid",
       "target": 35266,
-      "target_label": "c89c2"
+      "target_label": "tok_resume_mid"
     },
     {
       "addr": 35289,
@@ -20075,9 +20075,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c89d2",
+      "operand": "tok_name_loop",
       "target": 35282,
-      "target_label": "c89d2"
+      "target_label": "tok_name_loop"
     },
     {
       "addr": 35295,
@@ -20086,7 +20086,7 @@
         65
       ],
       "labels": [
-        "c89df"
+        "tok_check_letter"
       ],
       "comment_inline": "a letter ('A'+)?",
       "xref_summaries": [
@@ -20108,9 +20108,9 @@
       "comment_inline": "yes: try to match a keyword",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c89ec",
+      "operand": "tok_try_keyword",
       "target": 35308,
-      "target_label": "c89ec"
+      "target_label": "tok_try_keyword"
     },
     {
       "addr": 35299,
@@ -20119,7 +20119,7 @@
         255
       ],
       "labels": [
-        "c89e3"
+        "tok_not_keyword"
       ],
       "comment_inline": "Not a keyword: middle of statement",
       "xref_summaries": [
@@ -20167,7 +20167,7 @@
         137
       ],
       "labels": [
-        "c89e9"
+        "tok_continue"
       ],
       "comment_inline": "continue scanning",
       "xref_summaries": [
@@ -20178,9 +20178,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8961",
+      "operand": "tok_advance",
       "target": 35169,
-      "target_label": "c8961"
+      "target_label": "tok_advance"
     },
     {
       "addr": 35308,
@@ -20189,7 +20189,7 @@
         88
       ],
       "labels": [
-        "c89ec"
+        "tok_try_keyword"
       ],
       "comment_inline": "'X' or above?",
       "xref_summaries": [
@@ -20211,9 +20211,9 @@
       "comment_inline": "nothing starts with X/Y/Z: skip the name",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c89cb",
+      "operand": "tok_skip_name",
       "target": 35275,
-      "target_label": "loop_c89cb"
+      "target_label": "tok_skip_name"
     },
     {
       "addr": 35312,
@@ -20270,7 +20270,7 @@
         57
       ],
       "labels": [
-        "c89f8"
+        "tok_kw_entry"
       ],
       "comment_inline": "Compare the first letter with this entry",
       "xref_summaries": [
@@ -20294,9 +20294,9 @@
       "comment_inline": "entry past our letter: not a keyword",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c89d2",
+      "operand": "tok_name_loop",
       "target": 35282,
-      "target_label": "c89d2"
+      "target_label": "tok_name_loop"
     },
     {
       "addr": 35324,
@@ -20307,9 +20307,9 @@
       "comment_inline": "first letter differs: next entry",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8a0d",
+      "operand": "tok_kw_check_end",
       "target": 35341,
-      "target_label": "c8a0d"
+      "target_label": "tok_kw_check_end"
     },
     {
       "addr": 35326,
@@ -20317,7 +20317,7 @@
         200
       ],
       "labels": [
-        "loop_c89fe"
+        "tok_kw_match_loop"
       ],
       "comment_inline": "matches: compare the rest of the keyword",
       "xref_summaries": [
@@ -20351,9 +20351,9 @@
       "comment_inline": "whole keyword matched: got a token",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8a37",
+      "operand": "tok_kw_found",
       "target": 35383,
-      "target_label": "c8a37"
+      "target_label": "tok_kw_found"
     },
     {
       "addr": 35331,
@@ -20377,9 +20377,9 @@
       "comment_inline": "match: next character",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c89fe",
+      "operand": "tok_kw_match_loop",
       "target": 35326,
-      "target_label": "loop_c89fe"
+      "target_label": "tok_kw_match_loop"
     },
     {
       "addr": 35335,
@@ -20414,9 +20414,9 @@
       "comment_inline": "yes: accept the abbreviation",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8a18",
+      "operand": "tok_kw_abbrev",
       "target": 35352,
-      "target_label": "c8a18"
+      "target_label": "tok_kw_abbrev"
     },
     {
       "addr": 35341,
@@ -20424,7 +20424,7 @@
         200
       ],
       "labels": [
-        "c8a0d"
+        "tok_kw_check_end"
       ],
       "comment_inline": "Skip to the next entry: past the name",
       "xref_summaries": [
@@ -20459,9 +20459,9 @@
       "comment_inline": "until the token byte (bit 7 set)",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c8a0d",
+      "operand": "tok_kw_check_end",
       "target": 35341,
-      "target_label": "c8a0d"
+      "target_label": "tok_kw_check_end"
     },
     {
       "addr": 35346,
@@ -20483,9 +20483,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8a25",
+      "operand": "tok_kw_next_entry",
       "target": 35365,
-      "target_label": "c8a25"
+      "target_label": "tok_kw_next_entry"
     },
     {
       "addr": 35350,
@@ -20496,9 +20496,9 @@
       "comment_inline": "end: not a keyword (skip the name)",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c89d0",
+      "operand": "tok_name",
       "target": 35280,
-      "target_label": "c89d0"
+      "target_label": "tok_name"
     },
     {
       "addr": 35352,
@@ -20506,7 +20506,7 @@
         200
       ],
       "labels": [
-        "c8a18"
+        "tok_kw_abbrev"
       ],
       "comment_inline": "Abbreviation: skip to this entry's token",
       "xref_summaries": [
@@ -20525,7 +20525,7 @@
         57
       ],
       "labels": [
-        "c8a19"
+        "tok_kw_skip_loop"
       ],
       "comment_inline": "read it",
       "xref_summaries": [
@@ -20550,9 +20550,9 @@
       "comment_inline": "token byte: got it",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8a37",
+      "operand": "tok_kw_found",
       "target": 35383,
-      "target_label": "c8a37"
+      "target_label": "tok_kw_found"
     },
     {
       "addr": 35357,
@@ -20576,9 +20576,9 @@
       "comment_inline": "no wrap",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8a19",
+      "operand": "tok_kw_skip_loop",
       "target": 35353,
-      "target_label": "c8a19"
+      "target_label": "tok_kw_skip_loop"
     },
     {
       "addr": 35361,
@@ -20602,9 +20602,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8a19",
+      "operand": "tok_kw_skip_loop",
       "target": 35353,
-      "target_label": "c8a19"
+      "target_label": "tok_kw_skip_loop"
     },
     {
       "addr": 35365,
@@ -20612,7 +20612,7 @@
         56
       ],
       "labels": [
-        "c8a25"
+        "tok_kw_next_entry"
       ],
       "comment_inline": "Advance past this entry to the next:",
       "xref_summaries": [
@@ -20677,9 +20677,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a30",
+      "operand": "tok_kw_retry",
       "target": 35376,
-      "target_label": "c8a30"
+      "target_label": "tok_kw_retry"
     },
     {
       "addr": 35374,
@@ -20701,7 +20701,7 @@
         0
       ],
       "labels": [
-        "c8a30"
+        "tok_kw_retry"
       ],
       "comment_inline": "reset Y",
       "xref_summaries": [
@@ -20737,9 +20737,9 @@
       "comment_inline": "try the next entry",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c89f8",
+      "operand": "tok_kw_entry",
       "target": 35320,
-      "target_label": "c89f8"
+      "target_label": "tok_kw_entry"
     },
     {
       "addr": 35383,
@@ -20747,7 +20747,7 @@
         170
       ],
       "labels": [
-        "c8a37"
+        "tok_kw_found"
       ],
       "comment_inline": "Token byte found: keep it in X",
       "xref_summaries": [
@@ -20822,9 +20822,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a48",
+      "operand": "tok_emit_token",
       "target": 35400,
-      "target_label": "c8a48"
+      "target_label": "tok_emit_token"
     },
     {
       "addr": 35393,
@@ -20862,9 +20862,9 @@
       "comment_inline": "yes: keep it as a name, not a token",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c89d0",
+      "operand": "tok_name",
       "target": 35280,
-      "target_label": "c89d0"
+      "target_label": "tok_name"
     },
     {
       "addr": 35400,
@@ -20872,7 +20872,7 @@
         138
       ],
       "labels": [
-        "c8a48"
+        "tok_emit_token"
       ],
       "comment_inline": "Emit the token: A = token byte",
       "xref_summaries": [
@@ -20906,9 +20906,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bvc",
-      "operand": "c8a54",
+      "operand": "tok_write_token",
       "target": 35412,
-      "target_label": "c8a54"
+      "target_label": "tok_write_token"
     },
     {
       "addr": 35405,
@@ -20932,9 +20932,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8a54",
+      "operand": "tok_write_token",
       "target": 35412,
-      "target_label": "c8a54"
+      "target_label": "tok_write_token"
     },
     {
       "addr": 35409,
@@ -20962,7 +20962,7 @@
         136
       ],
       "labels": [
-        "c8a54"
+        "tok_write_token"
       ],
       "comment_inline": "Write the token over the keyword",
       "xref_summaries": [
@@ -21051,9 +21051,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a66",
+      "operand": "tok_flag_start_stmt",
       "target": 35430,
-      "target_label": "c8a66"
+      "target_label": "tok_flag_start_stmt"
     },
     {
       "addr": 35426,
@@ -21087,7 +21087,7 @@
         74
       ],
       "labels": [
-        "c8a66"
+        "tok_flag_start_stmt"
       ],
       "comment_inline": "bit 2: enter start-of-statement?",
       "xref_summaries": [
@@ -21108,9 +21108,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a6d",
+      "operand": "tok_flag_fnproc",
       "target": 35437,
-      "target_label": "c8a6d"
+      "target_label": "tok_flag_fnproc"
     },
     {
       "addr": 35433,
@@ -21144,7 +21144,7 @@
         74
       ],
       "labels": [
-        "c8a6d"
+        "tok_flag_fnproc"
       ],
       "comment_inline": "bit 3: FN/PROC (do not tokenise the name)?",
       "xref_summaries": [
@@ -21165,9 +21165,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a81",
+      "operand": "tok_flag_linenum",
       "target": 35457,
-      "target_label": "c8a81"
+      "target_label": "tok_flag_linenum"
     },
     {
       "addr": 35440,
@@ -21194,7 +21194,7 @@
         55
       ],
       "labels": [
-        "c8a72"
+        "tok_skip_fnproc_loop"
       ],
       "comment_inline": "char",
       "xref_summaries": [
@@ -21232,9 +21232,9 @@
       "comment_inline": "no: end of the name",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a7f",
+      "operand": "tok_skip_fnproc_done",
       "target": 35455,
-      "target_label": "c8a7f"
+      "target_label": "tok_skip_fnproc_done"
     },
     {
       "addr": 35449,
@@ -21260,9 +21260,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8a72",
+      "operand": "tok_skip_fnproc_loop",
       "target": 35442,
-      "target_label": "c8a72"
+      "target_label": "tok_skip_fnproc_loop"
     },
     {
       "addr": 35455,
@@ -21270,7 +21270,7 @@
         136
       ],
       "labels": [
-        "c8a7f"
+        "tok_skip_fnproc_done"
       ],
       "comment_inline": "step back",
       "xref_summaries": [
@@ -21297,7 +21297,7 @@
         74
       ],
       "labels": [
-        "c8a81"
+        "tok_flag_linenum"
       ],
       "comment_inline": "bit 4: start a line number?",
       "xref_summaries": [
@@ -21318,9 +21318,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8a86",
+      "operand": "tok_flag_skipline",
       "target": 35462,
-      "target_label": "c8a86"
+      "target_label": "tok_flag_skipline"
     },
     {
       "addr": 35460,
@@ -21341,7 +21341,7 @@
         74
       ],
       "labels": [
-        "c8a86"
+        "tok_flag_skipline"
       ],
       "comment_inline": "bit 5: skip the rest of the line (REM/DATA)?",
       "xref_summaries": [
@@ -21376,9 +21376,9 @@
       "comment_inline": "continue scanning",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8961",
+      "operand": "tok_advance",
       "target": 35169,
-      "target_label": "c8961"
+      "target_label": "tok_advance"
     },
     {
       "addr": 35468,
@@ -22489,9 +22489,9 @@
       "comment_inline": "Tokenise the line",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c8957",
+      "operand": "tok_scan",
       "target": 35159,
-      "target_label": "c8957"
+      "target_label": "tok_scan"
     },
     {
       "addr": 35629,
@@ -79160,9 +79160,9 @@
       "comment_inline": "Tokenise the stacked string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8955",
+      "operand": "tokenise_resume",
       "target": 35157,
-      "target_label": "sub_c8955"
+      "target_label": "tokenise_resume"
     },
     {
       "addr": 44061,
