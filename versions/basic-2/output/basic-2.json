@@ -65597,7 +65597,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -65935,7 +65935,7 @@
       "labels": [
         "ca552"
       ],
-      "comment_inline": "FWB the smaller: shift FWA to align",
+      "comment_inline": "FWA the smaller: shift FWA down to align",
       "xref_summaries": [
         "&a552 referenced 1 time by &a519"
       ],
@@ -65964,7 +65964,7 @@
         229,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus FWA exponent",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_exp",
@@ -66042,7 +66042,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "lsr"
     },
@@ -66092,7 +66092,7 @@
         133,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_rnd",
@@ -66118,7 +66118,7 @@
         133,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m4",
@@ -66144,7 +66144,7 @@
         133,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m3",
@@ -66170,7 +66170,7 @@
         133,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m2",
@@ -66463,7 +66463,7 @@
         197,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "against FWB",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m1",
@@ -66502,7 +66502,7 @@
         197,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "against FWB",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m2",
@@ -66541,7 +66541,7 @@
         197,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "against FWB",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m3",
@@ -66580,7 +66580,7 @@
         197,
         65
       ],
-      "comment_inline": "...",
+      "comment_inline": "against FWB",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_m4",
@@ -66619,7 +66619,7 @@
         197,
         66
       ],
-      "comment_inline": "...",
+      "comment_inline": "against FWB",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_fwb_rnd",
@@ -66694,7 +66694,7 @@
         165,
         66
       ],
-      "comment_inline": "...",
+      "comment_inline": "FWB rnd...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_rnd",
@@ -66707,7 +66707,7 @@
         229,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWA rnd,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_rnd",
@@ -66746,7 +66746,7 @@
         229,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWA m4,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m4",
@@ -66785,7 +66785,7 @@
         229,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWA m3,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m3",
@@ -66824,7 +66824,7 @@
         229,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWA m2,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m2",
@@ -66863,7 +66863,7 @@
         229,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWA m1",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwa_m1",
@@ -66979,7 +66979,7 @@
         165,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "FWA rnd...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_rnd",
@@ -66992,7 +66992,7 @@
         229,
         66
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB rnd,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_rnd",
@@ -67031,7 +67031,7 @@
         229,
         65
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m4,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m4",
@@ -67070,7 +67070,7 @@
         229,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m3,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m3",
@@ -67109,7 +67109,7 @@
         229,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "- FWB m2,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_fwb_m2",
