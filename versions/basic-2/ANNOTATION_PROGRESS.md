@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 336 of 7,129 placeholders left (4.7 %);
-depths 0–5 complete, depth 6 in progress. (~8 strays left for the
+**STATUS: in progress — 312 of 7,129 placeholders left (4.4 %);
+depths 0–6 complete, depth 7 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
 **Stray partial placeholders:** the status tool counts an instruction
@@ -27,9 +27,10 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 6 next: `stmt_save` (13), then `parse_lvalue` (5),
-`stmt_data` (4), `iwa_div` (4), and the small remainder of depth 6,
-then depths 7–8.
+Depth 6 complete. Depth 7 next: `call_proc_fn` (100), then
+`stmt_for` (37), `stmt_input` (25), `stmt_auto` (22), and the rest of
+depths 7–9. (Depth 8 has asm_parse_mnemonic (36); depth 9 has
+assembler_exit (17).)
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
 unstack_value_to_var, iwa_divide, check_end_of_statement, iwa_test_var,
 stmt_print, asm_opcode_add4, iwa_add, fn_eval, iwa_rsub, fn_instr,
@@ -256,4 +257,5 @@ placeholders goes first.
 | 2026-06-14 | depth 6: stmt_list | stmt_list (LIST: range parse/defaults, line walk + end test, LISTO indent, de-tokenise with quote tracking, embedded line-number decode) | 35 | 381 |
 | 2026-06-14 | depth 6: stmt_renumber | stmt_renumber (RENUMBER 3 passes: record old numbers in heap table, write new numbers+step, rewrite &8D references) | 17 | 364 |
 | 2026-06-14 | depth 6: stmt_mode | stmt_mode (MODE: STACK==HIMEM check, OSBYTE &85 top-of-RAM, VARTOP/TOP room checks, set HIMEM/STACK, VDU 22) | 15 | 349 |
-| 2026-06-14 | depth 6: stmt_save | stmt_save (SAVE: build the OSFILE block - end=TOP, exec=&8023, start=PAGE, address high words) | 13 | 336 | — |
+| 2026-06-14 | depth 6: stmt_save | stmt_save (SAVE: build the OSFILE block - end=TOP, exec=&8023, start=PAGE, address high words) | 13 | 336 |
+| 2026-06-14 | depth 6 complete | parse_lvalue, stmt_data, iwa_div, stmt_old, stmt_trace, stmt_run, stmt_endproc, stmt_colour, stmt_return | 24 | 312 | — |
