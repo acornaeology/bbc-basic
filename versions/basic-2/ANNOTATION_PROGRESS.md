@@ -1,8 +1,8 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 662 of 7,129 placeholders left (9.3 %);
-depths 0–4 complete, depth 5 in progress. (671 source `...` lines vs
-662 counted = 9 strays left for the final sweep.)**
+**STATUS: in progress — 645 of 7,129 placeholders left (9.0 %);
+depths 0–4 complete, depth 5 in progress. (~8 strays left for the
+final sweep — see the stray-partial note above.)**
 
 **Stray partial placeholders:** the status tool counts an instruction
 as a placeholder only when its *whole* rendered comment is `...`. A few
@@ -27,11 +27,11 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`iwa_add` (17), then `fn_eval` (17), `iwa_rsub` (16),
-`fn_instr` (12), and the rest of depths 5–8.
+`fn_eval` (17), then `iwa_rsub` (16), `fn_instr` (12),
+`fn_mids` (12), and the rest of depths 5–8.
 (`stmt_dim`, `parse_var_ref`, `unstack_value_to_var`, `iwa_divide`,
 `check_end_of_statement`, `iwa_test_var`, `stmt_print`,
-`asm_opcode_add4` done 2026-06-14.) Per routine:
+`asm_opcode_add4`, `iwa_add` done 2026-06-14.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -236,4 +236,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: check_end_of_statement | check_end_of_statement (require :/CR/ELSE or Syntax error, poll Escape) + trailing next-line walk (end-of-program, TRACE line report, 3-byte line-header skip) | 24 | 721 |
 | 2026-06-14 | depth 5: iwa_test_var | iwa_test_var (integer compare via sign-biased 32-bit subtract setting C/Z) + trailing string compare (shorter-length scan, length tie-break) | 23 | 698 |
 | 2026-06-14 | depth 5: stmt_print | stmt_print (PRINT: @% field padding, format-state save/restore, number right-justify, string output) + trailing TAB/SPC cursor positioning | 19 | 679 |
-| 2026-06-14 | depth 5: asm_opcode_add4 | asm_opcode_add4 (+4 addressing-mode step) + EQUB/EQUW/EQUD/EQUS block + sub_c887c byte-insert/line-shift; re-keyed mis-attached EQUS comments, deleted 2 stray placeholders | 17 | 662 | — |
+| 2026-06-14 | depth 5: asm_opcode_add4 | asm_opcode_add4 (+4 addressing-mode step) + EQUB/EQUW/EQUD/EQUS block + sub_c887c byte-insert/line-shift; re-keyed mis-attached EQUS comments, deleted 2 stray placeholders | 17 | 662 |
+| 2026-06-14 | depth 5: iwa_add | iwa_add (32-bit integer add of stacked operand to IWA, 4-byte stack drop, real-promote path); fixed high-byte-store lead, cleaned 1 stray | 17 | 645 | — |
