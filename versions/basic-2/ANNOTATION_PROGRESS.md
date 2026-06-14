@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 972 of 7,129 placeholders left (13.6 %);
+**STATUS: in progress — 958 of 7,129 placeholders left (13.4 %);
 depths 0–3 complete.**
 
 **Note for `stmt_dim` (depth 5):** its descriptor byte 0 leads are
@@ -15,8 +15,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 4 next:
-`eval_factor` (14), then `fn_point` (7), `eval_or_eor` (6),
-`trace_line` (5), `eval_and` (3), and the rest of depths 4–8. Per routine:
+`fn_point` (7), then `eval_or_eor` (6), `trace_line` (5),
+`eval_and` (3), `eval_mul_div` (2), and the rest of depths 4–8. Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -212,3 +212,4 @@ placeholders goes first.
 | 2026-06-14 | depth 4: index_array | index_array (array element address: row-major Horner over extents, x4/x5 element scale; +1 byte-0 = data-offset lead fix) | 62 | 1011 | — |
 | 2026-06-14 | depth 4: eval_power | eval_power (^ operator: int/frac/large-exponent paths; owned hex-output nibble expansion and real-print sign) | 23 | 988 | — |
 | 2026-06-14 | depth 4: eval_relational | eval_relational (< <= = >= > <> -> TRUE/FALSE; owned string-concat tail: new length, prepend) | 16 | 972 | — |
+| 2026-06-14 | depth 4: eval_factor | eval_factor (level-1 factor: token classify; hex-number parse - clear IWA, nibble shift, bit roll) | 14 | 958 | — |

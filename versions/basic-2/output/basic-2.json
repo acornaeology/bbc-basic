@@ -80079,7 +80079,7 @@
         230,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "advance the offset",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_text_ptr2_off",
@@ -80092,7 +80092,7 @@
         177,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_text_ptr2),y",
@@ -80859,7 +80859,7 @@
         134,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 0,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa",
@@ -80872,7 +80872,7 @@
         134,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_1",
@@ -80885,7 +80885,7 @@
         134,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_2",
@@ -80898,7 +80898,7 @@
         134,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_3",
@@ -81070,7 +81070,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -81079,7 +81079,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -81088,7 +81088,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "asl"
     },
@@ -81127,7 +81127,7 @@
         38,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 0,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa",
@@ -81140,7 +81140,7 @@
         38,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 1,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_1",
@@ -81153,7 +81153,7 @@
         38,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_2",
@@ -81166,7 +81166,7 @@
         38,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -81178,7 +81178,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "one of four bits done",
       "type": "code",
       "mnemonic": "dex"
     },

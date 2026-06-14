@@ -8617,8 +8617,8 @@ l848a = sub_c847b+15
 ; &adec referenced 13 times by &92e3, &92fa, &9e20, &ab88, &abe9, &ac2f, &ac78, &ac9e, &ad6a, &adf4, &aed1, &b0a3, &bf83
 .eval_factor
     ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..       ; Next character
-    inc zp_text_ptr2_off                                              ; adee: e6 1b       ..       ; ...
-    lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..       ; ...
+    inc zp_text_ptr2_off                                              ; adee: e6 1b       ..       ; advance the offset
+    lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..       ; read it
     cmp #&20 ; ' '                                                    ; adf2: c9 20       .        ; space?
     beq eval_factor                                                   ; adf4: f0 f6       ..       ; skip it
     cmp #&2d ; '-'                                                    ; adf6: c9 2d       .-       ; '-' unary minus?
@@ -8693,10 +8693,10 @@ l848a = sub_c847b+15
 ; &ae6d referenced 1 time by &ae1a
 .cae6d
     ldx #0                                                            ; ae6d: a2 00       ..       ; Hex number: clear IWA
-    stx zp_iwa                                                        ; ae6f: 86 2a       .*       ; ...
-    stx zp_iwa_1                                                      ; ae71: 86 2b       .+       ; ...
-    stx zp_iwa_2                                                      ; ae73: 86 2c       .,       ; ...
-    stx zp_iwa_3                                                      ; ae75: 86 2d       .-       ; ...
+    stx zp_iwa                                                        ; ae6f: 86 2a       .*       ; byte 0,
+    stx zp_iwa_1                                                      ; ae71: 86 2b       .+       ; byte 1,
+    stx zp_iwa_2                                                      ; ae73: 86 2c       .,       ; byte 2,
+    stx zp_iwa_3                                                      ; ae75: 86 2d       .-       ; byte 3
     ldy zp_text_ptr2_off                                              ; ae77: a4 1b       ..       ; scan offset
 ; &ae79 referenced 1 time by &aea0
 .loop_cae79
@@ -8713,18 +8713,18 @@ l848a = sub_c847b+15
 ; &ae8d referenced 1 time by &ae81
 .cae8d
     asl a                                                             ; ae8d: 0a          .        ; Shift the digit into the high nibble
-    asl a                                                             ; ae8e: 0a          .        ; ...
-    asl a                                                             ; ae8f: 0a          .        ; ...
-    asl a                                                             ; ae90: 0a          .        ; ...
+    asl a                                                             ; ae8e: 0a          .        ; (continued)
+    asl a                                                             ; ae8f: 0a          .        ; (continued)
+    asl a                                                             ; ae90: 0a          .        ; (continued)
     ldx #3                                                            ; ae91: a2 03       ..       ; four bits to shift
 ; &ae93 referenced 1 time by &ae9d
 .loop_cae93
     asl a                                                             ; ae93: 0a          .        ; Shift one bit into IWA
-    rol zp_iwa                                                        ; ae94: 26 2a       &*       ; ...
-    rol zp_iwa_1                                                      ; ae96: 26 2b       &+       ; ...
-    rol zp_iwa_2                                                      ; ae98: 26 2c       &,       ; ...
-    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-       ; ...
-    dex                                                               ; ae9c: ca          .        ; ...
+    rol zp_iwa                                                        ; ae94: 26 2a       &*       ; byte 0,
+    rol zp_iwa_1                                                      ; ae96: 26 2b       &+       ; byte 1,
+    rol zp_iwa_2                                                      ; ae98: 26 2c       &,       ; byte 2,
+    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-       ; byte 3
+    dex                                                               ; ae9c: ca          .        ; one of four bits done
     bpl loop_cae93                                                    ; ae9d: 10 f4       ..       ; next bit
     iny                                                               ; ae9f: c8          .        ; advance
     bne loop_cae79                                                    ; aea0: d0 d7       ..       ; next digit
