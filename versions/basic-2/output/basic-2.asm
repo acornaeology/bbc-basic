@@ -785,7 +785,7 @@ oscli            = &fff7
     equb <(stmt_old)                                                  ; 83aa: b6          .     
     equb <(stmt_renumber)                                             ; 83ab: a3          .     
     equb <(stmt_save)                                                 ; 83ac: f3          .     
-    equb <(c982a)                                                     ; 83ad: 2a          *     
+    equb <(syntax_error)                                              ; 83ad: 2a          *     
     equb <(stmt_ptr)                                                  ; 83ae: 30          0     
     equb <(stmt_page)                                                 ; 83af: 83          .     
     equb <(stmt_time)                                                 ; 83b0: c9          .     
@@ -900,7 +900,7 @@ oscli            = &fff7
     equb >(stmt_old)                                                  ; 841c: 8a          .     
     equb >(stmt_renumber)                                             ; 841d: 8f          .     
     equb >(stmt_save)                                                 ; 841e: be          .     
-    equb >(c982a)                                                     ; 841f: 98          .     
+    equb >(syntax_error)                                              ; 841f: 98          .     
     equb >(stmt_ptr)                                                  ; 8420: bf          .     
     equb >(stmt_page)                                                 ; 8421: 92          .     
     equb >(stmt_time)                                                 ; 8422: 92          .     
@@ -1006,7 +1006,7 @@ oscli            = &fff7
     jsr skip_spaces                                                   ; 8508: 20 97 8a     ..      ; Skip spaces
     cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]       ; ']' end of assembler?
     beq assembler_exit                                                ; 850d: f0 ee       ..       ; yes: exit
-    jsr c986d                                                         ; 850f: 20 6d 98     m.      ; Skip to the statement
+    jsr skip_to_statement_end                                         ; 850f: 20 6d 98     m.      ; Skip to the statement
     dec zp_text_ptr_off                                               ; 8512: c6 0a       ..       ; back up
     jsr asm_parse_mnemonic                                            ; 8514: 20 ba 85     ..      ; Assemble one instruction
     dec zp_text_ptr_off                                               ; 8517: c6 0a       ..       ; back up
@@ -1092,7 +1092,7 @@ oscli            = &fff7
     bne asm_scan_end_loop                                             ; 858a: d0 f5       ..       ; no: continue
 ; &858c referenced 1 time by &8586
 .asm_stmt_end
-    jsr c9859                                                         ; 858c: 20 59 98     Y.      ; Check Escape and advance
+    jsr cend_back                                                     ; 858c: 20 59 98     Y.      ; Check Escape and advance
     dey                                                               ; 858f: 88          .        ; Re-read the terminator
     lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..       ; read it
     cmp #&3a ; ':'                                                    ; 8592: c9 3a       .:       ; ':'?
@@ -1103,7 +1103,7 @@ oscli            = &fff7
     jmp immediate_loop                                                ; 859c: 4c f6 8a    L..      ; yes: immediate mode
 ; &859f referenced 1 time by &859a
 .asm_next_line
-    jsr sub_c9890                                                     ; 859f: 20 90 98     ..      ; Move to the next line
+    jsr step_to_next_line                                             ; 859f: 20 90 98     ..      ; Move to the next line
 ; &85a2 referenced 1 time by &8594
 .asm_continue
     jmp asm_loop                                                      ; 85a2: 4c 08 85    L..      ; continue assembling
@@ -1183,7 +1183,7 @@ oscli            = &fff7
     bne asm_mn_search_loop                                            ; 8602: d0 f1       ..       ; loop
 ; &8604 referenced 4 times by &85a8, &85aa, &8615, &861e
 .asm_mistake
-    jmp c982a                                                         ; 8604: 4c 2a 98    L*.      ; not matched: Mistake
+    jmp syntax_error                                                  ; 8604: 4c 2a 98    L*.      ; not matched: Mistake
 ; &8607 referenced 1 time by &85db
 .asm_logic_mnemonic
     ldx #&22                                                          ; 8607: a2 22       ."       ; opcode index for AND
@@ -1604,7 +1604,7 @@ oscli            = &fff7
     beq c8858                                                         ; 884f: f0 07       ..       ; 'S' (EQUS)?
     cmp #&53 ; 'S'                                                    ; 8851: c9 53       .S       ; yes
     beq c886a                                                         ; 8853: f0 15       ..       ; none: Mistake (syntax error)
-    jmp c982a                                                         ; 8855: 4c 2a 98    L*.      ; Mistake (syntax) error
+    jmp syntax_error                                                  ; 8855: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8858 referenced 3 times by &8844, &8849, &884f
 .c8858
     txa                                                               ; 8858: 8a          .        ; Save the byte count
@@ -2347,7 +2347,7 @@ oscli            = &fff7
     cmp #&a4                                                          ; 8b4f: c9 a4       ..       ; FN?
     bne no_fn_error                                                   ; 8b51: d0 06       ..       ; no: error
     jsr eval_expr                                                     ; 8b53: 20 1d 9b     ..      ; Evaluate the return value
-    jmp c984c                                                         ; 8b56: 4c 4c 98    LL.      ; check end, return from the function
+    jmp assign_check_end                                              ; 8b56: 4c 4c 98    LL.      ; check end, return from the function
 ; &8b59 referenced 2 times by &8b4a, &8b51
 .no_fn_error
     brk                                                               ; 8b59: 00          .        ; No FN error
@@ -2381,7 +2381,7 @@ oscli            = &fff7
     bne stmt_backup_end                                               ; 8b71: d0 23       .#       ; otherwise check for end of statement
 ; &8b73 referenced 1 time by &8b6b
 .exec_star_command
-    jsr c986d                                                         ; 8b73: 20 6d 98     m.      ; Point PtrA at the command text
+    jsr skip_to_statement_end                                         ; 8b73: 20 6d 98     m.      ; Point PtrA at the command text
     ldx zp_text_ptr                                                   ; 8b76: a6 0b       ..       ; XY -> the command string
     ldy zp_text_ptr_1                                                 ; 8b78: a4 0c       ..       ; (high byte)
     jsr oscli                                                         ; 8b7a: 20 f7 ff     ..      ; Pass it to OSCLI
@@ -2416,7 +2416,7 @@ oscli            = &fff7
     lda zp_text_ptr_1                                                 ; 8b8b: a5 0c       ..       ; In the command buffer?
     cmp #7                                                            ; 8b8d: c9 07       ..       ; page &07 (command buffer)?
     beq exec_immediate                                                ; 8b8f: f0 b0       ..       ; yes: immediate mode
-    jsr sub_c9890                                                     ; 8b91: 20 90 98     ..      ; Check for end of program, step past CR
+    jsr step_to_next_line                                             ; 8b91: 20 90 98     ..      ; Check for end of program, step past CR
     bne next_statement                                                ; 8b94: d0 0d       ..       ; more: next statement
 ; &8b96 referenced 7 times by &8b71, &8d80, &9212, &9350, &9453, &b7a1, &bb1c
 .stmt_backup_end
@@ -2539,7 +2539,7 @@ oscli            = &fff7
     jmp statement_loop                                                ; 8c08: 4c 9b 8b    L..      ; next statement
 ; &8c0b referenced 1 time by &8be7
 .let_mistake
-    jmp c982a                                                         ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
+    jmp syntax_error                                                  ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96
 .err_type_mismatch
     brk                                                               ; 8c0e: 00          .        ; Type mismatch error
@@ -3136,7 +3136,7 @@ oscli            = &fff7
 ; &8f0c referenced 1 time by &8ee8
 .call_check_end
     dec zp_text_ptr2_off                                              ; 8f0c: c6 1b       ..       ; Check for end of statement
-    jsr sub_c9852                                                     ; 8f0e: 20 52 98     R.      ; error if more follows
+    jsr sync_text_ptr                                                 ; 8f0e: 20 52 98     R.      ; error if more follows
     jsr unstack_integer                                               ; 8f11: 20 ea bd     ..      ; pop the address into IWA
     jsr usr_call                                                      ; 8f14: 20 1e 8f     ..      ; set up registers and call the code
     cld                                                               ; 8f17: d8          .        ; clear decimal mode on return
@@ -3170,7 +3170,7 @@ oscli            = &fff7
     jmp (zp_iwa)                                                      ; 8f2b: 6c 2a 00    l*.      ; Call the routine at the address in IWA
 ; &8f2e referenced 3 times by &8f34, &8f3e, &8f43
 .call_arg_error
-    jmp c982a                                                         ; 8f2e: 4c 2a 98    L*.      ; error (shared)
+    jmp syntax_error                                                  ; 8f2e: 4c 2a 98    L*.      ; error (shared)
 ; ***************************************************************************************
 ; DELETE
 ;
@@ -3201,7 +3201,7 @@ oscli            = &fff7
 ; &8f53 referenced 1 time by &8f64
 .delete_loop
     jsr delete_program_line                                           ; 8f53: 20 2d bc     -.      ; Delete the line
-    jsr sub_c987b                                                     ; 8f56: 20 7b 98     {.      ; Find the next line number
+    jsr check_escape                                                  ; 8f56: 20 7b 98     {.      ; Find the next line number
     jsr iwa_inc                                                       ; 8f59: 20 22 92     ".      ; Advance the line counter
     lda zp_fileblk                                                    ; 8f5c: a5 39       .9       ; past the end line?
     cmp zp_iwa                                                        ; 8f5e: c5 2a       .*       ; end low - line low,
@@ -3966,7 +3966,7 @@ oscli            = &fff7
 ;     BRK: Mistake if "=" is missing, Type mismatch on a string
 ; &92eb referenced 4 times by &925d, &926f, &9283, &92c9
 .eval_eq_integer
-    jsr sub_c9807                                                     ; 92eb: 20 07 98     ..      ; Expect "=" and evaluate
+    jsr copy_ptra_to_ptrb                                             ; 92eb: 20 07 98     ..      ; Expect "=" and evaluate
 ; ***************************************************************************************
 ; Coerce the current value to an integer
 ;
@@ -4060,7 +4060,7 @@ oscli            = &fff7
     sta zp_text_ptr2_off                                              ; 930e: 85 1b       ..       ; to PtrB offset
     lda #&f2                                                          ; 9310: a9 f2       ..       ; Enter the procedure (PROC token &F2)
     jsr call_proc_fn                                                  ; 9312: 20 97 b1     ..      ; call it
-    jsr sub_c9852                                                     ; 9315: 20 52 98     R.      ; check the statement ends
+    jsr sync_text_ptr                                                 ; 9315: 20 52 98     R.      ; check the statement ends
     jmp statement_loop                                                ; 9318: 4c 9b 8b    L..      ; next statement
 ; &931b referenced 1 time by &9332
 .proc_clear_loop
@@ -4165,7 +4165,7 @@ oscli            = &fff7
     lda zp_iwa                                                        ; 937d: a5 2a       .*       ; save it
     pha                                                               ; 937f: 48          H        ; push the GCOL mode
     jsr eval_comma_integer                                            ; 9380: 20 da 92     ..      ; Step past the comma, evaluate the colour
-    jsr sub_c9852                                                     ; 9383: 20 52 98     R.      ; check the statement ends
+    jsr sync_text_ptr                                                 ; 9383: 20 52 98     R.      ; check the statement ends
     lda #&12                                                          ; 9386: a9 12       ..       ; VDU 18 (GCOL)
     jsr oswrch                                                        ; 9388: 20 ee ff     ..      ; send it
     jmp mode_send                                                     ; 938b: 4c da 93    L..      ; send the mode and colour
@@ -4296,7 +4296,7 @@ oscli            = &fff7
     jsr coerce_var_to_integer                                         ; 93fd: 20 ee 92     ..      ; ensure integer
     jsr stack_integer                                                 ; 9400: 20 94 bd     ..      ; stack X
     jsr eval_comma_integer                                            ; 9403: 20 da 92     ..      ; Step past the comma, evaluate Y
-    jsr sub_c9852                                                     ; 9406: 20 52 98     R.      ; check the statement ends
+    jsr sync_text_ptr                                                 ; 9406: 20 52 98     R.      ; check the statement ends
     lda #&19                                                          ; 9409: a9 19       ..       ; VDU 25 (PLOT)
     jsr oswrch                                                        ; 940b: 20 ee ff     ..      ; send it
     pla                                                               ; 940e: 68          h        ; Send the plot action
@@ -5152,7 +5152,7 @@ oscli            = &fff7
     cmp #&20 ; ' '                                                    ; 97e3: c9 20       .        ; space?
     beq chkline_skip                                                  ; 97e5: f0 f6       ..       ; skip it
     cmp #&8d                                                          ; 97e7: c9 8d       ..       ; line-number token?
-    bne c9805                                                         ; 97e9: d0 1a       ..       ; no: carry clear
+    bne not_line_number                                               ; 97e9: d0 1a       ..       ; no: carry clear
 ; ***************************************************************************************
 ; Decode a 3-byte line number into IWA
 ;
@@ -5189,11 +5189,11 @@ oscli            = &fff7
     sec                                                               ; 9803: 38          8        ; carry set: found
     rts                                                               ; 9804: 60          `        ; Return
 ; &9805 referenced 1 time by &97e9
-.c9805
+.not_line_number
     clc                                                               ; 9805: 18          .        ; carry clear: not a line number
     rts                                                               ; 9806: 60          `        ; Return
 ; &9807 referenced 1 time by &92eb
-.sub_c9807
+.copy_ptra_to_ptrb
     lda zp_text_ptr                                                   ; 9807: a5 0b       ..       ; Copy PtrA to PtrB
     sta zp_text_ptr2                                                  ; 9809: 85 19       ..       ; (low)
     lda zp_text_ptr_1                                                 ; 980b: a5 0c       ..       ; high...
@@ -5222,19 +5222,19 @@ oscli            = &fff7
     cmp #&20 ; ' '                                                    ; 9819: c9 20       .        ; space?
     beq eval_after_eq                                                 ; 981b: f0 f6       ..       ; skip it
     cmp #&3d ; '='                                                    ; 981d: c9 3d       .=       ; "="?
-    beq c9849                                                         ; 981f: f0 28       .(       ; yes: evaluate
+    beq eval_rhs                                                      ; 981f: f0 28       .(       ; yes: evaluate
 ; &9821 referenced 1 time by &9846
-.loop_c9821
+.mistake_error
     brk                                                               ; 9821: 00          .        ; Mistake error
     equb &04                                                          ; 9822: 04          .     
     equs "Mistake"                                                    ; 9823: 4d 69 73... Mis...
 ; &982a referenced 7 times by &8604, &8855, &8c0b, &8f2e, &986b, &b6a0, &b9c7
-.c982a
+.syntax_error
     brk                                                               ; 982a: 00          .        ; Mistake error
     equb &10                                                          ; 982b: 10          .     
     equs "Syntax error"                                               ; 982c: 53 79 6e... Syn...
 ; &9838 referenced 2 times by &987d, &bc22
-.c9838
+.escape_error
     brk                                                               ; 9838: 00          .        ; Escape error
     equb &11                                                          ; 9839: 11          .     
     equs "Escape"                                                     ; 983a: 45 73 63... Esc...
@@ -5255,20 +5255,20 @@ oscli            = &fff7
 .expect_eq
     jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..      ; Skip spaces
     cmp #&3d ; '='                                                    ; 9844: c9 3d       .=       ; "="?
-    bne loop_c9821                                                    ; 9846: d0 d9       ..       ; no: Mistake
+    bne mistake_error                                                 ; 9846: d0 d9       ..       ; no: Mistake
     rts                                                               ; 9848: 60          `        ; Return
 ; &9849 referenced 2 times by &981f, &bf5f
-.c9849
+.eval_rhs
     jsr eval_or_eor                                                   ; 9849: 20 29 9b     ).      ; Evaluate the right-hand side
 ; &984c referenced 4 times by &8b56, &b58f, &bbb4, &beda
-.c984c
+.assign_check_end
     txa                                                               ; 984c: 8a          .        ; Result type
     ldy zp_text_ptr2_off                                              ; 984d: a4 1b       ..       ; Sync the program pointer
-    jmp c9861                                                         ; 984f: 4c 61 98    La.      ; check the statement ends
+    jmp cend_check                                                    ; 984f: 4c 61 98    La.      ; check the statement ends
 ; &9852 referenced 8 times by &8f0e, &9315, &9383, &9406, &b461, &b484, &b4a3, &bf9c
-.sub_c9852
+.sync_text_ptr
     ldy zp_text_ptr2_off                                              ; 9852: a4 1b       ..       ; Sync the program pointer
-    jmp c9859                                                         ; 9854: 4c 59 98    LY.      ; check the statement ends
+    jmp cend_back                                                     ; 9854: 4c 59 98    LY.      ; check the statement ends
 ; ***************************************************************************************
 ; Check for end of statement
 ;
@@ -5287,43 +5287,43 @@ oscli            = &fff7
 .check_end_of_statement
     ldy zp_text_ptr_off                                               ; 9857: a4 0a       ..       ; Program pointer offset
 ; &9859 referenced 2 times by &858c, &9854
-.c9859
+.cend_back
     dey                                                               ; 9859: 88          .        ; step back
 ; &985a referenced 1 time by &985f
-.loop_c985a
+.cend_skip_loop
     iny                                                               ; 985a: c8          .        ; Next character
     lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..       ; read it
     cmp #&20 ; ' '                                                    ; 985d: c9 20       .        ; space?
-    beq loop_c985a                                                    ; 985f: f0 f9       ..       ; skip it
+    beq cend_skip_loop                                                ; 985f: f0 f9       ..       ; skip it
 ; &9861 referenced 1 time by &984f
-.c9861
+.cend_check
     cmp #&3a ; ':'                                                    ; 9861: c9 3a       .:       ; ':' statement separator?
-    beq c986d                                                         ; 9863: f0 08       ..       ; yes
+    beq skip_to_statement_end                                         ; 9863: f0 08       ..       ; yes
     cmp #&0d                                                          ; 9865: c9 0d       ..       ; end of line?
-    beq c986d                                                         ; 9867: f0 04       ..       ; yes
+    beq skip_to_statement_end                                         ; 9867: f0 04       ..       ; yes
     cmp #&8b                                                          ; 9869: c9 8b       ..       ; ELSE token?
-    bne c982a                                                         ; 986b: d0 bd       ..       ; none: Mistake (syntax error)
+    bne syntax_error                                                  ; 986b: d0 bd       ..       ; none: Mistake (syntax error)
 ; &986d referenced 8 times by &850f, &8b73, &9863, &9867, &b16e, &b5ff, &b8fc, &bbea
-.c986d
+.skip_to_statement_end
     clc                                                               ; 986d: 18          .        ; Advance the program pointer past the statement
     tya                                                               ; 986e: 98          .        ; offset to A,
     adc zp_text_ptr                                                   ; 986f: 65 0b       e.       ; - pointer low,
     sta zp_text_ptr                                                   ; 9871: 85 0b       ..       ; store low,
-    bcc c9877                                                         ; 9873: 90 02       ..       ; no carry into the high byte
+    bcc reset_offset_1                                                ; 9873: 90 02       ..       ; no carry into the high byte
     inc zp_text_ptr_1                                                 ; 9875: e6 0c       ..       ; carry into the high byte
 ; &9877 referenced 4 times by &9873, &98eb, &b74b, &b964
-.c9877
+.reset_offset_1
     ldy #1                                                            ; 9877: a0 01       ..       ; Reset the offset to 1
     sty zp_text_ptr_off                                               ; 9879: 84 0a       ..       ; store it (&0A)
 ; &987b referenced 1 time by &8f56
-.sub_c987b
+.check_escape
     bit l00ff                                                         ; 987b: 24 ff       $.       ; Escape pressed (ESCFLG)?
-    bmi c9838                                                         ; 987d: 30 b9       0.       ; yes: raise Escape
+    bmi escape_error                                                  ; 987d: 30 b9       0.       ; yes: raise Escape
 ; &987f referenced 1 time by &9888
 .return_14
     rts                                                               ; 987f: 60          `        ; Return
 ; &9880 referenced 1 time by &b837
-.sub_c9880
+.check_statement_terminated
     jsr check_end_of_statement                                        ; 9880: 20 57 98     W.      ; Check this statement is terminated
     dey                                                               ; 9883: 88          .        ; Re-read the terminator
     lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..       ; read it
@@ -5331,14 +5331,14 @@ oscli            = &fff7
     beq return_14                                                     ; 9888: f0 f5       ..       ; yes: continue on the line
     lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..       ; At the end of program memory?
     cmp #7                                                            ; 988c: c9 07       ..       ; in the &0700 buffer (immediate)?
-    beq c98bc                                                         ; 988e: f0 2c       .,       ; yes: return to immediate mode
+    beq to_immediate                                                  ; 988e: f0 2c       .,       ; yes: return to immediate mode
 ; &9890 referenced 2 times by &859f, &8b91
-.sub_c9890
+.step_to_next_line
     iny                                                               ; 9890: c8          .        ; Next byte (line-number marker)
     lda (zp_text_ptr),y                                               ; 9891: b1 0b       ..       ; read it
-    bmi c98bc                                                         ; 9893: 30 27       0'       ; end of program: immediate mode
+    bmi to_immediate                                                  ; 9893: 30 27       0'       ; end of program: immediate mode
     lda zp_trace_flag                                                 ; 9895: a5 20       .        ; TRACE on?
-    beq c98ac                                                         ; 9897: f0 13       ..       ; no: skip the line number
+    beq step_past_line_header                                         ; 9897: f0 13       ..       ; no: skip the line number
     tya                                                               ; 9899: 98          .        ; Save the offset
     pha                                                               ; 989a: 48          H        ; push it
     iny                                                               ; 989b: c8          .        ; Line number high byte
@@ -5353,26 +5353,26 @@ oscli            = &fff7
     pla                                                               ; 98aa: 68          h        ; Restore the offset
     tay                                                               ; 98ab: a8          .        ; into Y
 ; &98ac referenced 1 time by &9897
-.c98ac
+.step_past_line_header
     iny                                                               ; 98ac: c8          .        ; Step past the 3-byte line header
     sec                                                               ; 98ad: 38          8        ; set carry (advance by offset + 1),
     tya                                                               ; 98ae: 98          .        ; offset to A,
     adc zp_text_ptr                                                   ; 98af: 65 0b       e.       ; - pointer low,
     sta zp_text_ptr                                                   ; 98b1: 85 0b       ..       ; store low,
-    bcc c98b7                                                         ; 98b3: 90 02       ..       ; no carry into the high byte
+    bcc line_reset_offset                                             ; 98b3: 90 02       ..       ; no carry into the high byte
     inc zp_text_ptr_1                                                 ; 98b5: e6 0c       ..       ; carry into the high byte
 ; &98b7 referenced 1 time by &98b3
-.c98b7
+.line_reset_offset
     ldy #1                                                            ; 98b7: a0 01       ..       ; Reset the offset to 1
     sty zp_text_ptr_off                                               ; 98b9: 84 0a       ..       ; store it (&0A)
 ; &98bb referenced 1 time by &990d
 .return_15
     rts                                                               ; 98bb: 60          `        ; Return
 ; &98bc referenced 2 times by &988e, &9893
-.c98bc
+.to_immediate
     jmp immediate_loop                                                ; 98bc: 4c f6 8a    L..      ; End of program: immediate mode
 ; &98bf referenced 1 time by &98c5
-.loop_c98bf
+.if_type_error
     jmp err_type_mismatch                                             ; 98bf: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; IF
@@ -5389,48 +5389,48 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_if
     jsr eval_expr                                                     ; 98c2: 20 1d 9b     ..      ; Evaluate the condition
-    beq loop_c98bf                                                    ; 98c5: f0 f8       ..       ; string: handle elsewhere
-    bpl c98cc                                                         ; 98c7: 10 03       ..       ; integer: use as is
+    beq if_type_error                                                 ; 98c5: f0 f8       ..       ; string: handle elsewhere
+    bpl if_skip_cond                                                  ; 98c7: 10 03       ..       ; integer: use as is
     jsr fwa_to_int                                                    ; 98c9: 20 e4 a3     ..      ; real: convert to integer
 ; &98cc referenced 1 time by &98c7
-.c98cc
+.if_skip_cond
     ldy zp_text_ptr2_off                                              ; 98cc: a4 1b       ..       ; Advance the text pointer past the condition
     sty zp_text_ptr_off                                               ; 98ce: 84 0a       ..       ; copy it to PtrA
     lda zp_iwa                                                        ; 98d0: a5 2a       .*       ; Is the condition value zero (false)?
     ora zp_iwa_1                                                      ; 98d2: 05 2b       .+       ; or byte 1,
     ora zp_iwa_2                                                      ; 98d4: 05 2c       .,       ; byte 2,
     ora zp_iwa_3                                                      ; 98d6: 05 2d       .-       ; byte 3
-    beq c98f1                                                         ; 98d8: f0 17       ..       ; false: look for ELSE
+    beq if_false                                                      ; 98d8: f0 17       ..       ; false: look for ELSE
     cpx #&8c                                                          ; 98da: e0 8c       ..       ; true: is the next token THEN?
-    beq c98e1                                                         ; 98dc: f0 03       ..       ; yes
+    beq if_then                                                       ; 98dc: f0 03       ..       ; yes
 ; &98de referenced 1 time by &98e6
-.loop_c98de
+.if_no_then
     jmp next_statement                                                ; 98de: 4c a3 8b    L..      ; no THEN: execute the statement that follows
 ; &98e1 referenced 1 time by &98dc
-.c98e1
+.if_then
     inc zp_text_ptr_off                                               ; 98e1: e6 0a       ..       ; Step past THEN
 ; &98e3 referenced 2 times by &9900, &b997
-.c98e3
+.if_then_line
     jsr check_line_number                                             ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
-    bcc loop_c98de                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
+    bcc if_no_then                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
     jsr cb9af                                                         ; 98e8: 20 af b9     ..      ; yes: set up the line number...
-    jsr c9877                                                         ; 98eb: 20 77 98     w.      ; to the line start, test Escape
+    jsr reset_offset_1                                                ; 98eb: 20 77 98     w.      ; to the line start, test Escape
     jmp cb8d2                                                         ; 98ee: 4c d2 b8    L..      ; ...and GOTO it
 ; &98f1 referenced 1 time by &98d8
-.c98f1
+.if_false
     ldy zp_text_ptr_off                                               ; 98f1: a4 0a       ..       ; False: scan the rest of the line for ELSE
 ; &98f3 referenced 1 time by &98fc
-.loop_c98f3
+.if_scan_else_loop
     lda (zp_text_ptr),y                                               ; 98f3: b1 0b       ..       ; Next character
     cmp #&0d                                                          ; 98f5: c9 0d       ..       ; end of line?
-    beq c9902                                                         ; 98f7: f0 09       ..       ; yes: move to the next line
+    beq if_no_else                                                    ; 98f7: f0 09       ..       ; yes: move to the next line
     iny                                                               ; 98f9: c8          .        ; advance
     cmp #&8b                                                          ; 98fa: c9 8b       ..       ; ELSE token?
-    bne loop_c98f3                                                    ; 98fc: d0 f5       ..       ; no: keep scanning
+    bne if_scan_else_loop                                             ; 98fc: d0 f5       ..       ; no: keep scanning
     sty zp_text_ptr_off                                               ; 98fe: 84 0a       ..       ; found ELSE: point past it
-    beq c98e3                                                         ; 9900: f0 e1       ..       ; execute what follows ELSE
+    beq if_then_line                                                  ; 9900: f0 e1       ..       ; execute what follows ELSE
 ; &9902 referenced 1 time by &98f7
-.c9902
+.if_no_else
     jmp stmt_eol                                                      ; 9902: 4c 87 8b    L..      ; No ELSE: continue at the next line
 ; ***************************************************************************************
 ; Print [line] when TRACE is active
@@ -11199,7 +11199,7 @@ oscli            = &fff7
     bcs cb12d                                                         ; b16a: b0 c1       ..       ; definition name is longer: next line
     txa                                                               ; b16c: 8a          .        ; Match: cache the definition
     tay                                                               ; b16d: a8          .        ; Y = name length
-    jsr c986d                                                         ; b16e: 20 6d 98     m.      ; point PtrA at the body
+    jsr skip_to_statement_end                                         ; b16e: 20 6d 98     m.      ; point PtrA at the body
     jsr create_def_entry                                              ; b171: 20 ed 94     ..      ; create/find the FN/PROC entry
     ldx #1                                                            ; b174: a2 01       ..       ; init it
     jsr clear_value_bytes                                             ; b176: 20 31 95     1.      ; initialise the value
@@ -11801,7 +11801,7 @@ oscli            = &fff7
     tax                                                               ; b45d: aa          .        ; into X,
     dex                                                               ; b45e: ca          .        ; one fewer parameter
     bne loop_cb451                                                    ; b45f: d0 f0       ..       ; loop
-    jsr sub_c9852                                                     ; b461: 20 52 98     R.      ; Check the statement ends
+    jsr sync_text_ptr                                                 ; b461: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b464: a5 2a       .*       ; Last value to the block end
     sta zp_fwb_exp                                                    ; b466: 85 3d       .=       ; low byte to &3D,
     lda zp_iwa_1                                                      ; b468: a5 2b       .+       ; high,
@@ -11835,7 +11835,7 @@ oscli            = &fff7
     tax                                                               ; b480: aa          .        ; into X,
     dex                                                               ; b481: ca          .        ; one fewer parameter
     bne loop_cb477                                                    ; b482: d0 f3       ..       ; loop
-    jsr sub_c9852                                                     ; b484: 20 52 98     R.      ; Check the statement ends
+    jsr sync_text_ptr                                                 ; b484: 20 52 98     R.      ; Check the statement ends
     lda zp_iwa                                                        ; b487: a5 2a       .*       ; Last value to the block end
     sta l0044                                                         ; b489: 85 44       .D       ; into &44 (the block end)
     ldx #&0c                                                          ; b48b: a2 0c       ..       ; OSWORD 8, 12 bytes
@@ -11865,7 +11865,7 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_width
     jsr eval_expr_to_integer                                          ; b4a0: 20 21 88     !.      ; Evaluate the width
-    jsr sub_c9852                                                     ; b4a3: 20 52 98     R.      ; check the statement ends
+    jsr sync_text_ptr                                                 ; b4a3: 20 52 98     R.      ; check the statement ends
     ldy zp_iwa                                                        ; b4a6: a4 2a       .*       ; Auto-newline column = width - 1
     dey                                                               ; b4a8: 88          .        ; width - 1
     sty zp_width                                                      ; b4a9: 84 23       .#       ; store it
@@ -12162,7 +12162,7 @@ oscli            = &fff7
 .stmt_listo
     inc zp_text_ptr_off                                               ; b58a: e6 0a       ..       ; Step past LISTO
     jsr eval_expr                                                     ; b58c: 20 1d 9b     ..      ; Evaluate the option value
-    jsr c984c                                                         ; b58f: 20 4c 98     L.      ; check the statement ends
+    jsr assign_check_end                                              ; b58f: 20 4c 98     L.      ; check the statement ends
     jsr coerce_var_to_integer                                         ; b592: 20 ee 92     ..      ; coerce to a byte
     lda zp_iwa                                                        ; b595: a5 2a       .*       ; Store the LISTO flag
     sta zp_listo                                                      ; b597: 85 1f       ..       ; into &1F
@@ -12233,7 +12233,7 @@ oscli            = &fff7
 ; &b5fc referenced 1 time by &b63d
 .loop_cb5fc
     jsr sub_cbc25                                                     ; b5fc: 20 25 bc     %.      ; Newline after the previous line
-    jsr c986d                                                         ; b5ff: 20 6d 98     m.      ; check Escape
+    jsr skip_to_statement_end                                         ; b5ff: 20 6d 98     m.      ; check Escape
 ; &b602 referenced 1 time by &b5fa
 .cb602
     lda (zp_text_ptr),y                                               ; b602: b1 0b       ..       ; This line's number: high byte
@@ -12353,7 +12353,7 @@ oscli            = &fff7
     bcs cb6d7                                                         ; b69e: b0 37       .7       ; no variable: use the innermost loop
 ; &b6a0 referenced 1 time by &b6a3
 .loop_cb6a0
-    jmp c982a                                                         ; b6a0: 4c 2a 98    L*.      ; not a variable: error
+    jmp syntax_error                                                  ; b6a0: 4c 2a 98    L*.      ; not a variable: error
 ; &b6a3 referenced 1 time by &b698
 .cb6a3
     bcs loop_cb6a0                                                    ; b6a3: b0 fb       ..       ; string/array: not a loop variable
@@ -12441,7 +12441,7 @@ oscli            = &fff7
     lda l04ff,x                                                       ; b744: bd ff 04    ...      ; loop-back pointer high
     sty zp_text_ptr                                                   ; b747: 84 0b       ..       ; (text pointer)
     sta zp_text_ptr_1                                                 ; b749: 85 0c       ..       ; text pointer high
-    jsr c9877                                                         ; b74b: 20 77 98     w.      ; restore the offset
+    jsr reset_offset_1                                                ; b74b: 20 77 98     w.      ; restore the offset
     jmp next_statement                                                ; b74e: 4c a3 8b    L..      ; jump back to the loop body
 ; &b751 referenced 4 times by &b73d, &b73f, &b79b, &b79f
 .cb751
@@ -12571,7 +12571,7 @@ oscli            = &fff7
     sta l0506,y                                                       ; b834: 99 06 05    ...      ; (+6)
 ; &b837 referenced 1 time by &b885
 .cb837
-    jsr sub_c9880                                                     ; b837: 20 80 98     ..      ; Step over the loop body to find its start
+    jsr check_statement_terminated                                    ; b837: 20 80 98     ..      ; Step over the loop body to find its start
     ldy zp_for_level                                                  ; b83a: a4 26       .&       ; FOR level
     lda zp_text_ptr                                                   ; b83c: a5 0b       ..       ; Store the loop-body pointer (+D)
     sta l050d,y                                                       ; b83e: 99 0d 05    ...      ; low (+D),
@@ -12713,7 +12713,7 @@ oscli            = &fff7
     beq loop_cb8e4                                                    ; b8f7: f0 eb       ..       ; yes: ON ERROR OFF
     ldy zp_text_ptr_off                                               ; b8f9: a4 0a       ..       ; Point at the handler statement
     dey                                                               ; b8fb: 88          .        ; back up,
-    jsr c986d                                                         ; b8fc: 20 6d 98     m.      ; check Escape
+    jsr skip_to_statement_end                                         ; b8fc: 20 6d 98     m.      ; check Escape
     lda zp_text_ptr                                                   ; b8ff: a5 0b       ..       ; Set the error handler to this line
     sta zp_error_vec                                                  ; b901: 85 16       ..       ; low byte,
     lda zp_text_ptr_1                                                 ; b903: a5 0c       ..       ; high byte,
@@ -12786,7 +12786,7 @@ oscli            = &fff7
     pla                                                               ; b95f: 68          h        ; Recover the token
     cmp #&e4                                                          ; b960: c9 e4       ..       ; GOSUB?
     beq cb96a                                                         ; b962: f0 06       ..       ; yes
-    jsr c9877                                                         ; b964: 20 77 98     w.      ; GOTO: update the index and check Escape
+    jsr reset_offset_1                                                ; b964: 20 77 98     w.      ; GOTO: update the index and check Escape
     jmp cb8d2                                                         ; b967: 4c d2 b8    L..      ; jump to the line
 ; &b96a referenced 1 time by &b962
 .cb96a
@@ -12823,7 +12823,7 @@ oscli            = &fff7
 ; &b995 referenced 1 time by &b985
 .cb995
     sty zp_text_ptr_off                                               ; b995: 84 0a       ..       ; Step past ELSE
-    jmp c98e3                                                         ; b997: 4c e3 98    L..      ; execute what follows
+    jmp if_then_line                                                  ; b997: 4c e3 98    L..      ; execute what follows
 ; ***************************************************************************************
 ; Resolve a line-number operand to a program line
 ;
@@ -12864,7 +12864,7 @@ oscli            = &fff7
     jmp err_type_mismatch                                             ; b9c4: 4c 0e 8c    L..      ; Type mismatch error
 ; &b9c7 referenced 1 time by &b9e7
 .loop_cb9c7
-    jmp c982a                                                         ; b9c7: 4c 2a 98    L*.      ; Mistake error
+    jmp syntax_error                                                  ; b9c7: 4c 2a 98    L*.      ; Mistake error
 ; &b9ca referenced 1 time by &b9df
 .loop_cb9ca
     sty zp_text_ptr_off                                               ; b9ca: 84 0a       ..       ; Sync the pointer
@@ -13233,7 +13233,7 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_until
     jsr eval_expr                                                     ; bbb1: 20 1d 9b     ..      ; Evaluate the UNTIL condition
-    jsr c984c                                                         ; bbb4: 20 4c 98     L.      ; Check for end of statement
+    jsr assign_check_end                                              ; bbb4: 20 4c 98     L.      ; Check for end of statement
     jsr coerce_var_to_integer                                         ; bbb7: 20 ee 92     ..      ; coerce the condition to an integer
     ldx zp_repeat_level                                               ; bbba: a6 24       .$       ; UNTIL with no REPEAT pending: error
     beq err_no_repeat                                                 ; bbbc: f0 e8       ..       ; UNTIL with no REPEAT: error
@@ -13270,7 +13270,7 @@ oscli            = &fff7
     ldx zp_repeat_level                                               ; bbe4: a6 24       .$       ; Index the REPEAT stack
     cpx #&14                                                          ; bbe6: e0 14       ..       ; At most 20 nested REPEATs
     bcs err_too_many_repeats                                          ; bbe8: b0 ec       ..       ; Too many nested REPEATs
-    jsr c986d                                                         ; bbea: 20 6d 98     m.      ; Point PtrA at the loop start
+    jsr skip_to_statement_end                                         ; bbea: 20 6d 98     m.      ; Point PtrA at the loop start
     lda zp_text_ptr                                                   ; bbed: a5 0b       ..       ; Push the loop-start position
     sta repeat_stack,x                                                ; bbef: 9d a4 05    ...      ; Store the loop position: low
     lda zp_text_ptr_1                                                 ; bbf2: a5 0c       ..       ; high
@@ -13314,7 +13314,7 @@ oscli            = &fff7
     tya                                                               ; bc1c: 98          .        ; A = 0: OSWORD read line
     jsr osword                                                        ; bc1d: 20 f1 ff     ..      ; Read a line
     bcc cbc28                                                         ; bc20: 90 06       ..       ; ok: reset the column
-    jmp c9838                                                         ; bc22: 4c 38 98    L8.      ; Escape: raise it
+    jmp escape_error                                                  ; bc22: 4c 38 98    L8.      ; Escape: raise it
 ; &bc25 referenced 9 times by &853f, &857b, &8d7d, &8e53, &8e67, &909a, &b56e, &b5fc, &bfe7
 .sub_cbc25
     jsr osnewl                                                        ; bc25: 20 e7 ff     ..      ; Print a newline
@@ -14008,7 +14008,7 @@ oscli            = &fff7
     jsr eval_expr                                                     ; bed2: 20 1d 9b     ..      ; Evaluate the expression
     bne loop_cbecf                                                    ; bed5: d0 f8       ..       ; not a string: error
     jsr sub_cbeb2                                                     ; bed7: 20 b2 be     ..      ; CR-terminate the string buffer
-    jmp c984c                                                         ; beda: 4c 4c 98    LL.      ; Check for end of statement
+    jmp assign_check_end                                              ; beda: 4c 4c 98    LL.      ; Check for end of statement
 ; &bedd referenced 2 times by &be62, &bf0a
 .sub_cbedd
     jsr sub_cbed2                                                     ; bedd: 20 d2 be     ..      ; Evaluate the filename, CR-terminate
@@ -14170,7 +14170,7 @@ oscli            = &fff7
     jsr sub_cbfa9                                                     ; bf58: 20 a9 bf     ..      ; Evaluate the #handle
     pha                                                               ; bf5b: 48          H        ; save it
     jsr skip_spaces_expect_comma                                      ; bf5c: 20 ae 8a     ..      ; require a comma
-    jsr c9849                                                         ; bf5f: 20 49 98     I.      ; evaluate the value
+    jsr eval_rhs                                                      ; bf5f: 20 49 98     I.      ; evaluate the value
     jsr coerce_var_to_integer                                         ; bf62: 20 ee 92     ..      ; coerce to an integer
     pla                                                               ; bf65: 68          h        ; recover the handle
     tay                                                               ; bf66: a8          .        ; Y = handle
@@ -14273,7 +14273,7 @@ oscli            = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_close
     jsr sub_cbfa9                                                     ; bf99: 20 a9 bf     ..      ; Evaluate the #handle
-    jsr sub_c9852                                                     ; bf9c: 20 52 98     R.      ; Check for end of statement
+    jsr sync_text_ptr                                                 ; bf9c: 20 52 98     R.      ; Check for end of statement
     ldy zp_iwa                                                        ; bf9f: a4 2a       .*       ; Y = the handle
     lda #osfind_close                                                 ; bfa1: a9 00       ..       ; OSFIND &00: close the file
     jsr osfind                                                        ; bfa3: 20 ce ff     ..      ; osfind: close one or all files
@@ -14364,1277 +14364,1260 @@ oscli            = &fff7
 save pydis_start, pydis_end
 
 ; Label references by decreasing frequency:
-;     zp_iwa:                    188
-;     zp_general:                142
-;     zp_iwa_1:                  112
-;     zp_text_ptr_off:            92
-;     zp_text_ptr2_off:           90
-;     zp_stack_ptr:               85
-;     zp_text_ptr:                77
-;     zp_fwa_m1:                  73
-;     zp_iwa_2:                   70
-;     zp_general_1:               66
-;     zp_fwb_exp:                 65
-;     zp_fileblk:                 62
-;     zp_fwa_m2:                  61
-;     zp_fwa_m4:                  61
-;     zp_iwa_3:                   61
-;     zp_fwb_sign:                59
-;     zp_fwa_m3:                  58
-;     zp_fwb_m1:                  56
-;     zp_fwa_exp:                 55
-;     zp_fwb_m2:                  55
-;     zp_strbuf_len:              52
-;     skip_spaces:                48
-;     zp_fwa_sign:                48
-;     zp_text_ptr2:               48
-;     l003a:                      45
-;     zp_fwa_rnd:                 42
-;     zp_text_ptr_1:              41
-;     zp_var_type:                41
-;     zp_fwb_ovf:                 39
-;     zp_fwb_m3:                  37
-;     zp_fp_ptr:                  31
-;     stack_integer:              29
-;     l004d:                      28
-;     zp_vartop:                  28
-;     string_work:                27
-;     check_end_of_statement:     25
-;     zp_fwb_m4:                  25
-;     statement_loop:             23
-;     eval_expr_to_integer:       22
-;     zp_text_ptr2_1:             22
-;     coerce_to_integer:          21
-;     skip_spaces_ptr2:           21
-;     zp_dec_exp:                 21
-;     zp_stack_ptr_1:             21
-;     zp_top:                     21
-;     l004a:                      20
-;     zp_fwa_ovf:                 20
-;     zp_vartop_1:                20
-;     err_type_mismatch:          18
-;     int_result_a:               18
-;     l004e:                      18
-;     fwa_sign:                   17
-;     zp_fwb_rnd:                 17
-;     eval_or_eor:                16
-;     unstack_integer:            16
-;     zp_page:                    16
-;     zp_for_level:               15
-;     zp_top_1:                   15
-;     zp_fp_ptr_1:                14
-;     eval_factor:                13
-;     print_char:                 13
-;     fwa_mul_var:                12
-;     int_to_fwa:                 12
-;     oswrch:                     12
-;     stack_real:                 12
-;     cae56:                      11
-;     eval_expr:                  11
-;     eval_real:                  11
-;     iwa_from_ya:                11
-;     osbyte:                     11
-;     output_char:                11
-;     unstack_real:               11
-;     zp_opt_flag:                11
-;     check_line_number:          10
-;     eval_factor_integer:        10
-;     fwa_add_var:                10
-;     fwa_unpack_var:             10
-;     next_statement:             10
-;     fwa_pack_temp1:              9
-;     parse_lvalue:                9
-;     print_space:                 9
-;     stack_string:                9
-;     sub_cbc25:                   9
-;     zp_dp_flag:                  9
-;     zp_print_flag:               9
-;     asm_index_error:             8
-;     bad_dim:                     8
-;     c986d:                       8
-;     ca099:                       8
-;     eval_expr_integer:           8
-;     fwa_clear:                   8
-;     fwa_normalise:               8
-;     inc_ptr_general:             8
-;     l05ff:                       8
-;     sub_c9852:                   8
-;     zp_himem:                    8
-;     zp_himem_1:                  8
-;     zp_print_bytes:              8
-;     asm_emit:                    7
-;     asm_opcode_add16:            7
-;     c982a:                       7
-;     c9bb5:                       7
-;     ensure_real:                 7
-;     fwa_pack_var:                7
-;     fwb_unpack_var:              7
-;     immediate_loop:              7
-;     stmt_backup_end:             7
-;     zp_count:                    7
-;     assign_number:               6
-;     c9bb4:                       6
-;     c9c88:                       6
-;     cae43:                       6
-;     cb2b5:                       6
-;     cbddc:                       6
-;     check_program:               6
-;     clear_then_immediate:        6
-;     coerce_var_to_integer:       6
-;     fwa_pack_temp3:              6
-;     fwa_set_one:                 6
-;     osbget:                      6
-;     osbput:                      6
-;     point_fp_temp1:              6
-;     unstack_string:              6
-;     zp_error_vec:                6
-;     zp_error_vec_1:              6
-;     zp_fp_temp:                  6
-;     zp_lomem:                    6
-;     zp_lomem_1:                  6
-;     asm_absolute:                5
-;     c9a93:                       5
-;     c9fe6:                       5
-;     ca208:                       5
-;     cac9b:                       5
-;     cb741:                       5
-;     cb97d:                       5
-;     clear_vars_heap_stack:       5
-;     fp_mantissas_sub:            5
-;     fwa_negate:                  5
-;     fwa_to_int:                  5
-;     fwb_copy_from_fwa:           5
-;     fwb_div2:                    5
-;     is_alphanumeric:             5
-;     iwa_store_zp:                5
-;     l0044:                       5
-;     osword:                      5
-;     print_sync:                  5
-;     resint_at:                   5
-;     return_22:                   5
-;     skip_spaces_expect_comma:    5
-;     sub_c9a9d:                   5
-;     sub_cbfa9:                   5
-;     tok_advance:                 5
-;     tok_scan:                    5
-;     unstack_int_to_zp:           5
-;     zp_gosub_level:              5
-;     zp_repeat_level:             5
-;     zp_trace_flag:               5
-;     asm_mistake:                 4
-;     bad_statement:               4
-;     c984c:                       4
-;     c9877:                       4
-;     c9c45:                       4
-;     ca46c:                       4
-;     cb036:                       4
-;     cb751:                       4
-;     cba5a:                       4
-;     cbc28:                       4
-;     clear_value_bytes:           4
-;     eval_add_sub:                4
-;     eval_after_eq:               4
-;     eval_comma_integer:          4
-;     eval_eq_integer:             4
-;     eval_power:                  4
-;     find_line_target:            4
-;     find_variable:               4
-;     findvar_walk:                4
-;     findvar_walk_b:              4
-;     fp_eval_cont_frac:           4
-;     fwa_rdiv_var:                4
-;     fwa_to_int2:                 4
-;     iwa_abs:                     4
-;     iwa_inc:                     4
-;     l0045:                       4
-;     l0046:                       4
-;     l0441:                       4
-;     missing_comma:               4
-;     parse_dec_overflow:          4
-;     point_fp_temp4:              4
-;     print_file_loop:             4
-;     pvr_name_end:                4
-;     read_via_ptr_general:        4
-;     reserve_stack:               4
-;     resint_p:                    4
-;     return_23:                   4
-;     stmt_check_end:              4
-;     vdu_send_byte:               4
-;     zp_asm_opcode:               4
-;     zp_data_ptr:                 4
-;     zp_data_ptr_1:               4
-;     zp_rnd_seed:                 4
-;     zp_rnd_seed_2:               4
-;     zp_rnd_seed_4:               4
-;     advance_to_next_line:        3
-;     asm_got_opcode:              3
-;     asm_opcode_add4:             3
-;     asm_opcode_add8:             3
-;     asm_zp_or_abs:               3
-;     assign_string:               3
-;     c8858:                       3
-;     c9960:                       3
-;     c99a4:                       3
-;     c9d0e:                       3
-;     c9d1d:                       3
-;     c9dd4:                       3
-;     c9ed1:                       3
-;     ca0e8:                       3
-;     ca387:                       3
-;     ca590:                       3
-;     ca724:                       3
-;     ca76c:                       3
-;     ca7f7:                       3
-;     ca99e:                       3
-;     caad1:                       3
-;     caea2:                       3
-;     call_arg_error:              3
-;     cb033:                       3
-;     cb32c:                       3
-;     cb8d2:                       3
-;     cbb07:                       3
-;     cbb7a:                       3
-;     check_subscript_bound:       3
-;     coerce_type_error:           3
-;     create_variable:             3
-;     dim_clear_loop:              3
-;     dim_no_room:                 3
-;     err_no_room:                 3
-;     eval_channel:                3
-;     eval_mul_div:                3
-;     find_program_line:           3
-;     fn_true:                     3
-;     fp_divide:                   3
-;     fwa_add_fwb:                 3
-;     fwa_div10:                   3
-;     fwa_int_power:               3
-;     fwb_clear:                   3
-;     general_next_byte:           3
-;     is_digit:                    3
-;     iwa_negate:                  3
-;     l0401:                       3
-;     not_name_char:               3
-;     parse_number:                3
-;     point_fp_temp2:              3
-;     print_done:                  3
-;     print_item:                  3
-;     print_line_number:           3
-;     print_listo_indent:          3
-;     print_newline:               3
-;     print_next:                  3
-;     print_string:                3
-;     print_token:                 3
-;     pvr_scan_loop:               3
-;     return_12:                   3
-;     return_19:                   3
-;     return_25:                   3
-;     return_33:                   3
-;     return_36:                   3
-;     return_39:                   3
-;     return_8:                    3
-;     sin_cos_reduce:              3
-;     sub_c8827:                   3
-;     sub_cbd3a:                   3
-;     tok_skip_number_loop:        3
-;     unstack_int_to_general:      3
-;     vdu_done:                    3
-;     zp_erl:                      3
-;     zp_erl_1:                    3
-;     zp_error_ptr:                3
-;     zp_listo:                    3
-;     zp_rnd_seed_1:               3
-;     zp_width:                    3
-;     array_error:                 2
-;     asm_branch_range_err:        2
-;     asm_emit_loop:               2
-;     asm_emit_more:               2
-;     asm_equ_index_err:           2
-;     asm_force_zp:                2
-;     asm_imm_byte:                2
-;     asm_imm_eval:                2
-;     asm_list_pad_loop:           2
-;     asm_set_operand:             2
-;     asm_three_byte:              2
-;     asm_two_byte:                2
-;     assign_str_alloc:            2
-;     assign_str_alloc_size:       2
-;     assign_str_store:            2
-;     assign_string_to:            2
-;     auto_loop:                   2
-;     c9838:                       2
-;     c9849:                       2
-;     c9859:                       2
-;     c98bc:                       2
-;     c98e3:                       2
-;     c9978:                       2
-;     c99a7:                       2
-;     c9a9a:                       2
-;     c9c03:                       2
-;     c9c9b:                       2
-;     c9ca1:                       2
-;     c9d39:                       2
-;     c9e23:                       2
-;     c9eb7:                       2
-;     c9ef9:                       2
-;     c9efb:                       2
-;     c9f39:                       2
-;     c9f5c:                       2
-;     ca072:                       2
-;     ca111:                       2
-;     ca118:                       2
-;     ca170:                       2
-;     ca174:                       2
-;     ca313:                       2
-;     ca336:                       2
-;     ca40c:                       2
-;     ca43c:                       2
-;     ca450:                       2
-;     ca659:                       2
-;     ca67c:                       2
-;     ca6bb:                       2
-;     ca8ea:                       2
-;     ca8fe:                       2
-;     ca904:                       2
-;     ca91b:                       2
-;     ca936:                       2
-;     ca9aa:                       2
-;     ca9c3:                       2
-;     caa4e:                       2
-;     caab8:                       2
-;     cab9d:                       2
-;     caba0:                       2
-;     cabb8:                       2
-;     cabe6:                       2
-;     cac73:                       2
-;     cac95:                       2
-;     cad3c:                       2
-;     cad52:                       2
-;     cad67:                       2
-;     cad89:                       2
-;     cadc9:                       2
-;     cafc2:                       2
-;     cb02e:                       2
-;     cb0bf:                       2
-;     cb0f5:                       2
-;     cb11a:                       2
-;     cb12d:                       2
-;     cb24d:                       2
-;     cb2ca:                       2
-;     cb329:                       2
-;     cb48f:                       2
-;     cb4ae:                       2
-;     cb4e9:                       2
-;     cb51e:                       2
-;     cb5d8:                       2
-;     cb639:                       2
-;     cb678:                       2
-;     cb688:                       2
-;     cb68e:                       2
-;     cb6be:                       2
-;     cb6d7:                       2
-;     cb7a4:                       2
-;     cb944:                       2
-;     cb9af:                       2
-;     cb9c4:                       2
-;     cb9da:                       2
-;     cbb15:                       2
-;     cbc55:                       2
-;     cbcd6:                       2
-;     cbe41:                       2
-;     cbe9e:                       2
-;     cbf82:                       2
-;     createvar_chain:             2
-;     decode_line_number:          2
-;     delete_program_line:         2
-;     dim_array:                   2
-;     dispatch_token:              2
-;     drop_stack_integer:          2
-;     err_too_big:                 2
-;     eval_relational:             2
-;     expect_eq:                   2
-;     findvar_chain_head:          2
-;     fp_split_int_frac:           2
-;     fp_temp1:                    2
-;     fwa_acc_fwb:                 2
-;     fwa_add_fwb_raw:             2
-;     fwa_copy_from_fwb:           2
-;     fwa_mul10:                   2
-;     fwa_mul_var_raw:             2
-;     fwa_pack_temp2:              2
-;     fwa_reciprocal:              2
-;     fwa_round:                   2
-;     fwa_rsub_var:                2
-;     fwa_sub_var:                 2
-;     fwa_unpack_temp1:            2
-;     fwb_half_fwa:                2
-;     imul16:                      2
-;     index_array:                 2
-;     iwa_divide:                  2
-;     iwa_load_zp:                 2
-;     l0022:                       2
-;     l0100:                       2
-;     l01ff:                       2
-;     l0402:                       2
-;     l0403:                       2
-;     l043d:                       2
-;     l04f1:                       2
-;     l04f2:                       2
-;     l04f3:                       2
-;     l04f5:                       2
-;     l04f7:                       2
-;     l04fc:                       2
-;     l06ff:                       2
-;     load_program:                2
-;     load_real_var:               2
-;     mant_mul10:                  2
-;     missing_quote:               2
-;     mode_reset_col:              2
-;     mode_send:                   2
-;     next_data_item:              2
-;     no_fn_error:                 2
-;     no_proc_error:               2
-;     number_to_ascii:             2
-;     osargs:                      2
-;     oscli:                       2
-;     osfile:                      2
-;     osfind:                      2
-;     osrdch:                      2
-;     output_digit:                2
-;     page_done:                   2
-;     parse_dec_encode:            2
-;     parse_dec_loop:              2
-;     parse_line_range:            2
-;     parse_var_ref:               2
-;     point_const_half_pi:         2
-;     point_fp_temp3:              2
-;     point_half_pi_hi:            2
-;     point_half_pi_lo:            2
-;     print_hex_byte:              2
-;     print_inline_char:           2
-;     print_inline_string:         2
-;     print_spc_loop:              2
-;     print_special_item:          2
-;     print_special_skip:          2
-;     pvr_named:                   2
-;     pvr_parse:                   2
-;     pvr_undefined:               2
-;     read_input_line:             2
-;     read_key_timed:              2
-;     read_string_literal:         2
-;     renum_done:                  2
-;     renum_line_loop:             2
-;     renum_scan_loop:             2
-;     renum_table_next:            2
-;     renum_table_search:          2
-;     resint_o:                    2
-;     return_1:                    2
-;     return_10:                   2
-;     return_13:                   2
-;     return_2:                    2
-;     return_21:                   2
-;     return_26:                   2
-;     return_28:                   2
-;     return_3:                    2
-;     return_31:                   2
-;     return_35:                   2
-;     return_9:                    2
-;     rnd_fraction:                2
-;     rnd_step:                    2
-;     setup_scan_top:              2
-;     silly_error:                 2
-;     stack_local:                 2
-;     stack_value:                 2
-;     stmt_data:                   2
-;     stmt_eol:                    2
-;     sub_c887c:                   2
-;     sub_c9890:                   2
-;     sub_c9923:                   2
-;     sub_c9b6b:                   2
-;     sub_c9dce:                   2
-;     sub_c9e1d:                   2
-;     sub_cb4b1:                   2
-;     sub_cb562:                   2
-;     sub_cbc81:                   2
-;     sub_cbc8d:                   2
-;     sub_cbe92:                   2
-;     sub_cbeba:                   2
-;     sub_cbed2:                   2
-;     sub_cbedd:                   2
-;     subscript_error:             2
-;     tok_hex_loop:                2
-;     tok_kw_check_end:            2
-;     tok_kw_found:                2
-;     tok_kw_skip_loop:            2
-;     tok_name:                    2
-;     tok_name_loop:               2
-;     tok_not_keyword:             2
-;     tok_resume_mid:              2
-;     tok_write_token:             2
-;     trace_line:                  2
-;     try_variable_assignment:     2
-;     unstack_numeric_drop:        2
-;     usr_call:                    2
-;     valname_count:               2
-;     valname_loop:                2
-;     vartop_commit:               2
-;     wrchv:                       2
-;     zero_new_value:              2
-;     zp_rnd_seed_3:               2
-;     zp_trace_max:                2
-;     action_hi_by_token:          1
-;     action_lo_by_token:          1
-;     advance_vartop:              1
-;     ascii_to_number:             1
-;     asm_abs_from_paren:          1
-;     asm_acc_or_abs:              1
-;     asm_accumulator:             1
-;     asm_addr_eval:               1
-;     asm_base_opcode:             1
-;     asm_branch_back:             1
-;     asm_branch_fwd:              1
-;     asm_branch_ok:               1
-;     asm_byte_error:              1
-;     asm_continue:                1
-;     asm_define_label:            1
-;     asm_emit_advance:            1
-;     asm_emit_dest:               1
-;     asm_emit_store:              1
-;     asm_enter:                   1
-;     asm_equ_backup:              1
-;     asm_equ_eval:                1
-;     asm_equ_index:               1
-;     asm_imm1_backup:             1
-;     asm_imm1_eval:               1
-;     asm_indexed_adjust:          1
-;     asm_indirect_zpx:            1
-;     asm_jmp_indirect:            1
-;     asm_list_byte:               1
-;     asm_list_byte_loop:          1
-;     asm_list_count:              1
-;     asm_list_indent_loop:        1
-;     asm_list_newline:            1
-;     asm_list_source:             1
-;     asm_list_src_end:            1
-;     asm_list_src_loop:           1
-;     asm_list_src_print:          1
-;     asm_logic_mnemonic:          1
-;     asm_loop:                    1
-;     asm_mn_char_loop:            1
-;     asm_mn_pack_loop:            1
-;     asm_mn_search:               1
-;     asm_mn_search_loop:          1
-;     asm_mn_search_next:          1
-;     asm_mnemonic_hi:             1
-;     asm_mnemonic_lo:             1
-;     asm_mode_class2:             1
-;     asm_mode_class3:             1
-;     asm_mode_equ:                1
-;     asm_mode_imm:                1
-;     asm_mode_indirect:           1
-;     asm_mode_noop:               1
-;     asm_next_line:               1
-;     asm_next_statement:          1
-;     asm_operand:                 1
-;     asm_opt_directive:           1
-;     asm_parse_mnemonic:          1
-;     asm_scan_end_loop:           1
-;     asm_stmt_end:                1
-;     asm_three_emit:              1
-;     asm_try_indirect:            1
-;     assembler_exit:              1
-;     assign_new_var:              1
-;     assign_str_addr:             1
-;     assign_str_addr_cr:          1
-;     assign_str_addr_loop:        1
-;     assign_str_copy_loop:        1
-;     brkv:                        1
-;     brkv+1:                      1
-;     c883a:                       1
-;     c886a:                       1
-;     c9805:                       1
-;     c9861:                       1
-;     c98ac:                       1
-;     c98b7:                       1
-;     c98cc:                       1
-;     c98e1:                       1
-;     c98f1:                       1
-;     c9902:                       1
-;     c9925:                       1
-;     c9943:                       1
-;     c994f:                       1
-;     c998e:                       1
-;     c9a33:                       1
-;     c9a35:                       1
-;     c9a62:                       1
-;     c9ae5:                       1
-;     c9ae7:                       1
-;     c9aff:                       1
-;     c9b11:                       1
-;     c9b15:                       1
-;     c9b3a:                       1
-;     c9b55:                       1
-;     c9b7a:                       1
-;     c9ba8:                       1
-;     c9bc0:                       1
-;     c9bd4:                       1
-;     c9bdf:                       1
-;     c9be8:                       1
-;     c9bfa:                       1
-;     c9c4e:                       1
-;     c9c77:                       1
-;     c9c8b:                       1
-;     c9ca7:                       1
-;     c9cb5:                       1
-;     c9ce1:                       1
-;     c9cf1:                       1
-;     c9cfa:                       1
-;     c9d2c:                       1
-;     c9d3c:                       1
-;     c9d4e:                       1
-;     c9d69:                       1
-;     c9da6:                       1
-;     c9dbb:                       1
-;     c9dbd:                       1
-;     c9dc6:                       1
-;     c9de5:                       1
-;     c9e35:                       1
-;     c9e59:                       1
-;     c9e88:                       1
-;     c9e96:                       1
-;     c9ebf:                       1
-;     c9ee8:                       1
-;     c9ef5:                       1
-;     c9f0f:                       1
-;     c9f1d:                       1
-;     c9f25:                       1
-;     c9f31:                       1
-;     c9f34:                       1
-;     c9f71:                       1
-;     c9f92:                       1
-;     c9f9c:                       1
-;     c9fa0:                       1
-;     c9fad:                       1
-;     c9fc3:                       1
-;     c9fcf:                       1
-;     c9fe4:                       1
-;     c9ff4:                       1
-;     ca00f:                       1
-;     ca011:                       1
-;     ca015:                       1
-;     ca028:                       1
-;     ca038:                       1
-;     ca063:                       1
-;     ca0a0:                       1
-;     ca0a8:                       1
-;     ca0c2:                       1
-;     ca0c8:                       1
-;     ca0e1:                       1
-;     ca11b:                       1
-;     ca11f:                       1
-;     ca14e:                       1
-;     ca1ed:                       1
-;     ca1ff:                       1
-;     ca20b:                       1
-;     ca258:                       1
-;     ca2cd:                       1
-;     ca2fd:                       1
-;     ca33a:                       1
-;     ca37a:                       1
-;     ca3e1:                       1
-;     ca466:                       1
-;     ca468:                       1
-;     ca491:                       1
-;     ca4ae:                       1
-;     ca4b0:                       1
-;     ca4b3:                       1
-;     ca53d:                       1
-;     ca552:                       1
-;     ca579:                       1
-;     ca58c:                       1
-;     ca5e3:                       1
-;     ca613:                       1
-;     ca61d:                       1
-;     ca625:                       1
-;     ca652:                       1
-;     ca676:                       1
-;     ca6f1:                       1
-;     ca701:                       1
-;     ca70a:                       1
-;     ca726:                       1
-;     ca73f:                       1
-;     ca76e:                       1
-;     ca787:                       1
-;     ca7b7:                       1
-;     ca7e6:                       1
-;     ca808:                       1
-;     ca814:                       1
-;     ca82a:                       1
-;     ca82c:                       1
-;     ca8aa:                       1
-;     ca90a:                       1
-;     ca916:                       1
-;     caa0e:                       1
-;     caa35:                       1
-;     caa38:                       1
-;     caaa2:                       1
-;     caaac:                       1
-;     cab1e:                       1
-;     cab25:                       1
-;     caba2:                       1
-;     caba5:                       1
-;     cac0f:                       1
-;     cac23:                       1
-;     cac5e:                       1
-;     cac66:                       1
-;     cad03:                       1
-;     cad06:                       1
-;     cad12:                       1
-;     cad1a:                       1
-;     cad4d:                       1
-;     cad59:                       1
-;     cad77:                       1
-;     cad83:                       1
-;     cadaa:                       1
-;     cadc5:                       1
-;     cade1:                       1
-;     cade9:                       1
-;     cae05:                       1
-;     cae10:                       1
-;     cae20:                       1
-;     cae2a:                       1
-;     cae30:                       1
-;     cae61:                       1
-;     cae6d:                       1
-;     cae8d:                       1
-;     caeaa:                       1
-;     cafeb:                       1
-;     call_block_init:             1
-;     call_check_end:              1
-;     call_param_error:            1
-;     call_proc_fn:                1
-;     cb023:                       1
-;     cb061:                       1
-;     cb06f:                       1
-;     cb07f:                       1
-;     cb0a1:                       1
-;     cb0b9:                       1
-;     cb0f8:                       1
-;     cb0fb:                       1
-;     cb13c:                       1
-;     cb14d:                       1
-;     cb1ca:                       1
-;     cb1e9:                       1
-;     cb1f4:                       1
-;     cb202:                       1
-;     cb226:                       1
-;     cb24a:                       1
-;     cb2f0:                       1
-;     cb2f3:                       1
-;     cb2f9:                       1
-;     cb303:                       1
-;     cb318:                       1
-;     cb37f:                       1
-;     cb3a7:                       1
-;     cb3ba:                       1
-;     cb3c0:                       1
-;     cb3f9:                       1
-;     cb413:                       1
-;     cb4e0:                       1
-;     cb536:                       1
-;     cb542:                       1
-;     cb556:                       1
-;     cb567:                       1
-;     cb571:                       1
-;     cb5cf:                       1
-;     cb5db:                       1
-;     cb602:                       1
-;     cb60f:                       1
-;     cb61d:                       1
-;     cb637:                       1
-;     cb651:                       1
-;     cb668:                       1
-;     cb66e:                       1
-;     cb67e:                       1
-;     cb6a3:                       1
-;     cb73f:                       1
-;     cb766:                       1
-;     cb79d:                       1
-;     cb7a1:                       1
-;     cb81f:                       1
-;     cb837:                       1
-;     cb84f:                       1
-;     cb875:                       1
-;     cb88b:                       1
-;     cb8d9:                       1
-;     cb8dd:                       1
-;     cb931:                       1
-;     cb95c:                       1
-;     cb96a:                       1
-;     cb977:                       1
-;     cb995:                       1
-;     cba13:                       1
-;     cba19:                       1
-;     cba2b:                       1
-;     cba39:                       1
-;     cba52:                       1
-;     cba69:                       1
-;     cba99:                       1
-;     cbaa2:                       1
-;     cbab0:                       1
-;     cbaca:                       1
-;     cbacd:                       1
-;     cbadc:                       1
-;     cbb32:                       1
-;     cbb40:                       1
-;     cbb9c:                       1
-;     cbbad:                       1
-;     cbbcd:                       1
-;     cbc09:                       1
-;     cbc53:                       1
-;     cbc5d:                       1
-;     cbc66:                       1
-;     cbc6d:                       1
-;     cbc7c:                       1
-;     cbc88:                       1
-;     cbce1:                       1
-;     cbcea:                       1
-;     cbd14:                       1
-;     cbdc6:                       1
-;     cbde1:                       1
-;     cbe34:                       1
-;     cbe5f:                       1
-;     cbe90:                       1
-;     cbe9b:                       1
-;     cbf96:                       1
-;     cbfc3:                       1
-;     cbfdc:                       1
-;     cbff6:                       1
-;     check_eq_star_bracket:       1
-;     chkline_skip:                1
-;     clearval_loop:               1
-;     cls_send:                    1
-;     coerce_real:                 1
-;     create_def_entry:            1
-;     createvar_copy_loop:         1
-;     createvar_link:              1
-;     createvar_walk_loop:         1
-;     data_scan_loop:              1
-;     delete_loop:                 1
-;     dim_after:                   1
-;     dim_alloc:                   1
-;     dim_bound_loop:              1
-;     dim_byte:                    1
-;     dim_byte_block:              1
-;     dim_check_paren:             1
-;     dim_clear:                   1
-;     dim_clear_check:             1
-;     dim_name:                    1
-;     dim_next_array:              1
-;     dim_no_room_jmp:             1
-;     draw_save_mode:              1
-;     encode_line_number:          1
-;     err_no_gosub:                1
-;     err_no_repeat:               1
-;     err_no_such_line:            1
-;     err_too_many_gosubs:         1
-;     err_too_many_repeats:        1
-;     eval_and:                    1
-;     eval_and_compare:            1
-;     exec_assembler:              1
-;     exec_dispatch:               1
-;     exec_immediate:              1
-;     exec_star_command:           1
-;     execute_line:                1
-;     find_def:                    1
-;     find_error_line:             1
-;     find_proc_fn:                1
-;     findvar_cmp_a:               1
-;     findvar_cmp_a_loop:          1
-;     findvar_cmp_b:               1
-;     findvar_cmp_b_loop:          1
-;     findvar_match_a:             1
-;     findvar_match_b:             1
-;     fn_asn:                      1
-;     fn_ln:                       1
-;     fn_return:                   1
-;     for_stack:                   1
-;     fp_compare:                  1
-;     fp_mantissas_add:            1
-;     fwa_complement_half_pi:      1
-;     fwa_round_carry:             1
-;     fwa_swap_var:                1
-;     gosub_stack:                 1
-;     gosub_stack_hi:              1
-;     idxarr_addr:                 1
-;     idxarr_loop:                 1
-;     idxarr_offset:               1
-;     idxarr_one:                  1
-;     idxarr_scale:                1
-;     idxarr_type:                 1
-;     imul_double:                 1
-;     imul_loop:                   1
-;     imul_overflow:               1
-;     is_dot_or_digit:             1
-;     iwa_div:                     1
-;     iwa_mod:                     1
-;     iwa_store_var:               1
-;     l0047:                       1
-;     l00ff:                       1
-;     l0106:                       1
-;     l047f:                       1
-;     l04f4:                       1
-;     l04f6:                       1
-;     l04f9:                       1
-;     l04fa:                       1
-;     l04fb:                       1
-;     l04fe:                       1
-;     l04ff:                       1
-;     l0501:                       1
-;     l0502:                       1
-;     l0503:                       1
-;     l0504:                       1
-;     l0505:                       1
-;     l0506:                       1
-;     l0508:                       1
-;     l0509:                       1
-;     l050a:                       1
-;     l050b:                       1
-;     l050d:                       1
-;     l050e:                       1
-;     l05a3:                       1
-;     l05b7:                       1
-;     l05cb:                       1
-;     l05e5:                       1
-;     l996b:                       1
-;     l99b9:                       1
-;     lang_install_brkv:           1
-;     language_startup:            1
-;     let_assign:                  1
-;     let_mistake:                 1
-;     let_numeric:                 1
-;     load_byte_var:               1
-;     load_string_var:             1
-;     local_bump:                  1
-;     local_not_var:               1
-;     loop_c8864:                  1
-;     loop_c8867:                  1
-;     loop_c888d:                  1
-;     loop_c9821:                  1
-;     loop_c985a:                  1
-;     loop_c98bf:                  1
-;     loop_c98de:                  1
-;     loop_c98f3:                  1
-;     loop_c9929:                  1
-;     loop_c992e:                  1
-;     loop_c9948:                  1
-;     loop_c995a:                  1
-;     loop_c9980:                  1
-;     loop_c99f4:                  1
-;     loop_c9a01:                  1
-;     loop_c9a39:                  1
-;     loop_c9a50:                  1
-;     loop_c9b03:                  1
-;     loop_c9b2c:                  1
-;     loop_c9b43:                  1
-;     loop_c9b4e:                  1
-;     loop_c9b5e:                  1
-;     loop_c9b75:                  1
-;     loop_c9b8a:                  1
-;     loop_c9c15:                  1
-;     loop_c9c2d:                  1
-;     loop_c9d11:                  1
-;     loop_c9d20:                  1
-;     loop_c9d8b:                  1
-;     loop_c9dcb:                  1
-;     loop_c9e24:                  1
-;     loop_c9e6c:                  1
-;     loop_c9e90:                  1
-;     loop_c9e9a:                  1
-;     loop_c9eb0:                  1
-;     loop_c9ec8:                  1
-;     loop_c9f20:                  1
-;     loop_c9f6b:                  1
-;     loop_c9f7e:                  1
-;     loop_c9fdb:                  1
-;     loop_c9fe8:                  1
-;     loop_ca002:                  1
-;     loop_ca055:                  1
-;     loop_ca0f5:                  1
-;     loop_ca108:                  1
-;     loop_ca139:                  1
-;     loop_ca2e6:                  1
-;     loop_ca3f8:                  1
-;     loop_ca528:                  1
-;     loop_ca543:                  1
-;     loop_ca564:                  1
-;     loop_ca57f:                  1
-;     loop_ca629:                  1
-;     loop_ca63a:                  1
-;     loop_ca70c:                  1
-;     loop_ca754:                  1
-;     loop_ca7a9:                  1
-;     loop_ca7cf:                  1
-;     loop_ca8b5:                  1
-;     loop_cab7f:                  1
-;     loop_cacaa:                  1
-;     loop_cacd6:                  1
-;     loop_cad42:                  1
-;     loop_cad4f:                  1
-;     loop_cad55:                  1
-;     loop_cad8c:                  1
-;     loop_cadb6:                  1
-;     loop_cadcb:                  1
-;     loop_cadcc:                  1
-;     loop_cae79:                  1
-;     loop_cae93:                  1
-;     loop_caec7:                  1
-;     loop_caece:                  1
-;     loop_caf78:                  1
-;     loop_caf89:                  1
-;     loop_cb083:                  1
-;     loop_cb0df:                  1
-;     loop_cb0e1:                  1
-;     loop_cb0fe:                  1
-;     loop_cb122:                  1
-;     loop_cb158:                  1
-;     loop_cb18a:                  1
-;     loop_cb1a6:                  1
-;     loop_cb21c:                  1
-;     loop_cb236:                  1
-;     loop_cb28e:                  1
-;     loop_cb39d:                  1
-;     loop_cb3ad:                  1
-;     loop_cb3d9:                  1
-;     loop_cb451:                  1
-;     loop_cb477:                  1
-;     loop_cb520:                  1
-;     loop_cb538:                  1
-;     loop_cb580:                  1
-;     loop_cb5fc:                  1
-;     loop_cb64b:                  1
-;     loop_cb6a0:                  1
-;     loop_cb6a9:                  1
-;     loop_cb7b0:                  1
-;     loop_cb7bd:                  1
-;     loop_cb8e4:                  1
-;     loop_cb8f2:                  1
-;     loop_cb90a:                  1
-;     loop_cb96c:                  1
-;     loop_cb980:                  1
-;     loop_cb9c7:                  1
-;     loop_cb9ca:                  1
-;     loop_cb9cf:                  1
-;     loop_cba0a:                  1
-;     loop_cba21:                  1
-;     loop_cba2d:                  1
-;     loop_cba3f:                  1
-;     loop_cba5f:                  1
-;     loop_cbabd:                  1
-;     loop_cbb6f:                  1
-;     loop_cbb85:                  1
-;     loop_cbc9e:                  1
-;     loop_cbd07:                  1
-;     loop_cbd33:                  1
-;     loop_cbdbe:                  1
-;     loop_cbdd4:                  1
-;     loop_cbe78:                  1
-;     loop_cbecf:                  1
-;     loop_cbfd9:                  1
-;     loop_cbfec:                  1
-;     lvalue_dollar:               1
-;     lvalue_indirect:             1
-;     lvalue_range_error:          1
-;     lvalue_save_width:           1
-;     lvalue_word:                 1
-;     not_local_error:             1
-;     osasci:                      1
-;     osnewl:                      1
-;     output_byte_decimal:         1
-;     output_top_digit:            1
-;     parse_dec_shift_loop:        1
-;     parse_decimal_u16:           1
-;     parse_exponent:              1
-;     plot_coord:                  1
-;     plot_send_hi:                1
-;     point_general_page:          1
-;     print_check_sep:             1
-;     print_comma:                 1
-;     print_field_loop:            1
-;     print_file:                  1
-;     print_file_done:             1
-;     print_file_int_loop:         1
-;     print_file_real:             1
-;     print_file_real_loop:        1
-;     print_file_str:              1
-;     print_file_str_loop:         1
-;     print_hex_digit:             1
-;     print_inline_loop:           1
-;     print_num_pad:               1
-;     print_pad_loop:              1
-;     print_semicolon:             1
-;     print_set_hex:               1
-;     print_spc:                   1
-;     print_spc_count:             1
-;     print_spc_newline:           1
-;     print_string_loop:           1
-;     print_tab_error:             1
-;     print_tab_x:                 1
-;     print_tab_xy:                1
-;     proc_clear_loop:             1
-;     pvr_advance:                 1
-;     pvr_after_name:              1
-;     pvr_byte_indirect:           1
-;     pvr_check_indirect:          1
-;     pvr_name_len:                1
-;     pvr_name_ptr_hi:             1
-;     pvr_name_setup:              1
-;     pvr_no_name:                 1
-;     pvr_record_offset:           1
-;     pvr_resint_array:            1
-;     pvr_restore_type:            1
-;     pvr_save_width:              1
-;     pvr_scan_check_lc:           1
-;     pvr_scan_check_uc:           1
-;     pvr_string:                  1
-;     pvr_string_array:            1
-;     pvr_word_indirect:           1
-;     range_backup:                1
-;     renum_missing_line:          1
-;     renum_no_space:              1
-;     renum_pass1_loop:            1
-;     renum_pass2:                 1
-;     renum_pass2_loop:            1
-;     renum_pass3:                 1
-;     renum_ref:                   1
-;     renum_resume:                1
-;     repeat_stack:                1
-;     repeat_stack_hi:             1
-;     resint_a:                    1
-;     resint_c:                    1
-;     resint_x:                    1
-;     resint_y:                    1
-;     return_11:                   1
-;     return_14:                   1
-;     return_15:                   1
-;     return_16:                   1
-;     return_17:                   1
-;     return_18:                   1
-;     return_20:                   1
-;     return_24:                   1
-;     return_27:                   1
-;     return_29:                   1
-;     return_30:                   1
-;     return_32:                   1
-;     return_34:                   1
-;     return_37:                   1
-;     return_38:                   1
-;     return_4:                    1
-;     return_40:                   1
-;     return_5:                    1
-;     return_6:                    1
-;     return_7:                    1
-;     rights_copy_down:            1
-;     rnd_dispatch:                1
-;     rnd_range:                   1
-;     rnd_repeat:                  1
-;     rnd_seed:                    1
-;     small_int_to_fwa:            1
-;     start_new_program:           1
-;     stmt_dim:                    1
-;     stmt_listo:                  1
-;     stmt_local:                  1
-;     stmt_next:                   1
-;     stmt_read:                   1
-;     stmt_vdu:                    1
-;     sub_c9231:                   1
-;     sub_c9807:                   1
-;     sub_c987b:                   1
-;     sub_c9880:                   1
-;     sub_ca14b:                   1
-;     sub_ca3e7:                   1
-;     sub_ca4b6:                   1
-;     sub_ca4c7:                   1
-;     sub_ca4e8:                   1
-;     sub_ca801:                   1
-;     sub_ca9b1:                   1
-;     sub_caa94:                   1
-;     sub_caada:                   1
-;     sub_cad8f:                   1
-;     sub_cae02:                   1
-;     sub_cae3a:                   1
-;     sub_cb4b7:                   1
-;     sub_cbbfc:                   1
-;     sub_cbd2f:                   1
-;     sub_cbe55:                   1
-;     sub_cbe56:                   1
-;     sub_cbe93:                   1
-;     sub_cbeb2:                   1
-;     sub_cbee7:                   1
-;     tok_check_colon:             1
-;     tok_check_comma_star:        1
-;     tok_check_hex:               1
-;     tok_check_letter:            1
-;     tok_check_number:            1
-;     tok_check_string:            1
-;     tok_continue:                1
-;     tok_emit_token:              1
-;     tok_flag_fnproc:             1
-;     tok_flag_linenum:            1
-;     tok_flag_skipline:           1
-;     tok_flag_start_stmt:         1
-;     tok_kw_abbrev:               1
-;     tok_kw_entry:                1
-;     tok_kw_match_loop:           1
-;     tok_kw_next_entry:           1
-;     tok_kw_retry:                1
-;     tok_skip_fnproc_done:        1
-;     tok_skip_fnproc_loop:        1
-;     tok_skip_name:               1
-;     tok_string_loop:             1
-;     tok_try_keyword:             1
-;     tokenise_line:               1
-;     tokenise_resume:             1
-;     trace_ceiling_loop:          1
-;     trace_check_end:             1
-;     trace_off:                   1
-;     trace_on:                    1
-;     trace_set_flag:              1
-;     unstack_addr:                1
-;     unstack_addr_copy:           1
-;     unstack_addr_cr:             1
-;     unstack_numeric:             1
-;     unstack_str_copy:            1
-;     unstack_str_drop:            1
-;     unstack_str_setlen:          1
-;     unstack_value_to_var:        1
-;     validate_var_name:           1
-;     valname_check_lc:            1
-;     valname_check_uc:            1
-;     vartop_check:                1
-;     vartop_no_room:              1
-;     vdu_loop:                    1
+;     zp_iwa:                      188
+;     zp_general:                  142
+;     zp_iwa_1:                    112
+;     zp_text_ptr_off:              92
+;     zp_text_ptr2_off:             90
+;     zp_stack_ptr:                 85
+;     zp_text_ptr:                  77
+;     zp_fwa_m1:                    73
+;     zp_iwa_2:                     70
+;     zp_general_1:                 66
+;     zp_fwb_exp:                   65
+;     zp_fileblk:                   62
+;     zp_fwa_m2:                    61
+;     zp_fwa_m4:                    61
+;     zp_iwa_3:                     61
+;     zp_fwb_sign:                  59
+;     zp_fwa_m3:                    58
+;     zp_fwb_m1:                    56
+;     zp_fwa_exp:                   55
+;     zp_fwb_m2:                    55
+;     zp_strbuf_len:                52
+;     skip_spaces:                  48
+;     zp_fwa_sign:                  48
+;     zp_text_ptr2:                 48
+;     l003a:                        45
+;     zp_fwa_rnd:                   42
+;     zp_text_ptr_1:                41
+;     zp_var_type:                  41
+;     zp_fwb_ovf:                   39
+;     zp_fwb_m3:                    37
+;     zp_fp_ptr:                    31
+;     stack_integer:                29
+;     l004d:                        28
+;     zp_vartop:                    28
+;     string_work:                  27
+;     check_end_of_statement:       25
+;     zp_fwb_m4:                    25
+;     statement_loop:               23
+;     eval_expr_to_integer:         22
+;     zp_text_ptr2_1:               22
+;     coerce_to_integer:            21
+;     skip_spaces_ptr2:             21
+;     zp_dec_exp:                   21
+;     zp_stack_ptr_1:               21
+;     zp_top:                       21
+;     l004a:                        20
+;     zp_fwa_ovf:                   20
+;     zp_vartop_1:                  20
+;     err_type_mismatch:            18
+;     int_result_a:                 18
+;     l004e:                        18
+;     fwa_sign:                     17
+;     zp_fwb_rnd:                   17
+;     eval_or_eor:                  16
+;     unstack_integer:              16
+;     zp_page:                      16
+;     zp_for_level:                 15
+;     zp_top_1:                     15
+;     zp_fp_ptr_1:                  14
+;     eval_factor:                  13
+;     print_char:                   13
+;     fwa_mul_var:                  12
+;     int_to_fwa:                   12
+;     oswrch:                       12
+;     stack_real:                   12
+;     cae56:                        11
+;     eval_expr:                    11
+;     eval_real:                    11
+;     iwa_from_ya:                  11
+;     osbyte:                       11
+;     output_char:                  11
+;     unstack_real:                 11
+;     zp_opt_flag:                  11
+;     check_line_number:            10
+;     eval_factor_integer:          10
+;     fwa_add_var:                  10
+;     fwa_unpack_var:               10
+;     next_statement:               10
+;     fwa_pack_temp1:                9
+;     parse_lvalue:                  9
+;     print_space:                   9
+;     stack_string:                  9
+;     sub_cbc25:                     9
+;     zp_dp_flag:                    9
+;     zp_print_flag:                 9
+;     asm_index_error:               8
+;     bad_dim:                       8
+;     ca099:                         8
+;     eval_expr_integer:             8
+;     fwa_clear:                     8
+;     fwa_normalise:                 8
+;     inc_ptr_general:               8
+;     l05ff:                         8
+;     skip_to_statement_end:         8
+;     sync_text_ptr:                 8
+;     zp_himem:                      8
+;     zp_himem_1:                    8
+;     zp_print_bytes:                8
+;     asm_emit:                      7
+;     asm_opcode_add16:              7
+;     c9bb5:                         7
+;     ensure_real:                   7
+;     fwa_pack_var:                  7
+;     fwb_unpack_var:                7
+;     immediate_loop:                7
+;     stmt_backup_end:               7
+;     syntax_error:                  7
+;     zp_count:                      7
+;     assign_number:                 6
+;     c9bb4:                         6
+;     c9c88:                         6
+;     cae43:                         6
+;     cb2b5:                         6
+;     cbddc:                         6
+;     check_program:                 6
+;     clear_then_immediate:          6
+;     coerce_var_to_integer:         6
+;     fwa_pack_temp3:                6
+;     fwa_set_one:                   6
+;     osbget:                        6
+;     osbput:                        6
+;     point_fp_temp1:                6
+;     unstack_string:                6
+;     zp_error_vec:                  6
+;     zp_error_vec_1:                6
+;     zp_fp_temp:                    6
+;     zp_lomem:                      6
+;     zp_lomem_1:                    6
+;     asm_absolute:                  5
+;     c9a93:                         5
+;     c9fe6:                         5
+;     ca208:                         5
+;     cac9b:                         5
+;     cb741:                         5
+;     cb97d:                         5
+;     clear_vars_heap_stack:         5
+;     fp_mantissas_sub:              5
+;     fwa_negate:                    5
+;     fwa_to_int:                    5
+;     fwb_copy_from_fwa:             5
+;     fwb_div2:                      5
+;     is_alphanumeric:               5
+;     iwa_store_zp:                  5
+;     l0044:                         5
+;     osword:                        5
+;     print_sync:                    5
+;     resint_at:                     5
+;     return_22:                     5
+;     skip_spaces_expect_comma:      5
+;     sub_c9a9d:                     5
+;     sub_cbfa9:                     5
+;     tok_advance:                   5
+;     tok_scan:                      5
+;     unstack_int_to_zp:             5
+;     zp_gosub_level:                5
+;     zp_repeat_level:               5
+;     zp_trace_flag:                 5
+;     asm_mistake:                   4
+;     assign_check_end:              4
+;     bad_statement:                 4
+;     c9c45:                         4
+;     ca46c:                         4
+;     cb036:                         4
+;     cb751:                         4
+;     cba5a:                         4
+;     cbc28:                         4
+;     clear_value_bytes:             4
+;     eval_add_sub:                  4
+;     eval_after_eq:                 4
+;     eval_comma_integer:            4
+;     eval_eq_integer:               4
+;     eval_power:                    4
+;     find_line_target:              4
+;     find_variable:                 4
+;     findvar_walk:                  4
+;     findvar_walk_b:                4
+;     fp_eval_cont_frac:             4
+;     fwa_rdiv_var:                  4
+;     fwa_to_int2:                   4
+;     iwa_abs:                       4
+;     iwa_inc:                       4
+;     l0045:                         4
+;     l0046:                         4
+;     l0441:                         4
+;     missing_comma:                 4
+;     parse_dec_overflow:            4
+;     point_fp_temp4:                4
+;     print_file_loop:               4
+;     pvr_name_end:                  4
+;     read_via_ptr_general:          4
+;     reserve_stack:                 4
+;     reset_offset_1:                4
+;     resint_p:                      4
+;     return_23:                     4
+;     stmt_check_end:                4
+;     vdu_send_byte:                 4
+;     zp_asm_opcode:                 4
+;     zp_data_ptr:                   4
+;     zp_data_ptr_1:                 4
+;     zp_rnd_seed:                   4
+;     zp_rnd_seed_2:                 4
+;     zp_rnd_seed_4:                 4
+;     advance_to_next_line:          3
+;     asm_got_opcode:                3
+;     asm_opcode_add4:               3
+;     asm_opcode_add8:               3
+;     asm_zp_or_abs:                 3
+;     assign_string:                 3
+;     c8858:                         3
+;     c9960:                         3
+;     c99a4:                         3
+;     c9d0e:                         3
+;     c9d1d:                         3
+;     c9dd4:                         3
+;     c9ed1:                         3
+;     ca0e8:                         3
+;     ca387:                         3
+;     ca590:                         3
+;     ca724:                         3
+;     ca76c:                         3
+;     ca7f7:                         3
+;     ca99e:                         3
+;     caad1:                         3
+;     caea2:                         3
+;     call_arg_error:                3
+;     cb033:                         3
+;     cb32c:                         3
+;     cb8d2:                         3
+;     cbb07:                         3
+;     cbb7a:                         3
+;     check_subscript_bound:         3
+;     coerce_type_error:             3
+;     create_variable:               3
+;     dim_clear_loop:                3
+;     dim_no_room:                   3
+;     err_no_room:                   3
+;     eval_channel:                  3
+;     eval_mul_div:                  3
+;     find_program_line:             3
+;     fn_true:                       3
+;     fp_divide:                     3
+;     fwa_add_fwb:                   3
+;     fwa_div10:                     3
+;     fwa_int_power:                 3
+;     fwb_clear:                     3
+;     general_next_byte:             3
+;     is_digit:                      3
+;     iwa_negate:                    3
+;     l0401:                         3
+;     not_name_char:                 3
+;     parse_number:                  3
+;     point_fp_temp2:                3
+;     print_done:                    3
+;     print_item:                    3
+;     print_line_number:             3
+;     print_listo_indent:            3
+;     print_newline:                 3
+;     print_next:                    3
+;     print_string:                  3
+;     print_token:                   3
+;     pvr_scan_loop:                 3
+;     return_12:                     3
+;     return_19:                     3
+;     return_25:                     3
+;     return_33:                     3
+;     return_36:                     3
+;     return_39:                     3
+;     return_8:                      3
+;     sin_cos_reduce:                3
+;     sub_c8827:                     3
+;     sub_cbd3a:                     3
+;     tok_skip_number_loop:          3
+;     unstack_int_to_general:        3
+;     vdu_done:                      3
+;     zp_erl:                        3
+;     zp_erl_1:                      3
+;     zp_error_ptr:                  3
+;     zp_listo:                      3
+;     zp_rnd_seed_1:                 3
+;     zp_width:                      3
+;     array_error:                   2
+;     asm_branch_range_err:          2
+;     asm_emit_loop:                 2
+;     asm_emit_more:                 2
+;     asm_equ_index_err:             2
+;     asm_force_zp:                  2
+;     asm_imm_byte:                  2
+;     asm_imm_eval:                  2
+;     asm_list_pad_loop:             2
+;     asm_set_operand:               2
+;     asm_three_byte:                2
+;     asm_two_byte:                  2
+;     assign_str_alloc:              2
+;     assign_str_alloc_size:         2
+;     assign_str_store:              2
+;     assign_string_to:              2
+;     auto_loop:                     2
+;     c9978:                         2
+;     c99a7:                         2
+;     c9a9a:                         2
+;     c9c03:                         2
+;     c9c9b:                         2
+;     c9ca1:                         2
+;     c9d39:                         2
+;     c9e23:                         2
+;     c9eb7:                         2
+;     c9ef9:                         2
+;     c9efb:                         2
+;     c9f39:                         2
+;     c9f5c:                         2
+;     ca072:                         2
+;     ca111:                         2
+;     ca118:                         2
+;     ca170:                         2
+;     ca174:                         2
+;     ca313:                         2
+;     ca336:                         2
+;     ca40c:                         2
+;     ca43c:                         2
+;     ca450:                         2
+;     ca659:                         2
+;     ca67c:                         2
+;     ca6bb:                         2
+;     ca8ea:                         2
+;     ca8fe:                         2
+;     ca904:                         2
+;     ca91b:                         2
+;     ca936:                         2
+;     ca9aa:                         2
+;     ca9c3:                         2
+;     caa4e:                         2
+;     caab8:                         2
+;     cab9d:                         2
+;     caba0:                         2
+;     cabb8:                         2
+;     cabe6:                         2
+;     cac73:                         2
+;     cac95:                         2
+;     cad3c:                         2
+;     cad52:                         2
+;     cad67:                         2
+;     cad89:                         2
+;     cadc9:                         2
+;     cafc2:                         2
+;     cb02e:                         2
+;     cb0bf:                         2
+;     cb0f5:                         2
+;     cb11a:                         2
+;     cb12d:                         2
+;     cb24d:                         2
+;     cb2ca:                         2
+;     cb329:                         2
+;     cb48f:                         2
+;     cb4ae:                         2
+;     cb4e9:                         2
+;     cb51e:                         2
+;     cb5d8:                         2
+;     cb639:                         2
+;     cb678:                         2
+;     cb688:                         2
+;     cb68e:                         2
+;     cb6be:                         2
+;     cb6d7:                         2
+;     cb7a4:                         2
+;     cb944:                         2
+;     cb9af:                         2
+;     cb9c4:                         2
+;     cb9da:                         2
+;     cbb15:                         2
+;     cbc55:                         2
+;     cbcd6:                         2
+;     cbe41:                         2
+;     cbe9e:                         2
+;     cbf82:                         2
+;     cend_back:                     2
+;     createvar_chain:               2
+;     decode_line_number:            2
+;     delete_program_line:           2
+;     dim_array:                     2
+;     dispatch_token:                2
+;     drop_stack_integer:            2
+;     err_too_big:                   2
+;     escape_error:                  2
+;     eval_relational:               2
+;     eval_rhs:                      2
+;     expect_eq:                     2
+;     findvar_chain_head:            2
+;     fp_split_int_frac:             2
+;     fp_temp1:                      2
+;     fwa_acc_fwb:                   2
+;     fwa_add_fwb_raw:               2
+;     fwa_copy_from_fwb:             2
+;     fwa_mul10:                     2
+;     fwa_mul_var_raw:               2
+;     fwa_pack_temp2:                2
+;     fwa_reciprocal:                2
+;     fwa_round:                     2
+;     fwa_rsub_var:                  2
+;     fwa_sub_var:                   2
+;     fwa_unpack_temp1:              2
+;     fwb_half_fwa:                  2
+;     if_then_line:                  2
+;     imul16:                        2
+;     index_array:                   2
+;     iwa_divide:                    2
+;     iwa_load_zp:                   2
+;     l0022:                         2
+;     l0100:                         2
+;     l01ff:                         2
+;     l0402:                         2
+;     l0403:                         2
+;     l043d:                         2
+;     l04f1:                         2
+;     l04f2:                         2
+;     l04f3:                         2
+;     l04f5:                         2
+;     l04f7:                         2
+;     l04fc:                         2
+;     l06ff:                         2
+;     load_program:                  2
+;     load_real_var:                 2
+;     mant_mul10:                    2
+;     missing_quote:                 2
+;     mode_reset_col:                2
+;     mode_send:                     2
+;     next_data_item:                2
+;     no_fn_error:                   2
+;     no_proc_error:                 2
+;     number_to_ascii:               2
+;     osargs:                        2
+;     oscli:                         2
+;     osfile:                        2
+;     osfind:                        2
+;     osrdch:                        2
+;     output_digit:                  2
+;     page_done:                     2
+;     parse_dec_encode:              2
+;     parse_dec_loop:                2
+;     parse_line_range:              2
+;     parse_var_ref:                 2
+;     point_const_half_pi:           2
+;     point_fp_temp3:                2
+;     point_half_pi_hi:              2
+;     point_half_pi_lo:              2
+;     print_hex_byte:                2
+;     print_inline_char:             2
+;     print_inline_string:           2
+;     print_spc_loop:                2
+;     print_special_item:            2
+;     print_special_skip:            2
+;     pvr_named:                     2
+;     pvr_parse:                     2
+;     pvr_undefined:                 2
+;     read_input_line:               2
+;     read_key_timed:                2
+;     read_string_literal:           2
+;     renum_done:                    2
+;     renum_line_loop:               2
+;     renum_scan_loop:               2
+;     renum_table_next:              2
+;     renum_table_search:            2
+;     resint_o:                      2
+;     return_1:                      2
+;     return_10:                     2
+;     return_13:                     2
+;     return_2:                      2
+;     return_21:                     2
+;     return_26:                     2
+;     return_28:                     2
+;     return_3:                      2
+;     return_31:                     2
+;     return_35:                     2
+;     return_9:                      2
+;     rnd_fraction:                  2
+;     rnd_step:                      2
+;     setup_scan_top:                2
+;     silly_error:                   2
+;     stack_local:                   2
+;     stack_value:                   2
+;     step_to_next_line:             2
+;     stmt_data:                     2
+;     stmt_eol:                      2
+;     sub_c887c:                     2
+;     sub_c9923:                     2
+;     sub_c9b6b:                     2
+;     sub_c9dce:                     2
+;     sub_c9e1d:                     2
+;     sub_cb4b1:                     2
+;     sub_cb562:                     2
+;     sub_cbc81:                     2
+;     sub_cbc8d:                     2
+;     sub_cbe92:                     2
+;     sub_cbeba:                     2
+;     sub_cbed2:                     2
+;     sub_cbedd:                     2
+;     subscript_error:               2
+;     to_immediate:                  2
+;     tok_hex_loop:                  2
+;     tok_kw_check_end:              2
+;     tok_kw_found:                  2
+;     tok_kw_skip_loop:              2
+;     tok_name:                      2
+;     tok_name_loop:                 2
+;     tok_not_keyword:               2
+;     tok_resume_mid:                2
+;     tok_write_token:               2
+;     trace_line:                    2
+;     try_variable_assignment:       2
+;     unstack_numeric_drop:          2
+;     usr_call:                      2
+;     valname_count:                 2
+;     valname_loop:                  2
+;     vartop_commit:                 2
+;     wrchv:                         2
+;     zero_new_value:                2
+;     zp_rnd_seed_3:                 2
+;     zp_trace_max:                  2
+;     action_hi_by_token:            1
+;     action_lo_by_token:            1
+;     advance_vartop:                1
+;     ascii_to_number:               1
+;     asm_abs_from_paren:            1
+;     asm_acc_or_abs:                1
+;     asm_accumulator:               1
+;     asm_addr_eval:                 1
+;     asm_base_opcode:               1
+;     asm_branch_back:               1
+;     asm_branch_fwd:                1
+;     asm_branch_ok:                 1
+;     asm_byte_error:                1
+;     asm_continue:                  1
+;     asm_define_label:              1
+;     asm_emit_advance:              1
+;     asm_emit_dest:                 1
+;     asm_emit_store:                1
+;     asm_enter:                     1
+;     asm_equ_backup:                1
+;     asm_equ_eval:                  1
+;     asm_equ_index:                 1
+;     asm_imm1_backup:               1
+;     asm_imm1_eval:                 1
+;     asm_indexed_adjust:            1
+;     asm_indirect_zpx:              1
+;     asm_jmp_indirect:              1
+;     asm_list_byte:                 1
+;     asm_list_byte_loop:            1
+;     asm_list_count:                1
+;     asm_list_indent_loop:          1
+;     asm_list_newline:              1
+;     asm_list_source:               1
+;     asm_list_src_end:              1
+;     asm_list_src_loop:             1
+;     asm_list_src_print:            1
+;     asm_logic_mnemonic:            1
+;     asm_loop:                      1
+;     asm_mn_char_loop:              1
+;     asm_mn_pack_loop:              1
+;     asm_mn_search:                 1
+;     asm_mn_search_loop:            1
+;     asm_mn_search_next:            1
+;     asm_mnemonic_hi:               1
+;     asm_mnemonic_lo:               1
+;     asm_mode_class2:               1
+;     asm_mode_class3:               1
+;     asm_mode_equ:                  1
+;     asm_mode_imm:                  1
+;     asm_mode_indirect:             1
+;     asm_mode_noop:                 1
+;     asm_next_line:                 1
+;     asm_next_statement:            1
+;     asm_operand:                   1
+;     asm_opt_directive:             1
+;     asm_parse_mnemonic:            1
+;     asm_scan_end_loop:             1
+;     asm_stmt_end:                  1
+;     asm_three_emit:                1
+;     asm_try_indirect:              1
+;     assembler_exit:                1
+;     assign_new_var:                1
+;     assign_str_addr:               1
+;     assign_str_addr_cr:            1
+;     assign_str_addr_loop:          1
+;     assign_str_copy_loop:          1
+;     brkv:                          1
+;     brkv+1:                        1
+;     c883a:                         1
+;     c886a:                         1
+;     c9925:                         1
+;     c9943:                         1
+;     c994f:                         1
+;     c998e:                         1
+;     c9a33:                         1
+;     c9a35:                         1
+;     c9a62:                         1
+;     c9ae5:                         1
+;     c9ae7:                         1
+;     c9aff:                         1
+;     c9b11:                         1
+;     c9b15:                         1
+;     c9b3a:                         1
+;     c9b55:                         1
+;     c9b7a:                         1
+;     c9ba8:                         1
+;     c9bc0:                         1
+;     c9bd4:                         1
+;     c9bdf:                         1
+;     c9be8:                         1
+;     c9bfa:                         1
+;     c9c4e:                         1
+;     c9c77:                         1
+;     c9c8b:                         1
+;     c9ca7:                         1
+;     c9cb5:                         1
+;     c9ce1:                         1
+;     c9cf1:                         1
+;     c9cfa:                         1
+;     c9d2c:                         1
+;     c9d3c:                         1
+;     c9d4e:                         1
+;     c9d69:                         1
+;     c9da6:                         1
+;     c9dbb:                         1
+;     c9dbd:                         1
+;     c9dc6:                         1
+;     c9de5:                         1
+;     c9e35:                         1
+;     c9e59:                         1
+;     c9e88:                         1
+;     c9e96:                         1
+;     c9ebf:                         1
+;     c9ee8:                         1
+;     c9ef5:                         1
+;     c9f0f:                         1
+;     c9f1d:                         1
+;     c9f25:                         1
+;     c9f31:                         1
+;     c9f34:                         1
+;     c9f71:                         1
+;     c9f92:                         1
+;     c9f9c:                         1
+;     c9fa0:                         1
+;     c9fad:                         1
+;     c9fc3:                         1
+;     c9fcf:                         1
+;     c9fe4:                         1
+;     c9ff4:                         1
+;     ca00f:                         1
+;     ca011:                         1
+;     ca015:                         1
+;     ca028:                         1
+;     ca038:                         1
+;     ca063:                         1
+;     ca0a0:                         1
+;     ca0a8:                         1
+;     ca0c2:                         1
+;     ca0c8:                         1
+;     ca0e1:                         1
+;     ca11b:                         1
+;     ca11f:                         1
+;     ca14e:                         1
+;     ca1ed:                         1
+;     ca1ff:                         1
+;     ca20b:                         1
+;     ca258:                         1
+;     ca2cd:                         1
+;     ca2fd:                         1
+;     ca33a:                         1
+;     ca37a:                         1
+;     ca3e1:                         1
+;     ca466:                         1
+;     ca468:                         1
+;     ca491:                         1
+;     ca4ae:                         1
+;     ca4b0:                         1
+;     ca4b3:                         1
+;     ca53d:                         1
+;     ca552:                         1
+;     ca579:                         1
+;     ca58c:                         1
+;     ca5e3:                         1
+;     ca613:                         1
+;     ca61d:                         1
+;     ca625:                         1
+;     ca652:                         1
+;     ca676:                         1
+;     ca6f1:                         1
+;     ca701:                         1
+;     ca70a:                         1
+;     ca726:                         1
+;     ca73f:                         1
+;     ca76e:                         1
+;     ca787:                         1
+;     ca7b7:                         1
+;     ca7e6:                         1
+;     ca808:                         1
+;     ca814:                         1
+;     ca82a:                         1
+;     ca82c:                         1
+;     ca8aa:                         1
+;     ca90a:                         1
+;     ca916:                         1
+;     caa0e:                         1
+;     caa35:                         1
+;     caa38:                         1
+;     caaa2:                         1
+;     caaac:                         1
+;     cab1e:                         1
+;     cab25:                         1
+;     caba2:                         1
+;     caba5:                         1
+;     cac0f:                         1
+;     cac23:                         1
+;     cac5e:                         1
+;     cac66:                         1
+;     cad03:                         1
+;     cad06:                         1
+;     cad12:                         1
+;     cad1a:                         1
+;     cad4d:                         1
+;     cad59:                         1
+;     cad77:                         1
+;     cad83:                         1
+;     cadaa:                         1
+;     cadc5:                         1
+;     cade1:                         1
+;     cade9:                         1
+;     cae05:                         1
+;     cae10:                         1
+;     cae20:                         1
+;     cae2a:                         1
+;     cae30:                         1
+;     cae61:                         1
+;     cae6d:                         1
+;     cae8d:                         1
+;     caeaa:                         1
+;     cafeb:                         1
+;     call_block_init:               1
+;     call_check_end:                1
+;     call_param_error:              1
+;     call_proc_fn:                  1
+;     cb023:                         1
+;     cb061:                         1
+;     cb06f:                         1
+;     cb07f:                         1
+;     cb0a1:                         1
+;     cb0b9:                         1
+;     cb0f8:                         1
+;     cb0fb:                         1
+;     cb13c:                         1
+;     cb14d:                         1
+;     cb1ca:                         1
+;     cb1e9:                         1
+;     cb1f4:                         1
+;     cb202:                         1
+;     cb226:                         1
+;     cb24a:                         1
+;     cb2f0:                         1
+;     cb2f3:                         1
+;     cb2f9:                         1
+;     cb303:                         1
+;     cb318:                         1
+;     cb37f:                         1
+;     cb3a7:                         1
+;     cb3ba:                         1
+;     cb3c0:                         1
+;     cb3f9:                         1
+;     cb413:                         1
+;     cb4e0:                         1
+;     cb536:                         1
+;     cb542:                         1
+;     cb556:                         1
+;     cb567:                         1
+;     cb571:                         1
+;     cb5cf:                         1
+;     cb5db:                         1
+;     cb602:                         1
+;     cb60f:                         1
+;     cb61d:                         1
+;     cb637:                         1
+;     cb651:                         1
+;     cb668:                         1
+;     cb66e:                         1
+;     cb67e:                         1
+;     cb6a3:                         1
+;     cb73f:                         1
+;     cb766:                         1
+;     cb79d:                         1
+;     cb7a1:                         1
+;     cb81f:                         1
+;     cb837:                         1
+;     cb84f:                         1
+;     cb875:                         1
+;     cb88b:                         1
+;     cb8d9:                         1
+;     cb8dd:                         1
+;     cb931:                         1
+;     cb95c:                         1
+;     cb96a:                         1
+;     cb977:                         1
+;     cb995:                         1
+;     cba13:                         1
+;     cba19:                         1
+;     cba2b:                         1
+;     cba39:                         1
+;     cba52:                         1
+;     cba69:                         1
+;     cba99:                         1
+;     cbaa2:                         1
+;     cbab0:                         1
+;     cbaca:                         1
+;     cbacd:                         1
+;     cbadc:                         1
+;     cbb32:                         1
+;     cbb40:                         1
+;     cbb9c:                         1
+;     cbbad:                         1
+;     cbbcd:                         1
+;     cbc09:                         1
+;     cbc53:                         1
+;     cbc5d:                         1
+;     cbc66:                         1
+;     cbc6d:                         1
+;     cbc7c:                         1
+;     cbc88:                         1
+;     cbce1:                         1
+;     cbcea:                         1
+;     cbd14:                         1
+;     cbdc6:                         1
+;     cbde1:                         1
+;     cbe34:                         1
+;     cbe5f:                         1
+;     cbe90:                         1
+;     cbe9b:                         1
+;     cbf96:                         1
+;     cbfc3:                         1
+;     cbfdc:                         1
+;     cbff6:                         1
+;     cend_check:                    1
+;     cend_skip_loop:                1
+;     check_eq_star_bracket:         1
+;     check_escape:                  1
+;     check_statement_terminated:    1
+;     chkline_skip:                  1
+;     clearval_loop:                 1
+;     cls_send:                      1
+;     coerce_real:                   1
+;     copy_ptra_to_ptrb:             1
+;     create_def_entry:              1
+;     createvar_copy_loop:           1
+;     createvar_link:                1
+;     createvar_walk_loop:           1
+;     data_scan_loop:                1
+;     delete_loop:                   1
+;     dim_after:                     1
+;     dim_alloc:                     1
+;     dim_bound_loop:                1
+;     dim_byte:                      1
+;     dim_byte_block:                1
+;     dim_check_paren:               1
+;     dim_clear:                     1
+;     dim_clear_check:               1
+;     dim_name:                      1
+;     dim_next_array:                1
+;     dim_no_room_jmp:               1
+;     draw_save_mode:                1
+;     encode_line_number:            1
+;     err_no_gosub:                  1
+;     err_no_repeat:                 1
+;     err_no_such_line:              1
+;     err_too_many_gosubs:           1
+;     err_too_many_repeats:          1
+;     eval_and:                      1
+;     eval_and_compare:              1
+;     exec_assembler:                1
+;     exec_dispatch:                 1
+;     exec_immediate:                1
+;     exec_star_command:             1
+;     execute_line:                  1
+;     find_def:                      1
+;     find_error_line:               1
+;     find_proc_fn:                  1
+;     findvar_cmp_a:                 1
+;     findvar_cmp_a_loop:            1
+;     findvar_cmp_b:                 1
+;     findvar_cmp_b_loop:            1
+;     findvar_match_a:               1
+;     findvar_match_b:               1
+;     fn_asn:                        1
+;     fn_ln:                         1
+;     fn_return:                     1
+;     for_stack:                     1
+;     fp_compare:                    1
+;     fp_mantissas_add:              1
+;     fwa_complement_half_pi:        1
+;     fwa_round_carry:               1
+;     fwa_swap_var:                  1
+;     gosub_stack:                   1
+;     gosub_stack_hi:                1
+;     idxarr_addr:                   1
+;     idxarr_loop:                   1
+;     idxarr_offset:                 1
+;     idxarr_one:                    1
+;     idxarr_scale:                  1
+;     idxarr_type:                   1
+;     if_false:                      1
+;     if_no_else:                    1
+;     if_no_then:                    1
+;     if_scan_else_loop:             1
+;     if_skip_cond:                  1
+;     if_then:                       1
+;     if_type_error:                 1
+;     imul_double:                   1
+;     imul_loop:                     1
+;     imul_overflow:                 1
+;     is_dot_or_digit:               1
+;     iwa_div:                       1
+;     iwa_mod:                       1
+;     iwa_store_var:                 1
+;     l0047:                         1
+;     l00ff:                         1
+;     l0106:                         1
+;     l047f:                         1
+;     l04f4:                         1
+;     l04f6:                         1
+;     l04f9:                         1
+;     l04fa:                         1
+;     l04fb:                         1
+;     l04fe:                         1
+;     l04ff:                         1
+;     l0501:                         1
+;     l0502:                         1
+;     l0503:                         1
+;     l0504:                         1
+;     l0505:                         1
+;     l0506:                         1
+;     l0508:                         1
+;     l0509:                         1
+;     l050a:                         1
+;     l050b:                         1
+;     l050d:                         1
+;     l050e:                         1
+;     l05a3:                         1
+;     l05b7:                         1
+;     l05cb:                         1
+;     l05e5:                         1
+;     l996b:                         1
+;     l99b9:                         1
+;     lang_install_brkv:             1
+;     language_startup:              1
+;     let_assign:                    1
+;     let_mistake:                   1
+;     let_numeric:                   1
+;     line_reset_offset:             1
+;     load_byte_var:                 1
+;     load_string_var:               1
+;     local_bump:                    1
+;     local_not_var:                 1
+;     loop_c8864:                    1
+;     loop_c8867:                    1
+;     loop_c888d:                    1
+;     loop_c9929:                    1
+;     loop_c992e:                    1
+;     loop_c9948:                    1
+;     loop_c995a:                    1
+;     loop_c9980:                    1
+;     loop_c99f4:                    1
+;     loop_c9a01:                    1
+;     loop_c9a39:                    1
+;     loop_c9a50:                    1
+;     loop_c9b03:                    1
+;     loop_c9b2c:                    1
+;     loop_c9b43:                    1
+;     loop_c9b4e:                    1
+;     loop_c9b5e:                    1
+;     loop_c9b75:                    1
+;     loop_c9b8a:                    1
+;     loop_c9c15:                    1
+;     loop_c9c2d:                    1
+;     loop_c9d11:                    1
+;     loop_c9d20:                    1
+;     loop_c9d8b:                    1
+;     loop_c9dcb:                    1
+;     loop_c9e24:                    1
+;     loop_c9e6c:                    1
+;     loop_c9e90:                    1
+;     loop_c9e9a:                    1
+;     loop_c9eb0:                    1
+;     loop_c9ec8:                    1
+;     loop_c9f20:                    1
+;     loop_c9f6b:                    1
+;     loop_c9f7e:                    1
+;     loop_c9fdb:                    1
+;     loop_c9fe8:                    1
+;     loop_ca002:                    1
+;     loop_ca055:                    1
+;     loop_ca0f5:                    1
+;     loop_ca108:                    1
+;     loop_ca139:                    1
+;     loop_ca2e6:                    1
+;     loop_ca3f8:                    1
+;     loop_ca528:                    1
+;     loop_ca543:                    1
+;     loop_ca564:                    1
+;     loop_ca57f:                    1
+;     loop_ca629:                    1
+;     loop_ca63a:                    1
+;     loop_ca70c:                    1
+;     loop_ca754:                    1
+;     loop_ca7a9:                    1
+;     loop_ca7cf:                    1
+;     loop_ca8b5:                    1
+;     loop_cab7f:                    1
+;     loop_cacaa:                    1
+;     loop_cacd6:                    1
+;     loop_cad42:                    1
+;     loop_cad4f:                    1
+;     loop_cad55:                    1
+;     loop_cad8c:                    1
+;     loop_cadb6:                    1
+;     loop_cadcb:                    1
+;     loop_cadcc:                    1
+;     loop_cae79:                    1
+;     loop_cae93:                    1
+;     loop_caec7:                    1
+;     loop_caece:                    1
+;     loop_caf78:                    1
+;     loop_caf89:                    1
+;     loop_cb083:                    1
+;     loop_cb0df:                    1
+;     loop_cb0e1:                    1
+;     loop_cb0fe:                    1
+;     loop_cb122:                    1
+;     loop_cb158:                    1
+;     loop_cb18a:                    1
+;     loop_cb1a6:                    1
+;     loop_cb21c:                    1
+;     loop_cb236:                    1
+;     loop_cb28e:                    1
+;     loop_cb39d:                    1
+;     loop_cb3ad:                    1
+;     loop_cb3d9:                    1
+;     loop_cb451:                    1
+;     loop_cb477:                    1
+;     loop_cb520:                    1
+;     loop_cb538:                    1
+;     loop_cb580:                    1
+;     loop_cb5fc:                    1
+;     loop_cb64b:                    1
+;     loop_cb6a0:                    1
+;     loop_cb6a9:                    1
+;     loop_cb7b0:                    1
+;     loop_cb7bd:                    1
+;     loop_cb8e4:                    1
+;     loop_cb8f2:                    1
+;     loop_cb90a:                    1
+;     loop_cb96c:                    1
+;     loop_cb980:                    1
+;     loop_cb9c7:                    1
+;     loop_cb9ca:                    1
+;     loop_cb9cf:                    1
+;     loop_cba0a:                    1
+;     loop_cba21:                    1
+;     loop_cba2d:                    1
+;     loop_cba3f:                    1
+;     loop_cba5f:                    1
+;     loop_cbabd:                    1
+;     loop_cbb6f:                    1
+;     loop_cbb85:                    1
+;     loop_cbc9e:                    1
+;     loop_cbd07:                    1
+;     loop_cbd33:                    1
+;     loop_cbdbe:                    1
+;     loop_cbdd4:                    1
+;     loop_cbe78:                    1
+;     loop_cbecf:                    1
+;     loop_cbfd9:                    1
+;     loop_cbfec:                    1
+;     lvalue_dollar:                 1
+;     lvalue_indirect:               1
+;     lvalue_range_error:            1
+;     lvalue_save_width:             1
+;     lvalue_word:                   1
+;     mistake_error:                 1
+;     not_line_number:               1
+;     not_local_error:               1
+;     osasci:                        1
+;     osnewl:                        1
+;     output_byte_decimal:           1
+;     output_top_digit:              1
+;     parse_dec_shift_loop:          1
+;     parse_decimal_u16:             1
+;     parse_exponent:                1
+;     plot_coord:                    1
+;     plot_send_hi:                  1
+;     point_general_page:            1
+;     print_check_sep:               1
+;     print_comma:                   1
+;     print_field_loop:              1
+;     print_file:                    1
+;     print_file_done:               1
+;     print_file_int_loop:           1
+;     print_file_real:               1
+;     print_file_real_loop:          1
+;     print_file_str:                1
+;     print_file_str_loop:           1
+;     print_hex_digit:               1
+;     print_inline_loop:             1
+;     print_num_pad:                 1
+;     print_pad_loop:                1
+;     print_semicolon:               1
+;     print_set_hex:                 1
+;     print_spc:                     1
+;     print_spc_count:               1
+;     print_spc_newline:             1
+;     print_string_loop:             1
+;     print_tab_error:               1
+;     print_tab_x:                   1
+;     print_tab_xy:                  1
+;     proc_clear_loop:               1
+;     pvr_advance:                   1
+;     pvr_after_name:                1
+;     pvr_byte_indirect:             1
+;     pvr_check_indirect:            1
+;     pvr_name_len:                  1
+;     pvr_name_ptr_hi:               1
+;     pvr_name_setup:                1
+;     pvr_no_name:                   1
+;     pvr_record_offset:             1
+;     pvr_resint_array:              1
+;     pvr_restore_type:              1
+;     pvr_save_width:                1
+;     pvr_scan_check_lc:             1
+;     pvr_scan_check_uc:             1
+;     pvr_string:                    1
+;     pvr_string_array:              1
+;     pvr_word_indirect:             1
+;     range_backup:                  1
+;     renum_missing_line:            1
+;     renum_no_space:                1
+;     renum_pass1_loop:              1
+;     renum_pass2:                   1
+;     renum_pass2_loop:              1
+;     renum_pass3:                   1
+;     renum_ref:                     1
+;     renum_resume:                  1
+;     repeat_stack:                  1
+;     repeat_stack_hi:               1
+;     resint_a:                      1
+;     resint_c:                      1
+;     resint_x:                      1
+;     resint_y:                      1
+;     return_11:                     1
+;     return_14:                     1
+;     return_15:                     1
+;     return_16:                     1
+;     return_17:                     1
+;     return_18:                     1
+;     return_20:                     1
+;     return_24:                     1
+;     return_27:                     1
+;     return_29:                     1
+;     return_30:                     1
+;     return_32:                     1
+;     return_34:                     1
+;     return_37:                     1
+;     return_38:                     1
+;     return_4:                      1
+;     return_40:                     1
+;     return_5:                      1
+;     return_6:                      1
+;     return_7:                      1
+;     rights_copy_down:              1
+;     rnd_dispatch:                  1
+;     rnd_range:                     1
+;     rnd_repeat:                    1
+;     rnd_seed:                      1
+;     small_int_to_fwa:              1
+;     start_new_program:             1
+;     step_past_line_header:         1
+;     stmt_dim:                      1
+;     stmt_listo:                    1
+;     stmt_local:                    1
+;     stmt_next:                     1
+;     stmt_read:                     1
+;     stmt_vdu:                      1
+;     sub_c9231:                     1
+;     sub_ca14b:                     1
+;     sub_ca3e7:                     1
+;     sub_ca4b6:                     1
+;     sub_ca4c7:                     1
+;     sub_ca4e8:                     1
+;     sub_ca801:                     1
+;     sub_ca9b1:                     1
+;     sub_caa94:                     1
+;     sub_caada:                     1
+;     sub_cad8f:                     1
+;     sub_cae02:                     1
+;     sub_cae3a:                     1
+;     sub_cb4b7:                     1
+;     sub_cbbfc:                     1
+;     sub_cbd2f:                     1
+;     sub_cbe55:                     1
+;     sub_cbe56:                     1
+;     sub_cbe93:                     1
+;     sub_cbeb2:                     1
+;     sub_cbee7:                     1
+;     tok_check_colon:               1
+;     tok_check_comma_star:          1
+;     tok_check_hex:                 1
+;     tok_check_letter:              1
+;     tok_check_number:              1
+;     tok_check_string:              1
+;     tok_continue:                  1
+;     tok_emit_token:                1
+;     tok_flag_fnproc:               1
+;     tok_flag_linenum:              1
+;     tok_flag_skipline:             1
+;     tok_flag_start_stmt:           1
+;     tok_kw_abbrev:                 1
+;     tok_kw_entry:                  1
+;     tok_kw_match_loop:             1
+;     tok_kw_next_entry:             1
+;     tok_kw_retry:                  1
+;     tok_skip_fnproc_done:          1
+;     tok_skip_fnproc_loop:          1
+;     tok_skip_name:                 1
+;     tok_string_loop:               1
+;     tok_try_keyword:               1
+;     tokenise_line:                 1
+;     tokenise_resume:               1
+;     trace_ceiling_loop:            1
+;     trace_check_end:               1
+;     trace_off:                     1
+;     trace_on:                      1
+;     trace_set_flag:                1
+;     unstack_addr:                  1
+;     unstack_addr_copy:             1
+;     unstack_addr_cr:               1
+;     unstack_numeric:               1
+;     unstack_str_copy:              1
+;     unstack_str_drop:              1
+;     unstack_str_setlen:            1
+;     unstack_value_to_var:          1
+;     validate_var_name:             1
+;     valname_check_lc:              1
+;     valname_check_uc:              1
+;     vartop_check:                  1
+;     vartop_no_room:                1
+;     vdu_loop:                      1
 
 ; Automatically generated labels:
 ;     c883a
 ;     c8858
 ;     c886a
-;     c9805
-;     c982a
-;     c9838
-;     c9849
-;     c984c
-;     c9859
-;     c9861
-;     c986d
-;     c9877
-;     c98ac
-;     c98b7
-;     c98bc
-;     c98cc
-;     c98e1
-;     c98e3
-;     c98f1
-;     c9902
 ;     c9925
 ;     c9943
 ;     c994f
@@ -16053,11 +16036,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c9821
-;     loop_c985a
-;     loop_c98bf
-;     loop_c98de
-;     loop_c98f3
 ;     loop_c9929
 ;     loop_c992e
 ;     loop_c9948
@@ -16218,11 +16196,6 @@ save pydis_start, pydis_end
 ;     sub_c8827
 ;     sub_c887c
 ;     sub_c9231
-;     sub_c9807
-;     sub_c9852
-;     sub_c987b
-;     sub_c9880
-;     sub_c9890
 ;     sub_c9923
 ;     sub_c9a9d
 ;     sub_c9b6b

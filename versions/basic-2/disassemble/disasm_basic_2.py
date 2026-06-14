@@ -4115,10 +4115,13 @@ d.comment(0x9801, 'save the advanced text offset', align=Align.INLINE)
 d.comment(0x9803, 'carry set: found', align=Align.INLINE)
 d.comment(0x9804, 'Return', align=Align.INLINE)
 d.comment(0x9805, 'carry clear: not a line number', align=Align.INLINE)
+# decode_line_number / eval_after_eq / expect_eq
+d.label(0x9805, 'not_line_number')
 d.comment(0x9806, 'Return', align=Align.INLINE)
 
 # sub_c9807: copy PtrA to PtrB, then expect "=" and evaluate.
 d.comment(0x9807, 'Copy PtrA to PtrB', align=Align.INLINE)
+d.label(0x9807, 'copy_ptra_to_ptrb')
 d.comment(0x9809, '(low)', align=Align.INLINE)
 d.comment(0x980b, 'high...', align=Align.INLINE)
 d.comment(0x980d, '(high)', align=Align.INLINE)
@@ -4144,8 +4147,11 @@ d.comment(0x981b, 'skip it', align=Align.INLINE)
 d.comment(0x981d, '"="?', align=Align.INLINE)
 d.comment(0x981f, 'yes: evaluate', align=Align.INLINE)
 d.comment(0x9821, 'Mistake error', align=Align.INLINE)
+d.label(0x9821, 'mistake_error')
 d.comment(0x982a, 'Mistake error', align=Align.INLINE)
+d.label(0x982a, 'syntax_error')
 d.comment(0x9838, 'Escape error', align=Align.INLINE)
+d.label(0x9838, 'escape_error')
 d.subroutine(0x9841, 'expect_eq', title='Require "=" at the parser pointer',
              description='Skip spaces at PtrB and raise Mistake unless the next '
                          'character is "=".',
@@ -4158,10 +4164,13 @@ d.comment(0x9844, '"="?', align=Align.INLINE)
 d.comment(0x9846, 'no: Mistake', align=Align.INLINE)
 d.comment(0x9848, 'Return', align=Align.INLINE)
 d.comment(0x9849, 'Evaluate the right-hand side', align=Align.INLINE)
+d.label(0x9849, 'eval_rhs')
 d.comment(0x984c, 'Result type', align=Align.INLINE)
+d.label(0x984c, 'assign_check_end')
 d.comment(0x984d, 'Sync the program pointer', align=Align.INLINE)
 d.comment(0x984f, 'check the statement ends', align=Align.INLINE)
 d.comment(0x9852, 'Sync the program pointer', align=Align.INLINE)
+d.label(0x9852, 'sync_text_ptr')
 d.comment(0x9854, 'check the statement ends', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
@@ -4188,11 +4197,15 @@ Also polls for Escape.
 # check_end_of_statement (&9857): require ':', end-of-line or ELSE.
 d.comment(0x9857, 'Program pointer offset', align=Align.INLINE)
 d.comment(0x9859, 'step back', align=Align.INLINE)
+# check_end_of_statement and statement advance
+d.label(0x9859, 'cend_back')
 d.comment(0x985a, 'Next character', align=Align.INLINE)
+d.label(0x985a, 'cend_skip_loop')
 d.comment(0x985b, 'read it', align=Align.INLINE)
 d.comment(0x985d, 'space?', align=Align.INLINE)
 d.comment(0x985f, 'skip it', align=Align.INLINE)
 d.comment(0x9861, "':' statement separator?", align=Align.INLINE)
+d.label(0x9861, 'cend_check')
 d.comment(0x9863, 'yes', align=Align.INLINE)
 d.comment(0x9865, 'end of line?', align=Align.INLINE)
 d.comment(0x9867, 'yes', align=Align.INLINE)
@@ -4200,19 +4213,23 @@ d.comment(0x9869, 'ELSE token?', align=Align.INLINE)
 d.comment(0x986b, 'none: Mistake (syntax error)', align=Align.INLINE)
 d.comment(0x986d, 'Advance the program pointer past the statement',
           align=Align.INLINE)
+d.label(0x986d, 'skip_to_statement_end')
 d.comment(0x986e, 'offset to A,', align=Align.INLINE)
 d.comment(0x986f, '+ pointer low,', align=Align.INLINE)
 d.comment(0x9871, 'store low,', align=Align.INLINE)
 d.comment(0x9873, 'no carry into the high byte', align=Align.INLINE)
 d.comment(0x9875, 'carry into the high byte', align=Align.INLINE)
 d.comment(0x9877, 'Reset the offset to 1', align=Align.INLINE)
+d.label(0x9877, 'reset_offset_1')
 d.comment(0x9879, 'store it (&0A)', align=Align.INLINE)
 d.comment(0x987b, 'Escape pressed (ESCFLG)?', align=Align.INLINE)
+d.label(0x987b, 'check_escape')
 d.comment(0x987d, 'yes: raise Escape', align=Align.INLINE)
 d.comment(0x987f, 'Return', align=Align.INLINE)
 
 # step_statement (&9880): advance to the next statement, with TRACE.
 d.comment(0x9880, 'Check this statement is terminated', align=Align.INLINE)
+d.label(0x9880, 'check_statement_terminated')
 d.comment(0x9883, 'Re-read the terminator', align=Align.INLINE)
 d.comment(0x9884, 'read it', align=Align.INLINE)
 d.comment(0x9886, "':' (more on this line)?", align=Align.INLINE)
@@ -4221,6 +4238,7 @@ d.comment(0x988a, 'At the end of program memory?', align=Align.INLINE)
 d.comment(0x988c, 'in the &0700 buffer (immediate)?', align=Align.INLINE)
 d.comment(0x988e, 'yes: return to immediate mode', align=Align.INLINE)
 d.comment(0x9890, 'Next byte (line-number marker)', align=Align.INLINE)
+d.label(0x9890, 'step_to_next_line')
 d.comment(0x9891, 'read it', align=Align.INLINE)
 d.comment(0x9893, 'end of program: immediate mode', align=Align.INLINE)
 d.comment(0x9895, 'TRACE on?', align=Align.INLINE)
@@ -4239,6 +4257,7 @@ d.comment(0x98a7, 'trace it', align=Align.INLINE)
 d.comment(0x98aa, 'Restore the offset', align=Align.INLINE)
 d.comment(0x98ab, 'into Y', align=Align.INLINE)
 d.comment(0x98ac, 'Step past the 3-byte line header', align=Align.INLINE)
+d.label(0x98ac, 'step_past_line_header')
 d.comment(0x98ad, 'set carry (advance by offset + 1),', align=Align.INLINE)
 d.comment(0x98ae, 'offset to A,', align=Align.INLINE)
 d.comment(0x98af, '+ pointer low,', align=Align.INLINE)
@@ -4246,11 +4265,14 @@ d.comment(0x98b1, 'store low,', align=Align.INLINE)
 d.comment(0x98b3, 'no carry into the high byte', align=Align.INLINE)
 d.comment(0x98b5, 'carry into the high byte', align=Align.INLINE)
 d.comment(0x98b7, 'Reset the offset to 1', align=Align.INLINE)
+d.label(0x98b7, 'line_reset_offset')
 d.comment(0x98b9, 'store it (&0A)', align=Align.INLINE)
 d.comment(0x98bb, 'Return', align=Align.INLINE)
 d.comment(0x98bc, 'End of program: immediate mode', align=Align.INLINE)
+d.label(0x98bc, 'to_immediate')
 d.comment(0x98bf, 'Type mismatch error', align=Align.INLINE)
 
+d.label(0x98bf, 'if_type_error')
 # ----------------------------------------------------------------------
 # stmt_if (&98C2): the IF statement.
 # Evaluates the condition, then for a true result executes the THEN
@@ -4264,6 +4286,8 @@ d.comment(0x98c7, 'integer: use as is', align=Align.INLINE)
 d.comment(0x98c9, 'real: convert to integer', align=Align.INLINE)
 d.comment(0x98cc, 'Advance the text pointer past the condition',
           align=Align.INLINE)
+# stmt_if
+d.label(0x98cc, 'if_skip_cond')
 d.comment(0x98ce, 'copy it to PtrA', align=Align.INLINE)
 d.comment(0x98d0, 'Is the condition value zero (false)?', align=Align.INLINE)
 d.comment(0x98d2, 'or byte 1,', align=Align.INLINE)
@@ -4274,16 +4298,21 @@ d.comment(0x98da, 'true: is the next token THEN?', align=Align.INLINE)
 d.comment(0x98dc, 'yes', align=Align.INLINE)
 d.comment(0x98de, 'no THEN: execute the statement that follows',
           align=Align.INLINE)
+d.label(0x98de, 'if_no_then')
 d.comment(0x98e1, 'Step past THEN', align=Align.INLINE)
+d.label(0x98e1, 'if_then')
 d.comment(0x98e3, 'Is a line number following (THEN <line>)?',
           align=Align.INLINE)
+d.label(0x98e3, 'if_then_line')
 d.comment(0x98e6, 'no: execute the statements after THEN', align=Align.INLINE)
 d.comment(0x98e8, 'yes: set up the line number...', align=Align.INLINE)
 d.comment(0x98eb, 'to the line start, test Escape', align=Align.INLINE)
 d.comment(0x98ee, '...and GOTO it', align=Align.INLINE)
 d.comment(0x98f1, 'False: scan the rest of the line for ELSE',
           align=Align.INLINE)
+d.label(0x98f1, 'if_false')
 d.comment(0x98f3, 'Next character', align=Align.INLINE)
+d.label(0x98f3, 'if_scan_else_loop')
 d.comment(0x98f5, 'end of line?', align=Align.INLINE)
 d.comment(0x98f7, 'yes: move to the next line', align=Align.INLINE)
 d.comment(0x98f9, 'advance', align=Align.INLINE)
@@ -4292,6 +4321,8 @@ d.comment(0x98fc, 'no: keep scanning', align=Align.INLINE)
 d.comment(0x98fe, 'found ELSE: point past it', align=Align.INLINE)
 d.comment(0x9900, 'execute what follows ELSE', align=Align.INLINE)
 d.comment(0x9902, 'No ELSE: continue at the next line', align=Align.INLINE)
+
+d.label(0x9902, 'if_no_else')
 
 d.subroutine(0x9905, 'trace_line',
              title='Print [line] when TRACE is active',
@@ -10719,6 +10750,7 @@ d.comment(0xbff0, 'print it', align=Align.INLINE)
 d.comment(0xbff3, 'next', align=Align.INLINE)
 d.comment(0xbff4, 'loop', align=Align.INLINE)
 d.comment(0xbff6, 'next statement', align=Align.INLINE)
+
 
 
 

@@ -9014,7 +9014,7 @@
         42
       ],
       "expressions": [
-        "<(c982a)"
+        "<(syntax_error)"
       ]
     },
     {
@@ -10499,7 +10499,7 @@
         152
       ],
       "expressions": [
-        ">(c982a)"
+        ">(syntax_error)"
       ]
     },
     {
@@ -11760,9 +11760,9 @@
       "comment_inline": "Skip to the statement",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 34066,
@@ -12621,9 +12621,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9859",
+      "operand": "cend_back",
       "target": 39001,
-      "target_label": "c9859"
+      "target_label": "cend_back"
     },
     {
       "addr": 34191,
@@ -12741,9 +12741,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9890",
+      "operand": "step_to_next_line",
       "target": 39056,
-      "target_label": "sub_c9890"
+      "target_label": "step_to_next_line"
     },
     {
       "addr": 34210,
@@ -13426,9 +13426,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 34311,
@@ -17278,9 +17278,9 @@
       "comment_inline": "Mistake (syntax) error",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 34904,
@@ -22758,9 +22758,9 @@
       "comment_inline": "check end, return from the function",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c984c",
+      "operand": "assign_check_end",
       "target": 38988,
-      "target_label": "c984c"
+      "target_label": "assign_check_end"
     },
     {
       "addr": 35673,
@@ -22961,9 +22961,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 35702,
@@ -23173,9 +23173,9 @@
       "comment_inline": "Check for end of program, step past CR",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9890",
+      "operand": "step_to_next_line",
       "target": 39056,
-      "target_label": "sub_c9890"
+      "target_label": "step_to_next_line"
     },
     {
       "addr": 35732,
@@ -23997,9 +23997,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 35854,
@@ -29198,9 +29198,9 @@
       "comment_inline": "error if more follows",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 36625,
@@ -29386,9 +29386,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 36657,
@@ -29612,9 +29612,9 @@
       "comment_inline": "Find the next line number",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c987b",
+      "operand": "check_escape",
       "target": 39035,
-      "target_label": "sub_c987b"
+      "target_label": "check_escape"
     },
     {
       "addr": 36697,
@@ -35619,9 +35619,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9807",
+      "operand": "copy_ptra_to_ptrb",
       "target": 38919,
-      "target_label": "sub_c9807"
+      "target_label": "copy_ptra_to_ptrb"
     },
     {
       "addr": 37614,
@@ -35957,9 +35957,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 37656,
@@ -36643,9 +36643,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 37766,
@@ -37428,9 +37428,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 37897,
@@ -44457,9 +44457,9 @@
       "comment_inline": "no: carry clear",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9805",
+      "operand": "not_line_number",
       "target": 38917,
-      "target_label": "c9805"
+      "target_label": "not_line_number"
     },
     {
       "addr": 38891,
@@ -44674,7 +44674,7 @@
         24
       ],
       "labels": [
-        "c9805"
+        "not_line_number"
       ],
       "comment_inline": "carry clear: not a line number",
       "xref_summaries": [
@@ -44702,7 +44702,7 @@
         11
       ],
       "labels": [
-        "sub_c9807"
+        "copy_ptra_to_ptrb"
       ],
       "comment_inline": "Copy PtrA to PtrB",
       "xref_summaries": [
@@ -44877,9 +44877,9 @@
       "comment_inline": "yes: evaluate",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9849",
+      "operand": "eval_rhs",
       "target": 38985,
-      "target_label": "c9849"
+      "target_label": "eval_rhs"
     },
     {
       "addr": 38945,
@@ -44887,7 +44887,7 @@
         0
       ],
       "labels": [
-        "loop_c9821"
+        "mistake_error"
       ],
       "comment_inline": "Mistake error",
       "xref_summaries": [
@@ -44929,7 +44929,7 @@
         0
       ],
       "labels": [
-        "c982a"
+        "syntax_error"
       ],
       "comment_inline": "Mistake error",
       "xref_summaries": [
@@ -44982,7 +44982,7 @@
         0
       ],
       "labels": [
-        "c9838"
+        "escape_error"
       ],
       "comment_inline": "Escape error",
       "xref_summaries": [
@@ -45072,9 +45072,9 @@
       "comment_inline": "no: Mistake",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9821",
+      "operand": "mistake_error",
       "target": 38945,
-      "target_label": "loop_c9821"
+      "target_label": "mistake_error"
     },
     {
       "addr": 38984,
@@ -45093,7 +45093,7 @@
         155
       ],
       "labels": [
-        "c9849"
+        "eval_rhs"
       ],
       "comment_inline": "Evaluate the right-hand side",
       "xref_summaries": [
@@ -45115,7 +45115,7 @@
         138
       ],
       "labels": [
-        "c984c"
+        "assign_check_end"
       ],
       "comment_inline": "Result type",
       "xref_summaries": [
@@ -45153,9 +45153,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9861",
+      "operand": "cend_check",
       "target": 39009,
-      "target_label": "c9861"
+      "target_label": "cend_check"
     },
     {
       "addr": 38994,
@@ -45164,7 +45164,7 @@
         27
       ],
       "labels": [
-        "sub_c9852"
+        "sync_text_ptr"
       ],
       "comment_inline": "Sync the program pointer",
       "xref_summaries": [
@@ -45196,9 +45196,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9859",
+      "operand": "cend_back",
       "target": 39001,
-      "target_label": "c9859"
+      "target_label": "cend_back"
     },
     {
       "addr": 38999,
@@ -45252,7 +45252,7 @@
         136
       ],
       "labels": [
-        "c9859"
+        "cend_back"
       ],
       "comment_inline": "step back",
       "xref_summaries": [
@@ -45271,7 +45271,7 @@
         200
       ],
       "labels": [
-        "loop_c985a"
+        "cend_skip_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -45316,9 +45316,9 @@
       "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c985a",
+      "operand": "cend_skip_loop",
       "target": 39002,
-      "target_label": "loop_c985a"
+      "target_label": "cend_skip_loop"
     },
     {
       "addr": 39009,
@@ -45327,7 +45327,7 @@
         58
       ],
       "labels": [
-        "c9861"
+        "cend_check"
       ],
       "comment_inline": "':' statement separator?",
       "xref_summaries": [
@@ -45349,9 +45349,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 39013,
@@ -45373,9 +45373,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 39017,
@@ -45397,9 +45397,9 @@
       "comment_inline": "none: Mistake (syntax error)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 39021,
@@ -45407,7 +45407,7 @@
         24
       ],
       "labels": [
-        "c986d"
+        "skip_to_statement_end"
       ],
       "comment_inline": "Advance the program pointer past the statement",
       "xref_summaries": [
@@ -45470,9 +45470,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9877",
+      "operand": "reset_offset_1",
       "target": 39031,
-      "target_label": "c9877"
+      "target_label": "reset_offset_1"
     },
     {
       "addr": 39029,
@@ -45494,7 +45494,7 @@
         1
       ],
       "labels": [
-        "c9877"
+        "reset_offset_1"
       ],
       "comment_inline": "Reset the offset to 1",
       "xref_summaries": [
@@ -45530,7 +45530,7 @@
         255
       ],
       "labels": [
-        "sub_c987b"
+        "check_escape"
       ],
       "comment_inline": "Escape pressed (ESCFLG)?",
       "xref_summaries": [
@@ -45554,9 +45554,9 @@
       "comment_inline": "yes: raise Escape",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9838",
+      "operand": "escape_error",
       "target": 38968,
-      "target_label": "c9838"
+      "target_label": "escape_error"
     },
     {
       "addr": 39039,
@@ -45584,7 +45584,7 @@
         152
       ],
       "labels": [
-        "sub_c9880"
+        "check_statement_terminated"
       ],
       "comment_inline": "Check this statement is terminated",
       "xref_summaries": [
@@ -45678,9 +45678,9 @@
       "comment_inline": "yes: return to immediate mode",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c98bc",
+      "operand": "to_immediate",
       "target": 39100,
-      "target_label": "c98bc"
+      "target_label": "to_immediate"
     },
     {
       "addr": 39056,
@@ -45688,7 +45688,7 @@
         200
       ],
       "labels": [
-        "sub_c9890"
+        "step_to_next_line"
       ],
       "comment_inline": "Next byte (line-number marker)",
       "xref_summaries": [
@@ -45723,9 +45723,9 @@
       "comment_inline": "end of program: immediate mode",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c98bc",
+      "operand": "to_immediate",
       "target": 39100,
-      "target_label": "c98bc"
+      "target_label": "to_immediate"
     },
     {
       "addr": 39061,
@@ -45749,9 +45749,9 @@
       "comment_inline": "no: skip the line number",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c98ac",
+      "operand": "step_past_line_header",
       "target": 39084,
-      "target_label": "c98ac"
+      "target_label": "step_past_line_header"
     },
     {
       "addr": 39065,
@@ -45894,7 +45894,7 @@
         200
       ],
       "labels": [
-        "c98ac"
+        "step_past_line_header"
       ],
       "comment_inline": "Step past the 3-byte line header",
       "xref_summaries": [
@@ -45959,9 +45959,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c98b7",
+      "operand": "line_reset_offset",
       "target": 39095,
-      "target_label": "c98b7"
+      "target_label": "line_reset_offset"
     },
     {
       "addr": 39093,
@@ -45983,7 +45983,7 @@
         1
       ],
       "labels": [
-        "c98b7"
+        "line_reset_offset"
       ],
       "comment_inline": "Reset the offset to 1",
       "xref_summaries": [
@@ -46035,7 +46035,7 @@
         138
       ],
       "labels": [
-        "c98bc"
+        "to_immediate"
       ],
       "comment_inline": "End of program: immediate mode",
       "xref_summaries": [
@@ -46059,7 +46059,7 @@
         140
       ],
       "labels": [
-        "loop_c98bf"
+        "if_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -46100,9 +46100,9 @@
       "comment_inline": "string: handle elsewhere",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c98bf",
+      "operand": "if_type_error",
       "target": 39103,
-      "target_label": "loop_c98bf"
+      "target_label": "if_type_error"
     },
     {
       "addr": 39111,
@@ -46113,9 +46113,9 @@
       "comment_inline": "integer: use as is",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c98cc",
+      "operand": "if_skip_cond",
       "target": 39116,
-      "target_label": "c98cc"
+      "target_label": "if_skip_cond"
     },
     {
       "addr": 39113,
@@ -46138,7 +46138,7 @@
         27
       ],
       "labels": [
-        "c98cc"
+        "if_skip_cond"
       ],
       "comment_inline": "Advance the text pointer past the condition",
       "xref_summaries": [
@@ -46227,9 +46227,9 @@
       "comment_inline": "false: look for ELSE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c98f1",
+      "operand": "if_false",
       "target": 39153,
-      "target_label": "c98f1"
+      "target_label": "if_false"
     },
     {
       "addr": 39130,
@@ -46251,9 +46251,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c98e1",
+      "operand": "if_then",
       "target": 39137,
-      "target_label": "c98e1"
+      "target_label": "if_then"
     },
     {
       "addr": 39134,
@@ -46263,7 +46263,7 @@
         139
       ],
       "labels": [
-        "loop_c98de"
+        "if_no_then"
       ],
       "comment_inline": "no THEN: execute the statement that follows",
       "xref_summaries": [
@@ -46285,7 +46285,7 @@
         10
       ],
       "labels": [
-        "c98e1"
+        "if_then"
       ],
       "comment_inline": "Step past THEN",
       "xref_summaries": [
@@ -46308,7 +46308,7 @@
         151
       ],
       "labels": [
-        "c98e3"
+        "if_then_line"
       ],
       "comment_inline": "Is a line number following (THEN <line>)?",
       "xref_summaries": [
@@ -46333,9 +46333,9 @@
       "comment_inline": "no: execute the statements after THEN",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c98de",
+      "operand": "if_no_then",
       "target": 39134,
-      "target_label": "loop_c98de"
+      "target_label": "if_no_then"
     },
     {
       "addr": 39144,
@@ -46361,9 +46361,9 @@
       "comment_inline": "to the line start, test Escape",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9877",
+      "operand": "reset_offset_1",
       "target": 39031,
-      "target_label": "c9877"
+      "target_label": "reset_offset_1"
     },
     {
       "addr": 39150,
@@ -46386,7 +46386,7 @@
         10
       ],
       "labels": [
-        "c98f1"
+        "if_false"
       ],
       "comment_inline": "False: scan the rest of the line for ELSE",
       "xref_summaries": [
@@ -46408,7 +46408,7 @@
         11
       ],
       "labels": [
-        "loop_c98f3"
+        "if_scan_else_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -46443,9 +46443,9 @@
       "comment_inline": "yes: move to the next line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9902",
+      "operand": "if_no_else",
       "target": 39170,
-      "target_label": "c9902"
+      "target_label": "if_no_else"
     },
     {
       "addr": 39161,
@@ -46476,9 +46476,9 @@
       "comment_inline": "no: keep scanning",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c98f3",
+      "operand": "if_scan_else_loop",
       "target": 39155,
-      "target_label": "loop_c98f3"
+      "target_label": "if_scan_else_loop"
     },
     {
       "addr": 39166,
@@ -46502,9 +46502,9 @@
       "comment_inline": "execute what follows ELSE",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c98e3",
+      "operand": "if_then_line",
       "target": 39139,
-      "target_label": "c98e3"
+      "target_label": "if_then_line"
     },
     {
       "addr": 39170,
@@ -46514,7 +46514,7 @@
         139
       ],
       "labels": [
-        "c9902"
+        "if_no_else"
       ],
       "comment_inline": "No ELSE: continue at the next line",
       "xref_summaries": [
@@ -88286,9 +88286,9 @@
       "comment_inline": "point PtrA at the body",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 45425,
@@ -93259,9 +93259,9 @@
       "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 46180,
@@ -93491,9 +93491,9 @@
       "comment_inline": "Check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 46215,
@@ -93683,9 +93683,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 46246,
@@ -95429,9 +95429,9 @@
       "comment_inline": "check the statement ends",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c984c",
+      "operand": "assign_check_end",
       "target": 38988,
-      "target_label": "c984c"
+      "target_label": "assign_check_end"
     },
     {
       "addr": 46482,
@@ -96107,9 +96107,9 @@
       "comment_inline": "check Escape",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 46594,
@@ -97200,9 +97200,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 46755,
@@ -98223,9 +98223,9 @@
       "comment_inline": "restore the offset",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9877",
+      "operand": "reset_offset_1",
       "target": 39031,
-      "target_label": "c9877"
+      "target_label": "reset_offset_1"
     },
     {
       "addr": 46926,
@@ -99567,9 +99567,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9880",
+      "operand": "check_statement_terminated",
       "target": 39040,
-      "target_label": "sub_c9880"
+      "target_label": "check_statement_terminated"
     },
     {
       "addr": 47162,
@@ -100727,9 +100727,9 @@
       "comment_inline": "check Escape",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 47359,
@@ -101385,9 +101385,9 @@
       "comment_inline": "GOTO: update the index and check Escape",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9877",
+      "operand": "reset_offset_1",
       "target": 39031,
-      "target_label": "c9877"
+      "target_label": "reset_offset_1"
     },
     {
       "addr": 47463,
@@ -101739,9 +101739,9 @@
       "comment_inline": "execute what follows",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c98e3",
+      "operand": "if_then_line",
       "target": 39139,
-      "target_label": "c98e3"
+      "target_label": "if_then_line"
     },
     {
       "addr": 47514,
@@ -102010,9 +102010,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c982a",
+      "operand": "syntax_error",
       "target": 38954,
-      "target_label": "c982a"
+      "target_label": "syntax_error"
     },
     {
       "addr": 47562,
@@ -105228,9 +105228,9 @@
       "comment_inline": "Check for end of statement",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c984c",
+      "operand": "assign_check_end",
       "target": 38988,
-      "target_label": "c984c"
+      "target_label": "assign_check_end"
     },
     {
       "addr": 48055,
@@ -105514,9 +105514,9 @@
       "comment_inline": "Point PtrA at the loop start",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c986d",
+      "operand": "skip_to_statement_end",
       "target": 39021,
-      "target_label": "c986d"
+      "target_label": "skip_to_statement_end"
     },
     {
       "addr": 48109,
@@ -105862,9 +105862,9 @@
       "comment_inline": "Escape: raise it",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9838",
+      "operand": "escape_error",
       "target": 38968,
-      "target_label": "c9838"
+      "target_label": "escape_error"
     },
     {
       "addr": 48165,
@@ -110882,9 +110882,9 @@
       "comment_inline": "Check for end of statement",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c984c",
+      "operand": "assign_check_end",
       "target": 38988,
-      "target_label": "c984c"
+      "target_label": "assign_check_end"
     },
     {
       "addr": 48861,
@@ -111689,9 +111689,9 @@
       "comment_inline": "evaluate the value",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9849",
+      "operand": "eval_rhs",
       "target": 38985,
-      "target_label": "c9849"
+      "target_label": "eval_rhs"
     },
     {
       "addr": 48994,
@@ -112048,9 +112048,9 @@
       "comment_inline": "Check for end of statement",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c9852",
+      "operand": "sync_text_ptr",
       "target": 38994,
-      "target_label": "sub_c9852"
+      "target_label": "sync_text_ptr"
     },
     {
       "addr": 49055,
