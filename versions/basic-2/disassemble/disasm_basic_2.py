@@ -499,6 +499,9 @@ installs the BASIC error handler in BRKV, and jumps to
 start_new_program, which clears any program and enters the
 immediate ("> ") loop.
 """,
+    on_entry={'A': '1 (MOS language-start reason code)'},
+    on_exit={'zp_himem (&06/&07) / zp_page (&18)': 'read from the MOS',
+             'control': 'jumps to start_new_program (does not return)'},
 )
 
 # language_startup (&8023) remaining
@@ -1294,6 +1297,8 @@ keywords with tokens via the keyword_table while leaving strings,
 line numbers and names intact. Works through the buffer using the
 general pointer (zp_general, &37).
 """,
+    on_entry={'zp_general (&37/&38)': 'a pointer to the line text to tokenise'},
+    on_exit={'(zp_general)': 'the line rewritten with keyword tokens'},
 )
 # --- tokeniser character scan (front end of tokenise) ----------------
 # Walks the source line at (zp_general), passing literals through
@@ -3482,9 +3487,15 @@ d.comment(0x96d7, 'No such array: Array error', align=Align.INLINE)
 
 d.subroutine(0x96df, 'index_array',
              title='Locate an array and evaluate one subscript',
-             description='Find the named array and step the value pointer to '
-                         'the addressed element; raises Array on a missing '
-                         'array.')
+             description='Find the named array (find_variable) and step the '
+                         'value pointer to the addressed element, evaluating one '
+                         'subscript at PtrB and bounds-checking it. Raises Array '
+                         'on a missing array, Subscript on an out-of-range index.',
+             on_entry={'(zp_general) (&37/&38)': 'the array name reference',
+                       'zp_text_ptr2 (&19/&1A)': 'PtrB at the subscript'},
+             on_exit={'zp_iwa (&2A/&2B)': 'a pointer to the element',
+                      'zp_iwa_2 (&2C)': 'the element type',
+                      'BRK': 'Array / Subscript on error'})
 # index_array (&96DF): locate the array and step to one element.
 d.comment(0x96df, 'Find the array', align=Align.INLINE)
 d.comment(0x96e2, 'missing: Array error', align=Align.INLINE)
@@ -3863,8 +3874,11 @@ d.comment(0x9902, 'No ELSE: continue at the next line', align=Align.INLINE)
 
 d.subroutine(0x9905, 'trace_line',
              title='Print [line] when TRACE is active',
-             description='If the current line number is within the TRACE '
-                         'ceiling, print the line number in brackets.')
+             description='If the line number in IWA is at or below the TRACE '
+                         'ceiling, print it in brackets; otherwise do nothing.',
+             on_entry={'zp_iwa (&2A/&2B)': 'the current line number',
+                       'zp_trace_max (&21/&22)': 'the TRACE ceiling'},
+             on_exit={'the output': '[line] when traced, nothing otherwise'})
 # trace_line (&9905): print [line] when within the TRACE ceiling.
 d.comment(0x9905, 'Line number vs TRACE ceiling', align=Align.INLINE)
 d.comment(0x9907, 'vs ceiling low,', align=Align.INLINE)
@@ -7305,7 +7319,12 @@ d.comment(0xada8, '(store)', align=Align.INLINE)
 d.comment(0xadaa, 'integer result', align=Align.INLINE)
 d.comment(0xadac, 'Return -IWA', align=Align.INLINE)
 d.subroutine(0xadad, 'read_string_literal', title='Read a string literal',
-             description='Read a quoted ("...", with "" for a literal quote) or unquoted string into the string buffer.')
+             description='Read a quoted ("...", with "" for a literal quote) or '
+                         'unquoted string at PtrB into the string buffer.',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the string'},
+             on_exit={'string_work (&0600)': 'the string characters',
+                      'zp_strbuf_len (&36)': 'the string length',
+                      'zp_text_ptr2_off (&1B)': 'advanced past the literal'})
 
 d.comment(0xadad, 'Read a string literal: skip spaces', align=Align.INLINE)
 d.comment(0xadb0, 'a quote?', align=Align.INLINE)
@@ -7916,7 +7935,13 @@ d.comment(0xb101, 'pull the low byte', align=Align.INLINE)
 d.comment(0xb102, 'pointer low', align=Align.INLINE)
 d.comment(0xb104, '"No such FN/PROC" error block', align=Align.INLINE)
 d.subroutine(0xb112, 'find_def', title='Find a PROC/FN definition by name',
-             description='Search the program for the DEF line whose name matches, then cache its body address in the variable entry.')
+             description='Walk the program from PAGE for the DEF PROC/FN line '
+                         'whose name matches the reference at (zp_general), then '
+                         'cache its body address in the variable entry so later '
+                         'calls resolve quickly. Raises No such FN/PROC.',
+             on_entry={'(zp_general) (&37/&38)': 'the PROC/FN name reference'},
+             on_exit={'the variable entry': 'updated with the cached body address',
+                      'BRK': 'No such FN/PROC if no matching DEF exists'})
 
 d.comment(0xb112, 'Search from PAGE: high', align=Align.INLINE)
 d.comment(0xb114, '(store)', align=Align.INLINE)
@@ -8229,9 +8254,12 @@ d.comment(0xb30a, 'Execute the body', align=Align.INLINE)
 d.subroutine(
     0xb30d, 'stack_local',
     title='Save a variable for LOCAL',
-    description="""Push a variable's current value and identity onto the BASIC
-stack so ENDPROC can restore it, implementing LOCAL.
+    description="""Push a variable's current value and identity (address and type)
+onto the BASIC stack so ENDPROC can restore it, implementing LOCAL.
 """,
+    on_entry={'zp_iwa (&2A/&2B)': 'the variable address',
+              'zp_iwa_2 (&2C)': 'the variable type'},
+    on_exit={'zp_stack_ptr (&04/&05)': 'lowered past the saved value and identity'},
 )
 # stack_local (&B30D): save a variable's value and identity for LOCAL
 d.comment(0xb30d, 'Variable type', align=Align.INLINE)
@@ -8371,7 +8399,12 @@ d.comment(0xb3bd, 'Evaluate the integer argument', align=Align.INLINE)
 d.comment(0xb3c0, 'A = the character code', align=Align.INLINE)
 d.comment(0xb3c2, 'return a one-character string', align=Align.INLINE)
 d.subroutine(0xb3c5, 'find_error_line', title='Find the line an error occurred in',
-             description='Walk the program to locate the line containing the current text pointer and set ERL.')
+             description='Walk the program from PAGE to locate the line whose '
+                         'text span contains the current program pointer and '
+                         'record its number in ERL (0 in immediate mode).',
+             on_entry={'zp_text_ptr (&0B/&0C)': 'the program pointer at the error',
+                       'zp_page (&18)': 'PAGE, the start of the program'},
+             on_exit={'zp_erl (&08/&09)': 'the line number (ERL), or 0'})
 
 # find_error_line (&B3C5)
 d.comment(0xb3c5, 'Clear ERL:', align=Align.INLINE)
@@ -8732,7 +8765,11 @@ d.comment(0xb587, 'loop', align=Align.INLINE)
 d.comment(0xb589, 'Return', align=Align.INLINE)
 d.subroutine(0xb58a, 'stmt_listo', title='LISTO - set the listing options',
              description='Evaluate the option value and store it in the LISTO '
-                         'flag (&1F).')
+                         'flag (&1F), which controls LIST indentation and '
+                         'spacing. LISTO n.',
+             on_entry=STMT_ON_ENTRY,
+             on_exit={'zp_listo (&1F)': 'the new LISTO flags',
+                      'control': 'rejoins statement_loop'})
 # stmt_listo (&B58A): LISTO n.
 d.comment(0xb58a, 'Step past LISTO', align=Align.INLINE)
 d.comment(0xb58c, 'Evaluate the option value', align=Align.INLINE)
@@ -9462,7 +9499,11 @@ d.subroutine(0xbb50, 'next_data_item',
              description='Move the DATA pointer past the current item to the '
                          'next comma- or DATA-separated value, searching '
                          'forward through the program for the next DATA '
-                         'statement at end of line; raises Out of DATA.')
+                         'statement at end of line; raises Out of DATA.',
+             on_entry={'zp_data_ptr (&1C)': 'the current DATA read position'},
+             on_exit={'zp_text_ptr2 (&19/&1A)': 'PtrB at the next DATA value',
+                      'zp_data_ptr (&1C)': 'advanced',
+                      'BRK': 'Out of DATA if none remain'})
 # next_data_item (&BB50): step the DATA pointer to the next value.
 d.comment(0xbb50, 'Save the program pointer', align=Align.INLINE)
 d.comment(0xbb52, '(save)', align=Align.INLINE)
@@ -9552,7 +9593,11 @@ d.comment(0xbbfe, 'high', align=Align.INLINE)
 d.comment(0xbc00, 'set it (shared tail)', align=Align.INLINE)
 
 d.subroutine(0xbc02, 'read_input_line', title='Print the prompt and read a line',
-             description='Print the character in A as a prompt, then read a line into the input buffer.')
+             description='Print the character in A as a prompt, then read a line '
+                         'into the input buffer at &0700 via OSWORD 0.',
+             on_entry={'A': 'the prompt character to print'},
+             on_exit={'the input buffer (&0700)': 'the line read (CR terminated)',
+                      'C': 'set if the read was terminated by Escape'})
 # read_input_line (&BC02): print a prompt char, read a line (OSWORD 0).
 d.comment(0xbc02, 'Print the prompt character', align=Align.INLINE)
 d.comment(0xbc05, 'Input buffer at &0700', align=Align.INLINE)

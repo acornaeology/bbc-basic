@@ -409,6 +409,13 @@ oscli            = &fff7
 ; from the MOS, clears the print and formatting state, seeds the random-number generator
 ; if it is cold, installs the BASIC error handler in BRKV, and jumps to
 ; start_new_program, which clears any program and enters the immediate ("> ") loop.
+;
+; On Entry:
+;     A: 1 (MOS language-start reason code)
+;
+; On Exit:
+;     ZP_HIMEM (&06/&07) / ZP_PAGE (&18): read from the MOS
+;     CONTROL: jumps to start_new_program (does not return)
 ; &8023 referenced 1 time by &8002
 .language_startup
     lda #osbyte_read_himem                                            ; 8023: a9 84       ..       ; OSBYTE &84: read HIMEM
@@ -1860,6 +1867,12 @@ l848a = sub_c847b+15
 ; Convert the line being entered into its internal form, replacing keywords with tokens
 ; via the keyword_table while leaving strings, line numbers and names intact. Works
 ; through the buffer using the general pointer (zp_general, &37).
+;
+; On Entry:
+;     ZP_GENERAL (&37/&38): a pointer to the line text to tokenise
+;
+; On Exit:
+;     (ZP_GENERAL): the line rewritten with keyword tokens
 ; &8951 referenced 1 time by &90c3
 .tokenise_line
     ldy #0                                                            ; 8951: a0 00       ..       ; Tokeniser state (&3B/&3C): start of statement
@@ -4878,8 +4891,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Locate an array and evaluate one subscript
 ;
-; Find the named array and step the value pointer to the addressed element; raises Array
-; on a missing array.
+; Find the named array (find_variable) and step the value pointer to the addressed
+; element, evaluating one subscript at PtrB and bounds-checking it. Raises Array on a
+; missing array, Subscript on an out-of-range index.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the array name reference
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the subscript
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): a pointer to the element
+;     ZP_IWA_2 (&2C): the element type
+;     BRK: Array / Subscript on error
 ; &96df referenced 2 times by &96a9, &96ce
 .index_array
     jsr find_variable                                                 ; 96df: 20 69 94     i.      ; Find the array
@@ -5350,8 +5373,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Print [line] when TRACE is active
 ;
-; If the current line number is within the TRACE ceiling, print the line number in
-; brackets.
+; If the line number in IWA is at or below the TRACE ceiling, print it in brackets;
+; otherwise do nothing.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the current line number
+;     ZP_TRACE_MAX (&21/&22): the TRACE ceiling
+;
+; On Exit:
+;     THE OUTPUT: [line] when traced, nothing otherwise
 ; &9905 referenced 2 times by &98a7, &b8d6
 .trace_line
     lda zp_iwa                                                        ; 9905: a5 2a       .*       ; Line number vs TRACE ceiling
@@ -10043,8 +10073,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Read a string literal
 ;
-; Read a quoted ("...", with "" for a literal quote) or unquoted string into the string
-; buffer.
+; Read a quoted ("...", with "" for a literal quote) or unquoted string at PtrB into the
+; string buffer.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the string
+;
+; On Exit:
+;     STRING_WORK (&0600): the string characters
+;     ZP_STRBUF_LEN (&36): the string length
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the literal
 ; &adad referenced 2 times by &baba, &bb38
 .read_string_literal
     jsr skip_spaces_ptr2                                              ; adad: 20 8c 8a     ..      ; Read a string literal: skip spaces
@@ -11028,8 +11066,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Find a PROC/FN definition by name
 ;
-; Search the program for the DEF line whose name matches, then cache its body address in
-; the variable entry.
+; Walk the program from PAGE for the DEF PROC/FN line whose name matches the reference at
+; (zp_general), then cache its body address in the variable entry so later calls resolve
+; quickly. Raises No such FN/PROC.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the PROC/FN name reference
+;
+; On Exit:
+;     THE VARIABLE ENTRY: updated with the cached body address
+;     BRK: No such FN/PROC if no matching DEF exists
 ; &b112 referenced 1 time by &b1e6
 .find_def
     lda zp_page                                                       ; b112: a5 18       ..       ; Search from PAGE: high
@@ -11389,8 +11435,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Save a variable for LOCAL
 ;
-; Push a variable's current value and identity onto the BASIC stack so ENDPROC can
-; restore it, implementing LOCAL.
+; Push a variable's current value and identity (address and type) onto the BASIC stack so
+; ENDPROC can restore it, implementing LOCAL.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the variable address
+;     ZP_IWA_2 (&2C): the variable type
+;
+; On Exit:
+;     ZP_STACK_PTR (&04/&05): lowered past the saved value and identity
 ; &b30d referenced 2 times by &932d, &b276
 .stack_local
     ldy zp_iwa_2                                                      ; b30d: a4 2c       .,       ; Variable type
@@ -11588,7 +11641,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Find the line an error occurred in
 ;
-; Walk the program to locate the line containing the current text pointer and set ERL.
+; Walk the program from PAGE to locate the line whose text span contains the current
+; program pointer and record its number in ERL (0 in immediate mode).
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program pointer at the error
+;     ZP_PAGE (&18): PAGE, the start of the program
+;
+; On Exit:
+;     ZP_ERL (&08/&09): the line number (ERL), or 0
 ; &b3c5 referenced 1 time by &b402
 .find_error_line
     ldy #0                                                            ; b3c5: a0 00       ..       ; Clear ERL:
@@ -12029,7 +12090,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; LISTO - set the listing options
 ;
-; Evaluate the option value and store it in the LISTO flag (&1F).
+; Evaluate the option value and store it in the LISTO flag (&1F), which controls LIST
+; indentation and spacing. LISTO n.
+;
+; On Entry:
+;     A: the statement keyword token (>= &C6)
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword token
+;
+; On Exit:
+;     ZP_LISTO (&1F): the new LISTO flags
+;     CONTROL: rejoins statement_loop
 ; &b58a referenced 1 time by &b5a1
 .stmt_listo
     inc zp_text_ptr_off                                               ; b58a: e6 0a       ..       ; Step past LISTO
@@ -13018,6 +13089,14 @@ l848a = sub_c847b+15
 ; Move the DATA pointer past the current item to the next comma- or DATA-separated value,
 ; searching forward through the program for the next DATA statement at end of line;
 ; raises Out of DATA.
+;
+; On Entry:
+;     ZP_DATA_PTR (&1C): the current DATA read position
+;
+; On Exit:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the next DATA value
+;     ZP_DATA_PTR (&1C): advanced
+;     BRK: Out of DATA if none remain
 ; &bb50 referenced 2 times by &bb26, &bb32
 .next_data_item
     lda zp_text_ptr2_off                                              ; bb50: a5 1b       ..       ; Save the program pointer
@@ -13149,7 +13228,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Print the prompt and read a line
 ;
-; Print the character in A as a prompt, then read a line into the input buffer.
+; Print the character in A as a prompt, then read a line into the input buffer at &0700
+; via OSWORD 0.
+;
+; On Entry:
+;     A: the prompt character to print
+;
+; On Exit:
+;     THE INPUT BUFFER (&0700): the line read (CR terminated)
+;     C: set if the read was terminated by Escape
 ; &bc02 referenced 2 times by &8b08, &90bd
 .read_input_line
     jsr print_char                                                    ; bc02: 20 58 b5     X.      ; Print the prompt character
