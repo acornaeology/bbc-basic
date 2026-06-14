@@ -91644,7 +91644,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91695,7 +91695,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91705,7 +91705,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91730,7 +91730,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91740,7 +91740,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91765,7 +91765,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91775,7 +91775,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "write it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91889,7 +91889,7 @@
         165,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "load the exponent",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_exp",
@@ -91902,7 +91902,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to variable+0",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -91914,7 +91914,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "next byte slot",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -91937,7 +91937,7 @@
         41,
         128
       ],
-      "comment_inline": "...",
+      "comment_inline": "keep only the sign bit",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&80"
@@ -91948,7 +91948,7 @@
         133,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "save it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_sign",
@@ -91961,7 +91961,7 @@
         165,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "mantissa top byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m1",
@@ -91974,7 +91974,7 @@
         41,
         127
       ],
-      "comment_inline": "...",
+      "comment_inline": "drop its implicit top bit",
       "type": "code",
       "mnemonic": "and",
       "operand": "#&7f"
@@ -91985,7 +91985,7 @@
         5,
         46
       ],
-      "comment_inline": "...",
+      "comment_inline": "merge the sign bit in",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fwa_sign",
@@ -91998,7 +91998,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to variable+1",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -92020,7 +92020,7 @@
         165,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "load it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m2",
@@ -92033,7 +92033,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to variable+2",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -92055,7 +92055,7 @@
         165,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "load it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m3",
@@ -92068,7 +92068,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to variable+3",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
@@ -92090,7 +92090,7 @@
         165,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "load it",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwa_m4",
@@ -92103,7 +92103,7 @@
         145,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "to variable+4",
       "type": "code",
       "mnemonic": "sta",
       "operand": "(zp_general),y",
