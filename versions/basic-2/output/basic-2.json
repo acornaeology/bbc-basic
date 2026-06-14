@@ -62199,9 +62199,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca1ff",
+      "operand": "mul10_x8",
       "target": 41471,
-      "target_label": "ca1ff"
+      "target_label": "mul10_x8"
     },
     {
       "addr": 41469,
@@ -62224,7 +62224,7 @@
         162
       ],
       "labels": [
-        "ca1ff"
+        "mul10_x8"
       ],
       "comment_inline": "FWB = x*8",
       "xref_summaries": [
@@ -62275,7 +62275,7 @@
         161
       ],
       "labels": [
-        "ca208"
+        "fwa_acc10"
       ],
       "comment_inline": "FWA = x*8 + x*2 = x*10",
       "xref_summaries": [
@@ -62301,7 +62301,7 @@
         16
       ],
       "labels": [
-        "ca20b"
+        "fwa_carry_renorm"
       ],
       "comment_inline": "no overflow: done",
       "xref_summaries": [
@@ -62899,9 +62899,9 @@
       "comment_inline": "accumulate a shifted term into FWA",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca208",
+      "operand": "fwa_acc10",
       "target": 41480,
-      "target_label": "ca208"
+      "target_label": "fwa_acc10"
     },
     {
       "addr": 41566,
@@ -62969,9 +62969,9 @@
       "comment_inline": "accumulate the next term",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca208",
+      "operand": "fwa_acc10",
       "target": 41480,
-      "target_label": "ca208"
+      "target_label": "fwa_acc10"
     },
     {
       "addr": 41581,
@@ -63133,9 +63133,9 @@
       "comment_inline": "accumulate this term",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca208",
+      "operand": "fwa_acc10",
       "target": 41480,
-      "target_label": "ca208"
+      "target_label": "fwa_acc10"
     },
     {
       "addr": 41607,
@@ -63284,9 +63284,9 @@
       "comment_inline": "accumulate this term",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca208",
+      "operand": "fwa_acc10",
       "target": 41480,
-      "target_label": "ca208"
+      "target_label": "fwa_acc10"
     },
     {
       "addr": 41631,
@@ -63485,9 +63485,9 @@
       "comment_inline": "Carry out of the mantissa: renormalise (exponent up)",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca20b",
+      "operand": "fwa_carry_renorm",
       "target": 41483,
-      "target_label": "ca20b"
+      "target_label": "fwa_carry_renorm"
     },
     {
       "addr": 41661,
@@ -63590,9 +63590,9 @@
       "comment_inline": "positive: sign byte = 0",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca2cd",
+      "operand": "itf_store_sign",
       "target": 41677,
-      "target_label": "ca2cd"
+      "target_label": "itf_store_sign"
     },
     {
       "addr": 41672,
@@ -63626,7 +63626,7 @@
         46
       ],
       "labels": [
-        "ca2cd"
+        "itf_store_sign"
       ],
       "comment_inline": "(store the sign)",
       "xref_summaries": [
@@ -63790,7 +63790,7 @@
         46
       ],
       "labels": [
-        "loop_ca2e6"
+        "itf_zero"
       ],
       "comment_inline": "Zero: clear sign,",
       "xref_summaries": [
@@ -64114,9 +64114,9 @@
       "comment_inline": "so jump away to handle the zero value",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_ca2e6",
+      "operand": "itf_zero",
       "target": 41702,
-      "target_label": "loop_ca2e6"
+      "target_label": "itf_zero"
     },
     {
       "addr": 41745,
@@ -64138,7 +64138,7 @@
         49
       ],
       "labels": [
-        "ca313"
+        "norm_byte_loop"
       ],
       "comment_inline": "Shift up a whole byte while the MSB byte is zero",
       "xref_summaries": [
@@ -64176,9 +64176,9 @@
       "comment_inline": "MSB byte non-zero but bit 7 clear: bit-shift",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca33a",
+      "operand": "norm_bit_loop",
       "target": 41786,
-      "target_label": "ca33a"
+      "target_label": "norm_bit_loop"
     },
     {
       "addr": 41753,
@@ -64339,9 +64339,9 @@
       "comment_inline": "Loop to shift another byte if MSB still zero",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca313",
+      "operand": "norm_byte_loop",
       "target": 41747,
-      "target_label": "ca313"
+      "target_label": "norm_byte_loop"
     },
     {
       "addr": 41778,
@@ -64365,9 +64365,9 @@
       "comment_inline": "Continue the byte-shift loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca313",
+      "operand": "norm_byte_loop",
       "target": 41747,
-      "target_label": "ca313"
+      "target_label": "norm_byte_loop"
     },
     {
       "addr": 41782,
@@ -64376,7 +64376,7 @@
         49
       ],
       "labels": [
-        "ca336"
+        "norm_bit_check"
       ],
       "comment_inline": "Bit-shift loop: re-check the MSB",
       "xref_summaries": [
@@ -64412,7 +64412,7 @@
         53
       ],
       "labels": [
-        "ca33a"
+        "norm_bit_loop"
       ],
       "comment_inline": "Then shift left one bit at a time to normalise",
       "xref_summaries": [
@@ -64512,9 +64512,9 @@
       "comment_inline": "Loop until the MSB bit is set",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca336",
+      "operand": "norm_bit_check",
       "target": 41782,
-      "target_label": "ca336"
+      "target_label": "norm_bit_check"
     },
     {
       "addr": 41802,
@@ -64538,9 +64538,9 @@
       "comment_inline": "Continue the bit-shift loop",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca336",
+      "operand": "norm_bit_check",
       "target": 41782,
-      "target_label": "ca336"
+      "target_label": "norm_bit_check"
     },
     {
       "addr": 41806,
@@ -65689,7 +65689,7 @@
         49
       ],
       "labels": [
-        "sub_ca3e7"
+        "mantissa_to_iwa"
       ],
       "comment_inline": "Copy the 32-bit mantissa into IWA: byte 3",
       "xref_summaries": [
@@ -65812,7 +65812,7 @@
         162
       ],
       "labels": [
-        "loop_ca3f8"
+        "fti_small"
       ],
       "comment_inline": "|x| < 1: FWB = FWA",
       "xref_summaries": [
@@ -65875,9 +65875,9 @@
       "comment_inline": "< 1: result is zero",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_ca3f8",
+      "operand": "fti_small",
       "target": 41976,
-      "target_label": "loop_ca3f8"
+      "target_label": "fti_small"
     },
     {
       "addr": 41986,
@@ -65916,9 +65916,9 @@
       "comment_inline": "non-zero: denormalise",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca43c",
+      "operand": "fti2_shift_loop",
       "target": 42044,
-      "target_label": "ca43c"
+      "target_label": "fti2_shift_loop"
     },
     {
       "addr": 41994,
@@ -65929,9 +65929,9 @@
       "comment_inline": "zero: nothing to do",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca468",
+      "operand": "fti2_positive",
       "target": 42088,
-      "target_label": "ca468"
+      "target_label": "fti2_positive"
     },
     {
       "addr": 41996,
@@ -65940,7 +65940,7 @@
         48
       ],
       "labels": [
-        "ca40c"
+        "fti2_exp"
       ],
       "comment_inline": "Exponent",
       "xref_summaries": [
@@ -65976,9 +65976,9 @@
       "comment_inline": "yes: check it fits",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca466",
+      "operand": "fti2_exp_over",
       "target": 42086,
-      "target_label": "ca466"
+      "target_label": "fti2_exp_over"
     },
     {
       "addr": 42002,
@@ -66000,9 +66000,9 @@
       "comment_inline": "yes: finish with bit shifts",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "ca43c",
+      "operand": "fti2_shift_loop",
       "target": 42044,
-      "target_label": "ca43c"
+      "target_label": "fti2_shift_loop"
     },
     {
       "addr": 42006,
@@ -66243,9 +66243,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca40c",
+      "operand": "fti2_exp",
       "target": 41996,
-      "target_label": "ca40c"
+      "target_label": "fti2_exp"
     },
     {
       "addr": 42044,
@@ -66254,7 +66254,7 @@
         49
       ],
       "labels": [
-        "ca43c"
+        "fti2_shift_loop"
       ],
       "comment_inline": "Slow path: shift FWA:FWB right one bit",
       "xref_summaries": [
@@ -66383,9 +66383,9 @@
       "comment_inline": "loop until an exact integer",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca40c",
+      "operand": "fti2_exp",
       "target": 41996,
-      "target_label": "ca40c"
+      "target_label": "fti2_exp"
     },
     {
       "addr": 42064,
@@ -66395,7 +66395,7 @@
         166
       ],
       "labels": [
-        "ca450"
+        "fti2_too_big"
       ],
       "comment_inline": "Magnitude too large: Too big error",
       "xref_summaries": [
@@ -66553,7 +66553,7 @@
         232
       ],
       "labels": [
-        "ca466"
+        "fti2_exp_over"
       ],
       "comment_inline": "Exponent > 32: Too big error",
       "xref_summaries": [
@@ -66564,9 +66564,9 @@
       ],
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca450",
+      "operand": "fti2_too_big",
       "target": 42064,
-      "target_label": "ca450"
+      "target_label": "fti2_too_big"
     },
     {
       "addr": 42088,
@@ -66575,7 +66575,7 @@
         46
       ],
       "labels": [
-        "ca468"
+        "fti2_positive"
       ],
       "comment_inline": "Positive: integer ready, return",
       "xref_summaries": [
@@ -66609,7 +66609,7 @@
         56
       ],
       "labels": [
-        "ca46c"
+        "fti2_negate"
       ],
       "comment_inline": "Negative: negate the 32-bit mantissa",
       "xref_summaries": [
@@ -66822,9 +66822,9 @@
       "comment_inline": "|x| >= 1: has an integer part",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "ca491",
+      "operand": "sif_convert",
       "target": 42129,
-      "target_label": "ca491"
+      "target_label": "sif_convert"
     },
     {
       "addr": 42122,
@@ -66872,7 +66872,7 @@
         163
       ],
       "labels": [
-        "ca491"
+        "sif_convert"
       ],
       "comment_inline": "Convert to a fixed integer (fraction into FWB)",
       "xref_summaries": [
@@ -66973,9 +66973,9 @@
       "comment_inline": "no: fraction already in range",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca4b3",
+      "operand": "sif_normalise_frac",
       "target": 42163,
-      "target_label": "ca4b3"
+      "target_label": "sif_normalise_frac"
     },
     {
       "addr": 42147,
@@ -67012,9 +67012,9 @@
       "comment_inline": "remainder positive: round the integer down",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca4ae",
+      "operand": "sif_round_down",
       "target": 42158,
-      "target_label": "ca4ae"
+      "target_label": "sif_round_down"
     },
     {
       "addr": 42153,
@@ -67039,9 +67039,9 @@
       "comment_inline": "done: go negate the remainder",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca4b0",
+      "operand": "sif_negate_frac",
       "target": 42160,
-      "target_label": "ca4b0"
+      "target_label": "sif_negate_frac"
     },
     {
       "addr": 42158,
@@ -67050,7 +67050,7 @@
         74
       ],
       "labels": [
-        "ca4ae"
+        "sif_round_down"
       ],
       "comment_inline": "negative: round the integer part down",
       "xref_summaries": [
@@ -67073,7 +67073,7 @@
         164
       ],
       "labels": [
-        "ca4b0"
+        "sif_negate_frac"
       ],
       "comment_inline": "Negate the fraction mantissa",
       "xref_summaries": [
@@ -67084,9 +67084,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca46c",
+      "operand": "fti2_negate",
       "target": 42092,
-      "target_label": "ca46c"
+      "target_label": "fti2_negate"
     },
     {
       "addr": 42163,
@@ -67096,7 +67096,7 @@
         163
       ],
       "labels": [
-        "ca4b3"
+        "sif_normalise_frac"
       ],
       "comment_inline": "Normalise the fraction",
       "xref_summaries": [
@@ -67118,7 +67118,7 @@
         52
       ],
       "labels": [
-        "sub_ca4b6"
+        "inc_int_mantissa"
       ],
       "comment_inline": "Increment the integer-part mantissa (carry up)",
       "xref_summaries": [
@@ -67220,9 +67220,9 @@
       "comment_inline": "overflow: Too big",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca450",
+      "operand": "fti2_too_big",
       "target": 42064,
-      "target_label": "ca450"
+      "target_label": "fti2_too_big"
     },
     {
       "addr": 42182,
@@ -67252,7 +67252,7 @@
         164
       ],
       "labels": [
-        "sub_ca4c7"
+        "negate_mantissa"
       ],
       "comment_inline": "Decrement the mantissa magnitude (negate, +1, negate)",
       "xref_summaries": [
@@ -67263,9 +67263,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca46c",
+      "operand": "fti2_negate",
       "target": 42092,
-      "target_label": "ca46c"
+      "target_label": "fti2_negate"
     },
     {
       "addr": 42186,
@@ -67277,9 +67277,9 @@
       "comment_inline": "add one to the magnitude",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4b6",
+      "operand": "inc_int_mantissa",
       "target": 42166,
-      "target_label": "sub_ca4b6"
+      "target_label": "inc_int_mantissa"
     },
     {
       "addr": 42189,
@@ -67291,9 +67291,9 @@
       "comment_inline": "negate back",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca46c",
+      "operand": "fti2_negate",
       "target": 42092,
-      "target_label": "ca46c"
+      "target_label": "fti2_negate"
     },
     {
       "addr": 42192,
@@ -69258,9 +69258,9 @@
       "comment_inline": "FWA += FWB",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca208",
+      "operand": "fwa_acc10",
       "target": 41480,
-      "target_label": "ca208"
+      "target_label": "fwa_acc10"
     },
     {
       "addr": 42467,
@@ -76018,9 +76018,9 @@
       "comment_inline": "negative: negate the mantissa",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca46c",
+      "operand": "fti2_negate",
       "target": 42092,
-      "target_label": "ca46c"
+      "target_label": "fti2_negate"
     },
     {
       "addr": 43534,
@@ -79920,9 +79920,9 @@
       "comment_inline": "round down (floor of a negative)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca4c7",
+      "operand": "negate_mantissa",
       "target": 42183,
-      "target_label": "sub_ca4c7"
+      "target_label": "negate_mantissa"
     },
     {
       "addr": 44181,
@@ -79944,9 +79944,9 @@
       ],
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca3e7",
+      "operand": "mantissa_to_iwa",
       "target": 41959,
-      "target_label": "sub_ca3e7"
+      "target_label": "mantissa_to_iwa"
     },
     {
       "addr": 44184,
