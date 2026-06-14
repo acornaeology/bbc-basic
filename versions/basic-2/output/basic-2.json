@@ -5166,9 +5166,9 @@
       "comment_inline": "Non-zero: keep the existing state",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8063",
+      "operand": "lang_install_brkv",
       "target": 32867,
-      "target_label": "c8063"
+      "target_label": "lang_install_brkv"
     },
     {
       "addr": 32855,
@@ -5252,7 +5252,7 @@
         2
       ],
       "labels": [
-        "c8063"
+        "lang_install_brkv"
       ],
       "comment_inline": "Install brk_handler (&B402) into BRKV",
       "xref_summaries": [
@@ -11672,7 +11672,7 @@
         3
       ],
       "labels": [
-        "c8504"
+        "asm_enter"
       ],
       "comment_inline": "Entering: default OPT 3",
       "xref_summaries": [
@@ -11706,7 +11706,7 @@
         138
       ],
       "labels": [
-        "c8508"
+        "asm_loop"
       ],
       "comment_inline": "Skip spaces",
       "xref_summaries": [
@@ -11830,9 +11830,9 @@
       "comment_inline": "no: skip the listing",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c857e",
+      "operand": "asm_next_statement",
       "target": 34174,
-      "target_label": "c857e"
+      "target_label": "asm_next_statement"
     },
     {
       "addr": 34078,
@@ -11958,9 +11958,9 @@
       "comment_inline": "not EQUS: use the byte count,",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c8536",
+      "operand": "asm_list_count",
       "target": 34102,
-      "target_label": "c8536"
+      "target_label": "asm_list_count"
     },
     {
       "addr": 34100,
@@ -11982,7 +11982,7 @@
         56
       ],
       "labels": [
-        "c8536"
+        "asm_list_count"
       ],
       "comment_inline": "Bytes to list",
       "xref_summaries": [
@@ -12006,9 +12006,9 @@
       "comment_inline": "none",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8556",
+      "operand": "asm_list_pad_loop",
       "target": 34134,
-      "target_label": "c8556"
+      "target_label": "asm_list_pad_loop"
     },
     {
       "addr": 34106,
@@ -12027,7 +12027,7 @@
         232
       ],
       "labels": [
-        "loop_c853c"
+        "asm_list_byte_loop"
       ],
       "comment_inline": "Count printed on this line",
       "xref_summaries": [
@@ -12048,9 +12048,9 @@
       "comment_inline": "still on the line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c854c",
+      "operand": "asm_list_byte",
       "target": 34124,
-      "target_label": "c854c"
+      "target_label": "asm_list_byte"
     },
     {
       "addr": 34111,
@@ -12087,7 +12087,7 @@
         181
       ],
       "labels": [
-        "loop_c8544"
+        "asm_list_indent_loop"
       ],
       "comment_inline": "Print a space",
       "xref_summaries": [
@@ -12120,9 +12120,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8544",
+      "operand": "asm_list_indent_loop",
       "target": 34116,
-      "target_label": "loop_c8544"
+      "target_label": "asm_list_indent_loop"
     },
     {
       "addr": 34122,
@@ -12142,7 +12142,7 @@
         58
       ],
       "labels": [
-        "c854c"
+        "asm_list_byte"
       ],
       "comment_inline": "Assembled byte",
       "xref_summaries": [
@@ -12202,9 +12202,9 @@
       "comment_inline": "no: continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c853c",
+      "operand": "asm_list_byte_loop",
       "target": 34108,
-      "target_label": "loop_c853c"
+      "target_label": "asm_list_byte_loop"
     },
     {
       "addr": 34134,
@@ -12212,7 +12212,7 @@
         232
       ],
       "labels": [
-        "c8556"
+        "asm_list_pad_loop"
       ],
       "comment_inline": "Pad to the source column",
       "xref_summaries": [
@@ -12234,9 +12234,9 @@
       "comment_inline": "done",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "c8565",
+      "operand": "asm_list_source",
       "target": 34149,
-      "target_label": "c8565"
+      "target_label": "asm_list_source"
     },
     {
       "addr": 34137,
@@ -12290,9 +12290,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8556",
+      "operand": "asm_list_pad_loop",
       "target": 34134,
-      "target_label": "c8556"
+      "target_label": "asm_list_pad_loop"
     },
     {
       "addr": 34149,
@@ -12301,7 +12301,7 @@
         0
       ],
       "labels": [
-        "c8565"
+        "asm_list_source"
       ],
       "comment_inline": "Print the source: from offset 0",
       "xref_summaries": [
@@ -12321,7 +12321,7 @@
         11
       ],
       "labels": [
-        "loop_c8567"
+        "asm_list_src_loop"
       ],
       "comment_inline": "Next character",
       "xref_summaries": [
@@ -12356,9 +12356,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8577",
+      "operand": "asm_list_src_end",
       "target": 34167,
-      "target_label": "c8577"
+      "target_label": "asm_list_src_end"
     },
     {
       "addr": 34157,
@@ -12380,9 +12380,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c857b",
+      "operand": "asm_list_newline",
       "target": 34171,
-      "target_label": "c857b"
+      "target_label": "asm_list_newline"
     },
     {
       "addr": 34161,
@@ -12392,7 +12392,7 @@
         181
       ],
       "labels": [
-        "loop_c8571"
+        "asm_list_src_print"
       ],
       "comment_inline": "de-tokenise and print",
       "xref_summaries": [
@@ -12425,9 +12425,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8567",
+      "operand": "asm_list_src_loop",
       "target": 34151,
-      "target_label": "loop_c8567"
+      "target_label": "asm_list_src_loop"
     },
     {
       "addr": 34167,
@@ -12436,7 +12436,7 @@
         10
       ],
       "labels": [
-        "c8577"
+        "asm_list_src_end"
       ],
       "comment_inline": "reached the statement end?",
       "xref_summaries": [
@@ -12460,9 +12460,9 @@
       "comment_inline": "no: continue",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_c8571",
+      "operand": "asm_list_src_print",
       "target": 34161,
-      "target_label": "loop_c8571"
+      "target_label": "asm_list_src_print"
     },
     {
       "addr": 34171,
@@ -12472,7 +12472,7 @@
         188
       ],
       "labels": [
-        "c857b"
+        "asm_list_newline"
       ],
       "comment_inline": "Newline",
       "xref_summaries": [
@@ -12494,7 +12494,7 @@
         10
       ],
       "labels": [
-        "c857e"
+        "asm_next_statement"
       ],
       "comment_inline": "Advance to the next statement",
       "xref_summaries": [
@@ -12524,7 +12524,7 @@
         200
       ],
       "labels": [
-        "loop_c8581"
+        "asm_scan_end_loop"
       ],
       "comment_inline": "scan for the end",
       "xref_summaries": [
@@ -12569,9 +12569,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c858c",
+      "operand": "asm_stmt_end",
       "target": 34188,
-      "target_label": "c858c"
+      "target_label": "asm_stmt_end"
     },
     {
       "addr": 34184,
@@ -12593,9 +12593,9 @@
       "comment_inline": "no: continue",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8581",
+      "operand": "asm_scan_end_loop",
       "target": 34177,
-      "target_label": "loop_c8581"
+      "target_label": "asm_scan_end_loop"
     },
     {
       "addr": 34188,
@@ -12605,7 +12605,7 @@
         152
       ],
       "labels": [
-        "c858c"
+        "asm_stmt_end"
       ],
       "comment_inline": "Check Escape and advance",
       "xref_summaries": [
@@ -12662,9 +12662,9 @@
       "comment_inline": "yes: same line",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c85a2",
+      "operand": "asm_continue",
       "target": 34210,
-      "target_label": "c85a2"
+      "target_label": "asm_continue"
     },
     {
       "addr": 34198,
@@ -12699,9 +12699,9 @@
       "comment_inline": "no: next line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c859f",
+      "operand": "asm_next_line",
       "target": 34207,
-      "target_label": "c859f"
+      "target_label": "asm_next_line"
     },
     {
       "addr": 34204,
@@ -12725,7 +12725,7 @@
         152
       ],
       "labels": [
-        "c859f"
+        "asm_next_line"
       ],
       "comment_inline": "Move to the next line",
       "xref_summaries": [
@@ -12748,7 +12748,7 @@
         133
       ],
       "labels": [
-        "c85a2"
+        "asm_continue"
       ],
       "comment_inline": "continue assembling",
       "xref_summaries": [
@@ -12759,9 +12759,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8508",
+      "operand": "asm_loop",
       "target": 34056,
-      "target_label": "c8508"
+      "target_label": "asm_loop"
     },
     {
       "addr": 34213,
@@ -12771,7 +12771,7 @@
         149
       ],
       "labels": [
-        "loop_c85a5"
+        "asm_define_label"
       ],
       "comment_inline": "Label: parse the variable",
       "xref_summaries": [
@@ -13031,9 +13031,9 @@
       "comment_inline": "yes: define it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c85a5",
+      "operand": "asm_define_label",
       "target": 34213,
-      "target_label": "loop_c85a5"
+      "target_label": "asm_define_label"
     },
     {
       "addr": 34259,
@@ -22645,9 +22645,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c8504",
+      "operand": "asm_enter",
       "target": 34052,
-      "target_label": "c8504"
+      "target_label": "asm_enter"
     },
     {
       "addr": 35655,
