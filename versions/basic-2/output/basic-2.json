@@ -87673,7 +87673,7 @@
         1
       ],
       "labels": [
-        "cb11a"
+        "finddef_scan"
       ],
       "comment_inline": "line number high byte",
       "xref_summaries": [
@@ -87730,7 +87730,7 @@
         200
       ],
       "labels": [
-        "loop_cb122"
+        "finddef_advance"
       ],
       "comment_inline": "advance",
       "xref_summaries": [
@@ -87775,9 +87775,9 @@
       "comment_inline": "skip it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb122",
+      "operand": "finddef_advance",
       "target": 45346,
-      "target_label": "loop_cb122"
+      "target_label": "finddef_advance"
     },
     {
       "addr": 45353,
@@ -87799,9 +87799,9 @@
       "comment_inline": "yes: check the name",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb13c",
+      "operand": "finddef_found",
       "target": 45372,
-      "target_label": "cb13c"
+      "target_label": "finddef_found"
     },
     {
       "addr": 45357,
@@ -87810,7 +87810,7 @@
         3
       ],
       "labels": [
-        "cb12d"
+        "finddef_next_line"
       ],
       "comment_inline": "no DEF: skip to the next line",
       "xref_summaries": [
@@ -87881,9 +87881,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb11a",
+      "operand": "finddef_scan",
       "target": 45338,
-      "target_label": "cb11a"
+      "target_label": "finddef_scan"
     },
     {
       "addr": 45368,
@@ -87907,9 +87907,9 @@
       "comment_inline": "next line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb11a",
+      "operand": "finddef_scan",
       "target": 45338,
-      "target_label": "cb11a"
+      "target_label": "finddef_scan"
     },
     {
       "addr": 45372,
@@ -87917,7 +87917,7 @@
         200
       ],
       "labels": [
-        "cb13c"
+        "finddef_found"
       ],
       "comment_inline": "DEF found: skip past the FN/PROC token",
       "xref_summaries": [
@@ -88018,9 +88018,9 @@
       "comment_inline": "no carry",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb14d",
+      "operand": "finddef_name_setup",
       "target": 45389,
-      "target_label": "cb14d"
+      "target_label": "finddef_name_setup"
     },
     {
       "addr": 45387,
@@ -88047,7 +88047,7 @@
         0
       ],
       "labels": [
-        "cb14d"
+        "finddef_name_setup"
       ],
       "comment_inline": "minus 1 (loop pre-increments Y)",
       "xref_summaries": [
@@ -88123,7 +88123,7 @@
         200
       ],
       "labels": [
-        "loop_cb158"
+        "finddef_match_loop"
       ],
       "comment_inline": "next char",
       "xref_summaries": [
@@ -88179,9 +88179,9 @@
       "comment_inline": "differ: next line",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb12d",
+      "operand": "finddef_next_line",
       "target": 45357,
-      "target_label": "cb12d"
+      "target_label": "finddef_next_line"
     },
     {
       "addr": 45408,
@@ -88205,9 +88205,9 @@
       "comment_inline": "no: keep comparing",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb158",
+      "operand": "finddef_match_loop",
       "target": 45400,
-      "target_label": "loop_cb158"
+      "target_label": "finddef_match_loop"
     },
     {
       "addr": 45412,
@@ -88254,9 +88254,9 @@
       "comment_inline": "definition name is longer: next line",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb12d",
+      "operand": "finddef_next_line",
       "target": 45357,
-      "target_label": "cb12d"
+      "target_label": "finddef_next_line"
     },
     {
       "addr": 45420,
@@ -88425,9 +88425,9 @@
       "comment_inline": "continue",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb1f4",
+      "operand": "callpf_push_count",
       "target": 45556,
-      "target_label": "cb1f4"
+      "target_label": "callpf_push_count"
     },
     {
       "addr": 45450,
@@ -88435,7 +88435,7 @@
         0
       ],
       "labels": [
-        "loop_cb18a"
+        "finddef_not_found"
       ],
       "comment_inline": "error block",
       "xref_summaries": [
@@ -88611,7 +88611,7 @@
         232
       ],
       "labels": [
-        "loop_cb1a6"
+        "callpf_save_stack"
       ],
       "comment_inline": "Copy each 6502 stack byte",
       "xref_summaries": [
@@ -88679,9 +88679,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb1a6",
+      "operand": "callpf_save_stack",
       "target": 45478,
-      "target_label": "loop_cb1a6"
+      "target_label": "callpf_save_stack"
     },
     {
       "addr": 45489,
@@ -88846,9 +88846,9 @@
       "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb1ca",
+      "operand": "callpf_back",
       "target": 45514,
-      "target_label": "cb1ca"
+      "target_label": "callpf_back"
     },
     {
       "addr": 45512,
@@ -88875,7 +88875,7 @@
         1
       ],
       "labels": [
-        "cb1ca"
+        "callpf_back"
       ],
       "comment_inline": "back up one: low,",
       "xref_summaries": [
@@ -88979,9 +88979,9 @@
       "comment_inline": "yes: Bad call",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb18a",
+      "operand": "finddef_not_found",
       "target": 45450,
-      "target_label": "loop_cb18a"
+      "target_label": "finddef_not_found"
     },
     {
       "addr": 45532,
@@ -89041,9 +89041,9 @@
       "comment_inline": "found: jump to it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb1e9",
+      "operand": "callpf_set_ptr",
       "target": 45545,
-      "target_label": "cb1e9"
+      "target_label": "callpf_set_ptr"
     },
     {
       "addr": 45542,
@@ -89066,7 +89066,7 @@
         0
       ],
       "labels": [
-        "cb1e9"
+        "callpf_set_ptr"
       ],
       "comment_inline": "Set PtrA to the definition address",
       "xref_summaries": [
@@ -89147,7 +89147,7 @@
         0
       ],
       "labels": [
-        "cb1f4"
+        "callpf_push_count"
       ],
       "comment_inline": "Push the parameter count (0 so far)",
       "xref_summaries": [
@@ -89216,9 +89216,9 @@
       "comment_inline": "yes: bind them",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb24d",
+      "operand": "callpf_save_parser2",
       "target": 45645,
-      "target_label": "cb24d"
+      "target_label": "callpf_save_parser2"
     },
     {
       "addr": 45568,
@@ -89240,7 +89240,7 @@
         27
       ],
       "labels": [
-        "cb202"
+        "callpf_save_parser"
       ],
       "comment_inline": "Save the parser pointer",
       "xref_summaries": [
@@ -89406,9 +89406,9 @@
       "comment_inline": "none: skip",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb226",
+      "operand": "callpf_restore_ptr",
       "target": 45606,
-      "target_label": "cb226"
+      "target_label": "callpf_restore_ptr"
     },
     {
       "addr": 45594,
@@ -89431,7 +89431,7 @@
         190
       ],
       "labels": [
-        "loop_cb21c"
+        "callpf_restore_locals"
       ],
       "comment_inline": "Unstack the variable address",
       "xref_summaries": [
@@ -89482,9 +89482,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb21c",
+      "operand": "callpf_restore_locals",
       "target": 45596,
-      "target_label": "loop_cb21c"
+      "target_label": "callpf_restore_locals"
     },
     {
       "addr": 45606,
@@ -89492,7 +89492,7 @@
         104
       ],
       "labels": [
-        "cb226"
+        "callpf_restore_ptr"
       ],
       "comment_inline": "Restore PtrA",
       "xref_summaries": [
@@ -89618,7 +89618,7 @@
         200
       ],
       "labels": [
-        "loop_cb236"
+        "callpf_restore_stack"
       ],
       "comment_inline": "Copy each byte back to the 6502 stack",
       "xref_summaries": [
@@ -89686,9 +89686,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb236",
+      "operand": "callpf_restore_stack",
       "target": 45622,
-      "target_label": "loop_cb236"
+      "target_label": "callpf_restore_stack"
     },
     {
       "addr": 45633,
@@ -89734,9 +89734,9 @@
       "comment_inline": "no carry,",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb24a",
+      "operand": "callpf_return",
       "target": 45642,
-      "target_label": "cb24a"
+      "target_label": "callpf_return"
     },
     {
       "addr": 45640,
@@ -89758,7 +89758,7 @@
         39
       ],
       "labels": [
-        "cb24a"
+        "callpf_return"
       ],
       "comment_inline": "Return the PROC/FN token",
       "xref_summaries": [
@@ -89789,7 +89789,7 @@
         27
       ],
       "labels": [
-        "cb24d"
+        "callpf_save_parser2"
       ],
       "comment_inline": "Save the parser pointer",
       "xref_summaries": [
@@ -89881,9 +89881,9 @@
       "comment_inline": "invalid: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45659,
@@ -90136,9 +90136,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb24d",
+      "operand": "callpf_save_parser2",
       "target": 45645,
-      "target_label": "cb24d"
+      "target_label": "callpf_save_parser2"
     },
     {
       "addr": 45696,
@@ -90160,9 +90160,9 @@
       "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45700,
@@ -90218,9 +90218,9 @@
       "comment_inline": "missing: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45710,
@@ -90230,7 +90230,7 @@
         155
       ],
       "labels": [
-        "loop_cb28e"
+        "callpf_arg_loop"
       ],
       "comment_inline": "Evaluate an argument",
       "xref_summaries": [
@@ -90378,9 +90378,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_cb28e",
+      "operand": "callpf_arg_loop",
       "target": 45710,
-      "target_label": "loop_cb28e"
+      "target_label": "callpf_arg_loop"
     },
     {
       "addr": 45735,
@@ -90402,9 +90402,9 @@
       "comment_inline": "no: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45739,
@@ -90472,9 +90472,9 @@
       "comment_inline": "yes: bind them",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb2ca",
+      "operand": "callpf_unstack_arg",
       "target": 45770,
-      "target_label": "cb2ca"
+      "target_label": "callpf_unstack_arg"
     },
     {
       "addr": 45749,
@@ -90483,7 +90483,7 @@
         251
       ],
       "labels": [
-        "cb2b5"
+        "callpf_reset_stack"
       ],
       "comment_inline": "Reset the stack",
       "xref_summaries": [
@@ -90607,7 +90607,7 @@
         189
       ],
       "labels": [
-        "cb2ca"
+        "callpf_unstack_arg"
       ],
       "comment_inline": "Unstack the argument type",
       "xref_summaries": [
@@ -90698,9 +90698,9 @@
       "comment_inline": "string formal?",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "cb2f9",
+      "operand": "callpf_string_formal",
       "target": 45817,
-      "target_label": "cb2f9"
+      "target_label": "callpf_string_formal"
     },
     {
       "addr": 45784,
@@ -90724,9 +90724,9 @@
       "comment_inline": "string argument: Arguments error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45788,
@@ -90788,9 +90788,9 @@
       "comment_inline": "integer?",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cb2f0",
+      "operand": "callpf_assign_int",
       "target": 45808,
-      "target_label": "cb2f0"
+      "target_label": "callpf_assign_int"
     },
     {
       "addr": 45799,
@@ -90830,9 +90830,9 @@
       "comment_inline": "assign it",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb2f3",
+      "operand": "callpf_assign",
       "target": 45811,
-      "target_label": "cb2f3"
+      "target_label": "callpf_assign"
     },
     {
       "addr": 45808,
@@ -90842,7 +90842,7 @@
         189
       ],
       "labels": [
-        "cb2f0"
+        "callpf_assign_int"
       ],
       "comment_inline": "unstack the integer value",
       "xref_summaries": [
@@ -90865,7 +90865,7 @@
         180
       ],
       "labels": [
-        "cb2f3"
+        "callpf_assign"
       ],
       "comment_inline": "Assign to the formal",
       "xref_summaries": [
@@ -90890,9 +90890,9 @@
       "comment_inline": "next argument",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb303",
+      "operand": "callpf_bound",
       "target": 45827,
-      "target_label": "cb303"
+      "target_label": "callpf_bound"
     },
     {
       "addr": 45817,
@@ -90901,7 +90901,7 @@
         45
       ],
       "labels": [
-        "cb2f9"
+        "callpf_string_formal"
       ],
       "comment_inline": "String formal: argument type",
       "xref_summaries": [
@@ -90925,9 +90925,9 @@
       "comment_inline": "numeric argument: Arguments error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb2b5",
+      "operand": "callpf_reset_stack",
       "target": 45749,
-      "target_label": "cb2b5"
+      "target_label": "callpf_reset_stack"
     },
     {
       "addr": 45821,
@@ -90964,7 +90964,7 @@
         77
       ],
       "labels": [
-        "cb303"
+        "callpf_bound"
       ],
       "comment_inline": "One parameter bound",
       "xref_summaries": [
@@ -90988,9 +90988,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb2ca",
+      "operand": "callpf_unstack_arg",
       "target": 45770,
-      "target_label": "cb2ca"
+      "target_label": "callpf_unstack_arg"
     },
     {
       "addr": 45831,
@@ -91024,9 +91024,9 @@
       "comment_inline": "Execute the body",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cb202",
+      "operand": "callpf_save_parser",
       "target": 45570,
-      "target_label": "cb202"
+      "target_label": "callpf_save_parser"
     },
     {
       "addr": 45837,

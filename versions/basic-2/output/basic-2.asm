@@ -11140,31 +11140,31 @@ oscli            = &fff7
     lda #0                                                            ; b116: a9 00       ..       ; low 0
     sta zp_text_ptr                                                   ; b118: 85 0b       ..       ; (store)
 ; &b11a referenced 2 times by &b136, &b13a
-.cb11a
+.finddef_scan
     ldy #1                                                            ; b11a: a0 01       ..       ; line number high byte
     lda (zp_text_ptr),y                                               ; b11c: b1 0b       ..       ; read it
     bmi no_such_fn_proc                                               ; b11e: 30 de       0.       ; end of program: not found
     ldy #3                                                            ; b120: a0 03       ..       ; skip to the line body
 ; &b122 referenced 1 time by &b127
-.loop_cb122
+.finddef_advance
     iny                                                               ; b122: c8          .        ; advance
     lda (zp_text_ptr),y                                               ; b123: b1 0b       ..       ; char
     cmp #&20 ; ' '                                                    ; b125: c9 20       .        ; skip leading spaces
-    beq loop_cb122                                                    ; b127: f0 f9       ..       ; skip it
+    beq finddef_advance                                               ; b127: f0 f9       ..       ; skip it
     cmp #&dd                                                          ; b129: c9 dd       ..       ; DEF token at the start?
-    beq cb13c                                                         ; b12b: f0 0f       ..       ; yes: check the name
+    beq finddef_found                                                 ; b12b: f0 0f       ..       ; yes: check the name
 ; &b12d referenced 2 times by &b15e, &b16a
-.cb12d
+.finddef_next_line
     ldy #3                                                            ; b12d: a0 03       ..       ; no DEF: skip to the next line
     lda (zp_text_ptr),y                                               ; b12f: b1 0b       ..       ; line length
     clc                                                               ; b131: 18          .        ; add the line length...
     adc zp_text_ptr                                                   ; b132: 65 0b       e.       ; to the pointer low,
     sta zp_text_ptr                                                   ; b134: 85 0b       ..       ; (store)
-    bcc cb11a                                                         ; b136: 90 e2       ..       ; no carry
+    bcc finddef_scan                                                  ; b136: 90 e2       ..       ; no carry
     inc zp_text_ptr_1                                                 ; b138: e6 0c       ..       ; carry into the pointer high
-    bcs cb11a                                                         ; b13a: b0 de       ..       ; next line
+    bcs finddef_scan                                                  ; b13a: b0 de       ..       ; next line
 ; &b13c referenced 1 time by &b12b
-.cb13c
+.finddef_found
     iny                                                               ; b13c: c8          .        ; DEF found: skip past the FN/PROC token
     sty zp_text_ptr_off                                               ; b13d: 84 0a       ..       ; (store the offset)
     jsr skip_spaces                                                   ; b13f: 20 97 8a     ..      ; skip spaces
@@ -11173,11 +11173,11 @@ oscli            = &fff7
     clc                                                               ; b144: 18          .        ; pointer + offset:
     adc zp_text_ptr                                                   ; b145: 65 0b       e.       ; low,
     ldy zp_text_ptr_1                                                 ; b147: a4 0c       ..       ; high,
-    bcc cb14d                                                         ; b149: 90 02       ..       ; no carry
+    bcc finddef_name_setup                                            ; b149: 90 02       ..       ; no carry
     iny                                                               ; b14b: c8          .        ; carry into high
     clc                                                               ; b14c: 18          .        ; (borrow for the -1)
 ; &b14d referenced 1 time by &b149
-.cb14d
+.finddef_name_setup
     sbc #0                                                            ; b14d: e9 00       ..       ; minus 1 (loop pre-increments Y)
     sta zp_fwb_ovf                                                    ; b14f: 85 3c       .<       ; (save pointer low)
     tya                                                               ; b151: 98          .        ; high byte...
@@ -11185,18 +11185,18 @@ oscli            = &fff7
     sta zp_fwb_exp                                                    ; b154: 85 3d       .=       ; (save pointer high)
     ldy #0                                                            ; b156: a0 00       ..       ; Compare the definition name with the called name:
 ; &b158 referenced 1 time by &b162
-.loop_cb158
+.finddef_match_loop
     iny                                                               ; b158: c8          .        ; next char
     inx                                                               ; b159: e8          .        ; advance both cursors
     lda (zp_fwb_ovf),y                                                ; b15a: b1 3c       .<       ; definition char
     cmp (zp_general),y                                                ; b15c: d1 37       .7       ; vs called char
-    bne cb12d                                                         ; b15e: d0 cd       ..       ; differ: next line
+    bne finddef_next_line                                             ; b15e: d0 cd       ..       ; differ: next line
     cpy zp_fileblk                                                    ; b160: c4 39       .9       ; end of the called name?
-    bne loop_cb158                                                    ; b162: d0 f4       ..       ; no: keep comparing
+    bne finddef_match_loop                                            ; b162: d0 f4       ..       ; no: keep comparing
     iny                                                               ; b164: c8          .        ; definition name also ends?
     lda (zp_fwb_ovf),y                                                ; b165: b1 3c       .<       ; read the next def char
     jsr is_alphanumeric                                               ; b167: 20 26 89     &.      ; alphanumeric?
-    bcs cb12d                                                         ; b16a: b0 c1       ..       ; definition name is longer: next line
+    bcs finddef_next_line                                             ; b16a: b0 c1       ..       ; definition name is longer: next line
     txa                                                               ; b16c: 8a          .        ; Match: cache the definition
     tay                                                               ; b16d: a8          .        ; Y = name length
     jsr skip_to_statement_end                                         ; b16e: 20 6d 98     m.      ; point PtrA at the body
@@ -11210,9 +11210,9 @@ oscli            = &fff7
     lda zp_text_ptr_1                                                 ; b180: a5 0c       ..       ; pointer high...
     sta (zp_vartop),y                                                 ; b182: 91 02       ..       ; (store)
     jsr advance_vartop                                                ; b184: 20 39 95     9.      ; advance VARTOP
-    jmp cb1f4                                                         ; b187: 4c f4 b1    L..      ; continue
+    jmp callpf_push_count                                             ; b187: 4c f4 b1    L..      ; continue
 ; &b18a referenced 1 time by &b1da
-.loop_cb18a
+.finddef_not_found
     brk                                                               ; b18a: 00          .        ; error block
     equb &1e                                                          ; b18b: 1e          .     
     equs "Bad call"                                                   ; b18c: 42 61 64... Bad...
@@ -11262,13 +11262,13 @@ oscli            = &fff7
     txa                                                               ; b1a3: 8a          .        ; the saved SP,
     sta (zp_stack_ptr),y                                              ; b1a4: 91 04       ..       ; at offset 0
 ; &b1a6 referenced 1 time by &b1af
-.loop_cb1a6
+.callpf_save_stack
     inx                                                               ; b1a6: e8          .        ; Copy each 6502 stack byte
     iny                                                               ; b1a7: c8          .        ; next dest,
     lda l0100,x                                                       ; b1a8: bd 00 01    ...      ; read a stack byte,
     sta (zp_stack_ptr),y                                              ; b1ab: 91 04       ..       ; to the BASIC stack,
     cpx #&ff                                                          ; b1ad: e0 ff       ..       ; whole stack copied?
-    bne loop_cb1a6                                                    ; b1af: d0 f5       ..       ; loop
+    bne callpf_save_stack                                             ; b1af: d0 f5       ..       ; loop
     txs                                                               ; b1b1: 9a          .        ; Empty the 6502 stack
     lda zp_var_type                                                   ; b1b2: a5 27       .'       ; PROC/FN token
     pha                                                               ; b1b4: 48          H        ; Push the call context and return pointers
@@ -11283,11 +11283,11 @@ oscli            = &fff7
     clc                                                               ; b1c1: 18          .        ; add the parser pointer:
     adc zp_text_ptr2                                                  ; b1c2: 65 19       e.       ; low byte,
     ldy zp_text_ptr2_1                                                ; b1c4: a4 1a       ..       ; high byte in Y,
-    bcc cb1ca                                                         ; b1c6: 90 02       ..       ; no carry,
+    bcc callpf_back                                                   ; b1c6: 90 02       ..       ; no carry,
     iny                                                               ; b1c8: c8          .        ; carry into high,
     clc                                                               ; b1c9: 18          .        ; clear carry,
 ; &b1ca referenced 1 time by &b1c6
-.cb1ca
+.callpf_back
     sbc #1                                                            ; b1ca: e9 01       ..       ; back up one: low,
     sta zp_general                                                    ; b1cc: 85 37       .7       ; to &37,
     tya                                                               ; b1ce: 98          .        ; high byte,
@@ -11296,15 +11296,15 @@ oscli            = &fff7
     ldy #2                                                            ; b1d3: a0 02       ..       ; Validate the name
     jsr valname_loop                                                  ; b1d5: 20 5b 95     [.      ; scan it from offset 2
     cpy #2                                                            ; b1d8: c0 02       ..       ; no valid characters?
-    beq loop_cb18a                                                    ; b1da: f0 ae       ..       ; yes: Bad call
+    beq finddef_not_found                                             ; b1da: f0 ae       ..       ; yes: Bad call
     stx zp_text_ptr2_off                                              ; b1dc: 86 1b       ..       ; Offset past the name
     dey                                                               ; b1de: 88          .        ; Name length
     sty zp_fileblk                                                    ; b1df: 84 39       .9       ; store it (&39)
     jsr find_proc_fn                                                  ; b1e1: 20 5b 94     [.      ; Look it up in the heap cache
-    bne cb1e9                                                         ; b1e4: d0 03       ..       ; found: jump to it
+    bne callpf_set_ptr                                                ; b1e4: d0 03       ..       ; found: jump to it
     jmp find_def                                                      ; b1e6: 4c 12 b1    L..      ; not cached: scan the program
 ; &b1e9 referenced 1 time by &b1e4
-.cb1e9
+.callpf_set_ptr
     ldy #0                                                            ; b1e9: a0 00       ..       ; Set PtrA to the definition address
     lda (zp_iwa),y                                                    ; b1eb: b1 2a       .*       ; low byte,
     sta zp_text_ptr                                                   ; b1ed: 85 0b       ..       ; to PtrA low,
@@ -11312,16 +11312,16 @@ oscli            = &fff7
     lda (zp_iwa),y                                                    ; b1f0: b1 2a       .*       ; high byte,
     sta zp_text_ptr_1                                                 ; b1f2: 85 0c       ..       ; to PtrA high
 ; &b1f4 referenced 1 time by &b187
-.cb1f4
+.callpf_push_count
     lda #0                                                            ; b1f4: a9 00       ..       ; Push the parameter count (0 so far)
     pha                                                               ; b1f6: 48          H        ; push it,
     sta zp_text_ptr_off                                               ; b1f7: 85 0a       ..       ; offset = 0
     jsr skip_spaces                                                   ; b1f9: 20 97 8a     ..      ; Next character
     cmp #&28 ; '('                                                    ; b1fc: c9 28       .(       ; '(' parameters?
-    beq cb24d                                                         ; b1fe: f0 4d       .M       ; yes: bind them
+    beq callpf_save_parser2                                           ; b1fe: f0 4d       .M       ; yes: bind them
     dec zp_text_ptr_off                                               ; b200: c6 0a       ..       ; no: back up
 ; &b202 referenced 1 time by &b30a
-.cb202
+.callpf_save_parser
     lda zp_text_ptr2_off                                              ; b202: a5 1b       ..       ; Save the parser pointer
     pha                                                               ; b204: 48          H        ; push offset,
     lda zp_text_ptr2                                                  ; b205: a5 19       ..       ; low byte,
@@ -11336,16 +11336,16 @@ oscli            = &fff7
     pla                                                               ; b214: 68          h        ; pull offset,
     sta zp_text_ptr2_off                                              ; b215: 85 1b       ..       ; offset
     pla                                                               ; b217: 68          h        ; Number of LOCAL/parameter values to restore
-    beq cb226                                                         ; b218: f0 0c       ..       ; none: skip
+    beq callpf_restore_ptr                                            ; b218: f0 0c       ..       ; none: skip
     sta zp_fwb_m2                                                     ; b21a: 85 3f       .?       ; count
 ; &b21c referenced 1 time by &b224
-.loop_cb21c
+.callpf_restore_locals
     jsr unstack_int_to_general                                        ; b21c: 20 0b be     ..      ; Unstack the variable address
     jsr unstack_value_to_var                                          ; b21f: 20 c1 8c     ..      ; restore its saved value
     dec zp_fwb_m2                                                     ; b222: c6 3f       .?       ; one done
-    bne loop_cb21c                                                    ; b224: d0 f6       ..       ; loop
+    bne callpf_restore_locals                                         ; b224: d0 f6       ..       ; loop
 ; &b226 referenced 1 time by &b218
-.cb226
+.callpf_restore_ptr
     pla                                                               ; b226: 68          h        ; Restore PtrA
     sta zp_text_ptr_1                                                 ; b227: 85 0c       ..       ; high byte,
     pla                                                               ; b229: 68          h        ; pull low,
@@ -11358,24 +11358,24 @@ oscli            = &fff7
     tax                                                               ; b234: aa          .        ; into X
     txs                                                               ; b235: 9a          .        ; restore it
 ; &b236 referenced 1 time by &b23f
-.loop_cb236
+.callpf_restore_stack
     iny                                                               ; b236: c8          .        ; Copy each byte back to the 6502 stack
     inx                                                               ; b237: e8          .        ; next slot,
     lda (zp_stack_ptr),y                                              ; b238: b1 04       ..       ; read from the BASIC stack,
     sta l0100,x                                                       ; b23a: 9d 00 01    ...      ; to the 6502 stack,
     cpx #&ff                                                          ; b23d: e0 ff       ..       ; whole stack restored?
-    bne loop_cb236                                                    ; b23f: d0 f5       ..       ; loop
+    bne callpf_restore_stack                                          ; b23f: d0 f5       ..       ; loop
     tya                                                               ; b241: 98          .        ; Adjust the BASIC stack pointer back up
     adc zp_stack_ptr                                                  ; b242: 65 04       e.       ; free the copied bytes,
     sta zp_stack_ptr                                                  ; b244: 85 04       ..       ; store low,
-    bcc cb24a                                                         ; b246: 90 02       ..       ; no carry,
+    bcc callpf_return                                                 ; b246: 90 02       ..       ; no carry,
     inc zp_stack_ptr_1                                                ; b248: e6 05       ..       ; carry into high
 ; &b24a referenced 1 time by &b246
-.cb24a
+.callpf_return
     lda zp_var_type                                                   ; b24a: a5 27       .'       ; Return the PROC/FN token
     rts                                                               ; b24c: 60          `        ; Return
 ; &b24d referenced 2 times by &b1fe, &b27e
-.cb24d
+.callpf_save_parser2
     lda zp_text_ptr2_off                                              ; b24d: a5 1b       ..       ; Save the parser pointer
     pha                                                               ; b24f: 48          H        ; push offset,
     lda zp_text_ptr2                                                  ; b250: a5 19       ..       ; low byte,
@@ -11383,7 +11383,7 @@ oscli            = &fff7
     lda zp_text_ptr2_1                                                ; b253: a5 1a       ..       ; high byte,
     pha                                                               ; b255: 48          H        ; push high
     jsr parse_lvalue                                                  ; b256: 20 82 95     ..      ; Parse a formal parameter variable
-    beq cb2b5                                                         ; b259: f0 5a       .Z       ; invalid: error
+    beq callpf_reset_stack                                            ; b259: f0 5a       .Z       ; invalid: error
     lda zp_text_ptr2_off                                              ; b25b: a5 1b       ..       ; Update the program pointer
     sta zp_text_ptr_off                                               ; b25d: 85 0a       ..       ; from the PtrB offset
     pla                                                               ; b25f: 68          h        ; Restore the parser pointer
@@ -11406,16 +11406,16 @@ oscli            = &fff7
     jsr stack_local                                                   ; b276: 20 0d b3     ..      ; Stack the current value for LOCAL restore
     jsr skip_spaces                                                   ; b279: 20 97 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; b27c: c9 2c       .,       ; ',' another parameter?
-    beq cb24d                                                         ; b27e: f0 cd       ..       ; yes
+    beq callpf_save_parser2                                           ; b27e: f0 cd       ..       ; yes
     cmp #&29 ; ')'                                                    ; b280: c9 29       .)       ; ')' end of parameter list?
-    bne cb2b5                                                         ; b282: d0 31       .1       ; no: error
+    bne callpf_reset_stack                                            ; b282: d0 31       .1       ; no: error
     lda #0                                                            ; b284: a9 00       ..       ; Push the end marker
     pha                                                               ; b286: 48          H        ; push it
     jsr skip_spaces_ptr2                                              ; b287: 20 8c 8a     ..      ; Expect "(" for the arguments
     cmp #&28 ; '('                                                    ; b28a: c9 28       .(       ; '(' ?
-    bne cb2b5                                                         ; b28c: d0 27       .'       ; missing: error
+    bne callpf_reset_stack                                            ; b28c: d0 27       .'       ; missing: error
 ; &b28e referenced 1 time by &b2a5
-.loop_cb28e
+.callpf_arg_loop
     jsr eval_or_eor                                                   ; b28e: 20 29 9b     ).      ; Evaluate an argument
     jsr stack_value                                                   ; b291: 20 90 bd     ..      ; stack its value
     lda zp_var_type                                                   ; b294: a5 27       .'       ; save the type
@@ -11428,17 +11428,17 @@ oscli            = &fff7
     pha                                                               ; b29f: 48          H        ; push it
     jsr skip_spaces_ptr2                                              ; b2a0: 20 8c 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; b2a3: c9 2c       .,       ; ',' another argument?
-    beq loop_cb28e                                                    ; b2a5: f0 e7       ..       ; yes
+    beq callpf_arg_loop                                               ; b2a5: f0 e7       ..       ; yes
     cmp #&29 ; ')'                                                    ; b2a7: c9 29       .)       ; ')' end of arguments?
-    bne cb2b5                                                         ; b2a9: d0 0a       ..       ; no: error
+    bne callpf_reset_stack                                            ; b2a9: d0 0a       ..       ; no: error
     pla                                                               ; b2ab: 68          h        ; Recover the argument count
     pla                                                               ; b2ac: 68          h        ; and the formal count
     sta l004d                                                         ; b2ad: 85 4d       .M       ; to &4D,
     sta l004e                                                         ; b2af: 85 4e       .N       ; and &4E
     cpx l004d                                                         ; b2b1: e4 4d       .M       ; counts match?
-    beq cb2ca                                                         ; b2b3: f0 15       ..       ; yes: bind them
+    beq callpf_unstack_arg                                            ; b2b3: f0 15       ..       ; yes: bind them
 ; &b2b5 referenced 6 times by &b259, &b282, &b28c, &b2a9, &b2da, &b2fb
-.cb2b5
+.callpf_reset_stack
     ldx #&fb                                                          ; b2b5: a2 fb       ..       ; Reset the stack
     txs                                                               ; b2b7: 9a          .        ; set SP = &FB
     pla                                                               ; b2b8: 68          h        ; restore PtrA
@@ -11450,7 +11450,7 @@ oscli            = &fff7
     equs "Arguments"                                                  ; b2c0: 41 72 67... Arg...
     equb &00                                                          ; b2c9: 00          .     
 ; &b2ca referenced 2 times by &b2b3, &b305
-.cb2ca
+.callpf_unstack_arg
     jsr unstack_integer                                               ; b2ca: 20 ea bd     ..      ; Unstack the argument type
     pla                                                               ; b2cd: 68          h        ; Unstack the formal address/type
     sta zp_iwa                                                        ; b2ce: 85 2a       .*       ; address low,
@@ -11458,37 +11458,37 @@ oscli            = &fff7
     sta zp_iwa_1                                                      ; b2d1: 85 2b       .+       ; address high,
     pla                                                               ; b2d3: 68          h        ; pull type,
     sta zp_iwa_2                                                      ; b2d4: 85 2c       .,       ; type
-    bmi cb2f9                                                         ; b2d6: 30 21       0!       ; string formal?
+    bmi callpf_string_formal                                          ; b2d6: 30 21       0!       ; string formal?
     lda zp_iwa_3                                                      ; b2d8: a5 2d       .-       ; Argument type
-    beq cb2b5                                                         ; b2da: f0 d9       ..       ; string argument: Arguments error
+    beq callpf_reset_stack                                            ; b2da: f0 d9       ..       ; string argument: Arguments error
     sta zp_var_type                                                   ; b2dc: 85 27       .'       ; numeric: set the formal address
     ldx #&37 ; '7'                                                    ; b2de: a2 37       .7       ; address via &37,
     jsr iwa_store_zp                                                  ; b2e0: 20 44 be     D.      ; copy the address there
     lda zp_var_type                                                   ; b2e3: a5 27       .'       ; Argument type
-    bpl cb2f0                                                         ; b2e5: 10 09       ..       ; integer?
+    bpl callpf_assign_int                                             ; b2e5: 10 09       ..       ; integer?
     jsr unstack_real                                                  ; b2e7: 20 7e bd     ~.      ; real: unstack the real value
     jsr fwa_unpack_var                                                ; b2ea: 20 b5 a3     ..      ; into FWA
-    jmp cb2f3                                                         ; b2ed: 4c f3 b2    L..      ; assign it
+    jmp callpf_assign                                                 ; b2ed: 4c f3 b2    L..      ; assign it
 ; &b2f0 referenced 1 time by &b2e5
-.cb2f0
+.callpf_assign_int
     jsr unstack_integer                                               ; b2f0: 20 ea bd     ..      ; unstack the integer value
 ; &b2f3 referenced 1 time by &b2ed
-.cb2f3
+.callpf_assign
     jsr sub_cb4b7                                                     ; b2f3: 20 b7 b4     ..      ; Assign to the formal
-    jmp cb303                                                         ; b2f6: 4c 03 b3    L..      ; next argument
+    jmp callpf_bound                                                  ; b2f6: 4c 03 b3    L..      ; next argument
 ; &b2f9 referenced 1 time by &b2d6
-.cb2f9
+.callpf_string_formal
     lda zp_iwa_3                                                      ; b2f9: a5 2d       .-       ; String formal: argument type
-    bne cb2b5                                                         ; b2fb: d0 b8       ..       ; numeric argument: Arguments error
+    bne callpf_reset_stack                                            ; b2fb: d0 b8       ..       ; numeric argument: Arguments error
     jsr unstack_string                                                ; b2fd: 20 cb bd     ..      ; Unstack the string
     jsr assign_string_to                                              ; b300: 20 21 8c     !.      ; assign it
 ; &b303 referenced 1 time by &b2f6
-.cb303
+.callpf_bound
     dec l004d                                                         ; b303: c6 4d       .M       ; One parameter bound
-    bne cb2ca                                                         ; b305: d0 c3       ..       ; loop
+    bne callpf_unstack_arg                                            ; b305: d0 c3       ..       ; loop
     lda l004e                                                         ; b307: a5 4e       .N       ; Push the parameter count for restore
     pha                                                               ; b309: 48          H        ; push it
-    jmp cb202                                                         ; b30a: 4c 02 b2    L..      ; Execute the body
+    jmp callpf_save_parser                                            ; b30a: 4c 02 b2    L..      ; Execute the body
 ; ***************************************************************************************
 ; Save a variable for LOCAL
 ;
@@ -14474,7 +14474,7 @@ save pydis_start, pydis_end
 ;     zp_count:                      7
 ;     arith_type_error:              6
 ;     assign_number:                 6
-;     cb2b5:                         6
+;     callpf_reset_stack:            6
 ;     cbddc:                         6
 ;     check_program:                 6
 ;     clear_then_immediate:          6
@@ -14669,10 +14669,8 @@ save pydis_start, pydis_end
 ;     atn_large:                     2
 ;     auto_loop:                     2
 ;     caa4e:                         2
-;     cb11a:                         2
-;     cb12d:                         2
-;     cb24d:                         2
-;     cb2ca:                         2
+;     callpf_save_parser2:           2
+;     callpf_unstack_arg:            2
 ;     cb329:                         2
 ;     cb48f:                         2
 ;     cb4ae:                         2
@@ -14714,6 +14712,8 @@ save pydis_start, pydis_end
 ;     eval_rhs:                      2
 ;     exp_split:                     2
 ;     expect_eq:                     2
+;     finddef_next_line:             2
+;     finddef_scan:                  2
 ;     findvar_chain_head:            2
 ;     fneg_done:                     2
 ;     fp_div_zero:                   2
@@ -14975,18 +14975,20 @@ save pydis_start, pydis_end
 ;     call_check_end:                1
 ;     call_param_error:              1
 ;     call_proc_fn:                  1
-;     cb13c:                         1
-;     cb14d:                         1
-;     cb1ca:                         1
-;     cb1e9:                         1
-;     cb1f4:                         1
-;     cb202:                         1
-;     cb226:                         1
-;     cb24a:                         1
-;     cb2f0:                         1
-;     cb2f3:                         1
-;     cb2f9:                         1
-;     cb303:                         1
+;     callpf_arg_loop:               1
+;     callpf_assign:                 1
+;     callpf_assign_int:             1
+;     callpf_back:                   1
+;     callpf_bound:                  1
+;     callpf_push_count:             1
+;     callpf_restore_locals:         1
+;     callpf_restore_ptr:            1
+;     callpf_restore_stack:          1
+;     callpf_return:                 1
+;     callpf_save_parser:            1
+;     callpf_save_stack:             1
+;     callpf_set_ptr:                1
+;     callpf_string_formal:          1
 ;     cb318:                         1
 ;     cb37f:                         1
 ;     cb3a7:                         1
@@ -15149,6 +15151,11 @@ save pydis_start, pydis_end
 ;     find_def:                      1
 ;     find_error_line:               1
 ;     find_proc_fn:                  1
+;     finddef_advance:               1
+;     finddef_found:                 1
+;     finddef_match_loop:            1
+;     finddef_name_setup:            1
+;     finddef_not_found:             1
 ;     findvar_cmp_a:                 1
 ;     findvar_cmp_a_loop:            1
 ;     findvar_cmp_b:                 1
@@ -15274,13 +15281,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_cb122:                    1
-;     loop_cb158:                    1
-;     loop_cb18a:                    1
-;     loop_cb1a6:                    1
-;     loop_cb21c:                    1
-;     loop_cb236:                    1
-;     loop_cb28e:                    1
 ;     loop_cb39d:                    1
 ;     loop_cb3ad:                    1
 ;     loop_cb3d9:                    1
@@ -15620,23 +15620,6 @@ save pydis_start, pydis_end
 ;     c886a
 ;     ca7f7
 ;     caa4e
-;     cb11a
-;     cb12d
-;     cb13c
-;     cb14d
-;     cb1ca
-;     cb1e9
-;     cb1f4
-;     cb202
-;     cb226
-;     cb24a
-;     cb24d
-;     cb2b5
-;     cb2ca
-;     cb2f0
-;     cb2f3
-;     cb2f9
-;     cb303
 ;     cb318
 ;     cb329
 ;     cb32c
@@ -15800,13 +15783,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_cb122
-;     loop_cb158
-;     loop_cb18a
-;     loop_cb1a6
-;     loop_cb21c
-;     loop_cb236
-;     loop_cb28e
 ;     loop_cb39d
 ;     loop_cb3ad
 ;     loop_cb3d9
