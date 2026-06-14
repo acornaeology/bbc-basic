@@ -45487,7 +45487,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA = the integer divisor",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -45512,7 +45512,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -45573,7 +45573,7 @@
         240,
         146
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA = the integer dividend",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "coerce_to_integer",
@@ -45621,7 +45621,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "store the quotient sign (&37)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -45660,7 +45660,7 @@
         13,
         190
       ],
-      "comment_inline": "...",
+      "comment_inline": "unpack starting at &39",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "unstack_int_to_zp",
@@ -45686,7 +45686,7 @@
         132,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3E,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m1",
@@ -45699,7 +45699,7 @@
         132,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3F,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m2",
@@ -45712,7 +45712,7 @@
         132,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "&40",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_m3",
@@ -45738,7 +45738,7 @@
         5,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR the low byte,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa",
@@ -45751,7 +45751,7 @@
         5,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "&2B,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -45764,7 +45764,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "&2C (all zero => /0)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -45845,7 +45845,7 @@
         38,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "carrying up through &3A,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l003a",
@@ -45858,7 +45858,7 @@
         38,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3B,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_sign",
@@ -45871,7 +45871,7 @@
         38,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3C (until bit 7 is set)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_ovf",
@@ -45919,7 +45919,7 @@
         38,
         58
       ],
-      "comment_inline": "...",
+      "comment_inline": "dividend &3A,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "l003a",
@@ -45932,7 +45932,7 @@
         38,
         59
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3B,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_sign",
@@ -45945,7 +45945,7 @@
         38,
         60
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3C,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_ovf",
@@ -45958,7 +45958,7 @@
         38,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "into remainder &3D,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_exp",
@@ -45971,7 +45971,7 @@
         38,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3E,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m1",
@@ -45984,7 +45984,7 @@
         38,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "&3F,",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m2",
@@ -45997,7 +45997,7 @@
         38,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "&40 (remainder high)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_fwb_m3",
@@ -46019,7 +46019,7 @@
         165,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "low byte &3D,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -46032,7 +46032,7 @@
         229,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus divisor low,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa",
@@ -46044,7 +46044,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the result,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -46054,7 +46054,7 @@
         165,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte &3E,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m1",
@@ -46067,7 +46067,7 @@
         229,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus divisor &2B,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_1",
@@ -46079,7 +46079,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "save it,",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -46089,7 +46089,7 @@
         165,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte &3F,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2",
@@ -46102,7 +46102,7 @@
         229,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus divisor &2C,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_2",
@@ -46114,7 +46114,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "hold it in X,",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -46124,7 +46124,7 @@
         165,
         64
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &40,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m3",
@@ -46137,7 +46137,7 @@
         229,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus divisor high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -46176,7 +46176,7 @@
         134,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "and &3F,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_m2",
@@ -46188,7 +46188,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull &3E,",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -46198,7 +46198,7 @@
         133,
         62
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m1",
@@ -46210,7 +46210,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "pull &3D,",
       "type": "code",
       "mnemonic": "pla"
     },
@@ -46220,7 +46220,7 @@
         133,
         61
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_exp",
@@ -46263,7 +46263,7 @@
       "bytes": [
         104
       ],
-      "comment_inline": "...",
+      "comment_inline": "(continued)",
       "type": "code",
       "mnemonic": "pla"
     },
