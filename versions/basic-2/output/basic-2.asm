@@ -8895,16 +8895,16 @@ oscli             = &fff7
     jsr fwa_add_var                                                   ; a863: 20 00 a5     ..      ; LN(x) = e*ln2 + ln(mantissa)
     lda #&ff                                                          ; a866: a9 ff       ..       ; real result
     rts                                                               ; a868: 60          `        ; Return
-    equb &7f, &5e, &5b, &d8, &aa                                      ; a869: 7f 5e 5b... .^[...   ; bbc_float5 = 0.4342944819945842  log10(e) = 1/ln(10)
-    equb &80, &31, &72, &17, &f8                                      ; a86e: 80 31 72... .1r...   ; bbc_float5 = 0.6931471806019545  ln 2
+    equb &7f, &5e, &5b, &d8, &aa                                      ; a869: 7f 5e 5b... .^[...   ; float40 0.434294482  log10(e) = 1/ln(10)
+    equb &80, &31, &72, &17, &f8                                      ; a86e: 80 31 72... .1r...   ; float40 0.6931471806  ln 2
     equb &06                                                          ; a873: 06          .     
-    equb &7a, &12, &38, &a5, &0b                                      ; a874: 7a 12 38... z.8...   ; bbc_float5 = 0.008924637961172266  ln c0
-    equb &88, &79, &0e, &9f, &f3                                      ; a879: 88 79 0e... .y....   ; bbc_float5 = 249.05712813138962  ln c1
-    equb &7c, &2a, &ac, &3f, &b5                                      ; a87e: 7c 2a ac... |*....   ; bbc_float5 = 0.041668175559607334  ln c2
-    equb &86, &34, &01, &a2, &7a                                      ; a883: 86 34 01... .4....   ; bbc_float5 = 45.0015963613987  ln c3
-    equb &7f, &63, &8e, &37, &ec                                      ; a888: 7f 63 8e... .c....   ; bbc_float5 = 0.4444444156251848  ln c4
-    equb &82, &3f, &ff, &ff, &c1                                      ; a88d: 82 3f ff... .?....   ; bbc_float5 = 2.999999941326678  ln c5
-    equb &7f, &ff, &ff, &ff, &ff                                      ; a892: 7f ff ff... ......   ; bbc_float5 = -0.4999999998835847  -0.5
+    equb &7a, &12, &38, &a5, &0b                                      ; a874: 7a 12 38... z.8...   ; float40 0.008924637961  ln c0
+    equb &88, &79, &0e, &9f, &f3                                      ; a879: 88 79 0e... .y....   ; float40 249.0571281  ln c1
+    equb &7c, &2a, &ac, &3f, &b5                                      ; a87e: 7c 2a ac... |*....   ; float40 0.04166817556  ln c2
+    equb &86, &34, &01, &a2, &7a                                      ; a883: 86 34 01... .4....   ; float40 45.00159636  ln c3
+    equb &7f, &63, &8e, &37, &ec                                      ; a888: 7f 63 8e... .c....   ; float40 0.4444444156  ln c4
+    equb &82, &3f, &ff, &ff, &c1                                      ; a88d: 82 3f ff... .?....   ; float40 2.999999941  ln c5
+    equb &7f, &ff, &ff, &ff, &ff                                      ; a892: 7f ff ff... ......   ; float40 -0.4999999999  -0.5
 ; ***************************************************************************************
 ; Evaluate a continued-fraction approximation
 ;
@@ -9086,16 +9086,16 @@ oscli             = &fff7
     lda #&ff                                                          ; a957: a9 ff       ..       ; real result
     rts                                                               ; a959: 60          `        ; Return
     equb &09                                                          ; a95a: 09          .     
-    equb &85, &a3, &59, &e8, &67                                      ; a95b: 85 a3 59... ..Y...   ; bbc_float5 = -20.418900303542614  atn c0
-    equb &80, &1c, &9d, &07, &36                                      ; a960: 80 1c 9d... ......   ; bbc_float5 = 0.6117710596881807  atn c1
-    equb &80, &57, &bb, &78, &df                                      ; a965: 80 57 bb... .W....   ; bbc_float5 = 0.8427043480332941  atn c2
-    equb &80, &ca, &9a, &0e, &83                                      ; a96a: 80 ca 9a... ......   ; bbc_float5 = -0.7914132184814662  atn c3
-    equb &84, &8c, &bb, &ca, &6e                                      ; a96f: 84 8c bb... ......   ; bbc_float5 = -8.795847348868847  atn c4
-    equb &81, &95, &96, &06, &de                                      ; a974: 81 95 96... ......   ; bbc_float5 = -1.168640955351293  atn c5
-    equb &81, &0a, &c7, &6c, &52                                      ; a979: 81 0a c7... ......   ; bbc_float5 = 1.084210910834372  atn c6
-    equb &7f, &7d, &ad, &90, &a1                                      ; a97e: 7f 7d ad... .}....   ; bbc_float5 = 0.4954648205311969  atn c7
-    equb &82, &fb, &62, &57, &2f                                      ; a983: 82 fb 62... ..b...   ; bbc_float5 = -3.927877231501043  atn c8
-    equb &80, &6d, &63, &38, &2c                                      ; a988: 80 6d 63... .mc...   ; bbc_float5 = 0.9272952182218432
+    equb &85, &a3, &59, &e8, &67                                      ; a95b: 85 a3 59... ..Y...   ; float40 -20.4189003  atn c0
+    equb &80, &1c, &9d, &07, &36                                      ; a960: 80 1c 9d... ......   ; float40 0.6117710597  atn c1
+    equb &80, &57, &bb, &78, &df                                      ; a965: 80 57 bb... .W....   ; float40 0.842704348  atn c2
+    equb &80, &ca, &9a, &0e, &83                                      ; a96a: 80 ca 9a... ......   ; float40 -0.7914132185  atn c3
+    equb &84, &8c, &bb, &ca, &6e                                      ; a96f: 84 8c bb... ......   ; float40 -8.795847349  atn c4
+    equb &81, &95, &96, &06, &de                                      ; a974: 81 95 96... ......   ; float40 -1.168640955  atn c5
+    equb &81, &0a, &c7, &6c, &52                                      ; a979: 81 0a c7... ......   ; float40 1.084210911  atn c6
+    equb &7f, &7d, &ad, &90, &a1                                      ; a97e: 7f 7d ad... .}....   ; float40 0.4954648205  atn c7
+    equb &82, &fb, &62, &57, &2f                                      ; a983: 82 fb 62... ..b...   ; float40 -3.927877232  atn c8
+    equb &80, &6d, &63, &38, &2c                                      ; a988: 80 6d 63... .mc...   ; float40 0.9272952182
 ; ***************************************************************************************
 ; COS
 ;
@@ -9272,18 +9272,18 @@ oscli             = &fff7
 .point_const_half_pi
     lda #&63 ; 'c'                                                    ; aa55: a9 63       .c       ; pi/2 constant: low byte
     bne set_pi_ptr                                                    ; aa57: d0 f5       ..       ; ...(shared tail)
-    equb &81, &c9, &10, &00, &00                                      ; aa59: 81 c9 10... ......   ; bbc_float5 = -1.57080078125  pi/2, high part (Cody-Waite)
-    equb &6f, &15, &77, &7a, &61                                      ; aa5e: 6f 15 77... o.w...   ; bbc_float5 = 4.454455110547428e-06  pi/2, low part (Cody-Waite)
-    equb &81, &49, &0f, &da, &a2                                      ; aa63: 81 49 0f... .I....   ; bbc_float5 = 1.5707963267341256  pi/2
-    equb &7b, &0e, &fa, &35, &12                                      ; aa68: 7b 0e fa... {.....   ; bbc_float5 = 0.017453292515710928  pi/180 (degrees -> radians, RAD)
-    equb &86, &65, &2e, &e0, &d3                                      ; aa6d: 86 65 2e... .e....   ; bbc_float5 = 57.29577951133251  180/pi (radians -> degrees, DEG)
+    equb &81, &c9, &10, &00, &00                                      ; aa59: 81 c9 10... ......   ; float40 -1.570800781  pi/2, high part (Cody-Waite)
+    equb &6f, &15, &77, &7a, &61                                      ; aa5e: 6f 15 77... o.w...   ; float40 4.454455111e-06  pi/2, low part (Cody-Waite)
+    equb &81, &49, &0f, &da, &a2                                      ; aa63: 81 49 0f... .I....   ; float40 1.570796327  pi/2
+    equb &7b, &0e, &fa, &35, &12                                      ; aa68: 7b 0e fa... {.....   ; float40 0.01745329252  pi/180 (degrees -> radians, RAD)
+    equb &86, &65, &2e, &e0, &d3                                      ; aa6d: 86 65 2e... .e....   ; float40 57.29577951  180/pi (radians -> degrees, DEG)
     equb &05                                                          ; aa72: 05          .     
-    equb &84, &8a, &ea, &0c, &1b                                      ; aa73: 84 8a ea... ......   ; bbc_float5 = -8.682140450924635  sin c0
-    equb &84, &1a, &be, &bb, &2b                                      ; aa78: 84 1a be... ......   ; bbc_float5 = 9.67156521603465  sin c1
-    equb &84, &37, &45, &55, &ab                                      ; aa7d: 84 37 45... .7E...   ; bbc_float5 = 11.454427402466536  sin c2
-    equb &82, &d5, &55, &57, &7c                                      ; aa82: 82 d5 55... ..U...   ; bbc_float5 = -3.333333846181631  sin c3
-    equb &83, &c0, &00, &00, &05                                      ; aa87: 83 c0 00... ......   ; bbc_float5 = -6.000000009313226  sin c4
-    equb &81, &00, &00, &00, &00                                      ; aa8c: 81 00 00... ......   ; bbc_float5 = 1.0  1.0
+    equb &84, &8a, &ea, &0c, &1b                                      ; aa73: 84 8a ea... ......   ; float40 -8.682140451  sin c0
+    equb &84, &1a, &be, &bb, &2b                                      ; aa78: 84 1a be... ......   ; float40 9.671565216  sin c1
+    equb &84, &37, &45, &55, &ab                                      ; aa7d: 84 37 45... .7E...   ; float40 11.4544274  sin c2
+    equb &82, &d5, &55, &57, &7c                                      ; aa82: 82 d5 55... ..U...   ; float40 -3.333333846  sin c3
+    equb &83, &c0, &00, &00, &05                                      ; aa87: 83 c0 00... ......   ; float40 -6.000000009  sin c4
+    equb &81, &00, &00, &00, &00                                      ; aa8c: 81 00 00... ......   ; float40 1  1.0
 ; ***************************************************************************************
 ; EXP
 ;
@@ -9347,16 +9347,16 @@ oscli             = &fff7
     jsr fp_eval_cont_frac                                             ; aade: 20 97 a8     ..      ; Evaluate the continued fraction
     lda #&ff                                                          ; aae1: a9 ff       ..       ; real result
     rts                                                               ; aae3: 60          `        ; Return
-    equb &82, &2d, &f8, &54, &58                                      ; aae4: 82 2d f8... .-....   ; bbc_float5 = 2.718281827867031  e
+    equb &82, &2d, &f8, &54, &58                                      ; aae4: 82 2d f8... .-....   ; float40 2.718281828  e
     equb &07                                                          ; aae9: 07          .     
-    equb &83, &e0, &20, &86, &5b                                      ; aaea: 83 e0 20... .. ...   ; bbc_float5 = -7.003970315679908  exp c0
-    equb &82, &80, &53, &93, &b8                                      ; aaef: 82 80 53... ..S...   ; bbc_float5 = -2.0051011368632317  exp c1
-    equb &83, &20, &00, &06, &a1                                      ; aaf4: 83 20 00... . ....   ; bbc_float5 = 5.000003160908818  exp c2
-    equb &82, &00, &00, &21, &63                                      ; aaf9: 82 00 00... ......   ; bbc_float5 = 2.0000079600140452  exp c3
-    equb &82, &c0, &00, &00, &02                                      ; aafe: 82 c0 00... ......   ; bbc_float5 = -3.000000001862645  exp c4
-    equb &82, &80, &00, &00, &0c                                      ; ab03: 82 80 00... ......   ; bbc_float5 = -2.000000011175871  exp c5
-    equb &81, &00, &00, &00, &00                                      ; ab08: 81 00 00... ......   ; bbc_float5 = 1.0  exp c6
-    equb &81, &00, &00, &00, &00                                      ; ab0d: 81 00 00... ......   ; bbc_float5 = 1.0  1.0
+    equb &83, &e0, &20, &86, &5b                                      ; aaea: 83 e0 20... .. ...   ; float40 -7.003970316  exp c0
+    equb &82, &80, &53, &93, &b8                                      ; aaef: 82 80 53... ..S...   ; float40 -2.005101137  exp c1
+    equb &83, &20, &00, &06, &a1                                      ; aaf4: 83 20 00... . ....   ; float40 5.000003161  exp c2
+    equb &82, &00, &00, &21, &63                                      ; aaf9: 82 00 00... ......   ; float40 2.00000796  exp c3
+    equb &82, &c0, &00, &00, &02                                      ; aafe: 82 c0 00... ......   ; float40 -3.000000002  exp c4
+    equb &82, &80, &00, &00, &0c                                      ; ab03: 82 80 00... ......   ; float40 -2.000000011  exp c5
+    equb &81, &00, &00, &00, &00                                      ; ab08: 81 00 00... ......   ; float40 1  exp c6
+    equb &81, &00, &00, &00, &00                                      ; ab0d: 81 00 00... ......   ; float40 1  1.0
 ; ***************************************************************************************
 ; FWA = FWA ^ n (n in A)
 ;

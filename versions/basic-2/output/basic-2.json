@@ -74035,9 +74035,10 @@
         216,
         170
       ],
+      "comment_inline": "float40 0.434294482  log10(e) = 1/ln(10)",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.4342944819945842",
+        "text": "0.434294482",
         "value": 0.4342944819945842,
         "comment": "log10(e) = 1/ln(10)"
       },
@@ -74059,9 +74060,10 @@
         23,
         248
       ],
+      "comment_inline": "float40 0.6931471806  ln 2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.6931471806019545",
+        "text": "0.6931471806",
         "value": 0.6931471806019545,
         "comment": "ln 2"
       },
@@ -74093,9 +74095,10 @@
         165,
         11
       ],
+      "comment_inline": "float40 0.008924637961  ln c0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.008924637961172266",
+        "text": "0.008924637961",
         "value": 0.008924637961172266,
         "comment": "ln c0"
       },
@@ -74117,9 +74120,10 @@
         159,
         243
       ],
+      "comment_inline": "float40 249.0571281  ln c1",
       "decoded": {
         "type": "bbc_float5",
-        "text": "249.05712813138962",
+        "text": "249.0571281",
         "value": 249.05712813138962,
         "comment": "ln c1"
       },
@@ -74141,9 +74145,10 @@
         63,
         181
       ],
+      "comment_inline": "float40 0.04166817556  ln c2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.041668175559607334",
+        "text": "0.04166817556",
         "value": 0.041668175559607334,
         "comment": "ln c2"
       },
@@ -74165,9 +74170,10 @@
         162,
         122
       ],
+      "comment_inline": "float40 45.00159636  ln c3",
       "decoded": {
         "type": "bbc_float5",
-        "text": "45.0015963613987",
+        "text": "45.00159636",
         "value": 45.0015963613987,
         "comment": "ln c3"
       },
@@ -74189,9 +74195,10 @@
         55,
         236
       ],
+      "comment_inline": "float40 0.4444444156  ln c4",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.4444444156251848",
+        "text": "0.4444444156",
         "value": 0.4444444156251848,
         "comment": "ln c4"
       },
@@ -74213,9 +74220,10 @@
         255,
         193
       ],
+      "comment_inline": "float40 2.999999941  ln c5",
       "decoded": {
         "type": "bbc_float5",
-        "text": "2.999999941326678",
+        "text": "2.999999941",
         "value": 2.999999941326678,
         "comment": "ln c5"
       },
@@ -74237,9 +74245,10 @@
         255,
         255
       ],
+      "comment_inline": "float40 -0.4999999999  -0.5",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-0.4999999998835847",
+        "text": "-0.4999999999",
         "value": -0.4999999998835847,
         "comment": "-0.5"
       },
@@ -75464,9 +75473,10 @@
         232,
         103
       ],
+      "comment_inline": "float40 -20.4189003  atn c0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-20.418900303542614",
+        "text": "-20.4189003",
         "value": -20.418900303542614,
         "comment": "atn c0"
       },
@@ -75488,9 +75498,10 @@
         7,
         54
       ],
+      "comment_inline": "float40 0.6117710597  atn c1",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.6117710596881807",
+        "text": "0.6117710597",
         "value": 0.6117710596881807,
         "comment": "atn c1"
       },
@@ -75512,9 +75523,10 @@
         120,
         223
       ],
+      "comment_inline": "float40 0.842704348  atn c2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.8427043480332941",
+        "text": "0.842704348",
         "value": 0.8427043480332941,
         "comment": "atn c2"
       },
@@ -75536,9 +75548,10 @@
         14,
         131
       ],
+      "comment_inline": "float40 -0.7914132185  atn c3",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-0.7914132184814662",
+        "text": "-0.7914132185",
         "value": -0.7914132184814662,
         "comment": "atn c3"
       },
@@ -75560,9 +75573,10 @@
         202,
         110
       ],
+      "comment_inline": "float40 -8.795847349  atn c4",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-8.795847348868847",
+        "text": "-8.795847349",
         "value": -8.795847348868847,
         "comment": "atn c4"
       },
@@ -75584,9 +75598,10 @@
         6,
         222
       ],
+      "comment_inline": "float40 -1.168640955  atn c5",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-1.168640955351293",
+        "text": "-1.168640955",
         "value": -1.168640955351293,
         "comment": "atn c5"
       },
@@ -75608,9 +75623,10 @@
         108,
         82
       ],
+      "comment_inline": "float40 1.084210911  atn c6",
       "decoded": {
         "type": "bbc_float5",
-        "text": "1.084210910834372",
+        "text": "1.084210911",
         "value": 1.084210910834372,
         "comment": "atn c6"
       },
@@ -75632,9 +75648,10 @@
         144,
         161
       ],
+      "comment_inline": "float40 0.4954648205  atn c7",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.4954648205311969",
+        "text": "0.4954648205",
         "value": 0.4954648205311969,
         "comment": "atn c7"
       },
@@ -75656,9 +75673,10 @@
         87,
         47
       ],
+      "comment_inline": "float40 -3.927877232  atn c8",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-3.927877231501043",
+        "text": "-3.927877232",
         "value": -3.927877231501043,
         "comment": "atn c8"
       },
@@ -75680,9 +75698,10 @@
         56,
         44
       ],
+      "comment_inline": "float40 0.9272952182",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.9272952182218432",
+        "text": "0.9272952182",
         "value": 0.9272952182218432
       },
       "type": "byte",
@@ -76866,9 +76885,10 @@
         0,
         0
       ],
+      "comment_inline": "float40 -1.570800781  pi/2, high part (Cody-Waite)",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-1.57080078125",
+        "text": "-1.570800781",
         "value": -1.57080078125,
         "comment": "pi/2, high part (Cody-Waite)"
       },
@@ -76890,9 +76910,10 @@
         122,
         97
       ],
+      "comment_inline": "float40 4.454455111e-06  pi/2, low part (Cody-Waite)",
       "decoded": {
         "type": "bbc_float5",
-        "text": "4.454455110547428e-06",
+        "text": "4.454455111e-06",
         "value": 4.454455110547428e-06,
         "comment": "pi/2, low part (Cody-Waite)"
       },
@@ -76914,9 +76935,10 @@
         218,
         162
       ],
+      "comment_inline": "float40 1.570796327  pi/2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "1.5707963267341256",
+        "text": "1.570796327",
         "value": 1.5707963267341256,
         "comment": "pi/2"
       },
@@ -76938,9 +76960,10 @@
         53,
         18
       ],
+      "comment_inline": "float40 0.01745329252  pi/180 (degrees -> radians, RAD)",
       "decoded": {
         "type": "bbc_float5",
-        "text": "0.017453292515710928",
+        "text": "0.01745329252",
         "value": 0.017453292515710928,
         "comment": "pi/180 (degrees -> radians, RAD)"
       },
@@ -76962,9 +76985,10 @@
         224,
         211
       ],
+      "comment_inline": "float40 57.29577951  180/pi (radians -> degrees, DEG)",
       "decoded": {
         "type": "bbc_float5",
-        "text": "57.29577951133251",
+        "text": "57.29577951",
         "value": 57.29577951133251,
         "comment": "180/pi (radians -> degrees, DEG)"
       },
@@ -76996,9 +77020,10 @@
         12,
         27
       ],
+      "comment_inline": "float40 -8.682140451  sin c0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-8.682140450924635",
+        "text": "-8.682140451",
         "value": -8.682140450924635,
         "comment": "sin c0"
       },
@@ -77020,9 +77045,10 @@
         187,
         43
       ],
+      "comment_inline": "float40 9.671565216  sin c1",
       "decoded": {
         "type": "bbc_float5",
-        "text": "9.67156521603465",
+        "text": "9.671565216",
         "value": 9.67156521603465,
         "comment": "sin c1"
       },
@@ -77044,9 +77070,10 @@
         85,
         171
       ],
+      "comment_inline": "float40 11.4544274  sin c2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "11.454427402466536",
+        "text": "11.4544274",
         "value": 11.454427402466536,
         "comment": "sin c2"
       },
@@ -77068,9 +77095,10 @@
         87,
         124
       ],
+      "comment_inline": "float40 -3.333333846  sin c3",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-3.333333846181631",
+        "text": "-3.333333846",
         "value": -3.333333846181631,
         "comment": "sin c3"
       },
@@ -77092,9 +77120,10 @@
         0,
         5
       ],
+      "comment_inline": "float40 -6.000000009  sin c4",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-6.000000009313226",
+        "text": "-6.000000009",
         "value": -6.000000009313226,
         "comment": "sin c4"
       },
@@ -77116,9 +77145,10 @@
         0,
         0
       ],
+      "comment_inline": "float40 1  1.0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "1.0",
+        "text": "1",
         "value": 1.0,
         "comment": "1.0"
       },
@@ -77641,9 +77671,10 @@
         84,
         88
       ],
+      "comment_inline": "float40 2.718281828  e",
       "decoded": {
         "type": "bbc_float5",
-        "text": "2.718281827867031",
+        "text": "2.718281828",
         "value": 2.718281827867031,
         "comment": "e"
       },
@@ -77675,9 +77706,10 @@
         134,
         91
       ],
+      "comment_inline": "float40 -7.003970316  exp c0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-7.003970315679908",
+        "text": "-7.003970316",
         "value": -7.003970315679908,
         "comment": "exp c0"
       },
@@ -77699,9 +77731,10 @@
         147,
         184
       ],
+      "comment_inline": "float40 -2.005101137  exp c1",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-2.0051011368632317",
+        "text": "-2.005101137",
         "value": -2.0051011368632317,
         "comment": "exp c1"
       },
@@ -77723,9 +77756,10 @@
         6,
         161
       ],
+      "comment_inline": "float40 5.000003161  exp c2",
       "decoded": {
         "type": "bbc_float5",
-        "text": "5.000003160908818",
+        "text": "5.000003161",
         "value": 5.000003160908818,
         "comment": "exp c2"
       },
@@ -77747,9 +77781,10 @@
         33,
         99
       ],
+      "comment_inline": "float40 2.00000796  exp c3",
       "decoded": {
         "type": "bbc_float5",
-        "text": "2.0000079600140452",
+        "text": "2.00000796",
         "value": 2.0000079600140452,
         "comment": "exp c3"
       },
@@ -77771,9 +77806,10 @@
         0,
         2
       ],
+      "comment_inline": "float40 -3.000000002  exp c4",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-3.000000001862645",
+        "text": "-3.000000002",
         "value": -3.000000001862645,
         "comment": "exp c4"
       },
@@ -77795,9 +77831,10 @@
         0,
         12
       ],
+      "comment_inline": "float40 -2.000000011  exp c5",
       "decoded": {
         "type": "bbc_float5",
-        "text": "-2.000000011175871",
+        "text": "-2.000000011",
         "value": -2.000000011175871,
         "comment": "exp c5"
       },
@@ -77819,9 +77856,10 @@
         0,
         0
       ],
+      "comment_inline": "float40 1  exp c6",
       "decoded": {
         "type": "bbc_float5",
-        "text": "1.0",
+        "text": "1",
         "value": 1.0,
         "comment": "exp c6"
       },
@@ -77843,9 +77881,10 @@
         0,
         0
       ],
+      "comment_inline": "float40 1  1.0",
       "decoded": {
         "type": "bbc_float5",
-        "text": "1.0",
+        "text": "1",
         "value": 1.0,
         "comment": "1.0"
       },
