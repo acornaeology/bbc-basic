@@ -4772,7 +4772,7 @@ l848a = sub_c847b+15
 ; &991f referenced 3 times by &9097, &9914, &b662
 .print_line_number
     lda #0                                                            ; 991f: a9 00       ..       ; Default: no field padding
-    beq c9925                                                         ; 9921: f0 02       ..       ; ...
+    beq c9925                                                         ; 9921: f0 02       ..       ; always: skip the TRACE entry
 ; &9923 referenced 2 times by &90b8, &b61d
 .sub_c9923
     lda #5                                                            ; 9923: a9 05       ..       ; TRACE entry: 5-digit field
@@ -4783,31 +4783,31 @@ l848a = sub_c847b+15
 ; &9929 referenced 1 time by &9944
 .loop_c9929
     lda #0                                                            ; 9929: a9 00       ..       ; Clear this digit
-    sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?       ; ...
-    sec                                                               ; 992d: 38          8        ; ...
+    sta zp_fwb_m2,x                                                   ; 992b: 95 3f       .?       ; zero its count
+    sec                                                               ; 992d: 38          8        ; set carry for the subtraction
 ; &992e referenced 1 time by &9941
 .loop_c992e
     lda zp_iwa                                                        ; 992e: a5 2a       .*       ; Subtract this power of ten from IWA
-    sbc l996b,x                                                       ; 9930: fd 6b 99    .k.      ; ...
-    tay                                                               ; 9933: a8          .        ; ...
-    lda zp_iwa_1                                                      ; 9934: a5 2b       .+       ; ...
-    sbc l99b9,x                                                       ; 9936: fd b9 99    ...      ; ...
+    sbc l996b,x                                                       ; 9930: fd 6b 99    .k.      ; minus the low byte,
+    tay                                                               ; 9933: a8          .        ; stash the low result
+    lda zp_iwa_1                                                      ; 9934: a5 2b       .+       ; IWA high byte
+    sbc l99b9,x                                                       ; 9936: fd b9 99    ...      ; minus the high byte
     bcc c9943                                                         ; 9939: 90 08       ..       ; underflow: digit complete
     sta zp_iwa_1                                                      ; 993b: 85 2b       .+       ; keep the remainder
-    sty zp_iwa                                                        ; 993d: 84 2a       .*       ; ...
+    sty zp_iwa                                                        ; 993d: 84 2a       .*       ; (low byte too)
     inc zp_fwb_m2,x                                                   ; 993f: f6 3f       .?       ; count the digit
     bne loop_c992e                                                    ; 9941: d0 eb       ..       ; subtract again
 ; &9943 referenced 1 time by &9939
 .c9943
     dex                                                               ; 9943: ca          .        ; Next power of ten
-    bpl loop_c9929                                                    ; 9944: 10 e3       ..       ; ...
+    bpl loop_c9929                                                    ; 9944: 10 e3       ..       ; until all five powers used
     ldx #5                                                            ; 9946: a2 05       ..       ; Find the most significant non-zero digit
 ; &9948 referenced 1 time by &994d
 .loop_c9948
-    dex                                                               ; 9948: ca          .        ; ...
-    beq c994f                                                         ; 9949: f0 04       ..       ; ...
-    lda zp_fwb_m2,x                                                   ; 994b: b5 3f       .?       ; ...
-    beq loop_c9948                                                    ; 994d: f0 f9       ..       ; ...
+    dex                                                               ; 9948: ca          .        ; step down to the next digit
+    beq c994f                                                         ; 9949: f0 04       ..       ; units digit: always shown
+    lda zp_fwb_m2,x                                                   ; 994b: b5 3f       .?       ; is this digit zero?
+    beq loop_c9948                                                    ; 994d: f0 f9       ..       ; yes: skip the leading zero
 ; &994f referenced 1 time by &9949
 .c994f
     stx zp_general                                                    ; 994f: 86 37       .7       ; Index of the top digit
@@ -4815,19 +4815,19 @@ l848a = sub_c847b+15
     beq c9960                                                         ; 9953: f0 0b       ..       ; no
     sbc zp_general                                                    ; 9955: e5 37       .7       ; leading spaces = field - digits
     beq c9960                                                         ; 9957: f0 07       ..       ; none
-    tay                                                               ; 9959: a8          .        ; ...
+    tay                                                               ; 9959: a8          .        ; space count into Y
 ; &995a referenced 1 time by &995e
 .loop_c995a
     jsr print_space                                                   ; 995a: 20 65 b5     e.      ; print a leading space
-    dey                                                               ; 995d: 88          .        ; ...
-    bne loop_c995a                                                    ; 995e: d0 fa       ..       ; ...
+    dey                                                               ; 995d: 88          .        ; one fewer space
+    bne loop_c995a                                                    ; 995e: d0 fa       ..       ; until the field is padded
 ; &9960 referenced 3 times by &9953, &9957, &9968
 .c9960
     lda zp_fwb_m2,x                                                   ; 9960: b5 3f       .?       ; Digit
     ora #&30 ; '0'                                                    ; 9962: 09 30       .0       ; to ASCII
     jsr print_char                                                    ; 9964: 20 58 b5     X.      ; print it
     dex                                                               ; 9967: ca          .        ; next digit
-    bpl c9960                                                         ; 9968: 10 f6       ..       ; ...
+    bpl c9960                                                         ; 9968: 10 f6       ..       ; until all digits printed
     rts                                                               ; 996a: 60          `        ; Return
 ; &996b referenced 1 time by &9930
 .l996b

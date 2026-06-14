@@ -44403,7 +44403,7 @@
         240,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "always: skip the TRACE entry",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9925",
@@ -44490,7 +44490,7 @@
         149,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "zero its count",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_m2,x",
@@ -44502,7 +44502,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry for the subtraction",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -44535,7 +44535,7 @@
         107,
         153
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the low byte,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l996b,x",
@@ -44547,7 +44547,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "stash the low result",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -44557,7 +44557,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "IWA high byte",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -44571,7 +44571,7 @@
         185,
         153
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the high byte",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l99b9,x",
@@ -44610,7 +44610,7 @@
         132,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "(low byte too)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_iwa",
@@ -44667,7 +44667,7 @@
         16,
         227
       ],
-      "comment_inline": "...",
+      "comment_inline": "until all five powers used",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "loop_c9929",
@@ -44693,7 +44693,7 @@
       "labels": [
         "loop_c9948"
       ],
-      "comment_inline": "...",
+      "comment_inline": "step down to the next digit",
       "xref_summaries": [
         "&9948 referenced 1 time by &994d"
       ],
@@ -44709,7 +44709,7 @@
         240,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "units digit: always shown",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c994f",
@@ -44722,7 +44722,7 @@
         181,
         63
       ],
-      "comment_inline": "...",
+      "comment_inline": "is this digit zero?",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_m2,x",
@@ -44735,7 +44735,7 @@
         240,
         249
       ],
-      "comment_inline": "...",
+      "comment_inline": "yes: skip the leading zero",
       "type": "code",
       "mnemonic": "beq",
       "operand": "loop_c9948",
@@ -44821,7 +44821,7 @@
       "bytes": [
         168
       ],
-      "comment_inline": "...",
+      "comment_inline": "space count into Y",
       "type": "code",
       "mnemonic": "tay"
     },
@@ -44853,7 +44853,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer space",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -44863,7 +44863,7 @@
         208,
         250
       ],
-      "comment_inline": "...",
+      "comment_inline": "until the field is padded",
       "type": "code",
       "mnemonic": "bne",
       "operand": "loop_c995a",
@@ -44934,7 +44934,7 @@
         16,
         246
       ],
-      "comment_inline": "...",
+      "comment_inline": "until all digits printed",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "c9960",
