@@ -8391,7 +8391,7 @@ l848a = sub_c847b+15
     jsr eval_or_eor                                                   ; acf0: 20 29 9b     ).      ; Evaluate the search string
     bne cac9b                                                         ; acf3: d0 a6       ..       ; not a string: Type mismatch
     lda #1                                                            ; acf5: a9 01       ..       ; Default start position = 1
-    sta zp_iwa                                                        ; acf7: 85 2a       .*       ; ...
+    sta zp_iwa                                                        ; acf7: 85 2a       .*       ; store as the start position
     inc zp_text_ptr2_off                                              ; acf9: e6 1b       ..       ; step past
     cpx #&29 ; ')'                                                    ; acfb: e0 29       .)       ; ')' (no start given)?
     beq cad12                                                         ; acfd: f0 13       ..       ; yes: search from 1
@@ -8416,22 +8416,22 @@ l848a = sub_c847b+15
 .cad1a
     stx zp_iwa                                                        ; ad1a: 86 2a       .*       ; Current match position
     txa                                                               ; ad1c: 8a          .        ; Zero-based start = start - 1
-    dex                                                               ; ad1d: ca          .        ; ...
-    stx zp_iwa_3                                                      ; ad1e: 86 2d       .-       ; ...
+    dex                                                               ; ad1d: ca          .        ; start - 1,
+    stx zp_iwa_3                                                      ; ad1e: 86 2d       .-       ; save the zero-based start
     clc                                                               ; ad20: 18          .        ; Point at s$ + (start-1)
-    adc zp_stack_ptr                                                  ; ad21: 65 04       e.       ; ...
-    sta zp_general                                                    ; ad23: 85 37       .7       ; ...
-    tya                                                               ; ad25: 98          .        ; ...
-    adc zp_stack_ptr_1                                                ; ad26: 65 05       e.       ; ...
-    sta zp_general_1                                                  ; ad28: 85 38       .8       ; ...
+    adc zp_stack_ptr                                                  ; ad21: 65 04       e.       ; - stack pointer low,
+    sta zp_general                                                    ; ad23: 85 37       .7       ; pointer low,
+    tya                                                               ; ad25: 98          .        ; A = 0 (from Y),
+    adc zp_stack_ptr_1                                                ; ad26: 65 05       e.       ; - stack pointer high,
+    sta zp_general_1                                                  ; ad28: 85 38       .8       ; pointer high
     lda (zp_stack_ptr),y                                              ; ad2a: b1 04       ..       ; Length of s$
     sec                                                               ; ad2c: 38          8        ; minus the start offset...
-    sbc zp_iwa_3                                                      ; ad2d: e5 2d       .-       ; ...
+    sbc zp_iwa_3                                                      ; ad2d: e5 2d       .-       ; len(s$) - (start-1)
     bcc cad52                                                         ; ad2f: 90 21       .!       ; start beyond the end: not found
     sbc zp_strbuf_len                                                 ; ad31: e5 36       .6       ; minus the search length
     bcc cad52                                                         ; ad33: 90 1d       ..       ; won't fit: not found
     adc #0                                                            ; ad35: 69 00       i.       ; Number of start positions to try
-    sta zp_iwa_1                                                      ; ad37: 85 2b       .+       ; ...
+    sta zp_iwa_1                                                      ; ad37: 85 2b       .+       ; positions to try
     jsr cbddc                                                         ; ad39: 20 dc bd     ..      ; Re-point at the stacked string
 ; &ad3c referenced 2 times by &ad61, &ad65
 .cad3c
@@ -8444,7 +8444,7 @@ l848a = sub_c847b+15
     cmp string_work,y                                                 ; ad44: d9 00 06    ...      ; vs search character
     bne cad59                                                         ; ad47: d0 10       ..       ; mismatch: advance
     iny                                                               ; ad49: c8          .        ; next
-    dex                                                               ; ad4a: ca          .        ; ...
+    dex                                                               ; ad4a: ca          .        ; one fewer char to match
     bne loop_cad42                                                    ; ad4b: d0 f5       ..       ; all matched?
 ; &ad4d referenced 1 time by &ad40
 .cad4d
@@ -8466,7 +8466,7 @@ l848a = sub_c847b+15
     beq loop_cad55                                                    ; ad5d: f0 f6       ..       ; exhausted: not found
     inc zp_general                                                    ; ad5f: e6 37       .7       ; advance the s$ pointer
     bne cad3c                                                         ; ad61: d0 d9       ..       ; retry
-    inc zp_general_1                                                  ; ad63: e6 38       .8       ; ...
+    inc zp_general_1                                                  ; ad63: e6 38       .8       ; carry into the high byte
     bne cad3c                                                         ; ad65: d0 d5       ..       ; retry
 ; &ad67 referenced 2 times by &ad6d, &ad8f
 .cad67

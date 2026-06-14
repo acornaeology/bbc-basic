@@ -78263,7 +78263,7 @@
         133,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "store as the start position",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa",
@@ -78512,7 +78512,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "start - 1,",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -78522,7 +78522,7 @@
         134,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "save the zero-based start",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_iwa_3",
@@ -78544,7 +78544,7 @@
         101,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ stack pointer low,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr",
@@ -78557,7 +78557,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -78569,7 +78569,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "A = 0 (from Y),",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -78579,7 +78579,7 @@
         101,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "+ stack pointer high,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "zp_stack_ptr_1",
@@ -78592,7 +78592,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -78627,7 +78627,7 @@
         229,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "len(s$) - (start-1)",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_iwa_3",
@@ -78690,7 +78690,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "positions to try",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -78821,7 +78821,7 @@
       "bytes": [
         202
       ],
-      "comment_inline": "...",
+      "comment_inline": "one fewer char to match",
       "type": "code",
       "mnemonic": "dex"
     },
@@ -79020,7 +79020,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "carry into the high byte",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
