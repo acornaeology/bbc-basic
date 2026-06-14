@@ -55859,9 +55859,9 @@
       "comment_inline": "ln(base)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca801",
+      "operand": "ln_compute",
       "target": 43009,
-      "target_label": "sub_ca801"
+      "target_label": "ln_compute"
     },
     {
       "addr": 40568,
@@ -55873,9 +55873,9 @@
       "comment_inline": "times the fractional exponent",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caad1",
+      "operand": "mul_by_temp3",
       "target": 43729,
-      "target_label": "caad1"
+      "target_label": "mul_by_temp3"
     },
     {
       "addr": 40571,
@@ -55887,9 +55887,9 @@
       "comment_inline": "exp(that) = base^frac",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caa94",
+      "operand": "exp_compute",
       "target": 43668,
-      "target_label": "sub_caa94"
+      "target_label": "exp_compute"
     },
     {
       "addr": 40574,
@@ -70915,9 +70915,9 @@
       "comment_inline": "compute the other (sin)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca99e",
+      "operand": "sin_quadrant",
       "target": 43422,
-      "target_label": "ca99e"
+      "target_label": "sin_quadrant"
     },
     {
       "addr": 42706,
@@ -70979,9 +70979,9 @@
       "comment_inline": "finish the trig (cos in FWA)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca99e",
+      "operand": "sin_quadrant",
       "target": 43422,
-      "target_label": "ca99e"
+      "target_label": "sin_quadrant"
     },
     {
       "addr": 42718,
@@ -72479,7 +72479,7 @@
         161
       ],
       "labels": [
-        "ca7b7"
+        "sqr_sign"
       ],
       "comment_inline": "Sign of the argument",
       "xref_summaries": [
@@ -72503,9 +72503,9 @@
       "comment_inline": "zero: the root is zero",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca7e6",
+      "operand": "sqr_done",
       "target": 42982,
-      "target_label": "ca7e6"
+      "target_label": "sqr_done"
     },
     {
       "addr": 42940,
@@ -72626,7 +72626,7 @@
         163
       ],
       "labels": [
-        "loop_ca7cf"
+        "sqr_iter_loop"
       ],
       "comment_inline": "save the current guess",
       "xref_summaries": [
@@ -72752,9 +72752,9 @@
       "comment_inline": "iterate",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca7cf",
+      "operand": "sqr_iter_loop",
       "target": 42959,
-      "target_label": "loop_ca7cf"
+      "target_label": "sqr_iter_loop"
     },
     {
       "addr": 42982,
@@ -72763,7 +72763,7 @@
         255
       ],
       "labels": [
-        "ca7e6"
+        "sqr_done"
       ],
       "comment_inline": "real result",
       "xref_summaries": [
@@ -73003,7 +73003,7 @@
         161
       ],
       "labels": [
-        "sub_ca801"
+        "ln_compute"
       ],
       "comment_inline": "Sign of x",
       "xref_summaries": [
@@ -73027,9 +73027,9 @@
       "comment_inline": "zero: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca808",
+      "operand": "log_range_error",
       "target": 43016,
-      "target_label": "ca808"
+      "target_label": "log_range_error"
     },
     {
       "addr": 43014,
@@ -73040,9 +73040,9 @@
       "comment_inline": "positive: compute",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca814",
+      "operand": "ln_setup",
       "target": 43028,
-      "target_label": "ca814"
+      "target_label": "ln_setup"
     },
     {
       "addr": 43016,
@@ -73050,7 +73050,7 @@
         0
       ],
       "labels": [
-        "ca808"
+        "log_range_error"
       ],
       "comment_inline": "zero or negative: Log range error",
       "xref_summaries": [
@@ -73106,7 +73106,7 @@
         164
       ],
       "labels": [
-        "ca814"
+        "ln_setup"
       ],
       "comment_inline": "Set FWB = -1 (to form mantissa - 1)",
       "xref_summaries": [
@@ -73202,9 +73202,9 @@
       "comment_inline": "zero mantissa exponent?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca82a",
+      "operand": "ln_scale",
       "target": 43050,
-      "target_label": "ca82a"
+      "target_label": "ln_scale"
     },
     {
       "addr": 43044,
@@ -73239,9 +73239,9 @@
       "comment_inline": "yes: keep this exponent",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca82c",
+      "operand": "ln_save_exp",
       "target": 43052,
-      "target_label": "ca82c"
+      "target_label": "ln_save_exp"
     },
     {
       "addr": 43050,
@@ -73249,7 +73249,7 @@
         232
       ],
       "labels": [
-        "ca82a"
+        "ln_scale"
       ],
       "comment_inline": "no: scale mantissa to [sqrt(1/2), sqrt(2)]",
       "xref_summaries": [
@@ -73276,7 +73276,7 @@
         138
       ],
       "labels": [
-        "ca82c"
+        "ln_save_exp"
       ],
       "comment_inline": "Save the adjusted binary exponent",
       "xref_summaries": [
@@ -73945,9 +73945,9 @@
       "comment_inline": "no carry into the high byte",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "ca8aa",
+      "operand": "cfrac_first",
       "target": 43178,
-      "target_label": "ca8aa"
+      "target_label": "cfrac_first"
     },
     {
       "addr": 43176,
@@ -73969,7 +73969,7 @@
         77
       ],
       "labels": [
-        "ca8aa"
+        "cfrac_first"
       ],
       "comment_inline": "Point the fp pointer at the first coefficient",
       "xref_summaries": [
@@ -74045,7 +74045,7 @@
         167
       ],
       "labels": [
-        "loop_ca8b5"
+        "cfrac_loop"
       ],
       "comment_inline": "Point at the argument in TEMP1",
       "xref_summaries": [
@@ -74219,9 +74219,9 @@
       "comment_inline": "loop until the table is exhausted",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_ca8b5",
+      "operand": "cfrac_loop",
       "target": 43189,
-      "target_label": "loop_ca8b5"
+      "target_label": "cfrac_loop"
     },
     {
       "addr": 43219,
@@ -74309,9 +74309,9 @@
       "comment_inline": "positive: compute directly",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca8ea",
+      "operand": "asn_save",
       "target": 43242,
-      "target_label": "ca8ea"
+      "target_label": "asn_save"
     },
     {
       "addr": 43234,
@@ -74336,9 +74336,9 @@
       "comment_inline": "compute asn(|x|)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca8ea",
+      "operand": "asn_save",
       "target": 43242,
-      "target_label": "ca8ea"
+      "target_label": "asn_save"
     },
     {
       "addr": 43239,
@@ -74350,9 +74350,9 @@
       "comment_inline": "...and negate the result",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca916",
+      "operand": "atn_neg",
       "target": 43286,
-      "target_label": "ca916"
+      "target_label": "atn_neg"
     },
     {
       "addr": 43242,
@@ -74362,7 +74362,7 @@
         163
       ],
       "labels": [
-        "ca8ea"
+        "asn_save"
       ],
       "comment_inline": "Save x in TEMP3",
       "xref_summaries": [
@@ -74388,9 +74388,9 @@
       "comment_inline": "compute sqrt(1 - x^2)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_ca9b1",
+      "operand": "sin_series",
       "target": 43441,
-      "target_label": "sub_ca9b1"
+      "target_label": "sin_series"
     },
     {
       "addr": 43248,
@@ -74415,9 +74415,9 @@
       "comment_inline": "yes: result is pi/2",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca8fe",
+      "operand": "asn_one",
       "target": 43262,
-      "target_label": "ca8fe"
+      "target_label": "asn_one"
     },
     {
       "addr": 43253,
@@ -74457,9 +74457,9 @@
       "comment_inline": "asn(x) = atn(that)",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca90a",
+      "operand": "atn_sign",
       "target": 43274,
-      "target_label": "ca90a"
+      "target_label": "atn_sign"
     },
     {
       "addr": 43262,
@@ -74469,7 +74469,7 @@
         170
       ],
       "labels": [
-        "ca8fe"
+        "asn_one"
       ],
       "comment_inline": "x = 1: load pi/2",
       "xref_summaries": [
@@ -74506,7 +74506,7 @@
         255
       ],
       "labels": [
-        "ca904"
+        "asn_done"
       ],
       "comment_inline": "real result",
       "xref_summaries": [
@@ -74554,7 +74554,7 @@
         161
       ],
       "labels": [
-        "ca90a"
+        "atn_sign"
       ],
       "comment_inline": "Sign of the argument",
       "xref_summaries": [
@@ -74578,9 +74578,9 @@
       "comment_inline": "zero: atn(0) = 0, return it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca904",
+      "operand": "asn_done",
       "target": 43268,
-      "target_label": "ca904"
+      "target_label": "asn_done"
     },
     {
       "addr": 43279,
@@ -74591,9 +74591,9 @@
       "comment_inline": "positive: compute directly",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca91b",
+      "operand": "atn_large",
       "target": 43291,
-      "target_label": "ca91b"
+      "target_label": "atn_large"
     },
     {
       "addr": 43281,
@@ -74618,9 +74618,9 @@
       "comment_inline": "compute atn(|x|)",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca91b",
+      "operand": "atn_large",
       "target": 43291,
-      "target_label": "ca91b"
+      "target_label": "atn_large"
     },
     {
       "addr": 43286,
@@ -74629,7 +74629,7 @@
         128
       ],
       "labels": [
-        "ca916"
+        "atn_neg"
       ],
       "comment_inline": "set the result sign negative",
       "xref_summaries": [
@@ -74671,7 +74671,7 @@
         48
       ],
       "labels": [
-        "ca91b"
+        "atn_large"
       ],
       "comment_inline": "Exponent of |x|",
       "xref_summaries": [
@@ -74707,9 +74707,9 @@
       "comment_inline": "yes: evaluate the series directly",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca936",
+      "operand": "chp_exp",
       "target": 43318,
-      "target_label": "ca936"
+      "target_label": "chp_exp"
     },
     {
       "addr": 43297,
@@ -74735,9 +74735,9 @@
       "comment_inline": "atn(1/x) via the series",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca936",
+      "operand": "chp_exp",
       "target": 43318,
-      "target_label": "ca936"
+      "target_label": "chp_exp"
     },
     {
       "addr": 43303,
@@ -74825,7 +74825,7 @@
         48
       ],
       "labels": [
-        "ca936"
+        "chp_exp"
       ],
       "comment_inline": "Exponent of the (reduced) argument",
       "xref_summaries": [
@@ -74861,9 +74861,9 @@
       "comment_inline": "yes: atn(x) = x to working precision",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca904",
+      "operand": "asn_done",
       "target": 43268,
-      "target_label": "ca904"
+      "target_label": "asn_done"
     },
     {
       "addr": 43324,
@@ -75003,9 +75003,9 @@
       "comment_inline": "Scale by x (in TEMP3): atn(x) = x * P",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "caad1",
+      "operand": "mul_by_temp3",
       "target": 43729,
-      "target_label": "caad1"
+      "target_label": "mul_by_temp3"
     },
     {
       "addr": 43351,
@@ -75330,9 +75330,9 @@
       "comment_inline": "Finish (shared with SIN)",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca99e",
+      "operand": "sin_quadrant",
       "target": 43422,
-      "target_label": "ca99e"
+      "target_label": "sin_quadrant"
     },
     {
       "addr": 43416,
@@ -75372,7 +75372,7 @@
         74
       ],
       "labels": [
-        "ca99e"
+        "sin_quadrant"
       ],
       "comment_inline": "Quadrant",
       "xref_summaries": [
@@ -75409,9 +75409,9 @@
       "comment_inline": "no: compute and return directly",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca9aa",
+      "operand": "sin_odd_quad",
       "target": 43434,
-      "target_label": "ca9aa"
+      "target_label": "sin_odd_quad"
     },
     {
       "addr": 43428,
@@ -75423,9 +75423,9 @@
       "comment_inline": "compute the magnitude...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca9aa",
+      "operand": "sin_odd_quad",
       "target": 43434,
-      "target_label": "ca9aa"
+      "target_label": "sin_odd_quad"
     },
     {
       "addr": 43431,
@@ -75448,7 +75448,7 @@
         74
       ],
       "labels": [
-        "ca9aa"
+        "sin_odd_quad"
       ],
       "comment_inline": "Odd quadrant (use cosine instead of sine)?",
       "xref_summaries": [
@@ -75473,9 +75473,9 @@
       "comment_inline": "even: evaluate the sine series",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "ca9c3",
+      "operand": "sin_save_r",
       "target": 43459,
-      "target_label": "ca9c3"
+      "target_label": "sin_save_r"
     },
     {
       "addr": 43438,
@@ -75487,9 +75487,9 @@
       "comment_inline": "odd: evaluate the sine series...",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca9c3",
+      "operand": "sin_save_r",
       "target": 43459,
-      "target_label": "ca9c3"
+      "target_label": "sin_save_r"
     },
     {
       "addr": 43441,
@@ -75499,7 +75499,7 @@
         163
       ],
       "labels": [
-        "sub_ca9b1"
+        "sin_series"
       ],
       "comment_inline": "Save sin into TEMP1",
       "xref_summaries": [
@@ -75580,9 +75580,9 @@
       "comment_inline": "cos = sqrt(1 - sin^2)",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "ca7b7",
+      "operand": "sqr_sign",
       "target": 42935,
-      "target_label": "ca7b7"
+      "target_label": "sqr_sign"
     },
     {
       "addr": 43459,
@@ -75592,7 +75592,7 @@
         163
       ],
       "labels": [
-        "ca9c3"
+        "sin_save_r"
       ],
       "comment_inline": "Save the reduced angle r in TEMP3",
       "xref_summaries": [
@@ -75668,9 +75668,9 @@
       "comment_inline": "Scale by r (in TEMP3): sin(r) = r * P",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "caad1",
+      "operand": "mul_by_temp3",
       "target": 43729,
-      "target_label": "caad1"
+      "target_label": "mul_by_temp3"
     },
     {
       "addr": 43475,
@@ -75716,9 +75716,9 @@
       "comment_inline": "yes: report the error",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "caa38",
+      "operand": "reduce_too_big",
       "target": 43576,
-      "target_label": "caa38"
+      "target_label": "reduce_too_big"
     },
     {
       "addr": 43481,
@@ -75917,9 +75917,9 @@
       "comment_inline": "yes: argument already in range, use it as is",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "caa35",
+      "operand": "reduce_in_range",
       "target": 43573,
-      "target_label": "caa35"
+      "target_label": "reduce_in_range"
     },
     {
       "addr": 43517,
@@ -76004,9 +76004,9 @@
       "comment_inline": "positive: skip",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "caa0e",
+      "operand": "reduce_norm_quad",
       "target": 43534,
-      "target_label": "caa0e"
+      "target_label": "reduce_norm_quad"
     },
     {
       "addr": 43531,
@@ -76030,7 +76030,7 @@
         163
       ],
       "labels": [
-        "caa0e"
+        "reduce_norm_quad"
       ],
       "comment_inline": "Normalise the quadrant count",
       "xref_summaries": [
@@ -76221,7 +76221,7 @@
         163
       ],
       "labels": [
-        "caa35"
+        "reduce_in_range"
       ],
       "comment_inline": "Argument in range: reduced angle is the argument",
       "xref_summaries": [
@@ -76242,7 +76242,7 @@
         0
       ],
       "labels": [
-        "caa38"
+        "reduce_too_big"
       ],
       "comment_inline": "Argument too large: error",
       "xref_summaries": [
@@ -76737,7 +76737,7 @@
         48
       ],
       "labels": [
-        "sub_caa94"
+        "exp_compute"
       ],
       "comment_inline": "Exponent of x",
       "xref_summaries": [
@@ -76772,9 +76772,9 @@
       "comment_inline": "yes: compute",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "caab8",
+      "operand": "exp_split",
       "target": 43704,
-      "target_label": "caab8"
+      "target_label": "exp_split"
     },
     {
       "addr": 43674,
@@ -76785,9 +76785,9 @@
       "comment_inline": "much too large: handle the overflow case",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "caaa2",
+      "operand": "exp_sign",
       "target": 43682,
-      "target_label": "caaa2"
+      "target_label": "exp_sign"
     },
     {
       "addr": 43676,
@@ -76822,9 +76822,9 @@
       "comment_inline": "below it: still computable",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "caab8",
+      "operand": "exp_split",
       "target": 43704,
-      "target_label": "caab8"
+      "target_label": "exp_split"
     },
     {
       "addr": 43682,
@@ -76833,7 +76833,7 @@
         46
       ],
       "labels": [
-        "caaa2"
+        "exp_sign"
       ],
       "comment_inline": "Sign of x",
       "xref_summaries": [
@@ -76857,9 +76857,9 @@
       "comment_inline": "x very negative: e^x underflows to 0",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "caaac",
+      "operand": "exp_range_error",
       "target": 43692,
-      "target_label": "caaac"
+      "target_label": "exp_range_error"
     },
     {
       "addr": 43686,
@@ -76901,7 +76901,7 @@
         0
       ],
       "labels": [
-        "caaac"
+        "exp_range_error"
       ],
       "comment_inline": "x very positive: Exp range error",
       "xref_summaries": [
@@ -76957,7 +76957,7 @@
         164
       ],
       "labels": [
-        "caab8"
+        "exp_split"
       ],
       "comment_inline": "Split x into integer (&4A) and fraction",
       "xref_summaries": [
@@ -76983,9 +76983,9 @@
       "comment_inline": "FWA = e^frac via the series",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_caada",
+      "operand": "exp_coeff_table",
       "target": 43738,
-      "target_label": "sub_caada"
+      "target_label": "exp_coeff_table"
     },
     {
       "addr": 43710,
@@ -77098,7 +77098,7 @@
         167
       ],
       "labels": [
-        "caad1"
+        "mul_by_temp3"
       ],
       "comment_inline": "Point at the saved argument in TEMP3",
       "xref_summaries": [
@@ -77156,7 +77156,7 @@
         233
       ],
       "labels": [
-        "sub_caada"
+        "exp_coeff_table"
       ],
       "comment_inline": "Point at the coefficient table: low byte",
       "xref_summaries": [
@@ -77469,9 +77469,9 @@
       "comment_inline": "positive?",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "cab1e",
+      "operand": "intpow_loop",
       "target": 43806,
-      "target_label": "cab1e"
+      "target_label": "intpow_loop"
     },
     {
       "addr": 43797,
@@ -77540,7 +77540,7 @@
         72
       ],
       "labels": [
-        "cab1e"
+        "intpow_loop"
       ],
       "comment_inline": "Save the count",
       "xref_summaries": [
@@ -77586,7 +77586,7 @@
         104
       ],
       "labels": [
-        "cab25"
+        "intpow_check"
       ],
       "comment_inline": "Count remaining",
       "xref_summaries": [
@@ -77664,9 +77664,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cab25",
+      "operand": "intpow_check",
       "target": 43813,
-      "target_label": "cab25"
+      "target_label": "intpow_check"
     },
     {
       "addr": 43826,
@@ -78636,9 +78636,9 @@
       "comment_inline": "Load the constant pi/2 into FWA",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "ca8fe",
+      "operand": "asn_one",
       "target": 43262,
-      "target_label": "ca8fe"
+      "target_label": "asn_one"
     },
     {
       "addr": 43982,
