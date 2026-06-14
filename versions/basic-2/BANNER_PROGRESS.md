@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 199 fully documented
-(desc + calling contract), 86 remaining (70 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 226 fully documented
+(desc + calling contract), 59 remaining (79 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
 
 Driver sorted into address order; shared stmt_*/fn_* contracts established
@@ -276,6 +276,8 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | variable management | find_variable, find_proc_fn, create_variable, validate_var_name | 4 | 103 | 3e6bd5e |
 | 2026-06-14 | number<->FP conversion | int_to_fwa, small_int_to_fwa, fwa_mul10/div10, output_* digit helpers, parse_exponent | 9 | 94 | ac0bf3c |
 | 2026-06-14 | integer/RND/USR | iwa_inc, imul16, iwa_store_zp, unstack_int_to_zp, rnd_step, rnd_repeat, read_key_timed, usr_call | 8 | 86 | 48d054e |
+| 2026-06-14 | FP operators | add/sub/mul/div var + fwb, compare, round, negate, set_one, swap, to_int/to_int2, split_int_frac | 16 | 70 | d469dd8 |
+| 2026-06-14 | RND/stack/helpers | rnd_seed/integer/fraction/range, fwa_reciprocal, fwa_sub_var, stack_real/string, print_hex_byte, load_byte_var, encode_line_number | 11 | 59 | c4b3f45 |
 
 ## Resume here
 
