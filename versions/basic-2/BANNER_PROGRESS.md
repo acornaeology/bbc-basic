@@ -1,7 +1,7 @@
 # BBC BASIC II annotation — subroutine banner pass
 
-**STATUS: in progress — 285 ROM subroutine banners, 178 fully documented
-(desc + calling contract), 107 remaining (62 %). Inline-comment pass is
+**STATUS: in progress — 285 ROM subroutine banners, 199 fully documented
+(desc + calling contract), 86 remaining (70 %). Inline-comment pass is
 COMPLETE (see ANNOTATION_PROGRESS.md); this is the follow-on pass.**
 
 Driver sorted into address order; shared stmt_*/fn_* contracts established
@@ -273,6 +273,9 @@ no emojis in commit messages; never `git push`; prefer
 | 2026-06-14 | FP ptrs + helpers | 7 point_* setters, byte/print/int-result helpers; fixed iwa_from_ya + fn_to | 15 | 122 | eccee24 |
 | 2026-06-14 | value stack + loaders | stack/unstack/drop + load_real_var/load_string_var; fixed unstack_integer | 8 | 114 | 8afd278 |
 | 2026-06-14 | line/program helpers | check/decode_line_number, parse_decimal_u16, advance_to_next_line, check_subscript_bound, clear_value_bytes; fixed find_program_line | 7 | 107 | e46362b |
+| 2026-06-14 | variable management | find_variable, find_proc_fn, create_variable, validate_var_name | 4 | 103 | 3e6bd5e |
+| 2026-06-14 | number<->FP conversion | int_to_fwa, small_int_to_fwa, fwa_mul10/div10, output_* digit helpers, parse_exponent | 9 | 94 | ac0bf3c |
+| 2026-06-14 | integer/RND/USR | iwa_inc, imul16, iwa_store_zp, unstack_int_to_zp, rnd_step, rnd_repeat, read_key_timed, usr_call | 8 | 86 | 48d054e |
 
 ## Resume here
 
