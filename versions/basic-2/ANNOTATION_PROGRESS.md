@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 578 of 7,129 placeholders left (8.1 %);
+**STATUS: in progress — 568 of 7,129 placeholders left (8.0 %);
 depths 0–4 complete, depth 5 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,12 +27,12 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`stmt_sound` (10), then `stmt_envelope` (9), `execute_line` (8),
-`stmt_plot` (7), and the rest of depths 5–8.
+`stmt_envelope` (9), then `execute_line` (8), `stmt_plot` (7),
+and the rest of depths 5–8.
 (Done 2026-06-14: `stmt_dim`, `parse_var_ref`, `unstack_value_to_var`,
 `iwa_divide`, `check_end_of_statement`, `iwa_test_var`, `stmt_print`,
 `asm_opcode_add4`, `iwa_add`, `fn_eval`, `iwa_rsub`, `fn_instr`,
-`fn_mids`, `fn_ln`.) Per routine:
+`fn_mids`, `fn_ln`, `stmt_sound`.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -243,4 +243,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: iwa_rsub | iwa_rsub (reverse 32-bit subtract stacked-IWA, real-operand path, owned eval_mul_div 16-bit-fit checks) | 16 | 612 |
 | 2026-06-14 | depth 5: fn_instr | fn_instr (INSTR: start position, search pointer into s$, fit/bound checks, char-compare search loop) | 12 | 600 |
 | 2026-06-14 | depth 5: fn_mids | fn_mids (MID$: start/length parse, zero-based start, length clamp to available, substring copy-to-front) | 12 | 588 |
-| 2026-06-14 | depth 5: fn_ln | fn_ln (LN: FWB=-1 for m-1, sqrt(2) range reduction, continued fraction, e*ln2 recombine) | 10 | 578 | — |
+| 2026-06-14 | depth 5: fn_ln | fn_ln (LN: FWB=-1 for m-1, sqrt(2) range reduction, continued fraction, e*ln2 recombine) | 10 | 578 |
+| 2026-06-14 | depth 5: stmt_sound | stmt_sound (SOUND: stack 4 params with loop counter, build OSWORD 7 6-byte block) | 10 | 568 | — |
