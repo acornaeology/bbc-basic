@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 825 of 7,129 placeholders left (11.6 %);
+**STATUS: in progress — 783 of 7,129 placeholders left (11.0 %);
 depths 0–4 complete, depth 5 in progress.**
 
 **Stray partial placeholders:** the status tool counts an instruction
@@ -26,9 +26,9 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 next:
-`unstack_value_to_var` (42), then `iwa_divide` (38),
-`check_end_of_statement` (24), `iwa_test_var` (23), and the rest of
-depths 5–8. (`stmt_dim`, `parse_var_ref` done 2026-06-14.) Per routine:
+`iwa_divide` (38), then `check_end_of_statement` (24),
+`iwa_test_var` (23), `stmt_print` (19), and the rest of depths 5–8.
+(`stmt_dim`, `parse_var_ref`, `unstack_value_to_var` done 2026-06-14.) Per routine:
 `uv run tools/annotation_status.py --addrs <name>` for placeholder
 addresses + leads, then `uv run fantasm asm extract 2 <name>` to read it.
 Verify byte-identical + lint + comments-check before each commit.
@@ -227,4 +227,5 @@ placeholders goes first.
 | 2026-06-14 | depth 4: eval_factor | eval_factor (level-1 factor: token classify; hex-number parse - clear IWA, nibble shift, bit roll) | 14 | 958 | — |
 | 2026-06-14 | depth 4 complete | fn_point (POINT->OSWORD 9), eval_or_eor, trace_line ([line] TRACE), eval_and, eval_mul_div, eval_expr_to_integer; +2 stray concat-placeholder lines removed | 24 | 934 |
 | 2026-06-14 | depth 5: stmt_dim | stmt_dim (DIM array: name pointer, per-dimension extent store, descriptor data offset, total size, VARTOP advance + zero-fill; +2 byte-0/offset lead fixes, +1 'loop' weak comment) | 58 | 876 |
-| 2026-06-14 | depth 5: parse_var_ref | parse_var_ref (variable ref/lvalue: scan pointer, resident-integer hash, name scan, suffix/array dispatch, binary indirection base+index, string lvalue; +3 fixes: type-byte/return contract header, "Found"->not-found lead, base-not-offset) | 51 | 825 | — |
+| 2026-06-14 | depth 5: parse_var_ref | parse_var_ref (variable ref/lvalue: scan pointer, resident-integer hash, name scan, suffix/array dispatch, binary indirection base+index, string lvalue; +3 fixes: type-byte/return contract header, "Found"->not-found lead, base-not-offset) | 51 | 825 |
+| 2026-06-14 | depth 5: unstack_value_to_var | unstack_value_to_var (pop stacked value to var: string-var heap copy, $addr CR-terminated copy, unrolled numeric copy) + trailing PRINT#-to-file block (OSBPUT type+bytes, MSB-first numerics, reversed strings) | 42 | 783 | — |
