@@ -2098,8 +2098,16 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Skip spaces and require a comma
 ;
-; Call skip_spaces, then check the character is a comma. Raises "Missing ," if it is not.
-; Used by statements that take a comma-separated argument list.
+; Skip spaces at PtrB, then check the character is a comma. Raises "Missing ," if it is
+; not. Used by statements that take a comma-separated argument list.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the parser position
+;
+; On Exit:
+;     A: the comma (consumed)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the comma
+;     BRK: Missing , if a comma is absent
 ; &8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c
 .skip_spaces_expect_comma
     jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..      ; Skip spaces at PtrB
@@ -2276,7 +2284,14 @@ l848a = sub_c847b+15
 ;
 ; Recognise the statement forms that are not introduced by a token: "=" (return a value
 ; from FN), "*" (pass the rest of the line to OSCLI), and "[" (enter the inline
-; assembler).
+; assembler). Dispatches to the matching handler, otherwise checks for end of statement.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the introducing character
+;
+; On Exit:
+;     CONTROL: tail-jumps to the FN-return, OSCLI or assembler handler, else falls into the end-of-statement check
 ; &8b60 referenced 1 time by &8bce
 .check_eq_star_bracket
     ldy zp_text_ptr_off                                               ; 8b60: a4 0a       ..       ; Step back to the introducing character
@@ -4978,8 +4993,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Expect "=" then evaluate the right-hand side
 ;
-; Skip spaces, require an "=" sign, then evaluate the expression that follows, leaving
-; the value in the accumulator with its type in zp_var_type.
+; Skip spaces at PtrB, require an "=" sign, then evaluate the expression that follows,
+; leaving the value in the accumulator with its type in zp_var_type. Raises Mistake if
+; "=" is missing.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB before the "="
+;
+; On Exit:
+;     A: the result type (also in zp_var_type, &27)
+;     ZP_IWA / ZP_FWA / STRING_WORK (&0600): the evaluated value
+;     BRK: Mistake if "=" is missing
 ; &9813 referenced 4 times by &8bee, &8bfe, &981b, &bf34
 .eval_after_eq
     ldy zp_text_ptr2_off                                              ; 9813: a4 1b       ..       ; Next character
@@ -5008,7 +5032,15 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Require "=" at the parser pointer
 ;
-; Skip spaces and raise Mistake unless the next character is "=".
+; Skip spaces at PtrB and raise Mistake unless the next character is "=".
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the parser position
+;
+; On Exit:
+;     A: the "=" character (consumed)
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the "="
+;     BRK: Mistake if "=" is missing
 ; &9841 referenced 2 times by &8bd2, &b7ce
 .expect_eq
     jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..      ; Skip spaces
@@ -5032,6 +5064,15 @@ l848a = sub_c847b+15
 ;
 ; Skip spaces and require the statement to end here: a colon, an end-of-line (&0D), or
 ; ELSE. Anything else raises "Syntax error". Also polls for Escape.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset of the next character
+;
+; On Exit:
+;     ZP_TEXT_PTR_OFF (&0A): at the statement terminator
+;     A: the terminator character
+;     BRK: Syntax error if more text follows
 ; &9857 referenced 25 times by &8ab6, &8ac8, &8ad0, &8ada, &8b98, &8ebd, &8ec4, &8f45, &8f8f, &928d, &92a5, &92b9, &92c2, &9362, &9394, &93a0, &9880, &b5e3, &b88b, &b8b6, &b8cf, &b8e4, &bb07, &bd11, &bfe4
 .check_end_of_statement
     ldy zp_text_ptr_off                                               ; 9857: a4 0a       ..       ; Program pointer offset
@@ -5331,10 +5372,21 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Unsigned/signed 32-bit integer division
 ;
-; Evaluate the right operand, take absolute values, and do a 32-step shift-subtract
-; division. The dividend/quotient builds in &39-&3C and the remainder in &3D-&40; the
-; divisor is IWA. The quotient sign is the XOR of the operand signs in &37, the remainder
-; sign the dividend sign in &38. Raises Division by zero. Shared by DIV and MOD.
+; Divide the dividend (IWA, the left operand) by the divisor (the right operand,
+; evaluated here at PtrB). Both are made positive and a 32-step shift-subtract division
+; runs with the dividend/quotient in &39-&3C and the remainder in &3D-&40. The quotient
+; sign is the XOR of the operand signs (&37), the remainder sign the dividend sign (&38).
+; Raises Division by zero. Shared by DIV (reads the quotient) and MOD (the remainder).
+;
+; On Entry:
+;     ZP_IWA (&2A-&2D): the dividend (left operand)
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the divisor operand
+;
+; On Exit:
+;     (&39-&3C): the quotient
+;     (&3D-&40): the remainder
+;     (&37) / (&38): the quotient sign / remainder sign
+;     BRK: Division by zero
 ; &99be referenced 2 times by &9e01, &9e0a
 .iwa_divide
     tay                                                               ; 99be: a8          .        ; Coerce the divisor to integer
@@ -5518,7 +5570,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Compare an integer variable with the accumulator
 ;
-; Compare the integer operand against IWA and set flags.
+; Signed 32-bit compare of the integer on top of the BASIC stack against IWA: bias both
+; sign bits so an unsigned subtract orders signed values, then subtract, returning the
+; ordering in C and Z (Z = equal).
+;
+; On Entry:
+;     (ZP_STACK_PTR) (&04/&05): the stacked integer (left operand)
+;     ZP_IWA (&2A-&2D): the accumulator (right operand)
+;
+; On Exit:
+;     C: set if stacked >= IWA
+;     Z: set if equal
+;     ZP_IWA (&2A-&2D): corrupted (holds the difference)
 .iwa_test_var
     lda zp_iwa_3                                                      ; 9aad: a5 2d       .-       ; Flip the sign bit of the IWA top byte
     eor #&80                                                          ; 9aaf: 49 80       I.       ; toggle bit 7 (bias to unsigned),
@@ -13843,7 +13906,17 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Evaluate a #channel argument
 ;
-; Evaluate the #handle of a file operation, leaving it in IWA.
+; Require "#" at PtrB then evaluate the file handle as an integer, leaving it in IWA.
+; Raises Missing # if the "#" is absent.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB before the "#channel"
+;
+; On Exit:
+;     ZP_IWA (&2A-&2D): the channel handle
+;     A: the handle low byte
+;     Y: the handle low byte
+;     BRK: Missing # if "#" is absent
 ; &bfb5 referenced 3 times by &acb8, &bf4c, &bf6f
 .eval_channel
     jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..      ; Skip spaces

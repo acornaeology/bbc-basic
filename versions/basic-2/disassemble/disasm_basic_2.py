@@ -1502,10 +1502,14 @@ d.comment(0x8aa2, 'BRK error block ("Missing ,") follows', align=Align.INLINE)
 d.subroutine(
     0x8aae, 'skip_spaces_expect_comma',
     title='Skip spaces and require a comma',
-    description="""Call skip_spaces, then check the character is a comma. Raises
-"Missing ," if it is not. Used by statements that take a
+    description="""Skip spaces at PtrB, then check the character is a comma.
+Raises "Missing ," if it is not. Used by statements that take a
 comma-separated argument list.
 """,
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the parser position'},
+    on_exit={'A': 'the comma (consumed)',
+             'zp_text_ptr2_off (&1B)': 'advanced past the comma',
+             'BRK': 'Missing , if a comma is absent'},
 )
 # skip_spaces_expect_comma (&8AAE)
 d.comment(0x8aae, 'Skip spaces at PtrB', align=Align.INLINE)
@@ -1632,8 +1636,13 @@ d.subroutine(
     title='Check for =, * and [ statements',
     description="""Recognise the statement forms that are not introduced by a
 token: "=" (return a value from FN), "*" (pass the rest of the line
-to OSCLI), and "[" (enter the inline assembler).
+to OSCLI), and "[" (enter the inline assembler). Dispatches to the
+matching handler, otherwise checks for end of statement.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset just past the introducing character'},
+    on_exit={'control': 'tail-jumps to the FN-return, OSCLI or assembler handler, '
+                        'else falls into the end-of-statement check'},
 )
 # check_eq_star_bracket (&8B60)
 d.comment(0x8b60, 'Step back to the introducing character', align=Align.INLINE)
@@ -3623,10 +3632,14 @@ d.comment(0x9811, '(offset)', align=Align.INLINE)
 d.subroutine(
     0x9813, 'eval_after_eq',
     title='Expect "=" then evaluate the right-hand side',
-    description="""Skip spaces, require an "=" sign, then evaluate the expression
-that follows, leaving the value in the accumulator with its type in
-zp_var_type.
+    description="""Skip spaces at PtrB, require an "=" sign, then evaluate the
+expression that follows, leaving the value in the accumulator with its
+type in zp_var_type. Raises Mistake if "=" is missing.
 """,
+    on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB before the "="'},
+    on_exit={'A': 'the result type (also in zp_var_type, &27)',
+             'zp_iwa / zp_fwa / string_work (&0600)': 'the evaluated value',
+             'BRK': 'Mistake if "=" is missing'},
 )
 d.comment(0x9813, 'Next character', align=Align.INLINE)
 d.comment(0x9815, 'and advance', align=Align.INLINE)
@@ -3639,8 +3652,12 @@ d.comment(0x9821, 'Mistake error', align=Align.INLINE)
 d.comment(0x982a, 'Mistake error', align=Align.INLINE)
 d.comment(0x9838, 'Escape error', align=Align.INLINE)
 d.subroutine(0x9841, 'expect_eq', title='Require "=" at the parser pointer',
-             description='Skip spaces and raise Mistake unless the next '
-                         'character is "=".')
+             description='Skip spaces at PtrB and raise Mistake unless the next '
+                         'character is "=".',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the parser position'},
+             on_exit={'A': 'the "=" character (consumed)',
+                      'zp_text_ptr2_off (&1B)': 'advanced past the "="',
+                      'BRK': 'Mistake if "=" is missing'})
 d.comment(0x9841, 'Skip spaces', align=Align.INLINE)
 d.comment(0x9844, '"="?', align=Align.INLINE)
 d.comment(0x9846, 'no: Mistake', align=Align.INLINE)
@@ -3667,6 +3684,11 @@ d.subroutine(
 end-of-line (&0D), or ELSE. Anything else raises "Syntax error".
 Also polls for Escape.
 """,
+    on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
+              'zp_text_ptr_off (&0A)': 'offset of the next character'},
+    on_exit={'zp_text_ptr_off (&0A)': 'at the statement terminator',
+             'A': 'the terminator character',
+             'BRK': 'Syntax error if more text follows'},
 )
 # check_end_of_statement (&9857): require ':', end-of-line or ELSE.
 d.comment(0x9857, 'Program pointer offset', align=Align.INLINE)
@@ -3895,13 +3917,20 @@ d.comment(0x99a6, 'Return', align=Align.INLINE)
 d.comment(0x99a7, 'Division by zero error', align=Align.INLINE)
 d.subroutine(0x99be, 'iwa_divide',
              title='Unsigned/signed 32-bit integer division',
-             description='Evaluate the right operand, take absolute values, '
-                         'and do a 32-step shift-subtract division. The '
-                         'dividend/quotient builds in &39-&3C and the '
-                         'remainder in &3D-&40; the divisor is IWA. The '
-                         'quotient sign is the XOR of the operand signs in '
-                         '&37, the remainder sign the dividend sign in &38. '
-                         'Raises Division by zero. Shared by DIV and MOD.')
+             description='Divide the dividend (IWA, the left operand) by the '
+                         'divisor (the right operand, evaluated here at PtrB). '
+                         'Both are made positive and a 32-step shift-subtract '
+                         'division runs with the dividend/quotient in &39-&3C '
+                         'and the remainder in &3D-&40. The quotient sign is the '
+                         'XOR of the operand signs (&37), the remainder sign the '
+                         'dividend sign (&38). Raises Division by zero. Shared '
+                         'by DIV (reads the quotient) and MOD (the remainder).',
+             on_entry={'zp_iwa (&2A-&2D)': 'the dividend (left operand)',
+                       'zp_text_ptr2 (&19/&1A)': 'PtrB at the divisor operand'},
+             on_exit={'(&39-&3C)': 'the quotient',
+                      '(&3D-&40)': 'the remainder',
+                      '(&37) / (&38)': 'the quotient sign / remainder sign',
+                      'BRK': 'Division by zero'})
 # iwa_divide (&99BE): shift-subtract 32-bit integer division.
 d.comment(0x99be, 'Coerce the divisor to integer', align=Align.INLINE)
 d.comment(0x99bf, 'IWA = the integer divisor', align=Align.INLINE)
@@ -4057,7 +4086,14 @@ d.comment(0x9aab, 'float: compare floats', align=Align.INLINE)
 d.subroutine(
     0x9aad, 'iwa_test_var',
     title='Compare an integer variable with the accumulator',
-    description='Compare the integer operand against IWA and set flags.',
+    description='Signed 32-bit compare of the integer on top of the BASIC stack '
+                'against IWA: bias both sign bits so an unsigned subtract orders '
+                'signed values, then subtract, returning the ordering in C and Z '
+                '(Z = equal).',
+    on_entry={'(zp_stack_ptr) (&04/&05)': 'the stacked integer (left operand)',
+              'zp_iwa (&2A-&2D)': 'the accumulator (right operand)'},
+    on_exit={'C': 'set if stacked >= IWA', 'Z': 'set if equal',
+             'zp_iwa (&2A-&2D)': 'corrupted (holds the difference)'},
 )
 # iwa_test_var (&9AAD): signed 32-bit compare of stacked int vs IWA.
 # Flips the sign bits so an unsigned subtract orders signed values, then
@@ -10070,7 +10106,13 @@ d.comment(0xbfb1, 'high', align=Align.INLINE)
 d.comment(0xbfb3, '(store)', align=Align.INLINE)
 
 d.subroutine(0xbfb5, 'eval_channel', title='Evaluate a #channel argument',
-             description='Evaluate the #handle of a file operation, leaving it in IWA.')
+             description='Require "#" at PtrB then evaluate the file handle as '
+                         'an integer, leaving it in IWA. Raises Missing # if the '
+                         '"#" is absent.',
+             on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB before the "#channel"'},
+             on_exit={'zp_iwa (&2A-&2D)': 'the channel handle',
+                      'A': 'the handle low byte', 'Y': 'the handle low byte',
+                      'BRK': 'Missing # if "#" is absent'})
 # eval_channel (&BFB5) remaining
 d.comment(0xbfb5, 'Skip spaces', align=Align.INLINE)
 d.comment(0xbfb8, 'Require "#"', align=Align.INLINE)
