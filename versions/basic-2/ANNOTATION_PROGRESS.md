@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 515 of 7,129 placeholders left (7.2 %);
+**STATUS: in progress — 457 of 7,129 placeholders left (6.4 %);
 depths 0–5 complete, depth 6 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,8 +27,8 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 6 next: `delete_program_line` (58), then `stmt_next` (41),
-`stmt_list` (35), `stmt_renumber` (17), and the rest of depths 6–8.
+Depth 6 next: `stmt_next` (41), then `stmt_list` (35),
+`stmt_renumber` (17), `stmt_mode` (15), and the rest of depths 6–8.
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
 unstack_value_to_var, iwa_divide, check_end_of_statement, iwa_test_var,
 stmt_print, asm_opcode_add4, iwa_add, fn_eval, iwa_rsub, fn_instr,
@@ -249,4 +249,5 @@ placeholders goes first.
 | 2026-06-14 | depth 5: stmt_envelope | stmt_envelope (ENVELOPE: stack 14 params, pop into the ZP control block, OSWORD 8) | 9 | 559 |
 | 2026-06-14 | depth 5: execute_line | execute_line (run a tokenised line: default error vector &B433, OPT flag, general pointer, missing-FN-frame check) | 8 | 551 |
 | 2026-06-14 | depth 5: stmt_plot | stmt_plot (PLOT: push mode, VDU 25 mode/X/Y OSWRCH sequence) | 7 | 544 |
-| 2026-06-14 | depth 5 complete | fn_sqr, fn_int, fn_tan, fn_sgn, fn_strs, stmt_gcol, fn_exp, stmt_time, stmt_vdu, fn_asn, fn_sin, stmt_width, stmt_listo, check_program, fn_openup | 29 | 515 | — |
+| 2026-06-14 | depth 5 complete | fn_sqr, fn_int, fn_tan, fn_sgn, fn_strs, stmt_gcol, fn_exp, stmt_time, stmt_vdu, fn_asn, fn_sin, stmt_width, stmt_listo, check_program, fn_openup | 29 | 515 |
+| 2026-06-14 | depth 6: delete_program_line | delete_program_line + sub_cbc8d insert (gap close shift-down, HIMEM check, shift-up, line-header write, body copy) | 58 | 457 | — |
