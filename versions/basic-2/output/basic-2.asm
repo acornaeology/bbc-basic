@@ -10372,7 +10372,7 @@ oscli            = &fff7
     ldy zp_page                                                       ; aec2: a4 18       ..       ; ...high byte is the page number
     jmp iwa_from_ya                                                   ; aec4: 4c ea ae    L..      ; Return PAGE as an integer
 ; &aec7 referenced 1 time by &aee2
-.loop_caec7
+.pseudovar_syntax_error
     jmp no_such_variable                                              ; aec7: 4c 43 ae    LC.      ; syntax error (shared)
 ; ***************************************************************************************
 ; FALSE
@@ -10392,7 +10392,7 @@ oscli            = &fff7
     lda #0                                                            ; aeca: a9 00       ..       ; FALSE is 0
     beq int_result_a                                                  ; aecc: f0 0a       ..       ; Return 0 as an integer
 ; &aece referenced 1 time by &aed4
-.loop_caece
+.bool_type_error
     jmp err_type_mismatch                                             ; aece: 4c 0e 8c    L..      ; String operand here is a Type mismatch
 ; ***************************************************************************************
 ; LEN
@@ -10410,7 +10410,7 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_len
     jsr eval_factor                                                   ; aed1: 20 ec ad     ..      ; Evaluate the string
-    bne loop_caece                                                    ; aed4: d0 f8       ..       ; not a string: error
+    bne bool_type_error                                               ; aed4: d0 f8       ..       ; not a string: error
     lda zp_strbuf_len                                                 ; aed6: a5 36       .6       ; Length, returned as an integer
 ; ***************************************************************************************
 ; Return A as an integer result
@@ -10448,7 +10448,7 @@ oscli            = &fff7
     ldy zp_text_ptr2_off                                              ; aedc: a4 1b       ..       ; Look at the character after TO
     lda (zp_text_ptr2),y                                              ; aede: b1 19       ..       ; (get it)
     cmp #&50 ; 'P'                                                    ; aee0: c9 50       .P       ; Is it "P"? TO + P spells TOP
-    bne loop_caec7                                                    ; aee2: d0 e3       ..       ; No: a bare TO here is a syntax error
+    bne pseudovar_syntax_error                                        ; aee2: d0 e3       ..       ; No: a bare TO here is a syntax error
     inc zp_text_ptr2_off                                              ; aee4: e6 1b       ..       ; Consume the P
     lda zp_top                                                        ; aee6: a5 12       ..       ; TOP: end-of-program address, low byte
     ldy zp_top_1                                                      ; aee8: a4 13       ..       ; high byte (returned as an integer)
@@ -10691,12 +10691,12 @@ oscli            = &fff7
     lda #&80                                                          ; af74: a9 80       ..       ; Exponent &80 (= 2^0)
     sta zp_fwa_exp                                                    ; af76: 85 30       .0       ; (store it)
 ; &af78 referenced 1 time by &af7f
-.loop_caf78
+.rnd_state_loop
     lda zp_rnd_seed,x                                                 ; af78: b5 0d       ..       ; State byte X (little-endian)...
     sta zp_fwa_m1,x                                                   ; af7a: 95 31       .1       ; ...into mantissa byte X (MSB first): byte-reverses
     inx                                                               ; af7c: e8          .        ; next byte
     cpx #4                                                            ; af7d: e0 04       ..       ; all four?
-    bne loop_caf78                                                    ; af7f: d0 f7       ..       ; loop
+    bne rnd_state_loop                                                ; af7f: d0 f7       ..       ; loop
     jsr mulf_normalise                                                ; af81: 20 59 a6     Y.      ; Normalise: value = reversed-state / 2^32
     lda #&ff                                                          ; af84: a9 ff       ..       ; Real result type
     rts                                                               ; af86: 60          `        ; Return RND(1) / RND(0)
@@ -10722,7 +10722,7 @@ oscli            = &fff7
 .rnd_step
     ldy #&20 ; ' '                                                    ; af87: a0 20       .        ; 32 single-bit steps make one RND advance
 ; &af89 referenced 1 time by &af9c
-.loop_caf89
+.rnd_step_loop
     lda zp_rnd_seed_2                                                 ; af89: a5 0f       ..       ; Byte 2 holds register bits 16-23
     lsr a                                                             ; af8b: 4a          J        ; Shift right so bit 19 (tap 20)...
     lsr a                                                             ; af8c: 4a          J        ; shifting it down
@@ -10735,7 +10735,7 @@ oscli            = &fff7
     rol zp_rnd_seed_3                                                 ; af97: 26 10       &.       ; bits 24-31
     rol zp_rnd_seed_4                                                 ; af99: 26 11       &.       ; bit 32
     dey                                                               ; af9b: 88          .        ; Next step
-    bne loop_caf89                                                    ; af9c: d0 eb       ..       ; Loop for all 32 steps
+    bne rnd_step_loop                                                 ; af9c: d0 eb       ..       ; Loop for all 32 steps
     rts                                                               ; af9e: 60          `        ; The register has advanced
 ; ***************************************************************************************
 ; ERL
@@ -10827,7 +10827,7 @@ oscli            = &fff7
 .fn_gets
     jsr osrdch                                                        ; afbf: 20 e0 ff     ..      ; Wait for a key
 ; &afc2 referenced 2 times by &b02c, &b3c2
-.cafc2
+.gets_char
     sta string_work                                                   ; afc2: 8d 00 06    ...      ; Store it as the one-character string body
     lda #1                                                            ; afc5: a9 01       ..       ; Length 1
     sta zp_strbuf_len                                                 ; afc7: 85 36       .6       ; (store)
@@ -10849,9 +10849,9 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_lefts
     jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).      ; Evaluate the source string
-    bne cb033                                                         ; afcf: d0 62       .b       ; not a string: Type mismatch
+    bne str_type_error                                                ; afcf: d0 62       .b       ; not a string: Type mismatch
     cpx #&2c ; ','                                                    ; afd1: e0 2c       .,       ; ','?
-    bne cb036                                                         ; afd3: d0 61       .a       ; no: Missing ,
+    bne str_missing_comma                                             ; afd3: d0 61       .a       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; afd5: e6 1b       ..       ; step past
     jsr stack_string                                                  ; afd7: 20 b2 bd     ..      ; Stack the string
     jsr eval_subexpr                                                  ; afda: 20 56 ae     V.      ; Evaluate the count, expect )
@@ -10859,10 +10859,10 @@ oscli            = &fff7
     jsr unstack_string                                                ; afe0: 20 cb bd     ..      ; Restore the string
     lda zp_iwa                                                        ; afe3: a5 2a       .*       ; Count
     cmp zp_strbuf_len                                                 ; afe5: c5 36       .6       ; count >= length?
-    bcs cafeb                                                         ; afe7: b0 02       ..       ; yes: keep the whole string
+    bcs lefts_result                                                  ; afe7: b0 02       ..       ; yes: keep the whole string
     sta zp_strbuf_len                                                 ; afe9: 85 36       .6       ; truncate to the count
 ; &afeb referenced 1 time by &afe7
-.cafeb
+.lefts_result
     lda #0                                                            ; afeb: a9 00       ..       ; String result
     rts                                                               ; afed: 60          `        ; Return
 ; ***************************************************************************************
@@ -10881,9 +10881,9 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_rights
     jsr eval_or_eor                                                   ; afee: 20 29 9b     ).      ; Evaluate the source string
-    bne cb033                                                         ; aff1: d0 40       .@       ; not a string: Type mismatch
+    bne str_type_error                                                ; aff1: d0 40       .@       ; not a string: Type mismatch
     cpx #&2c ; ','                                                    ; aff3: e0 2c       .,       ; ','?
-    bne cb036                                                         ; aff5: d0 3f       .?       ; no: Missing ,
+    bne str_missing_comma                                             ; aff5: d0 3f       .?       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; aff7: e6 1b       ..       ; step past
     jsr stack_string                                                  ; aff9: 20 b2 bd     ..      ; Stack the string
     jsr eval_subexpr                                                  ; affc: 20 56 ae     V.      ; Evaluate the count, expect )
@@ -10892,7 +10892,7 @@ oscli            = &fff7
     lda zp_strbuf_len                                                 ; b005: a5 36       .6       ; Start = length - count
     sec                                                               ; b007: 38          8        ; ready the subtract
     sbc zp_iwa                                                        ; b008: e5 2a       .*       ; minus the count: A = start offset
-    bcc cb023                                                         ; b00a: 90 17       ..       ; count > length: keep the whole string
+    bcc rights_whole                                                  ; b00a: 90 17       ..       ; count > length: keep the whole string
     beq return_31                                                     ; b00c: f0 17       ..       ; count == length: keep it
     tax                                                               ; b00e: aa          .        ; Start offset
     lda zp_iwa                                                        ; b00f: a5 2a       .*       ; New length = count
@@ -10908,7 +10908,7 @@ oscli            = &fff7
     dec zp_iwa                                                        ; b01f: c6 2a       .*       ; One fewer char to move
     bne rights_copy_down                                              ; b021: d0 f4       ..       ; Until all count chars are shifted down
 ; &b023 referenced 1 time by &b00a
-.cb023
+.rights_whole
     lda #0                                                            ; b023: a9 00       ..       ; Keep the whole string
 ; &b025 referenced 2 times by &b00c, &b013
 .return_31
@@ -10931,17 +10931,17 @@ oscli            = &fff7
     jsr read_key_timed                                                ; b026: 20 ad af     ..      ; Read a key within the time limit
     txa                                                               ; b029: 8a          .        ; X holds the key
     cpy #0                                                            ; b02a: c0 00       ..       ; Y=0 means a key was read
-    beq cafc2                                                         ; b02c: f0 94       ..       ; Got one: return it as a 1-char string
+    beq gets_char                                                     ; b02c: f0 94       ..       ; Got one: return it as a 1-char string
 ; &b02e referenced 2 times by &b06b, &b081
-.cb02e
+.inkeys_timeout
     lda #0                                                            ; b02e: a9 00       ..       ; Timeout: empty string
     sta zp_strbuf_len                                                 ; b030: 85 36       .6       ; length 0
     rts                                                               ; b032: 60          `        ; Return the (possibly empty) string
 ; &b033 referenced 3 times by &afcf, &aff1, &b03c
-.cb033
+.str_type_error
     jmp err_type_mismatch                                             ; b033: 4c 0e 8c    L..      ; Type mismatch (shared)
 ; &b036 referenced 4 times by &afd3, &aff5, &b040, &b059
-.cb036
+.str_missing_comma
     jmp missing_comma                                                 ; b036: 4c a2 8a    L..      ; Missing , error (shared)
 ; ***************************************************************************************
 ; MID$
@@ -10959,9 +10959,9 @@ oscli            = &fff7
 ;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed argument(s)
 .fn_mids
     jsr eval_or_eor                                                   ; b039: 20 29 9b     ).      ; Evaluate the source string
-    bne cb033                                                         ; b03c: d0 f5       ..       ; not a string: Type mismatch
+    bne str_type_error                                                ; b03c: d0 f5       ..       ; not a string: Type mismatch
     cpx #&2c ; ','                                                    ; b03e: e0 2c       .,       ; ','?
-    bne cb036                                                         ; b040: d0 f4       ..       ; no: Missing ,
+    bne str_missing_comma                                             ; b040: d0 f4       ..       ; no: Missing ,
     jsr stack_string                                                  ; b042: 20 b2 bd     ..      ; Stack the string
     inc zp_text_ptr2_off                                              ; b045: e6 1b       ..       ; step past
     jsr eval_expr_integer                                             ; b047: 20 dd 92     ..      ; Evaluate the start position
@@ -10971,24 +10971,24 @@ oscli            = &fff7
     sta zp_iwa                                                        ; b04f: 85 2a       .*       ; as the length
     inc zp_text_ptr2_off                                              ; b051: e6 1b       ..       ; step past
     cpx #&29 ; ')'                                                    ; b053: e0 29       .)       ; ')' (no length given)?
-    beq cb061                                                         ; b055: f0 0a       ..       ; yes: use the default
+    beq mids_restore                                                  ; b055: f0 0a       ..       ; yes: use the default
     cpx #&2c ; ','                                                    ; b057: e0 2c       .,       ; ','?
-    bne cb036                                                         ; b059: d0 db       ..       ; no: Missing ,
+    bne str_missing_comma                                             ; b059: d0 db       ..       ; no: Missing ,
     jsr eval_subexpr                                                  ; b05b: 20 56 ae     V.      ; Evaluate the length, expect )
     jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..      ; coerce to integer
 ; &b061 referenced 1 time by &b055
-.cb061
+.mids_restore
     jsr unstack_string                                                ; b061: 20 cb bd     ..      ; Restore the string
     pla                                                               ; b064: 68          h        ; Start position
     tay                                                               ; b065: a8          .        ; into Y (also tests for 0),
     clc                                                               ; b066: 18          .        ; clear carry for the compare
-    beq cb06f                                                         ; b067: f0 06       ..       ; position 0: treat as 1
+    beq mids_start                                                    ; b067: f0 06       ..       ; position 0: treat as 1
     sbc zp_strbuf_len                                                 ; b069: e5 36       .6       ; past the end?
-    bcs cb02e                                                         ; b06b: b0 c1       ..       ; yes: empty string
+    bcs inkeys_timeout                                                ; b06b: b0 c1       ..       ; yes: empty string
     dey                                                               ; b06d: 88          .        ; Zero-based start = p - 1
     tya                                                               ; b06e: 98          .        ; A = start - 1
 ; &b06f referenced 1 time by &b067
-.cb06f
+.mids_start
     sta zp_iwa_2                                                      ; b06f: 85 2c       .,       ; Save the start offset
     tax                                                               ; b071: aa          .        ; also into X (source index)
     ldy #0                                                            ; b072: a0 00       ..       ; Destination index
@@ -10996,20 +10996,20 @@ oscli            = &fff7
     sec                                                               ; b076: 38          8        ; set carry,
     sbc zp_iwa_2                                                      ; b077: e5 2c       .,       ; length - start offset
     cmp zp_iwa                                                        ; b079: c5 2a       .*       ; more than requested?
-    bcs cb07f                                                         ; b07b: b0 02       ..       ; no: use the available count
+    bcs mids_length                                                   ; b07b: b0 02       ..       ; no: use the available count
     sta zp_iwa                                                        ; b07d: 85 2a       .*       ; clamp the length
 ; &b07f referenced 1 time by &b07b
-.cb07f
+.mids_length
     lda zp_iwa                                                        ; b07f: a5 2a       .*       ; Length
-    beq cb02e                                                         ; b081: f0 ab       ..       ; zero: empty string
+    beq inkeys_timeout                                                ; b081: f0 ab       ..       ; zero: empty string
 ; &b083 referenced 1 time by &b08d
-.loop_cb083
+.mids_copy_loop
     lda string_work,x                                                 ; b083: bd 00 06    ...      ; Copy the substring to the front
     sta string_work,y                                                 ; b086: 99 00 06    ...      ; to the front,
     iny                                                               ; b089: c8          .        ; next dest,
     inx                                                               ; b08a: e8          .        ; next source,
     cpy zp_iwa                                                        ; b08b: c4 2a       .*       ; copied the requested length?
-    bne loop_cb083                                                    ; b08d: d0 f4       ..       ; loop
+    bne mids_copy_loop                                                ; b08d: d0 f4       ..       ; loop
     sty zp_strbuf_len                                                 ; b08f: 84 36       .6       ; Set the result length
     lda #0                                                            ; b091: a9 00       ..       ; String result
     rts                                                               ; b093: 60          `        ; Return
@@ -11031,31 +11031,31 @@ oscli            = &fff7
     jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..      ; Next character
     ldy #&ff                                                          ; b097: a0 ff       ..       ; assume hex
     cmp #&7e ; '~'                                                    ; b099: c9 7e       .~       ; '~' hex prefix?
-    beq cb0a1                                                         ; b09b: f0 04       ..       ; yes
+    beq strs_save_flag                                                ; b09b: f0 04       ..       ; yes
     ldy #0                                                            ; b09d: a0 00       ..       ; no: decimal
     dec zp_text_ptr2_off                                              ; b09f: c6 1b       ..       ; back up
 ; &b0a1 referenced 1 time by &b09b
-.cb0a1
+.strs_save_flag
     tya                                                               ; b0a1: 98          .        ; Save the hex/dec flag
     pha                                                               ; b0a2: 48          H        ; push it
     jsr eval_factor                                                   ; b0a3: 20 ec ad     ..      ; Evaluate the number
-    beq cb0bf                                                         ; b0a6: f0 17       ..       ; string: error
+    beq strs_type_error                                               ; b0a6: f0 17       ..       ; string: error
     tay                                                               ; b0a8: a8          .        ; Restore the flag
     pla                                                               ; b0a9: 68          h        ; recover the hex/dec flag
     sta zp_print_flag                                                 ; b0aa: 85 15       ..       ; @% formatting set?
     lda l0403                                                         ; b0ac: ad 03 04    ...      ; yes: use it
-    bne cb0b9                                                         ; b0af: d0 08       ..       ; Default conversion
+    bne strs_formatted                                                ; b0af: d0 08       ..       ; Default conversion
     sta zp_general                                                    ; b0b1: 85 37       .7       ; clear &37 (default format)
     jsr nta_default_digits                                            ; b0b3: 20 f9 9e     ..      ; string result
     lda #0                                                            ; b0b6: a9 00       ..       ; Return
     rts                                                               ; b0b8: 60          `        ; Return
 ; &b0b9 referenced 1 time by &b0af
-.cb0b9
+.strs_formatted
     jsr number_to_ascii                                               ; b0b9: 20 df 9e     ..      ; Formatted conversion (@%)
     lda #0                                                            ; b0bc: a9 00       ..       ; string result
     rts                                                               ; b0be: 60          `        ; Return
 ; &b0bf referenced 2 times by &b0a6, &b0ce
-.cb0bf
+.strs_type_error
     jmp err_type_mismatch                                             ; b0bf: 4c 0e 8c    L..      ; Type mismatch error
 ; ***************************************************************************************
 ; STRING$
@@ -11076,42 +11076,42 @@ oscli            = &fff7
     jsr stack_integer                                                 ; b0c5: 20 94 bd     ..      ; stack it
     jsr skip_spaces_expect_comma                                      ; b0c8: 20 ae 8a     ..      ; require a comma
     jsr eval_subexpr                                                  ; b0cb: 20 56 ae     V.      ; evaluate the string s$
-    bne cb0bf                                                         ; b0ce: d0 ef       ..       ; not a string: Type mismatch
+    bne strs_type_error                                               ; b0ce: d0 ef       ..       ; not a string: Type mismatch
     jsr unstack_integer                                               ; b0d0: 20 ea bd     ..      ; recover the count
     ldy zp_strbuf_len                                                 ; b0d3: a4 36       .6       ; source string length
-    beq cb0f5                                                         ; b0d5: f0 1e       ..       ; empty source: empty result
+    beq strings_type                                                  ; b0d5: f0 1e       ..       ; empty source: empty result
     lda zp_iwa                                                        ; b0d7: a5 2a       .*       ; count = 0?
-    beq cb0f8                                                         ; b0d9: f0 1d       ..       ; yes: empty result
+    beq strings_empty                                                 ; b0d9: f0 1d       ..       ; yes: empty result
     dec zp_iwa                                                        ; b0db: c6 2a       .*       ; one copy is already there; need count-1 more
-    beq cb0f5                                                         ; b0dd: f0 16       ..       ; count = 1: done
+    beq strings_type                                                  ; b0dd: f0 16       ..       ; count = 1: done
 ; &b0df referenced 1 time by &b0f1
-.loop_cb0df
+.strings_append
     ldx #0                                                            ; b0df: a2 00       ..       ; Append another copy:
 ; &b0e1 referenced 1 time by &b0ed
-.loop_cb0e1
+.strings_copy_loop
     lda string_work,x                                                 ; b0e1: bd 00 06    ...      ; source char...
     sta string_work,y                                                 ; b0e4: 99 00 06    ...      ; ...appended
     inx                                                               ; b0e7: e8          .        ; next source
     iny                                                               ; b0e8: c8          .        ; next dest
-    beq cb0fb                                                         ; b0e9: f0 10       ..       ; too long: error
+    beq strings_too_long                                              ; b0e9: f0 10       ..       ; too long: error
     cpx zp_strbuf_len                                                 ; b0eb: e4 36       .6       ; end of this copy?
-    bcc loop_cb0e1                                                    ; b0ed: 90 f2       ..       ; no: keep copying
+    bcc strings_copy_loop                                             ; b0ed: 90 f2       ..       ; no: keep copying
     dec zp_iwa                                                        ; b0ef: c6 2a       .*       ; one fewer copy
-    bne loop_cb0df                                                    ; b0f1: d0 ec       ..       ; loop
+    bne strings_append                                                ; b0f1: d0 ec       ..       ; loop
     sty zp_strbuf_len                                                 ; b0f3: 84 36       .6       ; set the result length
 ; &b0f5 referenced 2 times by &b0d5, &b0dd
-.cb0f5
+.strings_type
     lda #0                                                            ; b0f5: a9 00       ..       ; string type
     rts                                                               ; b0f7: 60          `        ; Return
 ; &b0f8 referenced 1 time by &b0d9
-.cb0f8
+.strings_empty
     sta zp_strbuf_len                                                 ; b0f8: 85 36       .6       ; empty result (length 0)
     rts                                                               ; b0fa: 60          `        ; Return
 ; &b0fb referenced 1 time by &b0e9
-.cb0fb
+.strings_too_long
     jmp string_too_long                                               ; b0fb: 4c 03 9c    L..      ; String too long error
 ; &b0fe referenced 1 time by &b11e
-.loop_cb0fe
+.no_such_fn_proc
     pla                                                               ; b0fe: 68          h        ; No such FN/PROC: restore the text pointer
     sta zp_text_ptr_1                                                 ; b0ff: 85 0c       ..       ; pointer high
     pla                                                               ; b101: 68          h        ; pull the low byte
@@ -11143,7 +11143,7 @@ oscli            = &fff7
 .cb11a
     ldy #1                                                            ; b11a: a0 01       ..       ; line number high byte
     lda (zp_text_ptr),y                                               ; b11c: b1 0b       ..       ; read it
-    bmi loop_cb0fe                                                    ; b11e: 30 de       0.       ; end of program: not found
+    bmi no_such_fn_proc                                               ; b11e: 30 de       0.       ; end of program: not found
     ldy #3                                                            ; b120: a0 03       ..       ; skip to the line body
 ; &b122 referenced 1 time by &b127
 .loop_cb122
@@ -11694,7 +11694,7 @@ oscli            = &fff7
 ; &b3c0 referenced 1 time by &b3a9
 .cb3c0
     lda zp_iwa                                                        ; b3c0: a5 2a       .*       ; A = the character code
-    jmp cafc2                                                         ; b3c2: 4c c2 af    L..      ; return a one-character string
+    jmp gets_char                                                     ; b3c2: 4c c2 af    L..      ; return a one-character string
 ; ***************************************************************************************
 ; Find the line an error occurred in
 ;
@@ -14525,7 +14525,6 @@ save pydis_start, pydis_end
 ;     asm_mistake:                   4
 ;     assign_check_end:              4
 ;     bad_statement:                 4
-;     cb036:                         4
 ;     cb751:                         4
 ;     cba5a:                         4
 ;     cbc28:                         4
@@ -14559,6 +14558,7 @@ save pydis_start, pydis_end
 ;     resint_p:                      4
 ;     return_23:                     4
 ;     stmt_check_end:                4
+;     str_missing_comma:             4
 ;     vdu_send_byte:                 4
 ;     zp_asm_opcode:                 4
 ;     zp_data_ptr:                   4
@@ -14576,7 +14576,6 @@ save pydis_start, pydis_end
 ;     c8858:                         3
 ;     ca7f7:                         3
 ;     call_arg_error:                3
-;     cb033:                         3
 ;     cb32c:                         3
 ;     cb8d2:                         3
 ;     cbb07:                         3
@@ -14633,6 +14632,7 @@ save pydis_start, pydis_end
 ;     return_8:                      3
 ;     sin_cos_reduce:                3
 ;     sin_quadrant:                  3
+;     str_type_error:                3
 ;     sub_c8827:                     3
 ;     sub_cbd3a:                     3
 ;     tok_skip_number_loop:          3
@@ -14669,10 +14669,6 @@ save pydis_start, pydis_end
 ;     atn_large:                     2
 ;     auto_loop:                     2
 ;     caa4e:                         2
-;     cafc2:                         2
-;     cb02e:                         2
-;     cb0bf:                         2
-;     cb0f5:                         2
 ;     cb11a:                         2
 ;     cb12d:                         2
 ;     cb24d:                         2
@@ -14739,10 +14735,12 @@ save pydis_start, pydis_end
 ;     fwa_sub_var:                   2
 ;     fwa_unpack_temp1:              2
 ;     fwb_half_fwa:                  2
+;     gets_char:                     2
 ;     hex_digit_loop:                2
 ;     if_then_line:                  2
 ;     imul16:                        2
 ;     index_array:                   2
+;     inkeys_timeout:                2
 ;     instr_compare:                 2
 ;     instr_not_found:               2
 ;     instr_type_error:              2
@@ -14848,6 +14846,8 @@ save pydis_start, pydis_end
 ;     stmt_data:                     2
 ;     stmt_eol:                      2
 ;     string_too_long:               2
+;     strings_type:                  2
+;     strs_type_error:               2
 ;     sub_c887c:                     2
 ;     sub_cb4b1:                     2
 ;     sub_cb562:                     2
@@ -14966,23 +14966,15 @@ save pydis_start, pydis_end
 ;     atn_neg:                       1
 ;     atn_sign:                      1
 ;     bad_hex:                       1
+;     bool_type_error:               1
 ;     brkv:                          1
 ;     brkv+1:                        1
 ;     c883a:                         1
 ;     c886a:                         1
-;     cafeb:                         1
 ;     call_block_init:               1
 ;     call_check_end:                1
 ;     call_param_error:              1
 ;     call_proc_fn:                  1
-;     cb023:                         1
-;     cb061:                         1
-;     cb06f:                         1
-;     cb07f:                         1
-;     cb0a1:                         1
-;     cb0b9:                         1
-;     cb0f8:                         1
-;     cb0fb:                         1
 ;     cb13c:                         1
 ;     cb14d:                         1
 ;     cb1ca:                         1
@@ -15265,6 +15257,7 @@ save pydis_start, pydis_end
 ;     l05e5:                         1
 ;     lang_install_brkv:             1
 ;     language_startup:              1
+;     lefts_result:                  1
 ;     let_assign:                    1
 ;     let_mistake:                   1
 ;     let_numeric:                   1
@@ -15281,14 +15274,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                    1
 ;     loop_c8867:                    1
 ;     loop_c888d:                    1
-;     loop_caec7:                    1
-;     loop_caece:                    1
-;     loop_caf78:                    1
-;     loop_caf89:                    1
-;     loop_cb083:                    1
-;     loop_cb0df:                    1
-;     loop_cb0e1:                    1
-;     loop_cb0fe:                    1
 ;     loop_cb122:                    1
 ;     loop_cb158:                    1
 ;     loop_cb18a:                    1
@@ -15341,6 +15326,10 @@ save pydis_start, pydis_end
 ;     lvalue_save_width:             1
 ;     lvalue_word:                   1
 ;     mantissa_to_iwa:               1
+;     mids_copy_loop:                1
+;     mids_length:                   1
+;     mids_restore:                  1
+;     mids_start:                    1
 ;     missing_paren:                 1
 ;     mistake_error:                 1
 ;     mul10_x8:                      1
@@ -15357,6 +15346,7 @@ save pydis_start, pydis_end
 ;     mulf_setup:                    1
 ;     mulf_unbias:                   1
 ;     negate_mantissa:               1
+;     no_such_fn_proc:               1
 ;     norm_bit_loop:                 1
 ;     not_line_number:               1
 ;     not_local_error:               1
@@ -15453,6 +15443,7 @@ save pydis_start, pydis_end
 ;     print_tab_x:                   1
 ;     print_tab_xy:                  1
 ;     proc_clear_loop:               1
+;     pseudovar_syntax_error:        1
 ;     pvr_advance:                   1
 ;     pvr_after_name:                1
 ;     pvr_byte_indirect:             1
@@ -15517,10 +15508,13 @@ save pydis_start, pydis_end
 ;     return_6:                      1
 ;     return_7:                      1
 ;     rights_copy_down:              1
+;     rights_whole:                  1
 ;     rnd_dispatch:                  1
 ;     rnd_range:                     1
 ;     rnd_repeat:                    1
 ;     rnd_seed:                      1
+;     rnd_state_loop:                1
+;     rnd_step_loop:                 1
 ;     round_half:                    1
 ;     rsl_drop_trail:                1
 ;     rsl_missing_quote:             1
@@ -15556,6 +15550,12 @@ save pydis_start, pydis_end
 ;     strcmp_loop:                   1
 ;     strcmp_result:                 1
 ;     strcmp_shorter:                1
+;     strings_append:                1
+;     strings_copy_loop:             1
+;     strings_empty:                 1
+;     strings_too_long:              1
+;     strs_formatted:                1
+;     strs_save_flag:                1
 ;     sub_c9231:                     1
 ;     sub_cb4b7:                     1
 ;     sub_cbbfc:                     1
@@ -15620,21 +15620,6 @@ save pydis_start, pydis_end
 ;     c886a
 ;     ca7f7
 ;     caa4e
-;     cafc2
-;     cafeb
-;     cb023
-;     cb02e
-;     cb033
-;     cb036
-;     cb061
-;     cb06f
-;     cb07f
-;     cb0a1
-;     cb0b9
-;     cb0bf
-;     cb0f5
-;     cb0f8
-;     cb0fb
 ;     cb11a
 ;     cb12d
 ;     cb13c
@@ -15815,14 +15800,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_caec7
-;     loop_caece
-;     loop_caf78
-;     loop_caf89
-;     loop_cb083
-;     loop_cb0df
-;     loop_cb0e1
-;     loop_cb0fe
 ;     loop_cb122
 ;     loop_cb158
 ;     loop_cb18a

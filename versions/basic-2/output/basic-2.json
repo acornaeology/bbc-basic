@@ -83760,7 +83760,7 @@
         174
       ],
       "labels": [
-        "loop_caec7"
+        "pseudovar_syntax_error"
       ],
       "comment_inline": "syntax error (shared)",
       "xref_summaries": [
@@ -83810,7 +83810,7 @@
         140
       ],
       "labels": [
-        "loop_caece"
+        "bool_type_error"
       ],
       "comment_inline": "String operand here is a Type mismatch",
       "xref_summaries": [
@@ -83851,9 +83851,9 @@
       "comment_inline": "not a string: error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_caece",
+      "operand": "bool_type_error",
       "target": 44750,
-      "target_label": "loop_caece"
+      "target_label": "bool_type_error"
     },
     {
       "addr": 44758,
@@ -83967,9 +83967,9 @@
       "comment_inline": "No: a bare TO here is a syntax error",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_caec7",
+      "operand": "pseudovar_syntax_error",
       "target": 44743,
-      "target_label": "loop_caec7"
+      "target_label": "pseudovar_syntax_error"
     },
     {
       "addr": 44772,
@@ -84930,7 +84930,7 @@
         13
       ],
       "labels": [
-        "loop_caf78"
+        "rnd_state_loop"
       ],
       "comment_inline": "State byte X (little-endian)...",
       "xref_summaries": [
@@ -84987,9 +84987,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_caf78",
+      "operand": "rnd_state_loop",
       "target": 44920,
-      "target_label": "loop_caf78"
+      "target_label": "rnd_state_loop"
     },
     {
       "addr": 44929,
@@ -85053,7 +85053,7 @@
         15
       ],
       "labels": [
-        "loop_caf89"
+        "rnd_step_loop"
       ],
       "comment_inline": "Byte 2 holds register bits 16-23",
       "xref_summaries": [
@@ -85200,9 +85200,9 @@
       "comment_inline": "Loop for all 32 steps",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_caf89",
+      "operand": "rnd_step_loop",
       "target": 44937,
-      "target_label": "loop_caf89"
+      "target_label": "rnd_step_loop"
     },
     {
       "addr": 44958,
@@ -85428,7 +85428,7 @@
         6
       ],
       "labels": [
-        "cafc2"
+        "gets_char"
       ],
       "comment_inline": "Store it as the one-character string body",
       "xref_summaries": [
@@ -85514,9 +85514,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb033",
+      "operand": "str_type_error",
       "target": 45107,
-      "target_label": "cb033"
+      "target_label": "str_type_error"
     },
     {
       "addr": 45009,
@@ -85538,9 +85538,9 @@
       "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb036",
+      "operand": "str_missing_comma",
       "target": 45110,
-      "target_label": "cb036"
+      "target_label": "str_missing_comma"
     },
     {
       "addr": 45013,
@@ -85646,9 +85646,9 @@
       "comment_inline": "yes: keep the whole string",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cafeb",
+      "operand": "lefts_result",
       "target": 45035,
-      "target_label": "cafeb"
+      "target_label": "lefts_result"
     },
     {
       "addr": 45033,
@@ -85670,7 +85670,7 @@
         0
       ],
       "labels": [
-        "cafeb"
+        "lefts_result"
       ],
       "comment_inline": "String result",
       "xref_summaries": [
@@ -85718,9 +85718,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb033",
+      "operand": "str_type_error",
       "target": 45107,
-      "target_label": "cb033"
+      "target_label": "str_type_error"
     },
     {
       "addr": 45043,
@@ -85742,9 +85742,9 @@
       "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb036",
+      "operand": "str_missing_comma",
       "target": 45110,
-      "target_label": "cb036"
+      "target_label": "str_missing_comma"
     },
     {
       "addr": 45047,
@@ -85859,9 +85859,9 @@
       "comment_inline": "count > length: keep the whole string",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "cb023",
+      "operand": "rights_whole",
       "target": 45091,
-      "target_label": "cb023"
+      "target_label": "rights_whole"
     },
     {
       "addr": 45068,
@@ -86023,7 +86023,7 @@
         0
       ],
       "labels": [
-        "cb023"
+        "rights_whole"
       ],
       "comment_inline": "Keep the whole string",
       "xref_summaries": [
@@ -86101,9 +86101,9 @@
       "comment_inline": "Got one: return it as a 1-char string",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cafc2",
+      "operand": "gets_char",
       "target": 44994,
-      "target_label": "cafc2"
+      "target_label": "gets_char"
     },
     {
       "addr": 45102,
@@ -86112,7 +86112,7 @@
         0
       ],
       "labels": [
-        "cb02e"
+        "inkeys_timeout"
       ],
       "comment_inline": "Timeout: empty string",
       "xref_summaries": [
@@ -86156,7 +86156,7 @@
         140
       ],
       "labels": [
-        "cb033"
+        "str_type_error"
       ],
       "comment_inline": "Type mismatch (shared)",
       "xref_summaries": [
@@ -86181,7 +86181,7 @@
         138
       ],
       "labels": [
-        "cb036"
+        "str_missing_comma"
       ],
       "comment_inline": "Missing , error (shared)",
       "xref_summaries": [
@@ -86225,9 +86225,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb033",
+      "operand": "str_type_error",
       "target": 45107,
-      "target_label": "cb033"
+      "target_label": "str_type_error"
     },
     {
       "addr": 45118,
@@ -86249,9 +86249,9 @@
       "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb036",
+      "operand": "str_missing_comma",
       "target": 45110,
-      "target_label": "cb036"
+      "target_label": "str_missing_comma"
     },
     {
       "addr": 45122,
@@ -86373,9 +86373,9 @@
       "comment_inline": "yes: use the default",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb061",
+      "operand": "mids_restore",
       "target": 45153,
-      "target_label": "cb061"
+      "target_label": "mids_restore"
     },
     {
       "addr": 45143,
@@ -86397,9 +86397,9 @@
       "comment_inline": "no: Missing ,",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb036",
+      "operand": "str_missing_comma",
       "target": 45110,
-      "target_label": "cb036"
+      "target_label": "str_missing_comma"
     },
     {
       "addr": 45147,
@@ -86437,7 +86437,7 @@
         189
       ],
       "labels": [
-        "cb061"
+        "mids_restore"
       ],
       "comment_inline": "Restore the string",
       "xref_summaries": [
@@ -86488,9 +86488,9 @@
       "comment_inline": "position 0: treat as 1",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb06f",
+      "operand": "mids_start",
       "target": 45167,
-      "target_label": "cb06f"
+      "target_label": "mids_start"
     },
     {
       "addr": 45161,
@@ -86514,9 +86514,9 @@
       "comment_inline": "yes: empty string",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb02e",
+      "operand": "inkeys_timeout",
       "target": 45102,
-      "target_label": "cb02e"
+      "target_label": "inkeys_timeout"
     },
     {
       "addr": 45165,
@@ -86543,7 +86543,7 @@
         44
       ],
       "labels": [
-        "cb06f"
+        "mids_start"
       ],
       "comment_inline": "Save the start offset",
       "xref_summaries": [
@@ -86635,9 +86635,9 @@
       "comment_inline": "no: use the available count",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "cb07f",
+      "operand": "mids_length",
       "target": 45183,
-      "target_label": "cb07f"
+      "target_label": "mids_length"
     },
     {
       "addr": 45181,
@@ -86659,7 +86659,7 @@
         42
       ],
       "labels": [
-        "cb07f"
+        "mids_length"
       ],
       "comment_inline": "Length",
       "xref_summaries": [
@@ -86683,9 +86683,9 @@
       "comment_inline": "zero: empty string",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb02e",
+      "operand": "inkeys_timeout",
       "target": 45102,
-      "target_label": "cb02e"
+      "target_label": "inkeys_timeout"
     },
     {
       "addr": 45187,
@@ -86695,7 +86695,7 @@
         6
       ],
       "labels": [
-        "loop_cb083"
+        "mids_copy_loop"
       ],
       "comment_inline": "Copy the substring to the front",
       "xref_summaries": [
@@ -86764,9 +86764,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb083",
+      "operand": "mids_copy_loop",
       "target": 45187,
-      "target_label": "loop_cb083"
+      "target_label": "mids_copy_loop"
     },
     {
       "addr": 45199,
@@ -86849,9 +86849,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0a1",
+      "operand": "strs_save_flag",
       "target": 45217,
-      "target_label": "cb0a1"
+      "target_label": "strs_save_flag"
     },
     {
       "addr": 45213,
@@ -86883,7 +86883,7 @@
         152
       ],
       "labels": [
-        "cb0a1"
+        "strs_save_flag"
       ],
       "comment_inline": "Save the hex/dec flag",
       "xref_summaries": [
@@ -86927,9 +86927,9 @@
       "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0bf",
+      "operand": "strs_type_error",
       "target": 45247,
-      "target_label": "cb0bf"
+      "target_label": "strs_type_error"
     },
     {
       "addr": 45224,
@@ -86985,9 +86985,9 @@
       "comment_inline": "Default conversion",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb0b9",
+      "operand": "strs_formatted",
       "target": 45241,
-      "target_label": "cb0b9"
+      "target_label": "strs_formatted"
     },
     {
       "addr": 45233,
@@ -87044,7 +87044,7 @@
         158
       ],
       "labels": [
-        "cb0b9"
+        "strs_formatted"
       ],
       "comment_inline": "Formatted conversion (@%)",
       "xref_summaries": [
@@ -87087,7 +87087,7 @@
         140
       ],
       "labels": [
-        "cb0bf"
+        "strs_type_error"
       ],
       "comment_inline": "Type mismatch error",
       "xref_summaries": [
@@ -87171,9 +87171,9 @@
       "comment_inline": "not a string: Type mismatch",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "cb0bf",
+      "operand": "strs_type_error",
       "target": 45247,
-      "target_label": "cb0bf"
+      "target_label": "strs_type_error"
     },
     {
       "addr": 45264,
@@ -87211,9 +87211,9 @@
       "comment_inline": "empty source: empty result",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0f5",
+      "operand": "strings_type",
       "target": 45301,
-      "target_label": "cb0f5"
+      "target_label": "strings_type"
     },
     {
       "addr": 45271,
@@ -87237,9 +87237,9 @@
       "comment_inline": "yes: empty result",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0f8",
+      "operand": "strings_empty",
       "target": 45304,
-      "target_label": "cb0f8"
+      "target_label": "strings_empty"
     },
     {
       "addr": 45275,
@@ -87263,9 +87263,9 @@
       "comment_inline": "count = 1: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0f5",
+      "operand": "strings_type",
       "target": 45301,
-      "target_label": "cb0f5"
+      "target_label": "strings_type"
     },
     {
       "addr": 45279,
@@ -87274,7 +87274,7 @@
         0
       ],
       "labels": [
-        "loop_cb0df"
+        "strings_append"
       ],
       "comment_inline": "Append another copy:",
       "xref_summaries": [
@@ -87295,7 +87295,7 @@
         6
       ],
       "labels": [
-        "loop_cb0e1"
+        "strings_copy_loop"
       ],
       "comment_inline": "source char...",
       "xref_summaries": [
@@ -87351,9 +87351,9 @@
       "comment_inline": "too long: error",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "cb0fb",
+      "operand": "strings_too_long",
       "target": 45307,
-      "target_label": "cb0fb"
+      "target_label": "strings_too_long"
     },
     {
       "addr": 45291,
@@ -87377,9 +87377,9 @@
       "comment_inline": "no: keep copying",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "loop_cb0e1",
+      "operand": "strings_copy_loop",
       "target": 45281,
-      "target_label": "loop_cb0e1"
+      "target_label": "strings_copy_loop"
     },
     {
       "addr": 45295,
@@ -87403,9 +87403,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_cb0df",
+      "operand": "strings_append",
       "target": 45279,
-      "target_label": "loop_cb0df"
+      "target_label": "strings_append"
     },
     {
       "addr": 45299,
@@ -87427,7 +87427,7 @@
         0
       ],
       "labels": [
-        "cb0f5"
+        "strings_type"
       ],
       "comment_inline": "string type",
       "xref_summaries": [
@@ -87457,7 +87457,7 @@
         54
       ],
       "labels": [
-        "cb0f8"
+        "strings_empty"
       ],
       "comment_inline": "empty result (length 0)",
       "xref_summaries": [
@@ -87489,7 +87489,7 @@
         156
       ],
       "labels": [
-        "cb0fb"
+        "strings_too_long"
       ],
       "comment_inline": "String too long error",
       "xref_summaries": [
@@ -87510,7 +87510,7 @@
         104
       ],
       "labels": [
-        "loop_cb0fe"
+        "no_such_fn_proc"
       ],
       "comment_inline": "No such FN/PROC: restore the text pointer",
       "xref_summaries": [
@@ -87709,9 +87709,9 @@
       "comment_inline": "end of program: not found",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "loop_cb0fe",
+      "operand": "no_such_fn_proc",
       "target": 45310,
-      "target_label": "loop_cb0fe"
+      "target_label": "no_such_fn_proc"
     },
     {
       "addr": 45344,
@@ -92326,9 +92326,9 @@
       "comment_inline": "return a one-character string",
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "cafc2",
+      "operand": "gets_char",
       "target": 44994,
-      "target_label": "cafc2"
+      "target_label": "gets_char"
     },
     {
       "addr": 46021,
