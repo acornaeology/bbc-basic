@@ -56518,9 +56518,9 @@
       "comment_inline": "yes: output the integer part",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9f25",
+      "operand": "nta_check_mag",
       "target": 40741,
-      "target_label": "c9f25"
+      "target_label": "nta_check_mag"
     },
     {
       "addr": 40663,
@@ -56607,9 +56607,9 @@
       "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9ee8",
+      "operand": "nta_store_format",
       "target": 40680,
-      "target_label": "c9ee8"
+      "target_label": "nta_store_format"
     },
     {
       "addr": 40678,
@@ -56629,7 +56629,7 @@
         55
       ],
       "labels": [
-        "c9ee8"
+        "nta_store_format"
       ],
       "comment_inline": "store the format type",
       "xref_summaries": [
@@ -56667,9 +56667,9 @@
       "comment_inline": "zero: check the format",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9ef5",
+      "operand": "nta_check_fixed",
       "target": 40693,
-      "target_label": "c9ef5"
+      "target_label": "nta_check_fixed"
     },
     {
       "addr": 40687,
@@ -56691,9 +56691,9 @@
       "comment_inline": "yes: cap at 10",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9ef9",
+      "operand": "nta_default_digits",
       "target": 40697,
-      "target_label": "c9ef9"
+      "target_label": "nta_default_digits"
     },
     {
       "addr": 40691,
@@ -56704,9 +56704,9 @@
       "comment_inline": "use the specified count",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9efb",
+      "operand": "nta_store_count",
       "target": 40699,
-      "target_label": "c9efb"
+      "target_label": "nta_store_count"
     },
     {
       "addr": 40693,
@@ -56715,7 +56715,7 @@
         2
       ],
       "labels": [
-        "c9ef5"
+        "nta_check_fixed"
       ],
       "comment_inline": "fixed format?",
       "xref_summaries": [
@@ -56737,9 +56737,9 @@
       "comment_inline": "yes: zero digits",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9efb",
+      "operand": "nta_store_count",
       "target": 40699,
-      "target_label": "c9efb"
+      "target_label": "nta_store_count"
     },
     {
       "addr": 40697,
@@ -56748,7 +56748,7 @@
         10
       ],
       "labels": [
-        "c9ef9"
+        "nta_default_digits"
       ],
       "comment_inline": "default to 10 digits",
       "xref_summaries": [
@@ -56769,7 +56769,7 @@
         56
       ],
       "labels": [
-        "c9efb"
+        "nta_store_count"
       ],
       "comment_inline": "store the digit count",
       "xref_summaries": [
@@ -56879,9 +56879,9 @@
       "comment_inline": "already a real",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9f0f",
+      "operand": "nta_sign",
       "target": 40719,
-      "target_label": "c9f0f"
+      "target_label": "nta_sign"
     },
     {
       "addr": 40716,
@@ -56905,7 +56905,7 @@
         161
       ],
       "labels": [
-        "c9f0f"
+        "nta_sign"
       ],
       "comment_inline": "sign of the value",
       "xref_summaries": [
@@ -56955,9 +56955,9 @@
       "comment_inline": "fixed/exponential zero",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9f1d",
+      "operand": "nta_output_zero",
       "target": 40733,
-      "target_label": "c9f1d"
+      "target_label": "nta_output_zero"
     },
     {
       "addr": 40728,
@@ -56992,7 +56992,7 @@
         159
       ],
       "labels": [
-        "c9f1d"
+        "nta_output_zero"
       ],
       "comment_inline": "output zero in fixed/exp format",
       "xref_summaries": [
@@ -57003,9 +57003,9 @@
       ],
       "type": "code",
       "mnemonic": "jmp",
-      "operand": "c9f9c",
+      "operand": "nta_check_fixed2",
       "target": 40860,
-      "target_label": "c9f9c"
+      "target_label": "nta_check_fixed2"
     },
     {
       "addr": 40736,
@@ -57015,7 +57015,7 @@
         166
       ],
       "labels": [
-        "loop_c9f20"
+        "nta_set_one"
       ],
       "comment_inline": "FWA = 1.0",
       "xref_summaries": [
@@ -57039,9 +57039,9 @@
       "comment_inline": "always taken (count a place)",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9f34",
+      "operand": "nta_count_up",
       "target": 40756,
-      "target_label": "c9f34"
+      "target_label": "nta_count_up"
     },
     {
       "addr": 40741,
@@ -57050,7 +57050,7 @@
         132
       ],
       "labels": [
-        "c9f25"
+        "nta_check_mag"
       ],
       "comment_inline": "exponent < 4 (value < 10)?",
       "xref_summaries": [
@@ -57072,9 +57072,9 @@
       "comment_inline": "yes: ready to convert",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9f39",
+      "operand": "nta_save_temp1",
       "target": 40761,
-      "target_label": "c9f39"
+      "target_label": "nta_save_temp1"
     },
     {
       "addr": 40745,
@@ -57085,9 +57085,9 @@
       "comment_inline": "exponent != 4: too big, divide",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9f31",
+      "operand": "nta_div10",
       "target": 40753,
-      "target_label": "c9f31"
+      "target_label": "nta_div10"
     },
     {
       "addr": 40747,
@@ -57122,9 +57122,9 @@
       "comment_inline": "yes: ready to convert",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9f39",
+      "operand": "nta_save_temp1",
       "target": 40761,
-      "target_label": "c9f39"
+      "target_label": "nta_save_temp1"
     },
     {
       "addr": 40753,
@@ -57134,7 +57134,7 @@
         162
       ],
       "labels": [
-        "c9f31"
+        "nta_div10"
       ],
       "comment_inline": "FWA = FWA / 10",
       "xref_summaries": [
@@ -57156,7 +57156,7 @@
         73
       ],
       "labels": [
-        "c9f34"
+        "nta_count_up"
       ],
       "comment_inline": "count one decimal place up",
       "xref_summaries": [
@@ -57192,7 +57192,7 @@
         53
       ],
       "labels": [
-        "c9f39"
+        "nta_save_temp1"
       ],
       "comment_inline": "Save FWA in TEMP1 (a fraction in [1,10)):",
       "xref_summaries": [
@@ -57294,9 +57294,9 @@
       "comment_inline": "do exponent/general",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9f5c",
+      "operand": "nta_round_const",
       "target": 40796,
-      "target_label": "c9f5c"
+      "target_label": "nta_round_const"
     },
     {
       "addr": 40778,
@@ -57320,9 +57320,9 @@
       "comment_inline": "negative: round to zero",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9fa0",
+      "operand": "nta_zero",
       "target": 40864,
-      "target_label": "c9fa0"
+      "target_label": "nta_zero"
     },
     {
       "addr": 40782,
@@ -57357,9 +57357,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c9f5c",
+      "operand": "nta_round_const",
       "target": 40796,
-      "target_label": "c9f5c"
+      "target_label": "nta_round_const"
     },
     {
       "addr": 40788,
@@ -57417,7 +57417,7 @@
         166
       ],
       "labels": [
-        "c9f5c"
+        "nta_round_const"
       ],
       "comment_inline": "Build a rounding constant 0.5e-n:",
       "xref_summaries": [
@@ -57503,9 +57503,9 @@
       "comment_inline": "no shift needed",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9f71",
+      "operand": "nta_point_temp1",
       "target": 40817,
-      "target_label": "c9f71"
+      "target_label": "nta_point_temp1"
     },
     {
       "addr": 40811,
@@ -57515,7 +57515,7 @@
         162
       ],
       "labels": [
-        "loop_c9f6b"
+        "nta_round_loop"
       ],
       "comment_inline": "rounding /= 10",
       "xref_summaries": [
@@ -57548,9 +57548,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9f6b",
+      "operand": "nta_round_loop",
       "target": 40811,
-      "target_label": "loop_c9f6b"
+      "target_label": "nta_round_loop"
     },
     {
       "addr": 40817,
@@ -57560,7 +57560,7 @@
         167
       ],
       "labels": [
-        "c9f71"
+        "nta_point_temp1"
       ],
       "comment_inline": "point at the saved value (TEMP1)",
       "xref_summaries": [
@@ -57636,7 +57636,7 @@
         48
       ],
       "labels": [
-        "loop_c9f7e"
+        "nta_renorm_loop"
       ],
       "comment_inline": "Re-normalise to [1,10): exponent",
       "xref_summaries": [
@@ -57671,9 +57671,9 @@
       "comment_inline": "in range",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9f92",
+      "operand": "nta_renorm_mant",
       "target": 40850,
-      "target_label": "c9f92"
+      "target_label": "nta_renorm_mant"
     },
     {
       "addr": 40836,
@@ -57762,9 +57762,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9f7e",
+      "operand": "nta_renorm_loop",
       "target": 40830,
-      "target_label": "loop_c9f7e"
+      "target_label": "nta_renorm_loop"
     },
     {
       "addr": 40850,
@@ -57773,7 +57773,7 @@
         49
       ],
       "labels": [
-        "c9f92"
+        "nta_renorm_mant"
       ],
       "comment_inline": "mantissa top byte",
       "xref_summaries": [
@@ -57808,9 +57808,9 @@
       "comment_inline": "yes: re-divide",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "loop_c9f20",
+      "operand": "nta_set_one",
       "target": 40736,
-      "target_label": "loop_c9f20"
+      "target_label": "nta_set_one"
     },
     {
       "addr": 40856,
@@ -57834,9 +57834,9 @@
       "comment_inline": "non-zero",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9fad",
+      "operand": "nta_check_general",
       "target": 40877,
-      "target_label": "c9fad"
+      "target_label": "nta_check_general"
     },
     {
       "addr": 40860,
@@ -57845,7 +57845,7 @@
         1
       ],
       "labels": [
-        "c9f9c"
+        "nta_check_fixed2"
       ],
       "comment_inline": "fixed format?",
       "xref_summaries": [
@@ -57867,9 +57867,9 @@
       "comment_inline": "output the value",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9fe6",
+      "operand": "nta_digit_pos",
       "target": 40934,
-      "target_label": "c9fe6"
+      "target_label": "nta_digit_pos"
     },
     {
       "addr": 40864,
@@ -57879,7 +57879,7 @@
         166
       ],
       "labels": [
-        "c9fa0"
+        "nta_zero"
       ],
       "comment_inline": "Clear FWA (zero / underflow):",
       "xref_summaries": [
@@ -57964,7 +57964,7 @@
         1
       ],
       "labels": [
-        "c9fad"
+        "nta_check_general"
       ],
       "comment_inline": "General format?",
       "xref_summaries": [
@@ -57999,9 +57999,9 @@
       "comment_inline": "output the value",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9fe6",
+      "operand": "nta_digit_pos",
       "target": 40934,
-      "target_label": "c9fe6"
+      "target_label": "nta_digit_pos"
     },
     {
       "addr": 40883,
@@ -58025,9 +58025,9 @@
       "comment_inline": "negative: leading zeros",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c9fc3",
+      "operand": "nta_check_fixed3",
       "target": 40899,
-      "target_label": "c9fc3"
+      "target_label": "nta_check_fixed3"
     },
     {
       "addr": 40887,
@@ -58051,9 +58051,9 @@
       "comment_inline": "no: use E-notation",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c9fe6",
+      "operand": "nta_digit_pos",
       "target": 40934,
-      "target_label": "c9fe6"
+      "target_label": "nta_digit_pos"
     },
     {
       "addr": 40891,
@@ -58106,9 +58106,9 @@
       "comment_inline": "output the value",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9fe6",
+      "operand": "nta_digit_pos",
       "target": 40934,
-      "target_label": "c9fe6"
+      "target_label": "nta_digit_pos"
     },
     {
       "addr": 40899,
@@ -58117,7 +58117,7 @@
         55
       ],
       "labels": [
-        "c9fc3"
+        "nta_check_fixed3"
       ],
       "comment_inline": "fixed format?",
       "xref_summaries": [
@@ -58152,9 +58152,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9fcf",
+      "operand": "nta_leading_zero",
       "target": 40911,
-      "target_label": "c9fcf"
+      "target_label": "nta_leading_zero"
     },
     {
       "addr": 40905,
@@ -58187,9 +58187,9 @@
       "comment_inline": "not far below: output",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9fe6",
+      "operand": "nta_digit_pos",
       "target": 40934,
-      "target_label": "c9fe6"
+      "target_label": "nta_digit_pos"
     },
     {
       "addr": 40911,
@@ -58198,7 +58198,7 @@
         48
       ],
       "labels": [
-        "c9fcf"
+        "nta_leading_zero"
       ],
       "comment_inline": "leading '0'",
       "xref_summaries": [
@@ -58268,7 +58268,7 @@
         73
       ],
       "labels": [
-        "loop_c9fdb"
+        "nta_frac_zeros_loop"
       ],
       "comment_inline": "leading zeros for the fraction:",
       "xref_summaries": [
@@ -58292,9 +58292,9 @@
       "comment_inline": "exponent reached 0: done",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c9fe4",
+      "operand": "nta_all_digits",
       "target": 40932,
-      "target_label": "c9fe4"
+      "target_label": "nta_all_digits"
     },
     {
       "addr": 40927,
@@ -58319,9 +58319,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9fdb",
+      "operand": "nta_frac_zeros_loop",
       "target": 40923,
-      "target_label": "loop_c9fdb"
+      "target_label": "nta_frac_zeros_loop"
     },
     {
       "addr": 40932,
@@ -58330,7 +58330,7 @@
         128
       ],
       "labels": [
-        "c9fe4"
+        "nta_all_digits"
       ],
       "comment_inline": "all digits (no point yet)",
       "xref_summaries": [
@@ -58350,7 +58350,7 @@
         78
       ],
       "labels": [
-        "c9fe6"
+        "nta_digit_pos"
       ],
       "comment_inline": "digit position counter",
       "xref_summaries": [
@@ -58377,7 +58377,7 @@
         160
       ],
       "labels": [
-        "loop_c9fe8"
+        "nta_emit_loop"
       ],
       "comment_inline": "Emit each digit:",
       "xref_summaries": [
@@ -58414,9 +58414,9 @@
       "comment_inline": "no",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c9ff4",
+      "operand": "nta_more_digits",
       "target": 40948,
-      "target_label": "c9ff4"
+      "target_label": "nta_more_digits"
     },
     {
       "addr": 40943,
@@ -58450,7 +58450,7 @@
         56
       ],
       "labels": [
-        "c9ff4"
+        "nta_more_digits"
       ],
       "comment_inline": "more digits?",
       "xref_summaries": [
@@ -58474,9 +58474,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c9fe8",
+      "operand": "nta_emit_loop",
       "target": 40936,
-      "target_label": "loop_c9fe8"
+      "target_label": "nta_emit_loop"
     },
     {
       "addr": 40952,
@@ -58509,9 +58509,9 @@
       "comment_inline": "yes: go to the exponent",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca015",
+      "operand": "nta_output_e",
       "target": 40981,
-      "target_label": "ca015"
+      "target_label": "nta_output_e"
     },
     {
       "addr": 40957,
@@ -58531,9 +58531,9 @@
       "comment_inline": "fixed: skip trimming",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca011",
+      "operand": "nta_check_exp",
       "target": 40977,
-      "target_label": "ca011"
+      "target_label": "nta_check_exp"
     },
     {
       "addr": 40960,
@@ -58554,7 +58554,7 @@
         136
       ],
       "labels": [
-        "loop_ca002"
+        "nta_trim_loop"
       ],
       "comment_inline": "previous char",
       "xref_summaries": [
@@ -58600,9 +58600,9 @@
       "comment_inline": "yes: trim it",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_ca002",
+      "operand": "nta_trim_loop",
       "target": 40962,
-      "target_label": "loop_ca002"
+      "target_label": "nta_trim_loop"
     },
     {
       "addr": 40970,
@@ -58624,9 +58624,9 @@
       "comment_inline": "trim it too",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "ca00f",
+      "operand": "nta_set_length",
       "target": 40975,
-      "target_label": "ca00f"
+      "target_label": "nta_set_length"
     },
     {
       "addr": 40974,
@@ -58644,7 +58644,7 @@
         54
       ],
       "labels": [
-        "ca00f"
+        "nta_set_length"
       ],
       "comment_inline": "set the trimmed length",
       "xref_summaries": [
@@ -58666,7 +58666,7 @@
         73
       ],
       "labels": [
-        "ca011"
+        "nta_check_exp"
       ],
       "comment_inline": "a decimal exponent to print?",
       "xref_summaries": [
@@ -58701,7 +58701,7 @@
         69
       ],
       "labels": [
-        "ca015"
+        "nta_output_e"
       ],
       "comment_inline": "output 'E'",
       "xref_summaries": [
@@ -58750,9 +58750,9 @@
       "comment_inline": "positive",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "ca028",
+      "operand": "nta_output_exp",
       "target": 41000,
-      "target_label": "ca028"
+      "target_label": "nta_output_exp"
     },
     {
       "addr": 40990,
@@ -58820,7 +58820,7 @@
         160
       ],
       "labels": [
-        "ca028"
+        "nta_output_exp"
       ],
       "comment_inline": "output the exponent in decimal",
       "xref_summaries": [
@@ -58894,9 +58894,9 @@
       "comment_inline": "negative: no pad",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "ca038",
+      "operand": "nta_field_pad",
       "target": 41016,
-      "target_label": "ca038"
+      "target_label": "nta_field_pad"
     },
     {
       "addr": 41013,
@@ -58919,7 +58919,7 @@
         0
       ],
       "labels": [
-        "ca038"
+        "nta_field_pad"
       ],
       "comment_inline": "any field width left?",
       "xref_summaries": [
@@ -87012,9 +87012,9 @@
       "comment_inline": "string result",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "c9ef9",
+      "operand": "nta_default_digits",
       "target": 40697,
-      "target_label": "c9ef9"
+      "target_label": "nta_default_digits"
     },
     {
       "addr": 45238,
