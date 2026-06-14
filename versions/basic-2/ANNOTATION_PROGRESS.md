@@ -1,19 +1,19 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 17 of 7,129 placeholders left (0.2 %);
-depths 0–8 complete, depth 9 in progress (only assembler_exit left). (~8 strays left for the
-final sweep — see the stray-partial note above.)**
+**STATUS: COMPLETE — 0 of 7,129 placeholders left (0.0 %); all
+307 subroutines fully substantive; depths 0–9 done; the 9 stray partial
+placeholders have been swept. Every instruction now carries an
+intention-revealing comment. Verify byte-identical + lint + comments
+check all pass.**
 
-**Stray partial placeholders:** the status tool counts an instruction
-as a placeholder only when its *whole* rendered comment is `...`. A few
-instructions carry a sub-instruction `'...'` d.comment concatenated with
-real text (an artefact of the first pass placing comments at mid-
-instruction byte addresses), so they render as e.g. `...  Recover x` and
-are NOT counted. As of depth 4 there are ~12 such strays (source `...`
-count 946 vs counted 934). Find them by diffing `grep -c ",'\.\.\.'"`
-against the tool count; clean by deleting the redundant d.comment line
-(as done for fn_point &AB56/&AB5B). Worth a final sweep once the counted
-placeholders are gone.
+**Stray partial placeholders (resolved 2026-06-14):** the status tool
+counted an instruction as a placeholder only when its *whole* rendered
+comment was `...`. A few instructions carried a sub-instruction `'...'`
+d.comment concatenated with real text (an artefact of the first pass
+placing comments at mid-instruction byte addresses). All such strays
+(9 at the end of the pass) have been deleted. To check none have crept
+back: `grep -cE "d\.comment\(0x[0-9a-f]+, '\.\.\.'" <driver>` should be
+0, matching the tool count.
 
 **Descriptor byte 0 = data offset, not dimension count.** Both
 `index_array` and `stmt_dim` were first-pass-mislabelled here: byte 0 of
@@ -25,12 +25,11 @@ literal `...` placeholder wherever it had nothing to say. At the start
 of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 `...` comment — coverage theatre, not annotation.
 
-**Resume here:** run `uv run tools/annotation_status.py` for the live
-worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 9 last: `assembler_exit` (17). After that, every counted
-placeholder is gone — only the stray partial placeholders remain for the
-final sweep (diff `grep -cE "d\.comment\(0x[0-9a-f]+, '\.\.\.'"` against
-the tool count).
+**Nothing left to resume:** `uv run tools/annotation_status.py` reports
+0 placeholders across all 307 subroutines. The semantic quality pass is
+finished. Any future work is review/refinement of existing comments, not
+placeholder replacement — re-run the status tool to confirm before
+assuming there is work to do.
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
 unstack_value_to_var, iwa_divide, check_end_of_statement, iwa_test_var,
 stmt_print, asm_opcode_add4, iwa_add, fn_eval, iwa_rsub, fn_instr,
@@ -267,4 +266,6 @@ placeholders goes first.
 | 2026-06-14 | depth 7: stmt_delete | stmt_delete (DELETE range) + shared start/step parser + TOP/PAGE pointer helpers | 15 | 96 |
 | 2026-06-14 | depth 7 complete | stmt_read (DATA-pointer advance), stmt_local (frame count bump) | 8 | 88 |
 | 2026-06-14 | depth 8: asm_parse_mnemonic | asm_parse_mnemonic (pack 3 letters to 5-bit code, opcode lookup, P%/O% destination, branch offset target-(P%+2), indexed/indirect modes) | 36 | 52 |
-| 2026-06-14 | depth 8 complete | stmt_goto (+ON ERROR), stmt_on (computed GOTO/GOSUB), stmt_proc, stmt_restore, stmt_gosub | 35 | 17 | — |
+| 2026-06-14 | depth 8 complete | stmt_goto (+ON ERROR), stmt_on (computed GOTO/GOSUB), stmt_proc, stmt_restore, stmt_gosub | 35 | 17 |
+| 2026-06-14 | depth 9: assembler_exit | assembler_exit (inline-assembler driver/listing: OPT mode, hex byte listing, source de-tokenise; +1 OPT errors-bit fix) | 17 | 0 |
+| 2026-06-14 | final sweep | deleted the 9 stray partial placeholders (find_def msg, asm_parse_mnemonic, sub_cae3a, fn_point, fn_strs) | 0 | 0 | — |
