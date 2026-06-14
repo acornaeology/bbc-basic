@@ -123,3 +123,4 @@ placeholders goes first.
 | 2026-06-14 | depth 1: error/DATA walkers | find_error_line (set ERL, ON ERROR handler dispatch), next_data_item | 30 | 1354 | — |
 | 2026-06-14 | depth 1: output helpers | output_top_digit, output_char, output_byte_decimal, print_hex_byte, fn_usr, encode_line_number tail | 17 | 1337 | — |
 | 2026-06-14 | depth 1 complete | read_string_literal, stmt_until, stmt_oscli, stmt_close, validate_var_name, stack_real/integer/string, stmt_ptr | 18 | 1319 | — |
+| 2026-06-14 | depth 2: number_to_ascii | number_to_ascii (PRINT number formatter: round, format-select, trim, exponent) | 49 | 1270 | — |

@@ -54508,7 +54508,7 @@
         133,
         54
       ],
-      "comment_inline": "...",
+      "comment_inline": "(length = 0)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_strbuf_len",
@@ -54729,7 +54729,7 @@
         208,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "always taken (count a place)",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9f34",
@@ -54907,7 +54907,7 @@
         133,
         39
       ],
-      "comment_inline": "...",
+      "comment_inline": "stash the rounding byte,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -54921,7 +54921,7 @@
         133,
         163
       ],
-      "comment_inline": "...",
+      "comment_inline": "pack the mantissa",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "fwa_pack_temp1",
@@ -54947,7 +54947,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -55023,7 +55023,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store the digit count)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -55071,7 +55071,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -55095,7 +55095,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -55132,7 +55132,7 @@
         169,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "mantissa = &A0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&a0"
@@ -55143,7 +55143,7 @@
         133,
         49
       ],
-      "comment_inline": "...",
+      "comment_inline": "(MSB)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_m1",
@@ -55156,7 +55156,7 @@
         169,
         131
       ],
-      "comment_inline": "...",
+      "comment_inline": "exponent = &83 (0.5),",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#&83"
@@ -55167,7 +55167,7 @@
         133,
         48
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwa_exp",
@@ -55193,7 +55193,7 @@
         240,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "no shift needed",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9f71",
@@ -55288,7 +55288,7 @@
         165,
         39
       ],
-      "comment_inline": "...",
+      "comment_inline": "the saved rnd byte...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_var_type",
@@ -55301,7 +55301,7 @@
         133,
         66
       ],
-      "comment_inline": "...",
+      "comment_inline": "(into FWB)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fwb_rnd",
@@ -55387,7 +55387,7 @@
         102,
         50
       ],
-      "comment_inline": "...",
+      "comment_inline": "m2,",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m2",
@@ -55400,7 +55400,7 @@
         102,
         51
       ],
-      "comment_inline": "...",
+      "comment_inline": "m3,",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m3",
@@ -55413,7 +55413,7 @@
         102,
         52
       ],
-      "comment_inline": "...",
+      "comment_inline": "m4,",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_m4",
@@ -55426,7 +55426,7 @@
         102,
         53
       ],
-      "comment_inline": "...",
+      "comment_inline": "rnd",
       "type": "code",
       "mnemonic": "ror",
       "operand": "zp_fwa_rnd",
@@ -55593,7 +55593,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -55604,7 +55604,7 @@
         133,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "decimal exponent = 0,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_dec_exp",
@@ -55617,7 +55617,7 @@
         165,
         78
       ],
-      "comment_inline": "...",
+      "comment_inline": "original digit count...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l004e",
@@ -55630,7 +55630,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -55643,7 +55643,7 @@
         230,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "plus one",
       "type": "code",
       "mnemonic": "inc",
       "operand": "zp_general_1",
@@ -55676,7 +55676,7 @@
         197,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "is the format General (1)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_general",
@@ -55754,7 +55754,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "within range: clear the exponent,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -55765,7 +55765,7 @@
         133,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_dec_exp",
@@ -55777,7 +55777,7 @@
       "bytes": [
         200
       ],
-      "comment_inline": "...",
+      "comment_inline": "one more digit",
       "type": "code",
       "mnemonic": "iny"
     },
@@ -55831,7 +55831,7 @@
         201,
         2
       ],
-      "comment_inline": "...",
+      "comment_inline": "fixed format (2)?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#2"
@@ -55842,7 +55842,7 @@
         240,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9fcf",
@@ -55855,7 +55855,7 @@
         169,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "(General marker)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#1"
@@ -55877,7 +55877,7 @@
         208,
         23
       ],
-      "comment_inline": "...",
+      "comment_inline": "not far below: output",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c9fe6",
@@ -55911,7 +55911,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "emit it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -55936,7 +55936,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "emit it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -55982,7 +55982,7 @@
         240,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "exponent reached 0: done",
       "type": "code",
       "mnemonic": "beq",
       "operand": "c9fe4",
@@ -56025,7 +56025,7 @@
       "labels": [
         "c9fe4"
       ],
-      "comment_inline": "...",
+      "comment_inline": "all digits (no point yet)",
       "xref_summaries": [
         "&9fe4 referenced 1 time by &9fdd"
       ],
@@ -56129,7 +56129,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "emit it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -56189,7 +56189,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "general 1 (E)?",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -56199,7 +56199,7 @@
         240,
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "yes: go to the exponent",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca015",
@@ -56211,7 +56211,7 @@
       "bytes": [
         136
       ],
-      "comment_inline": "...",
+      "comment_inline": "general 2 (fixed)?",
       "type": "code",
       "mnemonic": "dey"
     },
@@ -56221,7 +56221,7 @@
         240,
         17
       ],
-      "comment_inline": "...",
+      "comment_inline": "fixed: skip trimming",
       "type": "code",
       "mnemonic": "beq",
       "operand": "ca011",
@@ -56249,7 +56249,7 @@
       "labels": [
         "loop_ca002"
       ],
-      "comment_inline": "...",
+      "comment_inline": "previous char",
       "xref_summaries": [
         "&a002 referenced 1 time by &a008"
       ],
@@ -56414,7 +56414,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "emit it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -56465,7 +56465,7 @@
         102,
         160
       ],
-      "comment_inline": "...",
+      "comment_inline": "emit it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "output_char",
@@ -56487,7 +56487,7 @@
         169,
         0
       ],
-      "comment_inline": "...",
+      "comment_inline": "0...",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#0"
@@ -56498,7 +56498,7 @@
         229,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus the exponent",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_dec_exp",
@@ -56571,7 +56571,7 @@
         164,
         73
       ],
-      "comment_inline": "...",
+      "comment_inline": "check the exponent sign",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "zp_dec_exp",
@@ -56584,7 +56584,7 @@
         48,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "negative: no pad",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "ca038",
@@ -56614,7 +56614,7 @@
       "labels": [
         "ca038"
       ],
-      "comment_inline": "...",
+      "comment_inline": "any field width left?",
       "xref_summaries": [
         "&a038 referenced 1 time by &a033"
       ],
