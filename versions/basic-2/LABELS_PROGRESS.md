@@ -1,8 +1,10 @@
 # BBC BASIC II annotation — label-naming pass
 
-**STATUS: in progress — 397 auto-generated labels remaining (of 864).
-Goal: give every dasmos auto-named label (`cXXXX`, `loop_cXXXX`,
-`sub_cXXXX`, `lXXXX`) a semantically meaningful, globally unique name.**
+**STATUS: COMPLETE — all 864 dasmos auto-generated code labels named,
+plus the ~50 auto-generated zero-page/RAM workspace labels. Every label
+in the disassembly now has a semantically meaningful, globally unique
+name. Verification byte-identical; `labels classify 2` reports 0;
+`driver sort --check` clean.**
 
 This is the follow-on to the inline-comment pass and the banner pass
 (both COMPLETE — see ANNOTATION_PROGRESS.md / BANNER_PROGRESS.md). All
@@ -100,25 +102,32 @@ label), so a clash is caught immediately.
 | 2026-06-14 | integer +/-/*/DIV operators | 29 | 443 | 0ff433b |
 | 2026-06-14 | eval_power + hex convert | 14 | 429 | 8e99038 |
 | 2026-06-14 | number_to_ascii | 32 | 397 | 425c2cb |
+| 2026-06-14 | parse_number/exponent/output | 21 | 376 | 95cb707 |
+| 2026-06-14 | FP normalise/int-float/split | 22 | 354 | 6b8cd0e |
+| 2026-06-14 | FP add/multiply/round | 27 | 327 | 3504126 |
+| 2026-06-14 | fp_divide | 12 | 315 | 65eaece |
+| 2026-06-14 | SQR/LN/ASN/ATN/SIN/EXP | 32 | 283 | 676f917 |
+| 2026-06-14 | SGN/VAL/INT/INSTR + misc fns | 28 | 255 | c955272 |
+| 2026-06-14 | eval_factor/negate/string-literal | 29 | 226 | b66c509 |
+| 2026-06-14 | string functions + RND loops | 23 | 203 | 21413f2 |
+| 2026-06-14 | find_def + call_proc_fn | 24 | 179 | f3ff960 |
+| 2026-06-14 | LOCAL/load/SOUND/WIDTH/print | 30 | 149 | 4dc23a7 |
+| 2026-06-14 | LIST/NEXT/FOR | 35 | 114 | 9a9afe3 |
+| 2026-06-14 | GOTO/ON/find_line/INPUT# | 29 | 85 | dcf2907 |
+| 2026-06-14 | INPUT/READ/DATA/edit/file (final code) | 85 | 0 | (4dc23a7..) |
+| 2026-06-14 | workspace/zero-page/frame-field labels | 50 | 0 | 3aeb5f2 |
 
 ## Resume here
 
-Done through the inline assembler (&8063-&8831). The append +
-`driver sort -i` recipe is confirmed (byte-identical each batch).
+**COMPLETE — nothing remains.** All auto-generated labels (cXXXX,
+loop_cXXXX, sub_cXXXX, lXXXX) have been replaced with meaningful,
+globally unique names, working address-ascending routine by routine.
+`uv run fantasm labels classify 2` reports 0; the driver is
+address-sorted and reassembles byte-identical.
 
-Next routine in address order: **output_byte_decimal (&A055)** / parse_number (&A099), then
-eval_after_eq, expect_eq, check_end_of_statement (&9859, 12), stmt_if,
-print_line_number, find_program_line, iwa_divide, the iwa_* arithmetic,
-the eval_* operators, number_to_ascii (&9EE8, 32), parse_number, the FP
-routines, the fn_* functions, the remaining stmt_* handlers. Regenerate
-the live,
-comment-enriched worklist with:
-
-```
-uv run fantasm labels classify 2 --no-header --as tsv > /tmp/labels_classify.tsv
-# then the python snippet in the conversation builds /tmp/labels_enriched.tsv
-```
-
-`/tmp/labels_enriched.tsv` columns: routine, addr, auto-name, category,
-refs, inline-comment — a starting hint only; read the full routine body
-before naming (see step 1).
+Naming conventions used: subroutine-category labels got standalone
+descriptive names; local branch/loop/tail labels were prefixed by their
+routine (tok_*, asm_*, pvr_*, nta_*, callpf_*, etc.) for global
+uniqueness; shared error/return points got domain names (syntax_error,
+no_for_error, mistake_error, …); zero-page extensions followed the
+existing zp_* scheme.
