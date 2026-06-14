@@ -2921,6 +2921,10 @@ d.subroutine(
 whose name starts at (zp_general)+1. Shares the chain walk with
 find_variable; returns a pointer to the body, or "not found".
 """,
+    on_entry={'(zp_general) (&37/&38)': 'the reference (PROC/FN token at +1)',
+              'zp_fileblk (&39)': 'the length of the name being sought'},
+    on_exit={'zp_iwa (&2A/&2B)': 'pointer to the definition body (when found)',
+             'Z': 'clear if found, set if not present'},
 )
 # find_proc_fn (&945B) remaining
 d.comment(0x945b, 'Look at the PROC/FN token', align=Align.INLINE)
@@ -2941,6 +2945,10 @@ linked lists via the variable table; the chain is walked comparing
 the rest of the name. On a match, returns a pointer to the value in
 zp_iwa/zp_iwa_1; otherwise reports it is not present.
 """,
+    on_entry={'(zp_general) (&37/&38)': 'the variable reference (name at +1)',
+              'zp_fileblk (&39)': 'the length of the name being sought'},
+    on_exit={'zp_iwa (&2A/&2B)': 'pointer to the value (when found)',
+             'Z': 'clear if found, set if not present'},
 )
 # find_variable (&9469): walk the name's chain looking for a match
 d.comment(
@@ -3044,7 +3052,15 @@ d.comment(0x94f8, 'FN list index (&F8)', align=Align.INLINE)
 d.comment(0x94fa, 'use the FN chain', align=Align.INLINE)
 
 d.subroutine(0x94fc, 'create_variable', title='Create a new variable',
-             description='Allocate a new entry for a variable that does not yet exist.')
+             description='Append a new variable entry at VARTOP: walk to the end '
+                         'of the per-letter chain, link in the new node, and copy '
+                         'the name into it. The caller initialises the value bytes '
+                         '(clear_value_bytes) and advances VARTOP (sub_c9539).',
+             on_entry={'(zp_general) (&37/&38)': 'the variable reference (name at +1)',
+                       'zp_fileblk (&39)': 'the name length',
+                       'zp_vartop (&02/&03)': 'top of the variable heap'},
+             on_exit={'(zp_vartop)': 'a new linked entry with its name',
+                      'Y': 'offset of the last name byte in the entry'})
 
 # create_variable (&94FC): append a new entry to the name's chain
 d.comment(0x94fc, 'First character of the name', align=Align.INLINE)
@@ -3110,7 +3126,15 @@ d.comment(0x9553, 'No room error', align=Align.INLINE)
 d.comment(0x9556, 'Commit the new VARTOP', align=Align.INLINE)
 d.comment(0x9558, 'Return', align=Align.INLINE)
 d.subroutine(0x9559, 'validate_var_name', title='Validate / measure a variable name',
-             description='Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.')
+             description='Scan the variable name at (zp_general)+1, stopping at '
+                         'the first non-name character (letters, digits and _ are '
+                         'accepted; a leading digit is rejected, giving an empty '
+                         'name). Advances X as the running text offset.',
+             on_entry={'(zp_general) (&37/&38)': 'a pointer to the name (name at +1)',
+                       'X': 'the current text offset'},
+             on_exit={'Y': 'one past the name (Y-1 = length; Y=1 means invalid)',
+                      'X': 'the text offset advanced past the name',
+                      'A': 'the terminating non-name character'})
 
 d.comment(0x9559, 'Validate the name from offset 1:', align=Align.INLINE)
 d.comment(0x955b, 'character...', align=Align.INLINE)

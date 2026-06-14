@@ -4105,6 +4105,14 @@ l848a = sub_c847b+15
 ; Search the PROC (token &F2) or FN linked list for a definition whose name starts at
 ; (zp_general)+1. Shares the chain walk with find_variable; returns a pointer to the
 ; body, or "not found".
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the reference (PROC/FN token at +1)
+;     ZP_FILEBLK (&39): the length of the name being sought
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): pointer to the definition body (when found)
+;     Z: clear if found, set if not present
 ; &945b referenced 1 time by &b1e1
 .find_proc_fn
     ldy #1                                                            ; 945b: a0 01       ..       ; Look at the PROC/FN token
@@ -4121,6 +4129,14 @@ l848a = sub_c847b+15
 ; character selects one of the per-letter linked lists via the variable table; the chain
 ; is walked comparing the rest of the name. On a match, returns a pointer to the value in
 ; zp_iwa/zp_iwa_1; otherwise reports it is not present.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the variable reference (name at +1)
+;     ZP_FILEBLK (&39): the length of the name being sought
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): pointer to the value (when found)
+;     Z: clear if found, set if not present
 ; Each variable chain (one per initial letter) is a list of
 ; entries: a 2-byte link to the next, the rest of the name, a
 ; NUL, then the value. The walk alternates two node pointers
@@ -4237,7 +4253,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Create a new variable
 ;
-; Allocate a new entry for a variable that does not yet exist.
+; Append a new variable entry at VARTOP: walk to the end of the per-letter chain, link in
+; the new node, and copy the name into it. The caller initialises the value bytes
+; (clear_value_bytes) and advances VARTOP (sub_c9539).
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): the variable reference (name at +1)
+;     ZP_FILEBLK (&39): the name length
+;     ZP_VARTOP (&02/&03): top of the variable heap
+;
+; On Exit:
+;     (ZP_VARTOP): a new linked entry with its name
+;     Y: offset of the last name byte in the entry
 ; &94fc referenced 3 times by &8bd5, &9174, &9589
 .create_variable
     ldy #1                                                            ; 94fc: a0 01       ..       ; First character of the name
@@ -4334,8 +4361,18 @@ l848a = sub_c847b+15
 ; ***************************************************************************************
 ; Validate / measure a variable name
 ;
-; Scan a variable name, counting its characters (letters, digits, _); a leading digit is
-; rejected.
+; Scan the variable name at (zp_general)+1, stopping at the first non-name character
+; (letters, digits and _ are accepted; a leading digit is rejected, giving an empty
+; name). Advances X as the running text offset.
+;
+; On Entry:
+;     (ZP_GENERAL) (&37/&38): a pointer to the name (name at +1)
+;     X: the current text offset
+;
+; On Exit:
+;     Y: one past the name (Y-1 = length; Y=1 means invalid)
+;     X: the text offset advanced past the name
+;     A: the terminating non-name character
 ; &9559 referenced 1 time by &914b
 .validate_var_name
     ldy #1                                                            ; 9559: a0 01       ..       ; Validate the name from offset 1:

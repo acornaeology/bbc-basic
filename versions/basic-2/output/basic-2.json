@@ -2143,6 +2143,14 @@
       "name": "find_proc_fn",
       "title": "Find a PROC or FN definition by name",
       "description": "Search the PROC (token &F2) or FN linked list for a definition\nwhose name starts at (zp_general)+1. Shares the chain walk with\nfind_variable; returns a pointer to the body, or \"not found\".\n",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "the reference (PROC/FN token at +1)",
+        "zp_fileblk (&39)": "the length of the name being sought"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "pointer to the definition body (when found)",
+        "Z": "clear if found, set if not present"
+      },
       "fall_through": true
     },
     {
@@ -2150,13 +2158,30 @@
       "name": "find_variable",
       "title": "Find a variable by name",
       "description": "Search the heap for a variable whose name starts at\n(zp_general)+1. The initial character selects one of the per-letter\nlinked lists via the variable table; the chain is walked comparing\nthe rest of the name. On a match, returns a pointer to the value in\nzp_iwa/zp_iwa_1; otherwise reports it is not present.\n",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "the variable reference (name at +1)",
+        "zp_fileblk (&39)": "the length of the name being sought"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "pointer to the value (when found)",
+        "Z": "clear if found, set if not present"
+      },
       "fall_through": true
     },
     {
       "addr": 38140,
       "name": "create_variable",
       "title": "Create a new variable",
-      "description": "Allocate a new entry for a variable that does not yet exist."
+      "description": "Append a new variable entry at VARTOP: walk to the end of the per-letter chain, link in the new node, and copy the name into it. The caller initialises the value bytes (clear_value_bytes) and advances VARTOP (sub_c9539).",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "the variable reference (name at +1)",
+        "zp_fileblk (&39)": "the name length",
+        "zp_vartop (&02/&03)": "top of the variable heap"
+      },
+      "on_exit": {
+        "(zp_vartop)": "a new linked entry with its name",
+        "Y": "offset of the last name byte in the entry"
+      }
     },
     {
       "addr": 38193,
@@ -2179,7 +2204,16 @@
       "addr": 38233,
       "name": "validate_var_name",
       "title": "Validate / measure a variable name",
-      "description": "Scan a variable name, counting its characters (letters, digits, _); a leading digit is rejected.",
+      "description": "Scan the variable name at (zp_general)+1, stopping at the first non-name character (letters, digits and _ are accepted; a leading digit is rejected, giving an empty name). Advances X as the running text offset.",
+      "on_entry": {
+        "(zp_general) (&37/&38)": "a pointer to the name (name at +1)",
+        "X": "the current text offset"
+      },
+      "on_exit": {
+        "Y": "one past the name (Y-1 = length; Y=1 means invalid)",
+        "X": "the text offset advanced past the name",
+        "A": "the terminating non-name character"
+      },
       "fall_through": true
     },
     {
