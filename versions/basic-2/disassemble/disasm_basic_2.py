@@ -343,6 +343,25 @@ HANDLER_INFO = {
 # symbolically against the first declaration.
 _rom_bytes = Path(_rom_filepath).read_bytes()
 _declared_handlers: dict[int, str] = {}
+# --- expression evaluator: the operator-precedence ladder ------------
+# eval_expr enters at the lowest precedence and each level calls the
+# next-higher one for its operands, then applies its own operators in a
+# loop. Each level returns the next (unconsumed) operator token in X and
+# the result type in A / zp_var_type. Level 1 (eval_factor) handles
+# unary operators, parentheses, literals and functions.
+#
+# Shared contract for the precedence-climbing levels (2-7): read the
+# (sub)expression at PtrB and return a typed value plus the lookahead.
+EVAL_LEVEL_ON_ENTRY = {
+    'zp_text_ptr2 (&19/&1A)': 'PtrB at the (sub)expression to evaluate',
+    'zp_text_ptr2_off (&1B)': 'offset into the text',
+}
+EVAL_LEVEL_ON_EXIT = {
+    'A': 'result type: <0 = float in fwa, >0 = integer in iwa, 0 = string',
+    'zp_iwa / zp_fwa / string_work (&0600)': 'the value, selected by the type in A',
+    'X': 'the next unconsumed operator token (lookahead)',
+    'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
+}
 """dasmos driver for Acorn BBC BASIC II.
 
 BBC BASIC II is a 16 kB sideways language ROM mapped at &8000-&BFFF
@@ -4266,25 +4285,6 @@ d.comment(0x9b21, 'PtrA high...', align=Align.INLINE)
 d.comment(0x9b23, '...to PtrB high', align=Align.INLINE)
 d.comment(0x9b25, 'PtrA offset...', align=Align.INLINE)
 d.comment(0x9b27, '...to PtrB offset', align=Align.INLINE)
-# --- expression evaluator: the operator-precedence ladder ------------
-# eval_expr enters at the lowest precedence and each level calls the
-# next-higher one for its operands, then applies its own operators in a
-# loop. Each level returns the next (unconsumed) operator token in X and
-# the result type in A / zp_var_type. Level 1 (eval_factor) handles
-# unary operators, parentheses, literals and functions.
-#
-# Shared contract for the precedence-climbing levels (2-7): read the
-# (sub)expression at PtrB and return a typed value plus the lookahead.
-EVAL_LEVEL_ON_ENTRY = {
-    'zp_text_ptr2 (&19/&1A)': 'PtrB at the (sub)expression to evaluate',
-    'zp_text_ptr2_off (&1B)': 'offset into the text',
-}
-EVAL_LEVEL_ON_EXIT = {
-    'A': 'result type: <0 = float in fwa, >0 = integer in iwa, 0 = string',
-    'zp_iwa / zp_fwa / string_work (&0600)': 'the value, selected by the type in A',
-    'X': 'the next unconsumed operator token (lookahead)',
-    'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
-}
 for _addr, _name, _title, _desc in [
     (0x9b29, 'eval_or_eor', 'Evaluator level 7: OR, EOR',
      'Lowest precedence: bitwise OR (&84) and EOR (&82) on integers.'),
