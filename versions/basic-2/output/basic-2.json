@@ -94907,7 +94907,7 @@
       "labels": [
         "cb6a3"
       ],
-      "comment_inline": "...",
+      "comment_inline": "string/array: not a loop variable",
       "xref_summaries": [
         "&b6a3 referenced 1 time by &b698"
       ],
@@ -95015,7 +95015,7 @@
         242,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "match the frame address high?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l04f2,x",
@@ -95055,7 +95055,7 @@
         243,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "match the frame type?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "l04f3,x",
@@ -95109,7 +95109,7 @@
         233,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus 15 bytes,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&0f"
@@ -95119,7 +95119,7 @@
       "bytes": [
         170
       ],
-      "comment_inline": "...",
+      "comment_inline": "new frame index,",
       "type": "code",
       "mnemonic": "tax"
     },
@@ -95129,7 +95129,7 @@
         134,
         38
       ],
-      "comment_inline": "...",
+      "comment_inline": "update the FOR level",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_for_level",
@@ -95247,7 +95247,7 @@
         133,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "address high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_iwa_1",
@@ -95371,7 +95371,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "variable byte 1",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -95433,7 +95433,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "variable byte 2",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -95495,7 +95495,7 @@
         177,
         42
       ],
-      "comment_inline": "...",
+      "comment_inline": "variable byte 3",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_iwa),y",
@@ -95556,7 +95556,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry for the subtract",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -95607,7 +95607,7 @@
         250,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus limit byte 1",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fa,x",
@@ -95647,7 +95647,7 @@
         251,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus limit byte 2",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fb,x",
@@ -95683,7 +95683,7 @@
         252,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus limit byte 3",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "l04fc,x",
@@ -95709,7 +95709,7 @@
         5,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "OR byte 1,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_general_1",
@@ -95722,7 +95722,7 @@
         5,
         57
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2 (all zero => equal)",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_fileblk",
@@ -95758,7 +95758,7 @@
         247,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "XOR the step sign,",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l04f7,x",
@@ -95772,7 +95772,7 @@
         252,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "XOR the limit sign,",
       "type": "code",
       "mnemonic": "eor",
       "operand": "l04fc,x",
@@ -95785,7 +95785,7 @@
         16,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "sign positive: use the carry test",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "cb73f",
@@ -95874,7 +95874,7 @@
         255,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "loop-back pointer high",
       "type": "code",
       "mnemonic": "lda",
       "operand": "l04ff,x",
@@ -95900,7 +95900,7 @@
         133,
         12
       ],
-      "comment_inline": "...",
+      "comment_inline": "text pointer high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_text_ptr_1",
@@ -95965,7 +95965,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "set carry,",
       "type": "code",
       "mnemonic": "sec"
     },
@@ -95975,7 +95975,7 @@
         233,
         15
       ],
-      "comment_inline": "...",
+      "comment_inline": "minus 15 bytes,",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#&0f"
@@ -95986,7 +95986,7 @@
         133,
         38
       ],
-      "comment_inline": "...",
+      "comment_inline": "pop the frame",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_for_level",
@@ -96012,7 +96012,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "sync the program offset",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -96039,7 +96039,7 @@
         201,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "','?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&2c"
@@ -96112,7 +96112,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry,",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -96122,7 +96122,7 @@
         105,
         244
       ],
-      "comment_inline": "...",
+      "comment_inline": "level + &F4,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&f4"
@@ -96133,7 +96133,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -96146,7 +96146,7 @@
         169,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &05,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -96157,7 +96157,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high (STEP address)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -96197,7 +96197,7 @@
         133,
         55
       ],
-      "comment_inline": "...",
+      "comment_inline": "var address low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general",
@@ -96210,7 +96210,7 @@
         165,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_iwa_1",
@@ -96223,7 +96223,7 @@
         133,
         56
       ],
-      "comment_inline": "...",
+      "comment_inline": "var address high",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_general_1",
@@ -96263,7 +96263,7 @@
         133,
         39
       ],
-      "comment_inline": "...",
+      "comment_inline": "stash the level in &27,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_var_type",
@@ -96275,7 +96275,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "...",
+      "comment_inline": "clear carry,",
       "type": "code",
       "mnemonic": "clc"
     },
@@ -96285,7 +96285,7 @@
         105,
         249
       ],
-      "comment_inline": "...",
+      "comment_inline": "level + &F9,",
       "type": "code",
       "mnemonic": "adc",
       "operand": "#&f9"
@@ -96296,7 +96296,7 @@
         133,
         75
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer low,",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr",
@@ -96309,7 +96309,7 @@
         169,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "page &05,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#5"
@@ -96320,7 +96320,7 @@
         133,
         76
       ],
-      "comment_inline": "...",
+      "comment_inline": "pointer high (LIMIT address)",
       "type": "code",
       "mnemonic": "sta",
       "operand": "zp_fp_ptr_1",
@@ -96374,7 +96374,7 @@
         48,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "negative step",
       "type": "code",
       "mnemonic": "bmi",
       "operand": "cb79d",
