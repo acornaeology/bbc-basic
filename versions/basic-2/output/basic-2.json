@@ -34463,7 +34463,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "push it for later",
       "type": "code",
       "mnemonic": "pha"
     },
@@ -34526,7 +34526,7 @@
         208,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "addr not &xxFF: skip the check",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c93d7",
@@ -34550,7 +34550,7 @@
         208,
         41
       ],
-      "comment_inline": "...",
+      "comment_inline": "high byte &FF too: skip the check",
       "type": "code",
       "mnemonic": "bne",
       "operand": "c93d7",
@@ -34576,7 +34576,7 @@
         197,
         6
       ],
-      "comment_inline": "...",
+      "comment_inline": "STACK low vs HIMEM low",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_himem",
@@ -34602,7 +34602,7 @@
         165,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "STACK high,",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_stack_ptr_1",
@@ -34615,7 +34615,7 @@
         197,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "vs HIMEM high",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "zp_himem_1",
@@ -34654,7 +34654,7 @@
         169,
         133
       ],
-      "comment_inline": "...",
+      "comment_inline": "OSBYTE &85",
       "type": "code",
       "mnemonic": "lda",
       "operand": "#osbyte_read_himem_for_mode"
@@ -34691,7 +34691,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top high,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -34701,7 +34701,7 @@
         229,
         3
       ],
-      "comment_inline": "...",
+      "comment_inline": "vs VARTOP high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_vartop_1",
@@ -34739,7 +34739,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "new top high,",
       "type": "code",
       "mnemonic": "tya"
     },
@@ -34749,7 +34749,7 @@
         229,
         19
       ],
-      "comment_inline": "...",
+      "comment_inline": "vs TOP high",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "zp_top_1",
@@ -34788,7 +34788,7 @@
         134,
         4
       ],
-      "comment_inline": "...",
+      "comment_inline": "STACK low,",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_stack_ptr",
@@ -34801,7 +34801,7 @@
         132,
         7
       ],
-      "comment_inline": "...",
+      "comment_inline": "HIMEM high,",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_himem_1",
@@ -34814,7 +34814,7 @@
         132,
         5
       ],
-      "comment_inline": "...",
+      "comment_inline": "STACK high",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_stack_ptr_1",
@@ -34871,7 +34871,7 @@
         238,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "send it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "oswrch",

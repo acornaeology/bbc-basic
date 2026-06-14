@@ -3690,42 +3690,42 @@ l848a = sub_c847b+15
 ; Select a screen mode, resetting the display. MODE n.
 .stmt_mode
     lda #&16                                                          ; 939a: a9 16       ..       ; VDU 22 (MODE)
-    pha                                                               ; 939c: 48          H        ; ...
+    pha                                                               ; 939c: 48          H        ; push it for later
     jsr eval_expr_to_integer                                          ; 939d: 20 21 88     !.      ; Evaluate the mode number
     jsr check_end_of_statement                                        ; 93a0: 20 57 98     W.      ; check the statement ends
     jsr sub_cbee7                                                     ; 93a3: 20 e7 be     ..      ; Read the high word of the machine address
     cpx #&ff                                                          ; 93a6: e0 ff       ..       ; not &xxFF: skip the memory test
-    bne c93d7                                                         ; 93a8: d0 2d       .-       ; ...
+    bne c93d7                                                         ; 93a8: d0 2d       .-       ; addr not &xxFF: skip the check
     cpy #&ff                                                          ; 93aa: c0 ff       ..       ; not all ones: skip the memory test
-    bne c93d7                                                         ; 93ac: d0 29       .)       ; ...
+    bne c93d7                                                         ; 93ac: d0 29       .)       ; high byte &FF too: skip the check
     lda zp_stack_ptr                                                  ; 93ae: a5 04       ..       ; Stack not empty (STACK != HIMEM)?
-    cmp zp_himem                                                      ; 93b0: c5 06       ..       ; ...
+    cmp zp_himem                                                      ; 93b0: c5 06       ..       ; STACK low vs HIMEM low
     bne c9372                                                         ; 93b2: d0 be       ..       ; yes: Bad MODE
-    lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..       ; ...
-    cmp zp_himem_1                                                    ; 93b6: c5 07       ..       ; ...
+    lda zp_stack_ptr_1                                                ; 93b4: a5 05       ..       ; STACK high,
+    cmp zp_himem_1                                                    ; 93b6: c5 07       ..       ; vs HIMEM high
     bne c9372                                                         ; 93b8: d0 b8       ..       ; Bad MODE
     ldx zp_iwa                                                        ; 93ba: a6 2a       .*       ; Top of RAM for this mode
-    lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..       ; ...
+    lda #osbyte_read_himem_for_mode                                   ; 93bc: a9 85       ..       ; OSBYTE &85
     jsr osbyte                                                        ; 93be: 20 f4 ff     ..      ; Read top of user RAM for given screen mode
     cpx zp_vartop                                                     ; 93c1: e4 02       ..       ; below the variables?
-    tya                                                               ; 93c3: 98          .        ; ...
-    sbc zp_vartop_1                                                   ; 93c4: e5 03       ..       ; ...
+    tya                                                               ; 93c3: 98          .        ; new top high,
+    sbc zp_vartop_1                                                   ; 93c4: e5 03       ..       ; vs VARTOP high
     bcc c9372                                                         ; 93c6: 90 aa       ..       ; yes: Bad MODE
     cpx zp_top                                                        ; 93c8: e4 12       ..       ; below the program top?
-    tya                                                               ; 93ca: 98          .        ; ...
-    sbc zp_top_1                                                      ; 93cb: e5 13       ..       ; ...
+    tya                                                               ; 93ca: 98          .        ; new top high,
+    sbc zp_top_1                                                      ; 93cb: e5 13       ..       ; vs TOP high
     bcc c9372                                                         ; 93cd: 90 a3       ..       ; yes: Bad MODE
     stx zp_himem                                                      ; 93cf: 86 06       ..       ; Set HIMEM and STACK to the new top
-    stx zp_stack_ptr                                                  ; 93d1: 86 04       ..       ; ...
-    sty zp_himem_1                                                    ; 93d3: 84 07       ..       ; ...
-    sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..       ; ...
+    stx zp_stack_ptr                                                  ; 93d1: 86 04       ..       ; STACK low,
+    sty zp_himem_1                                                    ; 93d3: 84 07       ..       ; HIMEM high,
+    sty zp_stack_ptr_1                                                ; 93d5: 84 05       ..       ; STACK high
 ; &93d7 referenced 2 times by &93a8, &93ac
 .c93d7
     jsr cbc28                                                         ; 93d7: 20 28 bc     (.      ; Reset the print column
 ; &93da referenced 2 times by &938b, &9397
 .c93da
     pla                                                               ; 93da: 68          h        ; Send the stacked VDU byte
-    jsr oswrch                                                        ; 93db: 20 ee ff     ..      ; ...
+    jsr oswrch                                                        ; 93db: 20 ee ff     ..      ; send it
     jsr sub_c9456                                                     ; 93de: 20 56 94     V.      ; Send the parameter
     jmp statement_loop                                                ; 93e1: 4c 9b 8b    L..      ; next statement
 ; ***************************************************************************************
