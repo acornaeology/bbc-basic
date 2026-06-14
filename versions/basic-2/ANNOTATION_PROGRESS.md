@@ -1,6 +1,6 @@
 # BBC BASIC II annotation — semantic quality pass
 
-**STATUS: in progress — 128 of 7,129 placeholders left (1.8 %);
+**STATUS: in progress — 111 of 7,129 placeholders left (1.6 %);
 depths 0–6 complete, depth 7 in progress. (~8 strays left for the
 final sweep — see the stray-partial note above.)**
 
@@ -27,9 +27,9 @@ of this pass **1,806 of 7,129 code instructions (25.3 %)** carried a
 
 **Resume here:** run `uv run tools/annotation_status.py` for the live
 worklist (leaves-first, worst offenders first). Depth 5 complete.
-Depth 6 complete. Depth 7 next: `find_line_target` (17), then
-`stmt_delete` (15), `stmt_read` (6), `stmt_local` (2), then depths 8–9.
-(Depth 8 has asm_parse_mnemonic (36); depth 9 has assembler_exit (17).)
+Depth 6 complete. Depth 7 next: `stmt_delete` (15), then
+`stmt_read` (6), `stmt_local` (2), then depths 8–9. (Depth 8 has
+asm_parse_mnemonic (36); depth 9 has assembler_exit (17).)
 (Depth 5 done 2026-06-14: stmt_dim, parse_var_ref,
 unstack_value_to_var, iwa_divide, check_end_of_statement, iwa_test_var,
 stmt_print, asm_opcode_add4, iwa_add, fn_eval, iwa_rsub, fn_instr,
@@ -261,4 +261,5 @@ placeholders goes first.
 | 2026-06-14 | depth 7: call_proc_fn | call_proc_fn (PROC/FN frame: copy 6502 stack to BASIC stack & back, push call context, name lookup, parameter binding + LOCAL save, arg/formal count match) | 100 | 212 |
 | 2026-06-14 | depth 7: stmt_for | stmt_for (FOR: build 15-byte page-5 frame - var ptr/type, limit, step, body pointer; integer and real paths) | 37 | 175 |
 | 2026-06-14 | depth 7: stmt_input | stmt_input (INPUT: LINE/prompt flag bits in &4D/&4E, prompt items, ? prompt + line read, &0600 buffer, field scan, LINE/numeric assign) | 25 | 150 |
-| 2026-06-14 | depth 7: stmt_auto | stmt_auto (AUTO line generation) + owned DIM-var-n byte-block allocator | 22 | 128 | — |
+| 2026-06-14 | depth 7: stmt_auto | stmt_auto (AUTO line generation) + owned DIM-var-n byte-block allocator | 22 | 128 |
+| 2026-06-14 | depth 7: find_line_target | find_line_target (resolve a line-number operand, 14-bit mask) + INPUT#-from-file reader (type byte, reversed string, MSB-first numeric via OSBGET) | 17 | 111 | — |
