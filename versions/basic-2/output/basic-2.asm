@@ -1440,7 +1440,7 @@ l848a = sub_c847b+15
 .c87b2
     cpx #&39 ; '9'                                                    ; 87b2: e0 39       .9       ; index &39+ : EQU directives
     bcs c8813                                                         ; 87b4: b0 5d       .]       ; yes
-    lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic  ...
+    lda zp_fwb_exp                                                    ; 87b6: a5 3d       .=       ; Register letter from the mnemonic
     eor #1                                                            ; 87b8: 49 01       I.       ; toggle bit 0
     and #&1f                                                          ; 87ba: 29 1f       ).       ; save it  index &37+ (two-register form)?
     pha                                                               ; 87bc: 48          H        ; Save the register
@@ -1463,7 +1463,7 @@ l848a = sub_c847b+15
     jmp c8735                                                         ; 87db: 4c 35 87    L5.      ; process as absolute
 ; &87de referenced 1 time by &87d9
 .c87de
-    jsr skip_spaces                                                   ; 87de: 20 97 8a     ..      ; Index register letter  ...
+    jsr skip_spaces                                                   ; 87de: 20 97 8a     ..      ; Index register letter
     and #&1f                                                          ; 87e1: 29 1f       ).       ; matches the expected register?
     cmp zp_general                                                    ; 87e3: c5 37       .7       ; no: Index error
     bne c87ed                                                         ; 87e5: d0 06       ..       ; register mismatch?
@@ -3116,7 +3116,7 @@ l848a = sub_c847b+15
 ; &9080 referenced 1 time by &9047
 .c9080
     jsr print_inline_string                                           ; 9080: 20 cf bf     ..      ; Reference to a missing line: report it
-    equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  ...  ...  ...  print it
+    equs "Failed at "                                                 ; 9083: 46 61 69... Fai...   ; build the "Failed at <line>" message...  print it
     iny                                                               ; 908d: c8          .        ; This line's number
     lda (zp_text_ptr),y                                               ; 908e: b1 0b       ..       ; high byte,
     sta zp_iwa_1                                                      ; 9090: 85 2b       .+       ; store high,
@@ -8062,7 +8062,7 @@ l848a = sub_c847b+15
     sta zp_iwa_2                                                      ; ab5d: 85 2c       .,       ; y low into the block
     ldx #&2a ; '*'                                                    ; ab5f: a2 2a       .*       ; point X at the block (&2A)
     lda #osword_read_pixel                                            ; ab61: a9 09       ..       ; Read the pixel colour
-    jsr osword                                                        ; ab63: 20 f1 ff     ..      ; ...  Read pixel value  ...
+    jsr osword                                                        ; ab63: 20 f1 ff     ..      ; Read pixel value
     lda zp_fwa_sign                                                   ; ab66: a5 2e       ..       ; Result sign (off-screen = -1)
     bmi cab9d                                                         ; ab68: 30 33       03       ; off-screen?
     jmp int_result_a                                                  ; ab6a: 4c d8 ae    L..      ; return as an integer
@@ -8669,7 +8669,7 @@ l848a = sub_c847b+15
 ; &ae3a referenced 1 time by &85af
 .sub_cae3a
     lda resint_p                                                      ; ae3a: ad 40 04    .@.      ; Use P% as the value
-    ldy l0441                                                         ; ae3d: ac 41 04    .A.      ; ...  return it as an integer
+    ldy l0441                                                         ; ae3d: ac 41 04    .A.      ; return it as an integer
     jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..      ; return as a 16-bit integer
 ; &ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7
 .cae43
@@ -9193,7 +9193,7 @@ l848a = sub_c847b+15
     tya                                                               ; b0a1: 98          .        ; Save the hex/dec flag
     pha                                                               ; b0a2: 48          H        ; push it
     jsr eval_factor                                                   ; b0a3: 20 ec ad     ..      ; Evaluate the number
-    beq cb0bf                                                         ; b0a6: f0 17       ..       ; string: error  ...
+    beq cb0bf                                                         ; b0a6: f0 17       ..       ; string: error
     tay                                                               ; b0a8: a8          .        ; Restore the flag
     pla                                                               ; b0a9: 68          h        ; recover the hex/dec flag
     sta zp_print_flag                                                 ; b0aa: 85 15       ..       ; @% formatting set?

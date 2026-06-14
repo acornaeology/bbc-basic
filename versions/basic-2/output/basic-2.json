@@ -13918,7 +13918,7 @@
         165,
         61
       ],
-      "comment_inline": "Register letter from the mnemonic ...",
+      "comment_inline": "Register letter from the mnemonic",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fwb_exp",
@@ -14161,7 +14161,7 @@
       "labels": [
         "c87de"
       ],
-      "comment_inline": "Index register letter ...",
+      "comment_inline": "Index register letter",
       "xref_summaries": [
         "&87de referenced 1 time by &87d9"
       ],
@@ -29278,7 +29278,7 @@
         116,
         32
       ],
-      "comment_inline": "build the \"Failed at <line>\" message... ... ... ... print it",
+      "comment_inline": "build the \"Failed at <line>\" message... print it",
       "type": "string",
       "string": "Failed at "
     },
@@ -75662,7 +75662,7 @@
         241,
         255
       ],
-      "comment_inline": "... Read pixel value ...",
+      "comment_inline": "Read pixel value",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "osword",
@@ -80604,7 +80604,7 @@
         65,
         4
       ],
-      "comment_inline": "... return it as an integer",
+      "comment_inline": "return it as an integer",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "l0441",
@@ -84618,7 +84618,7 @@
         240,
         23
       ],
-      "comment_inline": "string: error ...",
+      "comment_inline": "string: error",
       "type": "code",
       "mnemonic": "beq",
       "operand": "cb0bf",
