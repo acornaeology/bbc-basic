@@ -1,7 +1,7 @@
 # Glossary
 
 **BBC BASIC**
-: The BASIC interpreter built into the BBC Micro, written by Roger Wilson (now Sophie Wilson) at Acorn. A 16 kB sideways language ROM providing a line editor, tokeniser, statement interpreter, expression evaluator, and floating-point arithmetic.
+: The BASIC interpreter built into the BBC Micro, written by Sophie Wilson at Acorn. A 16 kB sideways language ROM providing a line editor, tokeniser, statement interpreter, expression evaluator, and floating-point arithmetic.
 
   BBC BASIC is notable for its structured-programming features (named
   PROC/FN procedures and functions with local variables, REPEAT/UNTIL,

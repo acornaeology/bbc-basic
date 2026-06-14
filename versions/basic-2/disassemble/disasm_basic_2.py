@@ -662,9 +662,9 @@ d.comment(0x8055, 'Non-zero: keep the existing state', align=Align.INLINE)
 d.comment(
     0x8057,
     'The generator needs a non-zero state. At power-on the work\n'
-    'area is zero, so a fixed seed is installed here. The bytes\n'
-    '&41, &52, &57 spell "ARW": the initials of Roger (now Sophie)\n'
-    'Wilson, who wrote BBC BASIC. Nothing else re-seeds unless the\n'
+    'area is zero, so a fixed seed is installed here. The three\n'
+    "bytes &41/&52/&57 are the ASCII codes of Wilson's initials,\n"
+    "a nod to BBC BASIC's author. Nothing else re-seeds unless the\n"
     'program calls RND(-n), so a sequence is deterministic from a\n'
     'cold start.',
     word_wrap=False,

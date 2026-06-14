@@ -443,9 +443,9 @@ oscli             = &fff7
     ora zp_rnd_seed_3                                                 ; 8053: 05 10       ..       ; bits 24-31
     bne lang_install_brkv                                             ; 8055: d0 0c       ..       ; Non-zero: keep the existing state
 ; The generator needs a non-zero state. At power-on the work
-; area is zero, so a fixed seed is installed here. The bytes
-; &41, &52, &57 spell "ARW": the initials of Roger (now Sophie)
-; Wilson, who wrote BBC BASIC. Nothing else re-seeds unless the
+; area is zero, so a fixed seed is installed here. The three
+; bytes &41/&52/&57 are the ASCII codes of Wilson's initials,
+; a nod to BBC BASIC's author. Nothing else re-seeds unless the
 ; program calls RND(-n), so a sequence is deterministic from a
 ; cold start.
     lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed: state becomes &00575241; load &41
