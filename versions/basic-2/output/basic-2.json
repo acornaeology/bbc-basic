@@ -4436,7 +4436,7 @@
     "zp_listo": 31,
     "zp_trace_flag": 32,
     "zp_trace_max": 33,
-    "l0022": 34,
+    "zp_trace_max_1": 34,
     "zp_width": 35,
     "zp_repeat_level": 36,
     "zp_gosub_level": 37,
@@ -4460,7 +4460,7 @@
     "zp_general": 55,
     "zp_general_1": 56,
     "zp_fileblk": 57,
-    "l003a": 58,
+    "zp_fileblk_1": 58,
     "zp_fwb_sign": 59,
     "zp_fwb_ovf": 60,
     "zp_fwb_exp": 61,
@@ -4470,25 +4470,25 @@
     "zp_fwb_m4": 65,
     "zp_fwb_rnd": 66,
     "zp_fp_temp": 67,
-    "l0044": 68,
-    "l0045": 69,
-    "l0046": 70,
-    "l0047": 71,
+    "zp_fp_temp_1": 68,
+    "zp_fp_temp_2": 69,
+    "zp_fp_temp_3": 70,
+    "zp_fp_temp_4": 71,
     "zp_dp_flag": 72,
     "zp_dec_exp": 73,
-    "l004a": 74,
+    "zp_int_exp": 74,
     "zp_fp_ptr": 75,
     "zp_fp_ptr_1": 76,
-    "l004d": 77,
-    "l004e": 78,
+    "zp_coeff_ptr": 77,
+    "zp_coeff_ptr_1": 78,
     "os_text_ptr": 242,
     "romsel_copy": 244,
     "osrdsc_ptr": 246,
     "zp_error_ptr": 253,
-    "l00ff": 255,
-    "l0100": 256,
-    "l0106": 262,
-    "l01ff": 511,
+    "zp_escflg": 255,
+    "hw_stack": 256,
+    "frame_local_count": 262,
+    "hw_stack_top": 511,
     "userv": 512,
     "brkv": 514,
     "irq1v": 516,
@@ -4517,9 +4517,9 @@
     "ind2v": 562,
     "ind3v": 564,
     "resint_at": 1024,
-    "l0401": 1025,
-    "l0402": 1026,
-    "l0403": 1027,
+    "resint_at_1": 1025,
+    "resint_at_2": 1026,
+    "resint_at_3": 1027,
     "resint_a": 1028,
     "resint_b": 1032,
     "resint_c": 1036,
@@ -4535,9 +4535,9 @@
     "resint_m": 1076,
     "resint_n": 1080,
     "resint_o": 1084,
-    "l043d": 1085,
+    "resint_o_1": 1085,
     "resint_p": 1088,
-    "l0441": 1089,
+    "resint_p_1": 1089,
     "resint_q": 1092,
     "resint_r": 1096,
     "resint_s": 1100,
@@ -4552,45 +4552,45 @@
     "fp_temp2": 1137,
     "fp_temp3": 1142,
     "fp_temp4": 1147,
-    "l047f": 1151,
+    "var_table_base": 1151,
     "var_ptr_table": 1152,
-    "l04f1": 1265,
-    "l04f2": 1266,
-    "l04f3": 1267,
-    "l04f4": 1268,
-    "l04f5": 1269,
-    "l04f6": 1270,
-    "l04f7": 1271,
-    "l04f9": 1273,
-    "l04fa": 1274,
-    "l04fb": 1275,
-    "l04fc": 1276,
-    "l04fe": 1278,
-    "l04ff": 1279,
+    "for_var_lo": 1265,
+    "for_var_hi": 1266,
+    "for_type": 1267,
+    "for_step0": 1268,
+    "for_step1": 1269,
+    "for_step2": 1270,
+    "for_step3": 1271,
+    "for_limit0": 1273,
+    "for_limit1": 1274,
+    "for_limit2": 1275,
+    "for_limit3": 1276,
+    "for_loopback_lo": 1278,
+    "for_loopback_hi": 1279,
     "for_stack": 1280,
-    "l0501": 1281,
-    "l0502": 1282,
-    "l0503": 1283,
-    "l0504": 1284,
-    "l0505": 1285,
-    "l0506": 1286,
-    "l0508": 1288,
-    "l0509": 1289,
-    "l050a": 1290,
-    "l050b": 1291,
-    "l050d": 1293,
-    "l050e": 1294,
-    "l05a3": 1443,
+    "for_set_ptr_hi": 1281,
+    "for_set_type": 1282,
+    "for_set_step0": 1283,
+    "for_set_step1": 1284,
+    "for_set_step2": 1285,
+    "for_set_step3": 1286,
+    "for_set_limit0": 1288,
+    "for_set_limit1": 1289,
+    "for_set_limit2": 1290,
+    "for_set_limit3": 1291,
+    "for_set_loop_lo": 1293,
+    "for_set_loop_hi": 1294,
+    "repeat_loop_lo": 1443,
     "repeat_stack": 1444,
-    "l05b7": 1463,
+    "repeat_loop_hi": 1463,
     "repeat_stack_hi": 1464,
-    "l05cb": 1483,
+    "gosub_return_lo": 1483,
     "gosub_stack": 1484,
-    "l05e5": 1509,
+    "gosub_return_hi": 1509,
     "gosub_stack_hi": 1510,
-    "l05ff": 1535,
+    "strbuf_base": 1535,
     "string_work": 1536,
-    "l06ff": 1791,
+    "call_block_base": 1791,
     "line_input_buf": 1792,
     "fred_hard_drive_0": 64576,
     "fred_hard_drive_1": 64577,
@@ -4993,9 +4993,9 @@
       "comment_inline": "@% high two bytes = 0",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0402",
+      "operand": "resint_at_2",
       "target": 1026,
-      "target_label": "l0402"
+      "target_label": "resint_at_2"
     },
     {
       "addr": 32826,
@@ -5007,9 +5007,9 @@
       "comment_inline": "@% byte 3 = 0",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0403",
+      "operand": "resint_at_3",
       "target": 1027,
-      "target_label": "l0403"
+      "target_label": "resint_at_3"
     },
     {
       "addr": 32829,
@@ -5077,9 +5077,9 @@
       "comment_inline": "@% byte 1 = &09",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0401",
+      "operand": "resint_at_1",
       "target": 1025,
-      "target_label": "l0401"
+      "target_label": "resint_at_1"
     },
     {
       "addr": 32841,
@@ -12158,9 +12158,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 34126,
@@ -13761,9 +13761,9 @@
       "comment_inline": "P% high",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0441",
+      "operand": "resint_p_1",
       "target": 1089,
-      "target_label": "l0441"
+      "target_label": "resint_p_1"
     },
     {
       "addr": 34361,
@@ -13815,9 +13815,9 @@
       "comment_inline": "O% high",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l043d",
+      "operand": "resint_o_1",
       "target": 1085,
-      "target_label": "l043d"
+      "target_label": "resint_o_1"
     },
     {
       "addr": 34371,
@@ -13837,9 +13837,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 34373,
@@ -14006,9 +14006,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 34397,
@@ -14047,9 +14047,9 @@
       "comment_inline": "carry into P% high",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0441",
+      "operand": "resint_p_1",
       "target": 1089,
-      "target_label": "l0441"
+      "target_label": "resint_p_1"
     },
     {
       "addr": 34405,
@@ -14110,9 +14110,9 @@
       "comment_inline": "carry into O% high",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l043d",
+      "operand": "resint_o_1",
       "target": 1085,
-      "target_label": "l043d"
+      "target_label": "resint_o_1"
     },
     {
       "addr": 34415,
@@ -14280,9 +14280,9 @@
       "comment_inline": "minus P% high,",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0441",
+      "operand": "resint_p_1",
       "target": 1089,
-      "target_label": "l0441"
+      "target_label": "resint_p_1"
     },
     {
       "addr": 34438,
@@ -17637,9 +17637,9 @@
       "comment_inline": "source high (&3A)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 34954,
@@ -18338,9 +18338,9 @@
       "comment_inline": "dest high",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 35052,
@@ -20259,9 +20259,9 @@
       "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 35320,
@@ -20589,9 +20589,9 @@
       "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 35363,
@@ -20690,9 +20690,9 @@
       "comment_inline": "carry into high",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 35376,
@@ -22706,9 +22706,9 @@
       "comment_inline": "Pushed token",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l01ff",
+      "operand": "hw_stack_top",
       "target": 511,
-      "target_label": "l01ff"
+      "target_label": "hw_stack_top"
     },
     {
       "addr": 35663,
@@ -25412,9 +25412,9 @@
       "comment_inline": "dest pointer high (&3A)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36061,
@@ -26475,9 +26475,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l05ff,x",
+      "operand": "strbuf_base,x",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 36207,
@@ -28934,9 +28934,9 @@
       ],
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l06ff",
+      "operand": "call_block_base",
       "target": 1791,
-      "target_label": "l06ff"
+      "target_label": "call_block_base"
     },
     {
       "addr": 36579,
@@ -29026,9 +29026,9 @@
       "comment_inline": "append its address to the block:",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l06ff",
+      "operand": "call_block_base",
       "target": 1791,
-      "target_label": "l06ff"
+      "target_label": "call_block_base"
     },
     {
       "addr": 36596,
@@ -29561,9 +29561,9 @@
       "comment_inline": "to &3A",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36688,
@@ -29665,9 +29665,9 @@
       "comment_inline": "end high,",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36706,
@@ -30575,9 +30575,9 @@
       "comment_inline": "Write the new number: high byte",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36850,
@@ -30695,9 +30695,9 @@
       "comment_inline": "+ carry",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36868,
@@ -30719,9 +30719,9 @@
       "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 36872,
@@ -35188,9 +35188,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0022",
+      "operand": "zp_trace_max_1",
       "target": 34,
-      "target_label": "l0022"
+      "target_label": "zp_trace_max_1"
     },
     {
       "addr": 37552,
@@ -36235,9 +36235,9 @@
       "comment_inline": "at frame offset +6",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l0106,x",
+      "operand": "frame_local_count,x",
       "target": 262,
-      "target_label": "l0106"
+      "target_label": "frame_local_count"
     },
     {
       "addr": 37701,
@@ -36386,9 +36386,9 @@
       "comment_inline": "Framed call token",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l01ff",
+      "operand": "hw_stack_top",
       "target": 511,
-      "target_label": "l01ff"
+      "target_label": "hw_stack_top"
     },
     {
       "addr": 37726,
@@ -38105,9 +38105,9 @@
       "comment_inline": "Chain head low byte -> node pointer (&3A)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38004,
@@ -38119,9 +38119,9 @@
       "comment_inline": "Chain head high byte (&0400 + 1 + 2*char)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0401,y",
+      "operand": "resint_at_1,y",
       "target": 1025,
-      "target_label": "l0401"
+      "target_label": "resint_at_1"
     },
     {
       "addr": 38007,
@@ -38194,9 +38194,9 @@
       "comment_inline": "link low byte...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38017,
@@ -38229,9 +38229,9 @@
       "comment_inline": "link high byte...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38022,
@@ -38264,9 +38264,9 @@
       "comment_inline": "get it",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38027,
@@ -38365,9 +38365,9 @@
       "comment_inline": "next stored name character",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38040,
@@ -38461,9 +38461,9 @@
       "comment_inline": "read the stored name char",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38053,
@@ -38505,9 +38505,9 @@
       "comment_inline": "value pointer = node + name length: low",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38058,
@@ -38649,9 +38649,9 @@
       "comment_inline": "...into the node pointer (&3A)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38077,
@@ -39174,9 +39174,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38147,
@@ -39220,9 +39220,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38153,
@@ -39264,9 +39264,9 @@
       "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38159,
@@ -39277,9 +39277,9 @@
       "comment_inline": "follow the link: low",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38161,
@@ -39347,9 +39347,9 @@
       "comment_inline": "...into the previous link",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38170,
@@ -39382,9 +39382,9 @@
       "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38175,
@@ -39791,9 +39791,9 @@
       "comment_inline": "(clear the link)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "(l003a),y",
+      "operand": "(zp_fileblk_1),y",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38227,
@@ -43238,9 +43238,9 @@
       "comment_inline": "+ subscript high,",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38708,
@@ -43534,9 +43534,9 @@
       "comment_inline": "subscript high",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 38758,
@@ -45541,9 +45541,9 @@
       ],
       "type": "code",
       "mnemonic": "bit",
-      "operand": "l00ff",
+      "operand": "zp_escflg",
       "target": 255,
-      "target_label": "l00ff"
+      "target_label": "zp_escflg"
     },
     {
       "addr": 39037,
@@ -46587,9 +46587,9 @@
       "comment_inline": "minus ceiling high",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l0022",
+      "operand": "zp_trace_max_1",
       "target": 34,
-      "target_label": "l0022"
+      "target_label": "zp_trace_max_1"
     },
     {
       "addr": 39181,
@@ -48155,9 +48155,9 @@
       "comment_inline": "carrying up through &3A,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 39419,
@@ -48229,9 +48229,9 @@
       "comment_inline": "dividend &3A,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 39429,
@@ -49968,9 +49968,9 @@
       ],
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 39681,
@@ -50001,9 +50001,9 @@
       ],
       "type": "code",
       "mnemonic": "cpy",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 39685,
@@ -50050,9 +50050,9 @@
       "comment_inline": "vs current string",
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l05ff,y",
+      "operand": "strbuf_base,y",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 39693,
@@ -52024,9 +52024,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l05ff,y",
+      "operand": "strbuf_base,y",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 39984,
@@ -52038,9 +52038,9 @@
       "comment_inline": "to the new tail (at X)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05ff,x",
+      "operand": "strbuf_base,x",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 39987,
@@ -54315,9 +54315,9 @@
       ],
       "type": "code",
       "mnemonic": "lsr",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 40333,
@@ -54577,9 +54577,9 @@
       "comment_inline": "OR in the high byte",
       "type": "code",
       "mnemonic": "ora",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 40370,
@@ -55210,9 +55210,9 @@
       "comment_inline": "through &3A,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 40465,
@@ -55640,9 +55640,9 @@
       "comment_inline": "integer exponent",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 40530,
@@ -55780,9 +55780,9 @@
       "comment_inline": "integer part of the exponent",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 40553,
@@ -56583,9 +56583,9 @@
       ],
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l0402",
+      "operand": "resint_at_2",
       "target": 1026,
-      "target_label": "l0402"
+      "target_label": "resint_at_2"
     },
     {
       "addr": 40674,
@@ -56654,9 +56654,9 @@
       "comment_inline": "digit count from @%",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0401",
+      "operand": "resint_at_1",
       "target": 1025,
-      "target_label": "l0401"
+      "target_label": "resint_at_1"
     },
     {
       "addr": 40685,
@@ -56794,9 +56794,9 @@
       "comment_inline": "(copy)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 40703,
@@ -57244,9 +57244,9 @@
       "comment_inline": "digit count",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 40770,
@@ -57927,9 +57927,9 @@
       "comment_inline": "original digit count...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 40873,
@@ -58365,9 +58365,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 40936,
@@ -58401,9 +58401,9 @@
       "comment_inline": "at the decimal point?",
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 40941,
@@ -60976,9 +60976,9 @@
       "comment_inline": "store the first exponent digit",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 41304,
@@ -61081,9 +61081,9 @@
       "comment_inline": "d1",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 41320,
@@ -61112,9 +61112,9 @@
       "comment_inline": "+ d1 (now * 5)",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 41324,
@@ -61166,9 +61166,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 41330,
@@ -66846,9 +66846,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42126,
@@ -66909,9 +66909,9 @@
       "comment_inline": "...kept in &4A",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42136,
@@ -67025,9 +67025,9 @@
       "comment_inline": "remainder negative: round the integer up",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42155,
@@ -67061,9 +67061,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42160,
@@ -69957,9 +69957,9 @@
       "comment_inline": "Shift the running product left (&43-&46):",
       "type": "code",
       "mnemonic": "asl",
-      "operand": "l0046",
+      "operand": "zp_fp_temp_3",
       "target": 70,
-      "target_label": "l0046"
+      "target_label": "zp_fp_temp_3"
     },
     {
       "addr": 42566,
@@ -69970,9 +69970,9 @@
       "comment_inline": "through &45,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0045",
+      "operand": "zp_fp_temp_2",
       "target": 69,
-      "target_label": "l0045"
+      "target_label": "zp_fp_temp_2"
     },
     {
       "addr": 42568,
@@ -69983,9 +69983,9 @@
       "comment_inline": "&44,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0044",
+      "operand": "zp_fp_temp_1",
       "target": 68,
-      "target_label": "l0044"
+      "target_label": "zp_fp_temp_1"
     },
     {
       "addr": 42570,
@@ -70851,9 +70851,9 @@
       "comment_inline": "save the quadrant",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42694,
@@ -70901,9 +70901,9 @@
       "comment_inline": "shift the quadrant (cos -> sin)",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42703,
@@ -70965,9 +70965,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42715,
@@ -71683,9 +71683,9 @@
       ],
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0046",
+      "operand": "zp_fp_temp_3",
       "target": 70,
-      "target_label": "l0046"
+      "target_label": "zp_fp_temp_3"
     },
     {
       "addr": 42817,
@@ -71696,9 +71696,9 @@
       "comment_inline": "through &45,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0045",
+      "operand": "zp_fp_temp_2",
       "target": 69,
-      "target_label": "l0045"
+      "target_label": "zp_fp_temp_2"
     },
     {
       "addr": 42819,
@@ -71709,9 +71709,9 @@
       "comment_inline": "&44,",
       "type": "code",
       "mnemonic": "rol",
-      "operand": "l0044",
+      "operand": "zp_fp_temp_1",
       "target": 68,
-      "target_label": "l0044"
+      "target_label": "zp_fp_temp_1"
     },
     {
       "addr": 42821,
@@ -72292,9 +72292,9 @@
       "comment_inline": "move the quotient into the FWA mantissa:",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0046",
+      "operand": "zp_fp_temp_3",
       "target": 70,
-      "target_label": "l0046"
+      "target_label": "zp_fp_temp_3"
     },
     {
       "addr": 42904,
@@ -72318,9 +72318,9 @@
       "comment_inline": "&45...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0045",
+      "operand": "zp_fp_temp_2",
       "target": 69,
-      "target_label": "l0045"
+      "target_label": "zp_fp_temp_2"
     },
     {
       "addr": 42908,
@@ -72344,9 +72344,9 @@
       "comment_inline": "&44...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0044",
+      "operand": "zp_fp_temp_1",
       "target": 68,
-      "target_label": "l0044"
+      "target_label": "zp_fp_temp_1"
     },
     {
       "addr": 42912,
@@ -72600,9 +72600,9 @@
       "comment_inline": "(counter)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42956,
@@ -72739,9 +72739,9 @@
       "comment_inline": "count",
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 42980,
@@ -73855,9 +73855,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43161,
@@ -73868,9 +73868,9 @@
       "comment_inline": "...and high",
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 43163,
@@ -73906,9 +73906,9 @@
       "comment_inline": "read it",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "(l004d),y",
+      "operand": "(zp_coeff_ptr),y",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43170,
@@ -73932,9 +73932,9 @@
       "comment_inline": "Advance past the count byte to coefficient 0",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43174,
@@ -73958,9 +73958,9 @@
       "comment_inline": "else bump the high byte",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 43178,
@@ -73980,9 +73980,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43180,
@@ -74006,9 +74006,9 @@
       "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 43184,
@@ -74092,9 +74092,9 @@
       "comment_inline": "...(five bytes per coefficient)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43198,
@@ -74116,9 +74116,9 @@
       "comment_inline": "store the table pointer low",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 43202,
@@ -74142,9 +74142,9 @@
       "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 43206,
@@ -74166,9 +74166,9 @@
       "comment_inline": "store the table pointer high",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 43210,
@@ -75316,9 +75316,9 @@
       "comment_inline": "Shift the quadrant: cos x = sin(x + pi/2)",
       "type": "code",
       "mnemonic": "inc",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 43413,
@@ -75385,9 +75385,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 43424,
@@ -75460,9 +75460,9 @@
       ],
       "type": "code",
       "mnemonic": "lsr",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 43436,
@@ -75865,9 +75865,9 @@
       "comment_inline": "save it in &4A",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 43509,
@@ -77072,9 +77072,9 @@
       "comment_inline": "Integer part of x",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004a",
+      "operand": "zp_int_exp",
       "target": 74,
-      "target_label": "l004a"
+      "target_label": "zp_int_exp"
     },
     {
       "addr": 43726,
@@ -78902,9 +78902,9 @@
       "comment_inline": "append it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05ff,y",
+      "operand": "strbuf_base,y",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 44023,
@@ -82913,9 +82913,9 @@
       "comment_inline": "return it as an integer",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l0441",
+      "operand": "resint_p_1",
       "target": 1089,
-      "target_label": "l0441"
+      "target_label": "resint_p_1"
     },
     {
       "addr": 44608,
@@ -86972,9 +86972,9 @@
       "comment_inline": "yes: use it",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0403",
+      "operand": "resint_at_3",
       "target": 1027,
-      "target_label": "l0403"
+      "target_label": "resint_at_3"
     },
     {
       "addr": 45231,
@@ -88642,9 +88642,9 @@
       "comment_inline": "read a stack byte,",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l0100,x",
+      "operand": "hw_stack,x",
       "target": 256,
-      "target_label": "l0100"
+      "target_label": "hw_stack"
     },
     {
       "addr": 45483,
@@ -89662,9 +89662,9 @@
       "comment_inline": "to the 6502 stack,",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0100,x",
+      "operand": "hw_stack,x",
       "target": 256,
-      "target_label": "l0100"
+      "target_label": "hw_stack"
     },
     {
       "addr": 45629,
@@ -90433,9 +90433,9 @@
       "comment_inline": "to &4D,",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 45743,
@@ -90446,9 +90446,9 @@
       "comment_inline": "and &4E",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 45745,
@@ -90459,9 +90459,9 @@
       "comment_inline": "counts match?",
       "type": "code",
       "mnemonic": "cpx",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 45747,
@@ -90975,9 +90975,9 @@
       ],
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 45829,
@@ -91001,9 +91001,9 @@
       "comment_inline": "Push the parameter count for restore",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 45833,
@@ -93517,9 +93517,9 @@
       "comment_inline": "into &44 (the block end)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0044",
+      "operand": "zp_fp_temp_1",
       "target": 68,
-      "target_label": "l0044"
+      "target_label": "zp_fp_temp_1"
     },
     {
       "addr": 46219,
@@ -94530,9 +94530,9 @@
       "comment_inline": "save Y",
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 46366,
@@ -94826,9 +94826,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 46404,
@@ -96352,9 +96352,9 @@
       "comment_inline": "store it (&4D)",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 46628,
@@ -96570,9 +96570,9 @@
       "comment_inline": "flip the flag,",
       "type": "code",
       "mnemonic": "eor",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 46663,
@@ -96583,9 +96583,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 46665,
@@ -96661,9 +96661,9 @@
       ],
       "type": "code",
       "mnemonic": "bit",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 46675,
@@ -97284,9 +97284,9 @@
       "comment_inline": "match the variable address low?",
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l04f1,x",
+      "operand": "for_var_lo,x",
       "target": 1265,
-      "target_label": "l04f1"
+      "target_label": "for_var_lo"
     },
     {
       "addr": 46766,
@@ -97324,9 +97324,9 @@
       "comment_inline": "match the frame address high?",
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l04f2,x",
+      "operand": "for_var_hi,x",
       "target": 1266,
-      "target_label": "l04f2"
+      "target_label": "for_var_hi"
     },
     {
       "addr": 46773,
@@ -97364,9 +97364,9 @@
       "comment_inline": "match the frame type?",
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "l04f3,x",
+      "operand": "for_type,x",
       "target": 1267,
-      "target_label": "l04f3"
+      "target_label": "for_type"
     },
     {
       "addr": 46780,
@@ -97516,9 +97516,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l04f1,x",
+      "operand": "for_var_lo,x",
       "target": 1265,
-      "target_label": "l04f1"
+      "target_label": "for_var_lo"
     },
     {
       "addr": 46810,
@@ -97543,9 +97543,9 @@
       "comment_inline": "high",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l04f2,x",
+      "operand": "for_var_hi,x",
       "target": 1266,
-      "target_label": "l04f2"
+      "target_label": "for_var_hi"
     },
     {
       "addr": 46815,
@@ -97570,9 +97570,9 @@
       "comment_inline": "type",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l04f3,x",
+      "operand": "for_type,x",
       "target": 1267,
-      "target_label": "l04f3"
+      "target_label": "for_type"
     },
     {
       "addr": 46820,
@@ -97632,9 +97632,9 @@
       "comment_inline": "+ step byte 0",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l04f4,x",
+      "operand": "for_step0,x",
       "target": 1268,
-      "target_label": "l04f4"
+      "target_label": "for_step0"
     },
     {
       "addr": 46831,
@@ -97694,9 +97694,9 @@
       "comment_inline": "+ step byte 1",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l04f5,x",
+      "operand": "for_step1,x",
       "target": 1269,
-      "target_label": "l04f5"
+      "target_label": "for_step1"
     },
     {
       "addr": 46841,
@@ -97756,9 +97756,9 @@
       "comment_inline": "+ step byte 2",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l04f6,x",
+      "operand": "for_step2,x",
       "target": 1270,
-      "target_label": "l04f6"
+      "target_label": "for_step2"
     },
     {
       "addr": 46851,
@@ -97818,9 +97818,9 @@
       "comment_inline": "+ step byte 3",
       "type": "code",
       "mnemonic": "adc",
-      "operand": "l04f7,x",
+      "operand": "for_step3,x",
       "target": 1271,
-      "target_label": "l04f7"
+      "target_label": "for_step3"
     },
     {
       "addr": 46861,
@@ -97876,9 +97876,9 @@
       "comment_inline": "value - limit: byte 0",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l04f9,x",
+      "operand": "for_limit0,x",
       "target": 1273,
-      "target_label": "l04f9"
+      "target_label": "for_limit0"
     },
     {
       "addr": 46870,
@@ -97916,9 +97916,9 @@
       "comment_inline": "minus limit byte 1",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l04fa,x",
+      "operand": "for_limit1,x",
       "target": 1274,
-      "target_label": "l04fa"
+      "target_label": "for_limit1"
     },
     {
       "addr": 46877,
@@ -97956,9 +97956,9 @@
       "comment_inline": "minus limit byte 2",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l04fb,x",
+      "operand": "for_limit2,x",
       "target": 1275,
-      "target_label": "l04fb"
+      "target_label": "for_limit2"
     },
     {
       "addr": 46884,
@@ -97992,9 +97992,9 @@
       "comment_inline": "minus limit byte 3",
       "type": "code",
       "mnemonic": "sbc",
-      "operand": "l04fc,x",
+      "operand": "for_limit3,x",
       "target": 1276,
-      "target_label": "l04fc"
+      "target_label": "for_limit3"
     },
     {
       "addr": 46890,
@@ -98067,9 +98067,9 @@
       "comment_inline": "XOR the step sign,",
       "type": "code",
       "mnemonic": "eor",
-      "operand": "l04f7,x",
+      "operand": "for_step3,x",
       "target": 1271,
-      "target_label": "l04f7"
+      "target_label": "for_step3"
     },
     {
       "addr": 46902,
@@ -98081,9 +98081,9 @@
       "comment_inline": "XOR the limit sign,",
       "type": "code",
       "mnemonic": "eor",
-      "operand": "l04fc,x",
+      "operand": "for_limit3,x",
       "target": 1276,
-      "target_label": "l04fc"
+      "target_label": "for_limit3"
     },
     {
       "addr": 46905,
@@ -98169,9 +98169,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l04fe,x",
+      "operand": "for_loopback_lo,x",
       "target": 1278,
-      "target_label": "l04fe"
+      "target_label": "for_loopback_lo"
     },
     {
       "addr": 46916,
@@ -98183,9 +98183,9 @@
       "comment_inline": "loop-back pointer high",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l04ff,x",
+      "operand": "for_loopback_hi,x",
       "target": 1279,
-      "target_label": "l04ff"
+      "target_label": "for_loopback_hi"
     },
     {
       "addr": 46919,
@@ -98670,9 +98670,9 @@
       "comment_inline": "sign of STEP...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l04f5,x",
+      "operand": "for_step1,x",
       "target": 1269,
-      "target_label": "l04f5"
+      "target_label": "for_step1"
     },
     {
       "addr": 46999,
@@ -99078,9 +99078,9 @@
       "comment_inline": "pointer high (+1)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0501,y",
+      "operand": "for_set_ptr_hi,y",
       "target": 1281,
-      "target_label": "l0501"
+      "target_label": "for_set_ptr_hi"
     },
     {
       "addr": 47076,
@@ -99105,9 +99105,9 @@
       "comment_inline": "type (+2)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0502,y",
+      "operand": "for_set_type,y",
       "target": 1282,
-      "target_label": "l0502"
+      "target_label": "for_set_type"
     },
     {
       "addr": 47081,
@@ -99230,9 +99230,9 @@
       "comment_inline": "limit byte 0 (+8),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0508,y",
+      "operand": "for_set_limit0,y",
       "target": 1288,
-      "target_label": "l0508"
+      "target_label": "for_set_limit0"
     },
     {
       "addr": 47103,
@@ -99257,9 +99257,9 @@
       "comment_inline": "(+9),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0509,y",
+      "operand": "for_set_limit1,y",
       "target": 1289,
-      "target_label": "l0509"
+      "target_label": "for_set_limit1"
     },
     {
       "addr": 47108,
@@ -99284,9 +99284,9 @@
       "comment_inline": "(+A),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l050a,y",
+      "operand": "for_set_limit2,y",
       "target": 1290,
-      "target_label": "l050a"
+      "target_label": "for_set_limit2"
     },
     {
       "addr": 47113,
@@ -99311,9 +99311,9 @@
       "comment_inline": "(+B)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l050b,y",
+      "operand": "for_set_limit3,y",
       "target": 1291,
-      "target_label": "l050b"
+      "target_label": "for_set_limit3"
     },
     {
       "addr": 47118,
@@ -99463,9 +99463,9 @@
       "comment_inline": "step byte 0 (+3),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0503,y",
+      "operand": "for_set_step0,y",
       "target": 1283,
-      "target_label": "l0503"
+      "target_label": "for_set_step0"
     },
     {
       "addr": 47144,
@@ -99490,9 +99490,9 @@
       "comment_inline": "(+4),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0504,y",
+      "operand": "for_set_step1,y",
       "target": 1284,
-      "target_label": "l0504"
+      "target_label": "for_set_step1"
     },
     {
       "addr": 47149,
@@ -99517,9 +99517,9 @@
       "comment_inline": "(+5),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0505,y",
+      "operand": "for_set_step2,y",
       "target": 1285,
-      "target_label": "l0505"
+      "target_label": "for_set_step2"
     },
     {
       "addr": 47154,
@@ -99544,9 +99544,9 @@
       "comment_inline": "(+6)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0506,y",
+      "operand": "for_set_step3,y",
       "target": 1286,
-      "target_label": "l0506"
+      "target_label": "for_set_step3"
     },
     {
       "addr": 47159,
@@ -99607,9 +99607,9 @@
       "comment_inline": "low (+D),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l050d,y",
+      "operand": "for_set_loop_lo,y",
       "target": 1293,
-      "target_label": "l050d"
+      "target_label": "for_set_loop_lo"
     },
     {
       "addr": 47169,
@@ -99634,9 +99634,9 @@
       "comment_inline": "(+E)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l050e,y",
+      "operand": "for_set_loop_hi,y",
       "target": 1294,
-      "target_label": "l050e"
+      "target_label": "for_set_loop_hi"
     },
     {
       "addr": 47174,
@@ -100339,9 +100339,9 @@
       "comment_inline": "return position low byte",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l05cb,x",
+      "operand": "gosub_return_lo,x",
       "target": 1483,
-      "target_label": "l05cb"
+      "target_label": "gosub_return_lo"
     },
     {
       "addr": 47298,
@@ -100353,9 +100353,9 @@
       "comment_inline": "...high byte",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l05e5,x",
+      "operand": "gosub_return_hi,x",
       "target": 1509,
-      "target_label": "l05e5"
+      "target_label": "gosub_return_hi"
     },
     {
       "addr": 47301,
@@ -102121,9 +102121,9 @@
       "comment_inline": "save the handle",
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47578,
@@ -102182,9 +102182,9 @@
       "comment_inline": "Save the handle",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47587,
@@ -102266,9 +102266,9 @@
       "comment_inline": "store it (&4D),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47600,
@@ -102302,9 +102302,9 @@
       "comment_inline": "Handle",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47606,
@@ -102463,9 +102463,9 @@
       "comment_inline": "into the buffer (reversed),",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05ff,x",
+      "operand": "strbuf_base,x",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 47632,
@@ -102932,9 +102932,9 @@
       ],
       "type": "code",
       "mnemonic": "ror",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47700,
@@ -102945,9 +102945,9 @@
       "comment_inline": "shift it into bit 6",
       "type": "code",
       "mnemonic": "lsr",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47702,
@@ -102969,9 +102969,9 @@
       "comment_inline": "store it (&4E)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47706,
@@ -103068,9 +103068,9 @@
       "comment_inline": "flag = -1 (printed),",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47720,
@@ -103108,9 +103108,9 @@
       "comment_inline": "shift out the old bit,",
       "type": "code",
       "mnemonic": "asl",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47724,
@@ -103130,9 +103130,9 @@
       "comment_inline": "rotate it into bit 7",
       "type": "code",
       "mnemonic": "ror",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47727,
@@ -103204,9 +103204,9 @@
       "comment_inline": "Save the flags...",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47739,
@@ -103226,9 +103226,9 @@
       "comment_inline": "&4E,",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47742,
@@ -103284,9 +103284,9 @@
       "comment_inline": "&4E,",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47751,
@@ -103306,9 +103306,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47754,
@@ -103354,9 +103354,9 @@
       "comment_inline": "Still reading the current input line?",
       "type": "code",
       "mnemonic": "bit",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47761,
@@ -103380,9 +103380,9 @@
       "comment_inline": "Prompt flag",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47765,
@@ -103426,9 +103426,9 @@
       ],
       "type": "code",
       "mnemonic": "bit",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47771,
@@ -103513,9 +103513,9 @@
       "comment_inline": "Mark the input line as fresh",
       "type": "code",
       "mnemonic": "asl",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47785,
@@ -103535,9 +103535,9 @@
       "comment_inline": "rotate into bit 7",
       "type": "code",
       "mnemonic": "ror",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47788,
@@ -103548,9 +103548,9 @@
       "comment_inline": "LINE mode?",
       "type": "code",
       "mnemonic": "bit",
-      "operand": "l004d",
+      "operand": "zp_coeff_ptr",
       "target": 77,
-      "target_label": "l004d"
+      "target_label": "zp_coeff_ptr"
     },
     {
       "addr": 47790,
@@ -103758,9 +103758,9 @@
       "comment_inline": "store it (&4E)",
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l004e",
+      "operand": "zp_coeff_ptr_1",
       "target": 78,
-      "target_label": "l004e"
+      "target_label": "zp_coeff_ptr_1"
     },
     {
       "addr": 47821,
@@ -105383,9 +105383,9 @@
       ],
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "l05a3,x",
+      "operand": "repeat_loop_lo,x",
       "target": 1443,
-      "target_label": "l05a3"
+      "target_label": "repeat_loop_lo"
     },
     {
       "addr": 48080,
@@ -105397,9 +105397,9 @@
       "comment_inline": "Reload the loop position: high",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l05b7,x",
+      "operand": "repeat_loop_hi,x",
       "target": 1463,
-      "target_label": "l05b7"
+      "target_label": "repeat_loop_hi"
     },
     {
       "addr": 48083,
@@ -105768,9 +105768,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 48149,
@@ -106893,9 +106893,9 @@
       "comment_inline": "to &3A",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 48306,
@@ -107163,9 +107163,9 @@
       "comment_inline": "cross a page",
       "type": "code",
       "mnemonic": "dec",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 48351,
@@ -107229,9 +107229,9 @@
       "comment_inline": "source high in X,",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 48359,
@@ -107787,9 +107787,9 @@
       ],
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l047f,x",
+      "operand": "var_table_base,x",
       "target": 1151,
-      "target_label": "l047f"
+      "target_label": "var_table_base"
     },
     {
       "addr": 48438,
@@ -108816,9 +108816,9 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "l05ff,y",
+      "operand": "strbuf_base,y",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 48577,
@@ -109004,9 +109004,9 @@
       "comment_inline": "(into the buffer)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l05ff,y",
+      "operand": "strbuf_base,y",
       "target": 1535,
-      "target_label": "l05ff"
+      "target_label": "strbuf_base"
     },
     {
       "addr": 48601,
@@ -110954,9 +110954,9 @@
       "comment_inline": "(store)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l003a",
+      "operand": "zp_fileblk_1",
       "target": 58,
-      "target_label": "l003a"
+      "target_label": "zp_fileblk_1"
     },
     {
       "addr": 48871,
@@ -111077,9 +111077,9 @@
       "comment_inline": "low byte to &45,",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0045",
+      "operand": "zp_fp_temp_2",
       "target": 69,
-      "target_label": "l0045"
+      "target_label": "zp_fp_temp_2"
     },
     {
       "addr": 48890,
@@ -111103,9 +111103,9 @@
       "comment_inline": "to &46",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "l0046",
+      "operand": "zp_fp_temp_3",
       "target": 70,
-      "target_label": "l0046"
+      "target_label": "zp_fp_temp_3"
     },
     {
       "addr": 48894,
@@ -111243,9 +111243,9 @@
       "comment_inline": "&44,",
       "type": "code",
       "mnemonic": "sty",
-      "operand": "l0044",
+      "operand": "zp_fp_temp_1",
       "target": 68,
-      "target_label": "l0044"
+      "target_label": "zp_fp_temp_1"
     },
     {
       "addr": 48917,
@@ -111256,9 +111256,9 @@
       "comment_inline": "&47,",
       "type": "code",
       "mnemonic": "stx",
-      "operand": "l0047",
+      "operand": "zp_fp_temp_4",
       "target": 71,
-      "target_label": "l0047"
+      "target_label": "zp_fp_temp_4"
     },
     {
       "addr": 48919,

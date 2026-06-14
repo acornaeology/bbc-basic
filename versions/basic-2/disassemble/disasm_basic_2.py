@@ -436,6 +436,8 @@ d.label(0x001e, 'zp_count')           # Bytes printed since last newline
 d.label(0x001f, 'zp_listo')           # LISTO flag
 d.label(0x0020, 'zp_trace_flag')      # &00 = trace off, &FF = trace on
 d.label(0x0021, 'zp_trace_max')       # Maximum TRACE line number
+# workspace / zero-page and FOR/REPEAT/GOSUB frame-field labels
+d.label(0x0022, 'zp_trace_max_1')
 d.label(0x0023, 'zp_width')           # WIDTH setting
 d.label(0x0024, 'zp_repeat_level')    # REPEAT stack depth; not saved by PROC
 d.label(0x0025, 'zp_gosub_level')     # GOSUB stack depth; not saved by PROC
@@ -464,6 +466,7 @@ d.label(0x0036, 'zp_strbuf_len')      # Length of the string buffer
 d.label(0x0037, 'zp_general')         # General work area (&37-&3A)
 d.label(0x0038, 'zp_general_1')       # general pointer high byte
 d.label(0x0039, 'zp_fileblk')         # LOAD/SAVE control block (&39-&44)
+d.label(0x003a, 'zp_fileblk_1')
 # Floating point work area B (FWB), same layout as FWA.
 d.label(0x003b, 'zp_fwb_sign')
 d.label(0x003c, 'zp_fwb_ovf')
@@ -474,19 +477,49 @@ d.label(0x0040, 'zp_fwb_m3')
 d.label(0x0041, 'zp_fwb_m4')
 d.label(0x0042, 'zp_fwb_rnd')
 d.label(0x0043, 'zp_fp_temp')         # Floating point temporary area
+d.label(0x0044, 'zp_fp_temp_1')
+d.label(0x0045, 'zp_fp_temp_2')
+d.label(0x0046, 'zp_fp_temp_3')
+d.label(0x0047, 'zp_fp_temp_4')
 d.label(0x0048, 'zp_dp_flag')         # decimal-point-seen flag (conversion)
 d.label(0x0049, 'zp_dec_exp')         # decimal exponent (conversion)
+d.label(0x004a, 'zp_int_exp')
 d.label(0x004b, 'zp_fp_ptr')          # Pointer to a packed fp variable
 d.label(0x004c, 'zp_fp_ptr_1')        # (high byte; used by the FP routines)
+d.label(0x004d, 'zp_coeff_ptr')
+d.label(0x004e, 'zp_coeff_ptr_1')
 d.label(0x00fd, 'zp_error_ptr')       # Pointer to the current error block
 
+d.label(0x00ff, 'zp_escflg')
+d.label(0x0100, 'hw_stack')
+d.label(0x0106, 'frame_local_count')
+d.label(0x01ff, 'hw_stack_top')
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
 # ----------------------------------------------------------------------
 d.label(0x0400, 'resint_at')          # @% print-format resident integer
+d.label(0x0401, 'resint_at_1')
+d.label(0x0402, 'resint_at_2')
+d.label(0x0403, 'resint_at_3')
 for _i, _name in enumerate('abcdefghijklmnopqrstuvwxyz'):
     d.label(0x0404 + 4 * _i, f'resint_{_name}')  # A%..Z%
+d.label(0x043d, 'resint_o_1')
+d.label(0x0441, 'resint_p_1')
+d.label(0x047f, 'var_table_base')
 d.label(0x0480, 'var_ptr_table')      # Variable lookup table (by initial)
+d.label(0x04f1, 'for_var_lo')
+d.label(0x04f2, 'for_var_hi')
+d.label(0x04f3, 'for_type')
+d.label(0x04f4, 'for_step0')
+d.label(0x04f5, 'for_step1')
+d.label(0x04f6, 'for_step2')
+d.label(0x04f7, 'for_step3')
+d.label(0x04f9, 'for_limit0')
+d.label(0x04fa, 'for_limit1')
+d.label(0x04fb, 'for_limit2')
+d.label(0x04fc, 'for_limit3')
+d.label(0x04fe, 'for_loopback_lo')
+d.label(0x04ff, 'for_loopback_hi')
 # Control-flow stacks (page 5). Three independent LIFO arrays, one per
 # loop construct, each indexed by its own zero-page level counter:
 #   for_stack    &0500  15-byte frames, counter zp_for_level    (&26)
@@ -496,11 +529,30 @@ d.label(0x0480, 'var_ptr_table')      # Variable lookup table (by initial)
 # stack, and -- unlike those two -- are NOT saved/restored across a
 # PROC/FN call. See call_proc_fn (&B197).
 d.label(0x0500, 'for_stack')          # FOR stack (&0500-&0595, 10 frames)
+d.label(0x0501, 'for_set_ptr_hi')
+d.label(0x0502, 'for_set_type')
+d.label(0x0503, 'for_set_step0')
+d.label(0x0504, 'for_set_step1')
+d.label(0x0505, 'for_set_step2')
+d.label(0x0506, 'for_set_step3')
+d.label(0x0508, 'for_set_limit0')
+d.label(0x0509, 'for_set_limit1')
+d.label(0x050a, 'for_set_limit2')
+d.label(0x050b, 'for_set_limit3')
+d.label(0x050d, 'for_set_loop_lo')
+d.label(0x050e, 'for_set_loop_hi')
+d.label(0x05a3, 'repeat_loop_lo')
 d.label(0x05a4, 'repeat_stack')       # REPEAT loop-start ptrs (low bytes)
+d.label(0x05b7, 'repeat_loop_hi')
 d.label(0x05b8, 'repeat_stack_hi')    # REPEAT loop-start ptrs (high bytes)
+d.label(0x05cb, 'gosub_return_lo')
 d.label(0x05cc, 'gosub_stack')        # GOSUB return ptrs (low bytes)
+d.label(0x05e5, 'gosub_return_hi')
 d.label(0x05e6, 'gosub_stack_hi')     # GOSUB return ptrs (high bytes)
+d.label(0x05ff, 'strbuf_base')
 d.label(0x0600, 'string_work')        # String work area / CALL block
+d.label(0x06ff, 'call_block_base')
+
 d.label(0x0700, 'line_input_buf')     # Line input buffer
 
 # language_entry (&8000): the ROM language entry point.
@@ -11367,6 +11419,7 @@ d.comment(0xbff6, 'next statement', align=Align.INLINE)
 
 
 d.label(0xbff6, 'report_done')
+
 
 ir = d.disassemble()
 output = str(
