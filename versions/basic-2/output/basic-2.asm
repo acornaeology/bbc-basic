@@ -2564,26 +2564,26 @@ oscli            = &fff7
 .assign_string
     jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..      ; Unstack the variable descriptor address
 ; &8c21 referenced 2 times by &b300, &bae0
-.sub_c8c21
+.assign_string_to
     lda zp_iwa_2                                                      ; 8c21: a5 2c       .,       ; Variable type
     cmp #&80                                                          ; 8c23: c9 80       ..       ; An absolute $-string address?
-    beq c8ca2                                                         ; 8c25: f0 7b       .{       ; yes
+    beq assign_str_addr                                               ; 8c25: f0 7b       .{       ; yes
     ldy #2                                                            ; 8c27: a0 02       ..       ; Bytes currently allocated
     lda (zp_iwa),y                                                    ; 8c29: b1 2a       .*       ; read it
     cmp zp_strbuf_len                                                 ; 8c2b: c5 36       .6       ; Does the new string fit the existing allocation?
-    bcs c8c84                                                         ; 8c2d: b0 55       .U       ; yes: reuse the allocation
+    bcs assign_str_store                                              ; 8c2d: b0 55       .U       ; yes: reuse the allocation
     lda zp_vartop                                                     ; 8c2f: a5 02       ..       ; Tentative new address = heap top
     sta zp_iwa_2                                                      ; 8c31: 85 2c       .,       ; (low)
     lda zp_vartop_1                                                   ; 8c33: a5 03       ..       ; high...
     sta zp_iwa_3                                                      ; 8c35: 85 2d       .-       ; (high)
     lda zp_strbuf_len                                                 ; 8c37: a5 36       .6       ; Round the size up (min 8, granularity 8)
     cmp #8                                                            ; 8c39: c9 08       ..       ; at least 8?
-    bcc c8c43                                                         ; 8c3b: 90 06       ..       ; under 8: take it as is
+    bcc assign_str_alloc_size                                         ; 8c3b: 90 06       ..       ; under 8: take it as is
     adc #7                                                            ; 8c3d: 69 07       i.       ; else add 7 (round up),
-    bcc c8c43                                                         ; 8c3f: 90 02       ..       ; no overflow
+    bcc assign_str_alloc_size                                         ; 8c3f: 90 02       ..       ; no overflow
     lda #&ff                                                          ; 8c41: a9 ff       ..       ; cap at 255
 ; &8c43 referenced 2 times by &8c3b, &8c3f
-.c8c43
+.assign_str_alloc_size
     clc                                                               ; 8c43: 18          .        ; (clear carry)
     pha                                                               ; 8c44: 48          H        ; Save the new allocation size
     tax                                                               ; 8c45: aa          .        ; keep the size in X
@@ -2591,11 +2591,11 @@ oscli            = &fff7
     ldy #0                                                            ; 8c48: a0 00       ..       ; offset 0 (data low)
     adc (zp_iwa),y                                                    ; 8c4a: 71 2a       q*       ; (data address + allocated == top?)
     eor zp_vartop                                                     ; 8c4c: 45 02       E.       ; compare with heap top low
-    bne c8c5f                                                         ; 8c4e: d0 0f       ..       ; no: allocate fresh space
+    bne assign_str_alloc                                              ; 8c4e: d0 0f       ..       ; no: allocate fresh space
     iny                                                               ; 8c50: c8          .        ; high byte:
     adc (zp_iwa),y                                                    ; 8c51: 71 2a       q*       ; - allocated,
     eor zp_vartop_1                                                   ; 8c53: 45 03       E.       ; == heap top high?
-    bne c8c5f                                                         ; 8c55: d0 08       ..       ; no: allocate fresh space
+    bne assign_str_alloc                                              ; 8c55: d0 08       ..       ; no: allocate fresh space
     sta zp_iwa_3                                                      ; 8c57: 85 2d       .-       ; yes: extend in place from this block
     txa                                                               ; 8c59: 8a          .        ; new size...
     iny                                                               ; 8c5a: c8          .        ; offset 2 (old allocation)
@@ -2603,7 +2603,7 @@ oscli            = &fff7
     sbc (zp_iwa),y                                                    ; 8c5c: f1 2a       .*       ; reclaim the old allocation
     tax                                                               ; 8c5e: aa          .        ; X = extra bytes needed
 ; &8c5f referenced 2 times by &8c4e, &8c55
-.c8c5f
+.assign_str_alloc
     txa                                                               ; 8c5f: 8a          .        ; New heap top = top + allocation
     clc                                                               ; 8c60: 18          .        ; (clear carry)
     adc zp_vartop                                                     ; 8c61: 65 02       e.       ; - heap top low,
@@ -2621,13 +2621,13 @@ oscli            = &fff7
     sta (zp_iwa),y                                                    ; 8c76: 91 2a       .*       ; (store)
     dey                                                               ; 8c78: 88          .        ; Store the new data address
     lda zp_iwa_3                                                      ; 8c79: a5 2d       .-       ; data address high
-    beq c8c84                                                         ; 8c7b: f0 07       ..       ; extended in place: keep the address
+    beq assign_str_store                                              ; 8c7b: f0 07       ..       ; extended in place: keep the address
     sta (zp_iwa),y                                                    ; 8c7d: 91 2a       .*       ; store the data high,
     dey                                                               ; 8c7f: 88          .        ; offset 0
     lda zp_iwa_2                                                      ; 8c80: a5 2c       .,       ; data low...
     sta (zp_iwa),y                                                    ; 8c82: 91 2a       .*       ; (store)
 ; &8c84 referenced 2 times by &8c2d, &8c7b
-.c8c84
+.assign_str_store
     ldy #3                                                            ; 8c84: a0 03       ..       ; Store the current length
     lda zp_strbuf_len                                                 ; 8c86: a5 36       .6       ; the length
     sta (zp_iwa),y                                                    ; 8c88: 91 2a       .*       ; (store)
@@ -2640,29 +2640,29 @@ oscli            = &fff7
     lda (zp_iwa),y                                                    ; 8c93: b1 2a       .*       ; low...
     sta zp_iwa_2                                                      ; 8c95: 85 2c       .,       ; (low)
 ; &8c97 referenced 1 time by &8c9f
-.loop_c8c97
+.assign_str_copy_loop
     lda string_work,y                                                 ; 8c97: b9 00 06    ...      ; Copy the string buffer to the storage
     sta (zp_iwa_2),y                                                  ; 8c9a: 91 2c       .,       ; to storage
     iny                                                               ; 8c9c: c8          .        ; next
     cpy zp_strbuf_len                                                 ; 8c9d: c4 36       .6       ; done?
-    bne loop_c8c97                                                    ; 8c9f: d0 f6       ..       ; loop
+    bne assign_str_copy_loop                                          ; 8c9f: d0 f6       ..       ; loop
 ; &8ca1 referenced 1 time by &8c8a
 .return_5
     rts                                                               ; 8ca1: 60          `        ; Return
 ; &8ca2 referenced 1 time by &8c25
-.c8ca2
+.assign_str_addr
     jsr sub_cbeba                                                     ; 8ca2: 20 ba be     ..      ; $addr: prepare the destination
     cpy #0                                                            ; 8ca5: c0 00       ..       ; empty string?
-    beq c8cb4                                                         ; 8ca7: f0 0b       ..       ; yes: just the terminator
+    beq assign_str_addr_cr                                            ; 8ca7: f0 0b       ..       ; yes: just the terminator
 ; &8ca9 referenced 1 time by &8caf
-.loop_c8ca9
+.assign_str_addr_loop
     lda string_work,y                                                 ; 8ca9: b9 00 06    ...      ; Copy the string to the address
     sta (zp_iwa),y                                                    ; 8cac: 91 2a       .*       ; store it
     dey                                                               ; 8cae: 88          .        ; next (downwards)
-    bne loop_c8ca9                                                    ; 8caf: d0 f8       ..       ; loop
+    bne assign_str_addr_loop                                          ; 8caf: d0 f8       ..       ; loop
     lda string_work                                                   ; 8cb1: ad 00 06    ...      ; First character
 ; &8cb4 referenced 1 time by &8ca7
-.c8cb4
+.assign_str_addr_cr
     sta (zp_iwa),y                                                    ; 8cb4: 91 2a       .*       ; Store it (with the CR terminator following)
     rts                                                               ; 8cb6: 60          `        ; Return
 ; &8cb7 referenced 3 times by &8c6d, &9553, &be41
@@ -2691,12 +2691,12 @@ oscli            = &fff7
 .unstack_value_to_var
     lda zp_fileblk                                                    ; 8cc1: a5 39       .9       ; Type/size byte
     cmp #&80                                                          ; 8cc3: c9 80       ..       ; $addr string?
-    beq c8cee                                                         ; 8cc5: f0 27       .'       ; yes
-    bcc c8d03                                                         ; 8cc7: 90 3a       .:       ; numeric?
+    beq unstack_addr                                                  ; 8cc5: f0 27       .'       ; yes
+    bcc unstack_numeric                                               ; 8cc7: 90 3a       .:       ; numeric?
     ldy #0                                                            ; 8cc9: a0 00       ..       ; String variable: length on the stack
     lda (zp_stack_ptr),y                                              ; 8ccb: b1 04       ..       ; read the length,
     tax                                                               ; 8ccd: aa          .        ; into X as the byte count
-    beq c8ce5                                                         ; 8cce: f0 15       ..       ; empty: just set the length
+    beq unstack_str_setlen                                            ; 8cce: f0 15       ..       ; empty: just set the length
     lda (zp_general),y                                                ; 8cd0: b1 37       .7       ; Data address - 1 (for 1-based copy)
     sbc #1                                                            ; 8cd2: e9 01       ..       ; low byte - 1,
     sta zp_fileblk                                                    ; 8cd4: 85 39       .9       ; dest pointer low (&39),
@@ -2705,47 +2705,47 @@ oscli            = &fff7
     sbc #0                                                            ; 8cd9: e9 00       ..       ; - borrow,
     sta l003a                                                         ; 8cdb: 85 3a       .:       ; dest pointer high (&3A)
 ; &8cdd referenced 1 time by &8ce3
-.loop_c8cdd
+.unstack_str_copy
     lda (zp_stack_ptr),y                                              ; 8cdd: b1 04       ..       ; Copy the string bytes
     sta (zp_fileblk),y                                                ; 8cdf: 91 39       .9       ; into the heap allocation,
     iny                                                               ; 8ce1: c8          .        ; next byte,
     dex                                                               ; 8ce2: ca          .        ; count down
-    bne loop_c8cdd                                                    ; 8ce3: d0 f8       ..       ; loop
+    bne unstack_str_copy                                              ; 8ce3: d0 f8       ..       ; loop
 ; &8ce5 referenced 1 time by &8cce
-.c8ce5
+.unstack_str_setlen
     lda (zp_stack_ptr,x)                                              ; 8ce5: a1 04       ..       ; String length
     ldy #3                                                            ; 8ce7: a0 03       ..       ; descriptor offset 3
 ; &8ce9 referenced 1 time by &8d01
-.loop_c8ce9
+.unstack_str_drop
     sta (zp_general),y                                                ; 8ce9: 91 37       .7       ; Store the length
     jmp cbddc                                                         ; 8ceb: 4c dc bd    L..      ; drop the value from the stack
 ; &8cee referenced 1 time by &8cc5
-.c8cee
+.unstack_addr
     ldy #0                                                            ; 8cee: a0 00       ..       ; $addr: length on the stack
     lda (zp_stack_ptr),y                                              ; 8cf0: b1 04       ..       ; read the length,
     tax                                                               ; 8cf2: aa          .        ; into X as the count
-    beq c8cff                                                         ; 8cf3: f0 0a       ..       ; empty: just the terminator
+    beq unstack_addr_cr                                               ; 8cf3: f0 0a       ..       ; empty: just the terminator
 ; &8cf5 referenced 1 time by &8cfd
-.loop_c8cf5
+.unstack_addr_copy
     iny                                                               ; 8cf5: c8          .        ; Copy the string to the address
     lda (zp_stack_ptr),y                                              ; 8cf6: b1 04       ..       ; read a char from the stack,
     dey                                                               ; 8cf8: 88          .        ; back to the destination offset,
     sta (zp_general),y                                                ; 8cf9: 91 37       .7       ; store it at the address,
     iny                                                               ; 8cfb: c8          .        ; advance,
     dex                                                               ; 8cfc: ca          .        ; count down
-    bne loop_c8cf5                                                    ; 8cfd: d0 f6       ..       ; loop
+    bne unstack_addr_copy                                             ; 8cfd: d0 f6       ..       ; loop
 ; &8cff referenced 1 time by &8cf3
-.c8cff
+.unstack_addr_cr
     lda #&0d                                                          ; 8cff: a9 0d       ..       ; CR terminator
-    bne loop_c8ce9                                                    ; 8d01: d0 e6       ..       ; store it
+    bne unstack_str_drop                                              ; 8d01: d0 e6       ..       ; store it
 ; &8d03 referenced 1 time by &8cc7
-.c8d03
+.unstack_numeric
     ldy #0                                                            ; 8d03: a0 00       ..       ; Numeric: copy byte 0
     lda (zp_stack_ptr),y                                              ; 8d05: b1 04       ..       ; read it,
     sta (zp_general),y                                                ; 8d07: 91 37       .7       ; store it,
     iny                                                               ; 8d09: c8          .        ; next byte
     cpy zp_fileblk                                                    ; 8d0a: c4 39       .9       ; all bytes done?
-    bcs c8d26                                                         ; 8d0c: b0 18       ..       ; yes
+    bcs unstack_numeric_drop                                          ; 8d0c: b0 18       ..       ; yes
     lda (zp_stack_ptr),y                                              ; 8d0e: b1 04       ..       ; Copy byte 1
     sta (zp_general),y                                                ; 8d10: 91 37       .7       ; store it
     iny                                                               ; 8d12: c8          .        ; byte 2
@@ -2756,26 +2756,26 @@ oscli            = &fff7
     sta (zp_general),y                                                ; 8d1a: 91 37       .7       ; store it,
     iny                                                               ; 8d1c: c8          .        ; next byte
     cpy zp_fileblk                                                    ; 8d1d: c4 39       .9       ; all bytes done?
-    bcs c8d26                                                         ; 8d1f: b0 05       ..       ; yes
+    bcs unstack_numeric_drop                                          ; 8d1f: b0 05       ..       ; yes
     lda (zp_stack_ptr),y                                              ; 8d21: b1 04       ..       ; byte 4 (real only)
     sta (zp_general),y                                                ; 8d23: 91 37       .7       ; store it,
     iny                                                               ; 8d25: c8          .        ; next byte
 ; &8d26 referenced 2 times by &8d0c, &8d1f
-.c8d26
+.unstack_numeric_drop
     tya                                                               ; 8d26: 98          .        ; Bytes copied
     clc                                                               ; 8d27: 18          .        ; carry clear for the stack drop
     jmp cbde1                                                         ; 8d28: 4c e1 bd    L..      ; drop them from the stack
 ; &8d2b referenced 1 time by &8d9f
-.loop_c8d2b
+.print_file
     dec zp_text_ptr_off                                               ; 8d2b: c6 0a       ..       ; Back up over "#"
     jsr sub_cbfa9                                                     ; 8d2d: 20 a9 bf     ..      ; Get the file handle
 ; &8d30 referenced 4 times by &8d55, &8d62, &8d6a, &8d75
-.c8d30
+.print_file_loop
     tya                                                               ; 8d30: 98          .        ; Save the handle
     pha                                                               ; 8d31: 48          H        ; (push it)
     jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..      ; Skip spaces
     cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,       ; ',' another value?
-    bne c8d77                                                         ; 8d37: d0 3e       .>       ; no: done
+    bne print_file_done                                               ; 8d37: d0 3e       .>       ; no: done
     jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).      ; Evaluate the value
     jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..      ; pack it (in case real)
     pla                                                               ; 8d3f: 68          h        ; Recover the handle
@@ -2783,62 +2783,62 @@ oscli            = &fff7
     lda zp_var_type                                                   ; 8d41: a5 27       .'       ; Type byte
     jsr osbput                                                        ; 8d43: 20 d4 ff     ..      ; write it
     tax                                                               ; 8d46: aa          .        ; examine the type byte
-    beq c8d64                                                         ; 8d47: f0 1b       ..       ; string?
-    bmi c8d57                                                         ; 8d49: 30 0c       0.       ; real?
+    beq print_file_str                                                ; 8d47: f0 1b       ..       ; string?
+    bmi print_file_real                                               ; 8d49: 30 0c       0.       ; real?
     ldx #3                                                            ; 8d4b: a2 03       ..       ; Integer: 4 bytes
 ; &8d4d referenced 1 time by &8d53
-.loop_c8d4d
+.print_file_int_loop
     lda zp_iwa,x                                                      ; 8d4d: b5 2a       .*       ; Write a byte
     jsr osbput                                                        ; 8d4f: 20 d4 ff     ..      ; send it,
     dex                                                               ; 8d52: ca          .        ; next byte (MSB first)
-    bpl loop_c8d4d                                                    ; 8d53: 10 f8       ..       ; loop
-    bmi c8d30                                                         ; 8d55: 30 d9       0.       ; next value
+    bpl print_file_int_loop                                           ; 8d53: 10 f8       ..       ; loop
+    bmi print_file_loop                                               ; 8d55: 30 d9       0.       ; next value
 ; &8d57 referenced 1 time by &8d49
-.c8d57
+.print_file_real
     ldx #4                                                            ; 8d57: a2 04       ..       ; Real: 5 bytes
 ; &8d59 referenced 1 time by &8d60
-.loop_c8d59
+.print_file_real_loop
     lda fp_temp1,x                                                    ; 8d59: bd 6c 04    .l.      ; Write a byte
     jsr osbput                                                        ; 8d5c: 20 d4 ff     ..      ; send it,
     dex                                                               ; 8d5f: ca          .        ; next byte (MSB first)
-    bpl loop_c8d59                                                    ; 8d60: 10 f7       ..       ; loop
-    bmi c8d30                                                         ; 8d62: 30 cc       0.       ; next value
+    bpl print_file_real_loop                                          ; 8d60: 10 f7       ..       ; loop
+    bmi print_file_loop                                               ; 8d62: 30 cc       0.       ; next value
 ; &8d64 referenced 1 time by &8d47
-.c8d64
+.print_file_str
     lda zp_strbuf_len                                                 ; 8d64: a5 36       .6       ; String: write the length
     jsr osbput                                                        ; 8d66: 20 d4 ff     ..      ; send it,
     tax                                                               ; 8d69: aa          .        ; empty string?
-    beq c8d30                                                         ; 8d6a: f0 c4       ..       ; empty
+    beq print_file_loop                                               ; 8d6a: f0 c4       ..       ; empty
 ; &8d6c referenced 1 time by &8d73
-.loop_c8d6c
+.print_file_str_loop
     lda l05ff,x                                                       ; 8d6c: bd ff 05    ...      ; Write a character
     jsr osbput                                                        ; 8d6f: 20 d4 ff     ..      ; send it,
     dex                                                               ; 8d72: ca          .        ; next character (written in reverse)
-    bne loop_c8d6c                                                    ; 8d73: d0 f7       ..       ; loop
-    beq c8d30                                                         ; 8d75: f0 b9       ..       ; next value
+    bne print_file_str_loop                                           ; 8d73: d0 f7       ..       ; loop
+    beq print_file_loop                                               ; 8d75: f0 b9       ..       ; next value
 ; &8d77 referenced 1 time by &8d37
-.c8d77
+.print_file_done
     pla                                                               ; 8d77: 68          h        ; Recover the handle
     sty zp_text_ptr_off                                               ; 8d78: 84 0a       ..       ; sync the pointer
     jmp stmt_check_end                                                ; 8d7a: 4c 98 8b    L..      ; next statement
 ; &8d7d referenced 3 times by &8dc8, &8dcc, &8dd0
-.c8d7d
+.print_newline
     jsr sub_cbc25                                                     ; 8d7d: 20 25 bc     %.      ; Print a newline
 ; &8d80 referenced 3 times by &8d8e, &8d92, &8d96
-.c8d80
+.print_done
     jmp stmt_backup_end                                               ; 8d80: 4c 96 8b    L..      ; next statement
 ; &8d83 referenced 1 time by &8ddc
-.loop_c8d83
+.print_semicolon
     lda #0                                                            ; 8d83: a9 00       ..       ; Semicolon: clear the field width...
     sta zp_print_bytes                                                ; 8d85: 85 14       ..       ; the field width,
     sta zp_print_flag                                                 ; 8d87: 85 15       ..       ; ...and flags
     jsr skip_spaces                                                   ; 8d89: 20 97 8a     ..      ; Next non-space character
     cmp #&3a ; ':'                                                    ; 8d8c: c9 3a       .:       ; ':' end?
-    beq c8d80                                                         ; 8d8e: f0 f0       ..       ; yes: end without a newline
+    beq print_done                                                    ; 8d8e: f0 f0       ..       ; yes: end without a newline
     cmp #&0d                                                          ; 8d90: c9 0d       ..       ; end of line?
-    beq c8d80                                                         ; 8d92: f0 ec       ..       ; yes
+    beq print_done                                                    ; 8d92: f0 ec       ..       ; yes
     cmp #&8b                                                          ; 8d94: c9 8b       ..       ; ELSE?
-    beq c8d80                                                         ; 8d96: f0 e8       ..       ; yes
+    beq print_done                                                    ; 8d96: f0 e8       ..       ; yes
     bne c8dd2                                                         ; 8d98: d0 38       .8       ; otherwise continue the print loop
 ; ***************************************************************************************
 ; PRINT
@@ -2856,7 +2856,7 @@ oscli            = &fff7
 .stmt_print
     jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..      ; Next non-space character
     cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
-    beq loop_c8d2b                                                    ; 8d9f: f0 8a       ..       ; '#': PRINT# to a file
+    beq print_file                                                    ; 8d9f: f0 8a       ..       ; '#': PRINT# to a file
     dec zp_text_ptr_off                                               ; 8da1: c6 0a       ..       ; Back up over the character
     jmp c8dbb                                                         ; 8da3: 4c bb 8d    L..      ; enter the print loop
 ; &8da6 referenced 1 time by &8dd8
@@ -2887,11 +2887,11 @@ oscli            = &fff7
 .c8dc3
     jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..      ; Next non-space character
     cmp #&3a ; ':'                                                    ; 8dc6: c9 3a       .:       ; ':' end of statement?
-    beq c8d7d                                                         ; 8dc8: f0 b3       ..       ; yes
+    beq print_newline                                                 ; 8dc8: f0 b3       ..       ; yes
     cmp #&0d                                                          ; 8dca: c9 0d       ..       ; end of line?
-    beq c8d7d                                                         ; 8dcc: f0 af       ..       ; yes
+    beq print_newline                                                 ; 8dcc: f0 af       ..       ; yes
     cmp #&8b                                                          ; 8dce: c9 8b       ..       ; ELSE?
-    beq c8d7d                                                         ; 8dd0: f0 ab       ..       ; yes
+    beq print_newline                                                 ; 8dd0: f0 ab       ..       ; yes
 ; &8dd2 referenced 1 time by &8d98
 .c8dd2
     cmp #&7e ; '~'                                                    ; 8dd2: c9 7e       .~       ; '~' hex mode?
@@ -2899,7 +2899,7 @@ oscli            = &fff7
     cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
     beq loop_c8da6                                                    ; 8dd8: f0 cc       ..       ; yes
     cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
-    beq loop_c8d83                                                    ; 8ddc: f0 a5       ..       ; yes
+    beq print_semicolon                                               ; 8ddc: f0 a5       ..       ; yes
     jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
     bcc c8dc3                                                         ; 8de1: 90 e0       ..       ; handled: next item
     lda zp_print_bytes                                                ; 8de3: a5 14       ..       ; Save the field width...
@@ -11481,7 +11481,7 @@ oscli            = &fff7
     lda zp_iwa_3                                                      ; b2f9: a5 2d       .-       ; String formal: argument type
     bne cb2b5                                                         ; b2fb: d0 b8       ..       ; numeric argument: Arguments error
     jsr unstack_string                                                ; b2fd: 20 cb bd     ..      ; Unstack the string
-    jsr sub_c8c21                                                     ; b300: 20 21 8c     !.      ; assign it
+    jsr assign_string_to                                              ; b300: 20 21 8c     !.      ; assign it
 ; &b303 referenced 1 time by &b2f6
 .cb303
     dec l004d                                                         ; b303: c6 4d       .M       ; One parameter bound
@@ -13058,7 +13058,7 @@ oscli            = &fff7
 .cbadc
     lda #0                                                            ; badc: a9 00       ..       ; LINE: string type
     sta zp_var_type                                                   ; bade: 85 27       .'       ; type 0 (string)
-    jsr sub_c8c21                                                     ; bae0: 20 21 8c     !.      ; assign the line as a string
+    jsr assign_string_to                                              ; bae0: 20 21 8c     !.      ; assign the line as a string
     jmp cba5a                                                         ; bae3: 4c 5a ba    LZ.      ; next variable
 ; ***************************************************************************************
 ; RESTORE
@@ -14522,7 +14522,6 @@ save pydis_start, pydis_end
 ;     zp_repeat_level:             5
 ;     zp_trace_flag:               5
 ;     asm_mistake:                 4
-;     c8d30:                       4
 ;     c9372:                       4
 ;     c9479:                       4
 ;     c94b3:                       4
@@ -14554,6 +14553,7 @@ save pydis_start, pydis_end
 ;     missing_comma:               4
 ;     parse_dec_overflow:          4
 ;     point_fp_temp4:              4
+;     print_file_loop:             4
 ;     read_via_ptr_general:        4
 ;     reserve_stack:               4
 ;     resint_p:                    4
@@ -14573,8 +14573,6 @@ save pydis_start, pydis_end
 ;     asm_zp_or_abs:               3
 ;     assign_string:               3
 ;     c8858:                       3
-;     c8d7d:                       3
-;     c8d80:                       3
 ;     c8dbb:                       3
 ;     c8dc3:                       3
 ;     c8e0e:                       3
@@ -14623,8 +14621,10 @@ save pydis_start, pydis_end
 ;     not_name_char:               3
 ;     parse_number:                3
 ;     point_fp_temp2:              3
+;     print_done:                  3
 ;     print_line_number:           3
 ;     print_listo_indent:          3
+;     print_newline:               3
 ;     print_token:                 3
 ;     return_12:                   3
 ;     return_19:                   3
@@ -14655,10 +14655,10 @@ save pydis_start, pydis_end
 ;     asm_set_operand:             2
 ;     asm_three_byte:              2
 ;     asm_two_byte:                2
-;     c8c43:                       2
-;     c8c5f:                       2
-;     c8c84:                       2
-;     c8d26:                       2
+;     assign_str_alloc:            2
+;     assign_str_alloc_size:       2
+;     assign_str_store:            2
+;     assign_string_to:            2
 ;     c8e5f:                       2
 ;     c8e98:                       2
 ;     c8ea4:                       2
@@ -14848,7 +14848,6 @@ save pydis_start, pydis_end
 ;     stmt_data:                   2
 ;     stmt_eol:                    2
 ;     sub_c887c:                   2
-;     sub_c8c21:                   2
 ;     sub_c8e8a:                   2
 ;     sub_c8f69:                   2
 ;     sub_c8f92:                   2
@@ -14877,6 +14876,7 @@ save pydis_start, pydis_end
 ;     tok_write_token:             2
 ;     trace_line:                  2
 ;     try_variable_assignment:     2
+;     unstack_numeric_drop:        2
 ;     usr_call:                    2
 ;     wrchv:                       2
 ;     zp_rnd_seed_3:               2
@@ -14942,19 +14942,14 @@ save pydis_start, pydis_end
 ;     asm_try_indirect:            1
 ;     assembler_exit:              1
 ;     assign_new_var:              1
+;     assign_str_addr:             1
+;     assign_str_addr_cr:          1
+;     assign_str_addr_loop:        1
+;     assign_str_copy_loop:        1
 ;     brkv:                        1
 ;     brkv+1:                      1
 ;     c883a:                       1
 ;     c886a:                       1
-;     c8ca2:                       1
-;     c8cb4:                       1
-;     c8ce5:                       1
-;     c8cee:                       1
-;     c8cff:                       1
-;     c8d03:                       1
-;     c8d57:                       1
-;     c8d64:                       1
-;     c8d77:                       1
 ;     c8dd2:                       1
 ;     c8e5b:                       1
 ;     c8ea7:                       1
@@ -15348,16 +15343,6 @@ save pydis_start, pydis_end
 ;     loop_c8864:                  1
 ;     loop_c8867:                  1
 ;     loop_c888d:                  1
-;     loop_c8c97:                  1
-;     loop_c8ca9:                  1
-;     loop_c8cdd:                  1
-;     loop_c8ce9:                  1
-;     loop_c8cf5:                  1
-;     loop_c8d2b:                  1
-;     loop_c8d4d:                  1
-;     loop_c8d59:                  1
-;     loop_c8d6c:                  1
-;     loop_c8d83:                  1
 ;     loop_c8da6:                  1
 ;     loop_c8dad:                  1
 ;     loop_c8db5:                  1
@@ -15519,7 +15504,15 @@ save pydis_start, pydis_end
 ;     parse_dec_shift_loop:        1
 ;     parse_decimal_u16:           1
 ;     parse_exponent:              1
+;     print_file:                  1
+;     print_file_done:             1
+;     print_file_int_loop:         1
+;     print_file_real:             1
+;     print_file_real_loop:        1
+;     print_file_str:              1
+;     print_file_str_loop:         1
 ;     print_hex_digit:             1
+;     print_semicolon:             1
 ;     repeat_stack:                1
 ;     repeat_stack_hi:             1
 ;     resint_a:                    1
@@ -15611,6 +15604,13 @@ save pydis_start, pydis_end
 ;     tok_try_keyword:             1
 ;     tokenise_line:               1
 ;     tokenise_resume:             1
+;     unstack_addr:                1
+;     unstack_addr_copy:           1
+;     unstack_addr_cr:             1
+;     unstack_numeric:             1
+;     unstack_str_copy:            1
+;     unstack_str_drop:            1
+;     unstack_str_setlen:          1
 ;     unstack_value_to_var:        1
 ;     validate_var_name:           1
 
@@ -15618,22 +15618,6 @@ save pydis_start, pydis_end
 ;     c883a
 ;     c8858
 ;     c886a
-;     c8c43
-;     c8c5f
-;     c8c84
-;     c8ca2
-;     c8cb4
-;     c8ce5
-;     c8cee
-;     c8cff
-;     c8d03
-;     c8d26
-;     c8d30
-;     c8d57
-;     c8d64
-;     c8d77
-;     c8d7d
-;     c8d80
 ;     c8dbb
 ;     c8dc3
 ;     c8dd2
@@ -16175,16 +16159,6 @@ save pydis_start, pydis_end
 ;     loop_c8864
 ;     loop_c8867
 ;     loop_c888d
-;     loop_c8c97
-;     loop_c8ca9
-;     loop_c8cdd
-;     loop_c8ce9
-;     loop_c8cf5
-;     loop_c8d2b
-;     loop_c8d4d
-;     loop_c8d59
-;     loop_c8d6c
-;     loop_c8d83
 ;     loop_c8da6
 ;     loop_c8dad
 ;     loop_c8db5
@@ -16381,7 +16355,6 @@ save pydis_start, pydis_end
 ;     return_9
 ;     sub_c8827
 ;     sub_c887c
-;     sub_c8c21
 ;     sub_c8e8a
 ;     sub_c8f69
 ;     sub_c8f92

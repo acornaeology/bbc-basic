@@ -24108,7 +24108,7 @@
         44
       ],
       "labels": [
-        "sub_c8c21"
+        "assign_string_to"
       ],
       "comment_inline": "Variable type",
       "xref_summaries": [
@@ -24144,9 +24144,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8ca2",
+      "operand": "assign_str_addr",
       "target": 36002,
-      "target_label": "c8ca2"
+      "target_label": "assign_str_addr"
     },
     {
       "addr": 35879,
@@ -24194,9 +24194,9 @@
       "comment_inline": "yes: reuse the allocation",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8c84",
+      "operand": "assign_str_store",
       "target": 35972,
-      "target_label": "c8c84"
+      "target_label": "assign_str_store"
     },
     {
       "addr": 35887,
@@ -24283,9 +24283,9 @@
       "comment_inline": "under 8: take it as is",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8c43",
+      "operand": "assign_str_alloc_size",
       "target": 35907,
-      "target_label": "c8c43"
+      "target_label": "assign_str_alloc_size"
     },
     {
       "addr": 35901,
@@ -24307,9 +24307,9 @@
       "comment_inline": "no overflow",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8c43",
+      "operand": "assign_str_alloc_size",
       "target": 35907,
-      "target_label": "c8c43"
+      "target_label": "assign_str_alloc_size"
     },
     {
       "addr": 35905,
@@ -24328,7 +24328,7 @@
         24
       ],
       "labels": [
-        "c8c43"
+        "assign_str_alloc_size"
       ],
       "comment_inline": "(clear carry)",
       "xref_summaries": [
@@ -24418,9 +24418,9 @@
       "comment_inline": "no: allocate fresh space",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8c5f",
+      "operand": "assign_str_alloc",
       "target": 35935,
-      "target_label": "c8c5f"
+      "target_label": "assign_str_alloc"
     },
     {
       "addr": 35920,
@@ -24466,9 +24466,9 @@
       "comment_inline": "no: allocate fresh space",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8c5f",
+      "operand": "assign_str_alloc",
       "target": 35935,
-      "target_label": "c8c5f"
+      "target_label": "assign_str_alloc"
     },
     {
       "addr": 35927,
@@ -24538,7 +24538,7 @@
         138
       ],
       "labels": [
-        "c8c5f"
+        "assign_str_alloc"
       ],
       "comment_inline": "New heap top = top + allocation",
       "xref_summaries": [
@@ -24744,9 +24744,9 @@
       "comment_inline": "extended in place: keep the address",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8c84",
+      "operand": "assign_str_store",
       "target": 35972,
-      "target_label": "c8c84"
+      "target_label": "assign_str_store"
     },
     {
       "addr": 35965,
@@ -24803,7 +24803,7 @@
         3
       ],
       "labels": [
-        "c8c84"
+        "assign_str_store"
       ],
       "comment_inline": "Store the current length",
       "xref_summaries": [
@@ -24943,7 +24943,7 @@
         6
       ],
       "labels": [
-        "loop_c8c97"
+        "assign_str_copy_loop"
       ],
       "comment_inline": "Copy the string buffer to the storage",
       "xref_summaries": [
@@ -25002,9 +25002,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8c97",
+      "operand": "assign_str_copy_loop",
       "target": 35991,
-      "target_label": "loop_c8c97"
+      "target_label": "assign_str_copy_loop"
     },
     {
       "addr": 36001,
@@ -25032,7 +25032,7 @@
         190
       ],
       "labels": [
-        "c8ca2"
+        "assign_str_addr"
       ],
       "comment_inline": "$addr: prepare the destination",
       "xref_summaries": [
@@ -25067,9 +25067,9 @@
       "comment_inline": "yes: just the terminator",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8cb4",
+      "operand": "assign_str_addr_cr",
       "target": 36020,
-      "target_label": "c8cb4"
+      "target_label": "assign_str_addr_cr"
     },
     {
       "addr": 36009,
@@ -25079,7 +25079,7 @@
         6
       ],
       "labels": [
-        "loop_c8ca9"
+        "assign_str_addr_loop"
       ],
       "comment_inline": "Copy the string to the address",
       "xref_summaries": [
@@ -25125,9 +25125,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8ca9",
+      "operand": "assign_str_addr_loop",
       "target": 36009,
-      "target_label": "loop_c8ca9"
+      "target_label": "assign_str_addr_loop"
     },
     {
       "addr": 36017,
@@ -25150,7 +25150,7 @@
         42
       ],
       "labels": [
-        "c8cb4"
+        "assign_str_addr_cr"
       ],
       "comment_inline": "Store it (with the CR terminator following)",
       "xref_summaries": [
@@ -25270,9 +25270,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8cee",
+      "operand": "unstack_addr",
       "target": 36078,
-      "target_label": "c8cee"
+      "target_label": "unstack_addr"
     },
     {
       "addr": 36039,
@@ -25283,9 +25283,9 @@
       "comment_inline": "numeric?",
       "type": "code",
       "mnemonic": "bcc",
-      "operand": "c8d03",
+      "operand": "unstack_numeric",
       "target": 36099,
-      "target_label": "c8d03"
+      "target_label": "unstack_numeric"
     },
     {
       "addr": 36041,
@@ -25329,9 +25329,9 @@
       "comment_inline": "empty: just set the length",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8ce5",
+      "operand": "unstack_str_setlen",
       "target": 36069,
-      "target_label": "c8ce5"
+      "target_label": "unstack_str_setlen"
     },
     {
       "addr": 36048,
@@ -25423,7 +25423,7 @@
         4
       ],
       "labels": [
-        "loop_c8cdd"
+        "unstack_str_copy"
       ],
       "comment_inline": "Copy the string bytes",
       "xref_summaries": [
@@ -25478,9 +25478,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8cdd",
+      "operand": "unstack_str_copy",
       "target": 36061,
-      "target_label": "loop_c8cdd"
+      "target_label": "unstack_str_copy"
     },
     {
       "addr": 36069,
@@ -25489,7 +25489,7 @@
         4
       ],
       "labels": [
-        "c8ce5"
+        "unstack_str_setlen"
       ],
       "comment_inline": "String length",
       "xref_summaries": [
@@ -25522,7 +25522,7 @@
         55
       ],
       "labels": [
-        "loop_c8ce9"
+        "unstack_str_drop"
       ],
       "comment_inline": "Store the length",
       "xref_summaries": [
@@ -25558,7 +25558,7 @@
         0
       ],
       "labels": [
-        "c8cee"
+        "unstack_addr"
       ],
       "comment_inline": "$addr: length on the stack",
       "xref_summaries": [
@@ -25602,9 +25602,9 @@
       "comment_inline": "empty: just the terminator",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8cff",
+      "operand": "unstack_addr_cr",
       "target": 36095,
-      "target_label": "c8cff"
+      "target_label": "unstack_addr_cr"
     },
     {
       "addr": 36085,
@@ -25612,7 +25612,7 @@
         200
       ],
       "labels": [
-        "loop_c8cf5"
+        "unstack_addr_copy"
       ],
       "comment_inline": "Copy the string to the address",
       "xref_summaries": [
@@ -25686,9 +25686,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8cf5",
+      "operand": "unstack_addr_copy",
       "target": 36085,
-      "target_label": "loop_c8cf5"
+      "target_label": "unstack_addr_copy"
     },
     {
       "addr": 36095,
@@ -25697,7 +25697,7 @@
         13
       ],
       "labels": [
-        "c8cff"
+        "unstack_addr_cr"
       ],
       "comment_inline": "CR terminator",
       "xref_summaries": [
@@ -25719,9 +25719,9 @@
       "comment_inline": "store it",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8ce9",
+      "operand": "unstack_str_drop",
       "target": 36073,
-      "target_label": "loop_c8ce9"
+      "target_label": "unstack_str_drop"
     },
     {
       "addr": 36099,
@@ -25730,7 +25730,7 @@
         0
       ],
       "labels": [
-        "c8d03"
+        "unstack_numeric"
       ],
       "comment_inline": "Numeric: copy byte 0",
       "xref_summaries": [
@@ -25800,9 +25800,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8d26",
+      "operand": "unstack_numeric_drop",
       "target": 36134,
-      "target_label": "c8d26"
+      "target_label": "unstack_numeric_drop"
     },
     {
       "addr": 36110,
@@ -25931,9 +25931,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "bcs",
-      "operand": "c8d26",
+      "operand": "unstack_numeric_drop",
       "target": 36134,
-      "target_label": "c8d26"
+      "target_label": "unstack_numeric_drop"
     },
     {
       "addr": 36129,
@@ -25976,7 +25976,7 @@
         152
       ],
       "labels": [
-        "c8d26"
+        "unstack_numeric_drop"
       ],
       "comment_inline": "Bytes copied",
       "xref_summaries": [
@@ -26019,7 +26019,7 @@
         10
       ],
       "labels": [
-        "loop_c8d2b"
+        "print_file"
       ],
       "comment_inline": "Back up over \"#\"",
       "xref_summaries": [
@@ -26054,7 +26054,7 @@
         152
       ],
       "labels": [
-        "c8d30"
+        "print_file_loop"
       ],
       "comment_inline": "Save the handle",
       "xref_summaries": [
@@ -26112,9 +26112,9 @@
       "comment_inline": "no: done",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "c8d77",
+      "operand": "print_file_done",
       "target": 36215,
-      "target_label": "c8d77"
+      "target_label": "print_file_done"
     },
     {
       "addr": 36153,
@@ -26207,9 +26207,9 @@
       "comment_inline": "string?",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d64",
+      "operand": "print_file_str",
       "target": 36196,
-      "target_label": "c8d64"
+      "target_label": "print_file_str"
     },
     {
       "addr": 36169,
@@ -26220,9 +26220,9 @@
       "comment_inline": "real?",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8d57",
+      "operand": "print_file_real",
       "target": 36183,
-      "target_label": "c8d57"
+      "target_label": "print_file_real"
     },
     {
       "addr": 36171,
@@ -26242,7 +26242,7 @@
         42
       ],
       "labels": [
-        "loop_c8d4d"
+        "print_file_int_loop"
       ],
       "comment_inline": "Write a byte",
       "xref_summaries": [
@@ -26289,9 +26289,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c8d4d",
+      "operand": "print_file_int_loop",
       "target": 36173,
-      "target_label": "loop_c8d4d"
+      "target_label": "print_file_int_loop"
     },
     {
       "addr": 36181,
@@ -26302,9 +26302,9 @@
       "comment_inline": "next value",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8d30",
+      "operand": "print_file_loop",
       "target": 36144,
-      "target_label": "c8d30"
+      "target_label": "print_file_loop"
     },
     {
       "addr": 36183,
@@ -26313,7 +26313,7 @@
         4
       ],
       "labels": [
-        "c8d57"
+        "print_file_real"
       ],
       "comment_inline": "Real: 5 bytes",
       "xref_summaries": [
@@ -26334,7 +26334,7 @@
         4
       ],
       "labels": [
-        "loop_c8d59"
+        "print_file_real_loop"
       ],
       "comment_inline": "Write a byte",
       "xref_summaries": [
@@ -26381,9 +26381,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bpl",
-      "operand": "loop_c8d59",
+      "operand": "print_file_real_loop",
       "target": 36185,
-      "target_label": "loop_c8d59"
+      "target_label": "print_file_real_loop"
     },
     {
       "addr": 36194,
@@ -26394,9 +26394,9 @@
       "comment_inline": "next value",
       "type": "code",
       "mnemonic": "bmi",
-      "operand": "c8d30",
+      "operand": "print_file_loop",
       "target": 36144,
-      "target_label": "c8d30"
+      "target_label": "print_file_loop"
     },
     {
       "addr": 36196,
@@ -26405,7 +26405,7 @@
         54
       ],
       "labels": [
-        "c8d64"
+        "print_file_str"
       ],
       "comment_inline": "String: write the length",
       "xref_summaries": [
@@ -26452,9 +26452,9 @@
       "comment_inline": "empty",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d30",
+      "operand": "print_file_loop",
       "target": 36144,
-      "target_label": "c8d30"
+      "target_label": "print_file_loop"
     },
     {
       "addr": 36204,
@@ -26464,7 +26464,7 @@
         5
       ],
       "labels": [
-        "loop_c8d6c"
+        "print_file_str_loop"
       ],
       "comment_inline": "Write a character",
       "xref_summaries": [
@@ -26511,9 +26511,9 @@
       "comment_inline": "loop",
       "type": "code",
       "mnemonic": "bne",
-      "operand": "loop_c8d6c",
+      "operand": "print_file_str_loop",
       "target": 36204,
-      "target_label": "loop_c8d6c"
+      "target_label": "print_file_str_loop"
     },
     {
       "addr": 36213,
@@ -26524,9 +26524,9 @@
       "comment_inline": "next value",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d30",
+      "operand": "print_file_loop",
       "target": 36144,
-      "target_label": "c8d30"
+      "target_label": "print_file_loop"
     },
     {
       "addr": 36215,
@@ -26534,7 +26534,7 @@
         104
       ],
       "labels": [
-        "c8d77"
+        "print_file_done"
       ],
       "comment_inline": "Recover the handle",
       "xref_summaries": [
@@ -26581,7 +26581,7 @@
         188
       ],
       "labels": [
-        "c8d7d"
+        "print_newline"
       ],
       "comment_inline": "Print a newline",
       "xref_summaries": [
@@ -26606,7 +26606,7 @@
         139
       ],
       "labels": [
-        "c8d80"
+        "print_done"
       ],
       "comment_inline": "next statement",
       "xref_summaries": [
@@ -26630,7 +26630,7 @@
         0
       ],
       "labels": [
-        "loop_c8d83"
+        "print_semicolon"
       ],
       "comment_inline": "Semicolon: clear the field width...",
       "xref_summaries": [
@@ -26703,9 +26703,9 @@
       "comment_inline": "yes: end without a newline",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d80",
+      "operand": "print_done",
       "target": 36224,
-      "target_label": "c8d80"
+      "target_label": "print_done"
     },
     {
       "addr": 36240,
@@ -26727,9 +26727,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d80",
+      "operand": "print_done",
       "target": 36224,
-      "target_label": "c8d80"
+      "target_label": "print_done"
     },
     {
       "addr": 36244,
@@ -26751,9 +26751,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d80",
+      "operand": "print_done",
       "target": 36224,
-      "target_label": "c8d80"
+      "target_label": "print_done"
     },
     {
       "addr": 36248,
@@ -26805,9 +26805,9 @@
       "comment_inline": "'#': PRINT# to a file",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c8d2b",
+      "operand": "print_file",
       "target": 36139,
-      "target_label": "loop_c8d2b"
+      "target_label": "print_file"
     },
     {
       "addr": 36257,
@@ -27102,9 +27102,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d7d",
+      "operand": "print_newline",
       "target": 36221,
-      "target_label": "c8d7d"
+      "target_label": "print_newline"
     },
     {
       "addr": 36298,
@@ -27126,9 +27126,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d7d",
+      "operand": "print_newline",
       "target": 36221,
-      "target_label": "c8d7d"
+      "target_label": "print_newline"
     },
     {
       "addr": 36302,
@@ -27150,9 +27150,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "c8d7d",
+      "operand": "print_newline",
       "target": 36221,
-      "target_label": "c8d7d"
+      "target_label": "print_newline"
     },
     {
       "addr": 36306,
@@ -27231,9 +27231,9 @@
       "comment_inline": "yes",
       "type": "code",
       "mnemonic": "beq",
-      "operand": "loop_c8d83",
+      "operand": "print_semicolon",
       "target": 36227,
-      "target_label": "loop_c8d83"
+      "target_label": "print_semicolon"
     },
     {
       "addr": 36318,
@@ -90953,9 +90953,9 @@
       "comment_inline": "assign it",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8c21",
+      "operand": "assign_string_to",
       "target": 35873,
-      "target_label": "sub_c8c21"
+      "target_label": "assign_string_to"
     },
     {
       "addr": 45827,
@@ -103892,9 +103892,9 @@
       "comment_inline": "assign the line as a string",
       "type": "code",
       "mnemonic": "jsr",
-      "operand": "sub_c8c21",
+      "operand": "assign_string_to",
       "target": 35873,
-      "target_label": "sub_c8c21"
+      "target_label": "assign_string_to"
     },
     {
       "addr": 47843,
