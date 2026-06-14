@@ -2820,16 +2820,6 @@ d.comment(0x92d0, 'clear the 5th byte', align=Align.INLINE)
 d.comment(0x92d2, 'OSWORD 2 (write clock)', align=Align.INLINE)
 d.comment(0x92d7, 'next statement', align=Align.INLINE)
 d.comment(0x92da, 'Step past the comma', align=Align.INLINE)
-d.comment(0x92dd, 'Evaluate the expression', align=Align.INLINE)
-d.comment(0x92e0, '...and coerce to integer', align=Align.INLINE)
-
-d.comment(0x92e3, 'Evaluate a factor', align=Align.INLINE)
-d.comment(0x92e6, 'string: Type mismatch', align=Align.INLINE)
-d.comment(0x92e8, 'real: convert to integer', align=Align.INLINE)
-d.comment(0x92ea, 'Return', align=Align.INLINE)
-d.comment(0x92eb, 'Expect "=" and evaluate', align=Align.INLINE)
-d.comment(0x92ee, 'Result type, then coerce to integer', align=Align.INLINE)
-
 # The integer-argument evaluators: a stack of entry points sharing the
 # coerce_to_integer tail. Each evaluates at PtrB and returns the integer
 # in IWA, raising Type mismatch on a string. (eval_expr_to_integer at
@@ -2844,6 +2834,7 @@ eval_expr_integer to evaluate the following expression as an integer.
     on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
              'BRK': 'Missing , or Type mismatch'},
 )
+d.comment(0x92dd, 'Evaluate the expression', align=Align.INLINE)
 d.subroutine(
     0x92dd, 'eval_expr_integer',
     title='Evaluate an expression as an integer',
@@ -2855,6 +2846,9 @@ it does not sync the primary pointer, so the caller keeps managing PtrB.
     on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
              'BRK': 'Type mismatch on a string'},
 )
+d.comment(0x92e0, '...and coerce to integer', align=Align.INLINE)
+
+d.comment(0x92e3, 'Evaluate a factor', align=Align.INLINE)
 d.subroutine(
     0x92e3, 'eval_factor_integer',
     title='Evaluate a single factor as an integer',
@@ -2866,6 +2860,10 @@ mismatch, a real is converted, an integer is returned unchanged.
     on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
              'BRK': 'Type mismatch on a string'},
 )
+d.comment(0x92e6, 'string: Type mismatch', align=Align.INLINE)
+d.comment(0x92e8, 'real: convert to integer', align=Align.INLINE)
+d.comment(0x92ea, 'Return', align=Align.INLINE)
+d.comment(0x92eb, 'Expect "=" and evaluate', align=Align.INLINE)
 d.subroutine(
     0x92eb, 'eval_eq_integer',
     title='Require "=" then evaluate an integer',
@@ -2877,6 +2875,8 @@ pseudo-variable assignments (TIME=, PAGE=, ...).
     on_exit={'zp_iwa (&2A-&2D)': 'the integer result',
              'BRK': 'Mistake if "=" is missing, Type mismatch on a string'},
 )
+d.comment(0x92ee, 'Result type, then coerce to integer', align=Align.INLINE)
+
 d.subroutine(
     0x92ee, 'coerce_var_to_integer',
     title='Coerce the current value to an integer',
