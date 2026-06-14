@@ -25937,7 +25937,7 @@
         134,
         25
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2",
@@ -25963,7 +25963,7 @@
         134,
         26
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_1",
@@ -25989,7 +25989,7 @@
         134,
         27
       ],
-      "comment_inline": "...",
+      "comment_inline": "store it",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_text_ptr2_off",
@@ -26126,7 +26126,7 @@
         112,
         142
       ],
-      "comment_inline": "...",
+      "comment_inline": "handle it",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "print_special_item",
@@ -26387,7 +26387,7 @@
         201,
         34
       ],
-      "comment_inline": "...",
+      "comment_inline": "is it another quote?",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&22"
@@ -43852,7 +43852,7 @@
         132,
         10
       ],
-      "comment_inline": "...",
+      "comment_inline": "copy it to PtrA",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_text_ptr_off",
@@ -43878,7 +43878,7 @@
         5,
         43
       ],
-      "comment_inline": "...",
+      "comment_inline": "or byte 1,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_1",
@@ -43891,7 +43891,7 @@
         5,
         44
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 2,",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_2",
@@ -43904,7 +43904,7 @@
         5,
         45
       ],
-      "comment_inline": "...",
+      "comment_inline": "byte 3",
       "type": "code",
       "mnemonic": "ora",
       "operand": "zp_iwa_3",
@@ -44051,7 +44051,7 @@
         119,
         152
       ],
-      "comment_inline": "...",
+      "comment_inline": "to the line start, test Escape",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "c9877",
@@ -75181,7 +75181,7 @@
       "bytes": [
         138
       ],
-      "comment_inline": "...",
+      "comment_inline": "n-1 into A",
       "type": "code",
       "mnemonic": "txa"
     },
@@ -75191,7 +75191,7 @@
         73,
         255
       ],
-      "comment_inline": "...",
+      "comment_inline": "complement to give |n|",
       "type": "code",
       "mnemonic": "eor",
       "operand": "#&ff"
@@ -75320,7 +75320,7 @@
         233,
         1
       ],
-      "comment_inline": "...",
+      "comment_inline": "decrement the count",
       "type": "code",
       "mnemonic": "sbc",
       "operand": "#1"
@@ -75330,7 +75330,7 @@
       "bytes": [
         72
       ],
-      "comment_inline": "...",
+      "comment_inline": "save it back",
       "type": "code",
       "mnemonic": "pha"
     },

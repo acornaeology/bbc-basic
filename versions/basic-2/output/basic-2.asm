@@ -2777,11 +2777,11 @@ l848a = sub_c847b+15
 ; &8e70 referenced 2 times by &8dde, &8e8d
 .print_special_item
     ldx zp_text_ptr                                                   ; 8e70: a6 0b       ..       ; Save PtrA into PtrB: low
-    stx zp_text_ptr2                                                  ; 8e72: 86 19       ..       ; ...
+    stx zp_text_ptr2                                                  ; 8e72: 86 19       ..       ; store it
     ldx zp_text_ptr_1                                                 ; 8e74: a6 0c       ..       ; high
-    stx zp_text_ptr2_1                                                ; 8e76: 86 1a       ..       ; ...
+    stx zp_text_ptr2_1                                                ; 8e76: 86 1a       ..       ; store it
     ldx zp_text_ptr_off                                               ; 8e78: a6 0a       ..       ; offset
-    stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..       ; ...
+    stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..       ; store it
     cmp #&27                                                          ; 8e7c: c9 27       .'       ; an apostrophe?
     beq loop_c8e67                                                    ; 8e7e: f0 e7       ..       ; yes: force a newline
     cmp #&8a                                                          ; 8e80: c9 8a       ..       ; TAB token?
@@ -2795,7 +2795,7 @@ l848a = sub_c847b+15
 ; &8e8a referenced 2 times by &ba5a, &ba5f
 .sub_c8e8a
     jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..      ; Skip spaces, then handle a special item
-    jsr print_special_item                                            ; 8e8d: 20 70 8e     p.      ; ...
+    jsr print_special_item                                            ; 8e8d: 20 70 8e     p.      ; handle it
     bcc return_6                                                      ; 8e90: 90 f7       ..       ; consumed: done
     cmp #&22                                                          ; 8e92: c9 22       ."       ; a string literal (quote)?
     beq c8ea7                                                         ; 8e94: f0 11       ..       ; yes: print it inline
@@ -2821,7 +2821,7 @@ l848a = sub_c847b+15
     iny                                                               ; 8eb2: c8          .        ; advance
     sty zp_text_ptr2_off                                              ; 8eb3: 84 1b       ..       ; update the offset
     lda (zp_text_ptr2),y                                              ; 8eb5: b1 19       ..       ; doubled ""?
-    cmp #&22                                                          ; 8eb7: c9 22       ."       ; ...
+    cmp #&22                                                          ; 8eb7: c9 22       ."       ; is it another quote?
     bne c8e6a                                                         ; 8eb9: d0 af       ..       ; no: end of the string
     beq c8ea4                                                         ; 8ebb: f0 e7       ..       ; yes: print one quote
 ; ***************************************************************************************
@@ -4709,11 +4709,11 @@ l848a = sub_c847b+15
 ; &98cc referenced 1 time by &98c7
 .c98cc
     ldy zp_text_ptr2_off                                              ; 98cc: a4 1b       ..       ; Advance the text pointer past the condition
-    sty zp_text_ptr_off                                               ; 98ce: 84 0a       ..       ; ...
+    sty zp_text_ptr_off                                               ; 98ce: 84 0a       ..       ; copy it to PtrA
     lda zp_iwa                                                        ; 98d0: a5 2a       .*       ; Is the condition value zero (false)?
-    ora zp_iwa_1                                                      ; 98d2: 05 2b       .+       ; ...
-    ora zp_iwa_2                                                      ; 98d4: 05 2c       .,       ; ...
-    ora zp_iwa_3                                                      ; 98d6: 05 2d       .-       ; ...
+    ora zp_iwa_1                                                      ; 98d2: 05 2b       .+       ; or byte 1,
+    ora zp_iwa_2                                                      ; 98d4: 05 2c       .,       ; byte 2,
+    ora zp_iwa_3                                                      ; 98d6: 05 2d       .-       ; byte 3
     beq c98f1                                                         ; 98d8: f0 17       ..       ; false: look for ELSE
     cpx #&8c                                                          ; 98da: e0 8c       ..       ; true: is the next token THEN?
     beq c98e1                                                         ; 98dc: f0 03       ..       ; yes
@@ -4728,7 +4728,7 @@ l848a = sub_c847b+15
     jsr check_line_number                                             ; 98e3: 20 df 97     ..      ; Is a line number following (THEN <line>)?
     bcc loop_c98de                                                    ; 98e6: 90 f6       ..       ; no: execute the statements after THEN
     jsr cb9af                                                         ; 98e8: 20 af b9     ..      ; yes: set up the line number...
-    jsr c9877                                                         ; 98eb: 20 77 98     w.      ; ...
+    jsr c9877                                                         ; 98eb: 20 77 98     w.      ; to the line start, test Escape
     jmp cb8d2                                                         ; 98ee: 4c d2 b8    L..      ; ...and GOTO it
 ; &98f1 referenced 1 time by &98d8
 .c98f1
@@ -8007,8 +8007,8 @@ l848a = sub_c847b+15
     tax                                                               ; ab12: aa          .        ; Exponent n
     bpl cab1e                                                         ; ab13: 10 09       ..       ; positive?
     dex                                                               ; ab15: ca          .        ; negative: use |n| and reciprocate
-    txa                                                               ; ab16: 8a          .        ; ...
-    eor #&ff                                                          ; ab17: 49 ff       I.       ; ...
+    txa                                                               ; ab16: 8a          .        ; n-1 into A
+    eor #&ff                                                          ; ab17: 49 ff       I.       ; complement to give |n|
     pha                                                               ; ab19: 48          H        ; save the count
     jsr fwa_reciprocal                                                ; ab1a: 20 a5 a6     ..      ; FWA = 1 / FWA
     pla                                                               ; ab1d: 68          h        ; restore the count
@@ -8022,8 +8022,8 @@ l848a = sub_c847b+15
     pla                                                               ; ab25: 68          h        ; Count remaining
     beq return_29                                                     ; ab26: f0 0a       ..       ; zero: done
     sec                                                               ; ab28: 38          8        ; One multiplication fewer
-    sbc #1                                                            ; ab29: e9 01       ..       ; ...
-    pha                                                               ; ab2b: 48          H        ; ...
+    sbc #1                                                            ; ab29: e9 01       ..       ; decrement the count
+    pha                                                               ; ab2b: 48          H        ; save it back
     jsr fwa_mul_var                                                   ; ab2c: 20 56 a6     V.      ; FWA = FWA * base
     jmp cab25                                                         ; ab2f: 4c 25 ab    L%.      ; loop
 ; &ab32 referenced 1 time by &ab26
