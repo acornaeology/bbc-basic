@@ -247,7 +247,11 @@ HANDLER_INFO = {
                           '(PLOT 5). DRAW x, y.'),
     'stmt_end': ('END', 'End the program and return to the immediate '
                         'prompt. END.'),
-    'stmt_endproc': ('ENDPROC', 'Return from a procedure, restoring LOCAL '
+    'stmt_endproc': ('ENDPROC', 'Return from a procedure. Checks a PROC frame '
+                                'is present (the framed token at &01FF must be '
+                                '&F2), then falls into the end-of-statement '
+                                'path whose rts unwinds the frame back through '
+                                'call_proc_fn (&B197) -- restoring LOCAL '
                                 'values, the caller\'s text pointer and the '
                                 'saved 6502/value stacks. It does NOT tidy the '
                                 'FOR/REPEAT/GOSUB stacks, so ENDPROC from '
@@ -9182,20 +9186,53 @@ d.comment(0xb195, 'FN token: enter via the PROC/FN call mechanism', align=Align.
 d.subroutine(
     0xb197, 'call_proc_fn',
     title='Enter a PROC or FN',
-    description="""The procedure/function call mechanism. First copies the live
-6502 hardware stack onto the BASIC value stack and resets the
-hardware stack -- this is how BBC BASIC lets PROCs and FNs nest far
-beyond the 256-byte 6502 stack. Then pushes the call context (the
-PROC/FN token and the caller's text pointers), locates the named
-definition, binds any parameters, and transfers control to the body.
-ENDPROC / =expr unwind this frame.
+    description="""The procedure/function call mechanism. It lets PROCs and FNs
+nest far beyond the 256-byte 6502 stack by *moving* that stack out of
+the way for each call:
 
-Note what is NOT saved: only the 6502 hardware stack and the BASIC
-value stack are preserved across the call. The FOR, REPEAT and GOSUB
-stacks (page 5, counters &24/&25/&26) are global and untouched. So a
-loop opened inside the body and left via an early ENDPROC (or GOTO)
-leaks its frame -- the counter is never decremented. See stmt_endproc
-(&9356) and the page-5 control-flow stacks at &0500.
+1. Copy the whole live 6502 stack onto the BASIC value stack (the
+   saved stack pointer first, then every byte), then empty the
+   hardware stack (`txs` with X = &FF). The frame below is therefore
+   built from &01FF downwards.
+2. Push the call frame (the table).
+3. Locate the named definition (heap cache, else a program scan),
+   bind any parameters, and `jsr next_statement` to run the body.
+
+The 10-byte call frame, on the freshly emptied hardware stack while
+the body runs (deepest byte first):
+
+| Addr  | Byte                    | From |
+|-------|-------------------------|------|
+| &01FF | PROC token &F2 / FN &A4 | &27  |
+| &01FE | caller PtrA offset      | &0A  |
+| &01FD | caller PtrA low         | &0B  |
+| &01FC | caller PtrA high        | &0C  |
+| &01FB | LOCAL/parameter count   | -    |
+| &01FA | PtrB offset             | &1B  |
+| &01F9 | PtrB low                | &19  |
+| &01F8 | PtrB high               | &1A  |
+| &01F7 | body return high        | jsr  |
+| &01F6 | body return low         | jsr  |
+
+The addresses are absolute because the stack was just emptied -- which
+is why [`stmt_endproc`](address:9356) reads the framed token at
+[`hw_stack_top`](address:01ff) (&01FF) and [`stmt_local`](address:9323)
+bumps the count through [`frame_local_count`](address:0106) (&0106,X
+with X = &F5, i.e. &01FB).
+
+Unwinding is indirect: ENDPROC and `=expr` do not pop the frame. They
+verify the framed token, then fall into the end-of-statement path
+whose `rts` pops the body return (&01F6/&01F7) straight back here, to
+&B20E. From there this routine restores PtrB, replays the count by
+popping that many (variable address, saved value) pairs off the BASIC
+value stack to undo the LOCALs/parameters, restores the caller's PtrA,
+and copies the saved 6502 stack back into page 1.
+
+What is NOT saved: only the hardware stack and the BASIC value stack
+are preserved. The FOR/REPEAT/GOSUB stacks (page 5, counters
+&26/&24/&25) are global and untouched, so a loop left early via
+ENDPROC or GOTO leaks its frame. See [`stmt_endproc`](address:9356)
+and the page-5 control-flow stacks at &0500.
 """,
     on_entry={'A': 'PROC token &F2 or FN token &A4'},
 )
@@ -11465,9 +11502,26 @@ d.label(0xbe5f, 'fwb_scale_done')
 d.comment(0xbe61, 'Return', align=Align.INLINE)
 
 d.subroutine(0xbe62, 'load_program', title='Load a program from the filing system',
-             description='Set the OSFILE load address to PAGE and call OSFILE &FF '
-                         'to read the named BASIC program into memory. Used by '
-                         'LOAD and CHAIN.',
+             description="""Set the OSFILE load address to PAGE and call OSFILE &FF
+to read the named BASIC program into memory. Used by LOAD and CHAIN.
+
+LOAD/SAVE drive OSFILE through an 18-byte control block in zero page,
+pointed at by XY = &0037. Each address field is 4 bytes (the BBC's
+32-bit address space; the high words come from OSBYTE &82):
+
+| Addr    | Field            |
+|---------|------------------|
+| &37-&38 | filename pointer |
+| &39-&3C | load address     |
+| &3D-&40 | exec address     |
+| &41-&44 | start address    |
+| &45-&48 | end address      |
+
+This routine fills only the filename pointer, the load address (PAGE),
+and exec = 0 (so OSFILE &FF loads to the block's load address rather
+than the file's own). [`stmt_save`](address:bef3) fills all four
+address fields and calls OSFILE &00.
+""",
              on_entry={'the filename block': 'set up for OSFILE (control block at &37)',
                        'zp_page (&18)': 'PAGE, where the program loads'},
              on_exit={'memory from PAGE': 'the loaded program'})
@@ -11666,9 +11720,32 @@ d.comment(0xbfb1, 'high', align=Align.INLINE)
 d.comment(0xbfb3, '(store)', align=Align.INLINE)
 
 d.subroutine(0xbfb5, 'eval_channel', title='Evaluate a #channel argument',
-             description='Require "#" at PtrB then evaluate the file handle as '
-                         'an integer, leaving it in IWA. Raises Missing # if the '
-                         '"#" is absent.',
+             description="""Require "#" at PtrB then evaluate the file handle as an
+integer, leaving it in IWA. Raises Missing # if the "#" is absent.
+
+The shared entry point for the channel-based file words. BBC BASIC's
+file vocabulary maps onto five MOS calls; the handle is passed in Y
+(except OSFILE), and OSARGS reads/writes its 4-byte value through
+X -> IWA (&2A):
+
+| BASIC          | MOS call | A   |
+|----------------|----------|-----|
+| OPENIN f$      | OSFIND   | &40 |
+| OPENOUT f$     | OSFIND   | &80 |
+| OPENUP f$      | OSFIND   | &C0 |
+| CLOSE #h       | OSFIND   | &00 |
+| =PTR# h        | OSARGS   | &00 |
+| PTR# h =       | OSARGS   | &01 |
+| =EXT# h        | OSARGS   | &02 |
+| =BGET# h       | OSBGET   | -   |
+| BPUT# h, b     | OSBPUT   | -   |
+| LOAD / CHAIN   | OSFILE   | &FF |
+| SAVE           | OSFILE   | &00 |
+
+OSFIND returns the new handle in A (0 = open failed); CLOSE #0 closes
+every open file. OSFILE uses the control block at &37 (see
+[`load_program`](address:be62)), not a handle.
+""",
              on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB before the "#channel"'},
              on_exit={'zp_iwa (&2A-&2D)': 'the channel handle',
                       'A': 'the handle low byte', 'Y': 'the handle low byte',
