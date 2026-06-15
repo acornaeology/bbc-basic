@@ -506,7 +506,8 @@ d.label(0x003a, 'zp_fileblk_1')
 # Floating point work area B (FWB), same layout as FWA.
 d.label(0x003b, 'zp_fwb_sign', length=8, group='zero_page', access='rw',
         description="""FWB — floating-point work accumulator B (&3B-&42), same layout as [`zp_fwa_sign`](address:002e). Supplies the second operand for binary floating-point operations (add, multiply, divide).""")
-d.label(0x003c, 'zp_fwb_ovf')
+d.label(0x003c, 'zp_fwb_ovf',
+        description="""FWB overflow byte (&3C), part of [`zp_fwb_sign`](address:003b). A much-reused scratch location: outside floating point it serves as the tokeniser's line-number-arming flag (&FF after GOTO etc. means encode the next number as a line number), a variable-chain walk pointer, an array dimension-descriptor offset, and LIST's REPEAT/UNTIL indent counter. Read each use in its own context rather than assuming a single global meaning.""")
 d.label(0x003d, 'zp_fwb_exp')
 d.label(0x003e, 'zp_fwb_m1')
 d.label(0x003f, 'zp_fwb_m2')
@@ -710,8 +711,16 @@ set), then a flag byte that drives tokenising. The flag bits are:
 
 Bit 6 is why a pseudo-variable like PTR reads as &8F in a function
 position but &CF as an assignment target. Entries are ordered so that
-the first acceptable abbreviation of each keyword is unambiguous. The
-table runs to the action-address tables at action_table_lo.
+the first acceptable abbreviation of each keyword is unambiguous.
+
+The tokeniser scan stops at WIDTH's token &FE, which doubles as the
+end-of-table sentinel (see the `cmp #&fe` in the keyword search). The
+final five entries — the PTR/PAGE/TIME/LOMEM/HIMEM *assignment* forms
+&CF-&D3 — sit past that sentinel, so the tokeniser never matches them
+(it produces those tokens arithmetically via bit 6). They exist only
+for the de-tokeniser (`print_token`, which has no sentinel and scans by
+token value) to render `PTR=` etc. back to text. The data then runs on
+to the action-address tables at action_table_lo.
 """,
 )
 
@@ -1461,7 +1470,11 @@ d.subroutine(0x88f5, 'encode_line_number',
              description='Pack the line number in &3D/&3E into the BBC '
                          'three-byte GOTO encoding (a control byte holding '
                          'the scrambled top bits, then low|&40 and high|&40) '
-                         'so the bytes never collide with tokens.',
+                         'so the bytes never collide with tokens. The control '
+                         'byte carries only four high bits, so the encoding is '
+                         'exact only for line numbers 0-32767 (above that the '
+                         'top bit is lost - the documented line-number '
+                         'ceiling), and no encoded byte is ever &0D.',
              on_entry={'zp_fwb_exp (&3D/&3E)': 'the 16-bit line number',
                        'zp_general (&37/&38)': 'the destination text pointer',
                        'Y': 'offset of the last of the three bytes'},
@@ -1568,6 +1581,17 @@ d.subroutine(
 keywords with tokens via the keyword_table while leaving strings,
 line numbers and names intact. Works through the buffer using the
 general pointer (zp_general, &37).
+
+Three entry points share this scanner, differing only in how much of
+the &3B/&3C state they reset:
+ - tokenise_line (&8951): start a fresh line; clear both the
+   start-of-statement flag &3B and the line-number flag &3C.
+ - tokenise_resume (&8955): clear only &3C; the caller has already set
+   &3B. EVAL enters here with &3B = mid-statement so a re-tokenised
+   string reads PTR etc. as functions, not assignment targets.
+ - tok_scan (&8957): clear neither; execute_line enters here having
+   pre-armed &3C = &FF so a typed leading line number is encoded with
+   the &8D token (then recovered by check_line_number, see &8B2D).
 """,
     on_entry={'zp_general (&37/&38)': 'a pointer to the line text to tokenise'},
     on_exit={'(zp_general)': 'the line rewritten with keyword tokens'},
@@ -1716,9 +1740,10 @@ d.comment(0x8a0d, 'Skip to the next entry: past the name', align=Align.INLINE)
 d.label(0x8a0d, 'tok_kw_check_end')
 d.comment(0x8a0e, 'read it', align=Align.INLINE)
 d.comment(0x8a10, 'until the token byte (bit 7 set)', align=Align.INLINE)
-d.comment(0x8a12, 'end of the table?', align=Align.INLINE)
-d.comment(0x8a14, 'no', align=Align.INLINE)
-d.comment(0x8a16, 'end: not a keyword (skip the name)', align=Align.INLINE)
+d.comment(0x8a12, 'WIDTH token &FE doubles as the end-of-table sentinel',
+          align=Align.INLINE)
+d.comment(0x8a14, 'no: a real token, try the next entry', align=Align.INLINE)
+d.comment(0x8a16, 'sentinel: not a keyword (skip the name)', align=Align.INLINE)
 d.comment(0x8a18, 'Abbreviation: skip to this entry\'s token', align=Align.INLINE)
 d.label(0x8a18, 'tok_kw_abbrev')
 d.comment(0x8a19, 'read it', align=Align.INLINE)
@@ -1977,11 +2002,13 @@ d.comment(0x8b22, 'high byte,', align=Align.INLINE)
 d.comment(0x8b24, 'store it', align=Align.INLINE)
 d.comment(0x8b26, 'start of statement (&3B = 0)', align=Align.INLINE)
 d.comment(0x8b28, 'and the offset', align=Align.INLINE)
-d.comment(0x8b2a, 'Tokenise the line', align=Align.INLINE)
-d.comment(0x8b2d, 'Tokenise; carry set if the line starts with a number',
+d.comment(0x8b2a, 'Tokenise (&3C pre-armed for a leading number)',
+          align=Align.INLINE)
+d.comment(0x8b2d, 'reuse the &8D codec: decode the leading line number',
           align=Align.INLINE)
 d.comment(0x8b30, 'no line number: execute it', align=Align.INLINE)
-d.comment(0x8b32, 'Numbered line: insert it into the program', align=Align.INLINE)
+d.comment(0x8b32, 'numbered line: insert it (IWA = the line number)',
+          align=Align.INLINE)
 d.comment(0x8b35, 'inserted: immediate loop', align=Align.INLINE)
 d.comment(0x8b38, 'Skip spaces', align=Align.INLINE)
 d.label(0x8b38, 'exec_dispatch')
@@ -4337,7 +4364,9 @@ d.subroutine(0x97eb, 'decode_line_number',
              title='Decode a 3-byte line number into IWA',
              description='Reverse the three-byte &8D line-number encoding, '
                          'reconstructing the 16-bit line number in IWA (the two '
-                         'high-bit pairs are recovered from the control byte).',
+                         'high-bit pairs are recovered from the control byte). '
+                         'The inverse of encode_line_number, and like it exact '
+                         'only for 0-32767.',
              on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
                        'Y': 'offset of the &8D token'},
              on_exit={'zp_iwa (&2A/&2B)': 'the decoded 16-bit line number',

@@ -171,7 +171,7 @@
       "addr": 32881,
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
-      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising. The flag bits are:\n\n| Bit | Meaning |\n|-----|---------|\n| 0 | Conditional: do not tokenise if followed by a letter |\n| 1 | Enter \"middle of statement\" mode |\n| 2 | Enter \"start of statement\" mode |\n| 3 | FN/PROC: do not tokenise the following name |\n| 4 | Start tokenising a line number (after GOTO etc.) |\n| 5 | Do not tokenise the rest of the line (REM, DATA) |\n| 6 | Pseudo-variable: add &40 to the token in a statement |\n\nBit 6 is why a pseudo-variable like PTR reads as &8F in a function\nposition but &CF as an assignment target. Entries are ordered so that\nthe first acceptable abbreviation of each keyword is unambiguous. The\ntable runs to the action-address tables at action_table_lo.\n"
+      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising. The flag bits are:\n\n| Bit | Meaning |\n|-----|---------|\n| 0 | Conditional: do not tokenise if followed by a letter |\n| 1 | Enter \"middle of statement\" mode |\n| 2 | Enter \"start of statement\" mode |\n| 3 | FN/PROC: do not tokenise the following name |\n| 4 | Start tokenising a line number (after GOTO etc.) |\n| 5 | Do not tokenise the rest of the line (REM, DATA) |\n| 6 | Pseudo-variable: add &40 to the token in a statement |\n\nBit 6 is why a pseudo-variable like PTR reads as &8F in a function\nposition but &CF as an assignment target. Entries are ordered so that\nthe first acceptable abbreviation of each keyword is unambiguous.\n\nThe tokeniser scan stops at WIDTH's token &FE, which doubles as the\nend-of-table sentinel (see the `cmp #&fe` in the keyword search). The\nfinal five entries \u2014 the PTR/PAGE/TIME/LOMEM/HIMEM *assignment* forms\n&CF-&D3 \u2014 sit past that sentinel, so the tokeniser never matches them\n(it produces those tokens arithmetically via bit 6). They exist only\nfor the de-tokeniser (`print_token`, which has no sentinel and scans by\ntoken value) to render `PTR=` etc. back to text. The data then runs on\nto the action-address tables at action_table_lo.\n"
     },
     {
       "addr": 49016,
@@ -1971,7 +1971,7 @@
       "addr": 35061,
       "name": "encode_line_number",
       "title": "Encode a 16-bit line number into 3 bytes",
-      "description": "Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide with tokens.",
+      "description": "Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide with tokens. The control byte carries only four high bits, so the encoding is exact only for line numbers 0-32767 (above that the top bit is lost - the documented line-number ceiling), and no encoded byte is ever &0D.",
       "on_entry": {
         "zp_fwb_exp (&3D/&3E)": "the 16-bit line number",
         "zp_general (&37/&38)": "the destination text pointer",
@@ -2032,7 +2032,7 @@
       "addr": 35153,
       "name": "tokenise_line",
       "title": "Tokenise a line",
-      "description": "Convert the line being entered into its internal form, replacing\nkeywords with tokens via the keyword_table while leaving strings,\nline numbers and names intact. Works through the buffer using the\ngeneral pointer (zp_general, &37).\n",
+      "description": "Convert the line being entered into its internal form, replacing\nkeywords with tokens via the keyword_table while leaving strings,\nline numbers and names intact. Works through the buffer using the\ngeneral pointer (zp_general, &37).\n\nThree entry points share this scanner, differing only in how much of\nthe &3B/&3C state they reset:\n - tokenise_line (&8951): start a fresh line; clear both the\n   start-of-statement flag &3B and the line-number flag &3C.\n - tokenise_resume (&8955): clear only &3C; the caller has already set\n   &3B. EVAL enters here with &3B = mid-statement so a re-tokenised\n   string reads PTR etc. as functions, not assignment targets.\n - tok_scan (&8957): clear neither; execute_line enters here having\n   pre-armed &3C = &FF so a typed leading line number is encoded with\n   the &8D token (then recovered by check_line_number, see &8B2D).\n",
       "on_entry": {
         "zp_general (&37/&38)": "a pointer to the line text to tokenise"
       },
@@ -2543,7 +2543,7 @@
       "addr": 38891,
       "name": "decode_line_number",
       "title": "Decode a 3-byte line number into IWA",
-      "description": "Reverse the three-byte &8D line-number encoding, reconstructing the 16-bit line number in IWA (the two high-bit pairs are recovered from the control byte).",
+      "description": "Reverse the three-byte &8D line-number encoding, reconstructing the 16-bit line number in IWA (the two high-bit pairs are recovered from the control byte). The inverse of encode_line_number, and like it exact only for 0-32767.",
       "on_entry": {
         "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
         "Y": "offset of the &8D token"
@@ -4942,6 +4942,11 @@
       "group": "zero_page",
       "access": "rw",
       "description": "FWB \u2014 floating-point work accumulator B (&3B-&42), same layout as [`zp_fwa_sign`](address:002e). Supplies the second operand for binary floating-point operations (add, multiply, divide)."
+    },
+    {
+      "addr": 60,
+      "name": "zp_fwb_ovf",
+      "description": "FWB overflow byte (&3C), part of [`zp_fwb_sign`](address:003b). A much-reused scratch location: outside floating point it serves as the tokeniser's line-number-arming flag (&FF after GOTO etc. means encode the next number as a line number), a variable-chain walk pointer, an array dimension-descriptor offset, and LIST's REPEAT/UNTIL indent counter. Read each use in its own context rather than assuming a single global meaning."
     },
     {
       "addr": 67,
@@ -20945,7 +20950,7 @@
         201,
         254
       ],
-      "comment_inline": "end of the table?",
+      "comment_inline": "WIDTH token &FE doubles as the end-of-table sentinel",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&fe"
@@ -20956,7 +20961,7 @@
         208,
         15
       ],
-      "comment_inline": "no",
+      "comment_inline": "no: a real token, try the next entry",
       "type": "code",
       "mnemonic": "bne",
       "operand": "tok_kw_next_entry",
@@ -20969,7 +20974,7 @@
         176,
         184
       ],
-      "comment_inline": "end: not a keyword (skip the name)",
+      "comment_inline": "sentinel: not a keyword (skip the name)",
       "type": "code",
       "mnemonic": "bcs",
       "operand": "tok_name",
@@ -22966,7 +22971,7 @@
         87,
         137
       ],
-      "comment_inline": "Tokenise the line",
+      "comment_inline": "Tokenise (&3C pre-armed for a leading number)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "tok_scan",
@@ -22980,7 +22985,7 @@
         223,
         151
       ],
-      "comment_inline": "Tokenise; carry set if the line starts with a number",
+      "comment_inline": "reuse the &8D codec: decode the leading line number",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "check_line_number",
@@ -23007,7 +23012,7 @@
         141,
         188
       ],
-      "comment_inline": "Numbered line: insert it into the program",
+      "comment_inline": "numbered line: insert it (IWA = the line number)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "insert_line",

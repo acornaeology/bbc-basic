@@ -137,7 +137,7 @@ zp_fileblk_1      = &3a
 ; &3a referenced 45 times by &854c, &8643, &865b, &8888, &88ea, &89f6, &8a21, &8a2e, &8cdb, &8f4e, &8f60, &8ff0, &9002, &9006, &9472, &947f, &9484, &9489, &9496, &94a3, &94a8, &94bb, &9501, &9507, &950d, &950f, &9518, &951d, &9551, &9732, &9764, &99f9, &9a03, &9aff, &9b03, &9d8b, &9db0, &9e0f, &b51c, &b542, &bc13, &bcb0, &bcdd, &bce5, &bee5
 zp_fwb_sign       = &3b  ; FWB — floating-point work accumulator B (&3B-&42), same layout as zp_fwa_sign. Supplies the second operand for binary floating-point operations (add, multiply, divide).
 ; &3b referenced 59 times by &8645, &8953, &8990, &899e, &89c4, &89e5, &8a4d, &8a62, &8a69, &8b26, &8f94, &8fb7, &8fbc, &8fc0, &8fc2, &9049, &9050, &9074, &9078, &9477, &9479, &94ac, &94c0, &9505, &9511, &99fb, &9a05, &9a66, &9a6a, &9a70, &9a94, &9e11, &a066, &a06d, &a220, &a361, &a36c, &a376, &a455, &a4dc, &a592, &a5d8, &a634, &a6f3, &a819, &a948, &a9e4, &ac15, &b5a5, &b629, &b66c, &b672, &b676, &bc17, &bc8d, &bc9a, &bc9f, &bd08, &beec
-zp_fwb_ovf        = &3c
+zp_fwb_ovf        = &3c  ; FWB overflow byte (&3C), part of zp_fwb_sign. A much-reused scratch location: outside floating point it serves as the tokeniser's line-number-arming flag (&FF after GOTO etc. means encode the next number as a line number), a variable-chain walk pointer, an array dimension-descriptor offset, and LIST's REPEAT/UNTIL indent counter. Read each use in its own context rather than assuming a single global meaning.
 ; &3c referenced 39 times by &8955, &8992, &89ac, &89c6, &89e7, &8a64, &8a6b, &8a84, &8b17, &8f98, &8fc5, &8fc9, &907c, &9481, &94b9, &94be, &94c3, &94d0, &94dd, &94e2, &9710, &9758, &99fd, &9a07, &9e13, &a224, &a366, &a457, &a4e0, &b14f, &b15a, &b165, &b5a7, &b630, &b67c, &b682, &b686, &bc94, &beee
 zp_fwb_exp        = &3d
 ; &3d referenced 65 times by &85c1, &85e7, &85f3, &87b6, &8899, &88ad, &88b9, &88bb, &88c0, &88ca, &88cc, &88fc, &8905, &8909, &8911, &8a3b, &8a49, &8a5c, &9058, &9486, &94b3, &94e6, &9972, &997a, &9982, &9984, &9986, &9992, &999b, &999d, &99e0, &9a09, &9a12, &9a2f, &9a74, &9db4, &a228, &a36a, &a459, &a4e4, &a515, &a553, &a58c, &a616, &a6fa, &a81e, &a944, &a9e6, &b154, &b466, &b5ef, &b8d9, &bae8, &bb0a, &bc32, &bc38, &bcea, &bcf6, &bcfb, &bd00, &bd0a, &be57, &be59, &be68, &bf00
@@ -480,8 +480,15 @@ oscli             = &fff7
 ;
 ; Bit 6 is why a pseudo-variable like PTR reads as &8F in a function position but &CF as
 ; an assignment target. Entries are ordered so that the first acceptable abbreviation of
-; each keyword is unambiguous. The table runs to the action-address tables at
-; action_table_lo.
+; each keyword is unambiguous.
+;
+; The tokeniser scan stops at WIDTH's token &FE, which doubles as the end-of-table
+; sentinel (see the cmp #&fe in the keyword search). The final five entries — the
+; PTR/PAGE/TIME/LOMEM/HIMEM assignment forms &CF-&D3 — sit past that sentinel, so the
+; tokeniser never matches them (it produces those tokens arithmetically via bit 6). They
+; exist only for the de-tokeniser (print_token, which has no sentinel and scans by token
+; value) to render PTR= etc. back to text. The data then runs on to the action-address
+; tables at action_table_lo.
 .keyword_table
     equs "AND"                                                        ; 8071: 41 4e 44    AND   
     equb &80, &00                                                     ; 8074: 80 00       ..    
@@ -1743,7 +1750,9 @@ oscli             = &fff7
 ;
 ; Pack the line number in &3D/&3E into the BBC three-byte GOTO encoding (a control byte
 ; holding the scrambled top bits, then low|&40 and high|&40) so the bytes never collide
-; with tokens.
+; with tokens. The control byte carries only four high bits, so the encoding is exact
+; only for line numbers 0-32767 (above that the top bit is lost - the documented
+; line-number ceiling), and no encoded byte is ever &0D.
 ;
 ; On Entry:
 ;     ZP_FWB_EXP (&3D/&3E): the 16-bit line number
@@ -1871,6 +1880,18 @@ oscli             = &fff7
 ; Convert the line being entered into its internal form, replacing keywords with tokens
 ; via the keyword_table while leaving strings, line numbers and names intact. Works
 ; through the buffer using the general pointer (zp_general, &37).
+;
+; Three entry points share this scanner, differing only in how much of the &3B/&3C state
+; they reset:
+;
+; - tokenise_line (&8951): start a fresh line; clear both the start-of-statement flag &3B
+;   and the line-number flag &3C.
+; - tokenise_resume (&8955): clear only &3C; the caller has already set &3B. EVAL enters
+;   here with &3B = mid-statement so a re-tokenised string reads PTR etc. as functions,
+;   not assignment targets.
+; - tok_scan (&8957): clear neither; execute_line enters here having pre-armed &3C = &FF
+;   so a typed leading line number is encoded with the &8D token (then recovered by
+;   check_line_number, see &8B2D).
 ;
 ; On Entry:
 ;     ZP_GENERAL (&37/&38): a pointer to the line text to tokenise
@@ -2014,9 +2035,9 @@ oscli             = &fff7
     iny                                                               ; 8a0d: c8          .        ; Skip to the next entry: past the name
     lda (zp_fileblk),y                                                ; 8a0e: b1 39       .9       ; read it
     bpl tok_kw_check_end                                              ; 8a10: 10 fb       ..       ; until the token byte (bit 7 set)
-    cmp #&fe                                                          ; 8a12: c9 fe       ..       ; end of the table?
-    bne tok_kw_next_entry                                             ; 8a14: d0 0f       ..       ; no
-    bcs tok_name                                                      ; 8a16: b0 b8       ..       ; end: not a keyword (skip the name)
+    cmp #&fe                                                          ; 8a12: c9 fe       ..       ; WIDTH token &FE doubles as the end-of-table sentinel
+    bne tok_kw_next_entry                                             ; 8a14: d0 0f       ..       ; no: a real token, try the next entry
+    bcs tok_name                                                      ; 8a16: b0 b8       ..       ; sentinel: not a keyword (skip the name)
 ; &8a18 referenced 1 time by &8a0b
 .tok_kw_abbrev
     iny                                                               ; 8a18: c8          .        ; Abbreviation: skip to this entry's token
@@ -2328,10 +2349,10 @@ oscli             = &fff7
     sta zp_general_1                                                  ; 8b24: 85 38       .8       ; store it
     sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; start of statement (&3B = 0)
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
-    jsr tok_scan                                                      ; 8b2a: 20 57 89     W.      ; Tokenise the line
-    jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
+    jsr tok_scan                                                      ; 8b2a: 20 57 89     W.      ; Tokenise (&3C pre-armed for a leading number)
+    jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; reuse the &8D codec: decode the leading line number
     bcc exec_dispatch                                                 ; 8b30: 90 06       ..       ; no line number: execute it
-    jsr insert_line                                                   ; 8b32: 20 8d bc     ..      ; Numbered line: insert it into the program
+    jsr insert_line                                                   ; 8b32: 20 8d bc     ..      ; numbered line: insert it (IWA = the line number)
     jmp clear_then_immediate                                          ; 8b35: 4c f3 8a    L..      ; inserted: immediate loop
 ; &8b38 referenced 1 time by &8b30
 .exec_dispatch
@@ -5164,7 +5185,8 @@ oscli             = &fff7
 ; Decode a 3-byte line number into IWA
 ;
 ; Reverse the three-byte &8D line-number encoding, reconstructing the 16-bit line number
-; in IWA (the two high-bit pairs are recovered from the control byte).
+; in IWA (the two high-bit pairs are recovered from the control byte). The inverse of
+; encode_line_number, and like it exact only for 0-32767.
 ;
 ; On Entry:
 ;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
