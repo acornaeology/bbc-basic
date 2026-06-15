@@ -21422,7 +21422,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "(clear carry)",
+      "comment_inline": "superfluous: all paths reach here carry-clear",
       "type": "code",
       "mnemonic": "clc"
     },

@@ -2082,7 +2082,7 @@ oscli             = &fff7
     bvc tok_write_token                                               ; 8a4b: 50 07       P.       ; no
     ldx zp_fwb_sign                                                   ; 8a4d: a6 3b       .;       ; at the start of a statement?
     bne tok_write_token                                               ; 8a4f: d0 03       ..       ; no
-    clc                                                               ; 8a51: 18          .        ; (clear carry)
+    clc                                                               ; 8a51: 18          .        ; superfluous: all paths reach here carry-clear
     adc #&40 ; '@'                                                    ; 8a52: 69 40       i@       ; assignment form: token + &40
 ; &8a54 referenced 2 times by &8a4b, &8a4f
 .tok_write_token
