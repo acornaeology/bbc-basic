@@ -466,17 +466,22 @@ oscli             = &fff7
 ; Keyword / tokeniser table
 ;
 ; Each entry is the keyword in ASCII, then a token byte (bit 7 set), then a flag byte
-; that drives tokenising:
+; that drives tokenising. The flag bits are:
 ;
-; bit 0  conditional: do not tokenise if followed by a letter bit 1  enter "middle of
-; statement" mode bit 2  enter "start of statement" mode bit 3  FN/PROC: do not tokenise
-; the following name bit 4  start tokenising a line number (after GOTO etc.) bit 5  do
-; not tokenise the rest of the line (REM, DATA) bit 6  pseudo-variable: add &40 to the
-; token at the start of a statement (so e.g. PTR is &8F as a function and &CF as an
-; assignment target)
+; | Bit | Meaning                                              |
+; |-----|------------------------------------------------------|
+; | 0   | Conditional: do not tokenise if followed by a letter |
+; | 1   | Enter "middle of statement" mode                     |
+; | 2   | Enter "start of statement" mode                      |
+; | 3   | FN/PROC: do not tokenise the following name          |
+; | 4   | Start tokenising a line number (after GOTO etc.)     |
+; | 5   | Do not tokenise the rest of the line (REM, DATA)     |
+; | 6   | Pseudo-variable: add &40 to the token in a statement |
 ;
-; Entries are ordered so that the first acceptable abbreviation of each keyword is
-; unambiguous. The table runs to the action-address tables at action_table_lo.
+; Bit 6 is why a pseudo-variable like PTR reads as &8F in a function position but &CF as
+; an assignment target. Entries are ordered so that the first acceptable abbreviation of
+; each keyword is unambiguous. The table runs to the action-address tables at
+; action_table_lo.
 .keyword_table
     equs "AND"                                                        ; 8071: 41 4e 44    AND   
     equb &80, &00                                                     ; 8074: 80 00       ..    

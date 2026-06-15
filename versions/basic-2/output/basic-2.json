@@ -171,7 +171,7 @@
       "addr": 32881,
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
-      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising:\n\n  bit 0  conditional: do not tokenise if followed by a letter\n  bit 1  enter \"middle of statement\" mode\n  bit 2  enter \"start of statement\" mode\n  bit 3  FN/PROC: do not tokenise the following name\n  bit 4  start tokenising a line number (after GOTO etc.)\n  bit 5  do not tokenise the rest of the line (REM, DATA)\n  bit 6  pseudo-variable: add &40 to the token at the start of\n         a statement (so e.g. PTR is &8F as a function and &CF\n         as an assignment target)\n\nEntries are ordered so that the first acceptable abbreviation of\neach keyword is unambiguous. The table runs to the action-address\ntables at action_table_lo.\n"
+      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising. The flag bits are:\n\n| Bit | Meaning |\n|-----|---------|\n| 0 | Conditional: do not tokenise if followed by a letter |\n| 1 | Enter \"middle of statement\" mode |\n| 2 | Enter \"start of statement\" mode |\n| 3 | FN/PROC: do not tokenise the following name |\n| 4 | Start tokenising a line number (after GOTO etc.) |\n| 5 | Do not tokenise the rest of the line (REM, DATA) |\n| 6 | Pseudo-variable: add &40 to the token in a statement |\n\nBit 6 is why a pseudo-variable like PTR reads as &8F in a function\nposition but &CF as an assignment target. Entries are ordered so that\nthe first acceptable abbreviation of each keyword is unambiguous. The\ntable runs to the action-address tables at action_table_lo.\n"
     },
     {
       "addr": 49016,
