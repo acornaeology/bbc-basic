@@ -19605,7 +19605,7 @@
       "labels": [
         "tokenise_resume"
       ],
-      "comment_inline": "Clear the quote flag (&3C)",
+      "comment_inline": "Clear the line-number flag (&3C)",
       "xref_summaries": [
         "&8955 referenced 1 time by &ac1a"
       ],
@@ -20049,7 +20049,7 @@
         132,
         60
       ],
-      "comment_inline": "clear the quote flag",
+      "comment_inline": "clear the line-number flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -20147,7 +20147,7 @@
         208,
         65
       ],
-      "comment_inline": "yes: \"*command\", skip the rest of the line",
+      "comment_inline": "no (mid-statement): \"*\" is the multiply operator",
       "type": "code",
       "mnemonic": "bne",
       "operand": "tok_not_keyword",
@@ -20159,7 +20159,7 @@
       "bytes": [
         96
       ],
-      "comment_inline": "Return",
+      "comment_inline": "yes: \"*command\" - stop tokenising the rest of the line",
       "type": "code",
       "mnemonic": "rts"
     },
@@ -20230,7 +20230,7 @@
         166,
         60
       ],
-      "comment_inline": "inside a quote?",
+      "comment_inline": "line-number armed (after GOTO etc.)?",
       "type": "code",
       "mnemonic": "ldx",
       "operand": "zp_fwb_ovf",
@@ -20243,7 +20243,7 @@
         240,
         5
       ],
-      "comment_inline": "no: a line number",
+      "comment_inline": "not armed: an ordinary number",
       "type": "code",
       "mnemonic": "beq",
       "operand": "tok_skip_number_loop",
@@ -20396,7 +20396,7 @@
         132,
         60
       ],
-      "comment_inline": "clear the quote flag",
+      "comment_inline": "clear the line-number flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -20626,7 +20626,7 @@
         132,
         60
       ],
-      "comment_inline": "clear quote",
+      "comment_inline": "clear the line-number flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -21550,7 +21550,7 @@
         132,
         60
       ],
-      "comment_inline": "clear quote",
+      "comment_inline": "clear the line-number flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -21607,7 +21607,7 @@
         132,
         60
       ],
-      "comment_inline": "clear quote",
+      "comment_inline": "clear the line-number flag",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_ovf",
@@ -22842,7 +22842,7 @@
         134,
         60
       ],
-      "comment_inline": "Clear the machine-stack marker",
+      "comment_inline": "Arm line-number encoding (&3C) for a leading line number",
       "type": "code",
       "mnemonic": "stx",
       "operand": "zp_fwb_ovf",
@@ -22939,7 +22939,7 @@
         132,
         59
       ],
-      "comment_inline": "clear the quote flag",
+      "comment_inline": "start of statement (&3B = 0)",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",
@@ -79732,7 +79732,7 @@
         160,
         255
       ],
-      "comment_inline": "Quote flag reset",
+      "comment_inline": "Tokenise as mid-statement (&3B = &FF):",
       "type": "code",
       "mnemonic": "ldy",
       "operand": "#&ff"
@@ -79743,7 +79743,7 @@
         132,
         59
       ],
-      "comment_inline": "store the quote flag (&3B)",
+      "comment_inline": "so PTR etc. tokenise as functions, not assignments",
       "type": "code",
       "mnemonic": "sty",
       "operand": "zp_fwb_sign",

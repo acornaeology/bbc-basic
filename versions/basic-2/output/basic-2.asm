@@ -1883,7 +1883,7 @@ oscli             = &fff7
     sty zp_fwb_sign                                                   ; 8953: 84 3b       .;       ; Start-of-statement flag (&3B)
 ; &8955 referenced 1 time by &ac1a
 .tokenise_resume
-    sty zp_fwb_ovf                                                    ; 8955: 84 3c       .<       ; Clear the quote flag (&3C)
+    sty zp_fwb_ovf                                                    ; 8955: 84 3c       .<       ; Clear the line-number flag (&3C)
 ; &8957 referenced 5 times by &8964, &8974, &897a, &89c8, &8b2a
 .tok_scan
     lda (zp_general),y                                                ; 8957: b1 37       .7       ; Scan the next source character
@@ -1926,7 +1926,7 @@ oscli             = &fff7
     cmp #ASC(":")                                                     ; 898c: c9 3a       .:       ; A colon starts a new statement: reset the state
     bne tok_check_comma_star                                          ; 898e: d0 06       ..       ; not a colon: check for a comma
     sty zp_fwb_sign                                                   ; 8990: 84 3b       .;       ; Colon: back to start-of-statement
-    sty zp_fwb_ovf                                                    ; 8992: 84 3c       .<       ; clear the quote flag
+    sty zp_fwb_ovf                                                    ; 8992: 84 3c       .<       ; clear the line-number flag
     beq tok_advance                                                   ; 8994: f0 cb       ..       ; continue
 ; &8996 referenced 1 time by &898e
 .tok_check_comma_star
@@ -1935,16 +1935,16 @@ oscli             = &fff7
     cmp #ASC("*")                                                     ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
     bne tok_check_number                                              ; 899c: d0 05       ..       ; not "*": try a keyword or name
     lda zp_fwb_sign                                                   ; 899e: a5 3b       .;       ; at the start of a statement?
-    bne tok_not_keyword                                               ; 89a0: d0 41       .A       ; yes: "*command", skip the rest of the line
-    rts                                                               ; 89a2: 60          `        ; Return
+    bne tok_not_keyword                                               ; 89a0: d0 41       .A       ; no (mid-statement): "*" is the multiply operator
+    rts                                                               ; 89a2: 60          `        ; yes: "*command" - stop tokenising the rest of the line
 ; &89a3 referenced 1 time by &899c
 .tok_check_number
     cmp #ASC(".")                                                     ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?
     beq tok_skip_number_loop                                          ; 89a5: f0 0e       ..       ; yes
     jsr is_digit                                                      ; 89a7: 20 36 89     6.      ; a digit?
     bcc tok_check_letter                                              ; 89aa: 90 33       .3       ; no: a letter or symbol
-    ldx zp_fwb_ovf                                                    ; 89ac: a6 3c       .<       ; inside a quote?
-    beq tok_skip_number_loop                                          ; 89ae: f0 05       ..       ; no: a line number
+    ldx zp_fwb_ovf                                                    ; 89ac: a6 3c       .<       ; line-number armed (after GOTO etc.)?
+    beq tok_skip_number_loop                                          ; 89ae: f0 05       ..       ; not armed: an ordinary number
     jsr parse_decimal_u16                                             ; 89b0: 20 97 88     ..      ; tokenise the line number
     bcc tok_continue                                                  ; 89b3: 90 34       .4       ; continue
 ; &89b5 referenced 3 times by &89a5, &89ae, &89bf
@@ -1958,7 +1958,7 @@ oscli             = &fff7
 .tok_resume_mid
     ldx #&ff                                                          ; 89c2: a2 ff       ..       ; Now in the middle of a statement:
     stx zp_fwb_sign                                                   ; 89c4: 86 3b       .;       ; set the flag
-    sty zp_fwb_ovf                                                    ; 89c6: 84 3c       .<       ; clear the quote flag
+    sty zp_fwb_ovf                                                    ; 89c6: 84 3c       .<       ; clear the line-number flag
     jmp tok_scan                                                      ; 89c8: 4c 57 89    LW.      ; resume scanning
 ; &89cb referenced 1 time by &89ee
 .tok_skip_name
@@ -1982,7 +1982,7 @@ oscli             = &fff7
 .tok_not_keyword
     ldx #&ff                                                          ; 89e3: a2 ff       ..       ; Not a keyword: middle of statement
     stx zp_fwb_sign                                                   ; 89e5: 86 3b       .;       ; set mid-statement,
-    sty zp_fwb_ovf                                                    ; 89e7: 84 3c       .<       ; clear quote
+    sty zp_fwb_ovf                                                    ; 89e7: 84 3c       .<       ; clear the line-number flag
 ; &89e9 referenced 1 time by &89b3
 .tok_continue
     jmp tok_advance                                                   ; 89e9: 4c 61 89    La.      ; continue scanning
@@ -2074,13 +2074,13 @@ oscli             = &fff7
     lsr a                                                             ; 8a5f: 4a          J        ; bit 1: enter middle-of-statement?
     bcc tok_flag_start_stmt                                           ; 8a60: 90 04       ..       ; no
     stx zp_fwb_sign                                                   ; 8a62: 86 3b       .;       ; set middle-of-statement
-    sty zp_fwb_ovf                                                    ; 8a64: 84 3c       .<       ; clear quote
+    sty zp_fwb_ovf                                                    ; 8a64: 84 3c       .<       ; clear the line-number flag
 ; &8a66 referenced 1 time by &8a60
 .tok_flag_start_stmt
     lsr a                                                             ; 8a66: 4a          J        ; bit 2: enter start-of-statement?
     bcc tok_flag_fnproc                                               ; 8a67: 90 04       ..       ; no
     sty zp_fwb_sign                                                   ; 8a69: 84 3b       .;       ; set start-of-statement
-    sty zp_fwb_ovf                                                    ; 8a6b: 84 3c       .<       ; clear quote
+    sty zp_fwb_ovf                                                    ; 8a6b: 84 3c       .<       ; clear the line-number flag
 ; &8a6d referenced 1 time by &8a67
 .tok_flag_fnproc
     lsr a                                                             ; 8a6d: 4a          J        ; bit 3: FN/PROC (do not tokenise the name)?
@@ -2318,7 +2318,7 @@ oscli             = &fff7
     sta zp_error_vec_1                                                ; 8b11: 85 17       ..       ; store it (handler at &B433)
     ldx #&ff                                                          ; 8b13: a2 ff       ..       ; OPT = &FF: not inside the [ ] assembler
     stx zp_opt_flag                                                   ; 8b15: 86 28       .(       ; store the OPT flag
-    stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<       ; Clear the machine-stack marker
+    stx zp_fwb_ovf                                                    ; 8b17: 86 3c       .<       ; Arm line-number encoding (&3C) for a leading line number
     txs                                                               ; 8b19: 9a          .        ; Reset the 6502 hardware stack
     jsr reset_data_and_stacks                                         ; 8b1a: 20 3a bd     :.      ; Clear the DATA pointer and the BASIC stacks
     tay                                                               ; 8b1d: a8          .        ; Y = 0
@@ -2326,7 +2326,7 @@ oscli             = &fff7
     sta zp_general                                                    ; 8b20: 85 37       .7       ; low byte,
     lda zp_text_ptr_1                                                 ; 8b22: a5 0c       ..       ; high byte,
     sta zp_general_1                                                  ; 8b24: 85 38       .8       ; store it
-    sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; clear the quote flag
+    sty zp_fwb_sign                                                   ; 8b26: 84 3b       .;       ; start of statement (&3B = 0)
     sty zp_text_ptr_off                                               ; 8b28: 84 0a       ..       ; and the offset
     jsr tok_scan                                                      ; 8b2a: 20 57 89     W.      ; Tokenise the line
     jsr check_line_number                                             ; 8b2d: 20 df 97     ..      ; Tokenise; carry set if the line starts with a number
@@ -9690,8 +9690,8 @@ oscli             = &fff7
 .eval_ptr_hi
     stx zp_text_ptr2_1                                                ; ac0f: 86 1a       ..       ; parser pointer high
     stx zp_general_1                                                  ; ac11: 86 38       .8       ; name pointer high
-    ldy #&ff                                                          ; ac13: a0 ff       ..       ; Quote flag reset
-    sty zp_fwb_sign                                                   ; ac15: 84 3b       .;       ; store the quote flag (&3B)
+    ldy #&ff                                                          ; ac13: a0 ff       ..       ; Tokenise as mid-statement (&3B = &FF):
+    sty zp_fwb_sign                                                   ; ac15: 84 3b       .;       ; so PTR etc. tokenise as functions, not assignments
     iny                                                               ; ac17: c8          .        ; Offset back to the start
     sty zp_text_ptr2_off                                              ; ac18: 84 1b       ..       ; offset = 0 (start of string)
     jsr tokenise_resume                                               ; ac1a: 20 55 89     U.      ; Tokenise the stacked string

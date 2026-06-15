@@ -16,6 +16,12 @@
             "url": "docs/analysis/basic-2/floating-point-constants-and-precision.md",
             "icon": "doc",
             "note": "A close reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants. The significand is 32 bits — eight hexadecimal digits — so the e at &AAE4 is really the rational ADF85458/2^30: every stored hexit of e, then truncated one unit-in-the-last-place low (round-to-nearest would be ADF85459). A survey of the named scalars shows the last-bit rounding isn't even consistent (e and pi/180 truncated, ln 2 rounded, log10 e a ULP high), which is why the disassembly shows the full decoded value rather than a misleading rounded one. Ends on the two-part Cody-Waite pi/2, Acorn's own workaround for the precision limit."
+        },
+        {
+            "label": "Tokenising and de-tokenising: the keyword table, the crunch, and LIST (BASIC II)",
+            "url": "docs/analysis/basic-2/tokeniser-and-detokeniser.md",
+            "icon": "doc",
+            "note": "A complete, address-cited account of how BBC BASIC II turns source text into tokens and back. Gives the full 126-entry keyword/token/flag table verbatim, the meaning of every flag bit, and the first-full-match-in-table-order crunch algorithm (with abbreviations, the start-of-statement state machine, and the REM/DATA/* suppression contexts). Documents the three-byte &8D line-number codec — verified to round-trip only for 0–32767 and never to emit a &0D — the line storage layout (&0D hi lo len body, &0D &FF end marker), and what LIST does and does not preserve. Written for anyone building a faithful BASIC II tokeniser/detokeniser."
         }
     ],
     "references": [
