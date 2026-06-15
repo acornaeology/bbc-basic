@@ -14,7 +14,7 @@ The single most useful fact, derived directly from the ROM, is this:
 | Stack | Where | Frame | Counter | Capacity | Used by |
 |---|---|---|---|---|---|
 | 6502 hardware stack | page 1, `&0100–01FF` | 2 bytes (return addr) | the 6502 `S` register | 256 bytes | interpreter `JSR` nesting; nested `PROC`/`FN` call context |
-| BASIC value stack | descends from `HIMEM`, ptr at [`zp_stack_ptr`](address:0004@2?hex) (`&04/05`) | varies | the pointer itself | down to the top of variables | expression temporaries, stacked strings, the saved copy of the 6502 stack during a call |
+| BASIC value stack | descends from `HIMEM`, ptr at [`zp_stack_ptr`](address:0004@2?hex) (`&04/05`) | varies | the pointer itself | down to the top of variables | expression temporaries, stacked strings, the saved copy of the 6502 stack during a call, and the per-call `LOCAL`/parameter restore list |
 | `FOR` stack | [`for_stack`](address:0500@2?hex) (`&0500`) | 15 bytes | [`zp_for_level`](address:0026@2?hex) (`&26`) | 10 nested | `FOR`/`NEXT` |
 | `REPEAT` stack | [`repeat_stack`](address:05A4@2?hex) (`&05A4`/`&05B8`) | 2 bytes | [`zp_repeat_level`](address:0024@2?hex) (`&24`) | 20 nested | `REPEAT`/`UNTIL` |
 | `GOSUB` stack | [`gosub_stack`](address:05CC@2?hex) (`&05CC`/`&05E6`) | 2 bytes | [`zp_gosub_level`](address:0025@2?hex) (`&25`) | 26 nested | `GOSUB`/`RETURN` |
@@ -49,7 +49,35 @@ When you call `PROCfoo`, [`call_proc_fn`](address:B197@2?hex) does something non
 
 It snapshots the entire live hardware stack onto the BASIC value stack, then resets the hardware stack to empty before pushing a fresh call frame. This is what lets `PROC`s and `FN`s recurse far beyond the 256-byte limit of the 6502 stack — each level parks the previous level's hardware stack in the (much larger) value stack.
 
-`ENDPROC` ([`stmt_endproc`](address:9356@2?hex)) is tiny. It confirms a `PROC` frame is present by checking for the token at the fixed bottom-of-stack location `&01FF`, then returns through the normal statement-end path, which unwinds the hardware stack. On the way back, `call_proc_fn`'s tail restores the saved hardware stack and the value-stack pointer, and replays the `LOCAL`/parameter values.
+### The call frame
+
+Because the hardware stack was just emptied, the new frame is built from the top of page 1 downwards, at fixed, known addresses. During the body it is ten bytes:
+
+| Addr | Byte | Source |
+|---|---|---|
+| `&01FF` | `PROC` token `&F2` / `FN` `&A4` | [`zp_var_type`](address:0027@2?hex) (`&27`) |
+| `&01FE` | caller text offset (PtrA) | [`zp_text_ptr_off`](address:000a@2?hex) (`&0A`) |
+| `&01FD` | caller text pointer low | `&0B` |
+| `&01FC` | caller text pointer high | `&0C` |
+| `&01FB` | `LOCAL`/parameter count | — |
+| `&01FA` | PtrB offset | `&1B` |
+| `&01F9` | PtrB low | `&19` |
+| `&01F8` | PtrB high | `&1A` |
+| `&01F7` | body return address high | `JSR <body>` |
+| `&01F6` | body return address low | `JSR <body>` |
+
+The addresses are absolute, not relative, precisely *because* the stack was emptied first — which is how two routines reach into the frame by hard-coded address. `ENDPROC` reads the framed token at `hw_stack_top` (`&01FF`) to confirm it really is inside a `PROC`, and [`stmt_local`](address:9323@2?hex) bumps the count through `frame_local_count` (`&0106,X`, which with the body's `S` = `&F5` resolves to `&01FB`). Both sit inside the 6502 hardware-stack page ([`hw_stack`](address:0100@2?hex), `&0100`).
+
+### What rides on the value stack
+
+Two things sit on the BASIC value stack across the call, beneath that frame:
+
+- **the caller's entire hardware stack** — the snapshot taken on entry (the saved `S`, then every byte up to `&01FF`), copied back on return; and
+- **the `LOCAL`/parameter restore list** — one *(variable address, saved value)* pair for every `LOCAL` variable and every formal parameter. [`stmt_local`](address:9323@2?hex) stacks a pair and bumps the frame's count byte; each parameter does the same as it is bound. The count at `&01FB` is simply how many pairs there are to replay.
+
+### Unwinding
+
+`ENDPROC` ([`stmt_endproc`](address:9356@2?hex)) and `FN`'s `=expr` do **not** pop the frame themselves — and that is the elegant part. Each verifies the framed token, then falls into the ordinary end-of-statement path. Because the body was entered by `JSR <body>`, the `RTS` ending that path pops the body return address (`&01F6/&01F7`) straight back into `call_proc_fn` (at `&B20E`). Only there does the real unwind happen: restore PtrB, replay the count by popping that many *(address, value)* pairs off the value stack to undo the `LOCAL`s and parameters, restore the caller's PtrA, then copy the saved hardware stack back into page 1 and fix up the value-stack pointer.
 
 So `PROC`/`FN`/`ENDPROC` correctly tidy **two** stacks: the 6502 hardware stack and the BASIC value stack. The catch is in what they leave alone. Searching the ROM for every write to the three loop-level counters turns up exactly five sites — the loop statements themselves, plus one bulk reset — and **none of them is in `call_proc_fn` or `stmt_endproc`**. The loop stacks are global state that a procedure call neither saves nor restores.
 
@@ -135,6 +163,7 @@ The underlying rule is simple once the stacks are laid bare: **a loop's frame is
 
 - [`call_proc_fn`](address:B197@2?hex) — saves the 6502 and value stacks across a call; leaves the loop stacks alone.
 - [`stmt_endproc`](address:9356@2?hex) — the early-exit point; restores the two general stacks only.
+- [`stmt_local`](address:9323@2?hex) — stacks each `LOCAL`'s old value and bumps the call frame's restore count at `&01FB`.
 - [`stmt_for`](address:B7C4@2?hex) / [`stmt_next`](address:B695@2?hex), [`stmt_repeat`](address:BBE4@2?hex) / [`stmt_until`](address:BBB1@2?hex), [`stmt_gosub`](address:B888@2?hex) / [`stmt_return`](address:B8B6@2?hex) — the matched push/pop pairs.
 - [`reset_data_and_stacks`](address:BD3A@2?hex) — the prompt/`RUN` reset that zeroes all three loop-level counters.
 - Workspace: [`for_stack`](address:0500@2?hex), [`repeat_stack`](address:05A4@2?hex), [`gosub_stack`](address:05CC@2?hex), and the counters [`zp_for_level`](address:0026@2?hex), [`zp_repeat_level`](address:0024@2?hex), [`zp_gosub_level`](address:0025@2?hex).

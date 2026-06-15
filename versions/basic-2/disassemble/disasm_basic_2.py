@@ -9216,9 +9216,8 @@ the body runs (deepest byte first):
 
 The addresses are absolute because the stack was just emptied -- which
 is why [`stmt_endproc`](address:9356) reads the framed token at
-[`hw_stack_top`](address:01ff) (&01FF) and [`stmt_local`](address:9323)
-bumps the count through [`frame_local_count`](address:0106) (&0106,X
-with X = &F5, i.e. &01FB).
+`hw_stack_top` (&01FF) and [`stmt_local`](address:9323) bumps the count
+through `frame_local_count` (&0106,X with X = &F5, i.e. &01FB).
 
 Unwinding is indirect: ENDPROC and `=expr` do not pop the frame. They
 verify the framed token, then fall into the end-of-statement path
