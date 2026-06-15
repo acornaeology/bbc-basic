@@ -448,11 +448,11 @@ oscli             = &fff7
 ; a nod to BBC BASIC's author. Nothing else re-seeds unless the
 ; program calls RND(-n), so a sequence is deterministic from a
 ; cold start.
-    lda #&41 ; 'A'                                                    ; 8057: a9 41       .A       ; Cold seed: state becomes &00575241; load &41
+    lda #ASC("A")                                                     ; 8057: a9 41       .A       ; Cold seed: state becomes &00575241; load &41
     sta zp_rnd_seed                                                   ; 8059: 85 0d       ..       ; byte 0
-    lda #&52 ; 'R'                                                    ; 805b: a9 52       .R       ; load &52
+    lda #ASC("R")                                                     ; 805b: a9 52       .R       ; load &52
     sta zp_rnd_seed_1                                                 ; 805d: 85 0e       ..       ; byte 1
-    lda #&57 ; 'W'                                                    ; 805f: a9 57       .W       ; load &57
+    lda #ASC("W")                                                     ; 805f: a9 57       .W       ; load &57
     sta zp_rnd_seed_2                                                 ; 8061: 85 0f       ..       ; byte 2 (bytes 3 and 4 stay zero)
 ; &8063 referenced 1 time by &8055
 .lang_install_brkv
@@ -1011,7 +1011,7 @@ oscli             = &fff7
 ; &8508 referenced 1 time by &85a2
 .asm_loop
     jsr skip_spaces                                                   ; 8508: 20 97 8a     ..      ; Skip spaces
-    cmp #&5d ; ']'                                                    ; 850b: c9 5d       .]       ; ']' end of assembler?
+    cmp #ASC("]")                                                     ; 850b: c9 5d       .]       ; ']' end of assembler?
     beq assembler_exit                                                ; 850d: f0 ee       ..       ; yes: exit
     jsr skip_to_statement_end                                         ; 850f: 20 6d 98     m.      ; Skip to the statement
     dec zp_text_ptr_off                                               ; 8512: c6 0a       ..       ; back up
@@ -1069,7 +1069,7 @@ oscli             = &fff7
 ; &8567 referenced 1 time by &8575
 .asm_list_src_loop
     lda (zp_text_ptr),y                                               ; 8567: b1 0b       ..       ; Next character
-    cmp #&3a ; ':'                                                    ; 8569: c9 3a       .:       ; ':' end of statement?
+    cmp #ASC(":")                                                     ; 8569: c9 3a       .:       ; ':' end of statement?
     beq asm_list_src_end                                              ; 856b: f0 0a       ..       ; yes
     cmp #&0d                                                          ; 856d: c9 0d       ..       ; end of line?
     beq asm_list_newline                                              ; 856f: f0 0a       ..       ; yes
@@ -1093,7 +1093,7 @@ oscli             = &fff7
 .asm_scan_end_loop
     iny                                                               ; 8581: c8          .        ; scan for the end
     lda (zp_text_ptr),y                                               ; 8582: b1 0b       ..       ; read a character
-    cmp #&3a ; ':'                                                    ; 8584: c9 3a       .:       ; ':'?
+    cmp #ASC(":")                                                     ; 8584: c9 3a       .:       ; ':'?
     beq asm_stmt_end                                                  ; 8586: f0 04       ..       ; yes
     cmp #&0d                                                          ; 8588: c9 0d       ..       ; end of line?
     bne asm_scan_end_loop                                             ; 858a: d0 f5       ..       ; no: continue
@@ -1102,7 +1102,7 @@ oscli             = &fff7
     jsr cend_back                                                     ; 858c: 20 59 98     Y.      ; Check Escape and advance
     dey                                                               ; 858f: 88          .        ; Re-read the terminator
     lda (zp_text_ptr),y                                               ; 8590: b1 0b       ..       ; read it
-    cmp #&3a ; ':'                                                    ; 8592: c9 3a       .:       ; ':'?
+    cmp #ASC(":")                                                     ; 8592: c9 3a       .:       ; ':'?
     beq asm_continue                                                  ; 8594: f0 0c       ..       ; yes: same line
     lda zp_text_ptr_1                                                 ; 8596: a5 0c       ..       ; at end of program memory?
     cmp #7                                                            ; 8598: c9 07       ..       ; page &07 (immediate buffer)?
@@ -1143,13 +1143,13 @@ oscli             = &fff7
     jsr skip_spaces                                                   ; 85bc: 20 97 8a     ..      ; Skip spaces
     ldy #0                                                            ; 85bf: a0 00       ..       ; Clear the compacted value
     sty zp_fwb_exp                                                    ; 85c1: 84 3d       .=       ; low byte (&3D)
-    cmp #&3a ; ':'                                                    ; 85c3: c9 3a       .:       ; ':' end of statement?
+    cmp #ASC(":")                                                     ; 85c3: c9 3a       .:       ; ':' end of statement?
     beq asm_emit                                                      ; 85c5: f0 64       .d       ; yes: no instruction
     cmp #&0d                                                          ; 85c7: c9 0d       ..       ; end of line?
     beq asm_emit                                                      ; 85c9: f0 60       .`       ; yes
-    cmp #&5c ; '\'                                                    ; 85cb: c9 5c       .\       ; comment?
+    cmp #ASC("\")                                                     ; 85cb: c9 5c       .\       ; comment?
     beq asm_emit                                                      ; 85cd: f0 5c       .\       ; yes
-    cmp #&2e ; '.'                                                    ; 85cf: c9 2e       ..       ; '.' label?
+    cmp #ASC(".")                                                     ; 85cf: c9 2e       ..       ; '.' label?
     beq asm_define_label                                              ; 85d1: f0 d2       ..       ; yes: define it
     dec zp_text_ptr_off                                               ; 85d3: c6 0a       ..       ; back up
 ; &85d5 referenced 1 time by &85ef
@@ -1158,7 +1158,7 @@ oscli             = &fff7
     inc zp_text_ptr_off                                               ; 85d7: e6 0a       ..       ; advance the offset,
     lda (zp_text_ptr),y                                               ; 85d9: b1 0b       ..       ; read it
     bmi asm_logic_mnemonic                                            ; 85db: 30 2a       0*       ; token: tokenised AND/EOR/OR
-    cmp #&20 ; ' '                                                    ; 85dd: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 85dd: c9 20       .        ; space?
     beq asm_mn_search                                                 ; 85df: f0 10       ..       ; skip it
     ldy #5                                                            ; 85e1: a0 05       ..       ; Compact the character (5 bits)
     asl a                                                             ; 85e3: 0a          .        ; shift the char up by 3,
@@ -1205,7 +1205,7 @@ oscli             = &fff7
     inc zp_text_ptr_off                                               ; 8617: e6 0a       ..       ; step past, expect 'A'
     iny                                                               ; 8619: c8          .        ; advance,
     lda (zp_text_ptr),y                                               ; 861a: b1 0b       ..       ; read the next character
-    cmp #&41 ; 'A'                                                    ; 861c: c9 41       .A       ; 'A'?
+    cmp #ASC("A")                                                     ; 861c: c9 41       .A       ; 'A'?
     bne asm_mistake                                                   ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
 .asm_got_opcode
@@ -1312,7 +1312,7 @@ oscli             = &fff7
     cpx #&29 ; ')'                                                    ; 86b7: e0 29       .)       ; index &29+ : not immediate?
     bcs asm_mode_indirect                                             ; 86b9: b0 18       ..       ; yes: indexed/absolute modes
     jsr skip_spaces                                                   ; 86bb: 20 97 8a     ..      ; Skip spaces
-    cmp #&23 ; '#'                                                    ; 86be: c9 23       .#       ; '#' immediate prefix?
+    cmp #ASC("#")                                                     ; 86be: c9 23       .#       ; '#' immediate prefix?
     bne asm_try_indirect                                              ; 86c0: d0 18       ..       ; no: absolute
     jsr asm_opcode_add8                                               ; 86c2: 20 2f 88     /.      ; Immediate mode: adjust the opcode
 ; &86c5 referenced 2 times by &877d, &87c9
@@ -1335,29 +1335,29 @@ oscli             = &fff7
     jsr skip_spaces                                                   ; 86d7: 20 97 8a     ..      ; Skip spaces
 ; &86da referenced 1 time by &86c0
 .asm_try_indirect
-    cmp #&28 ; '('                                                    ; 86da: c9 28       .(       ; '(' opening an indirect mode?
+    cmp #ASC("(")                                                     ; 86da: c9 28       .(       ; '(' opening an indirect mode?
     bne asm_abs_from_paren                                            ; 86dc: d0 37       .7       ; no: absolute
     jsr eval_expr_to_integer                                          ; 86de: 20 21 88     !.      ; Evaluate the zero-page address
     jsr skip_spaces                                                   ; 86e1: 20 97 8a     ..      ; Skip spaces
-    cmp #&29 ; ')'                                                    ; 86e4: c9 29       .)       ; ')' -> (zp),Y form
+    cmp #ASC(")")                                                     ; 86e4: c9 29       .)       ; ')' -> (zp),Y form
     bne asm_indirect_zpx                                              ; 86e6: d0 13       ..       ; no: try (zp,X)
     jsr skip_spaces                                                   ; 86e8: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 86eb: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; 86eb: c9 2c       .,       ; ','?
     bne asm_index_error                                               ; 86ed: d0 1e       ..       ; no: Index error
     jsr asm_opcode_add16                                              ; 86ef: 20 2c 88     ,.      ; adjust the opcode for (zp),Y
     jsr skip_spaces                                                   ; 86f2: 20 97 8a     ..      ; Skip spaces
-    cmp #&59 ; 'Y'                                                    ; 86f5: c9 59       .Y       ; 'Y'?
+    cmp #ASC("Y")                                                     ; 86f5: c9 59       .Y       ; 'Y'?
     bne asm_index_error                                               ; 86f7: d0 14       ..       ; no: Index error
     beq asm_imm_byte                                                  ; 86f9: f0 cd       ..       ; process as a two-byte instruction
 ; &86fb referenced 1 time by &86e6
 .asm_indirect_zpx
-    cmp #&2c ; ','                                                    ; 86fb: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; 86fb: c9 2c       .,       ; ','?
     bne asm_index_error                                               ; 86fd: d0 0e       ..       ; no: Index error
     jsr skip_spaces                                                   ; 86ff: 20 97 8a     ..      ; Skip spaces
-    cmp #&58 ; 'X'                                                    ; 8702: c9 58       .X       ; 'X'?
+    cmp #ASC("X")                                                     ; 8702: c9 58       .X       ; 'X'?
     bne asm_index_error                                               ; 8704: d0 07       ..       ; no: Index error
     jsr skip_spaces                                                   ; 8706: 20 97 8a     ..      ; Skip spaces
-    cmp #&29 ; ')'                                                    ; 8709: c9 29       .)       ; ')'?
+    cmp #ASC(")")                                                     ; 8709: c9 29       .)       ; ')'?
     beq asm_imm_byte                                                  ; 870b: f0 bb       ..       ; yes: process
 ; &870d referenced 8 times by &86ed, &86f7, &86fd, &8704, &872d, &8764, &87af, &87ed
 .asm_index_error
@@ -1370,13 +1370,13 @@ oscli             = &fff7
     dec zp_text_ptr_off                                               ; 8715: c6 0a       ..       ; Back up over the "("
     jsr eval_expr_to_integer                                          ; 8717: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 871a: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 871d: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; 871d: c9 2c       .,       ; ','?
     bne asm_absolute                                                  ; 871f: d0 14       ..       ; no: process as absolute
     jsr asm_opcode_add16                                              ; 8721: 20 2c 88     ,.      ; adjust the opcode for absolute,X/,Y
     jsr skip_spaces                                                   ; 8724: 20 97 8a     ..      ; Skip spaces
-    cmp #&58 ; 'X'                                                    ; 8727: c9 58       .X       ; 'X'?
+    cmp #ASC("X")                                                     ; 8727: c9 58       .X       ; 'X'?
     beq asm_absolute                                                  ; 8729: f0 0a       ..       ; yes: abs,X
-    cmp #&59 ; 'Y'                                                    ; 872b: c9 59       .Y       ; 'Y'?
+    cmp #ASC("Y")                                                     ; 872b: c9 59       .Y       ; 'Y'?
     bne asm_index_error                                               ; 872d: d0 de       ..       ; no: Index error
 ; &872f referenced 1 time by &873a
 .asm_indexed_adjust
@@ -1397,18 +1397,18 @@ oscli             = &fff7
     cpx #&2d ; '-'                                                    ; 8743: e0 2d       .-       ; index &2D+ (accumulator-or-absolute)?
     bcs asm_acc_or_abs                                                ; 8745: b0 09       ..       ; yes
     jsr skip_spaces                                                   ; 8747: 20 97 8a     ..      ; Skip spaces
-    cmp #&41 ; 'A'                                                    ; 874a: c9 41       .A       ; 'A' (accumulator)?
+    cmp #ASC("A")                                                     ; 874a: c9 41       .A       ; 'A' (accumulator)?
     beq asm_accumulator                                               ; 874c: f0 19       ..       ; yes
     dec zp_text_ptr_off                                               ; 874e: c6 0a       ..       ; Back up a character
 ; &8750 referenced 1 time by &8745
 .asm_acc_or_abs
     jsr eval_expr_to_integer                                          ; 8750: 20 21 88     !.      ; Evaluate the address
     jsr skip_spaces                                                   ; 8753: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 8756: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; 8756: c9 2c       .,       ; ','?
     bne asm_zp_or_abs                                                 ; 8758: d0 de       ..       ; no: process
     jsr asm_opcode_add16                                              ; 875a: 20 2c 88     ,.      ; adjust the opcode for indexed mode
     jsr skip_spaces                                                   ; 875d: 20 97 8a     ..      ; Skip spaces
-    cmp #&58 ; 'X'                                                    ; 8760: c9 58       .X       ; 'X'?
+    cmp #ASC("X")                                                     ; 8760: c9 58       .X       ; 'X'?
     beq asm_zp_or_abs                                                 ; 8762: f0 d4       ..       ; yes: address,X
     jmp asm_index_error                                               ; 8764: 4c 0d 87    L..      ; Index error
 ; &8767 referenced 1 time by &874c
@@ -1423,7 +1423,7 @@ oscli             = &fff7
     cpx #&31 ; '1'                                                    ; 8772: e0 31       .1       ; index &31 (immediate-only)?
     beq asm_imm1_eval                                                 ; 8774: f0 0c       ..       ; yes
     jsr skip_spaces                                                   ; 8776: 20 97 8a     ..      ; Skip spaces
-    cmp #&23 ; '#'                                                    ; 8779: c9 23       .#       ; '#' immediate?
+    cmp #ASC("#")                                                     ; 8779: c9 23       .#       ; '#' immediate?
     bne asm_imm1_backup                                               ; 877b: d0 03       ..       ; no: address
     jmp asm_imm_eval                                                  ; 877d: 4c c5 86    L..      ; immediate
 ; &8780 referenced 1 time by &877b
@@ -1439,7 +1439,7 @@ oscli             = &fff7
     beq asm_addr_eval                                                 ; 878a: f0 0b       ..       ; yes
     bcs asm_mode_equ                                                  ; 878c: b0 24       .$       ; index &34+ : other forms
     jsr skip_spaces                                                   ; 878e: 20 97 8a     ..      ; Skip spaces
-    cmp #&28 ; '('                                                    ; 8791: c9 28       .(       ; '(' indirect?
+    cmp #ASC("(")                                                     ; 8791: c9 28       .(       ; '(' indirect?
     beq asm_jmp_indirect                                              ; 8793: f0 0a       ..       ; yes
     dec zp_text_ptr_off                                               ; 8795: c6 0a       ..       ; Back up a character
 ; &8797 referenced 1 time by &878a
@@ -1457,7 +1457,7 @@ oscli             = &fff7
     jsr asm_opcode_add16                                              ; 87a2: 20 2c 88     ,.      ; (continued)
     jsr eval_expr_to_integer                                          ; 87a5: 20 21 88     !.      ; evaluate the address
     jsr skip_spaces                                                   ; 87a8: 20 97 8a     ..      ; Skip spaces
-    cmp #&29 ; ')'                                                    ; 87ab: c9 29       .)       ; ')' to close?
+    cmp #ASC(")")                                                     ; 87ab: c9 29       .)       ; ')' to close?
     beq asm_three_byte                                                ; 87ad: f0 eb       ..       ; yes: three-byte instruction
     jmp asm_index_error                                               ; 87af: 4c 0d 87    L..      ; Index error
 ; &87b2 referenced 1 time by &878c
@@ -1471,7 +1471,7 @@ oscli             = &fff7
     cpx #&37 ; '7'                                                    ; 87bd: e0 37       .7       ; yes
     bcs asm_equ_eval                                                  ; 87bf: b0 2f       ./       ; two-register form?
     jsr skip_spaces                                                   ; 87c1: 20 97 8a     ..      ; '#' immediate?
-    cmp #&23 ; '#'                                                    ; 87c4: c9 23       .#       ; no: absolute
+    cmp #ASC("#")                                                     ; 87c4: c9 23       .#       ; no: absolute
     bne asm_equ_backup                                                ; 87c6: d0 04       ..       ; discard the saved register, do immediate
     pla                                                               ; 87c8: 68          h        ; discard the register
     jmp asm_imm_eval                                                  ; 87c9: 4c c5 86    L..      ; do immediate
@@ -1482,7 +1482,7 @@ oscli             = &fff7
     pla                                                               ; 87d1: 68          h        ; recover the register letter
     sta zp_general                                                    ; 87d2: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87d4: 20 97 8a     ..      ; ',' index register?
-    cmp #&2c ; ','                                                    ; 87d7: c9 2c       .,       ; yes
+    cmp #ASC(",")                                                     ; 87d7: c9 2c       .,       ; yes
     beq asm_equ_index                                                 ; 87d9: f0 03       ..       ; no: assemble as absolute
     jmp asm_absolute                                                  ; 87db: 4c 35 87    L5.      ; process as absolute
 ; &87de referenced 1 time by &87d9
@@ -1502,7 +1502,7 @@ oscli             = &fff7
     pla                                                               ; 87f3: 68          h        ; recover the register letter
     sta zp_general                                                    ; 87f4: 85 37       .7       ; into &37
     jsr skip_spaces                                                   ; 87f6: 20 97 8a     ..      ; ',' index register?
-    cmp #&2c ; ','                                                    ; 87f9: c9 2c       .,       ; no: single operand
+    cmp #ASC(",")                                                     ; 87f9: c9 2c       .,       ; no: single operand
     bne asm_force_zp                                                  ; 87fb: d0 13       ..       ; Index register letter
     jsr skip_spaces                                                   ; 87fd: 20 97 8a     ..      ; read the index register letter
     and #&1f                                                          ; 8800: 29 1f       ).       ; matches?
@@ -1601,15 +1601,15 @@ oscli             = &fff7
     ldy zp_text_ptr_off                                               ; 883c: a4 0a       ..       ; Next character of the directive
     inc zp_text_ptr_off                                               ; 883e: e6 0a       ..       ; consume that character
     lda (zp_text_ptr),y                                               ; 8840: b1 0b       ..       ; 'B' (EQUB)?
-    cmp #&42 ; 'B'                                                    ; 8842: c9 42       .B       ; yes
+    cmp #ASC("B")                                                     ; 8842: c9 42       .B       ; yes
     beq equb_save_count                                               ; 8844: f0 12       ..       ; two bytes (EQUW)  'W' (EQUW)?
     inx                                                               ; 8846: e8          .        ; two bytes
-    cmp #&57 ; 'W'                                                    ; 8847: c9 57       .W       ; yes
+    cmp #ASC("W")                                                     ; 8847: c9 57       .W       ; yes
     beq equb_save_count                                               ; 8849: f0 0d       ..       ; four bytes (EQUD)
     ldx #4                                                            ; 884b: a2 04       ..       ; 'D' (EQUD)?
-    cmp #&44 ; 'D'                                                    ; 884d: c9 44       .D       ; yes
+    cmp #ASC("D")                                                     ; 884d: c9 44       .D       ; yes
     beq equb_save_count                                               ; 884f: f0 07       ..       ; 'S' (EQUS)?
-    cmp #&53 ; 'S'                                                    ; 8851: c9 53       .S       ; yes
+    cmp #ASC("S")                                                     ; 8851: c9 53       .S       ; yes
     beq equs_save_opt                                                 ; 8853: f0 15       ..       ; none: Mistake (syntax error)
     jmp syntax_error                                                  ; 8855: 4c 2a 98    L*.      ; Mistake (syntax) error
 ; &8858 referenced 3 times by &8844, &8849, &884f
@@ -1684,9 +1684,9 @@ oscli             = &fff7
 .parse_dec_loop
     iny                                                               ; 889d: c8          .        ; Next character
     lda (zp_general),y                                                ; 889e: b1 37       .7       ; read it
-    cmp #&3a ; ':'                                                    ; 88a0: c9 3a       .:       ; above 9?
+    cmp #ASC(":")                                                     ; 88a0: c9 3a       .:       ; above 9?
     bcs parse_dec_encode                                              ; 88a2: b0 36       .6       ; not a digit: done
-    cmp #&30 ; '0'                                                    ; 88a4: c9 30       .0       ; below 0?
+    cmp #ASC("0")                                                     ; 88a4: c9 30       .0       ; below 0?
     bcc parse_dec_encode                                              ; 88a6: 90 32       .2       ; not a digit: done
     and #&0f                                                          ; 88a8: 29 0f       ).       ; Digit value
     pha                                                               ; 88aa: 48          H        ; save it
@@ -1799,25 +1799,25 @@ oscli             = &fff7
 ;     Y: preserved
 ; &8926 referenced 5 times by &89cb, &89d4, &8a43, &8a74, &b167
 .is_alphanumeric
-    cmp #&7b ; '{'                                                    ; 8926: c9 7b       .{       ; above 'z'?
+    cmp #ASC("{")                                                     ; 8926: c9 7b       .{       ; above 'z'?
     bcs not_name_char                                                 ; 8928: b0 fa       ..       ; yes: no
-    cmp #&5f ; '_'                                                    ; 892a: c9 5f       ._       ; '_' or above?
+    cmp #ASC("_")                                                     ; 892a: c9 5f       ._       ; '_' or above?
     bcs return_2                                                      ; 892c: b0 0e       ..       ; yes: name char
-    cmp #&5b ; '['                                                    ; 892e: c9 5b       .[       ; '[' to '^'?
+    cmp #ASC("[")                                                     ; 892e: c9 5b       .[       ; '[' to '^'?
     bcs not_name_char                                                 ; 8930: b0 f2       ..       ; yes: no
-    cmp #&41 ; 'A'                                                    ; 8932: c9 41       .A       ; 'A' or above?
+    cmp #ASC("A")                                                     ; 8932: c9 41       .A       ; 'A' or above?
     bcs return_2                                                      ; 8934: b0 06       ..       ; yes: name char
 ; &8936 referenced 3 times by &893f, &896d, &89a7
 .is_digit
-    cmp #&3a ; ':'                                                    ; 8936: c9 3a       .:       ; above '9'?
+    cmp #ASC(":")                                                     ; 8936: c9 3a       .:       ; above '9'?
     bcs not_name_char                                                 ; 8938: b0 ea       ..       ; yes: no
-    cmp #&30 ; '0'                                                    ; 893a: c9 30       .0       ; digit?
+    cmp #ASC("0")                                                     ; 893a: c9 30       .0       ; digit?
 ; &893c referenced 2 times by &892c, &8934
 .return_2
     rts                                                               ; 893c: 60          `        ; carry set if so
 ; &893d referenced 1 time by &89b7
 .is_dot_or_digit
-    cmp #&2e ; '.'                                                    ; 893d: c9 2e       ..       ; '.'?
+    cmp #ASC(".")                                                     ; 893d: c9 2e       ..       ; '.'?
     bne is_digit                                                      ; 893f: d0 f5       ..       ; no: test alphanumeric
     rts                                                               ; 8941: 60          `        ; Return
 ; ***************************************************************************************
@@ -1889,7 +1889,7 @@ oscli             = &fff7
     lda (zp_general),y                                                ; 8957: b1 37       .7       ; Scan the next source character
     cmp #&0d                                                          ; 8959: c9 0d       ..       ; CR: end of line
     beq return_3                                                      ; 895b: f0 ed       ..       ; Carriage return ends the line
-    cmp #&20 ; ' '                                                    ; 895d: c9 20       .        ; space: skip it
+    cmp #ASC(" ")                                                     ; 895d: c9 20       .        ; space: skip it
     bne tok_check_hex                                                 ; 895f: d0 05       ..       ; Skip spaces
 ; &8961 referenced 5 times by &8985, &8994, &8998, &89e9, &8a89
 .tok_advance
@@ -1897,49 +1897,49 @@ oscli             = &fff7
     bne tok_scan                                                      ; 8964: d0 f1       ..       ; loop
 ; &8966 referenced 1 time by &895f
 .tok_check_hex
-    cmp #&26 ; '&'                                                    ; 8966: c9 26       .&       ; An "&" introduces a hex constant: copy it unchanged
+    cmp #ASC("&")                                                     ; 8966: c9 26       .&       ; An "&" introduces a hex constant: copy it unchanged
     bne tok_check_string                                              ; 8968: d0 12       ..       ; not "&": check the other cases
 ; &896a referenced 2 times by &8970, &8978
 .tok_hex_loop
     jsr general_next_byte                                             ; 896a: 20 4b 89     K.      ; Hex constant: advance and get a character
     jsr is_digit                                                      ; 896d: 20 36 89     6.      ; a digit?
     bcs tok_hex_loop                                                  ; 8970: b0 f8       ..       ; yes: keep copying
-    cmp #&41 ; 'A'                                                    ; 8972: c9 41       .A       ; below 'A'?
+    cmp #ASC("A")                                                     ; 8972: c9 41       .A       ; below 'A'?
     bcc tok_scan                                                      ; 8974: 90 e1       ..       ; not hex: resume scanning
-    cmp #&47 ; 'G'                                                    ; 8976: c9 47       .G       ; 'A'..'F'?
+    cmp #ASC("G")                                                     ; 8976: c9 47       .G       ; 'A'..'F'?
     bcc tok_hex_loop                                                  ; 8978: 90 f0       ..       ; hex letter: keep copying
     bcs tok_scan                                                      ; 897a: b0 db       ..       ; past F: resume
 ; &897c referenced 1 time by &8968
 .tok_check_string
-    cmp #&22                                                          ; 897c: c9 22       ."       ; A quote starts a string literal: copy it verbatim
+    cmp #'"'                                                          ; 897c: c9 22       ."       ; A quote starts a string literal: copy it verbatim
     bne tok_check_colon                                               ; 897e: d0 0c       ..       ; not a quote: check for a colon
 ; &8980 referenced 1 time by &8989
 .tok_string_loop
     jsr general_next_byte                                             ; 8980: 20 4b 89     K.      ; String literal: copy to the closing quote
-    cmp #&22                                                          ; 8983: c9 22       ."       ; a quote?
+    cmp #'"'                                                          ; 8983: c9 22       ."       ; a quote?
     beq tok_advance                                                   ; 8985: f0 da       ..       ; yes: end of string
     cmp #&0d                                                          ; 8987: c9 0d       ..       ; CR (unterminated)?
     bne tok_string_loop                                               ; 8989: d0 f5       ..       ; no: keep copying
     rts                                                               ; 898b: 60          `        ; Return
 ; &898c referenced 1 time by &897e
 .tok_check_colon
-    cmp #&3a ; ':'                                                    ; 898c: c9 3a       .:       ; A colon starts a new statement: reset the state
+    cmp #ASC(":")                                                     ; 898c: c9 3a       .:       ; A colon starts a new statement: reset the state
     bne tok_check_comma_star                                          ; 898e: d0 06       ..       ; not a colon: check for a comma
     sty zp_fwb_sign                                                   ; 8990: 84 3b       .;       ; Colon: back to start-of-statement
     sty zp_fwb_ovf                                                    ; 8992: 84 3c       .<       ; clear the quote flag
     beq tok_advance                                                   ; 8994: f0 cb       ..       ; continue
 ; &8996 referenced 1 time by &898e
 .tok_check_comma_star
-    cmp #&2c ; ','                                                    ; 8996: c9 2c       .,       ; a comma?
+    cmp #ASC(",")                                                     ; 8996: c9 2c       .,       ; a comma?
     beq tok_advance                                                   ; 8998: f0 c7       ..       ; yes: skip it
-    cmp #&2a ; '*'                                                    ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
+    cmp #ASC("*")                                                     ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
     bne tok_check_number                                              ; 899c: d0 05       ..       ; not "*": try a keyword or name
     lda zp_fwb_sign                                                   ; 899e: a5 3b       .;       ; at the start of a statement?
     bne tok_not_keyword                                               ; 89a0: d0 41       .A       ; yes: "*command", skip the rest of the line
     rts                                                               ; 89a2: 60          `        ; Return
 ; &89a3 referenced 1 time by &899c
 .tok_check_number
-    cmp #&2e ; '.'                                                    ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?
+    cmp #ASC(".")                                                     ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?
     beq tok_skip_number_loop                                          ; 89a5: f0 0e       ..       ; yes
     jsr is_digit                                                      ; 89a7: 20 36 89     6.      ; a digit?
     bcc tok_check_letter                                              ; 89aa: 90 33       .3       ; no: a letter or symbol
@@ -1976,7 +1976,7 @@ oscli             = &fff7
     jmp tok_name_loop                                                 ; 89dc: 4c d2 89    L..      ; loop
 ; &89df referenced 1 time by &89aa
 .tok_check_letter
-    cmp #&41 ; 'A'                                                    ; 89df: c9 41       .A       ; a letter ('A'+)?
+    cmp #ASC("A")                                                     ; 89df: c9 41       .A       ; a letter ('A'+)?
     bcs tok_try_keyword                                               ; 89e1: b0 09       ..       ; yes: try to match a keyword
 ; &89e3 referenced 2 times by &89a0, &89ce
 .tok_not_keyword
@@ -1988,7 +1988,7 @@ oscli             = &fff7
     jmp tok_advance                                                   ; 89e9: 4c 61 89    La.      ; continue scanning
 ; &89ec referenced 1 time by &89e1
 .tok_try_keyword
-    cmp #&58 ; 'X'                                                    ; 89ec: c9 58       .X       ; 'X' or above?
+    cmp #ASC("X")                                                     ; 89ec: c9 58       .X       ; 'X' or above?
     bcs tok_skip_name                                                 ; 89ee: b0 db       ..       ; nothing starts with X/Y/Z: skip the name
     ldx #&71 ; 'q'                                                    ; 89f0: a2 71       .q       ; Point at the keyword table (&8071): low
     stx zp_fileblk                                                    ; 89f2: 86 39       .9       ; (store)
@@ -2007,7 +2007,7 @@ oscli             = &fff7
     cmp (zp_general),y                                                ; 8a03: d1 37       .7       ; compare with the line
     beq tok_kw_match_loop                                             ; 8a05: f0 f7       ..       ; match: next character
     lda (zp_general),y                                                ; 8a07: b1 37       .7       ; mismatch: a "." abbreviation?
-    cmp #&2e ; '.'                                                    ; 8a09: c9 2e       ..       ; is it "."?
+    cmp #ASC(".")                                                     ; 8a09: c9 2e       ..       ; is it "."?
     beq tok_kw_abbrev                                                 ; 8a0b: f0 0b       ..       ; yes: accept the abbreviation
 ; &8a0d referenced 2 times by &89fc, &8a10
 .tok_kw_check_end
@@ -2124,7 +2124,7 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; 8a8c: a4 1b       ..       ; Get the secondary text offset
     inc zp_text_ptr2_off                                              ; 8a8e: e6 1b       ..       ; advance it
     lda (zp_text_ptr2),y                                              ; 8a90: b1 19       ..       ; Read the character
-    cmp #&20 ; ' '                                                    ; 8a92: c9 20       .        ; Loop while the character is a space
+    cmp #ASC(" ")                                                     ; 8a92: c9 20       .        ; Loop while the character is a space
     beq skip_spaces_ptr2                                              ; 8a94: f0 f6       ..       ; Space: keep skipping
 ; &8a96 referenced 1 time by &8a87
 .return_4
@@ -2149,7 +2149,7 @@ oscli             = &fff7
     ldy zp_text_ptr_off                                               ; 8a97: a4 0a       ..       ; Get the text offset
     inc zp_text_ptr_off                                               ; 8a99: e6 0a       ..       ; advance it for next time
     lda (zp_text_ptr),y                                               ; 8a9b: b1 0b       ..       ; Read the character
-    cmp #&20 ; ' '                                                    ; 8a9d: c9 20       .        ; Loop while the character is a space
+    cmp #ASC(" ")                                                     ; 8a9d: c9 20       .        ; Loop while the character is a space
     beq skip_spaces                                                   ; 8a9f: f0 f6       ..       ; Space: keep skipping
     rts                                                               ; 8aa1: 60          `        ; Return the first non-space character
 ; &8aa2 referenced 4 times by &8ab3, &8e21, &ad03, &b036
@@ -2174,7 +2174,7 @@ oscli             = &fff7
 ; &8aae referenced 5 times by &92da, &93f7, &ab47, &b0c8, &bf5c
 .skip_spaces_expect_comma
     jsr skip_spaces_ptr2                                              ; 8aae: 20 8c 8a     ..      ; Skip spaces at PtrB
-    cmp #&2c ; ','                                                    ; 8ab1: c9 2c       .,       ; Require a comma
+    cmp #ASC(",")                                                     ; 8ab1: c9 2c       .,       ; Require a comma
     bne missing_comma                                                 ; 8ab3: d0 ed       ..       ; Missing: "Missing ," error
     rts                                                               ; 8ab5: 60          `        ; Return
 ; ***************************************************************************************
@@ -2294,7 +2294,7 @@ oscli             = &fff7
     sta zp_error_vec                                                  ; 8b00: 85 16       ..       ; (low)
     lda #&b4                                                          ; 8b02: a9 b4       ..       ; (high)
     sta zp_error_vec_1                                                ; 8b04: 85 17       ..       ; (store)
-    lda #&3e ; '>'                                                    ; 8b06: a9 3e       .>       ; The ">" prompt
+    lda #ASC(">")                                                     ; 8b06: a9 3e       .>       ; The ">" prompt
     jsr read_input_line                                               ; 8b08: 20 02 bc     ..      ; Print it and read a line into the buffer
 ; ***************************************************************************************
 ; Execute the line at the program pointer
@@ -2379,11 +2379,11 @@ oscli             = &fff7
     ldy zp_text_ptr_off                                               ; 8b60: a4 0a       ..       ; Step back to the introducing character
     dey                                                               ; 8b62: 88          .        ; one character back
     lda (zp_text_ptr),y                                               ; 8b63: b1 0b       ..       ; fetch it
-    cmp #&3d ; '='                                                    ; 8b65: c9 3d       .=       ; "=" returns a value from a function (FN)
+    cmp #ASC("=")                                                     ; 8b65: c9 3d       .=       ; "=" returns a value from a function (FN)
     beq fn_return                                                     ; 8b67: f0 de       ..       ; "=": return a value from a function
-    cmp #&2a ; '*'                                                    ; 8b69: c9 2a       .*       ; "*" passes the rest of the line to OSCLI
+    cmp #ASC("*")                                                     ; 8b69: c9 2a       .*       ; "*" passes the rest of the line to OSCLI
     beq exec_star_command                                             ; 8b6b: f0 06       ..       ; "*": an embedded OSCLI command
-    cmp #&5b ; '['                                                    ; 8b6d: c9 5b       .[       ; "[" enters the inline assembler
+    cmp #ASC("[")                                                     ; 8b6d: c9 5b       .[       ; "[" enters the inline assembler
     beq exec_assembler                                                ; 8b6f: f0 d3       ..       ; "[": enter the assembler
     bne stmt_backup_end                                               ; 8b71: d0 23       .#       ; otherwise check for end of statement
 ; &8b73 referenced 1 time by &8b6b
@@ -2449,14 +2449,14 @@ oscli             = &fff7
 .statement_loop
     ldy #0                                                            ; 8b9b: a0 00       ..       ; Fetch the next character of the statement
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..       ; Get the current character
-    cmp #&3a ; ':'                                                    ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
+    cmp #ASC(":")                                                     ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
     bne stmt_eol                                                      ; 8ba1: d0 e4       ..       ; Not a colon: check for ELSE / end of line
 ; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
 .next_statement
     ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..       ; Skip spaces to the next statement
     inc zp_text_ptr_off                                               ; 8ba5: e6 0a       ..       ; advance past the colon
     lda (zp_text_ptr),y                                               ; 8ba7: b1 0b       ..       ; Get the next character
-    cmp #&20 ; ' '                                                    ; 8ba9: c9 20       .        ; Skip spaces
+    cmp #ASC(" ")                                                     ; 8ba9: c9 20       .        ; Skip spaces
     beq next_statement                                                ; 8bab: f0 f6       ..       ; loop
     cmp #&cf                                                          ; 8bad: c9 cf       ..       ; Below &CF: a variable assignment, not a command
     bcc try_variable_assignment                                       ; 8baf: 90 0e       ..       ; Below &CF: a variable assignment
@@ -2781,7 +2781,7 @@ oscli             = &fff7
     tya                                                               ; 8d30: 98          .        ; Save the handle
     pha                                                               ; 8d31: 48          H        ; (push it)
     jsr skip_spaces_ptr2                                              ; 8d32: 20 8c 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 8d35: c9 2c       .,       ; ',' another value?
+    cmp #ASC(",")                                                     ; 8d35: c9 2c       .,       ; ',' another value?
     bne print_file_done                                               ; 8d37: d0 3e       .>       ; no: done
     jsr eval_or_eor                                                   ; 8d39: 20 29 9b     ).      ; Evaluate the value
     jsr fwa_pack_temp1                                                ; 8d3c: 20 85 a3     ..      ; pack it (in case real)
@@ -2840,7 +2840,7 @@ oscli             = &fff7
     sta zp_print_bytes                                                ; 8d85: 85 14       ..       ; the field width,
     sta zp_print_flag                                                 ; 8d87: 85 15       ..       ; ...and flags
     jsr skip_spaces                                                   ; 8d89: 20 97 8a     ..      ; Next non-space character
-    cmp #&3a ; ':'                                                    ; 8d8c: c9 3a       .:       ; ':' end?
+    cmp #ASC(":")                                                     ; 8d8c: c9 3a       .:       ; ':' end?
     beq print_done                                                    ; 8d8e: f0 f0       ..       ; yes: end without a newline
     cmp #&0d                                                          ; 8d90: c9 0d       ..       ; end of line?
     beq print_done                                                    ; 8d92: f0 ec       ..       ; yes
@@ -2862,7 +2862,7 @@ oscli             = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_print
     jsr skip_spaces                                                   ; 8d9a: 20 97 8a     ..      ; Next non-space character
-    cmp #&23 ; '#'                                                    ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
+    cmp #ASC("#")                                                     ; 8d9d: c9 23       .#       ; A leading # directs output to a file (PRINT#)
     beq print_file                                                    ; 8d9f: f0 8a       ..       ; '#': PRINT# to a file
     dec zp_text_ptr_off                                               ; 8da1: c6 0a       ..       ; Back up over the character
     jmp print_item                                                    ; 8da3: 4c bb 8d    L..      ; enter the print loop
@@ -2893,7 +2893,7 @@ oscli             = &fff7
 ; &8dc3 referenced 3 times by &8de1, &8e10, &8e1f
 .print_next
     jsr skip_spaces                                                   ; 8dc3: 20 97 8a     ..      ; Next non-space character
-    cmp #&3a ; ':'                                                    ; 8dc6: c9 3a       .:       ; ':' end of statement?
+    cmp #ASC(":")                                                     ; 8dc6: c9 3a       .:       ; ':' end of statement?
     beq print_newline                                                 ; 8dc8: f0 b3       ..       ; yes
     cmp #&0d                                                          ; 8dca: c9 0d       ..       ; end of line?
     beq print_newline                                                 ; 8dcc: f0 af       ..       ; yes
@@ -2901,11 +2901,11 @@ oscli             = &fff7
     beq print_newline                                                 ; 8dd0: f0 ab       ..       ; yes
 ; &8dd2 referenced 1 time by &8d98
 .print_check_sep
-    cmp #&7e ; '~'                                                    ; 8dd2: c9 7e       .~       ; '~' hex mode?
+    cmp #ASC("~")                                                     ; 8dd2: c9 7e       .~       ; '~' hex mode?
     beq print_set_hex                                                 ; 8dd4: f0 eb       ..       ; yes: set the flag
-    cmp #&2c ; ','                                                    ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
+    cmp #ASC(",")                                                     ; 8dd6: c9 2c       .,       ; Comma: advance to the next print field
     beq print_comma                                                   ; 8dd8: f0 cc       ..       ; yes
-    cmp #&3b ; ';'                                                    ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
+    cmp #ASC(";")                                                     ; 8dda: c9 3b       .;       ; Semicolon: print the next item with no gap
     beq print_semicolon                                               ; 8ddc: f0 a5       ..       ; yes
     jsr print_special_item                                            ; 8dde: 20 70 8e     p.      ; Handle the ' TAB and SPC print items
     bcc print_next                                                    ; 8de1: 90 e0       ..       ; handled: next item
@@ -2953,7 +2953,7 @@ oscli             = &fff7
     jmp missing_comma                                                 ; 8e21: 4c a2 8a    L..      ; Missing , error
 ; &8e24 referenced 1 time by &8e48
 .print_tab_xy
-    cmp #&2c ; ','                                                    ; 8e24: c9 2c       .,       ; ',' TAB(x,y) form?
+    cmp #ASC(",")                                                     ; 8e24: c9 2c       .,       ; ',' TAB(x,y) form?
     bne print_tab_error                                               ; 8e26: d0 f9       ..       ; no: TAB(x) or SPC
     lda zp_iwa                                                        ; 8e28: a5 2a       .*       ; Save the x coordinate
     pha                                                               ; 8e2a: 48          H        ; push it
@@ -2969,7 +2969,7 @@ oscli             = &fff7
 .print_tab_x
     jsr eval_expr_integer                                             ; 8e40: 20 dd 92     ..      ; TAB(x): evaluate x
     jsr skip_spaces_ptr2                                              ; 8e43: 20 8c 8a     ..      ; skip spaces
-    cmp #&29 ; ')'                                                    ; 8e46: c9 29       .)       ; ')'?
+    cmp #ASC(")")                                                     ; 8e46: c9 29       .)       ; ')'?
     bne print_tab_xy                                                  ; 8e48: d0 da       ..       ; no: TAB(x,y)
     lda zp_iwa                                                        ; 8e4a: a5 2a       .*       ; Spaces = x - COUNT
     sbc zp_count                                                      ; 8e4c: e5 1e       ..       ; subtract the current column
@@ -3022,7 +3022,7 @@ oscli             = &fff7
     stx zp_text_ptr2_1                                                ; 8e76: 86 1a       ..       ; store it
     ldx zp_text_ptr_off                                               ; 8e78: a6 0a       ..       ; offset
     stx zp_text_ptr2_off                                              ; 8e7a: 86 1b       ..       ; store it
-    cmp #&27                                                          ; 8e7c: c9 27       .'       ; an apostrophe?
+    cmp #ASC("'")                                                     ; 8e7c: c9 27       .'       ; an apostrophe?
     beq print_spc_newline                                             ; 8e7e: f0 e7       ..       ; yes: force a newline
     cmp #&8a                                                          ; 8e80: c9 8a       ..       ; TAB token?
     beq print_tab_x                                                   ; 8e82: f0 bc       ..       ; yes: handle TAB
@@ -3037,7 +3037,7 @@ oscli             = &fff7
     jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..      ; Skip spaces, then handle a special item
     jsr print_special_item                                            ; 8e8d: 20 70 8e     p.      ; handle it
     bcc return_6                                                      ; 8e90: 90 f7       ..       ; consumed: done
-    cmp #&22                                                          ; 8e92: c9 22       ."       ; a string literal (quote)?
+    cmp #'"'                                                          ; 8e92: c9 22       ."       ; a string literal (quote)?
     beq print_inline_loop                                             ; 8e94: f0 11       ..       ; yes: print it inline
     sec                                                               ; 8e96: 38          8        ; not consumed
     rts                                                               ; 8e97: 60          `        ; Return
@@ -3056,12 +3056,12 @@ oscli             = &fff7
     lda (zp_text_ptr2),y                                              ; 8ea8: b1 19       ..       ; char
     cmp #&0d                                                          ; 8eaa: c9 0d       ..       ; CR (unterminated)?
     beq missing_quote                                                 ; 8eac: f0 ea       ..       ; Missing " error
-    cmp #&22                                                          ; 8eae: c9 22       ."       ; a quote?
+    cmp #'"'                                                          ; 8eae: c9 22       ."       ; a quote?
     bne print_inline_char                                             ; 8eb0: d0 f2       ..       ; no: print it
     iny                                                               ; 8eb2: c8          .        ; advance
     sty zp_text_ptr2_off                                              ; 8eb3: 84 1b       ..       ; update the offset
     lda (zp_text_ptr2),y                                              ; 8eb5: b1 19       ..       ; doubled ""?
-    cmp #&22                                                          ; 8eb7: c9 22       ."       ; is it another quote?
+    cmp #'"'                                                          ; 8eb7: c9 22       ."       ; is it another quote?
     bne print_sync                                                    ; 8eb9: d0 af       ..       ; no: end of the string
     beq print_inline_char                                             ; 8ebb: f0 e7       ..       ; yes: print one quote
 ; ***************************************************************************************
@@ -3123,7 +3123,7 @@ oscli             = &fff7
 .call_block_init
     sty call_block_base                                               ; 8ee0: 8c ff 06    ...      ; reset the block write offset
     jsr skip_spaces_ptr2                                              ; 8ee3: 20 8c 8a     ..      ; next parameter?
-    cmp #&2c ; ','                                                    ; 8ee6: c9 2c       .,       ; a comma?
+    cmp #ASC(",")                                                     ; 8ee6: c9 2c       .,       ; a comma?
     bne call_check_end                                                ; 8ee8: d0 22       ."       ; no: end of the parameters
     ldy zp_text_ptr2_off                                              ; 8eea: a4 1b       ..       ; parse the parameter (a variable)
     jsr pvr_record_offset                                             ; 8eec: 20 d5 95     ..      ; resolve it to an address
@@ -3195,7 +3195,7 @@ oscli             = &fff7
     bcc call_arg_error                                                ; 8f34: 90 f8       ..       ; none: Syntax error
     jsr stack_integer                                                 ; 8f36: 20 94 bd     ..      ; stack it
     jsr skip_spaces                                                   ; 8f39: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 8f3c: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; 8f3c: c9 2c       .,       ; ','?
     bne call_arg_error                                                ; 8f3e: d0 ee       ..       ; no: error
     jsr check_line_number                                             ; 8f40: 20 df 97     ..      ; Read the end line number
     bcc call_arg_error                                                ; 8f43: 90 e9       ..       ; none: error
@@ -3225,7 +3225,7 @@ oscli             = &fff7
     lda #&0a                                                          ; 8f74: a9 0a       ..       ; Default increment = 10
     jsr int_result_a                                                  ; 8f76: 20 d8 ae     ..      ; IWA = 10
     jsr skip_spaces                                                   ; 8f79: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 8f7c: c9 2c       .,       ; ',' increment given?
+    cmp #ASC(",")                                                     ; 8f7c: c9 2c       .,       ; ',' increment given?
     bne range_backup                                                  ; 8f7e: d0 0d       ..       ; no: use the default
     jsr check_line_number                                             ; 8f80: 20 df 97     ..      ; Read the increment
     lda zp_iwa_1                                                      ; 8f83: a5 2b       .+       ; zero?
@@ -3466,7 +3466,7 @@ oscli             = &fff7
 .auto_loop
     jsr stack_integer                                                 ; 90b5: 20 94 bd     ..      ; Stack the line number
     jsr trace_print_number                                            ; 90b8: 20 23 99     #.      ; Print it
-    lda #&20 ; ' '                                                    ; 90bb: a9 20       .        ; Print a space and read a line
+    lda #ASC(" ")                                                     ; 90bb: a9 20       .        ; Print a space and read a line
     jsr read_input_line                                               ; 90bd: 20 02 bc     ..      ; do it
     jsr unstack_integer                                               ; 90c0: 20 ea bd     ..      ; Pop the line number
     jsr tokenise_line                                                 ; 90c3: 20 51 89     Q.      ; Tokenise the line
@@ -3561,11 +3561,11 @@ oscli             = &fff7
     jsr validate_var_name                                             ; 914b: 20 59 95     Y.      ; Validate the name
     cpy #1                                                            ; 914e: c0 01       ..       ; empty name?
     beq bad_dim                                                       ; 9150: f0 d5       ..       ; yes: Bad DIM
-    cmp #&28 ; '('                                                    ; 9152: c9 28       .(       ; '(' array?
+    cmp #ASC("(")                                                     ; 9152: c9 28       .(       ; '(' array?
     beq dim_array                                                     ; 9154: f0 15       ..       ; yes
-    cmp #&24 ; '$'                                                    ; 9156: c9 24       .$       ; '$' string?
+    cmp #ASC("$")                                                     ; 9156: c9 24       .$       ; '$' string?
     beq dim_check_paren                                               ; 9158: f0 04       ..       ; yes
-    cmp #&25 ; '%'                                                    ; 915a: c9 25       .%       ; '%' integer?
+    cmp #ASC("%")                                                     ; 915a: c9 25       .%       ; '%' integer?
     bne dim_byte                                                      ; 915c: d0 0a       ..       ; no: DIM var n (byte block)
 ; &915e referenced 1 time by &9158
 .dim_check_paren
@@ -3573,7 +3573,7 @@ oscli             = &fff7
     iny                                                               ; 9160: c8          .        ; step past the suffix
     inx                                                               ; 9161: e8          .        ; Count the suffix char in the name length too
     lda (zp_general),y                                                ; 9162: b1 37       .7       ; following character
-    cmp #&28 ; '('                                                    ; 9164: c9 28       .(       ; '(' array?
+    cmp #ASC("(")                                                     ; 9164: c9 28       .(       ; '(' array?
     beq dim_array                                                     ; 9166: f0 03       ..       ; yes
 ; &9168 referenced 1 time by &915c
 .dim_byte
@@ -3614,9 +3614,9 @@ oscli             = &fff7
     pha                                                               ; 91a5: 48          H        ; Push the updated descriptor offset
     jsr unstack_multiplier                                            ; 91a6: 20 31 92     1.      ; Multiply the running size by the extent
     jsr skip_spaces                                                   ; 91a9: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 91ac: c9 2c       .,       ; ',' another dimension?
+    cmp #ASC(",")                                                     ; 91ac: c9 2c       .,       ; ',' another dimension?
     beq dim_bound_loop                                                ; 91ae: f0 d5       ..       ; yes
-    cmp #&29 ; ')'                                                    ; 91b0: c9 29       .)       ; ')' end of dimensions?
+    cmp #ASC(")")                                                     ; 91b0: c9 29       .)       ; ')' end of dimensions?
     beq dim_alloc                                                     ; 91b2: f0 03       ..       ; yes
     jmp bad_dim                                                       ; 91b4: 4c 27 91    L'.      ; otherwise Bad DIM
 ; &91b7 referenced 1 time by &91b2
@@ -3675,7 +3675,7 @@ oscli             = &fff7
 ; &920b referenced 1 time by &9124
 .dim_after
     jsr skip_spaces                                                   ; 920b: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 920e: c9 2c       .,       ; ',' another array?
+    cmp #ASC(",")                                                     ; 920e: c9 2c       .,       ; ',' another array?
     beq dim_next_array                                                ; 9210: f0 03       ..       ; yes
     jmp stmt_backup_end                                               ; 9212: 4c 96 8b    L..      ; no: next statement
 ; &9215 referenced 1 time by &9210
@@ -4109,7 +4109,7 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; 9345: a4 1b       ..       ; Sync the program pointer
     sty zp_text_ptr_off                                               ; 9347: 84 0a       ..       ; from the PtrB offset
     jsr skip_spaces                                                   ; 9349: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
+    cmp #ASC(",")                                                     ; 934c: c9 2c       .,       ; A comma introduces another LOCAL
     beq stmt_local                                                    ; 934e: f0 d3       ..       ; yes
     jmp stmt_backup_end                                               ; 9350: 4c 96 8b    L..      ; next statement
 ; &9353 referenced 1 time by &932b
@@ -4338,7 +4338,7 @@ oscli             = &fff7
     jsr skip_spaces                                                   ; 942f: 20 97 8a     ..      ; Next character
 ; &9432 referenced 1 time by &944f
 .vdu_loop
-    cmp #&3a ; ':'                                                    ; 9432: c9 3a       .:       ; ':' end of statement?
+    cmp #ASC(":")                                                     ; 9432: c9 3a       .:       ; ':' end of statement?
     beq vdu_done                                                      ; 9434: f0 1d       ..       ; yes
     cmp #&0d                                                          ; 9436: c9 0d       ..       ; end of line?
     beq vdu_done                                                      ; 9438: f0 19       ..       ; yes
@@ -4348,9 +4348,9 @@ oscli             = &fff7
     jsr eval_expr_to_integer                                          ; 9440: 20 21 88     !.      ; Evaluate it
     jsr vdu_send_byte                                                 ; 9443: 20 56 94     V.      ; send the low byte
     jsr skip_spaces                                                   ; 9446: 20 97 8a     ..      ; Next character
-    cmp #&2c ; ','                                                    ; 9449: c9 2c       .,       ; ',' another byte?
+    cmp #ASC(",")                                                     ; 9449: c9 2c       .,       ; ',' another byte?
     beq stmt_vdu                                                      ; 944b: f0 e2       ..       ; yes
-    cmp #&3b ; ';'                                                    ; 944d: c9 3b       .;       ; ';' 16-bit value?
+    cmp #ASC(";")                                                     ; 944d: c9 3b       .;       ; ';' 16-bit value?
     bne vdu_loop                                                      ; 944f: d0 e1       ..       ; no: check the statement ends
     beq plot_send_hi                                                  ; 9451: f0 d7       ..       ; yes: send the high byte too
 ; &9453 referenced 3 times by &9434, &9438, &943c
@@ -4640,11 +4640,11 @@ oscli             = &fff7
 ; &955b referenced 2 times by &956f, &b1d5
 .valname_loop
     lda (zp_general),y                                                ; 955b: b1 37       .7       ; character...
-    cmp #&30 ; '0'                                                    ; 955d: c9 30       .0       ; below "0": end of name
+    cmp #ASC("0")                                                     ; 955d: c9 30       .0       ; below "0": end of name
     bcc return_12                                                     ; 955f: 90 18       ..       ; below "0": stop
-    cmp #&40 ; '@'                                                    ; 9561: c9 40       .@       ; in the digit/symbol range?
+    cmp #ASC("@")                                                     ; 9561: c9 40       .@       ; in the digit/symbol range?
     bcs valname_check_uc                                              ; 9563: b0 0c       ..       ; letter range: continue
-    cmp #&3a ; ':'                                                    ; 9565: c9 3a       .:       ; ":" or above (not a digit)?
+    cmp #ASC(":")                                                     ; 9565: c9 3a       .:       ; ":" or above (not a digit)?
     bcs return_12                                                     ; 9567: b0 10       ..       ; not a name character: stop
     cpy #1                                                            ; 9569: c0 01       ..       ; is this the first character?
     beq return_12                                                     ; 956b: f0 0c       ..       ; names can't start with a digit
@@ -4655,16 +4655,16 @@ oscli             = &fff7
     bne valname_loop                                                  ; 956f: d0 ea       ..       ; loop
 ; &9571 referenced 1 time by &9563
 .valname_check_uc
-    cmp #&5f ; '_'                                                    ; 9571: c9 5f       ._       ; below "_"?
+    cmp #ASC("_")                                                     ; 9571: c9 5f       ._       ; below "_"?
     bcs valname_check_lc                                              ; 9573: b0 05       ..       ; "_" or lower-case: accept
-    cmp #&5b ; '['                                                    ; 9575: c9 5b       .[       ; A-Z?
+    cmp #ASC("[")                                                     ; 9575: c9 5b       .[       ; A-Z?
     bcc valname_count                                                 ; 9577: 90 f4       ..       ; letter: accept
 ; &9579 referenced 3 times by &955f, &9567, &956b
 .return_12
     rts                                                               ; 9579: 60          `        ; Return
 ; &957a referenced 1 time by &9573
 .valname_check_lc
-    cmp #&7b ; '{'                                                    ; 957a: c9 7b       .{       ; a-z?
+    cmp #ASC("{")                                                     ; 957a: c9 7b       .{       ; a-z?
     bcc valname_count                                                 ; 957c: 90 ef       ..       ; accept
     rts                                                               ; 957e: 60          `        ; Return
 ; &957f referenced 2 times by &9590, &9593
@@ -4697,9 +4697,9 @@ oscli             = &fff7
     bne zero_new_value                                                ; 9593: d0 ea       ..       ; then retry the parse so it is found
 ; &9595 referenced 1 time by &95df
 .lvalue_indirect
-    cmp #&21 ; '!'                                                    ; 9595: c9 21       .!       ; '!' indirection?
+    cmp #ASC("!")                                                     ; 9595: c9 21       .!       ; '!' indirection?
     beq lvalue_word                                                   ; 9597: f0 0c       ..       ; yes: word indirection
-    cmp #&24 ; '$'                                                    ; 9599: c9 24       .$       ; '$' indirection?
+    cmp #ASC("$")                                                     ; 9599: c9 24       .$       ; '$' indirection?
     beq lvalue_dollar                                                 ; 959b: f0 13       ..       ; yes: string indirection
     eor #&3f ; '?'                                                    ; 959d: 49 3f       I?       ; '?' indirection?
     beq lvalue_save_width                                             ; 959f: f0 06       ..       ; yes: byte indirection
@@ -4766,13 +4766,13 @@ oscli             = &fff7
 .pvr_record_offset
     sty zp_text_ptr2_off                                              ; 95d5: 84 1b       ..       ; Record the scan offset
     lda (zp_text_ptr2),y                                              ; 95d7: b1 19       ..       ; Next character
-    cmp #&20 ; ' '                                                    ; 95d9: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 95d9: c9 20       .        ; space?
     beq pvr_advance                                                   ; 95db: f0 f7       ..       ; skip spaces
 ; &95dd referenced 2 times by &8bc9, &ae22
 .pvr_parse
-    cmp #&40 ; '@'                                                    ; 95dd: c9 40       .@       ; below '@': an indirection operator
+    cmp #ASC("@")                                                     ; 95dd: c9 40       .@       ; below '@': an indirection operator
     bcc lvalue_indirect                                               ; 95df: 90 b4       ..       ; below '@': handle as indirection ($ ! ?)
-    cmp #&5b ; '['                                                    ; 95e1: c9 5b       .[       ; above 'Z'?
+    cmp #ASC("[")                                                     ; 95e1: c9 5b       .[       ; above 'Z'?
     bcs pvr_named                                                     ; 95e3: b0 1a       ..       ; yes: a named (dynamic) variable
     asl a                                                             ; 95e5: 0a          .        ; Resident integer: hash char to &0400 + char*4
     asl a                                                             ; 95e6: 0a          .        ; (continued)
@@ -4782,12 +4782,12 @@ oscli             = &fff7
     iny                                                               ; 95ed: c8          .        ; Second character
     lda (zp_text_ptr2),y                                              ; 95ee: b1 19       ..       ; read it
     iny                                                               ; 95f0: c8          .        ; advance the scan offset
-    cmp #&25 ; '%'                                                    ; 95f1: c9 25       .%       ; must be '%' for a resident integer
+    cmp #ASC("%")                                                     ; 95f1: c9 25       .%       ; must be '%' for a resident integer
     bne pvr_named                                                     ; 95f3: d0 0a       ..       ; not %: treat as a named variable
     ldx #4                                                            ; 95f5: a2 04       ..       ; Type = integer
     stx zp_iwa_2                                                      ; 95f7: 86 2c       .,       ; store in the type byte (&2C)
     lda (zp_text_ptr2),y                                              ; 95f9: b1 19       ..       ; Following character
-    cmp #&28 ; '('                                                    ; 95fb: c9 28       .(       ; '(' -> array element
+    cmp #ASC("(")                                                     ; 95fb: c9 28       .(       ; '(' -> array element
     bne pvr_check_indirect                                            ; 95fd: d0 66       .f       ; yes: handle as an array
 ; &95ff referenced 2 times by &95e3, &95f3
 .pvr_named
@@ -4814,27 +4814,27 @@ oscli             = &fff7
 ; &961b referenced 3 times by &962b, &9633, &963f
 .pvr_scan_loop
     lda (zp_general),y                                                ; 961b: b1 37       .7       ; Scan the name: next character
-    cmp #&41 ; 'A'                                                    ; 961d: c9 41       .A       ; below 'A'?
+    cmp #ASC("A")                                                     ; 961d: c9 41       .A       ; below 'A'?
     bcs pvr_scan_check_uc                                             ; 961f: b0 0c       ..       ; no: check letters
-    cmp #&30 ; '0'                                                    ; 9621: c9 30       .0       ; a digit?
+    cmp #ASC("0")                                                     ; 9621: c9 30       .0       ; a digit?
     bcc pvr_name_end                                                  ; 9623: 90 1c       ..       ; no: name ends
-    cmp #&3a ; ':'                                                    ; 9625: c9 3a       .:       ; above '9'?
+    cmp #ASC(":")                                                     ; 9625: c9 3a       .:       ; above '9'?
     bcs pvr_name_end                                                  ; 9627: b0 18       ..       ; no: name ends
     inx                                                               ; 9629: e8          .        ; count this character
     iny                                                               ; 962a: c8          .        ; advance the scan
     bne pvr_scan_loop                                                 ; 962b: d0 ee       ..       ; continue
 ; &962d referenced 1 time by &961f
 .pvr_scan_check_uc
-    cmp #&5b ; '['                                                    ; 962d: c9 5b       .[       ; above 'Z'?
+    cmp #ASC("[")                                                     ; 962d: c9 5b       .[       ; above 'Z'?
     bcs pvr_scan_check_lc                                             ; 962f: b0 04       ..       ; yes: check lower case
     inx                                                               ; 9631: e8          .        ; A-Z: count it
     iny                                                               ; 9632: c8          .        ; advance the scan
     bne pvr_scan_loop                                                 ; 9633: d0 e6       ..       ; continue
 ; &9635 referenced 1 time by &962f
 .pvr_scan_check_lc
-    cmp #&5f ; '_'                                                    ; 9635: c9 5f       ._       ; below '_'?
+    cmp #ASC("_")                                                     ; 9635: c9 5f       ._       ; below '_'?
     bcc pvr_name_end                                                  ; 9637: 90 08       ..       ; yes: name ends
-    cmp #&7b ; '{'                                                    ; 9639: c9 7b       .{       ; above 'z'?
+    cmp #ASC("{")                                                     ; 9639: c9 7b       .{       ; above 'z'?
     bcs pvr_name_end                                                  ; 963b: b0 04       ..       ; yes: name ends
     inx                                                               ; 963d: e8          .        ; _ or a-z: count it
     iny                                                               ; 963e: c8          .        ; advance the scan
@@ -4843,9 +4843,9 @@ oscli             = &fff7
 .pvr_name_end
     dey                                                               ; 9641: 88          .        ; Back up to the terminator
     beq pvr_no_name                                                   ; 9642: f0 2f       ./       ; empty name: undefined
-    cmp #&24 ; '$'                                                    ; 9644: c9 24       .$       ; '$' suffix -> string variable
+    cmp #ASC("$")                                                     ; 9644: c9 24       .$       ; '$' suffix -> string variable
     beq pvr_string                                                    ; 9646: f0 67       .g       ; yes
-    cmp #&25 ; '%'                                                    ; 9648: c9 25       .%       ; '%' suffix -> integer variable
+    cmp #ASC("%")                                                     ; 9648: c9 25       .%       ; '%' suffix -> integer variable
     bne pvr_name_len                                                  ; 964a: d0 08       ..       ; no: real variable
     dec zp_iwa_2                                                      ; 964c: c6 2c       .,       ; mark the type integer
     iny                                                               ; 964e: c8          .        ; step past the %
@@ -4856,7 +4856,7 @@ oscli             = &fff7
 ; &9654 referenced 1 time by &964a
 .pvr_name_len
     sty zp_fileblk                                                    ; 9654: 84 39       .9       ; Record the name length
-    cmp #&28 ; '('                                                    ; 9656: c9 28       .(       ; '(' -> array element
+    cmp #ASC("(")                                                     ; 9656: c9 28       .(       ; '(' -> array element
     beq pvr_resint_array                                              ; 9658: f0 4c       .L       ; yes
     jsr find_variable                                                 ; 965a: 20 69 94     i.      ; Look the variable up in storage
     beq pvr_undefined                                                 ; 965d: f0 18       ..       ; not found: undefined
@@ -4867,9 +4867,9 @@ oscli             = &fff7
     lda (zp_text_ptr2),y                                              ; 9663: b1 19       ..       ; read it
 ; &9665 referenced 1 time by &95fd
 .pvr_check_indirect
-    cmp #&21 ; '!'                                                    ; 9665: c9 21       .!       ; '!' indirection following?
+    cmp #ASC("!")                                                     ; 9665: c9 21       .!       ; '!' indirection following?
     beq pvr_word_indirect                                             ; 9667: f0 16       ..       ; yes: word indirection
-    cmp #&3f ; '?'                                                    ; 9669: c9 3f       .?       ; '?' indirection following?
+    cmp #ASC("?")                                                     ; 9669: c9 3f       .?       ; '?' indirection following?
     beq pvr_byte_indirect                                             ; 966b: f0 0e       ..       ; yes: byte indirection
     clc                                                               ; 966d: 18          .        ; Plain variable: found
     sty zp_text_ptr2_off                                              ; 966e: 84 1b       ..       ; save the scan offset
@@ -4932,7 +4932,7 @@ oscli             = &fff7
     iny                                                               ; 96b3: c8          .        ; peek at the char after the $
     dec zp_iwa_2                                                      ; 96b4: c6 2c       .,       ; mark the type string
     lda (zp_general),y                                                ; 96b6: b1 37       .7       ; following character
-    cmp #&28 ; '('                                                    ; 96b8: c9 28       .(       ; '(' -> string array
+    cmp #ASC("(")                                                     ; 96b8: c9 28       .(       ; '(' -> string array
     beq pvr_string_array                                              ; 96ba: f0 0d       ..       ; yes
     jsr find_variable                                                 ; 96bc: 20 69 94     i.      ; Look the string variable up
     beq pvr_undefined                                                 ; 96bf: f0 b6       ..       ; not found: undefined
@@ -4996,7 +4996,7 @@ oscli             = &fff7
     jsr stack_integer                                                 ; 96ff: 20 94 bd     ..      ; Stack the running index
     jsr eval_expr_integer                                             ; 9702: 20 dd 92     ..      ; Evaluate the next subscript
     inc zp_text_ptr2_off                                              ; 9705: e6 1b       ..       ; step past it
-    cpx #&2c ; ','                                                    ; 9707: e0 2c       .,       ; comma (another subscript)?
+    cpx #ASC(",")                                                     ; 9707: e0 2c       .,       ; comma (another subscript)?
     bne array_error                                                   ; 9709: d0 cc       ..       ; no: wrong dimension count -> Array
     ldx #&39 ; '9'                                                    ; 970b: a2 39       .9       ; Unstack the running index
     jsr unstack_int_to_zp                                             ; 970d: 20 0d be     ..      ; into &39/&3A
@@ -5156,7 +5156,7 @@ oscli             = &fff7
 .check_line_number
     ldy zp_text_ptr_off                                               ; 97df: a4 0a       ..       ; Next character
     lda (zp_text_ptr),y                                               ; 97e1: b1 0b       ..       ; read it
-    cmp #&20 ; ' '                                                    ; 97e3: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 97e3: c9 20       .        ; space?
     beq chkline_skip                                                  ; 97e5: f0 f6       ..       ; skip it
     cmp #&8d                                                          ; 97e7: c9 8d       ..       ; line-number token?
     bne not_line_number                                               ; 97e9: d0 1a       ..       ; no: carry clear
@@ -5226,9 +5226,9 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; 9813: a4 1b       ..       ; Next character
     inc zp_text_ptr2_off                                              ; 9815: e6 1b       ..       ; and advance
     lda (zp_text_ptr2),y                                              ; 9817: b1 19       ..       ; read it
-    cmp #&20 ; ' '                                                    ; 9819: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 9819: c9 20       .        ; space?
     beq eval_after_eq                                                 ; 981b: f0 f6       ..       ; skip it
-    cmp #&3d ; '='                                                    ; 981d: c9 3d       .=       ; "="?
+    cmp #ASC("=")                                                     ; 981d: c9 3d       .=       ; "="?
     beq eval_rhs                                                      ; 981f: f0 28       .(       ; yes: evaluate
 ; &9821 referenced 1 time by &9846
 .mistake_error
@@ -5261,7 +5261,7 @@ oscli             = &fff7
 ; &9841 referenced 2 times by &8bd2, &b7ce
 .expect_eq
     jsr skip_spaces_ptr2                                              ; 9841: 20 8c 8a     ..      ; Skip spaces
-    cmp #&3d ; '='                                                    ; 9844: c9 3d       .=       ; "="?
+    cmp #ASC("=")                                                     ; 9844: c9 3d       .=       ; "="?
     bne mistake_error                                                 ; 9846: d0 d9       ..       ; no: Mistake
     rts                                                               ; 9848: 60          `        ; Return
 ; &9849 referenced 2 times by &981f, &bf5f
@@ -5300,11 +5300,11 @@ oscli             = &fff7
 .cend_skip_loop
     iny                                                               ; 985a: c8          .        ; Next character
     lda (zp_text_ptr),y                                               ; 985b: b1 0b       ..       ; read it
-    cmp #&20 ; ' '                                                    ; 985d: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 985d: c9 20       .        ; space?
     beq cend_skip_loop                                                ; 985f: f0 f9       ..       ; skip it
 ; &9861 referenced 1 time by &984f
 .cend_check
-    cmp #&3a ; ':'                                                    ; 9861: c9 3a       .:       ; ':' statement separator?
+    cmp #ASC(":")                                                     ; 9861: c9 3a       .:       ; ':' statement separator?
     beq skip_to_statement_end                                         ; 9863: f0 08       ..       ; yes
     cmp #&0d                                                          ; 9865: c9 0d       ..       ; end of line?
     beq skip_to_statement_end                                         ; 9867: f0 04       ..       ; yes
@@ -5334,7 +5334,7 @@ oscli             = &fff7
     jsr check_end_of_statement                                        ; 9880: 20 57 98     W.      ; Check this statement is terminated
     dey                                                               ; 9883: 88          .        ; Re-read the terminator
     lda (zp_text_ptr),y                                               ; 9884: b1 0b       ..       ; read it
-    cmp #&3a ; ':'                                                    ; 9886: c9 3a       .:       ; ':' (more on this line)?
+    cmp #ASC(":")                                                     ; 9886: c9 3a       .:       ; ':' (more on this line)?
     beq return_14                                                     ; 9888: f0 f5       ..       ; yes: continue on the line
     lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..       ; At the end of program memory?
     cmp #7                                                            ; 988c: c9 07       ..       ; in the &0700 buffer (immediate)?
@@ -5458,10 +5458,10 @@ oscli             = &fff7
     lda zp_iwa_1                                                      ; 9909: a5 2b       .+       ; line high
     sbc zp_trace_max_1                                                ; 990b: e5 22       ."       ; minus ceiling high
     bcs return_15                                                     ; 990d: b0 ac       ..       ; above the ceiling: do not trace
-    lda #&5b ; '['                                                    ; 990f: a9 5b       .[       ; Print '['
+    lda #ASC("[")                                                     ; 990f: a9 5b       .[       ; Print '['
     jsr print_char                                                    ; 9911: 20 58 b5     X.      ; output it
     jsr print_line_number                                             ; 9914: 20 1f 99     ..      ; print the line number
-    lda #&5d ; ']'                                                    ; 9917: a9 5d       .]       ; Print ']'
+    lda #ASC("]")                                                     ; 9917: a9 5d       .]       ; Print ']'
     jsr print_char                                                    ; 9919: 20 58 b5     X.      ; output it
     jmp print_space                                                   ; 991c: 4c 65 b5    Le.      ; and a space
 ; ***************************************************************************************
@@ -5532,7 +5532,7 @@ oscli             = &fff7
 ; &9960 referenced 3 times by &9953, &9957, &9968
 .plnum_print_loop
     lda zp_fwb_m2,x                                                   ; 9960: b5 3f       .?       ; Digit
-    ora #&30 ; '0'                                                    ; 9962: 09 30       .0       ; to ASCII
+    ora #ASC("0")                                                     ; 9962: 09 30       .0       ; to ASCII
     jsr print_char                                                    ; 9964: 20 58 b5     X.      ; print it
     dex                                                               ; 9967: ca          .        ; next digit
     bpl plnum_print_loop                                              ; 9968: 10 f6       ..       ; until all digits printed
@@ -6029,9 +6029,9 @@ oscli             = &fff7
 ; &9b9c referenced 2 times by &9b72, &9b81
 .eval_relational
     jsr eval_add_sub                                                  ; 9b9c: 20 42 9c     B.      ; Evaluate a + - operand
-    cpx #&3f ; '?'                                                    ; 9b9f: e0 3f       .?       ; next token past '>'?
+    cpx #ASC("?")                                                     ; 9b9f: e0 3f       .?       ; next token past '>'?
     bcs return_18                                                     ; 9ba1: b0 04       ..       ; yes: not a comparison, return
-    cpx #&3c ; '<'                                                    ; 9ba3: e0 3c       .<       ; before '<'?
+    cpx #ASC("<")                                                     ; 9ba3: e0 3c       .<       ; before '<'?
     bcs rel_lt_family                                                 ; 9ba5: b0 01       ..       ; a relational operator: handle it
 ; &9ba7 referenced 1 time by &9ba1
 .return_18
@@ -6039,7 +6039,7 @@ oscli             = &fff7
 ; &9ba8 referenced 1 time by &9ba5
 .rel_lt_family
     beq rel_lt                                                        ; 9ba8: f0 16       ..       ; '<' family?
-    cpx #&3e ; '>'                                                    ; 9baa: e0 3e       .>       ; '>' family?
+    cpx #ASC(">")                                                     ; 9baa: e0 3e       .>       ; '>' family?
     beq rel_gt                                                        ; 9bac: f0 3a       .:       ; yes
     tax                                                               ; 9bae: aa          .        ; '=': compare for equality
     jsr eval_and_compare                                              ; 9baf: 20 9e 9a     ..      ; evaluate the right operand and compare
@@ -6060,9 +6060,9 @@ oscli             = &fff7
     tax                                                               ; 9bc0: aa          .        ; '<' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9bc1: a4 1b       ..       ; Peek at the next source character
     lda (zp_text_ptr2),y                                              ; 9bc3: b1 19       ..       ; read it
-    cmp #&3d ; '='                                                    ; 9bc5: c9 3d       .=       ; '='? (<=)
+    cmp #ASC("=")                                                     ; 9bc5: c9 3d       .=       ; '='? (<=)
     beq rel_le                                                        ; 9bc7: f0 0b       ..       ; yes
-    cmp #&3e ; '>'                                                    ; 9bc9: c9 3e       .>       ; '>'? (<>)
+    cmp #ASC(">")                                                     ; 9bc9: c9 3e       .>       ; '>'? (<>)
     beq rel_ne                                                        ; 9bcb: f0 12       ..       ; yes
     jsr compare_values                                                ; 9bcd: 20 9d 9a     ..      ; plain "<": evaluate and compare
     bcc rel_true                                                      ; 9bd0: 90 e2       ..       ; less: TRUE
@@ -6085,7 +6085,7 @@ oscli             = &fff7
     tax                                                               ; 9be8: aa          .        ; '>' family: discard the operator
     ldy zp_text_ptr2_off                                              ; 9be9: a4 1b       ..       ; Peek at the next source character
     lda (zp_text_ptr2),y                                              ; 9beb: b1 19       ..       ; read it
-    cmp #&3d ; '='                                                    ; 9bed: c9 3d       .=       ; '='? (>=)
+    cmp #ASC("=")                                                     ; 9bed: c9 3d       .=       ; '='? (>=)
     beq rel_ge                                                        ; 9bef: f0 09       ..       ; yes
     jsr compare_values                                                ; 9bf1: 20 9d 9a     ..      ; plain ">": evaluate and compare
     beq store_bool                                                    ; 9bf4: f0 bf       ..       ; equal: FALSE
@@ -6150,9 +6150,9 @@ oscli             = &fff7
     jsr eval_mul_div                                                  ; 9c42: 20 d1 9d     ..      ; Evaluate a * / DIV MOD operand
 ; &9c45 referenced 4 times by &9c40, &9c82, &9c86, &9ca5
 .addsub_check
-    cpx #&2b ; '+'                                                    ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
+    cpx #ASC("+")                                                     ; 9c45: e0 2b       .+       ; Apply + or - if that is the next operator
     beq do_add                                                        ; 9c47: f0 05       ..       ; yes: addition
-    cpx #&2d ; '-'                                                    ; 9c49: e0 2d       .-       ; next operator "-"?
+    cpx #ASC("-")                                                     ; 9c49: e0 2d       .-       ; next operator "-"?
     beq sub_dispatch                                                  ; 9c4b: f0 68       .h       ; yes: subtraction
     rts                                                               ; 9c4d: 60          `        ; neither: expression complete
 ; &9c4e referenced 1 time by &9c47
@@ -6452,9 +6452,9 @@ oscli             = &fff7
     jsr eval_power                                                    ; 9dd1: 20 20 9e      .      ; Evaluate the higher level (^, level 2) operand
 ; &9dd4 referenced 3 times by &9d36, &9dc8, &9dff
 .muldiv_check
-    cpx #&2a ; '*'                                                    ; 9dd4: e0 2a       .*       ; next operator "*"?
+    cpx #ASC("*")                                                     ; 9dd4: e0 2a       .*       ; next operator "*"?
     beq iwamul_bounce                                                 ; 9dd6: f0 f3       ..       ; yes: multiply
-    cpx #&2f ; '/'                                                    ; 9dd8: e0 2f       ./       ; "/"?
+    cpx #ASC("/")                                                     ; 9dd8: e0 2f       ./       ; "/"?
     beq do_divide                                                     ; 9dda: f0 09       ..       ; yes: divide
     cpx #&83                                                          ; 9ddc: e0 83       ..       ; MOD token?
     beq iwa_mod                                                       ; 9dde: f0 21       .!       ; yes: integer remainder
@@ -6541,11 +6541,11 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; 9e24: a4 1b       ..       ; Next character
     inc zp_text_ptr2_off                                              ; 9e26: e6 1b       ..       ; advance the offset
     lda (zp_text_ptr2),y                                              ; 9e28: b1 19       ..       ; read it
-    cmp #&20 ; ' '                                                    ; 9e2a: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; 9e2a: c9 20       .        ; space?
     beq pow_op_loop                                                   ; 9e2c: f0 f6       ..       ; skip it
     tax                                                               ; 9e2e: aa          .        ; keep the operator
     pla                                                               ; 9e2f: 68          h        ; restore the type
-    cpx #&5e ; '^'                                                    ; 9e30: e0 5e       .^       ; '^'?
+    cpx #ASC("^")                                                     ; 9e30: e0 5e       .^       ; '^'?
     beq pow_apply                                                     ; 9e32: f0 01       ..       ; yes
     rts                                                               ; 9e34: 60          `        ; no: return
 ; &9e35 referenced 1 time by &9e32
@@ -6632,7 +6632,7 @@ oscli             = &fff7
     adc #6                                                            ; 9ebd: 69 06       i.       ; adjust for A-F
 ; &9ebf referenced 1 time by &9ebb
 .hex_to_ascii
-    adc #&30 ; '0'                                                    ; 9ebf: 69 30       i0       ; to ASCII
+    adc #ASC("0")                                                     ; 9ebf: 69 30       i0       ; to ASCII
     jsr output_char                                                   ; 9ec1: 20 66 a0     f.      ; output the digit
     dex                                                               ; 9ec4: ca          .        ; next
     bpl hex_digit_loop                                                ; 9ec5: 10 f0       ..       ; loop
@@ -6640,7 +6640,7 @@ oscli             = &fff7
 ; &9ec8 referenced 1 time by &9f12
 .num_sign
     bpl num_normalize_loop                                            ; 9ec8: 10 07       ..       ; positive?
-    lda #&2d ; '-'                                                    ; 9eca: a9 2d       .-       ; negative: output '-'
+    lda #ASC("-")                                                     ; 9eca: a9 2d       .-       ; negative: output '-'
     sta zp_fwa_sign                                                   ; 9ecc: 85 2e       ..       ; also clears the sign bit (bit 7 = 0)
     jsr output_char                                                   ; 9ece: 20 66 a0     f.      ; print it
 ; &9ed1 referenced 3 times by &9ec8, &9edc, &9f36
@@ -6705,7 +6705,7 @@ oscli             = &fff7
     bne num_sign                                                      ; 9f12: d0 b4       ..       ; non-zero: format it
     lda zp_general                                                    ; 9f14: a5 37       .7       ; zero, not General format?
     bne nta_output_zero                                               ; 9f16: d0 05       ..       ; fixed/exponential zero
-    lda #&30 ; '0'                                                    ; 9f18: a9 30       .0       ; output a single '0'
+    lda #ASC("0")                                                     ; 9f18: a9 30       .0       ; output a single '0'
     jmp output_char                                                   ; 9f1a: 4c 66 a0    Lf.      ; ...and return
 ; &9f1d referenced 1 time by &9f16
 .nta_output_zero
@@ -6824,11 +6824,11 @@ oscli             = &fff7
     bne nta_digit_pos                                                 ; 9fcd: d0 17       ..       ; not far below: output
 ; &9fcf referenced 1 time by &9fc7
 .nta_leading_zero
-    lda #&30 ; '0'                                                    ; 9fcf: a9 30       .0       ; leading '0'
+    lda #ASC("0")                                                     ; 9fcf: a9 30       .0       ; leading '0'
     jsr output_char                                                   ; 9fd1: 20 66 a0     f.      ; emit it
-    lda #&2e ; '.'                                                    ; 9fd4: a9 2e       ..       ; decimal '.'
+    lda #ASC(".")                                                     ; 9fd4: a9 2e       ..       ; decimal '.'
     jsr output_char                                                   ; 9fd6: 20 66 a0     f.      ; emit it
-    lda #&30 ; '0'                                                    ; 9fd9: a9 30       .0       ; prepare '0'
+    lda #ASC("0")                                                     ; 9fd9: a9 30       .0       ; prepare '0'
 ; &9fdb referenced 1 time by &9fe2
 .nta_frac_zeros_loop
     inc zp_dec_exp                                                    ; 9fdb: e6 49       .I       ; leading zeros for the fraction:
@@ -6846,7 +6846,7 @@ oscli             = &fff7
     jsr output_top_digit                                              ; 9fe8: 20 40 a0     @.      ; Emit each digit:
     dec zp_coeff_ptr_1                                                ; 9feb: c6 4e       .N       ; at the decimal point?
     bne nta_more_digits                                               ; 9fed: d0 05       ..       ; no
-    lda #&2e ; '.'                                                    ; 9fef: a9 2e       ..       ; emit '.'
+    lda #ASC(".")                                                     ; 9fef: a9 2e       ..       ; emit '.'
     jsr output_char                                                   ; 9ff1: 20 66 a0     f.      ; emit it
 ; &9ff4 referenced 1 time by &9fed
 .nta_more_digits
@@ -6862,9 +6862,9 @@ oscli             = &fff7
 .nta_trim_loop
     dey                                                               ; a002: 88          .        ; previous char
     lda string_work,y                                                 ; a003: b9 00 06    ...      ; a character
-    cmp #&30 ; '0'                                                    ; a006: c9 30       .0       ; a '0'?
+    cmp #ASC("0")                                                     ; a006: c9 30       .0       ; a '0'?
     beq nta_trim_loop                                                 ; a008: f0 f8       ..       ; yes: trim it
-    cmp #&2e ; '.'                                                    ; a00a: c9 2e       ..       ; a '.'?
+    cmp #ASC(".")                                                     ; a00a: c9 2e       ..       ; a '.'?
     beq nta_set_length                                                ; a00c: f0 01       ..       ; trim it too
     iny                                                               ; a00e: c8          .        ; keep this one
 ; &a00f referenced 1 time by &a00c
@@ -6876,11 +6876,11 @@ oscli             = &fff7
     beq return_19                                                     ; a013: f0 2a       .*       ; no: done
 ; &a015 referenced 1 time by &9ffb
 .nta_output_e
-    lda #&45 ; 'E'                                                    ; a015: a9 45       .E       ; output 'E'
+    lda #ASC("E")                                                     ; a015: a9 45       .E       ; output 'E'
     jsr output_char                                                   ; a017: 20 66 a0     f.      ; emit it
     lda zp_dec_exp                                                    ; a01a: a5 49       .I       ; the exponent
     bpl nta_output_exp                                                ; a01c: 10 0a       ..       ; positive
-    lda #&2d ; '-'                                                    ; a01e: a9 2d       .-       ; negative: output '-'
+    lda #ASC("-")                                                     ; a01e: a9 2d       .-       ; negative: output '-'
     jsr output_char                                                   ; a020: 20 66 a0     f.      ; emit it
     sec                                                               ; a023: 38          8        ; negate the exponent
     lda #0                                                            ; a024: a9 00       ..       ; 0...
@@ -6890,7 +6890,7 @@ oscli             = &fff7
     jsr output_byte_decimal                                           ; a028: 20 52 a0     R.      ; output the exponent in decimal
     lda zp_general                                                    ; a02b: a5 37       .7       ; General format?
     beq return_19                                                     ; a02d: f0 10       ..       ; done
-    lda #&20 ; ' '                                                    ; a02f: a9 20       .        ; pad: a space
+    lda #ASC(" ")                                                     ; a02f: a9 20       .        ; pad: a space
     ldy zp_dec_exp                                                    ; a031: a4 49       .I       ; check the exponent sign
     bmi nta_field_pad                                                 ; a033: 30 03       0.       ; negative: no pad
     jsr output_char                                                   ; a035: 20 66 a0     f.      ; output it
@@ -6972,7 +6972,7 @@ oscli             = &fff7
 ;     X: preserved
 ; &a064 referenced 2 times by &a046, &a060
 .output_digit
-    ora #&30 ; '0'                                                    ; a064: 09 30       .0       ; make it a digit ("0" + A)
+    ora #ASC("0")                                                     ; a064: 09 30       .0       ; make it a digit ("0" + A)
 ; ***************************************************************************************
 ; Append a character to the output string
 ;
@@ -7024,9 +7024,9 @@ oscli             = &fff7
     stx zp_fwa_rnd                                                    ; a085: 86 35       .5       ; and the guard byte
     stx zp_dp_flag                                                    ; a087: 86 48       .H       ; clear the decimal-point flag
     stx zp_dec_exp                                                    ; a089: 86 49       .I       ; decimal exponent = 0
-    cmp #&2e ; '.'                                                    ; a08b: c9 2e       ..       ; a leading decimal point?
+    cmp #ASC(".")                                                     ; a08b: c9 2e       ..       ; a leading decimal point?
     beq pn_dup_point                                                  ; a08d: f0 11       ..       ; yes
-    cmp #&3a ; ':'                                                    ; a08f: c9 3a       .:       ; not a digit (>= ':')?
+    cmp #ASC(":")                                                     ; a08f: c9 3a       .:       ; not a digit (>= ':')?
     bcs make_real_result                                              ; a091: b0 df       ..       ; finish
     sbc #&2f ; '/'                                                    ; a093: e9 2f       ./       ; convert to binary 0-9
     bmi make_real_result                                              ; a095: 30 db       0.       ; not a digit: finish
@@ -7035,7 +7035,7 @@ oscli             = &fff7
 .pn_loop
     iny                                                               ; a099: c8          .        ; next character
     lda (zp_text_ptr2),y                                              ; a09a: b1 19       ..       ; read it
-    cmp #&2e ; '.'                                                    ; a09c: c9 2e       ..       ; a decimal point?
+    cmp #ASC(".")                                                     ; a09c: c9 2e       ..       ; a decimal point?
     bne pn_check_e                                                    ; a09e: d0 08       ..       ; no
 ; &a0a0 referenced 1 time by &a08d
 .pn_dup_point
@@ -7045,9 +7045,9 @@ oscli             = &fff7
     bne pn_loop                                                       ; a0a6: d0 f1       ..       ; next char
 ; &a0a8 referenced 1 time by &a09e
 .pn_check_e
-    cmp #&45 ; 'E'                                                    ; a0a8: c9 45       .E       ; 'E' (exponent)?
+    cmp #ASC("E")                                                     ; a0a8: c9 45       .E       ; 'E' (exponent)?
     beq pn_scan_e                                                     ; a0aa: f0 35       .5       ; yes: scan the exponent
-    cmp #&3a ; ':'                                                    ; a0ac: c9 3a       .:       ; not a digit?
+    cmp #ASC(":")                                                     ; a0ac: c9 3a       .:       ; not a digit?
     bcs pn_store_offset                                               ; a0ae: b0 38       .8       ; finish
     sbc #&2f ; '/'                                                    ; a0b0: e9 2f       ./       ; convert to binary
     bcc pn_store_offset                                               ; a0b2: 90 34       .4       ; not a digit: finish
@@ -7161,9 +7161,9 @@ oscli             = &fff7
 .parse_exponent
     iny                                                               ; a140: c8          .        ; Scan exponent: next character
     lda (zp_text_ptr2),y                                              ; a141: b1 19       ..       ; read it
-    cmp #&2d ; '-'                                                    ; a143: c9 2d       .-       ; '-'?
+    cmp #ASC("-")                                                     ; a143: c9 2d       .-       ; '-'?
     beq pn_neg_exp_loop                                               ; a145: f0 f2       ..       ; yes: negative exponent
-    cmp #&2b ; '+'                                                    ; a147: c9 2b       .+       ; '+'?
+    cmp #ASC("+")                                                     ; a147: c9 2b       .+       ; '+'?
     bne pe_digit                                                      ; a149: d0 03       ..       ; no sign
 ; &a14b referenced 1 time by &a139
 .pe_skip_sign
@@ -7171,14 +7171,14 @@ oscli             = &fff7
     lda (zp_text_ptr2),y                                              ; a14c: b1 19       ..       ; read the digit after the sign
 ; &a14e referenced 1 time by &a149
 .pe_digit
-    cmp #&3a ; ':'                                                    ; a14e: c9 3a       .:       ; a digit?
+    cmp #ASC(":")                                                     ; a14e: c9 3a       .:       ; a digit?
     bcs pe_no_exp                                                     ; a150: b0 22       ."       ; no: exponent = 0
     sbc #&2f ; '/'                                                    ; a152: e9 2f       ./       ; convert
     bcc pe_no_exp                                                     ; a154: 90 1e       ..       ; not a digit: exponent = 0
     sta zp_int_exp                                                    ; a156: 85 4a       .J       ; store the first exponent digit
     iny                                                               ; a158: c8          .        ; second digit?
     lda (zp_text_ptr2),y                                              ; a159: b1 19       ..       ; read it
-    cmp #&3a ; ':'                                                    ; a15b: c9 3a       .:       ; above 9?
+    cmp #ASC(":")                                                     ; a15b: c9 3a       .:       ; above 9?
     bcs pe_one_digit                                                  ; a15d: b0 11       ..       ; one digit only
     sbc #&2f ; '/'                                                    ; a15f: e9 2f       ./       ; convert
     bcc pe_one_digit                                                  ; a161: 90 0d       ..       ; not a digit
@@ -9756,9 +9756,9 @@ oscli             = &fff7
     lda #6                                                            ; ac4c: a9 06       ..       ; high &06
     sta zp_text_ptr2_1                                                ; ac4e: 85 1a       ..       ; set the high byte
     jsr skip_spaces_ptr2                                              ; ac50: 20 8c 8a     ..      ; skip spaces
-    cmp #&2d ; '-'                                                    ; ac53: c9 2d       .-       ; minus sign?
+    cmp #ASC("-")                                                     ; ac53: c9 2d       .-       ; minus sign?
     beq a2n_negative                                                  ; ac55: f0 0f       ..       ; negative number
-    cmp #&2b ; '+'                                                    ; ac57: c9 2b       .+       ; plus sign?
+    cmp #ASC("+")                                                     ; ac57: c9 2b       .+       ; plus sign?
     bne a2n_back                                                      ; ac59: d0 03       ..       ; no sign
     jsr skip_spaces_ptr2                                              ; ac5b: 20 8c 8a     ..      ; skip the plus
 ; &ac5e referenced 1 time by &ac59
@@ -9946,7 +9946,7 @@ oscli             = &fff7
 .fn_instr
     jsr eval_or_eor                                                   ; ace2: 20 29 9b     ).      ; Evaluate the searched string
     bne num_type_error                                                ; ace5: d0 b4       ..       ; not a string: Type mismatch
-    cpx #&2c ; ','                                                    ; ace7: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; ace7: e0 2c       .,       ; ','?
     bne instr_missing_comma                                           ; ace9: d0 18       ..       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; aceb: e6 1b       ..       ; step past
     jsr stack_string                                                  ; aced: 20 b2 bd     ..      ; Stack the searched string
@@ -9955,9 +9955,9 @@ oscli             = &fff7
     lda #1                                                            ; acf5: a9 01       ..       ; Default start position = 1
     sta zp_iwa                                                        ; acf7: 85 2a       .*       ; store as the start position
     inc zp_text_ptr2_off                                              ; acf9: e6 1b       ..       ; step past
-    cpx #&29 ; ')'                                                    ; acfb: e0 29       .)       ; ')' (no start given)?
+    cpx #ASC(")")                                                     ; acfb: e0 29       .)       ; ')' (no start given)?
     beq instr_dest_index                                              ; acfd: f0 13       ..       ; yes: search from 1
-    cpx #&2c ; ','                                                    ; acff: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; acff: e0 2c       .,       ; ','?
     beq instr_stack                                                   ; ad01: f0 03       ..       ; yes: a start position follows
 ; &ad03 referenced 1 time by &ace9
 .instr_missing_comma
@@ -10150,7 +10150,7 @@ oscli             = &fff7
 ; &adad referenced 2 times by &baba, &bb38
 .read_string_literal
     jsr skip_spaces_ptr2                                              ; adad: 20 8c 8a     ..      ; Read a string literal: skip spaces
-    cmp #&22                                                          ; adb0: c9 22       ."       ; a quote?
+    cmp #'"'                                                          ; adb0: c9 22       ."       ; a quote?
     beq rsl_quoted                                                    ; adb2: f0 15       ..       ; quoted string
     ldx #0                                                            ; adb4: a2 00       ..       ; Unquoted: read until CR or comma
 ; &adb6 referenced 1 time by &adc3
@@ -10161,7 +10161,7 @@ oscli             = &fff7
     inx                                                               ; adbc: e8          .        ; and the buffer index
     cmp #&0d                                                          ; adbd: c9 0d       ..       ; CR?
     beq rsl_unquoted_end                                              ; adbf: f0 04       ..       ; end
-    cmp #&2c ; ','                                                    ; adc1: c9 2c       .,       ; comma?
+    cmp #ASC(",")                                                     ; adc1: c9 2c       .,       ; comma?
     bne rsl_unquoted_loop                                             ; adc3: d0 f1       ..       ; loop
 ; &adc5 referenced 1 time by &adbf
 .rsl_unquoted_end
@@ -10181,10 +10181,10 @@ oscli             = &fff7
     iny                                                               ; add2: c8          .        ; next
     sta string_work,x                                                 ; add3: 9d 00 06    ...      ; into the buffer
     inx                                                               ; add6: e8          .        ; advance the buffer index
-    cmp #&22                                                          ; add7: c9 22       ."       ; a quote?
+    cmp #'"'                                                          ; add7: c9 22       ."       ; a quote?
     bne rsl_quoted_loop                                               ; add9: d0 f1       ..       ; no: keep copying
     lda (zp_text_ptr2),y                                              ; addb: b1 19       ..       ; doubled "" = a literal quote?
-    cmp #&22                                                          ; addd: c9 22       ."       ; also a quote?
+    cmp #'"'                                                          ; addd: c9 22       ."       ; also a quote?
     beq rsl_quoted_adv                                                ; addf: f0 ea       ..       ; yes: keep it
 ; &ade1 referenced 1 time by &adc6
 .rsl_drop_trail
@@ -10217,13 +10217,13 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; adec: a4 1b       ..       ; Next character
     inc zp_text_ptr2_off                                              ; adee: e6 1b       ..       ; advance the offset
     lda (zp_text_ptr2),y                                              ; adf0: b1 19       ..       ; read it
-    cmp #&20 ; ' '                                                    ; adf2: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; adf2: c9 20       .        ; space?
     beq eval_factor                                                   ; adf4: f0 f6       ..       ; skip it
-    cmp #&2d ; '-'                                                    ; adf6: c9 2d       .-       ; '-' unary minus?
+    cmp #ASC("-")                                                     ; adf6: c9 2d       .-       ; '-' unary minus?
     beq unary_minus                                                   ; adf8: f0 92       ..       ; yes
-    cmp #&22                                                          ; adfa: c9 22       ."       ; '"' string literal?
+    cmp #'"'                                                          ; adfa: c9 22       ."       ; '"' string literal?
     beq rsl_quoted                                                    ; adfc: f0 cb       ..       ; yes
-    cmp #&2b ; '+'                                                    ; adfe: c9 2b       .+       ; '+' unary plus?
+    cmp #ASC("+")                                                     ; adfe: c9 2b       .+       ; '+' unary plus?
     bne factor_classify                                               ; ae00: d0 03       ..       ; no: classify the token
 ; &ae02 referenced 1 time by &ad8c
 .factor_unary_plus
@@ -10237,13 +10237,13 @@ oscli             = &fff7
     jmp dispatch_token                                                ; ae0d: 4c b1 8b    L..      ; a function: dispatch it
 ; &ae10 referenced 1 time by &ae07
 .factor_indirect
-    cmp #&3f ; '?'                                                    ; ae10: c9 3f       .?       ; '?' (byte indirection) or higher?
+    cmp #ASC("?")                                                     ; ae10: c9 3f       .?       ; '?' (byte indirection) or higher?
     bcs factor_name                                                   ; ae12: b0 0c       ..       ; yes: variable or indirection
-    cmp #&2e ; '.'                                                    ; ae14: c9 2e       ..       ; '.' or a digit?
+    cmp #ASC(".")                                                     ; ae14: c9 2e       ..       ; '.' or a digit?
     bcs factor_number                                                 ; ae16: b0 12       ..       ; yes: a number
-    cmp #&26 ; '&'                                                    ; ae18: c9 26       .&       ; '&' hex number?
+    cmp #ASC("&")                                                     ; ae18: c9 26       .&       ; '&' hex number?
     beq factor_hex                                                    ; ae1a: f0 51       .Q       ; yes
-    cmp #&28 ; '('                                                    ; ae1c: c9 28       .(       ; '(' sub-expression?
+    cmp #ASC("(")                                                     ; ae1c: c9 28       .(       ; '(' sub-expression?
     beq eval_subexpr                                                  ; ae1e: f0 36       .6       ; yes
 ; &ae20 referenced 1 time by &ae12
 .factor_name
@@ -10278,7 +10278,7 @@ oscli             = &fff7
 .eval_subexpr
     jsr eval_or_eor                                                   ; ae56: 20 29 9b     ).      ; Sub-expression: evaluate it
     inc zp_text_ptr2_off                                              ; ae59: e6 1b       ..       ; step past
-    cpx #&29 ; ')'                                                    ; ae5b: e0 29       .)       ; ')' to close?
+    cpx #ASC(")")                                                     ; ae5b: e0 29       .)       ; ')' to close?
     bne missing_paren                                                 ; ae5d: d0 02       ..       ; no: Missing )
     tay                                                               ; ae5f: a8          .        ; flag the result type
     rts                                                               ; ae60: 60          `        ; Return
@@ -10299,9 +10299,9 @@ oscli             = &fff7
 ; &ae79 referenced 1 time by &aea0
 .factor_hex_loop
     lda (zp_text_ptr2),y                                              ; ae79: b1 19       ..       ; Next character
-    cmp #&30 ; '0'                                                    ; ae7b: c9 30       .0       ; below '0'?
+    cmp #ASC("0")                                                     ; ae7b: c9 30       .0       ; below '0'?
     bcc factor_hex_check                                              ; ae7d: 90 23       .#       ; yes: end of number
-    cmp #&3a ; ':'                                                    ; ae7f: c9 3a       .:       ; a digit 0-9?
+    cmp #ASC(":")                                                     ; ae7f: c9 3a       .:       ; a digit 0-9?
     bcc factor_hex_nibble                                             ; ae81: 90 0a       ..       ; yes
     sbc #&37 ; '7'                                                    ; ae83: e9 37       .7       ; fold A-F to 10-15
     cmp #&0a                                                          ; ae85: c9 0a       ..       ; below 10 (a gap char)?
@@ -10454,7 +10454,7 @@ oscli             = &fff7
 .fn_to
     ldy zp_text_ptr2_off                                              ; aedc: a4 1b       ..       ; Look at the character after TO
     lda (zp_text_ptr2),y                                              ; aede: b1 19       ..       ; (get it)
-    cmp #&50 ; 'P'                                                    ; aee0: c9 50       .P       ; Is it "P"? TO + P spells TOP
+    cmp #ASC("P")                                                     ; aee0: c9 50       .P       ; Is it "P"? TO + P spells TOP
     bne pseudovar_syntax_error                                        ; aee2: d0 e3       ..       ; No: a bare TO here is a syntax error
     inc zp_text_ptr2_off                                              ; aee4: e6 1b       ..       ; Consume the P
     lda zp_top                                                        ; aee6: a5 12       ..       ; TOP: end-of-program address, low byte
@@ -10612,7 +10612,7 @@ oscli             = &fff7
 .fn_rnd
     ldy zp_text_ptr2_off                                              ; af49: a4 1b       ..       ; Look at the character after RND
     lda (zp_text_ptr2),y                                              ; af4b: b1 19       ..       ; (get it)
-    cmp #&28 ; '('                                                    ; af4d: c9 28       .(       ; Is it "("? then RND(expr)
+    cmp #ASC("(")                                                     ; af4d: c9 28       .(       ; Is it "("? then RND(expr)
     beq rnd_dispatch                                                  ; af4f: f0 b9       ..       ; Yes: select the RND form
 ; ***************************************************************************************
 ; RND: a full-range random integer
@@ -10857,7 +10857,7 @@ oscli             = &fff7
 .fn_lefts
     jsr eval_or_eor                                                   ; afcc: 20 29 9b     ).      ; Evaluate the source string
     bne str_type_error                                                ; afcf: d0 62       .b       ; not a string: Type mismatch
-    cpx #&2c ; ','                                                    ; afd1: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; afd1: e0 2c       .,       ; ','?
     bne str_missing_comma                                             ; afd3: d0 61       .a       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; afd5: e6 1b       ..       ; step past
     jsr stack_string                                                  ; afd7: 20 b2 bd     ..      ; Stack the string
@@ -10889,7 +10889,7 @@ oscli             = &fff7
 .fn_rights
     jsr eval_or_eor                                                   ; afee: 20 29 9b     ).      ; Evaluate the source string
     bne str_type_error                                                ; aff1: d0 40       .@       ; not a string: Type mismatch
-    cpx #&2c ; ','                                                    ; aff3: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; aff3: e0 2c       .,       ; ','?
     bne str_missing_comma                                             ; aff5: d0 3f       .?       ; no: Missing ,
     inc zp_text_ptr2_off                                              ; aff7: e6 1b       ..       ; step past
     jsr stack_string                                                  ; aff9: 20 b2 bd     ..      ; Stack the string
@@ -10967,7 +10967,7 @@ oscli             = &fff7
 .fn_mids
     jsr eval_or_eor                                                   ; b039: 20 29 9b     ).      ; Evaluate the source string
     bne str_type_error                                                ; b03c: d0 f5       ..       ; not a string: Type mismatch
-    cpx #&2c ; ','                                                    ; b03e: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; b03e: e0 2c       .,       ; ','?
     bne str_missing_comma                                             ; b040: d0 f4       ..       ; no: Missing ,
     jsr stack_string                                                  ; b042: 20 b2 bd     ..      ; Stack the string
     inc zp_text_ptr2_off                                              ; b045: e6 1b       ..       ; step past
@@ -10977,9 +10977,9 @@ oscli             = &fff7
     lda #&ff                                                          ; b04d: a9 ff       ..       ; Default length = 255
     sta zp_iwa                                                        ; b04f: 85 2a       .*       ; as the length
     inc zp_text_ptr2_off                                              ; b051: e6 1b       ..       ; step past
-    cpx #&29 ; ')'                                                    ; b053: e0 29       .)       ; ')' (no length given)?
+    cpx #ASC(")")                                                     ; b053: e0 29       .)       ; ')' (no length given)?
     beq mids_restore                                                  ; b055: f0 0a       ..       ; yes: use the default
-    cpx #&2c ; ','                                                    ; b057: e0 2c       .,       ; ','?
+    cpx #ASC(",")                                                     ; b057: e0 2c       .,       ; ','?
     bne str_missing_comma                                             ; b059: d0 db       ..       ; no: Missing ,
     jsr eval_subexpr                                                  ; b05b: 20 56 ae     V.      ; Evaluate the length, expect )
     jsr coerce_to_integer                                             ; b05e: 20 f0 92     ..      ; coerce to integer
@@ -11037,7 +11037,7 @@ oscli             = &fff7
 .fn_strs
     jsr skip_spaces_ptr2                                              ; b094: 20 8c 8a     ..      ; Next character
     ldy #&ff                                                          ; b097: a0 ff       ..       ; assume hex
-    cmp #&7e ; '~'                                                    ; b099: c9 7e       .~       ; '~' hex prefix?
+    cmp #ASC("~")                                                     ; b099: c9 7e       .~       ; '~' hex prefix?
     beq strs_save_flag                                                ; b09b: f0 04       ..       ; yes
     ldy #0                                                            ; b09d: a0 00       ..       ; no: decimal
     dec zp_text_ptr2_off                                              ; b09f: c6 1b       ..       ; back up
@@ -11156,7 +11156,7 @@ oscli             = &fff7
 .finddef_advance
     iny                                                               ; b122: c8          .        ; advance
     lda (zp_text_ptr),y                                               ; b123: b1 0b       ..       ; char
-    cmp #&20 ; ' '                                                    ; b125: c9 20       .        ; skip leading spaces
+    cmp #ASC(" ")                                                     ; b125: c9 20       .        ; skip leading spaces
     beq finddef_advance                                               ; b127: f0 f9       ..       ; skip it
     cmp #&dd                                                          ; b129: c9 dd       ..       ; DEF token at the start?
     beq finddef_found                                                 ; b12b: f0 0f       ..       ; yes: check the name
@@ -11324,7 +11324,7 @@ oscli             = &fff7
     pha                                                               ; b1f6: 48          H        ; push it,
     sta zp_text_ptr_off                                               ; b1f7: 85 0a       ..       ; offset = 0
     jsr skip_spaces                                                   ; b1f9: 20 97 8a     ..      ; Next character
-    cmp #&28 ; '('                                                    ; b1fc: c9 28       .(       ; '(' parameters?
+    cmp #ASC("(")                                                     ; b1fc: c9 28       .(       ; '(' parameters?
     beq callpf_save_parser2                                           ; b1fe: f0 4d       .M       ; yes: bind them
     dec zp_text_ptr_off                                               ; b200: c6 0a       ..       ; no: back up
 ; &b202 referenced 1 time by &b30a
@@ -11412,14 +11412,14 @@ oscli             = &fff7
     pha                                                               ; b275: 48          H        ; push it
     jsr stack_local                                                   ; b276: 20 0d b3     ..      ; Stack the current value for LOCAL restore
     jsr skip_spaces                                                   ; b279: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; b27c: c9 2c       .,       ; ',' another parameter?
+    cmp #ASC(",")                                                     ; b27c: c9 2c       .,       ; ',' another parameter?
     beq callpf_save_parser2                                           ; b27e: f0 cd       ..       ; yes
-    cmp #&29 ; ')'                                                    ; b280: c9 29       .)       ; ')' end of parameter list?
+    cmp #ASC(")")                                                     ; b280: c9 29       .)       ; ')' end of parameter list?
     bne callpf_reset_stack                                            ; b282: d0 31       .1       ; no: error
     lda #0                                                            ; b284: a9 00       ..       ; Push the end marker
     pha                                                               ; b286: 48          H        ; push it
     jsr skip_spaces_ptr2                                              ; b287: 20 8c 8a     ..      ; Expect "(" for the arguments
-    cmp #&28 ; '('                                                    ; b28a: c9 28       .(       ; '(' ?
+    cmp #ASC("(")                                                     ; b28a: c9 28       .(       ; '(' ?
     bne callpf_reset_stack                                            ; b28c: d0 27       .'       ; missing: error
 ; &b28e referenced 1 time by &b2a5
 .callpf_arg_loop
@@ -11434,9 +11434,9 @@ oscli             = &fff7
     txa                                                               ; b29e: 8a          .        ; back to A,
     pha                                                               ; b29f: 48          H        ; push it
     jsr skip_spaces_ptr2                                              ; b2a0: 20 8c 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; b2a3: c9 2c       .,       ; ',' another argument?
+    cmp #ASC(",")                                                     ; b2a3: c9 2c       .,       ; ',' another argument?
     beq callpf_arg_loop                                               ; b2a5: f0 e7       ..       ; yes
-    cmp #&29 ; ')'                                                    ; b2a7: c9 29       .)       ; ')' end of arguments?
+    cmp #ASC(")")                                                     ; b2a7: c9 29       .)       ; ')' end of arguments?
     bne callpf_reset_stack                                            ; b2a9: d0 0a       ..       ; no: error
     pla                                                               ; b2ab: 68          h        ; Recover the argument count
     pla                                                               ; b2ac: 68          h        ; and the formal count
@@ -12068,7 +12068,7 @@ oscli             = &fff7
     adc #6                                                            ; b554: 69 06       i.       ; adjust for A-F
 ; &b556 referenced 1 time by &b552
 .phd_ascii
-    adc #&30 ; '0'                                                    ; b556: 69 30       i0       ; to ASCII, then fall into print_char
+    adc #ASC("0")                                                     ; b556: 69 30       i0       ; to ASCII, then fall into print_char
 ; ***************************************************************************************
 ; Print a character with column tracking
 ;
@@ -12109,7 +12109,7 @@ oscli             = &fff7
 ;     Y: corrupted
 ; &b565 referenced 9 times by &8544, &8559, &8db5, &8e08, &8e5f, &991c, &995a, &b57e, &b580
 .print_space
-    lda #&20 ; ' '                                                    ; b565: a9 20       .        ; Space
+    lda #ASC(" ")                                                     ; b565: a9 20       .        ; Space
 ; &b567 referenced 1 time by &b55a
 .print_char_body
     pha                                                               ; b567: 48          H        ; Save the character
@@ -12189,7 +12189,7 @@ oscli             = &fff7
 .stmt_list
     iny                                                               ; b59c: c8          .        ; Peek at the next character
     lda (zp_text_ptr),y                                               ; b59d: b1 0b       ..       ; read it
-    cmp #&4f ; 'O'                                                    ; b59f: c9 4f       .O       ; 'O' (LISTO)?
+    cmp #ASC("O")                                                     ; b59f: c9 4f       .O       ; 'O' (LISTO)?
     beq stmt_listo                                                    ; b5a1: f0 e7       ..       ; yes: set the option
     lda #0                                                            ; b5a3: a9 00       ..       ; Clear the indent levels
     sta zp_fwb_sign                                                   ; b5a5: 85 3b       .;       ; FOR/REPEAT indent = 0,
@@ -12205,7 +12205,7 @@ oscli             = &fff7
     plp                                                               ; b5bb: 28          (        ; Was a start line given?
     bcc list_skip_spaces                                              ; b5bc: 90 11       ..       ; no: check for a range comma
     jsr skip_spaces                                                   ; b5be: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; b5c1: c9 2c       .,       ; ',' range separator?
+    cmp #ASC(",")                                                     ; b5c1: c9 2c       .,       ; ',' range separator?
     beq list_end_line                                                 ; b5c3: f0 13       ..       ; yes: read the end line
     jsr unstack_integer                                               ; b5c5: 20 ea bd     ..      ; Single line: end = start
     jsr stack_integer                                                 ; b5c8: 20 94 bd     ..      ; re-stack it
@@ -12214,7 +12214,7 @@ oscli             = &fff7
 ; &b5cf referenced 1 time by &b5bc
 .list_skip_spaces
     jsr skip_spaces                                                   ; b5cf: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; b5d2: c9 2c       .,       ; ',' range separator?
+    cmp #ASC(",")                                                     ; b5d2: c9 2c       .,       ; ',' range separator?
     beq list_end_line                                                 ; b5d4: f0 02       ..       ; yes
     dec zp_text_ptr_off                                               ; b5d6: c6 0a       ..       ; back up
 ; &b5d8 referenced 2 times by &b5c3, &b5d4
@@ -12281,12 +12281,12 @@ oscli             = &fff7
     lda (zp_text_ptr),y                                               ; b639: b1 0b       ..       ; Next character
     cmp #&0d                                                          ; b63b: c9 0d       ..       ; end of line?
     beq list_line_loop                                                ; b63d: f0 bd       ..       ; yes: next line
-    cmp #&22                                                          ; b63f: c9 22       ."       ; quote?
+    cmp #'"'                                                          ; b63f: c9 22       ."       ; quote?
     bne list_in_quote                                                 ; b641: d0 0e       ..       ; no: a token or literal
     lda #&ff                                                          ; b643: a9 ff       ..       ; toggle the quote flag
     eor zp_coeff_ptr                                                  ; b645: 45 4d       EM       ; flip the flag,
     sta zp_coeff_ptr                                                  ; b647: 85 4d       .M       ; store it
-    lda #&22                                                          ; b649: a9 22       ."       ; print the quote
+    lda #'"'                                                          ; b649: a9 22       ."       ; print the quote
 ; &b64b referenced 1 time by &b653
 .list_emit
     jsr print_char                                                    ; b64b: 20 58 b5     X.      ; do it
@@ -12459,7 +12459,7 @@ oscli             = &fff7
     ldy zp_text_ptr2_off                                              ; b758: a4 1b       ..       ; continue after NEXT:
     sty zp_text_ptr_off                                               ; b75a: 84 0a       ..       ; sync the program offset
     jsr skip_spaces                                                   ; b75c: 20 97 8a     ..      ; another NEXT variable (comma)?
-    cmp #&2c ; ','                                                    ; b75f: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; b75f: c9 2c       .,       ; ','?
     bne next_end                                                      ; b761: d0 3e       .>       ; no: end of statement
     jmp stmt_next                                                     ; b763: 4c 95 b6    L..      ; yes: handle the next variable
 ; &b766 referenced 1 time by &b6e6
@@ -12778,11 +12778,11 @@ oscli             = &fff7
     iny                                                               ; b946: c8          .        ; advance
     cmp #&0d                                                          ; b947: c9 0d       ..       ; end of line?
     beq on_out_of_range                                               ; b949: f0 32       .2       ; yes: out of range
-    cmp #&3a ; ':'                                                    ; b94b: c9 3a       .:       ; ':' end of statement?
+    cmp #ASC(":")                                                     ; b94b: c9 3a       .:       ; ':' end of statement?
     beq on_out_of_range                                               ; b94d: f0 2e       ..       ; yes: out of range
     cmp #&8b                                                          ; b94f: c9 8b       ..       ; ELSE?
     beq on_out_of_range                                               ; b951: f0 2a       .*       ; yes: out of range
-    cmp #&2c ; ','                                                    ; b953: c9 2c       .,       ; ',' separator?
+    cmp #ASC(",")                                                     ; b953: c9 2c       .,       ; ',' separator?
     bne on_char_loop                                                  ; b955: d0 ed       ..       ; no: keep scanning
     dex                                                               ; b957: ca          .        ; count this destination
     bne on_char_loop                                                  ; b958: d0 ea       ..       ; not yet reached: continue
@@ -12804,7 +12804,7 @@ oscli             = &fff7
     iny                                                               ; b96e: c8          .        ; advance
     cmp #&0d                                                          ; b96f: c9 0d       ..       ; end of line?
     beq on_return_index                                               ; b971: f0 04       ..       ; yes: return point here
-    cmp #&3a ; ':'                                                    ; b973: c9 3a       .:       ; ':' separator?
+    cmp #ASC(":")                                                     ; b973: c9 3a       .:       ; ':' separator?
     bne on_skip_loop                                                  ; b975: d0 f5       ..       ; no: keep scanning to the return point
 ; &b977 referenced 1 time by &b971
 .on_return_index
@@ -12886,7 +12886,7 @@ oscli             = &fff7
 ; &b9da referenced 2 times by &ba16, &ba3c
 .inputf_skip_spaces
     jsr skip_spaces                                                   ; b9da: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; b9dd: c9 2c       .,       ; ',' another variable?
+    cmp #ASC(",")                                                     ; b9dd: c9 2c       .,       ; ',' another variable?
     bne flt_sync                                                      ; b9df: d0 e9       ..       ; no: done
     lda zp_coeff_ptr                                                  ; b9e1: a5 4d       .M       ; Save the handle
     pha                                                               ; b9e3: 48          H        ; push it
@@ -12966,7 +12966,7 @@ oscli             = &fff7
 ;     CONTROL: rejoins statement_loop; no value, registers not preserved
 .stmt_input
     jsr skip_spaces                                                   ; ba44: 20 97 8a     ..      ; Next non-space character
-    cmp #&23 ; '#'                                                    ; ba47: c9 23       .#       ; '#': INPUT# from a file
+    cmp #ASC("#")                                                     ; ba47: c9 23       .#       ; '#': INPUT# from a file
     beq inputf_skip_hash                                              ; ba49: f0 84       ..       ; go handle INPUT#
     cmp #&86                                                          ; ba4b: c9 86       ..       ; LINE token?
     beq input_line_flag                                               ; ba4d: f0 03       ..       ; yes: LINE mode (carry set)
@@ -12995,9 +12995,9 @@ oscli             = &fff7
     asl zp_coeff_ptr                                                  ; ba6a: 06 4d       .M       ; shift out the old bit,
     plp                                                               ; ba6c: 28          (        ; recover the flag,
     ror zp_coeff_ptr                                                  ; ba6d: 66 4d       fM       ; rotate it into bit 7
-    cmp #&2c ; ','                                                    ; ba6f: c9 2c       .,       ; ',' next item?
+    cmp #ASC(",")                                                     ; ba6f: c9 2c       .,       ; ',' next item?
     beq input_prompt                                                  ; ba71: f0 e7       ..       ; yes
-    cmp #&3b ; ';'                                                    ; ba73: c9 3b       .;       ; ';' next item?
+    cmp #ASC(";")                                                     ; ba73: c9 3b       .;       ; ';' next item?
     beq input_prompt                                                  ; ba75: f0 e3       ..       ; yes
     dec zp_text_ptr_off                                               ; ba77: c6 0a       ..       ; Back up to the variable
     lda zp_coeff_ptr                                                  ; ba79: a5 4d       .M       ; Save the flags...
@@ -13022,7 +13022,7 @@ oscli             = &fff7
 .input_line_mode
     bit zp_coeff_ptr                                                  ; ba99: 24 4d       $M       ; LINE mode?
     bpl input_read_line                                               ; ba9b: 10 05       ..       ; yes: no ? prompt
-    lda #&3f ; '?'                                                    ; ba9d: a9 3f       .?       ; Print '?'
+    lda #ASC("?")                                                     ; ba9d: a9 3f       .?       ; Print '?'
     jsr print_char                                                    ; ba9f: 20 58 b5     X.      ; do it
 ; &baa2 referenced 1 time by &ba9b
 .input_read_line
@@ -13044,7 +13044,7 @@ oscli             = &fff7
 ; &babd referenced 1 time by &bac6
 .input_skip_spaces
     jsr skip_spaces_ptr2                                              ; babd: 20 8c 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; bac0: c9 2c       .,       ; ',' field delimiter?
+    cmp #ASC(",")                                                     ; bac0: c9 2c       .,       ; ',' field delimiter?
     beq input_field_offset                                            ; bac2: f0 06       ..       ; yes
     cmp #&0d                                                          ; bac4: c9 0d       ..       ; end of line?
     bne input_skip_spaces                                             ; bac6: d0 f5       ..       ; no: keep scanning
@@ -13086,7 +13086,7 @@ oscli             = &fff7
     sty zp_fwb_m1                                                     ; baec: 84 3e       .>       ; high byte (&3E)
     jsr skip_spaces                                                   ; baee: 20 97 8a     ..      ; Skip spaces
     dec zp_text_ptr_off                                               ; baf1: c6 0a       ..       ; back up
-    cmp #&3a ; ':'                                                    ; baf3: c9 3a       .:       ; ':' end?
+    cmp #ASC(":")                                                     ; baf3: c9 3a       .:       ; ':' end?
     beq restore_check_end                                             ; baf5: f0 10       ..       ; yes: restore to PAGE
     cmp #&0d                                                          ; baf7: c9 0d       ..       ; end of line?
     beq restore_check_end                                             ; baf9: f0 0c       ..       ; yes
@@ -13106,7 +13106,7 @@ oscli             = &fff7
 ; &bb15 referenced 2 times by &bb22, &bb4d
 .restore_skip_spaces
     jsr skip_spaces                                                   ; bb15: 20 97 8a     ..      ; Skip spaces
-    cmp #&2c ; ','                                                    ; bb18: c9 2c       .,       ; ','?
+    cmp #ASC(",")                                                     ; bb18: c9 2c       .,       ; ','?
     beq stmt_read                                                     ; bb1a: f0 03       ..       ; yes: READ
     jmp stmt_backup_end                                               ; bb1c: 4c 96 8b    L..      ; next statement
 ; ***************************************************************************************
@@ -13172,7 +13172,7 @@ oscli             = &fff7
     ldy #0                                                            ; bb5c: a0 00       ..       ; From offset 0
     sty zp_text_ptr2_off                                              ; bb5e: 84 1b       ..       ; (offset 0)
     jsr skip_spaces_ptr2                                              ; bb60: 20 8c 8a     ..      ; Next character
-    cmp #&2c ; ','                                                    ; bb63: c9 2c       .,       ; ',' item separator?
+    cmp #ASC(",")                                                     ; bb63: c9 2c       .,       ; ',' item separator?
     beq return_36                                                     ; bb65: f0 49       .I       ; yes: at the next item
     cmp #&dc                                                          ; bb67: c9 dc       ..       ; DATA token?
     beq return_36                                                     ; bb69: f0 45       .E       ; yes: at the first item
@@ -13181,7 +13181,7 @@ oscli             = &fff7
 ; &bb6f referenced 1 time by &bb78
 .ndi_scan_loop
     jsr skip_spaces_ptr2                                              ; bb6f: 20 8c 8a     ..      ; Scan to the item end: next character
-    cmp #&2c ; ','                                                    ; bb72: c9 2c       .,       ; ',' separator?
+    cmp #ASC(",")                                                     ; bb72: c9 2c       .,       ; ',' separator?
     beq return_36                                                     ; bb74: f0 3a       .:       ; yes
     cmp #&0d                                                          ; bb76: c9 0d       ..       ; end of line?
     bne ndi_scan_loop                                                 ; bb78: d0 f5       ..       ; no: keep scanning
@@ -13198,7 +13198,7 @@ oscli             = &fff7
 .ndi_scan_loop2
     iny                                                               ; bb85: c8          .        ; Next character
     lda (zp_text_ptr2),y                                              ; bb86: b1 19       ..       ; read it
-    cmp #&20 ; ' '                                                    ; bb88: c9 20       .        ; space?
+    cmp #ASC(" ")                                                     ; bb88: c9 20       .        ; space?
     beq ndi_scan_loop2                                                ; bb8a: f0 f9       ..       ; skip leading spaces
     cmp #&dc                                                          ; bb8c: c9 dc       ..       ; DATA token?
     beq ndi_skip_token                                                ; bb8e: f0 1d       ..       ; yes: use this line
@@ -13312,7 +13312,7 @@ oscli             = &fff7
     sta zp_general_1                                                  ; bc0b: 85 38       .8       ; address high = &07
     lda #&ee                                                          ; bc0d: a9 ee       ..       ; Max length 238
     sta zp_fileblk                                                    ; bc0f: 85 39       .9       ; store it
-    lda #&20 ; ' '                                                    ; bc11: a9 20       .        ; Lowest accepted character
+    lda #ASC(" ")                                                     ; bc11: a9 20       .        ; Lowest accepted character
     sta zp_fileblk_1                                                  ; bc13: 85 3a       .:       ; store it
     ldy #&ff                                                          ; bc15: a0 ff       ..       ; Highest accepted character (&FF)
     sty zp_fwb_sign                                                   ; bc17: 84 3b       .;       ; store it
@@ -14310,7 +14310,7 @@ oscli             = &fff7
 ; &bfb5 referenced 3 times by &acb8, &bf4c, &bf6f
 .eval_channel
     jsr skip_spaces_ptr2                                              ; bfb5: 20 8c 8a     ..      ; Skip spaces
-    cmp #&23 ; '#'                                                    ; bfb8: c9 23       .#       ; Require "#"
+    cmp #ASC("#")                                                     ; bfb8: c9 23       .#       ; Require "#"
     bne missing_hash                                                  ; bfba: d0 07       ..       ; missing: error
     jsr eval_factor_integer                                           ; bfbc: 20 e3 92     ..      ; Evaluate the handle as an integer
     ldy zp_iwa                                                        ; bfbf: a4 2a       .*       ; Y = the handle
