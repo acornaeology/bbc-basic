@@ -22,6 +22,12 @@
             "url": "docs/analysis/basic-2/tokeniser-and-detokeniser.md",
             "icon": "doc",
             "note": "A complete, address-cited account of how BBC BASIC II turns source text into tokens and back. Gives the full 126-entry keyword/token/flag table verbatim, the meaning of every flag bit, and the first-full-match-in-table-order crunch algorithm (with abbreviations, the start-of-statement state machine, and the REM/DATA/* suppression contexts). Documents the three-byte &8D line-number codec — verified to round-trip only for 0–32767 and never to emit a &0D — the line storage layout (&0D hi lo len body, &0D &FF end marker), and what LIST does and does not preserve. Written for anyone building a faithful BASIC II tokeniser/detokeniser."
+        },
+        {
+            "label": "Data files: channels, raw bytes, and the backwards PRINT# (BASIC II)",
+            "url": "docs/analysis/basic-2/data-files.md",
+            "icon": "doc",
+            "note": "How BBC BASIC II handles data files — the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a thin wrapper over a MOS call (OSFIND/OSBGET/OSBPUT/OSARGS/OSBYTE). The centrepiece is the PRINT#/INPUT# record format: PRINT# writes no text at all but a 1-byte type tag (0 string, &40 integer, &FF real) followed by the value's bytes in reverse — integers and reals MSB-first, strings last-character-first — so PRINT#42 emits 40 00 00 00 2A, not \"42\". INPUT# mirrors the reversal byte for byte, which is why such files are really only readable by BASIC. Whole-program LOAD/SAVE/CHAIN (a separate OSFILE mechanism) is deliberately excluded."
         }
     ],
     "references": [
