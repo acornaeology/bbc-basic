@@ -12,18 +12,18 @@ The headline, for the impatient:
 
 BBC BASIC owns no file logic of its own — every data-file word is a thin wrapper over a MOS (operating-system) call. A file is identified by a one-byte **handle** returned when it is opened. The whole vocabulary maps onto five MOS calls (see [`eval_channel`](address:BFB5@2?hex), the shared `#handle` parser):
 
-| BASIC                | MOS call | A   | Notes |
-|----------------------|----------|-----|-------|
-| `OPENIN f$`          | `OSFIND` | `&40` | open existing for input |
-| `OPENOUT f$`         | `OSFIND` | `&80` | create for output |
-| `OPENUP f$`          | `OSFIND` | `&C0` | open existing for update |
-| `CLOSE #h`           | `OSFIND` | `&00` | `CLOSE#0` closes *every* open file |
-| `BPUT# h, b`         | `OSBPUT` | —   | write one byte (`A`), handle in `Y` |
-| `=BGET# h`           | `OSBGET` | —   | read one byte, handle in `Y` |
-| `PTR# h =`           | `OSARGS` | `&01` | write the sequential pointer |
-| `=PTR# h`            | `OSARGS` | `&00` | read the sequential pointer |
-| `=EXT# h`            | `OSARGS` | `&02` | read the extent (length) |
-| `=EOF# h`            | `OSBYTE` | `&7F` | test for end of file |
+| BASIC        | MOS call | A     | Notes                               |
+|--------------|----------|-------|-------------------------------------|
+| `OPENIN f$`  | `OSFIND` | `&40` | open existing for input             |
+| `OPENOUT f$` | `OSFIND` | `&80` | create for output                   |
+| `OPENUP f$`  | `OSFIND` | `&C0` | open existing for update            |
+| `CLOSE #h`   | `OSFIND` | `&00` | `CLOSE#0` closes *every* open file  |
+| `BPUT# h, b` | `OSBPUT` | —     | write one byte (`A`), handle in `Y` |
+| `=BGET# h`   | `OSBGET` | —     | read one byte, handle in `Y`        |
+| `PTR# h =`   | `OSARGS` | `&01` | write the sequential pointer        |
+| `=PTR# h`    | `OSARGS` | `&00` | read the sequential pointer         |
+| `=EXT# h`    | `OSARGS` | `&02` | read the extent (length)            |
+| `=EOF# h`    | `OSBYTE` | `&7F` | test for end of file                |
 
 The handle is passed in `Y` (except `OSFILE`/`OSARGS`, which take a control block / a zero-page value address). **`OSFIND` returns the new handle in `A`, or 0 if the open failed** — which is why the idiom is `chan=OPENIN("x"):IF chan=0 THEN ...`. Two things follow from this being pure MOS plumbing: the *meaning* of a handle, the maximum number of open files, and the on-media layout all belong to the current filing system, not to BASIC; and `PTR#`/`EXT#` work in whatever units (usually bytes) that filing system uses.
 
@@ -50,11 +50,11 @@ This is the part that surprises people, and the reason data files written on a B
 
 [`print_file`](address:8D2B@2?hex) ignores all of screen `PRINT`'s formatting — there is no `TAB`, no `~`, no `;`/`'` handling. It simply walks a **comma-separated** value list ([`print_file_loop`](address:8D30@2?hex), which loops only while the next character is `,`), and for each value writes a **type tag** byte followed by the value's bytes:
 
-| First byte (tag) | Type | Then | Order |
-|------------------|------|------|-------|
-| `&40`            | integer | 4 bytes from IWA | **MSB first** ([`print_file_int_loop`](address:8D4D@2?hex), `LDX #3 … DEX`) |
-| `&FF` (negative) | real | 5 packed FP bytes | **MSB first** ([`print_file_real`](address:8D57@2?hex), `LDX #4 … DEX`) |
-| `&00`            | string | 1 length byte, then the characters | **reversed** ([`print_file_str`](address:8D64@2?hex), `LDX len … DEX`) |
+| First byte (tag) | Type    | Then                               | Order                                                                       |
+|------------------|---------|------------------------------------|-----------------------------------------------------------------------------|
+| `&40`            | integer | 4 bytes from IWA                   | **MSB first** ([`print_file_int_loop`](address:8D4D@2?hex), `LDX #3 … DEX`) |
+| `&FF` (negative) | real    | 5 packed FP bytes                  | **reversed** — mantissa LSB first, **exponent last** ([`print_file_real`](address:8D57@2?hex), `LDX #4 … DEX`)     |
+| `&00`            | string  | 1 length byte, then the characters | **reversed** ([`print_file_str`](address:8D64@2?hex), `LDX len … DEX`)      |
 
 The tag is BASIC's own internal type code for the value (`zp_var_type`, `&27`): `0` string, `&40` integer, `&FF` real. The disassembly's own inline comments name the quirk outright — [`&8D52`](address:8D52@2?hex) "next byte (MSB first)" and [`&8D72`](address:8D72@2?hex) "next character (written in reverse)".
 
@@ -70,6 +70,15 @@ PRINT#h, "AB"             ->  00 02 42 41
                               tag len 'B' 'A'   (characters reversed)
 
 PRINT#h, 42               ->  40 00 00 00 2A    (an integer, NOT "42")
+
+PRINT#h, 1.0              ->  FF 00 00 00 00 81
+                              tag  ── packed real, reversed ──
+                              (packed +0..+4 = 81 00 00 00 00:
+                               exp &81, significand 0 — exponent
+                               lands LAST)
+
+PRINT#h, -1.0             ->  FF 00 00 00 80 81
+                              (sign bit is in the 4th data byte)
 ```
 
 ### 3.3 Why "reversed"
@@ -88,6 +97,30 @@ So `PRINT#` and `INPUT#` are exact mirror images, and the on-disc bytes are an i
 - A file written by `PRINT#` is only sanely read by `INPUT#`. To consume one elsewhere you must parse the tag bytes and **byte-reverse** each field (and reverse string characters).
 - `PRINT#` and `INPUT#` must agree on the value types in order — `INPUT#` validates the tag and errors on a mismatch; it does not coerce.
 - Mixing `BPUT#`/`BGET#` (raw bytes) with `PRINT#`/`INPUT#` (tagged records) on the same file means tracking the tag/length framing yourself.
+
+### 3.4 Reading a real off the wire
+
+A real is the only multi-field value, so it is worth spelling out — and its byte order surprises people twice over. In memory the packed five bytes ([`fwa_pack_temp1`](address:A385@2?hex) → [`fwa_pack_var`](address:A38D@2?hex), buffer at [`fp_temp1`](address:046C@2?hex)) are **exponent-first**:
+
+| `fp_temp1` | byte |
+|---|---|
+| `+0` | exponent (excess-128; `0` ⇒ the value is zero) |
+| `+1` | sign (bit 7) + mantissa MSB (bits 6–0); the implied leading 1 is dropped |
+| `+2` | mantissa byte 2 |
+| `+3` | mantissa byte 3 |
+| `+4` | mantissa byte 4 (LSB) |
+
+`print_file_real` writes that buffer from `+4` down to `+0`, so on the wire (after the `&FF` tag) the order is **mantissa LSB first, exponent last**. Reading the five data bytes back as `b0 b1 b2 b3 b4`:
+
+```
+b0 = mantissa LSB         sign     = b3 >> 7               # 1 = negative
+b1 = mantissa byte 3      exp      = b4                    # 0 ⇒ value is 0
+b2 = mantissa byte 2      mantissa = ((b3 & 0x7F) | 0x80) << 24
+b3 = sign + mantissa MSB             | b2 << 16 | b1 << 8 | b0
+b4 = exponent             value    = (-1)**sign * mantissa * 2**(exp - 160)
+```
+
+The `−160` folds together the `−128` exponent bias and the `2⁻³²` that turns the 32-bit integer significand back into the `[0.5, 1)` fraction — the same formula derived in [the 5-byte float article](floating-point-constants-and-precision.md). Worked: `FF 00 00 00 00 81` → `mantissa = 0x80000000`, `exp = 0x81` → `2³¹ × 2^(129−160) = 1.0`; and `e` written as `PRINT#h, 2.718281828` lands as `FF 58 54 F8 2D 82` → `0xADF85458 × 2^(130−160) = 2.71828182…`. `INPUT#` does exactly this in reverse — [`inputf_real`](address:BA2B@2?hex) reads the five bytes into `fp_temp1+4…+0` and calls [`fwa_unpack_temp1`](address:A3B2@2?hex).
 
 ---
 
