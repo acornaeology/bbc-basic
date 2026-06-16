@@ -238,6 +238,14 @@ The crunch does **not** do longest-match, and it does not do plain prefix-match.
 
 Because matching is *exact and full*, table order is what guarantees correctness for shared prefixes. **`INPUT` vs `INT`:** `INPUT` (`&E8`) appears before `INT` (`&A8`); source `INPUT` matches `INPUT` fully on the first try, source `INT` fails `INPUT`/`IF`/`INKEY$`/`INKEY` in turn (each a full-compare mismatch) and then matches `INT` exactly. No prefix shadows another because the comparison always runs to the end of the keyword unless a `.` intervenes.
 
+**Where matching is even attempted — name-run starts only.** The scan above runs *only at the first character of a run of name characters* (`0-9 A-Z a-z _`, per `is_alphanumeric`). A run begins at the start of the line and after any non-name character (space, operator, `=`, punctuation, a digit) or an emitted token. If that first character does **not** yield a surviving keyword, control falls to [`tok_name`](address:89D0@2?hex)/[`tok_name_loop`](address:89D2@2?hex), which swallows the **entire** rest of the run as one identifier and **never re-attempts keyword matching inside it**. So a keyword that begins *partway* through a run is never tokenised:
+
+- `GDIV40`, `GONE`, `STORE`, `SANDY`, `XPRINT` all stay **literal** — the interior `DIV`/`ON`/`TO`/`AND`/`PRINT` is never looked at, because the run was already claimed as a name at its first letter. (Insert a boundary and it tokenises: `G DIV40` → `G·[DIV]·40`.)
+
+When a keyword *is* emitted at a run start, the scanner resumes at the next character, which is itself a fresh run start — so abutting keywords each tokenise: `DIVMOD` → `[DIV][MOD]`, `TOPRINT` → `[TO][PRINT]`. And a surviving leading keyword tokenises even with an identifier tail: `TOTAL` → `[TO]TAL`, `PRINTX` → `[PRINT]X`, `FORM` → `[FOR]M`, `INPUTS` → `[INPUT]S`.
+
+The bit-0 *conditional* (§2.1) layers on top, and its effect compounds: a run-start keyword with bit 0 set is suppressed when a name character follows, and *because suppression hands the whole run to `tok_name`*, any keyword abutting it is skipped too. So `TIMER`, `TRUER`, `TRUEELSE`, `TIMEPRINT`, `FALSEAND`, `ENDPROCPRINT` are **all literal** (the second keyword is never reached), whereas `TRUE+`, `TIME=0` and `=TRUE ELSE=` tokenise — the character after the conditional keyword is not a name character. This is the rule to verify a tokeniser against: keywords match at run starts only, and a suppressed conditional swallows everything to the end of the run.
+
 ### 2.3 Abbreviations: prefix + `.`, first table entry wins (Q7)
 
 There is **no per-keyword minimum length**. The rule is *any prefix that, in table order, first reaches a `.`* ([`tok_kw_abbrev`](address:8A18@2?hex)): during the full-compare, a character mismatch where the **source** character is `.` is accepted, and the scan jumps to that entry's token. The dot is consumed.
@@ -268,7 +276,7 @@ Two zero-page bytes hold the crunch state:
 
 `&3B` is set to **middle of statement** by: flag **bit 1** (most commands), and by reading a name ([`tok_not_keyword`](address:89E3@2?hex)/[`tok_resume_mid`](address:89C2@2?hex)) or a number. Note a **comma does not reset** the state ([`tok_check_comma_star`](address:8996@2?hex) just skips it) — that is deliberate, so `ON X GOTO 10,20,30` keeps `&3C` armed and encodes every number in the list as a line number.
 
-There is no "recognised only at statement start" *class* of keywords in the crunch — any keyword tokenises wherever its letters appear (subject to bit 0 / bit 6). The start/mid distinction only changes pseudo-variable tokens (bit 6) and line-number arming.
+There is no "recognised only at statement start" *class* of keywords in the crunch — a keyword tokenises at any name-run start where it survives (§2.2), regardless of statement position (subject to bit 0 / bit 6). The start/mid distinction only changes pseudo-variable tokens (bit 6) and line-number arming.
 
 ### 2.5 Suppression contexts — where tokenising turns off, and resumes (Q9)
 

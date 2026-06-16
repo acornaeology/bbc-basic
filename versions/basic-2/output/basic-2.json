@@ -171,7 +171,7 @@
       "addr": 32881,
       "name": "keyword_table",
       "title": "Keyword / tokeniser table",
-      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising. The flag bits are:\n\n| Bit | Meaning |\n|-----|---------|\n| 0 | Conditional: do not tokenise if followed by a letter |\n| 1 | Enter \"middle of statement\" mode |\n| 2 | Enter \"start of statement\" mode |\n| 3 | FN/PROC: do not tokenise the following name |\n| 4 | Start tokenising a line number (after GOTO etc.) |\n| 5 | Do not tokenise the rest of the line (REM, DATA) |\n| 6 | Pseudo-variable: add &40 to the token in a statement |\n\nBit 6 is why a pseudo-variable like PTR reads as &8F in a function\nposition but &CF as an assignment target. Entries are ordered so that\nthe first acceptable abbreviation of each keyword is unambiguous.\n\nThe tokeniser scan stops at WIDTH's token &FE, which doubles as the\nend-of-table sentinel (see the `cmp #&fe` in the keyword search). The\nfinal five entries \u2014 the PTR/PAGE/TIME/LOMEM/HIMEM *assignment* forms\n&CF-&D3 \u2014 sit past that sentinel, so the tokeniser never matches them\n(it produces those tokens arithmetically via bit 6). They exist only\nfor the de-tokeniser (`print_token`, which has no sentinel and scans by\ntoken value) to render `PTR=` etc. back to text. The data then runs on\nto the action-address tables at action_table_lo.\n"
+      "description": "Each entry is the keyword in ASCII, then a token byte (bit 7\nset), then a flag byte that drives tokenising. The flag bits are:\n\n| Bit | Meaning |\n|-----|---------|\n| 0 | Conditional: do not tokenise if followed by a name char (0-9 A-Z a-z _) |\n| 1 | Enter \"middle of statement\" mode |\n| 2 | Enter \"start of statement\" mode |\n| 3 | FN/PROC: do not tokenise the following name |\n| 4 | Start tokenising a line number (after GOTO etc.) |\n| 5 | Do not tokenise the rest of the line (REM, DATA) |\n| 6 | Pseudo-variable: add &40 to the token in a statement |\n\nBit 6 is why a pseudo-variable like PTR reads as &8F in a function\nposition but &CF as an assignment target. Entries are ordered so that\nthe first acceptable abbreviation of each keyword is unambiguous.\n\nThe tokeniser scan stops at WIDTH's token &FE, which doubles as the\nend-of-table sentinel (see the `cmp #&fe` in the keyword search). The\nfinal five entries \u2014 the PTR/PAGE/TIME/LOMEM/HIMEM *assignment* forms\n&CF-&D3 \u2014 sit past that sentinel, so the tokeniser never matches them\n(it produces those tokens arithmetically via bit 6). They exist only\nfor the de-tokeniser (`print_token`, which has no sentinel and scans by\ntoken value) to render `PTR=` etc. back to text. The data then runs on\nto the action-address tables at action_table_lo.\n"
     },
     {
       "addr": 49016,
@@ -20467,7 +20467,7 @@
       "labels": [
         "tok_name"
       ],
-      "comment_inline": "Read the next name character:",
+      "comment_inline": "Consume the whole name run; no interior keyword match",
       "xref_summaries": [
         "&89d0 referenced 2 times by &8a16, &8a46"
       ],
@@ -21313,7 +21313,7 @@
         177,
         55
       ],
-      "comment_inline": "a letter follows?",
+      "comment_inline": "a name char follows? (then keep it as a name)",
       "type": "code",
       "mnemonic": "lda",
       "operand": "(zp_general),y",

@@ -705,7 +705,7 @@ set), then a flag byte that drives tokenising. The flag bits are:
 
 | Bit | Meaning |
 |-----|---------|
-| 0 | Conditional: do not tokenise if followed by a letter |
+| 0 | Conditional: do not tokenise if followed by a name char (0-9 A-Z a-z _) |
 | 1 | Enter "middle of statement" mode |
 | 2 | Enter "start of statement" mode |
 | 3 | FN/PROC: do not tokenise the following name |
@@ -1700,7 +1700,8 @@ d.comment(0x89c8, 'resume scanning', align=Align.INLINE)
 d.comment(0x89cb, 'Skip a variable name: alphanumeric?', align=Align.INLINE)
 d.label(0x89cb, 'tok_skip_name')
 d.comment(0x89ce, 'no: not a name', align=Align.INLINE)
-d.comment(0x89d0, 'Read the next name character:', align=Align.INLINE)
+d.comment(0x89d0, 'Consume the whole name run; no interior keyword match',
+          align=Align.INLINE)
 d.label(0x89d0, 'tok_name')
 d.comment(0x89d2, 'read it', align=Align.INLINE)
 d.label(0x89d2, 'tok_name_loop')
@@ -1777,7 +1778,8 @@ d.comment(0x8a3b, '(save it in &3D)', align=Align.INLINE)
 d.comment(0x8a3d, 'back up Y', align=Align.INLINE)
 d.comment(0x8a3e, 'flag bit 0: conditional tokenisation?', align=Align.INLINE)
 d.comment(0x8a3f, 'no', align=Align.INLINE)
-d.comment(0x8a41, 'a letter follows?', align=Align.INLINE)
+d.comment(0x8a41, 'a name char follows? (then keep it as a name)',
+          align=Align.INLINE)
 d.comment(0x8a43, 'test it', align=Align.INLINE)
 d.comment(0x8a46, 'yes: keep it as a name, not a token', align=Align.INLINE)
 d.comment(0x8a48, 'Emit the token: A = token byte', align=Align.INLINE)

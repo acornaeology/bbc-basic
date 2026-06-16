@@ -468,15 +468,15 @@ oscli             = &fff7
 ; Each entry is the keyword in ASCII, then a token byte (bit 7 set), then a flag byte
 ; that drives tokenising. The flag bits are:
 ;
-; | Bit | Meaning                                              |
-; |-----|------------------------------------------------------|
-; | 0   | Conditional: do not tokenise if followed by a letter |
-; | 1   | Enter "middle of statement" mode                     |
-; | 2   | Enter "start of statement" mode                      |
-; | 3   | FN/PROC: do not tokenise the following name          |
-; | 4   | Start tokenising a line number (after GOTO etc.)     |
-; | 5   | Do not tokenise the rest of the line (REM, DATA)     |
-; | 6   | Pseudo-variable: add &40 to the token in a statement |
+; | Bit | Meaning                                                                 |
+; |-----|-------------------------------------------------------------------------|
+; | 0   | Conditional: do not tokenise if followed by a name char (0-9 A-Z a-z _) |
+; | 1   | Enter "middle of statement" mode                                        |
+; | 2   | Enter "start of statement" mode                                         |
+; | 3   | FN/PROC: do not tokenise the following name                             |
+; | 4   | Start tokenising a line number (after GOTO etc.)                        |
+; | 5   | Do not tokenise the rest of the line (REM, DATA)                        |
+; | 6   | Pseudo-variable: add &40 to the token in a statement                    |
 ;
 ; Bit 6 is why a pseudo-variable like PTR reads as &8F in a function position but &CF as
 ; an assignment target. Entries are ordered so that the first acceptable abbreviation of
@@ -1987,7 +1987,7 @@ oscli             = &fff7
     bcc tok_not_keyword                                               ; 89ce: 90 13       ..       ; no: not a name
 ; &89d0 referenced 2 times by &8a16, &8a46
 .tok_name
-    ldy #0                                                            ; 89d0: a0 00       ..       ; Read the next name character:
+    ldy #0                                                            ; 89d0: a0 00       ..       ; Consume the whole name run; no interior keyword match
 ; &89d2 referenced 2 times by &89dc, &89fa
 .tok_name_loop
     lda (zp_general),y                                                ; 89d2: b1 37       .7       ; read it
@@ -2072,7 +2072,7 @@ oscli             = &fff7
     dey                                                               ; 8a3d: 88          .        ; back up Y
     lsr a                                                             ; 8a3e: 4a          J        ; flag bit 0: conditional tokenisation?
     bcc tok_emit_token                                                ; 8a3f: 90 07       ..       ; no
-    lda (zp_general),y                                                ; 8a41: b1 37       .7       ; a letter follows?
+    lda (zp_general),y                                                ; 8a41: b1 37       .7       ; a name char follows? (then keep it as a name)
     jsr is_alphanumeric                                               ; 8a43: 20 26 89     &.      ; test it
     bcs tok_name                                                      ; 8a46: b0 88       ..       ; yes: keep it as a name, not a token
 ; &8a48 referenced 1 time by &8a3f
