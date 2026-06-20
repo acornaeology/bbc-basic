@@ -28,6 +28,12 @@
             "url": "docs/analysis/basic-2/data-files.md",
             "icon": "doc",
             "note": "How BBC BASIC II handles data files — the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a thin wrapper over a MOS call (OSFIND/OSBGET/OSBPUT/OSARGS/OSBYTE). The centrepiece is the PRINT#/INPUT# record format: PRINT# writes no text at all but a 1-byte type tag (0 string, &40 integer, &FF real) followed by the value's bytes in reverse — integers and reals MSB-first, strings last-character-first — so PRINT#42 emits 40 00 00 00 2A, not \"42\". INPUT# mirrors the reversal byte for byte, which is why such files are really only readable by BASIC. Whole-program LOAD/SAVE/CHAIN (a separate OSFILE mechanism) is deliberately excluded."
+        },
+        {
+            "label": "Indirection lvalues as PROC/FN parameters (BASIC II)",
+            "url": "docs/analysis/basic-2/indirection-lvalue-parameters.md",
+            "icon": "doc",
+            "note": "A little-known BBC BASIC II capability: a formal parameter of DEF FN/DEF PROC may be any assignable location, not just a name — including a byte (?), word (!) or string ($) indirection onto raw memory. The reason is structural: the parameter binder in call_proc_fn reuses parse_lvalue, the very routine that parses the left-hand side of LET, FOR and LOCAL, so all four accept the same lvalue grammar. Binding an indirection formal is therefore a scoped assignment to a memory cell — save the old contents (the same stack_local LOCAL uses), poke in the argument, run the body, restore on =/ENDPROC — not call-by-reference and not a named local. Explains the type-byte scheme (&00 ?, &04 ! / integer, &05 real, &80 $, &81 string), works through minimal demonstration programs for each lvalue form, and gives guidance for compiler authors on modelling it faithfully. Closes on the rheolism DEF FNd(X,$@%) one-liner that motivated the investigation."
         }
     ],
     "references": [
