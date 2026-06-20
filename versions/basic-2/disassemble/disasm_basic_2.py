@@ -3902,7 +3902,11 @@ d.subroutine(
     description="""Parse the variable reference being assigned to (parse_var_ref)
 and return a pointer to its storage plus its type, creating the variable
 (create_variable + clear_value_bytes) if it does not yet exist. Shared
-by LET and FOR.
+by LET, FOR ([`stmt_for`](address:b7c4)), LOCAL ([`stmt_local`](address:9323))
+and the PROC/FN parameter binder ([`call_proc_fn`](address:b197)) — so any
+assignable target, including `?`, `!` and `$` indirections and array
+elements, is equally valid as a LET target, a loop control variable, a
+LOCAL, or a formal parameter.
 """,
     on_entry={'zp_text_ptr (&0B/&0C)': 'the program text pointer (PtrA)',
               'zp_text_ptr_off (&0A)': 'offset of the target reference'},
@@ -8546,6 +8550,17 @@ d.comment(0xae5f, 'flag the result type', align=Align.INLINE)
 d.comment(0xae60, 'Return', align=Align.INLINE)
 d.comment(0xae61, 'Missing ) error', align=Align.INLINE)
 d.label(0xae61, 'missing_paren')
+d.banner(
+    0xae6d,
+    title='Scan an & hex constant',
+    description="""Shift each hex digit's nibble into the 32-bit IWA
+(&2A-&2D); the bit rolled off the top is discarded, so there is **no**
+overflow check — a 9th or later digit silently drops the high nibble and
+only the low 32 bits survive (so `&AABBCCDD` is accepted as the signed
+integer -1430532899, and `&FFFFFFFF` as -1). The digit run is unbounded;
+the sole error is Bad HEX, raised only when `&` is followed by no hex
+digits at all. Returns type &40 (integer).""",
+)
 d.comment(0xae6d, 'Hex number: clear IWA', align=Align.INLINE)
 d.label(0xae6d, 'factor_hex')
 d.comment(0xae6f, 'byte 0,', align=Align.INLINE)
@@ -8577,11 +8592,13 @@ d.label(0xae93, 'factor_hex_shift')
 d.comment(0xae94, 'byte 0,', align=Align.INLINE)
 d.comment(0xae96, 'byte 1,', align=Align.INLINE)
 d.comment(0xae98, 'byte 2,', align=Align.INLINE)
-d.comment(0xae9a, 'byte 3', align=Align.INLINE)
+d.comment(0xae9a, 'byte 3 (bit rolled out here is dropped: no check)',
+          align=Align.INLINE)
 d.comment(0xae9c, 'one of four bits done', align=Align.INLINE)
 d.comment(0xae9d, 'next bit', align=Align.INLINE)
 d.comment(0xae9f, 'advance', align=Align.INLINE)
-d.comment(0xaea0, 'next digit', align=Align.INLINE)
+d.comment(0xaea0, 'next digit: unbounded run, low 32 bits survive',
+          align=Align.INLINE)
 d.comment(0xaea2, 'Any digits seen?', align=Align.INLINE)
 d.label(0xaea2, 'factor_hex_check')
 d.comment(0xaea3, 'no: Bad HEX', align=Align.INLINE)
@@ -9364,9 +9381,17 @@ d.label(0xb24a, 'callpf_return')
 d.comment(0xb24c, 'Return', align=Align.INLINE)
 
 # Parameter binding (&B24D): collect the formal parameters.
-# Each formal variable's current value is stacked (for LOCAL-style
-# restore on return) and its identity recorded, then the actual
-# arguments are evaluated and assigned.
+d.banner(
+    0xb24d,
+    title='Bind the PROC/FN parameters',
+    description="""Each formal is parsed by [`parse_lvalue`](address:9582)
+— the same lvalue parser LET, FOR and LOCAL use — so a formal need not
+be a name: a `?`, `!` or `$` indirection or an array element is a legal
+parameter, and binding it is a scoped assignment to that location. Each
+formal's current value is stacked (for LOCAL-style restore on return via
+[`stack_local`](address:b30d)) and its identity recorded, then the
+actual arguments are evaluated and assigned.""",
+)
 d.comment(0xb24d, 'Save the parser pointer', align=Align.INLINE)
 d.label(0xb24d, 'callpf_save_parser2')
 d.comment(0xb24f, 'push offset,', align=Align.INLINE)
@@ -9374,7 +9399,8 @@ d.comment(0xb250, 'low byte,', align=Align.INLINE)
 d.comment(0xb252, 'push low,', align=Align.INLINE)
 d.comment(0xb253, 'high byte,', align=Align.INLINE)
 d.comment(0xb255, 'push high', align=Align.INLINE)
-d.comment(0xb256, 'Parse a formal parameter variable', align=Align.INLINE)
+d.comment(0xb256, 'Parse a formal parameter (any lvalue: parse_lvalue)',
+          align=Align.INLINE)
 d.comment(0xb259, 'invalid: error', align=Align.INLINE)
 d.comment(0xb25b, 'Update the program pointer', align=Align.INLINE)
 d.comment(0xb25d, 'from the PtrB offset', align=Align.INLINE)
@@ -9822,7 +9848,13 @@ d.subroutine(
     title='Store a numeric value into a variable',
     description="""Assign the current numeric value (integer or real) to the
 variable whose data address is on the stack, coercing to the variable's
-own type (real variables get the value converted to FP).
+own type (real variables get the value converted to FP). An integer
+value is written raw and wraps — there is no range check — so
+`A%=&AABBCCDD` or `!p=&AABBCCDD` stores the four bytes verbatim and never
+errors. The only numeric-overflow error (Too big) lives on the
+real→integer convert branch ([`fwa_to_int`](address:a3e4)), reached only
+when a *float* value lands in an integer cell, so `A%=1E10` does raise
+Too big.
 """,
     on_entry={'(zp_stack_ptr) (&04/&05)': 'the variable data address',
               'zp_iwa / zp_fwa': 'the value to store',
@@ -9838,24 +9870,32 @@ d.comment(0xb4b9, 'size 5 = real variable?', align=Align.INLINE)
 d.comment(0xb4bb, 'yes: store as a real', align=Align.INLINE)
 d.comment(0xb4bd, 'Type of the value', align=Align.INLINE)
 d.comment(0xb4bf, 'string: Type mismatch', align=Align.INLINE)
-d.comment(0xb4c1, 'integer: store directly', align=Align.INLINE)
+d.comment(0xb4c1, 'integer: store raw, 4-byte wrap (no range check)',
+          align=Align.INLINE)
 d.comment(0xb4c3, 'real value, integer variable: convert', align=Align.INLINE)
 
 d.subroutine(
     0xb4c6, 'iwa_store_var',
     title='Store the accumulator into an integer variable',
-    description='Copy IWA into the 4-byte integer variable addressed by &37.',
+    description="""Copy IWA into the integer variable addressed by &37. The
+width comes from &39, which is the lvalue *type* byte rather than a
+separate size field: it rode in as byte 2 of the stacked destination
+address ([`parse_lvalue`](address:9582) packs the address in &2A/&2B and
+the type in &2C, and [`unstack_int_to_general`](address:be0b) lands byte
+2 in &39). Type 0 (`?` byte indirection) writes 1 byte; type 4 (`!` word
+indirection, an integer variable, or an array element) writes 4.""",
     on_entry={
         '(zp_general) (&37/&38)': 'a pointer to the integer variable',
-        '&39': 'non-zero',
+        '&39': 'the lvalue type byte: 0 stores 1 byte, nonzero stores 4',
     },
     on_exit={'X': 'preserved'},
 )
-# iwa_store_var (&B4C6): store IWA into a variable (size in &39).
+# iwa_store_var (&B4C6): store IWA into a variable (width from &39).
 d.comment(0xb4c6, 'Offset 0', align=Align.INLINE)
 d.comment(0xb4c8, 'Store byte 1', align=Align.INLINE)
 d.comment(0xb4ca, 'write it', align=Align.INLINE)
-d.comment(0xb4cc, 'Size byte', align=Align.INLINE)
+d.comment(0xb4cc, 'Size byte: 0 -> 1-byte (? indir), else 4 bytes',
+          align=Align.INLINE)
 d.comment(0xb4ce, '1-byte value: done', align=Align.INLINE)
 d.comment(0xb4d0, 'Store byte 2', align=Align.INLINE)
 d.comment(0xb4d2, 'next byte slot', align=Align.INLINE)

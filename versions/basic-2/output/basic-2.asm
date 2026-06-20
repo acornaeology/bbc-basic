@@ -4698,7 +4698,10 @@ oscli             = &fff7
 ;
 ; Parse the variable reference being assigned to (parse_var_ref) and return a pointer to
 ; its storage plus its type, creating the variable (create_variable + clear_value_bytes)
-; if it does not yet exist. Shared by LET and FOR.
+; if it does not yet exist. Shared by LET, FOR (stmt_for), LOCAL (stmt_local) and the
+; PROC/FN parameter binder (call_proc_fn) — so any assignable target, including ?, ! and
+; $ indirections and array elements, is equally valid as a LET target, a loop control
+; variable, a LOCAL, or a formal parameter.
 ;
 ; On Entry:
 ;     ZP_TEXT_PTR (&0B/&0C): the program text pointer (PtrA)
@@ -10312,6 +10315,15 @@ oscli             = &fff7
     equb &1b                                                          ; ae62: 1b          .     
     equs "Missing )"                                                  ; ae63: 4d 69 73... Mis...
     equb &00                                                          ; ae6c: 00          .     
+; ***************************************************************************************
+; Scan an & hex constant
+;
+; Shift each hex digit's nibble into the 32-bit IWA (&2A-&2D); the bit rolled off the top
+; is discarded, so there is no overflow check — a 9th or later digit silently drops the
+; high nibble and only the low 32 bits survive (so &AABBCCDD is accepted as the signed
+; integer -1430532899, and &FFFFFFFF as -1). The digit run is unbounded; the sole error
+; is Bad HEX, raised only when & is followed by no hex digits at all. Returns type &40
+; (integer).
 ; &ae6d referenced 1 time by &ae1a
 .factor_hex
     ldx #0                                                            ; ae6d: a2 00       ..       ; Hex number: clear IWA
@@ -10345,11 +10357,11 @@ oscli             = &fff7
     rol zp_iwa                                                        ; ae94: 26 2a       &*       ; byte 0,
     rol zp_iwa_1                                                      ; ae96: 26 2b       &+       ; byte 1,
     rol zp_iwa_2                                                      ; ae98: 26 2c       &,       ; byte 2,
-    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-       ; byte 3
+    rol zp_iwa_3                                                      ; ae9a: 26 2d       &-       ; byte 3 (bit rolled out here is dropped: no check)
     dex                                                               ; ae9c: ca          .        ; one of four bits done
     bpl factor_hex_shift                                              ; ae9d: 10 f4       ..       ; next bit
     iny                                                               ; ae9f: c8          .        ; advance
-    bne factor_hex_loop                                               ; aea0: d0 d7       ..       ; next digit
+    bne factor_hex_loop                                               ; aea0: d0 d7       ..       ; next digit: unbounded run, low 32 bits survive
 ; &aea2 referenced 3 times by &ae7d, &ae87, &ae8b
 .factor_hex_check
     txa                                                               ; aea2: 8a          .        ; Any digits seen?
@@ -11435,6 +11447,14 @@ oscli             = &fff7
 .callpf_return
     lda zp_var_type                                                   ; b24a: a5 27       .'       ; Return the PROC/FN token
     rts                                                               ; b24c: 60          `        ; Return
+; ***************************************************************************************
+; Bind the PROC/FN parameters
+;
+; Each formal is parsed by parse_lvalue — the same lvalue parser LET, FOR and LOCAL use —
+; so a formal need not be a name: a ?, ! or $ indirection or an array element is a legal
+; parameter, and binding it is a scoped assignment to that location. Each formal's
+; current value is stacked (for LOCAL-style restore on return via stack_local) and its
+; identity recorded, then the actual arguments are evaluated and assigned.
 ; &b24d referenced 2 times by &b1fe, &b27e
 .callpf_save_parser2
     lda zp_text_ptr2_off                                              ; b24d: a5 1b       ..       ; Save the parser pointer
@@ -11443,7 +11463,7 @@ oscli             = &fff7
     pha                                                               ; b252: 48          H        ; push low,
     lda zp_text_ptr2_1                                                ; b253: a5 1a       ..       ; high byte,
     pha                                                               ; b255: 48          H        ; push high
-    jsr parse_lvalue                                                  ; b256: 20 82 95     ..      ; Parse a formal parameter variable
+    jsr parse_lvalue                                                  ; b256: 20 82 95     ..      ; Parse a formal parameter (any lvalue: parse_lvalue)
     beq callpf_reset_stack                                            ; b259: f0 5a       .Z       ; invalid: error
     lda zp_text_ptr2_off                                              ; b25b: a5 1b       ..       ; Update the program pointer
     sta zp_text_ptr_off                                               ; b25d: 85 0a       ..       ; from the PtrB offset
@@ -11942,7 +11962,11 @@ oscli             = &fff7
 ;
 ; Assign the current numeric value (integer or real) to the variable whose data address
 ; is on the stack, coercing to the variable's own type (real variables get the value
-; converted to FP).
+; converted to FP). An integer value is written raw and wraps — there is no range check —
+; so A%=&AABBCCDD or !p=&AABBCCDD stores the four bytes verbatim and never errors. The
+; only numeric-overflow error (Too big) lives on the real→integer convert branch
+; (fwa_to_int), reached only when a float value lands in an integer cell, so A%=1E10 does
+; raise Too big.
 ;
 ; On Entry:
 ;     (ZP_STACK_PTR) (&04/&05): the variable data address
@@ -11961,16 +11985,21 @@ oscli             = &fff7
     beq store_var_type                                                ; b4bb: f0 23       .#       ; yes: store as a real
     lda zp_var_type                                                   ; b4bd: a5 27       .'       ; Type of the value
     beq width_type_error                                              ; b4bf: f0 ed       ..       ; string: Type mismatch
-    bpl iwa_store_var                                                 ; b4c1: 10 03       ..       ; integer: store directly
+    bpl iwa_store_var                                                 ; b4c1: 10 03       ..       ; integer: store raw, 4-byte wrap (no range check)
     jsr fwa_to_int                                                    ; b4c3: 20 e4 a3     ..      ; real value, integer variable: convert
 ; ***************************************************************************************
 ; Store the accumulator into an integer variable
 ;
-; Copy IWA into the 4-byte integer variable addressed by &37.
+; Copy IWA into the integer variable addressed by &37. The width comes from &39, which is
+; the lvalue type byte rather than a separate size field: it rode in as byte 2 of the
+; stacked destination address (parse_lvalue packs the address in &2A/&2B and the type in
+; &2C, and unstack_int_to_general lands byte 2 in &39). Type 0 (? byte indirection)
+; writes 1 byte; type 4 (! word indirection, an integer variable, or an array element)
+; writes 4.
 ;
 ; On Entry:
 ;     (ZP_GENERAL) (&37/&38): a pointer to the integer variable
-;     &39: non-zero
+;     &39: the lvalue type byte: 0 stores 1 byte, nonzero stores 4
 ;
 ; On Exit:
 ;     X: preserved
@@ -11979,7 +12008,7 @@ oscli             = &fff7
     ldy #0                                                            ; b4c6: a0 00       ..       ; Offset 0
     lda zp_iwa                                                        ; b4c8: a5 2a       .*       ; Store byte 1
     sta (zp_general),y                                                ; b4ca: 91 37       .7       ; write it
-    lda zp_fileblk                                                    ; b4cc: a5 39       .9       ; Size byte
+    lda zp_fileblk                                                    ; b4cc: a5 39       .9       ; Size byte: 0 -> 1-byte (? indir), else 4 bytes
     beq return_34                                                     ; b4ce: f0 0f       ..       ; 1-byte value: done
     lda zp_iwa_1                                                      ; b4d0: a5 2b       .+       ; Store byte 2
     iny                                                               ; b4d2: c8          .        ; next byte slot

@@ -2465,7 +2465,7 @@
       "addr": 38274,
       "name": "parse_lvalue",
       "title": "Parse an assignment target variable",
-      "description": "Parse the variable reference being assigned to (parse_var_ref)\nand return a pointer to its storage plus its type, creating the variable\n(create_variable + clear_value_bytes) if it does not yet exist. Shared\nby LET and FOR.\n",
+      "description": "Parse the variable reference being assigned to (parse_var_ref)\nand return a pointer to its storage plus its type, creating the variable\n(create_variable + clear_value_bytes) if it does not yet exist. Shared\nby LET, FOR ([`stmt_for`](address:b7c4)), LOCAL ([`stmt_local`](address:9323))\nand the PROC/FN parameter binder ([`call_proc_fn`](address:b197)) \u2014 so any\nassignable target, including `?`, `!` and `$` indirections and array\nelements, is equally valid as a LET target, a loop control variable, a\nLOCAL, or a formal parameter.\n",
       "on_entry": {
         "zp_text_ptr (&0B/&0C)": "the program text pointer (PtrA)",
         "zp_text_ptr_off (&0A)": "offset of the target reference"
@@ -3984,7 +3984,7 @@
       "addr": 46260,
       "name": "assign_number",
       "title": "Store a numeric value into a variable",
-      "description": "Assign the current numeric value (integer or real) to the\nvariable whose data address is on the stack, coercing to the variable's\nown type (real variables get the value converted to FP).\n",
+      "description": "Assign the current numeric value (integer or real) to the\nvariable whose data address is on the stack, coercing to the variable's\nown type (real variables get the value converted to FP). An integer\nvalue is written raw and wraps \u2014 there is no range check \u2014 so\n`A%=&AABBCCDD` or `!p=&AABBCCDD` stores the four bytes verbatim and never\nerrors. The only numeric-overflow error (Too big) lives on the\nreal\u2192integer convert branch ([`fwa_to_int`](address:a3e4)), reached only\nwhen a *float* value lands in an integer cell, so `A%=1E10` does raise\nToo big.\n",
       "on_entry": {
         "(zp_stack_ptr) (&04/&05)": "the variable data address",
         "zp_iwa / zp_fwa": "the value to store",
@@ -3999,10 +3999,10 @@
       "addr": 46278,
       "name": "iwa_store_var",
       "title": "Store the accumulator into an integer variable",
-      "description": "Copy IWA into the 4-byte integer variable addressed by &37.",
+      "description": "Copy IWA into the integer variable addressed by &37. The\nwidth comes from &39, which is the lvalue *type* byte rather than a\nseparate size field: it rode in as byte 2 of the stacked destination\naddress ([`parse_lvalue`](address:9582) packs the address in &2A/&2B and\nthe type in &2C, and [`unstack_int_to_general`](address:be0b) lands byte\n2 in &39). Type 0 (`?` byte indirection) writes 1 byte; type 4 (`!` word\nindirection, an integer variable, or an array element) writes 4.",
       "on_entry": {
         "(zp_general) (&37/&38)": "a pointer to the integer variable",
-        "&39": "non-zero"
+        "&39": "the lvalue type byte: 0 stores 1 byte, nonzero stores 4"
       },
       "on_exit": {
         "X": "preserved"
@@ -4399,6 +4399,20 @@
       "title": "ROM type byte",
       "description": "| Bit | Value | Meaning                         |\n|-----|------|---------------------------------|\n| 7   | 0    | No service entry                |\n| 6   | 1    | Language entry present          |\n| 5   | 1    | Tube relocation address present |\n| 4   | 0    | No Electron firmkey             |\n| 3-0 | 0000 | Processor: 6502 BASIC           |",
       "align": "after_label"
+    },
+    {
+      "addr": 44653,
+      "name": "factor_hex",
+      "title": "Scan an & hex constant",
+      "description": "Shift each hex digit's nibble into the 32-bit IWA\n(&2A-&2D); the bit rolled off the top is discarded, so there is **no**\noverflow check \u2014 a 9th or later digit silently drops the high nibble and\nonly the low 32 bits survive (so `&AABBCCDD` is accepted as the signed\ninteger -1430532899, and `&FFFFFFFF` as -1). The digit run is unbounded;\nthe sole error is Bad HEX, raised only when `&` is followed by no hex\ndigits at all. Returns type &40 (integer).",
+      "align": "before_label"
+    },
+    {
+      "addr": 45645,
+      "name": "callpf_save_parser2",
+      "title": "Bind the PROC/FN parameters",
+      "description": "Each formal is parsed by [`parse_lvalue`](address:9582)\n\u2014 the same lvalue parser LET, FOR and LOCAL use \u2014 so a formal need not\nbe a name: a `?`, `!` or `$` indirection or an array element is a legal\nparameter, and binding it is a scoped assignment to that location. Each\nformal's current value is stacked (for LOCAL-style restore on return via\n[`stack_local`](address:b30d)) and its identity recorded, then the\nactual arguments are evaluated and assigned.",
+      "align": "before_label"
     }
   ],
   "external_labels": {
@@ -84119,7 +84133,7 @@
         38,
         45
       ],
-      "comment_inline": "byte 3",
+      "comment_inline": "byte 3 (bit rolled out here is dropped: no check)",
       "type": "code",
       "mnemonic": "rol",
       "operand": "zp_iwa_3",
@@ -84163,7 +84177,7 @@
         208,
         215
       ],
-      "comment_inline": "next digit",
+      "comment_inline": "next digit: unbounded run, low 32 bits survive",
       "type": "code",
       "mnemonic": "bne",
       "operand": "factor_hex_loop",
@@ -90522,7 +90536,7 @@
         130,
         149
       ],
-      "comment_inline": "Parse a formal parameter variable",
+      "comment_inline": "Parse a formal parameter (any lvalue: parse_lvalue)",
       "type": "code",
       "mnemonic": "jsr",
       "operand": "parse_lvalue",
@@ -94552,7 +94566,7 @@
         16,
         3
       ],
-      "comment_inline": "integer: store directly",
+      "comment_inline": "integer: store raw, 4-byte wrap (no range check)",
       "type": "code",
       "mnemonic": "bpl",
       "operand": "iwa_store_var",
@@ -94625,7 +94639,7 @@
         165,
         57
       ],
-      "comment_inline": "Size byte",
+      "comment_inline": "Size byte: 0 -> 1-byte (? indir), else 4 bytes",
       "type": "code",
       "mnemonic": "lda",
       "operand": "zp_fileblk",
