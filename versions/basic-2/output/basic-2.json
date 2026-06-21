@@ -20128,7 +20128,7 @@
         201,
         42
       ],
-      "comment_inline": "A \"*\" at statement start: rest is a *command",
+      "comment_inline": "\"*\": maybe a *command (statement position checked next)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#'*'",
@@ -20178,7 +20178,7 @@
       "bytes": [
         96
       ],
-      "comment_inline": "yes: \"*command\" - stop tokenising the rest of the line",
+      "comment_inline": "yes: *command - RTS leaves the rest untokenised",
       "type": "code",
       "mnemonic": "rts"
     },

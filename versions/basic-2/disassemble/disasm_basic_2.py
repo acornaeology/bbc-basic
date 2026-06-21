@@ -1666,7 +1666,7 @@ d.comment(0x8996, 'a comma?', align=Align.INLINE)
 d.char_literal(0x8997)
 d.label(0x8996, 'tok_check_comma_star')
 d.comment(0x8998, 'yes: skip it', align=Align.INLINE)
-d.comment(0x899a, 'A "*" at statement start: rest is a *command',
+d.comment(0x899a, '"*": maybe a *command (statement position checked next)',
           align=Align.INLINE)
 d.char_literal(0x899b)
 
@@ -1674,7 +1674,7 @@ d.comment(0x899c, 'not "*": try a keyword or name', align=Align.INLINE)
 d.comment(0x899e, 'at the start of a statement?', align=Align.INLINE)
 d.comment(0x89a0, 'no (mid-statement): "*" is the multiply operator',
           align=Align.INLINE)
-d.comment(0x89a2, 'yes: "*command" - stop tokenising the rest of the line',
+d.comment(0x89a2, 'yes: *command - RTS leaves the rest untokenised',
           align=Align.INLINE)
 d.comment(0x89a3, 'a "." (abbreviation dot)?', align=Align.INLINE)
 d.char_literal(0x89a4)

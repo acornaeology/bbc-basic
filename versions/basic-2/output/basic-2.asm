@@ -1953,11 +1953,11 @@ oscli             = &fff7
 .tok_check_comma_star
     cmp #ASC(",")                                                     ; 8996: c9 2c       .,       ; a comma?
     beq tok_advance                                                   ; 8998: f0 c7       ..       ; yes: skip it
-    cmp #ASC("*")                                                     ; 899a: c9 2a       .*       ; A "*" at statement start: rest is a *command
+    cmp #ASC("*")                                                     ; 899a: c9 2a       .*       ; "*": maybe a *command (statement position checked next)
     bne tok_check_number                                              ; 899c: d0 05       ..       ; not "*": try a keyword or name
     lda zp_fwb_sign                                                   ; 899e: a5 3b       .;       ; at the start of a statement?
     bne tok_not_keyword                                               ; 89a0: d0 41       .A       ; no (mid-statement): "*" is the multiply operator
-    rts                                                               ; 89a2: 60          `        ; yes: "*command" - stop tokenising the rest of the line
+    rts                                                               ; 89a2: 60          `        ; yes: *command - RTS leaves the rest untokenised
 ; &89a3 referenced 1 time by &899c
 .tok_check_number
     cmp #ASC(".")                                                     ; 89a3: c9 2e       ..       ; a "." (abbreviation dot)?

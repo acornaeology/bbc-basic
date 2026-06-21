@@ -279,7 +279,7 @@ A leading `.` with **no** preceding letter is not an abbreviation — it is trea
 Two zero-page bytes hold the crunch state:
 
 - **`&3B`** (`zp_fwb_sign`): `0` = start of statement, `&FF` = middle of statement.
-- **`&3C`** (`zp_fwb_ovf`): the **"next number is a line number"** flag (`&FF` = encode the next literal with `&8D`). *Despite some inline comments calling `&3C` a "quote flag", string handling does not use it — its only role in the crunch is line-number arming.*
+- **`&3C`** (`zp_fwb_ovf`): the **"next number is a line number"** flag (`&FF` = encode the next literal with `&8D`). Its only role in the crunch is line-number arming — string handling does not use it. (`&3C` is a much-reused scratch byte elsewhere; `LIST`'s own quote-state flag, by contrast, lives at `&4D`.)
 
 `&3B` is reset to **start of statement** by:
 
@@ -470,5 +470,3 @@ The one caveat is the editor, not the codec: you cannot *type* a literal `&0D` (
 | Insert / delete line | [`insert_line`](address:BC8D@2?hex) `&BC8D`, [`delete_program_line`](address:BC2D@2?hex) `&BC2D` |
 | Empty program / NEW | [`start_new_program`](address:8ADD@2?hex) `&8ADD` |
 | Read input line (OSWORD 0) | [`read_input_line`](address:BC02@2?hex) `&BC02` |
-
-> **A note on two stale inline comments.** The crunch's `&3C` byte is the *line-number-arming* flag, though a few inline comments around [`&8955`](address:8955@2?hex) call it a "quote flag" (string handling does not use it). And at the statement-leading `*` test ([`&899E`](address:899E@2?hex)) the inline comment reads as if the branch skips the rest of the line, whereas it is the fall-through `RTS` at start-of-statement that stops tokenising a `*command`. The behaviour described in this article is what the *code* does; treat these two comments as pending cleanups.
