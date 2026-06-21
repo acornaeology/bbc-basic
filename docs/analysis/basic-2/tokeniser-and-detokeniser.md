@@ -201,6 +201,19 @@ The scheme is *almost* perfectly symmetric, with two wrinkles:
 
 That is why the table carries the keyword twice — once at the function token (`&8F`–`&93`, scanned by the crunch) and once at the assignment token (`&CF`–`&D3`, used only by `LIST`).
 
+### 1.7 `TOP` is *not* a keyword — the `TO`+`P` trap
+
+`TOP` (the top-of-program pseudo-variable) looks like it belongs with the pseudo-variables above, but it is the odd one out: **it has no table entry, no token, and no flag bits.** The table holds `TO` (`&B8`, flag `&00`) and nothing beginning `TOP`. `TOP` is recognised purely at *run time*.
+
+This matters because `TO` is **not** conditional (flag `&00`, no bit 0), so it tokenises at a name-run start even when a name character follows (§2.2). So the crunch turns the source `TOP` into the two bytes `[TO]` + `'P'` — the `TO` token followed by a literal ASCII `P` left in the line as ordinary name text. There is no longest-match step that could ever produce a `TOP` token, because no such token exists. A tokeniser that carries `TOP` as a keyword and does longest-match will mis-split `FORi=0TOPI*2` as `… 0 TOP I …`; the ROM produces `… 0 TO PI …` (`PI` = `&AF`), because at the run-start after the digit `0` the crunch matches `TO`, resumes at `PI`, and matches that.
+
+At run time, when the evaluator dispatches the `TO` token *as a value* it calls [`fn_to`](address:AEDC@2?hex) (`&AEDC`), which peeks the **immediately following byte**: if it is ASCII `'P'` (`&50`) it consumes it and returns [`zp_top`](address:0012@2?hex) (`&12/&13`); anything else is a syntax error. So:
+
+- `PRINT TOP` → `[PRINT][TO]'P'` → `fn_to` sees `'P'` → top-of-program. (No space-skip: `TO P` with a space is *not* `TOP`.)
+- `0TOPI` → `[TO][PI]` → the byte after `TO` is the `PI` token `&AF`, not `'P'`, so this is never read as `TOP` — and in a `FOR` the `TO` is the loop separator anyway ([`stmt_for`](address:B7C4@2?hex) requires `&B8` at `&B7ED`), so `fn_to` never runs.
+
+For a faithful tokeniser: do **not** list `TOP` as a keyword; emit `TO` wherever it matches at a run start; and recognise the `TOP` pseudo-variable only at expression-evaluation time, as a `TO` token immediately followed by a bare `P`.
+
 ---
 
 ## 2. Flag bits and the crunch algorithm
@@ -450,6 +463,7 @@ The one caveat is the editor, not the codec: you cannot *type* a literal `&0D` (
 | Line-number detect/decode | [`check_line_number`](address:97DF@2?hex) `&97DF`, [`decode_line_number`](address:97EB@2?hex) `&97EB` |
 | Decimal print | [`print_line_number`](address:991F@2?hex) `&991F`, 5-wide variant [`trace_print_number`](address:9923@2?hex) `&9923` |
 | Token → text | [`print_token`](address:B50E@2?hex) `&B50E` |
+| `TOP` (`TO`+`P`) run-time read | [`fn_to`](address:AEDC@2?hex) `&AEDC` |
 | `LIST` line walk | [`stmt_list`](address:B59C@2?hex) `&B59C`, [`list_char_loop`](address:B639@2?hex) `&B639` |
 | LISTO option / indent | [`stmt_listo`](address:B58A@2?hex) `&B58A`, [`print_listo_indent`](address:B577@2?hex) `&B577` |
 | Line search / framing | [`find_program_line`](address:9970@2?hex) `&9970`, [`advance_to_next_line`](address:909F@2?hex) `&909F` |
