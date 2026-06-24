@@ -470,7 +470,7 @@
       "addr": 44009,
       "name": "fn_eval",
       "title": "EVAL",
-      "description": "Evaluate a string as a BASIC expression. EVAL string.",
+      "description": "Tokenise a string and evaluate it as a full BASIC expression. The argument is copied onto the stack, given a CR, tokenised in place (mid-statement, so PTR/TIME etc. tokenise as functions, not assignment targets) and run through the expression evaluator - so it accepts everything the evaluator does: \"&\" hex (factor_hex), \"E\"-exponent decimals, operators, parentheses, functions and in-scope variables. Hence EVAL(\"&FF\") is 255 where VAL(\"&FF\") is 0, though both read \"1E3\" as 1000. EVAL string.",
       "on_entry": {
         "A": "the function keyword token (&8E-&C5)",
         "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
@@ -909,7 +909,7 @@
       "addr": 44079,
       "name": "fn_val",
       "title": "VAL",
-      "description": "Number parsed from the start of a string. VAL string.",
+      "description": "Read a number from the start of a string, through the decimal reader only (ascii_to_number then parse_number): an optional leading sign, digits, a \".\" and an \"E\" exponent. It does NOT read \"&\" hex, so VAL(\"&FF\") is 0; it stops at the first non-numeric character (VAL(\"12AB\") is 12) and yields 0 when no number leads. Returns an integer (IWA) or a real (FWA). Contrast EVAL, which evaluates the whole string. VAL string.",
       "on_entry": {
         "A": "the function keyword token (&8E-&C5)",
         "zp_text_ptr2 (&19/&1A)": "the expression text pointer (PtrB)",
@@ -2964,7 +2964,7 @@
       "addr": 41083,
       "name": "parse_number",
       "title": "Parse an unsigned number at PtrB",
-      "description": "Parse an unsigned decimal or & hex number at PtrB into the accumulator, choosing integer or real form (a decimal point or E exponent forces real).",
+      "description": "Parse an unsigned decimal number at PtrB into the accumulator: digits, a \".\" and an \"E\" exponent, choosing integer or real form (a decimal point or exponent forces real). Decimal only - there is no \"&\" hex path here; \"&\" constants are read separately by [`factor_hex`](address:ae6d), and a non-digit first character yields 0. Shared by the expression decimal factor ([`eval_factor`](address:adec)) and VAL (via [`ascii_to_number`](address:ac34)).",
       "on_entry": {
         "zp_text_ptr2 (&19/&1A)": "PtrB at the first digit"
       },
@@ -3652,7 +3652,7 @@
       "addr": 44084,
       "name": "ascii_to_number",
       "title": "Convert an ASCII number to a value",
-      "description": "Convert the ASCII number in the string work area to a value:\nan integer in IWA or a real in FWA. Underlies VAL and numeric\ntokenising. A binary zero is appended to the SWA.\n",
+      "description": "Convert the ASCII number in the string work area to a value\n(an integer in IWA or a real in FWA) \u2014 the decimal/float reader behind\nVAL and numeric tokenising. It accepts an optional leading sign, then\ndefers to [`parse_number`](address:a07b) for the digits, \".\" and \"E\"\nexponent. It is decimal only: there is no \"&\" hex branch here (that is\n[`factor_hex`](address:ae6d), reached from eval_factor), so a string led\nby \"&\" reads no digits and yields 0, and scanning stops at the first\nnon-numeric character. A binary zero is appended to the SWA first.\n",
       "on_entry": {
         "zp_strbuf_len (&36)": "length of the ASCII number in the SWA",
         "string work area (&0600)": "the ASCII number"
@@ -4404,7 +4404,7 @@
       "addr": 44653,
       "name": "factor_hex",
       "title": "Scan an & hex constant",
-      "description": "Shift each hex digit's nibble into the 32-bit IWA\n(&2A-&2D); the bit rolled off the top is discarded, so there is **no**\noverflow check \u2014 a 9th or later digit silently drops the high nibble and\nonly the low 32 bits survive (so `&AABBCCDD` is accepted as the signed\ninteger -1430532899, and `&FFFFFFFF` as -1). The digit run is unbounded;\nthe sole error is Bad HEX, raised only when `&` is followed by no hex\ndigits at all. Returns type &40 (integer).",
+      "description": "Shift each hex digit's nibble into the 32-bit IWA\n(&2A-&2D); the bit rolled off the top is discarded, so there is **no**\noverflow check \u2014 a 9th or later digit silently drops the high nibble and\nonly the low 32 bits survive (so `&AABBCCDD` is accepted as the signed\ninteger -1430532899, and `&FFFFFFFF` as -1). The digit run is unbounded;\nthe sole error is Bad HEX, raised only when `&` is followed by no hex\ndigits at all. The accepted digits are `0-9` and uppercase `A-F` only \u2014\na lowercase `a-f` ends the scan, so `&ff` reads no digits and faults Bad\nHEX whereas `&Ff` is 15. This is the only `&` reader, reached from\n[`eval_factor`](address:adec); VAL's number reader\n([`parse_number`](address:a07b)) is decimal-only. Returns type &40\n(integer).",
       "align": "before_label"
     },
     {
@@ -83996,7 +83996,7 @@
         201,
         16
       ],
-      "comment_inline": "above F?",
+      "comment_inline": "above F? (also rejects lowercase a-f)",
       "type": "code",
       "mnemonic": "cmp",
       "operand": "#&10"

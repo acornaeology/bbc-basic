@@ -154,10 +154,25 @@ HANDLER_INFO = {
     'fn_asc': ('ASC', 'ASCII code of the first character of a string, or '
                       '-1 if empty. ASC string.'),
     'fn_len': ('LEN', 'Length of a string. LEN string.'),
-    'fn_val': ('VAL', 'Number parsed from the start of a string. '
-                      'VAL string.'),
-    'fn_eval': ('EVAL', 'Evaluate a string as a BASIC expression. '
-                        'EVAL string.'),
+    'fn_val': ('VAL',
+               'Read a number from the start of a string, through the '
+               'decimal reader only (ascii_to_number then parse_number): an '
+               'optional leading sign, digits, a "." and an "E" exponent. It '
+               'does NOT read "&" hex, so VAL("&FF") is 0; it stops at the '
+               'first non-numeric character (VAL("12AB") is 12) and yields 0 '
+               'when no number leads. Returns an integer (IWA) or a real '
+               '(FWA). Contrast EVAL, which evaluates the whole string. '
+               'VAL string.'),
+    'fn_eval': ('EVAL',
+                'Tokenise a string and evaluate it as a full BASIC '
+                'expression. The argument is copied onto the stack, given a '
+                'CR, tokenised in place (mid-statement, so PTR/TIME etc. '
+                'tokenise as functions, not assignment targets) and run '
+                'through the expression evaluator - so it accepts everything '
+                'the evaluator does: "&" hex (factor_hex), "E"-exponent '
+                'decimals, operators, parentheses, functions and in-scope '
+                'variables. Hence EVAL("&FF") is 255 where VAL("&FF") is 0, '
+                'though both read "1E3" as 1000. EVAL string.'),
     'fn_instr': ('INSTR', 'Position of one string within another, '
                           'optionally from a start. INSTR(a$, b$ [,n]).'),
     'fn_count': ('COUNT', 'Characters printed since the last newline. '
@@ -6021,9 +6036,15 @@ d.comment(0xa078, 'real result', align=Align.INLINE)
 d.comment(0xa07a, 'Return', align=Align.INLINE)
 
 d.subroutine(0xa07b, 'parse_number', title='Parse an unsigned number at PtrB',
-             description='Parse an unsigned decimal or & hex number at PtrB into '
-                         'the accumulator, choosing integer or real form (a '
-                         'decimal point or E exponent forces real).',
+             description='Parse an unsigned decimal number at PtrB into the '
+                         'accumulator: digits, a "." and an "E" exponent, '
+                         'choosing integer or real form (a decimal point or '
+                         'exponent forces real). Decimal only - there is no '
+                         '"&" hex path here; "&" constants are read separately '
+                         'by [`factor_hex`](address:ae6d), and a non-digit '
+                         'first character yields 0. Shared by the expression '
+                         'decimal factor ([`eval_factor`](address:adec)) and '
+                         'VAL (via [`ascii_to_number`](address:ac34)).',
              on_entry={'zp_text_ptr2 (&19/&1A)': 'PtrB at the first digit'},
              on_exit={'A': 'result type: <0 float in fwa, >0 integer in iwa',
                       'zp_iwa / zp_fwa': 'the parsed value',
@@ -8136,9 +8157,14 @@ d.comment(0xac32, 'not a string: error', align=Align.INLINE)
 d.subroutine(
     0xac34, 'ascii_to_number',
     title='Convert an ASCII number to a value',
-    description="""Convert the ASCII number in the string work area to a value:
-an integer in IWA or a real in FWA. Underlies VAL and numeric
-tokenising. A binary zero is appended to the SWA.
+    description="""Convert the ASCII number in the string work area to a value
+(an integer in IWA or a real in FWA) — the decimal/float reader behind
+VAL and numeric tokenising. It accepts an optional leading sign, then
+defers to [`parse_number`](address:a07b) for the digits, "." and "E"
+exponent. It is decimal only: there is no "&" hex branch here (that is
+[`factor_hex`](address:ae6d), reached from eval_factor), so a string led
+by "&" reads no digits and yields 0, and scanning stops at the first
+non-numeric character. A binary zero is appended to the SWA first.
 """,
     on_entry={
         'zp_strbuf_len (&36)': 'length of the ASCII number in the SWA',
@@ -8559,7 +8585,12 @@ overflow check — a 9th or later digit silently drops the high nibble and
 only the low 32 bits survive (so `&AABBCCDD` is accepted as the signed
 integer -1430532899, and `&FFFFFFFF` as -1). The digit run is unbounded;
 the sole error is Bad HEX, raised only when `&` is followed by no hex
-digits at all. Returns type &40 (integer).""",
+digits at all. The accepted digits are `0-9` and uppercase `A-F` only —
+a lowercase `a-f` ends the scan, so `&ff` reads no digits and faults Bad
+HEX whereas `&Ff` is 15. This is the only `&` reader, reached from
+[`eval_factor`](address:adec); VAL's number reader
+([`parse_number`](address:a07b)) is decimal-only. Returns type &40
+(integer).""",
 )
 d.comment(0xae6d, 'Hex number: clear IWA', align=Align.INLINE)
 d.label(0xae6d, 'factor_hex')
@@ -8579,7 +8610,7 @@ d.comment(0xae81, 'yes', align=Align.INLINE)
 d.comment(0xae83, "fold A-F to 10-15", align=Align.INLINE)
 d.comment(0xae85, 'below 10 (a gap char)?', align=Align.INLINE)
 d.comment(0xae87, 'yes: end of number', align=Align.INLINE)
-d.comment(0xae89, 'above F?', align=Align.INLINE)
+d.comment(0xae89, 'above F? (also rejects lowercase a-f)', align=Align.INLINE)
 d.comment(0xae8b, 'yes: end of number', align=Align.INLINE)
 d.comment(0xae8d, 'Shift the digit into the high nibble', align=Align.INLINE)
 d.label(0xae8d, 'factor_hex_nibble')

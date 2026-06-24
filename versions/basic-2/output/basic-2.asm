@@ -7031,8 +7031,11 @@ oscli             = &fff7
 ; ***************************************************************************************
 ; Parse an unsigned number at PtrB
 ;
-; Parse an unsigned decimal or & hex number at PtrB into the accumulator, choosing
-; integer or real form (a decimal point or E exponent forces real).
+; Parse an unsigned decimal number at PtrB into the accumulator: digits, a "." and an "E"
+; exponent, choosing integer or real form (a decimal point or exponent forces real).
+; Decimal only - there is no "&" hex path here; "&" constants are read separately by
+; factor_hex, and a non-digit first character yields 0. Shared by the expression decimal
+; factor (eval_factor) and VAL (via ascii_to_number).
 ;
 ; On Entry:
 ;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the first digit
@@ -9681,7 +9684,12 @@ oscli             = &fff7
 ; ***************************************************************************************
 ; EVAL
 ;
-; Evaluate a string as a BASIC expression. EVAL string.
+; Tokenise a string and evaluate it as a full BASIC expression. The argument is copied
+; onto the stack, given a CR, tokenised in place (mid-statement, so PTR/TIME etc.
+; tokenise as functions, not assignment targets) and run through the expression evaluator
+; - so it accepts everything the evaluator does: "&" hex (factor_hex), "E"-exponent
+; decimals, operators, parentheses, functions and in-scope variables. Hence EVAL("&FF")
+; is 255 where VAL("&FF") is 0, though both read "1E3" as 1000. EVAL string.
 ;
 ; On Entry:
 ;     A: the function keyword token (&8E-&C5)
@@ -9737,7 +9745,12 @@ oscli             = &fff7
 ; ***************************************************************************************
 ; VAL
 ;
-; Number parsed from the start of a string. VAL string.
+; Read a number from the start of a string, through the decimal reader only
+; (ascii_to_number then parse_number): an optional leading sign, digits, a "." and an "E"
+; exponent. It does NOT read "&" hex, so VAL("&FF") is 0; it stops at the first
+; non-numeric character (VAL("12AB") is 12) and yields 0 when no number leads. Returns an
+; integer (IWA) or a real (FWA). Contrast EVAL, which evaluates the whole string. VAL
+; string.
 ;
 ; On Entry:
 ;     A: the function keyword token (&8E-&C5)
@@ -9754,9 +9767,13 @@ oscli             = &fff7
 ; ***************************************************************************************
 ; Convert an ASCII number to a value
 ;
-; Convert the ASCII number in the string work area to a value: an integer in IWA or a
-; real in FWA. Underlies VAL and numeric tokenising. A binary zero is appended to the
-; SWA.
+; Convert the ASCII number in the string work area to a value (an integer in IWA or a
+; real in FWA) — the decimal/float reader behind VAL and numeric tokenising. It accepts
+; an optional leading sign, then defers to parse_number for the digits, "." and "E"
+; exponent. It is decimal only: there is no "&" hex branch here (that is factor_hex,
+; reached from eval_factor), so a string led by "&" reads no digits and yields 0, and
+; scanning stops at the first non-numeric character. A binary zero is appended to the SWA
+; first.
 ;
 ; On Entry:
 ;     ZP_STRBUF_LEN (&36): length of the ASCII number in the SWA
@@ -10322,7 +10339,10 @@ oscli             = &fff7
 ; is discarded, so there is no overflow check — a 9th or later digit silently drops the
 ; high nibble and only the low 32 bits survive (so &AABBCCDD is accepted as the signed
 ; integer -1430532899, and &FFFFFFFF as -1). The digit run is unbounded; the sole error
-; is Bad HEX, raised only when & is followed by no hex digits at all. Returns type &40
+; is Bad HEX, raised only when & is followed by no hex digits at all. The accepted digits
+; are 0-9 and uppercase A-F only — a lowercase a-f ends the scan, so &ff reads no digits
+; and faults Bad HEX whereas &Ff is 15. This is the only & reader, reached from
+; eval_factor; VAL's number reader (parse_number) is decimal-only. Returns type &40
 ; (integer).
 ; &ae6d referenced 1 time by &ae1a
 .factor_hex
@@ -10342,7 +10362,7 @@ oscli             = &fff7
     sbc #&37 ; '7'                                                    ; ae83: e9 37       .7       ; fold A-F to 10-15
     cmp #&0a                                                          ; ae85: c9 0a       ..       ; below 10 (a gap char)?
     bcc factor_hex_check                                              ; ae87: 90 19       ..       ; yes: end of number
-    cmp #&10                                                          ; ae89: c9 10       ..       ; above F?
+    cmp #&10                                                          ; ae89: c9 10       ..       ; above F? (also rejects lowercase a-f)
     bcs factor_hex_check                                              ; ae8b: b0 15       ..       ; yes: end of number
 ; &ae8d referenced 1 time by &ae81
 .factor_hex_nibble
