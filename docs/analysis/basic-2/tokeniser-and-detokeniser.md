@@ -207,12 +207,26 @@ That is why the table carries the keyword twice — once at the function token (
 
 This matters because `TO` is **not** conditional (flag `&00`, no bit 0), so it tokenises at a name-run start even when a name character follows (§2.2). So the crunch turns the source `TOP` into the two bytes `[TO]` + `'P'` — the `TO` token followed by a literal ASCII `P` left in the line as ordinary name text. There is no longest-match step that could ever produce a `TOP` token, because no such token exists. A tokeniser that carries `TOP` as a keyword and does longest-match will mis-split `FORi=0TOPI*2` as `… 0 TOP I …`; the ROM produces `… 0 TO PI …` (`PI` = `&AF`), because at the run-start after the digit `0` the crunch matches `TO`, resumes at `PI`, and matches that.
 
-At run time, when the evaluator dispatches the `TO` token *as a value* it calls [`fn_to`](address:AEDC@2?hex) (`&AEDC`), which peeks the **immediately following byte**: if it is ASCII `'P'` (`&50`) it consumes it and returns [`zp_top`](address:0012@2?hex) (`&12/&13`); anything else is a syntax error. So:
+**It is not just digits that trigger the split.** `TO` tokenises at *any* name-run start, and a run-start is any position not continuing an identifier — i.e. preceded by anything that is **not** a name character (`is_alphanumeric`, [`&8926`](address:8926@2?hex), accepts only `0-9 A-Z a-z _`; it rejects `% $ # ( ) [ ] ^` and every operator), or sitting just after a completed number literal or an emitted token. So `TO` glues onto the preceding text after every value terminator, not only after a digit:
 
-- `PRINT TOP` → `[PRINT][TO]'P'` → `fn_to` sees `'P'` → top-of-program. (No space-skip: `TO P` with a space is *not* `TOP`.)
-- `0TOPI` → `[TO][PI]` → the byte after `TO` is the `PI` token `&AF`, not `'P'`, so this is never read as `TOP` — and in a `FOR` the `TO` is the loop separator anyway ([`stmt_for`](address:B7C4@2?hex) requires `&B8` at `&B7ED`), so `fn_to` never runs.
+| Source | After | Crunches as | Why |
+|---|---|---|---|
+| `FNf(0)TOP+1` | `)` | `… ) [TO] P + 1` | `)` is not a name char → run-start |
+| `I%TOP`       | `%` | `I % [TO] P`     | `%` is not a name char → run-start |
+| `A$TOP`       | `$` | `A $ [TO] P`     | `$` is not a name char → run-start |
+| `)]TOP`       | `]` | `) ] [TO] P`     | `]` is not a name char → run-start |
+| `0TOPI`       | digit | `0 [TO] PI`    | the number ends → run-start |
 
-For a faithful tokeniser: do **not** list `TOP` as a keyword; emit `TO` wherever it matches at a run start; and recognise the `TOP` pseudo-variable only at expression-evaluation time, as a `TO` token immediately followed by a bare `P`.
+The **only** time `TO` is *not* tokenised is when it continues an identifier — immediately preceded by a name character that is part of the same name: `XTOP`, `A1TOP`, `T0TOP` are each one variable and the `TO` is never looked at. (Digit nuance: a digit *ending a number* yields a run-start, but a digit *inside a name* — `X9TOP` — keeps `TO` buried.)
+
+At run time the two bytes `[TO] 'P'` mean `TOP` or `TO`-then-`P` depending purely on the **grammatical role** the `TO` token plays — the tokenisation is identical either way:
+
+- **Operand position** — the evaluator needs a *factor* and the next token is `&B8`. It dispatches through the action table (slot `&8397`/`&8409`) to [`fn_to`](address:AEDC@2?hex) (`&AEDC`), which peeks the **immediately following byte**: ASCII `'P'` (`&50`) → consume it and return [`zp_top`](address:0012@2?hex) (`&12/&13`); anything else → syntax error. (No space-skip: `TO P` with a space is *not* `TOP`.) So `PRINT TOP` → `[PRINT][TO]'P'` → top-of-program.
+- **`FOR` separator** — `TO` is matched structurally by [`stmt_for`](address:B7C4@2?hex) (it requires `&B8` at `&B7ED`) and never reaches `fn_to`; the byte after it begins the limit expression. So in `FORi=…+2TOP+98` the `TO` separates the loop bounds and the `P` is the start of the limit (the variable `P`), giving `… +2 TO P+98`.
+
+`fn_to` therefore fires — and `TOP` is read — **iff the `TO` token is in operand position and the byte immediately after it is a bare `'P'`.** Note `0TOPI` is `[TO][PI]`: the byte after `TO` is the `PI` token `&AF`, not `'P'`, so even in operand position it is never `TOP`.
+
+For a faithful implementation: do **not** list `TOP` as a keyword; emit `TO` wherever it matches at a run start (after any non-name character, a number, or a token — not digits only); and recognise the `TOP` pseudo-variable only at expression-evaluation time, as a `TO` token in operand position immediately followed by a bare `P`.
 
 ---
 
