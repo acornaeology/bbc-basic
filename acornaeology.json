@@ -34,6 +34,12 @@
             "url": "docs/analysis/basic-2/indirection-lvalue-parameters.md",
             "icon": "doc",
             "note": "A little-known BBC BASIC II capability: a formal parameter of DEF FN/DEF PROC may be any assignable location, not just a name — including a byte (?), word (!) or string ($) indirection onto raw memory. The reason is structural: the parameter binder in call_proc_fn reuses parse_lvalue, the very routine that parses the left-hand side of LET, FOR and LOCAL, so all four accept the same lvalue grammar. Binding an indirection formal is therefore a scoped assignment to a memory cell — save the old contents (the same stack_local LOCAL uses), poke in the argument, run the body, restore on =/ENDPROC — not call-by-reference and not a named local. Explains the type-byte scheme (&00 ?, &04 ! / integer, &05 real, &80 $, &81 string), works through minimal demonstration programs for each lvalue form, and gives guidance for compiler authors on modelling it faithfully. Closes on the rheolism DEF FNd(X,$@%) one-liner that motivated the investigation."
+        },
+        {
+            "label": "Parsers and evaluators: who reads text, and how the language reaches them (BASIC II)",
+            "url": "docs/analysis/basic-2/parsers-and-evaluators.md",
+            "icon": "doc",
+            "note": "A road-map to BBC BASIC II's text-reading machinery, and the single insight that dissolves much of its parsing folklore: BASIC II is not one parser but several distinct machines reached from different places in the language. Lays out the tokeniser, the statement dispatcher, the recursive-descent expression evaluator (eval_expr down a precedence ladder to the level-1 eval_factor atom), the factor-level readers, the lvalue parser, and the two string-to-value front doors. The decisive split: the decimal/float reader (parse_number) and the hex reader (factor_hex) are different routines and & is reachable only through eval_factor — which is why VAL(\"&FF\")=0 (VAL runs parse_number on the raw string) but EVAL(\"&FF\")=255 (EVAL tokenises and runs the whole evaluator), though both read \"1E3\" as 1000. Also ties together the surface quirks documented in the sibling articles — TOP-as-TO+P, indirection lvalues as parameters, & being uppercase-only and 32-bit-wrapping — to the machine boundary each one exposes. Ends with a routine cross-reference."
         }
     ],
     "references": [
