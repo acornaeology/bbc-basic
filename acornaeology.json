@@ -40,6 +40,12 @@
             "url": "docs/analysis/basic-2/parsers-and-evaluators.md",
             "icon": "doc",
             "note": "A road-map to BBC BASIC II's text-reading machinery, and the single insight that dissolves much of its parsing folklore: BASIC II is not one parser but several distinct machines reached from different places in the language. Lays out the tokeniser, the statement dispatcher, the recursive-descent expression evaluator (eval_expr down a precedence ladder to the level-1 eval_factor atom), the factor-level readers, the lvalue parser, and the two string-to-value front doors. The decisive split: the decimal/float reader (parse_number) and the hex reader (factor_hex) are different routines and & is reachable only through eval_factor — which is why VAL(\"&FF\")=0 (VAL runs parse_number on the raw string) but EVAL(\"&FF\")=255 (EVAL tokenises and runs the whole evaluator), though both read \"1E3\" as 1000. Also ties together the surface quirks documented in the sibling articles — TOP-as-TO+P, indirection lvalues as parameters, & being uppercase-only and 32-bit-wrapping — to the machine boundary each one exposes. Ends with a routine cross-reference."
+        },
+        {
+            "label": "Program lifecycle: what NEW, OLD, CLEAR, RUN and CHAIN inherit and leave behind (BASIC II)",
+            "url": "docs/analysis/basic-2/program-lifecycle.md",
+            "icon": "doc",
+            "note": "What state survives, and what is wiped, across the BBC BASIC II commands that start, clear and re-run a program. All five funnel through one routine, clear_vars_heap_stack, which empties the dynamic-variable world (named variables, arrays, strings, PROC/FN, LOMEM, the DATA pointer and the FOR/REPEAT/GOSUB and value stacks) but deliberately preserves the resident integer variables @% and A%-Z% at &0400-&046B, because the variable-table clear starts at &0480 and never descends into them. That is the documented channel for passing data into a CHAINed program (and why @%'s print format persists across RUN). HIMEM and PAGE survive too. Includes a side-by-side matrix of NEW/OLD/CLEAR/RUN/CHAIN, the page-4 memory map that explains the &0480 boundary, and two non-obvious clears: editing any program line wipes the variables, whereas an error resets only the DATA pointer and stacks and leaves variables intact."
         }
     ],
     "references": [
