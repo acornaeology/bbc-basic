@@ -18,15 +18,15 @@ osfind_close                         = &00
 
 ; Memory locations
 zp_lomem          = &00  ; LOMEM: the start of variable storage. Defaults to TOP when a program is run and grows upward as variables are created (tracked by VARTOP); settable with LOMEM=.
-; &00 referenced 6 times by &9274, &aefc, &af56, &bd22, &be20, &be46
+; &00 referenced 3 times by &9274, &aefc, &bd22; also used as index base 3 times by &af56, &be20, &be46
 zp_lomem_1        = &01
-; &01 referenced 6 times by &927a, &aefe, &af5a, &bd28, &be1b, &be4a
+; &01 referenced 3 times by &927a, &aefe, &bd28; also used as index base 3 times by &af5a, &be1b, &be4a
 zp_vartop         = &02  ; VARTOP: the address just past the last allocated variable — where the next new variable goes. Runs from LOMEM up toward zp_stack_ptr; the two meeting is "No room".
-; &02 referenced 28 times by &8c2f, &8c4c, &8c61, &8c6f, &90fa, &9108, &9110, &919c, &91a1, &91c8, &91d6, &91eb, &9203, &9276, &93c1, &951a, &9521, &952a, &9534, &953b, &9556, &af5e, &b17d, &b182, &bd24, &be16, &be3c, &be4e
+; &02 referenced 25 times by &8c2f, &8c4c, &8c61, &8c6f, &90fa, &9108, &9110, &919c, &91a1, &91c8, &91d6, &91eb, &9203, &9276, &93c1, &951a, &9521, &952a, &9534, &953b, &9556, &b17d, &b182, &bd24, &be3c; also used as index base 3 times by &af5e, &be16, &be4e
 zp_vartop_1       = &03
-; &03 referenced 20 times by &8c33, &8c53, &8c64, &8c71, &90ff, &910c, &9112, &91d2, &91e0, &91ed, &927c, &93c4, &9516, &953f, &9541, &af62, &bd2a, &be11, &be36, &be52
+; &03 referenced 17 times by &8c33, &8c53, &8c64, &8c71, &90ff, &910c, &9112, &91d2, &91e0, &91ed, &927c, &93c4, &9516, &953f, &9541, &bd2a, &be36; also used as index base 3 times by &af62, &be11, &be52
 zp_stack_ptr      = &04  ; Pointer to the top of BASIC's value stack, which grows downward from HIMEM. The stack carries expression temporaries, strings pushed during evaluation, and — across a PROC/FN call — a saved copy of the 6502 hardware stack. "No room" is raised if it descends to meet VARTOP.
-; &04 referenced 85 times by &8c68, &8ccb, &8cdd, &8ce5, &8cf0, &8cf6, &8d05, &8d0e, &8d13, &8d18, &8d21, &9102, &91e5, &9264, &93ae, &93d1, &9549, &9ab6, &9abd, &9ac4, &9acb, &9add, &9adf, &9af6, &9b08, &9b43, &9b5e, &9b8a, &9c23, &9c5e, &9c65, &9c6c, &9c73, &9c7a, &9c7e, &9cc5, &9ccc, &9cd3, &9cda, &9e5c, &ac03, &ad21, &ad2a, &b19c, &b1a4, &b1ab, &b232, &b238, &b242, &b244, &bd40, &bd51, &bd5d, &bd6c, &bd71, &bd76, &bd7b, &bd7e, &bd85, &bd94, &bda0, &bda5, &bdaa, &bdaf, &bdb3, &bdc1, &bdc8, &bdcd, &bdd4, &bdde, &bde1, &bde3, &bdec, &bdf1, &bdf6, &bdfb, &be00, &be04, &be0f, &be14, &be19, &be1e, &be23, &be27, &be2e
+; &04 referenced 84 times by &8c68, &8ccb, &8cdd, &8cf0, &8cf6, &8d05, &8d0e, &8d13, &8d18, &8d21, &9102, &91e5, &9264, &93ae, &93d1, &9549, &9ab6, &9abd, &9ac4, &9acb, &9add, &9adf, &9af6, &9b08, &9b43, &9b5e, &9b8a, &9c23, &9c5e, &9c65, &9c6c, &9c73, &9c7a, &9c7e, &9cc5, &9ccc, &9cd3, &9cda, &9e5c, &ac03, &ad21, &ad2a, &b19c, &b1a4, &b1ab, &b232, &b238, &b242, &b244, &bd40, &bd51, &bd5d, &bd6c, &bd71, &bd76, &bd7b, &bd7e, &bd85, &bd94, &bda0, &bda5, &bdaa, &bdaf, &bdb3, &bdc1, &bdc8, &bdcd, &bdd4, &bdde, &bde1, &bde3, &bdec, &bdf1, &bdf6, &bdfb, &be00, &be04, &be0f, &be14, &be19, &be1e, &be23, &be27, &be2e; also used as index base 1 time by &8ce5
 zp_stack_ptr_1    = &05
 ; &05 referenced 21 times by &8c6b, &9104, &91e7, &926a, &93b4, &93d5, &9543, &9ae3, &9c84, &9e60, &ac05, &ad26, &b248, &bd44, &bd87, &bd8d, &bde7, &be08, &be2b, &be32, &be34
 zp_himem          = &06  ; HIMEM: the top of memory available to BASIC. The value stack (zp_stack_ptr) grows down from here; settable with HIMEM=. Read from the MOS (OSBYTE &84) at startup.
@@ -44,7 +44,7 @@ zp_text_ptr       = &0b  ; PtrA: the primary program/text pointer — the base a
 zp_text_ptr_1     = &0c
 ; &0c referenced 41 times by &8596, &8af8, &8b22, &8b78, &8b8b, &8bc3, &8e74, &900f, &9036, &9066, &9136, &9308, &95cd, &980b, &9875, &988a, &98b5, &9b21, &b0ff, &b114, &b138, &b147, &b180, &b1bb, &b1f2, &b227, &b2b9, &b3d1, &b3e2, &b3fb, &b419, &b5f5, &b749, &b841, &b899, &b8c7, &b8df, &b903, &bbf2, &bd19, &bfb1
 zp_rnd_seed       = &0d  ; RND state: the 33-bit linear-feedback shift register behind RND. &0D-&10 are a little-endian 32-bit value (bits 0-31); bit 0 of &11 is bit 32. Advanced 32 steps per RND call; reseeded by RND(-n).
-; &0d referenced 4 times by &804d, &8059, &af78, &af91
+; &0d referenced 3 times by &804d, &8059, &af91; also used as index base 1 time by &af78
 zp_rnd_seed_1     = &0e
 ; &0e referenced 3 times by &804f, &805d, &af93
 zp_rnd_seed_2     = &0f
@@ -100,9 +100,9 @@ zp_var_type       = &27  ; Value type of the most recently fetched/evaluated val
 zp_opt_flag       = &28  ; Inline-assembler OPT flags (OPT n): bit 0 prints a listing, bit 1 enables error reporting, bit 2 assembles to the offset address O% instead of P%. &FF outside [ ] marks "not assembling".
 ; &28 referenced 11 times by &84ff, &8506, &8519, &8632, &8691, &881a, &886a, &8873, &8b15, &ae30, &b42d
 zp_asm_opcode     = &29  ; Inline assembler: the opcode byte being built for the instruction currently being assembled, before its operand bytes are appended.
-; &29 referenced 4 times by &8623, &8651, &8832, &8837
+; &29 referenced 3 times by &8623, &8832, &8837; also used as index base 1 time by &8651
 zp_iwa            = &2a  ; IWA — the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable’s value during a fetch.
-; &2a referenced 188 times by &867b, &86a6, &8818, &8c29, &8c46, &8c4a, &8c51, &8c5c, &8c76, &8c7d, &8c82, &8c88, &8c8e, &8c93, &8cac, &8cb4, &8d4d, &8e28, &8e4a, &8e5b, &8ef5, &8f2b, &8f48, &8f5e, &8f87, &8ffa, &9052, &9095, &90af, &90cf, &90d1, &90f8, &910a, &919a, &91ca, &91cc, &91db, &9222, &9242, &924b, &9255, &9260, &9272, &92a8, &931f, &937d, &93ba, &93f4, &9456, &94aa, &94e4, &95e7, &968e, &9696, &9698, &96e9, &96f1, &972a, &972e, &9760, &9762, &9786, &9788, &978c, &9790, &9792, &979b, &979f, &97a4, &97a6, &97af, &97b1, &97c4, &97f6, &98d0, &9905, &992e, &993d, &9994, &99ea, &9a14, &9ab8, &9aba, &9ad3, &9b45, &9b48, &9b60, &9b63, &9b8c, &9b8f, &9bb5, &9c60, &9c62, &9cc7, &9cc9, &9d93, &9da6, &9e9a, &a12b, &a2cf, &a3f5, &ab36, &ab50, &ab95, &abd8, &acc6, &acd6, &acda, &acf7, &ad14, &ad1a, &ad4d, &ad59, &ad97, &ad99, &ae6f, &ae94, &aeea, &af1c, &af58, &afb2, &afe3, &b008, &b00f, &b01f, &b04a, &b04f, &b079, &b07d, &b07f, &b08b, &b0d7, &b0db, &b0ef, &b1eb, &b1f0, &b270, &b2ce, &b338, &b33d, &b342, &b346, &b348, &b34f, &b355, &b35a, &b35f, &b364, &b369, &b38a, &b392, &b397, &b3ad, &b3c0, &b451, &b464, &b477, &b487, &b4a6, &b4c8, &b595, &b5b5, &b5db, &b609, &b60f, &b6a9, &b6da, &b6ea, &b6ef, &b6f4, &b6f9, &b6fe, &b703, &b708, &b70d, &b777, &b7fa, &b823, &b93b, &ba24, &bbbe, &bcf9, &bdad, &bdfd, &be44, &bf67, &bf9f, &bfbf
+; &2a referenced 177 times by &867b, &86a6, &8818, &8c29, &8c46, &8c4a, &8c51, &8c5c, &8c76, &8c7d, &8c82, &8c88, &8c8e, &8c93, &8cac, &8cb4, &8e28, &8e4a, &8e5b, &8ef5, &8f2b, &8f48, &8f5e, &8f87, &8ffa, &9052, &9095, &90af, &90cf, &90d1, &90f8, &910a, &919a, &91ca, &91cc, &91db, &9222, &9242, &924b, &9255, &9260, &9272, &92a8, &931f, &937d, &93ba, &93f4, &9456, &94aa, &94e4, &95e7, &968e, &9696, &9698, &96e9, &96f1, &972a, &972e, &9760, &9762, &9786, &9788, &978c, &9790, &9792, &979b, &979f, &97a4, &97a6, &97af, &97b1, &97c4, &97f6, &98d0, &9905, &992e, &993d, &9994, &99ea, &9a14, &9ab8, &9aba, &9ad3, &9bb5, &9c60, &9c62, &9cc7, &9cc9, &9d93, &9da6, &a12b, &a2cf, &a3f5, &ab36, &ab50, &ab95, &abd8, &acc6, &acf7, &ad14, &ad1a, &ad4d, &ad59, &ad97, &ad99, &ae6f, &ae94, &aeea, &af1c, &af58, &afb2, &afe3, &b008, &b00f, &b01f, &b04a, &b04f, &b079, &b07d, &b07f, &b08b, &b0d7, &b0db, &b0ef, &b1eb, &b1f0, &b270, &b2ce, &b338, &b33d, &b342, &b346, &b348, &b34f, &b355, &b35a, &b35f, &b364, &b369, &b38a, &b392, &b397, &b3ad, &b3c0, &b451, &b464, &b477, &b487, &b4a6, &b4c8, &b595, &b5b5, &b5db, &b609, &b60f, &b6a9, &b6da, &b6ea, &b6ef, &b6f4, &b6f9, &b6fe, &b703, &b708, &b70d, &b777, &b7fa, &b823, &b93b, &bbbe, &bcf9, &bdad, &bdfd, &be44, &bf67, &bf9f, &bfbf; also used as index base 11 times by &8d4d, &9b45, &9b48, &9b60, &9b63, &9b8c, &9b8f, &9e9a, &acd6, &acda, &ba24
 zp_iwa_1          = &2b
 ; &2b referenced 112 times by &8681, &86c8, &8738, &8809, &8efb, &8f4c, &8f62, &8f83, &904c, &9090, &90d5, &90fd, &910e, &918b, &919f, &91d0, &91de, &9226, &9246, &924d, &9257, &9266, &9278, &9286, &92ac, &9422, &942a, &94b0, &94ea, &95b5, &95eb, &968b, &969b, &969d, &96ec, &9730, &9734, &9766, &9768, &9784, &978a, &978e, &9795, &9797, &979d, &97a1, &97aa, &97b5, &97b7, &97ba, &97c9, &97fe, &98d2, &9909, &9934, &993b, &997c, &99ec, &9a19, &9abf, &9ac1, &9ad5, &9bb7, &9c67, &9c69, &9cce, &9cd0, &9d4e, &9d69, &9d97, &9da8, &a12f, &a2d3, &a3f1, &ab53, &ab93, &abda, &acc8, &ad37, &ad5b, &ad9c, &ad9e, &ae71, &ae96, &aeec, &af18, &af5c, &afb4, &b26d, &b2d1, &b34a, &b3a7, &b454, &b468, &b4d0, &b5b9, &b5df, &b604, &b614, &b6b0, &b6df, &b77b, &b7ff, &b828, &b933, &b9a9, &b9ad, &bbc0, &bcf4, &bda8, &bdf8, &be48
 zp_iwa_2          = &2c
@@ -114,9 +114,9 @@ zp_fwa_sign       = &2e  ; FWA — floating-point work accumulator A (&2E-&35): 
 zp_fwa_ovf        = &2f
 ; &2f referenced 20 times by &a0fb, &a1f1, &a1fd, &a21b, &a222, &a256, &a2c2, &a2ea, &a332, &a34a, &a3d1, &a4e2, &a61a, &a623, &a680, &a68a, &a6fe, &a707, &af70, &b36f
 zp_fwa_exp        = &30
-; &30 referenced 55 times by &9a76, &9e3f, &9ed1, &9f65, &9f7e, &9f8e, &a0f7, &a1ef, &a1f5, &a1f9, &a217, &a226, &a24e, &a252, &a2e1, &a2e8, &a301, &a311, &a32e, &a346, &a38f, &a3cd, &a3fe, &a40c, &a418, &a44c, &a486, &a49d, &a4e6, &a513, &a555, &a58e, &a614, &a61f, &a629, &a62d, &a68c, &a6a1, &a6f8, &a703, &a7c1, &a7c6, &a7e0, &a820, &a82e, &a91b, &a936, &a9d3, &a9ff, &aa94, &abce, &af76, &b36b, &b4eb, &bd5b
+; &30 referenced 53 times by &9a76, &9e3f, &9ed1, &9f65, &9f7e, &9f8e, &a0f7, &a1ef, &a1f5, &a1f9, &a217, &a226, &a24e, &a252, &a2e1, &a2e8, &a301, &a311, &a32e, &a346, &a38f, &a3cd, &a3fe, &a40c, &a418, &a44c, &a486, &a49d, &a4e6, &a513, &a555, &a58e, &a614, &a61f, &a68c, &a6a1, &a6f8, &a703, &a7c1, &a7c6, &a7e0, &a820, &a82e, &a91b, &a936, &a9d3, &a9ff, &aa94, &abce, &af76, &b36b, &b4eb, &bd5b; also used as index base 2 times by &a629, &a62d
 zp_fwa_m1         = &31
-; &31 referenced 73 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a600, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &af7a, &b37f, &b4f6, &b5dd, &b612, &bd66
+; &31 referenced 72 times by &9a7c, &9f2b, &9f61, &9f84, &9f92, &a040, &a049, &a04d, &a07d, &a0b4, &a0dd, &a125, &a190, &a194, &a19a, &a1ac, &a1b5, &a1cb, &a1d6, &a1da, &a20d, &a22a, &a271, &a28d, &a2a2, &a2b6, &a2dd, &a2fd, &a303, &a313, &a31b, &a336, &a342, &a39a, &a3e1, &a3e7, &a432, &a438, &a43c, &a481, &a483, &a49f, &a4c2, &a4ea, &a570, &a574, &a57f, &a596, &a5d4, &a5d6, &a5fc, &a600, &a68e, &a69e, &a70e, &a738, &a73c, &a74d, &a756, &a780, &a784, &a78f, &a7a4, &a824, &a9f9, &aa05, &aa9c, &b37f, &b4f6, &b5dd, &b612, &bd66; also used as index base 1 time by &af7a
 zp_fwa_m2         = &32
 ; &32 referenced 61 times by &9a82, &9f86, &a07f, &a0d9, &a11f, &a18a, &a18e, &a19d, &a1aa, &a1b3, &a1c6, &a1c8, &a1d3, &a1dc, &a20f, &a22e, &a275, &a291, &a29f, &a2b2, &a2d9, &a307, &a319, &a31f, &a340, &a3a2, &a3c3, &a3d5, &a3eb, &a42e, &a434, &a43e, &a47b, &a47d, &a4be, &a4ee, &a56c, &a572, &a581, &a59c, &a5ce, &a5d0, &a5f6, &a5fa, &a690, &a714, &a732, &a736, &a74b, &a75c, &a77a, &a77e, &a78d, &a7a0, &a9f7, &b361, &b373, &b4ff, &b5e1, &b616, &bd6f
 zp_fwa_m3         = &33
@@ -128,7 +128,7 @@ zp_fwa_rnd        = &35
 zp_strbuf_len     = &36  ; Length of the string currently in the string work area at string_work.
 ; &36 referenced 52 times by &8534, &864c, &8c2b, &8c37, &8c86, &8c9d, &8d64, &8e01, &8e0e, &8e1b, &9af2, &9afa, &9b13, &9c25, &9c2b, &9c3b, &9f01, &a000, &a00f, &a068, &a06f, &abee, &abf0, &ac34, &aca3, &ad31, &ad3e, &ade2, &aed6, &afc7, &afe5, &afe9, &b005, &b011, &b030, &b069, &b074, &b08f, &b0d3, &b0eb, &b0f3, &b0f8, &b38c, &b39b, &b3ba, &ba05, &baa5, &bdb5, &bdba, &bdc6, &bdcf, &beba
 zp_general        = &37  ; General-purpose work pointer (&37-&3A). Reused widely — the tokeniser/line scanner, the variable-chain walk, the program editor — as a scratch 16-bit pointer.
-; &37 referenced 142 times by &8529, &862e, &87d2, &87e3, &87f4, &8802, &887f, &888b, &8890, &889e, &88e0, &88ec, &88f9, &8902, &8917, &8942, &8944, &894e, &8957, &89b5, &89d2, &8a03, &8a07, &8a32, &8a41, &8a72, &8abf, &8ac1, &8b20, &8bb5, &8bbc, &8cd0, &8cd7, &8ce9, &8cf9, &8d07, &8d10, &8d15, &8d1a, &8d23, &8fa0, &8fb3, &8fba, &8fec, &8ff2, &8ff7, &9045, &9056, &905b, &9064, &90a0, &90a2, &90a4, &913e, &9162, &91d8, &91ef, &91f6, &91fc, &9415, &945d, &946b, &949a, &94d4, &94ef, &94fe, &9528, &955b, &9610, &961b, &9651, &96b6, &9716, &9721, &9726, &973c, &9751, &9776, &97ad, &97c6, &97cb, &994f, &9955, &99d6, &9af0, &9b19, &9c1f, &9c3d, &9d7e, &9db8, &9e15, &9ee8, &9f14, &9f44, &9f5a, &9faf, &9fc3, &9ff8, &a02b, &ac0a, &ad23, &ad42, &ad5f, &b0b1, &b15c, &b1cc, &b399, &b39e, &b3cf, &b3e0, &b3f9, &b490, &b4ca, &b4d3, &b4d8, &b4dd, &b4ed, &b4fc, &b501, &b506, &b50b, &b50e, &b525, &b6f1, &b710, &b716, &b72a, &b779, &b7da, &bc09, &bc36, &bc48, &bc4b, &bc4d, &bc55, &bc6d, &bc88, &bcb5, &bcd8, &beb4, &bfd0, &bfe1
+; &37 referenced 141 times by &8529, &862e, &87d2, &87e3, &87f4, &8802, &887f, &888b, &8890, &889e, &88e0, &88ec, &88f9, &8902, &8917, &8942, &8944, &894e, &8957, &89b5, &89d2, &8a03, &8a07, &8a32, &8a41, &8a72, &8abf, &8ac1, &8b20, &8bb5, &8bbc, &8cd0, &8cd7, &8ce9, &8cf9, &8d07, &8d10, &8d15, &8d1a, &8d23, &8fa0, &8fb3, &8fba, &8fec, &8ff2, &8ff7, &9045, &9056, &905b, &9064, &90a0, &90a2, &90a4, &913e, &9162, &91d8, &91ef, &91f6, &91fc, &9415, &945d, &946b, &949a, &94d4, &94ef, &94fe, &9528, &955b, &9610, &961b, &9651, &96b6, &9716, &9721, &9726, &973c, &9751, &9776, &97ad, &97c6, &97cb, &994f, &9955, &99d6, &9af0, &9b19, &9c1f, &9c3d, &9d7e, &9db8, &9e15, &9ee8, &9f14, &9f44, &9f5a, &9faf, &9fc3, &9ff8, &a02b, &ac0a, &ad23, &ad42, &ad5f, &b0b1, &b15c, &b1cc, &b399, &b39e, &b3cf, &b3e0, &b3f9, &b4ca, &b4d3, &b4d8, &b4dd, &b4ed, &b4fc, &b501, &b506, &b50b, &b50e, &b525, &b6f1, &b710, &b716, &b72a, &b779, &b7da, &bc09, &bc36, &bc48, &bc4b, &bc4d, &bc55, &bc6d, &bc88, &bcb5, &bcd8, &beb4, &bfd0, &bfe1; also used as index base 1 time by &b490
 zp_general_1      = &38
 ; &38 referenced 66 times by &8524, &8536, &8552, &8639, &8886, &88e6, &8948, &8abb, &8b24, &8bba, &8f9c, &9068, &90a8, &9143, &91d4, &91fa, &9201, &9207, &941a, &9615, &9713, &9719, &974e, &9773, &97b3, &99d2, &9e04, &9efb, &9f42, &9f4e, &9f56, &9f67, &9f98, &9fa9, &9fab, &9fb7, &9ff4, &ac11, &ad28, &ad63, &b1d1, &b394, &b3cd, &b3e4, &b3fd, &b516, &b521, &b52c, &b52e, &b538, &b6fb, &b718, &b71d, &b72c, &b77d, &b7df, &bc0b, &bc40, &bc51, &bc60, &bc69, &bc86, &bcb9, &bcdf, &beb8, &bfd3
 zp_fileblk        = &39  ; Filing-system control block (&39 onward): the OSFILE / load-save parameter block. Filing is not active during arithmetic, so this overlaps the FP workspace below (zp_fwb_sign onward).
@@ -144,13 +144,13 @@ zp_fwb_exp        = &3d
 zp_fwb_m1         = &3e
 ; &3e referenced 56 times by &85e9, &85fd, &889b, &88ab, &88b0, &88b5, &88be, &88c7, &88d0, &88f5, &890b, &905d, &9976, &998a, &99a1, &99e2, &9a0b, &9a17, &9a2c, &9a7a, &9db6, &a192, &a22c, &a242, &a26f, &a289, &a37a, &a422, &a428, &a444, &a45b, &a4e8, &a534, &a538, &a543, &a598, &a5d2, &a5fe, &a63a, &a710, &a73a, &a758, &a782, &a81b, &a946, &ac88, &b46a, &b5f3, &b8db, &baec, &bb0e, &bc3c, &bc44, &bced, &be5d, &bf04
 zp_fwb_m2         = &3f
-; &3f referenced 55 times by &8522, &8542, &9147, &915e, &917c, &91bb, &923c, &924f, &9723, &992b, &993f, &994b, &9960, &99e4, &9a0d, &9a1c, &9a29, &9a80, &9d87, &9d9a, &9d9e, &9ea0, &9ea8, &9eb3, &9eb7, &a18c, &a230, &a244, &a273, &a28b, &a35c, &a36e, &a41e, &a424, &a446, &a45d, &a4ec, &a530, &a536, &a545, &a59e, &a5cc, &a5f8, &a63c, &a716, &a734, &a75e, &a77c, &ac8a, &b21a, &b222, &bca6, &bca8, &bcfe, &bf0d
+; &3f referenced 47 times by &8522, &8542, &9147, &915e, &917c, &91bb, &923c, &924f, &9723, &99e4, &9a0d, &9a1c, &9a29, &9a80, &9d87, &9d9a, &9d9e, &a18c, &a230, &a244, &a273, &a28b, &a35c, &a36e, &a41e, &a424, &a446, &a45d, &a4ec, &a530, &a536, &a545, &a59e, &a5cc, &a5f8, &a63c, &a716, &a734, &a75e, &a77c, &ac8a, &b21a, &b222, &bca6, &bca8, &bcfe, &bf0d; also used as index base 8 times by &992b, &993f, &994b, &9960, &9ea0, &9ea8, &9eb3, &9eb7
 zp_fwb_m3         = &40
 ; &40 referenced 37 times by &91bf, &923a, &9251, &9728, &99e6, &9a0f, &9a21, &9a27, &9a86, &9d89, &9da0, &9da4, &a186, &a234, &a246, &a277, &a28f, &a357, &a370, &a41a, &a420, &a448, &a45f, &a4f0, &a52c, &a532, &a547, &a5a4, &a5c6, &a5f2, &a63e, &a71c, &a72e, &a764, &a776, &ac8c, &bf0f
 zp_fwb_m4         = &41
 ; &41 referenced 25 times by &9a8c, &a180, &a238, &a248, &a27b, &a293, &a352, &a372, &a41c, &a44a, &a461, &a4f4, &a528, &a52e, &a549, &a5aa, &a5c0, &a5ec, &a640, &a722, &a728, &a76a, &a770, &ac8e, &bf19
 zp_fwb_rnd        = &42
-; &42 referenced 17 times by &9f79, &a17a, &a23c, &a24a, &a27f, &a297, &a364, &a463, &a4f8, &a52a, &a54b, &a5b0, &a5ba, &a5e6, &a62b, &a642, &bf08
+; &42 referenced 16 times by &9f79, &a17a, &a23c, &a24a, &a27f, &a297, &a364, &a463, &a4f8, &a52a, &a54b, &a5b0, &a5ba, &a5e6, &a642, &bf08; also used as index base 1 time by &a62b
 zp_fp_temp        = &43  ; Floating-point temporary / scratch (&43-&47). Holds spill bytes for the FP routines and serves as the quotient build area for integer DIV/MOD.
 ; &43 referenced 6 times by &a164, &a16d, &a64a, &a745, &a7a2, &bf11
 zp_fp_temp_1      = &44
@@ -180,9 +180,9 @@ zp_error_ptr      = &fd  ; Pointer to the error block currently being reported (
 zp_escflg         = &ff  ; ESCFLG — the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the "Escape" error.
 ; &ff referenced 1 time by &987b
 hw_stack          = &0100  ; The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.
-; &0100 referenced 2 times by &b1a8, &b23a
+; &0100 used as index base 2 times by &b1a8, &b23a
 frame_local_count = &0106
-; &0106 referenced 1 time by &9342
+; &0106 used as index base 1 time by &9342
 hw_stack_top      = &01ff
 ; &01ff referenced 2 times by &8b4c, &935b
 brkv              = &0202
@@ -190,9 +190,9 @@ brkv              = &0202
 wrchv             = &020e
 ; &020e referenced 2 times by &9458, &b574
 resint_at         = &0400  ; The resident integer variables, four bytes each: @% here at &0400, then A%-Z% at &0404-&046B. @% sets the PRINT/STR$ number format. Two slots double as the inline assembler's counters — O% (the 'O' slot, &043C) is the offset-assembly address and P% (the 'P' slot, &0440) the program counter.
-; &0400 referenced 5 times by &8042, &8da6, &8daf, &8dbc, &946f
+; &0400 referenced 4 times by &8042, &8da6, &8daf, &8dbc; also used as index base 1 time by &946f
 resint_at_1       = &0401
-; &0401 referenced 3 times by &8046, &9474, &9eea
+; &0401 referenced 2 times by &8046, &9eea; also used as index base 1 time by &9474
 resint_at_2       = &0402
 ; &0402 referenced 2 times by &8037, &9edf
 resint_at_3       = &0403
@@ -234,87 +234,87 @@ resint_y          = &0464
 ; &0464 referenced 1 time by &8f28
 resint_z          = &0468
 fp_temp1          = &046c  ; Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing FWA / FWB.
-; &046c referenced 2 times by &8d59, &ba30
+; &046c used as index base 2 times by &8d59, &ba30
 fp_temps          = &046c  ; Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing FWA / FWB.
-; &046c referenced 2 times by &8d59, &ba30
+; &046c used as index base 2 times by &8d59, &ba30
 fp_temp2          = &0471
 fp_temp3          = &0476
 fp_temp4          = &047b
 var_table_base    = &047f
-; &047f referenced 1 time by &bd33
+; &047f used as index base 1 time by &bd33
 var_ptr_table     = &0480  ; The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, _, @), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.
 for_var_lo        = &04f1
-; &04f1 referenced 2 times by &b6ab, &b6d7
+; &04f1 used as index base 2 times by &b6ab, &b6d7
 for_var_hi        = &04f2
-; &04f2 referenced 2 times by &b6b2, &b6dc
+; &04f2 used as index base 2 times by &b6b2, &b6dc
 for_type          = &04f3
-; &04f3 referenced 2 times by &b6b9, &b6e1
+; &04f3 used as index base 2 times by &b6b9, &b6e1
 for_step0         = &04f4
-; &04f4 referenced 1 time by &b6ec
+; &04f4 used as index base 1 time by &b6ec
 for_step1         = &04f5
-; &04f5 referenced 2 times by &b6f6, &b794
+; &04f5 used as index base 2 times by &b6f6, &b794
 for_step2         = &04f6
-; &04f6 referenced 1 time by &b700
+; &04f6 used as index base 1 time by &b700
 for_step3         = &04f7
-; &04f7 referenced 2 times by &b70a, &b733
+; &04f7 used as index base 2 times by &b70a, &b733
 for_limit0        = &04f9
-; &04f9 referenced 1 time by &b713
+; &04f9 used as index base 1 time by &b713
 for_limit1        = &04fa
-; &04fa referenced 1 time by &b71a
+; &04fa used as index base 1 time by &b71a
 for_limit2        = &04fb
-; &04fb referenced 1 time by &b721
+; &04fb used as index base 1 time by &b721
 for_limit3        = &04fc
-; &04fc referenced 2 times by &b727, &b736
+; &04fc used as index base 2 times by &b727, &b736
 for_loopback_lo   = &04fe
-; &04fe referenced 1 time by &b741
+; &04fe used as index base 1 time by &b741
 for_loopback_hi   = &04ff
-; &04ff referenced 1 time by &b744
+; &04ff used as index base 1 time by &b744
 for_stack         = &0500  ; The FOR stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in zp_for_level). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by FOR, consulted and updated by NEXT.
-; &0500 referenced 1 time by &b7dc
+; &0500 used as index base 1 time by &b7dc
 for_set_ptr_hi    = &0501
-; &0501 referenced 1 time by &b7e1
+; &0501 used as index base 1 time by &b7e1
 for_set_type      = &0502
-; &0502 referenced 1 time by &b7e6
+; &0502 used as index base 1 time by &b7e6
 for_set_step0     = &0503
-; &0503 referenced 1 time by &b825
+; &0503 used as index base 1 time by &b825
 for_set_step1     = &0504
-; &0504 referenced 1 time by &b82a
+; &0504 used as index base 1 time by &b82a
 for_set_step2     = &0505
-; &0505 referenced 1 time by &b82f
+; &0505 used as index base 1 time by &b82f
 for_set_step3     = &0506
-; &0506 referenced 1 time by &b834
+; &0506 used as index base 1 time by &b834
 for_set_limit0    = &0508
-; &0508 referenced 1 time by &b7fc
+; &0508 used as index base 1 time by &b7fc
 for_set_limit1    = &0509
-; &0509 referenced 1 time by &b801
+; &0509 used as index base 1 time by &b801
 for_set_limit2    = &050a
-; &050a referenced 1 time by &b806
+; &050a used as index base 1 time by &b806
 for_set_limit3    = &050b
-; &050b referenced 1 time by &b80b
+; &050b used as index base 1 time by &b80b
 for_set_loop_lo   = &050d
-; &050d referenced 1 time by &b83e
+; &050d used as index base 1 time by &b83e
 for_set_loop_hi   = &050e
-; &050e referenced 1 time by &b843
+; &050e used as index base 1 time by &b843
 repeat_loop_lo    = &05a3
-; &05a3 referenced 1 time by &bbcd
+; &05a3 used as index base 1 time by &bbcd
 repeat_stack      = &05a4  ; REPEAT loop-start text pointers, low bytes — up to 20 nested (depth in zp_repeat_level); high bytes in repeat_stack_hi. UNTIL reloads the pointer to re-test its condition.
-; &05a4 referenced 1 time by &bbef
+; &05a4 used as index base 1 time by &bbef
 repeat_loop_hi    = &05b7
-; &05b7 referenced 1 time by &bbd0
+; &05b7 used as index base 1 time by &bbd0
 repeat_stack_hi   = &05b8  ; High bytes of the REPEAT loop-start pointers; low bytes in repeat_stack.
-; &05b8 referenced 1 time by &bbf4
+; &05b8 used as index base 1 time by &bbf4
 gosub_return_lo   = &05cb
-; &05cb referenced 1 time by &b8bf
+; &05cb used as index base 1 time by &b8bf
 gosub_stack       = &05cc  ; GOSUB return text pointers, low bytes — up to 26 nested (depth in zp_gosub_level); high bytes in gosub_stack_hi. RETURN pops the top entry.
-; &05cc referenced 1 time by &b896
+; &05cc used as index base 1 time by &b896
 gosub_return_hi   = &05e5
-; &05e5 referenced 1 time by &b8c2
+; &05e5 used as index base 1 time by &b8c2
 gosub_stack_hi    = &05e6  ; High bytes of the GOSUB return pointers; low bytes in gosub_stack.
-; &05e6 referenced 1 time by &b89b
+; &05e6 used as index base 1 time by &b89b
 strbuf_base       = &05ff
-; &05ff referenced 8 times by &8d6c, &9b0a, &9c2d, &9c30, &abf4, &ba0d, &bdbe, &bdd6
+; &05ff used as index base 8 times by &8d6c, &9b0a, &9c2d, &9c30, &abf4, &ba0d, &bdbe, &bdd6
 string_work       = &0600  ; The string work area / CALL parameter block. BASIC builds string results here — the text of STR$, the digits of a number conversion, a popped string for comparison — with the length in zp_strbuf_len. CALL also assembles its parameter block here.
-; &0600 referenced 27 times by &8658, &8c97, &8ca9, &8cb1, &8e14, &8edd, &8ef7, &8efd, &8f03, &8f06, &a003, &a06a, &ac38, &aca7, &ad44, &adb8, &add3, &afc2, &b017, &b01a, &b083, &b086, &b0e1, &b0e4, &b3a0, &b3af, &bebe
+; &0600 referenced 5 times by &8cb1, &8edd, &8f06, &aca7, &afc2; also used as index base 22 times by &8658, &8c97, &8ca9, &8e14, &8ef7, &8efd, &8f03, &a003, &a06a, &ac38, &ad44, &adb8, &add3, &b017, &b01a, &b083, &b086, &b0e1, &b0e4, &b3a0, &b3af, &bebe
 call_block_base   = &06ff
 ; &06ff referenced 2 times by &8ee0, &8ef1
 line_input_buf    = &0700  ; The line input buffer. The line editor reads a typed line (at the > prompt or for INPUT) into here via OSWORD 0; the tokeniser then processes it in place.
@@ -685,7 +685,7 @@ oscli             = &fff7
     equs "SIN"                                                        ; 82d7: 53 49 4e    SIN   
     equb &b5, &00                                                     ; 82da: b5 00       ..    
     equs "SQR"                                                        ; 82dc: 53 51 52    SQR   
-; &82df referenced 1 time by &8bb2
+; &82df used as index base 1 time by &8bb2
 .action_lo_by_token
     equb &b6, &00                                                     ; 82df: b6 00       ..    
     equs "SPC"                                                        ; 82e1: 53 50 43    SPC   
@@ -723,7 +723,7 @@ oscli             = &fff7
     equs "WIDTH"                                                      ; 8347: 57 49 44... WID...
     equb &fe, &02                                                     ; 834c: fe 02       ..    
     equs "PAG"                                                        ; 834e: 50 41 47    PAG   
-; &8351 referenced 1 time by &8bb7
+; &8351 used as index base 1 time by &8bb7
 .action_hi_by_token
     equb &45, &d0, &00                                                ; 8351: 45 d0 00    E..   
     equs "PTR"                                                        ; 8354: 50 54 52    PTR   
@@ -963,7 +963,7 @@ oscli             = &fff7
     equb >(stmt_trace)                                                ; 844d: 92          .     
     equb >(stmt_until)                                                ; 844e: bb          .     
     equb >(stmt_width)                                                ; 844f: b4          .     
-; &8450 referenced 1 time by &85f5
+; &8450 used as index base 1 time by &85f5
 .asm_mnemonic_lo
     equb >(stmt_oscli)                                                ; 8450: be          .     
     equb &4b, &83, &84, &89, &96, &b8, &b9, &d8, &d9, &f0, &01, &10   ; 8451: 4b 83 84... K.....
@@ -975,7 +975,7 @@ oscli             = &fff7
     equs "Clr"                                                        ; 8478: 43 6c 72    Clr   
     equb &ec, &f2, &a3, &c3, &18, &19, &34, &b0, &72, &98, &99, &81   ; 847b: ec f2 a3... ......
     equb &98, &99, &14                                                ; 8487: 98 99 14    ...   
-; &848a referenced 1 time by &85fa
+; &848a used as index base 1 time by &85fa
 .asm_mnemonic_hi
     equb &35, &0a, &0d, &0d, &0d, &0d, &10, &10                       ; 848a: 35 0a 0d... 5.....
     equs "%%9AAAAJJLLLPPRSSS"                                         ; 8492: 25 25 39... %%9...
@@ -984,7 +984,7 @@ oscli             = &fff7
     equs "2II"                                                        ; 84b4: 32 49 49    2II   
     equb &10, &25, &0e, &0e, &09                                      ; 84b7: 10 25 0e... .%....
     equs ")*00NNN>"                                                   ; 84bc: 29 2a 30... )*0...
-; &84c4 referenced 1 time by &8620
+; &84c4 used as index base 1 time by &8620
 .asm_base_opcode
     equb &16, &00, &18, &d8, &58, &b8, &ca, &88, &e8, &c8, &ea, &48   ; 84c4: 16 00 18... ......
     equb &08                                                          ; 84d0: 08          .     
@@ -5564,7 +5564,7 @@ oscli             = &fff7
     dex                                                               ; 9967: ca          .        ; next digit
     bpl plnum_print_loop                                              ; 9968: 10 f6       ..       ; until all digits printed
     rts                                                               ; 996a: 60          `        ; Return
-; &996b referenced 1 time by &9930
+; &996b used as index base 1 time by &9930
 .powers_of_ten_lo
     equb &01, &0a, &64, &e8, &10                                      ; 996b: 01 0a 64... ..d...
 ; ***************************************************************************************
@@ -5625,7 +5625,7 @@ oscli             = &fff7
     brk                                                               ; 99a7: 00          .        ; Division by zero error
     equb &12                                                          ; 99a8: 12          .     
     equs "Division by zero"                                           ; 99a9: 44 69 76... Div...
-; &99b9 referenced 1 time by &9936
+; &99b9 used as index base 1 time by &9936
 .powers_of_ten_hi
     equb &00, &00, &00, &03, &27                                      ; 99b9: 00 00 00... ......
 ; ***************************************************************************************
