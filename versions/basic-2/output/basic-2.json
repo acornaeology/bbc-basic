@@ -5061,46 +5061,6 @@
       "description": "The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, `_`, `@`), addressed as &0400 + 2\u00d7char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head."
     },
     {
-      "addr": 1280,
-      "name": "for_stack",
-      "length": 150,
-      "group": "basic_stacks",
-      "access": "rw",
-      "description": "The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer \u2014 pushed by `FOR`, consulted and updated by `NEXT`."
-    },
-    {
-      "addr": 1444,
-      "name": "repeat_stack",
-      "length": 20,
-      "group": "basic_stacks",
-      "access": "rw",
-      "description": "`REPEAT` loop-start text pointers, low bytes \u2014 up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition."
-    },
-    {
-      "addr": 1464,
-      "name": "repeat_stack_hi",
-      "length": 20,
-      "group": "basic_stacks",
-      "access": "rw",
-      "description": "High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4)."
-    },
-    {
-      "addr": 1484,
-      "name": "gosub_stack",
-      "length": 26,
-      "group": "basic_stacks",
-      "access": "rw",
-      "description": "`GOSUB` return text pointers, low bytes \u2014 up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry."
-    },
-    {
-      "addr": 1510,
-      "name": "gosub_stack_hi",
-      "length": 26,
-      "group": "basic_stacks",
-      "access": "rw",
-      "description": "High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc)."
-    },
-    {
       "addr": 1536,
       "name": "string_work",
       "length": 256,
@@ -5117,7 +5077,171 @@
       "description": "The line input buffer. The line editor reads a typed line (at the `>` prompt or for `INPUT`) into here via OSWORD 0; the tokeniser then processes it in place."
     }
   ],
-  "index_bases": [],
+  "index_bases": [
+    {
+      "addr": 262,
+      "name": "frame_local_count"
+    },
+    {
+      "addr": 1151,
+      "name": "var_table_base"
+    },
+    {
+      "addr": 1265,
+      "name": "for_var_lo"
+    },
+    {
+      "addr": 1266,
+      "name": "for_var_hi"
+    },
+    {
+      "addr": 1267,
+      "name": "for_type"
+    },
+    {
+      "addr": 1268,
+      "name": "for_step0"
+    },
+    {
+      "addr": 1269,
+      "name": "for_step1"
+    },
+    {
+      "addr": 1270,
+      "name": "for_step2"
+    },
+    {
+      "addr": 1271,
+      "name": "for_step3"
+    },
+    {
+      "addr": 1273,
+      "name": "for_limit0"
+    },
+    {
+      "addr": 1274,
+      "name": "for_limit1"
+    },
+    {
+      "addr": 1275,
+      "name": "for_limit2"
+    },
+    {
+      "addr": 1276,
+      "name": "for_limit3"
+    },
+    {
+      "addr": 1278,
+      "name": "for_loopback_lo"
+    },
+    {
+      "addr": 1279,
+      "name": "for_loopback_hi"
+    },
+    {
+      "addr": 1280,
+      "name": "for_stack",
+      "length": 150,
+      "group": "basic_stacks",
+      "description": "The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer \u2014 pushed by `FOR`, consulted and updated by `NEXT`."
+    },
+    {
+      "addr": 1281,
+      "name": "for_set_ptr_hi"
+    },
+    {
+      "addr": 1282,
+      "name": "for_set_type"
+    },
+    {
+      "addr": 1283,
+      "name": "for_set_step0"
+    },
+    {
+      "addr": 1284,
+      "name": "for_set_step1"
+    },
+    {
+      "addr": 1285,
+      "name": "for_set_step2"
+    },
+    {
+      "addr": 1286,
+      "name": "for_set_step3"
+    },
+    {
+      "addr": 1288,
+      "name": "for_set_limit0"
+    },
+    {
+      "addr": 1289,
+      "name": "for_set_limit1"
+    },
+    {
+      "addr": 1290,
+      "name": "for_set_limit2"
+    },
+    {
+      "addr": 1291,
+      "name": "for_set_limit3"
+    },
+    {
+      "addr": 1293,
+      "name": "for_set_loop_lo"
+    },
+    {
+      "addr": 1294,
+      "name": "for_set_loop_hi"
+    },
+    {
+      "addr": 1443,
+      "name": "repeat_loop_lo"
+    },
+    {
+      "addr": 1444,
+      "name": "repeat_stack",
+      "length": 20,
+      "group": "basic_stacks",
+      "description": "`REPEAT` loop-start text pointers, low bytes \u2014 up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition."
+    },
+    {
+      "addr": 1463,
+      "name": "repeat_loop_hi"
+    },
+    {
+      "addr": 1464,
+      "name": "repeat_stack_hi",
+      "length": 20,
+      "group": "basic_stacks",
+      "description": "High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4)."
+    },
+    {
+      "addr": 1483,
+      "name": "gosub_return_lo"
+    },
+    {
+      "addr": 1484,
+      "name": "gosub_stack",
+      "length": 26,
+      "group": "basic_stacks",
+      "description": "`GOSUB` return text pointers, low bytes \u2014 up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry."
+    },
+    {
+      "addr": 1509,
+      "name": "gosub_return_hi"
+    },
+    {
+      "addr": 1510,
+      "name": "gosub_stack_hi",
+      "length": 26,
+      "group": "basic_stacks",
+      "description": "High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc)."
+    },
+    {
+      "addr": 1535,
+      "name": "strbuf_base"
+    }
+  ],
   "regions": [],
   "items": [
     {
