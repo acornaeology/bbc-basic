@@ -71,8 +71,8 @@ This is why the idiom for `CHAIN` data-passing works: set `A%`…`Z%` (or stash 
 
 ## Two clears you might not expect
 
-- **Editing any program line clears all variables.** Inserting or deleting a line goes through [`insert_line`](address:BC8D@2?hex) and then immediately calls [`clear_vars_heap_stack`](address:BD20@2?hex) (`&90C9`). So adding a line in the middle of a debugging session wipes the dynamic variables (the resident integers, again, survive). The out-of-room path raises *LINE space* after the same clear.
-- **An error does *not* clear variables** — by contrast. The error path calls only [`reset_data_and_stacks`](address:BD3A@2?hex) (`&B41B`), which resets the `DATA` pointer and the `FOR`/`REPEAT`/`GOSUB`/value stacks but leaves every variable intact. So after an error or `Escape`, your variables are still readable at the prompt, but the loop stacks and `DATA` position are gone (this is also why `GOTO`ing back into a loop after an error misbehaves — see [control-flow stacks](control-flow-stacks.md)).
+- **Editing any program line clears all variables.** Inserting or deleting a line goes through [`insert_line`](address:BC8D@2?hex) and then immediately calls [`clear_vars_heap_stack`](address:BD20@2?hex) (`jsr` at `&90C9`). So adding a line in the middle of a debugging session wipes the dynamic variables (the resident integers, again, survive). The out-of-room path raises *LINE space* after the same clear.
+- **An error does *not* clear variables** — by contrast. The error path calls only [`reset_data_and_stacks`](address:BD3A@2?hex) (`jsr` at `&B41B`), which resets the `DATA` pointer and the `FOR`/`REPEAT`/`GOSUB`/value stacks but leaves every variable intact. So after an error or `Escape`, your variables are still readable at the prompt, but the loop stacks and `DATA` position are gone (this is also why `GOTO`ing back into a loop after an error misbehaves — see [control-flow stacks](control-flow-stacks.md)).
 
 ## For a compiler
 
