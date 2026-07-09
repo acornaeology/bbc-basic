@@ -1333,7 +1333,24 @@ d.label(0x872f, 'asm_indexed_adjust')
 d.comment(0x8732, 'process the absolute operand', align=Align.INLINE)
 # abs / abs,X (&8735).
 d.comment(0x8735, 'Adjust the opcode for absolute mode', align=Align.INLINE)
-d.label(0x8735, 'asm_absolute')
+d.subroutine(
+    0x8735, 'asm_absolute',
+    title='Assemble a zero-page or absolute operand',
+    description="""Adjust the opcode being built for absolute addressing
+(asm_opcode_add4), then fall into asm_zp_or_abs, which tests the high
+byte of the evaluated operand address in zp_iwa: high byte zero emits
+the two-byte zero-page form (asm_two_byte), otherwise the three-byte
+absolute form (asm_indexed_adjust). The inline assembler's addressing-
+mode handler for absolute / zero-page operands.
+""",
+    on_entry={
+        'zp_iwa (&2A/&2B)': 'the evaluated operand address (low/high)',
+        'zp_asm_opcode (&29)': 'the opcode being built',
+    },
+    on_exit={
+        'control': 'tail-calls asm_two_byte (zero page, 2 bytes) or asm_indexed_adjust (absolute, 3 bytes); does not return here',
+    },
+)
 d.comment(0x8738, 'address fits in zero page (high byte 0)?',
           align=Align.INLINE)
 d.label(0x8738, 'asm_zp_or_abs')
@@ -2563,7 +2580,17 @@ d.comment(0x8cb4, 'Store it (with the CR terminator following)',
           align=Align.INLINE)
 d.label(0x8cb4, 'assign_str_addr_cr')
 d.comment(0x8cb6, 'Return', align=Align.INLINE)
-d.label(0x8cb7, 'err_no_room')   # BRK error block: "No room"
+d.subroutine(
+    0x8cb7, 'err_no_room',
+    title='Raise the "No room" error',
+    description="""Raise BASIC error &00, "No room", via a BRK error block. Reached when
+there is insufficient memory for the requested operation. Does not
+return.
+""",
+    on_exit={
+        'control': 'raises BRK error &00 "No room"; does not return to the caller',
+    },
+)
 
 d.comment(0x8cb7, 'No room error', align=Align.INLINE)
 
@@ -2899,7 +2926,25 @@ d.comment(0x8e88, 'none: not consumed (carry set)', align=Align.INLINE)
 d.comment(0x8e89, 'Return', align=Align.INLINE)
 d.comment(0x8e8a, 'Skip spaces, then handle a special item', align=Align.INLINE)
 # print_special_item
-d.label(0x8e8a, 'print_special_skip')
+d.subroutine(
+    0x8e8a, 'print_special_skip',
+    title='Skip spaces then handle a PRINT special item',
+    description="""Skip spaces at PtrA, then dispatch the next PRINT item to
+print_special_item (which handles ~, TAB, SPC, ' and so on). If that
+consumed the item, return with carry clear; if the next character is a
+string literal (a double-quote), print it inline via
+print_inline_loop; otherwise return with carry set, leaving the
+character in A.
+""",
+    on_entry={
+        'zp_text_ptr (&0B)': 'PtrA, at the item being scanned',
+        'zp_text_ptr_off (&0A)': 'offset within the line',
+    },
+    on_exit={
+        'C': 'clear if the item was consumed or printed, set if not recognised',
+        'A': 'the unconsumed character when carry is set',
+    },
+)
 d.comment(0x8e8d, 'handle it', align=Align.INLINE)
 d.comment(0x8e90, 'consumed: done', align=Align.INLINE)
 d.comment(0x8e92, 'a string literal (quote)?', align=Align.INLINE)
@@ -3030,7 +3075,25 @@ d.comment(0x8f66, 'done: immediate mode', align=Align.INLINE)
 
 # sub_c8f69 (&8F69): parse a line-number range/increment (default 10).
 d.comment(0x8f69, 'Default start = 10', align=Align.INLINE)
-d.label(0x8f69, 'parse_line_range')
+d.subroutine(
+    0x8f69, 'parse_line_range',
+    title='Parse an optional start,step line-number range',
+    description="""Parse the optional [start[,step]] arguments shared by AUTO and
+RENUMBER: default the start line to 10, read an explicit start if
+present and push it on the BASIC stack; then default the step to 10
+and, if a comma follows, read an explicit step, raising "Silly" if the
+step is zero. Tail-calls check_end_of_statement to verify nothing else
+follows.
+""",
+    on_entry={
+        'zp_text_ptr (&0B/&0C)': 'PtrA, at the text following the keyword',
+        'zp_text_ptr_off (&0A)': 'offset within the line',
+    },
+    on_exit={
+        'zp_iwa (&2A)': 'the step increment (default 10), &2A-&2D',
+        'control': 'the start line number is left pushed on the BASIC stack; returns via check_end_of_statement',
+    },
+)
 d.comment(0x8f6b, 'IWA = 10', align=Align.INLINE)
 d.comment(0x8f6e, 'Read the start line if given', align=Align.INLINE)
 d.comment(0x8f71, 'stack it', align=Align.INLINE)
@@ -3052,7 +3115,25 @@ d.comment(0x8f8f, 'check the statement ends', align=Align.INLINE)
 
 # sub_c8f92 / sub_c8f9a: set up pointers for the program scan.
 d.comment(0x8f92, 'Copy TOP to &3B/&3C', align=Align.INLINE)
-d.label(0x8f92, 'setup_scan_top')
+d.subroutine(
+    0x8f92, 'setup_scan_top',
+    title='Point the RENUMBER scan pointers at TOP and PAGE',
+    description="""Copy TOP (&12/&13) into the table pointer at &3B/&3C, then fall into
+point_general_page to set the program-scan pointer at &37/&38 to PAGE
+(low byte forced to 1, the first line-number byte). Used by RENUMBER
+to initialise the old-number table (built from the heap at TOP) and
+the pointer that walks the program from PAGE.
+""",
+    on_entry={
+        'zp_top (&12/&13)': 'TOP, the top of the program / base of the heap',
+        'zp_page (&18)': 'PAGE, the start of program text',
+    },
+    on_exit={
+        'zp_fwb_sign (&3B/&3C)': 'table pointer set to TOP',
+        'zp_general (&37/&38)': 'scan pointer set to PAGE, low byte 1 (first line-number byte)',
+        'A': 'corrupted',
+    },
+)
 d.comment(0x8f94, 'low to &3B,', align=Align.INLINE)
 d.comment(0x8f96, 'high byte,', align=Align.INLINE)
 d.comment(0x8f98, 'to &3C', align=Align.INLINE)
@@ -3293,8 +3374,18 @@ d.comment(0x911e, 'assign the address to the variable', align=Align.INLINE)
 d.comment(0x9121, 'sync the pointer', align=Align.INLINE)
 d.comment(0x9124, 'continue', align=Align.INLINE)
 d.comment(0x9127, 'Bad DIM error', align=Align.INLINE)
-d.label(0x9127, 'bad_dim')
-# ----------------------------------------------------------------------
+d.subroutine(
+    0x9127, 'bad_dim',
+    title='Raise the "Bad DIM" error',
+    description="""Raise BASIC error &0A, "Bad DIM", via a BRK error block (the message
+ends with the DIM token &DE). Reached by the DIM/array machinery on an
+empty name, a re-DIM of an existing array, a bound exceeding 16383, or
+another invalid dimension. Does not return.
+""",
+    on_exit={
+        'control': 'raises BRK error &0A "Bad DIM"; does not return to the caller',
+    },
+)
 # stmt_dim (&912F): the DIM statement - allocate an array.
 # Parses the array name and element size (5 real, 4 integer/string),
 # reads the comma-separated dimension bounds into the descriptor at the
@@ -5855,8 +5946,27 @@ d.comment(0x9dcb, 'bounce back to the multiply code', align=Align.INLINE)
 d.label(0x9dcb, 'iwamul_bounce')
 d.comment(0x9dce, 'stack the operand, then multiply', align=Align.INLINE)
 
-d.label(0x9dce, 'mul_stack_eval')
-# eval_mul_div (&9DD1): Level 3 - * / DIV MOD
+d.subroutine(
+    0x9dce, 'mul_stack_eval',
+    title='Stack the integer, then evaluate a * / DIV / MOD expression',
+    description="""Push the pending integer accumulator onto the arithmetic stack via
+stack_integer, then fall into eval_mul_div to evaluate the higher-
+precedence (^) operand and apply any * / DIV / MOD operators. A
+trampoline used when the caller already holds an integer that must be
+preserved across the multiply-level evaluation.
+""",
+    on_entry={
+        'zp_iwa (&2A)': 'integer value to push onto the stack',
+        'zp_text_ptr2 (&19/&1A)': 'PtrB at the expression to evaluate',
+        'zp_text_ptr2_off (&1B)': 'offset into the text',
+    },
+    on_exit={
+        'A': 'result type (<0 float in fwa, >0 integer in iwa, 0 string)',
+        'zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)': 'the value, selected by the type',
+        'X': 'the next unconsumed operator token',
+        'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
+    },
+)
 d.comment(0x9dd1, 'Evaluate the higher level (^, level 2) operand', align=Align.INLINE)
 d.comment(0x9dd4, 'next operator "*"?', align=Align.INLINE)
 d.char_literal(0x9dd5)
@@ -5920,7 +6030,27 @@ d.comment(0x9e1a, '...and apply the sign', align=Align.INLINE)
 d.comment(0x9e1d, 'Stack the integer, evaluate the next ^ operand',
           align=Align.INLINE)
 
-d.label(0x9e1d, 'pow_stack_eval')
+d.subroutine(
+    0x9e1d, 'pow_stack_eval',
+    title='Stack the integer, then evaluate a ^ expression',
+    description="""Push the pending integer accumulator onto the arithmetic stack via
+stack_integer, then fall into eval_power to evaluate the next factor
+and apply any ^ operators. A trampoline used when the caller already
+holds an integer that must be preserved across the power-level
+evaluation.
+""",
+    on_entry={
+        'zp_iwa (&2A)': 'integer value to push onto the stack',
+        'zp_text_ptr2 (&19/&1A)': 'PtrB at the expression to evaluate',
+        'zp_text_ptr2_off (&1B)': 'offset into the text',
+    },
+    on_exit={
+        'A': 'result type (<0 float in fwa, >0 integer in iwa, 0 string)',
+        'zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)': 'the value, selected by the type',
+        'X': 'the next unconsumed operator token',
+        'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
+    },
+)
 
 d.subroutine(0x9e20, 'eval_power',
              title='Expression Level 2 - the ^ operator',
@@ -6720,7 +6850,23 @@ d.comment(0xa23a, 'Copy the rounding byte...', align=Align.INLINE)
 d.comment(0xa23c, '...into FWB', align=Align.INLINE)
 d.comment(0xa23e, 'FWB is now a copy of FWA', align=Align.INLINE)
 
-d.label(0xa23f, 'fwb_half_fwa')   # FWB = FWA, then halve it
+d.subroutine(
+    0xa23f, 'fwb_half_fwa',
+    title='FWB = FWA / 2',
+    description="""Copy FWA into FWB (fwb_copy_from_fwa), then fall into fwb_div2 to
+shift the FWB mantissa (including the rounding byte) right one bit.
+The exponent is left unchanged, so the result is de-normalised; used
+to build the progressively shifted terms in fwa_div10.
+""",
+    on_entry={
+        'zp_fwa (&2E-&35)': 'floating-point accumulator A',
+    },
+    on_exit={
+        'zp_fwb (&3B-&42)': 'FWA with its mantissa shifted right one bit (rounding byte included)',
+        'X': 'preserved',
+        'C': 'the bit shifted out of the rounding byte',
+    },
+)
 d.comment(0xa23f, 'FWB = FWA, then halve it', align=Align.INLINE)
 # fwb_half_fwa (&A23F) / fwb_div2 (&A242): FWB = FWA / 2, and FWB >>= 1
 d.subroutine(0xa242, 'fwb_div2', title='Divide FWB by two',

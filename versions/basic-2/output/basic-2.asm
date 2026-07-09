@@ -1612,6 +1612,21 @@ oscli             = &fff7
 .asm_indexed_adjust
     jsr asm_opcode_add8                                               ; 872f: 20 2f 88     /.      ; Adjust the opcode for the indexed form
     jmp asm_three_byte                                                ; 8732: 4c 9a 87    L..      ; process the absolute operand
+; ***************************************************************************************
+; Assemble a zero-page or absolute operand
+;
+; Adjust the opcode being built for absolute addressing (asm_opcode_add4), then fall into
+; asm_zp_or_abs, which tests the high byte of the evaluated operand address in zp_iwa:
+; high byte zero emits the two-byte zero-page form (asm_two_byte), otherwise the
+; three-byte absolute form (asm_indexed_adjust). The inline assembler's addressing- mode
+; handler for absolute / zero-page operands.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the evaluated operand address (low/high)
+;     ZP_ASM_OPCODE (&29): the opcode being built
+;
+; On Exit:
+;     CONTROL: tail-calls asm_two_byte (zero page, 2 bytes) or asm_indexed_adjust (absolute, 3 bytes); does not return here
 ; &8735 referenced 5 times by &871f, &8729, &8785, &87db, &87ea
 .asm_absolute
     jsr asm_opcode_add4                                               ; 8735: 20 32 88     2.      ; Adjust the opcode for absolute mode
@@ -2965,6 +2980,14 @@ oscli             = &fff7
 .assign_str_addr_cr
     sta (zp_iwa),y                                                    ; 8cb4: 91 2a       .*       ; Store it (with the CR terminator following)
     rts                                                               ; 8cb6: 60          `        ; Return
+; ***************************************************************************************
+; Raise the "No room" error
+;
+; Raise BASIC error &00, "No room", via a BRK error block. Reached when there is
+; insufficient memory for the requested operation. Does not return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &00 "No room"; does not return to the caller
 ; &8cb7 referenced 3 times by &8c6d, &9553, &be41
 .err_no_room
     brk                                                               ; 8cb7: 00          .        ; No room error
@@ -3325,6 +3348,21 @@ oscli             = &fff7
 ; &8e89 referenced 1 time by &8e90
 .return_6
     rts                                                               ; 8e89: 60          `        ; Return
+; ***************************************************************************************
+; Skip spaces then handle a PRINT special item
+;
+; Skip spaces at PtrA, then dispatch the next PRINT item to print_special_item (which
+; handles ~, TAB, SPC, ' and so on). If that consumed the item, return with carry clear;
+; if the next character is a string literal (a double-quote), print it inline via
+; print_inline_loop; otherwise return with carry set, leaving the character in A.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B): PtrA, at the item being scanned
+;     ZP_TEXT_PTR_OFF (&0A): offset within the line
+;
+; On Exit:
+;     C: clear if the item was consumed or printed, set if not recognised
+;     A: the unconsumed character when carry is set
 ; &8e8a referenced 2 times by &ba5a, &ba5f
 .print_special_skip
     jsr skip_spaces                                                   ; 8e8a: 20 97 8a     ..      ; Skip spaces, then handle a special item
@@ -3509,6 +3547,22 @@ oscli             = &fff7
     sbc zp_iwa_1                                                      ; 8f62: e5 2b       .+       ; - line high
     bcs delete_loop                                                   ; 8f64: b0 ed       ..       ; no: delete the next
     jmp clear_then_immediate                                          ; 8f66: 4c f3 8a    L..      ; done: immediate mode
+; ***************************************************************************************
+; Parse an optional start,step line-number range
+;
+; Parse the optional [start[,step]] arguments shared by AUTO and RENUMBER: default the
+; start line to 10, read an explicit start if present and push it on the BASIC stack;
+; then default the step to 10 and, if a comma follows, read an explicit step, raising
+; "Silly" if the step is zero. Tail-calls check_end_of_statement to verify nothing else
+; follows.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): PtrA, at the text following the keyword
+;     ZP_TEXT_PTR_OFF (&0A): offset within the line
+;
+; On Exit:
+;     ZP_IWA (&2A): the step increment (default 10), &2A-&2D
+;     CONTROL: the start line number is left pushed on the BASIC stack; returns via check_end_of_statement
 ; &8f69 referenced 2 times by &8fa3, &90ac
 .parse_line_range
     lda #&0a                                                          ; 8f69: a9 0a       ..       ; Default start = 10
@@ -3530,6 +3584,22 @@ oscli             = &fff7
 .range_backup
     dec zp_text_ptr_off                                               ; 8f8d: c6 0a       ..       ; back up
     jmp check_end_of_statement                                        ; 8f8f: 4c 57 98    LW.      ; check the statement ends
+; ***************************************************************************************
+; Point the RENUMBER scan pointers at TOP and PAGE
+;
+; Copy TOP (&12/&13) into the table pointer at &3B/&3C, then fall into point_general_page
+; to set the program-scan pointer at &37/&38 to PAGE (low byte forced to 1, the first
+; line-number byte). Used by RENUMBER to initialise the old-number table (built from the
+; heap at TOP) and the pointer that walks the program from PAGE.
+;
+; On Entry:
+;     ZP_TOP (&12/&13): TOP, the top of the program / base of the heap
+;     ZP_PAGE (&18): PAGE, the start of program text
+;
+; On Exit:
+;     ZP_FWB_SIGN (&3B/&3C): table pointer set to TOP
+;     ZP_GENERAL (&37/&38): scan pointer set to PAGE, low byte 1 (first line-number byte)
+;     A: corrupted
 ; &8f92 referenced 2 times by &8fae, &9040
 .setup_scan_top
     lda zp_top                                                        ; 8f92: a5 12       ..       ; Copy TOP to &3B/&3C
@@ -3813,6 +3883,15 @@ oscli             = &fff7
     jsr assign_number                                                 ; 911e: 20 b4 b4     ..      ; assign the address to the variable
     jsr eeti_sync                                                     ; 9121: 20 27 88     '.      ; sync the pointer
     jmp dim_after                                                     ; 9124: 4c 0b 92    L..      ; continue
+; ***************************************************************************************
+; Raise the "Bad DIM" error
+;
+; Raise BASIC error &0A, "Bad DIM", via a BRK error block (the message ends with the DIM
+; token &DE). Reached by the DIM/array machinery on an empty name, a re-DIM of an
+; existing array, a bound exceeding 16383, or another invalid dimension. Does not return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &0A "Bad DIM"; does not return to the caller
 ; &9127 referenced 8 times by &90e4, &90e6, &90f5, &9150, &9172, &9193, &91b4, &925a
 .bad_dim
     brk                                                               ; 9127: 00          .        ; Bad DIM error
@@ -6800,6 +6879,24 @@ oscli             = &fff7
 ; &9dcb referenced 1 time by &9dd6
 .iwamul_bounce
     jmp mul_dispatch                                                  ; 9dcb: 4c 3c 9d    L<.      ; bounce back to the multiply code
+; ***************************************************************************************
+; Stack the integer, then evaluate a * / DIV / MOD expression
+;
+; Push the pending integer accumulator onto the arithmetic stack via stack_integer, then
+; fall into eval_mul_div to evaluate the higher- precedence (^) operand and apply any * /
+; DIV / MOD operators. A trampoline used when the caller already holds an integer that
+; must be preserved across the multiply-level evaluation.
+;
+; On Entry:
+;     ZP_IWA (&2A): integer value to push onto the stack
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type (<0 float in fwa, >0 integer in iwa, 0 string)
+;     ZP_IWA (&2A) / ZP_FWA (&2E) / STRING_WORK (&0600): the value, selected by the type
+;     X: the next unconsumed operator token
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9dce referenced 2 times by &9c53, &9cba
 .mul_stack_eval
     jsr stack_integer                                                 ; 9dce: 20 94 bd     ..      ; stack the operand, then multiply
@@ -6882,6 +6979,24 @@ oscli             = &fff7
     php                                                               ; 9e17: 08          .        ; save the sign flags
     ldx #&39 ; '9'                                                    ; 9e18: a2 39       .9       ; load the quotient (&39-&3C)
     jmp iwamul_copy                                                   ; 9e1a: 4c bd 9d    L..      ; ...and apply the sign
+; ***************************************************************************************
+; Stack the integer, then evaluate a ^ expression
+;
+; Push the pending integer accumulator onto the arithmetic stack via stack_integer, then
+; fall into eval_power to evaluate the next factor and apply any ^ operators. A
+; trampoline used when the caller already holds an integer that must be preserved across
+; the power-level evaluation.
+;
+; On Entry:
+;     ZP_IWA (&2A): integer value to push onto the stack
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the expression to evaluate
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type (<0 float in fwa, >0 integer in iwa, 0 string)
+;     ZP_IWA (&2A) / ZP_FWA (&2E) / STRING_WORK (&0600): the value, selected by the type
+;     X: the next unconsumed operator token
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the consumed text
 ; &9e1d referenced 2 times by &99c8, &9d52
 .pow_stack_eval
     jsr stack_integer                                                 ; 9e1d: 20 94 bd     ..      ; Stack the integer, evaluate the next ^ operand
@@ -7775,6 +7890,21 @@ oscli             = &fff7
     lda zp_fwa_rnd                                                    ; a23a: a5 35       .5       ; Copy the rounding byte...
     sta zp_fwb_rnd                                                    ; a23c: 85 42       .B       ; ...into FWB
     rts                                                               ; a23e: 60          `        ; FWB is now a copy of FWA
+; ***************************************************************************************
+; FWB = FWA / 2
+;
+; Copy FWA into FWB (fwb_copy_from_fwa), then fall into fwb_div2 to shift the FWB
+; mantissa (including the rounding byte) right one bit. The exponent is left unchanged,
+; so the result is de-normalised; used to build the progressively shifted terms in
+; fwa_div10.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): floating-point accumulator A
+;
+; On Exit:
+;     ZP_FWB (&3B-&42): FWA with its mantissa shifted right one bit (rounding byte included)
+;     X: preserved
+;     C: the bit shifted out of the rounding byte
 ; &a23f referenced 2 times by &a258, &a25e
 .fwb_half_fwa
     jsr fwb_copy_from_fwa                                             ; a23f: 20 1e a2     ..      ; FWB = FWA, then halve it
