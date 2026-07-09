@@ -1879,6 +1879,15 @@
       "on_exit": {
         "zp_opt_flag (&28)": "&FF (BASIC mode, not assembling)",
         "control": "resumes the statement interpreter (does not return)"
+      }
+    },
+    {
+      "addr": 34052,
+      "name": "asm_enter",
+      "title": "Enter the inline assembler",
+      "description": "Reached by the `jmp asm_enter` at &8B44, in\ncheck_eq_star_bracket, when a \"[\" opens an assembler block. Sets the\ndefault OPT 3 (listing + error reporting, assemble to P%) and falls\ninto asm_loop, which assembles one instruction or directive per\nstatement, optionally lists it, and advances. The loop runs until \"]\"\n(-> assembler_exit, back to the interpreter) or the end of the program\n(-> immediate_loop). Does not return.\n",
+      "on_exit": {
+        "control": "does not return; exits to assembler_exit on \"]\" or immediate_loop at end of program"
       },
       "fall_through": true
     },

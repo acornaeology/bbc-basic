@@ -943,7 +943,20 @@ d.comment(0x84fd, 'Leaving the assembler: OPT = BASIC mode', align=Align.INLINE)
 d.comment(0x84ff, 'store &FF (not assembling)', align=Align.INLINE)
 d.comment(0x8501, 'resume execution', align=Align.INLINE)
 d.comment(0x8504, 'Entering: default OPT 3', align=Align.INLINE)
-d.label(0x8504, 'asm_enter')
+d.subroutine(
+    0x8504, 'asm_enter',
+    title='Enter the inline assembler',
+    description="""Reached by the `jmp asm_enter` at &8B44, in
+check_eq_star_bracket, when a "[" opens an assembler block. Sets the
+default OPT 3 (listing + error reporting, assemble to P%) and falls
+into asm_loop, which assembles one instruction or directive per
+statement, optionally lists it, and advances. The loop runs until "]"
+(-> assembler_exit, back to the interpreter) or the end of the program
+(-> immediate_loop). Does not return.
+""",
+    on_exit={'control': 'does not return; exits to assembler_exit on "]" '
+                        'or immediate_loop at end of program'},
+)
 d.comment(0x8506, 'store it', align=Align.INLINE)
 d.comment(0x8508, 'Skip spaces', align=Align.INLINE)
 d.label(0x8508, 'asm_loop')

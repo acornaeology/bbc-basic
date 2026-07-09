@@ -1203,6 +1203,17 @@ oscli             = &fff7
     lda #&ff                                                          ; 84fd: a9 ff       ..       ; Leaving the assembler: OPT = BASIC mode
     sta zp_opt_flag                                                   ; 84ff: 85 28       .(       ; store &FF (not assembling)
     jmp next_statement                                                ; 8501: 4c a3 8b    L..      ; resume execution
+; ***************************************************************************************
+; Enter the inline assembler
+;
+; Reached by the jmp asm_enter at &8B44, in check_eq_star_bracket, when a "[" opens an
+; assembler block. Sets the default OPT 3 (listing + error reporting, assemble to P%) and
+; falls into asm_loop, which assembles one instruction or directive per statement,
+; optionally lists it, and advances. The loop runs until "]" (-> assembler_exit, back to
+; the interpreter) or the end of the program (-> immediate_loop). Does not return.
+;
+; On Exit:
+;     CONTROL: does not return; exits to assembler_exit on "]" or immediate_loop at end of program
 ; &8504 referenced 1 time by &8b44
 .asm_enter
     lda #3                                                            ; 8504: a9 03       ..       ; Entering: default OPT 3
