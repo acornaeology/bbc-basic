@@ -835,16 +835,17 @@ d.index_base(0x8351, 'action_hi_by_token')
 # ----------------------------------------------------------------------
 # Inline-assembler mnemonic tables (&8450-&84FC).
 # ----------------------------------------------------------------------
-d.comment(
+d.banner(
     ASM_MNEMONIC_LO_BASE,
-    """Inline-assembler mnemonic tables.
-
-Three parallel byte arrays, all indexed by the same X, that turn a
+    title='Inline-assembler mnemonic tables',
+    description="""Three parallel byte arrays, all indexed by the same X, that turn a
 typed mnemonic into a base opcode:
 
-  asm_mnemonic_lo  low  byte of the mnemonic's packed-name hash
-  asm_mnemonic_hi  high byte of the mnemonic's packed-name hash
-  asm_base_opcode  the base ("mode 0") opcode for that mnemonic
+| Array           | Holds                                     |
+|-----------------|-------------------------------------------|
+| asm_mnemonic_lo | low byte of the mnemonic's packed-name hash |
+| asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
+| asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
 
 asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
 low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
@@ -854,8 +855,8 @@ and, on a hit, the high half against asm_mnemonic_hi,x; the matching
 index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
 indices directly via asm_logic_mnemonic (&8607).
 
-The index order is meaningful: the operand parser keys its addressing
--mode handler off cpx thresholds on the matched index.
+The index order is meaningful: the operand parser keys its
+addressing-mode handler off cpx thresholds on the matched index.
 
 | Index   | Mnemonics     | Operand form               |
 |---------|---------------|----------------------------|
@@ -884,8 +885,6 @@ byte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and
 asm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse
 is safe precisely because index 0's own high and opcode bytes, which
 those shared bytes stand in for, are never read.""",
-    align=Align.BEFORE_LABEL,
-    word_wrap=False,
 )
 
 # Each byte gets its own EQUB item (d.byte length 1) so its per-index

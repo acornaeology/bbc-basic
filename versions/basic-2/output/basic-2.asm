@@ -963,53 +963,53 @@ oscli             = &fff7
     equb >(stmt_trace)                                                ; 844d: 92          .     
     equb >(stmt_until)                                                ; 844e: bb          .     
     equb >(stmt_width)                                                ; 844f: b4          .     
-; Inline-assembler mnemonic tables.
+; ***************************************************************************************
+; Inline-assembler mnemonic tables
 ;
-; Three parallel byte arrays, all indexed by the same X, that turn a
-; typed mnemonic into a base opcode:
+; Three parallel byte arrays, all indexed by the same X, that turn a typed mnemonic into
+; a base opcode:
 ;
-;   asm_mnemonic_lo  low  byte of the mnemonic's packed-name hash
-;   asm_mnemonic_hi  high byte of the mnemonic's packed-name hash
-;   asm_base_opcode  the base ("mode 0") opcode for that mnemonic
+; | Array           | Holds                                        |
+; |-----------------|----------------------------------------------|
+; | asm_mnemonic_lo | low byte of the mnemonic's packed-name hash  |
+; | asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
+; | asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
 ;
-; asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
-; low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
-; value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
-; from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
-; and, on a hit, the high half against asm_mnemonic_hi,x; the matching
-; index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
-; indices directly via asm_logic_mnemonic (&8607).
+; asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the low 5 bits of
+; each (A=1..Z=26) and packs them MSB-first into a 15-bit value in &3D (low) / &3E
+; (high). asm_mn_search (&85F1) then scans X from &3A down to 1, comparing the low half
+; against asm_mnemonic_lo,x and, on a hit, the high half against asm_mnemonic_hi,x; the
+; matching index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same indices
+; directly via asm_logic_mnemonic (&8607).
 ;
-; The index order is meaningful: the operand parser keys its addressing
-; -mode handler off cpx thresholds on the matched index.
+; The index order is meaningful: the operand parser keys its addressing-mode handler off
+; cpx thresholds on the matched index.
 ;
-; | Index   | Mnemonics     | Operand form               |
-; |---------|---------------|----------------------------|
-; | &01-&19 | BRK..TYA      | implied (opcode only)      |
-; | &1A-&21 | BCC..BVS      | relative branch            |
-; | &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|
-; | &29-&2C | ASL..ROR      | accumulator (A) or memory  |
-; | &2D-&2E | DEC, INC      | memory only                |
-; | &2F-&30 | CPX, CPY      | #/zp/abs                   |
-; | &31     | BIT           | abs/zp                     |
-; | &32-&33 | JMP, JSR      | abs; JMP also (abs)        |
-; | &34-&36 | LDX, LDY, STA | with index register        |
-; | &37-&38 | STX, STY      | two-register form          |
-; | &39     | OPT           | directive (sets OPT flag)  |
-; | &3A     | EQU           | directive (EQUB/W/D/S)     |
+; | Index   | Mnemonics     | Operand form                 |
+; |---------|---------------|------------------------------|
+; | &01-&19 | BRK..TYA      | implied (opcode only)        |
+; | &1A-&21 | BCC..BVS      | relative branch              |
+; | &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y |
+; | &29-&2C | ASL..ROR      | accumulator (A) or memory    |
+; | &2D-&2E | DEC, INC      | memory only                  |
+; | &2F-&30 | CPX, CPY      | #/zp/abs                     |
+; | &31     | BIT           | abs/zp                       |
+; | &32-&33 | JMP, JSR      | abs; JMP also (abs)          |
+; | &34-&36 | LDX, LDY, STA | with index register          |
+; | &37-&38 | STX, STY      | two-register form            |
+; | &39     | OPT           | directive (sets OPT flag)    |
+; | &3A     | EQU           | directive (EQUB/W/D/S)       |
 ;
-; Base opcodes are each group's column-0 value; the operand parser adds
-; addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
-; BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
-; standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
-; asm_base_opcode entry.
+; Base opcodes are each group's column-0 value; the operand parser adds addressing-mode
+; offsets via asm_opcode_add4/8/16, so a few bases (e.g. BIT &20, LDX/LDY-immediate
+; &A2/&A0) are the slot value, not a legal standalone opcode. OPT (&39) and EQU (&3A) are
+; directives and have no asm_base_opcode entry.
 ;
-; Two space-saving quirks. Index 0 is dead: the scan starts at &3A and
-; stops at 1, so index 0 is never tested. And the tables overlap by one
-; byte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and
-; asm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse
-; is safe precisely because index 0's own high and opcode bytes, which
-; those shared bytes stand in for, are never read.
+; Two space-saving quirks. Index 0 is dead: the scan starts at &3A and stops at 1, so
+; index 0 is never tested. And the tables overlap by one byte - asm_mnemonic_lo[&3A] is
+; the first byte of asm_mnemonic_hi, and asm_mnemonic_hi[&3A] is the first byte of
+; asm_base_opcode. The reuse is safe precisely because index 0's own high and opcode
+; bytes, which those shared bytes stand in for, are never read.
 ; &8450 used as index base 1 time by &85f5
 .asm_mnemonic_lo
     equb &be                                                          ; 8450: be          .        ; index &00: unused padding (never tested by the scan)
