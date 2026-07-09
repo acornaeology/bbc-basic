@@ -28,7 +28,7 @@ The formal is not a variable name at all — it is the *string stored at the add
 
 ## Why it works: one lvalue parser, used everywhere
 
-BBC BASIC has a single routine for "parse a thing that can be assigned to": [`parse_lvalue`](address:9582@2?hex) (`&9582`), whose own banner describes it as *"Shared by LET and FOR."* It is, in fact, shared by four callers:
+BBC BASIC has a single routine for "parse a thing that can be assigned to": [`parse_lvalue`](address:9582@2?hex), whose own banner describes it as *"Shared by LET and FOR."* It is, in fact, shared by four callers:
 
 | Caller | Site | What it parses |
 |---|---|---|
@@ -44,7 +44,7 @@ Because the same routine resolves all four, they accept the same grammar. `parse
 - a leading indirection — `?addr` (byte), `!addr` (word), `$addr` (string);
 - a trailing indirection — `base?n`, `base!n`.
 
-For each it returns the storage address in [`zp_iwa`](address:002a@2?hex) (`&2A/&2B`) and a **type byte** in [`zp_iwa_2`](address:002c@2?hex) (`&2C`):
+For each it returns the storage address in [`zp_iwa`](address:002a@2?hex) (`&2A/&2B`) and a **type byte** in [`zp_iwa_2`](address:002c@2?hex):
 
 | Type | Meaning | Width / form |
 |---|---|---|
@@ -212,10 +212,10 @@ This analysis was prompted by a [rheolism](https://bbcmic.ro/) BBC Micro Bot one
 
 ## Cross-references
 
-- [`parse_lvalue`](address:9582@2?hex) (`&9582`) — the shared assignment-target parser; the leading `!`/`$`/`?` dispatch lives at `&9595`–`&95BE`, with the `$ range` guard at [`&95BF`](address:95BF@2?hex).
-- [`parse_var_ref`](address:95C9@2?hex) (`&95C9`) — scans names, arrays and indirections; sets the type byte (`&00`/`&04`/`&05`/`&80`/`&81`) in [`zp_iwa_2`](address:002c@2?hex).
-- [`call_proc_fn`](address:B197@2?hex) (`&B197`) — the call mechanism; parameter binding at `&B24D`, the per-formal `parse_lvalue` at `&B256`, the string/numeric assign at `&B2F3`/`&B300`, and the restore replay at `&B21C`.
-- [`stack_local`](address:B30D@2?hex) (`&B30D`) — stacks a location's old value for restore; shared by `LOCAL` and by each parameter.
-- [`assign_string`](address:8C1E@2?hex) (`&8C1E`) / `assign_string_to` (`&8C21`) — the `$addr` CR-terminated write; [`iwa_store_var`](address:B4C6@2?hex) (`&B4C6`) — the `?`/`!`/integer write, width from the size byte.
-- [`stmt_local`](address:9323@2?hex) (`&9323`) — confirms `LOCAL` uses the same `parse_lvalue`, so `LOCAL ?buf%` / `LOCAL $buf%` are equally legal.
+- [`parse_lvalue`](address:9582@2?hex) — the shared assignment-target parser; the leading `!`/`$`/`?` dispatch lives at `&9595`–`&95BE`, with the `$ range` guard at [`&95BF`](address:95BF@2?hex).
+- [`parse_var_ref`](address:95C9@2?hex) — scans names, arrays and indirections; sets the type byte (`&00`/`&04`/`&05`/`&80`/`&81`) in [`zp_iwa_2`](address:002c@2?hex).
+- [`call_proc_fn`](address:B197@2?hex) — the call mechanism; parameter binding at `&B24D`, the per-formal `parse_lvalue` at `&B256`, the string/numeric assign at `&B2F3`/`&B300`, and the restore replay at `&B21C`.
+- [`stack_local`](address:B30D@2?hex) — stacks a location's old value for restore; shared by `LOCAL` and by each parameter.
+- [`assign_string`](address:8C1E@2?hex) / `assign_string_to` (`&8C21`) — the `$addr` CR-terminated write; [`iwa_store_var`](address:B4C6@2?hex) — the `?`/`!`/integer write, width from the size byte.
+- [`stmt_local`](address:9323@2?hex) — confirms `LOCAL` uses the same `parse_lvalue`, so `LOCAL ?buf%` / `LOCAL $buf%` are equally legal.
 - Related reading: [Control flow on five stacks](control-flow-stacks.md) for the call frame and the `LOCAL`/parameter restore list that this feature rides on.

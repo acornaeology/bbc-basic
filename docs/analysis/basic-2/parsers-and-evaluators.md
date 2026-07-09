@@ -8,11 +8,11 @@ A recurring source of confusion about BBC BASIC — *why does `VAL("&FF")` give 
 
 | Layer | Routine(s) | Reads → produces | Reached from BASIC by |
 |---|---|---|---|
-| Tokeniser (crunch) | [`tokenise_line`](address:8951@2?hex) (`&8951`) | source text → token bytes | every line as typed/edited; `EVAL` re-runs it on a string |
+| Tokeniser (crunch) | [`tokenise_line`](address:8951@2?hex) | source text → token bytes | every line as typed/edited; `EVAL` re-runs it on a string |
 | Statement dispatch | [`next_statement`](address:8BA3@2?hex) / [`dispatch_token`](address:8BB1@2?hex) | a token → a handler | `RUN`, immediate mode, each `:`-separated statement |
-| Expression evaluator | [`eval_expr`](address:9B1D@2?hex) (`&9B1D`) → the precedence ladder | token stream → a typed value | anywhere an expression is wanted (`PRINT`, `=`, `IF`, arguments…) |
-| Factor readers (level 1) | [`eval_factor`](address:ADEC@2?hex) (`&ADEC`) and its sub-readers | one atom → a value | reached only *through* the evaluator |
-| Lvalue parser | [`parse_lvalue`](address:9582@2?hex) (`&9582`) / [`parse_var_ref`](address:95C9@2?hex) | text → an assignable location + type | `LET`, `FOR`, `LOCAL`, `PROC`/`FN` parameters |
+| Expression evaluator | [`eval_expr`](address:9B1D@2?hex) → the precedence ladder | token stream → a typed value | anywhere an expression is wanted (`PRINT`, `=`, `IF`, arguments…) |
+| Factor readers (level 1) | [`eval_factor`](address:ADEC@2?hex) and its sub-readers | one atom → a value | reached only *through* the evaluator |
+| Lvalue parser | [`parse_lvalue`](address:9582@2?hex) / [`parse_var_ref`](address:95C9@2?hex) | text → an assignable location + type | `LET`, `FOR`, `LOCAL`, `PROC`/`FN` parameters |
 | String→value front doors | [`fn_val`](address:AC2F@2?hex) (`VAL`), [`fn_eval`](address:ABE9@2?hex) (`EVAL`) | a string → a value | the `VAL` and `EVAL` functions |
 
 The rest of this article walks the three layers that most often surprise people: the evaluator ladder, the factor-level *readers* (where the number/hex/string/variable splits live), and the two front doors.
@@ -23,12 +23,12 @@ The rest of this article walks the three layers that most often surprise people:
 
 | Level | Routine | Operators |
 |---|---|---|
-| 7 (lowest) | [`eval_or_eor`](address:9B29@2?hex) (`&9B29`) | `OR`, `EOR` |
-| 6 | [`eval_and`](address:9B72@2?hex) (`&9B72`) | `AND` |
-| 5 | [`eval_relational`](address:9B9C@2?hex) (`&9B9C`) | `< <= = >= > <>` |
-| 4 | [`eval_add_sub`](address:9C42@2?hex) (`&9C42`) | `+ -` (and string concatenation) |
-| 3 | [`eval_mul_div`](address:9DD1@2?hex) (`&9DD1`) | `* / DIV MOD` |
-| 1 | [`eval_factor`](address:ADEC@2?hex) (`&ADEC`) | the **atom** |
+| 7 (lowest) | [`eval_or_eor`](address:9B29@2?hex) | `OR`, `EOR` |
+| 6 | [`eval_and`](address:9B72@2?hex) | `AND` |
+| 5 | [`eval_relational`](address:9B9C@2?hex) | `< <= = >= > <>` |
+| 4 | [`eval_add_sub`](address:9C42@2?hex) | `+ -` (and string concatenation) |
+| 3 | [`eval_mul_div`](address:9DD1@2?hex) | `* / DIV MOD` |
+| 1 | [`eval_factor`](address:ADEC@2?hex) | the **atom** |
 
 [`eval_factor`](address:ADEC@2?hex) is "level 1" — the highest-precedence rung and the one that actually *reads* things. It handles unary `-`, `+` and `NOT`; a parenthesised sub-expression; the `?`, `!`, `$` and `|` indirection operators; string literals; and the built-in functions. Unlike the higher levels it does **not** read the trailing operator — its caller does. Everything below is a sub-reader dispatched from here.
 
@@ -36,9 +36,9 @@ The rest of this article walks the three layers that most often surprise people:
 
 This is the layer that explains the surface quirks. `eval_factor` looks at the first character of the atom and dispatches:
 
-- **Decimal / floating-point numbers** → [`parse_number`](address:A07B@2?hex) (`&A07B`). Reads digits, a `.` and an `E` exponent, choosing integer or real (a point or exponent forces real). It is **decimal only** — there is no `&` branch in it, and a non-digit first character yields 0.
-- **Hex constants** → [`factor_hex`](address:AE6D@2?hex) (`&AE6D`), dispatched on a leading `&`. Folds `0-9` and **uppercase** `A-F` into a 32-bit cell as a bit pattern, with **no overflow check** (a 9th digit drops the top nibble; `&FFFFFFFF` = −1) and the sole error *Bad HEX* when no hex digit follows. Lowercase `a-f` ends the scan.
-- **String literals** (`"..."`) → [`read_string_literal`](address:ADAD@2?hex) (`&ADAD`).
+- **Decimal / floating-point numbers** → [`parse_number`](address:A07B@2?hex). Reads digits, a `.` and an `E` exponent, choosing integer or real (a point or exponent forces real). It is **decimal only** — there is no `&` branch in it, and a non-digit first character yields 0.
+- **Hex constants** → [`factor_hex`](address:AE6D@2?hex), dispatched on a leading `&`. Folds `0-9` and **uppercase** `A-F` into a 32-bit cell as a bit pattern, with **no overflow check** (a 9th digit drops the top nibble; `&FFFFFFFF` = −1) and the sole error *Bad HEX* when no hex digit follows. Lowercase `a-f` ends the scan.
+- **String literals** (`"..."`) → [`read_string_literal`](address:ADAD@2?hex).
 - **Variables, array elements and indirection** as *values* → the scanner shared with the lvalue path ([`parse_var_ref`](address:95C9@2?hex)).
 - **Built-in functions** → the per-token `fn_*` handlers, reached through the action-address table ([`action_table_lo`](address:836D@2?hex)) by token value. This is how `SIN`, `LEN`, `VAL`, `EVAL`, and the `TO`-token's [`fn_to`](address:AEDC@2?hex) (which reads `TOP`) are dispatched.
 
@@ -52,7 +52,7 @@ Assignment *targets* are read by a separate machine, [`parse_lvalue`](address:95
 
 Both turn a string into a value, but through completely different machines:
 
-- **`VAL`** ([`fn_val`](address:AC2F@2?hex)) runs the **decimal reader on the raw string**: [`ascii_to_number`](address:AC34@2?hex) (`&AC34`) handles an optional leading sign, then defers to [`parse_number`](address:A07B@2?hex). No tokenising, no operators, no `&`. It reads a number from the *start* of the string and stops at the first non-numeric character.
+- **`VAL`** ([`fn_val`](address:AC2F@2?hex)) runs the **decimal reader on the raw string**: [`ascii_to_number`](address:AC34@2?hex) handles an optional leading sign, then defers to [`parse_number`](address:A07B@2?hex). No tokenising, no operators, no `&`. It reads a number from the *start* of the string and stops at the first non-numeric character.
 - **`EVAL`** ([`fn_eval`](address:ABE9@2?hex)) **tokenises the string and runs the full evaluator** on it: it copies the argument to the stack, appends a `CR`, crunches it in place (in mid-statement state, so `PTR`/`TIME` etc. tokenise as functions), and calls [`eval_expr`](address:9B1D@2?hex). So it accepts everything an expression can contain — `&` hex, `E` exponents, operators, parentheses, functions and in-scope variables.
 
 That is the entire reason for the classic contrast:

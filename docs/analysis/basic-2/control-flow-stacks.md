@@ -15,9 +15,9 @@ The single most useful fact, derived directly from the ROM, is this:
 |---|---|---|---|---|---|
 | 6502 hardware stack | page 1, `&0100–01FF` | 2 bytes (return addr) | the 6502 `S` register | 256 bytes | interpreter `JSR` nesting; nested `PROC`/`FN` call context |
 | BASIC value stack | descends from `HIMEM`, ptr at [`zp_stack_ptr`](address:0004@2?hex) (`&04/05`) | varies | the pointer itself | down to the top of variables | expression temporaries, stacked strings, the saved copy of the 6502 stack during a call, and the per-call `LOCAL`/parameter restore list |
-| `FOR` stack | [`for_stack`](address:0500@2?hex) (`&0500`) | 15 bytes | [`zp_for_level`](address:0026@2?hex) (`&26`) | 10 nested | `FOR`/`NEXT` |
-| `REPEAT` stack | [`repeat_stack`](address:05A4@2?hex) (`&05A4`/`&05B8`) | 2 bytes | [`zp_repeat_level`](address:0024@2?hex) (`&24`) | 20 nested | `REPEAT`/`UNTIL` |
-| `GOSUB` stack | [`gosub_stack`](address:05CC@2?hex) (`&05CC`/`&05E6`) | 2 bytes | [`zp_gosub_level`](address:0025@2?hex) (`&25`) | 26 nested | `GOSUB`/`RETURN` |
+| `FOR` stack | [`for_stack`](address:0500@2?hex) | 15 bytes | [`zp_for_level`](address:0026@2?hex) | 10 nested | `FOR`/`NEXT` |
+| `REPEAT` stack | [`repeat_stack`](address:05A4@2?hex) (`&05A4`/`&05B8`) | 2 bytes | [`zp_repeat_level`](address:0024@2?hex) | 20 nested | `REPEAT`/`UNTIL` |
+| `GOSUB` stack | [`gosub_stack`](address:05CC@2?hex) (`&05CC`/`&05E6`) | 2 bytes | [`zp_gosub_level`](address:0025@2?hex) | 26 nested | `GOSUB`/`RETURN` |
 
 The three loop stacks live side by side in page 5 and are plain LIFO arrays indexed by a one-byte counter each. They are completely independent of one another and of the two general-purpose stacks above them. The capacities are baked into the push routines as literal comparisons — e.g. `REPEAT` checks `CPX #&14` (20) and raises *Too many REPEATs* if the stack is full.
 
@@ -55,8 +55,8 @@ Because the hardware stack was just emptied, the new frame is built from the top
 
 | Addr | Byte | Source |
 |---|---|---|
-| `&01FF` | `PROC` token `&F2` / `FN` `&A4` | [`zp_var_type`](address:0027@2?hex) (`&27`) |
-| `&01FE` | caller text offset (PtrA) | [`zp_text_ptr_off`](address:000a@2?hex) (`&0A`) |
+| `&01FF` | `PROC` token `&F2` / `FN` `&A4` | [`zp_var_type`](address:0027@2?hex) |
+| `&01FE` | caller text offset (PtrA) | [`zp_text_ptr_off`](address:000a@2?hex) |
 | `&01FD` | caller text pointer low | `&0B` |
 | `&01FC` | caller text pointer high | `&0C` |
 | `&01FB` | `LOCAL`/parameter count | — |

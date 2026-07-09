@@ -4,15 +4,15 @@
 
 The single fact that explains the whole family:
 
-> All five commands funnel through one routine, [`clear_vars_heap_stack`](address:BD20@2?hex) (`&BD20`), which wipes the **dynamic-variable world** — every named variable, array, string and `PROC`/`FN` — but **deliberately preserves the resident integer variables `@%` and `A%`–`Z%`**, along with `HIMEM` and `PAGE`. That preservation is not an accident: it is the documented channel for passing data into a `CHAIN`ed program.
+> All five commands funnel through one routine, [`clear_vars_heap_stack`](address:BD20@2?hex), which wipes the **dynamic-variable world** — every named variable, array, string and `PROC`/`FN` — but **deliberately preserves the resident integer variables `@%` and `A%`–`Z%`**, along with `HIMEM` and `PAGE`. That preservation is not an accident: it is the documented channel for passing data into a `CHAIN`ed program.
 
 ## The shared clear
 
 [`clear_vars_heap_stack`](address:BD20@2?hex) does exactly three things:
 
 1. `LOMEM = VARTOP = TOP` — the dynamic-variable heap is emptied by resetting its top back to the end of the program.
-2. [`reset_data_and_stacks`](address:BD3A@2?hex) (`&BD3A`) — the `DATA` pointer is reset to `PAGE` (an implicit `RESTORE`), the BASIC value stack to `HIMEM`, and the `FOR`/`REPEAT`/`GOSUB` level counters to empty.
-3. [`clear_var_table`](address:BD2F@2?hex) (`&BD2F`) — zeroes the per-letter variable chain-head table.
+2. [`reset_data_and_stacks`](address:BD3A@2?hex) — the `DATA` pointer is reset to `PAGE` (an implicit `RESTORE`), the BASIC value stack to `HIMEM`, and the `FOR`/`REPEAT`/`GOSUB` level counters to empty.
+3. [`clear_var_table`](address:BD2F@2?hex) — zeroes the per-letter variable chain-head table.
 
 Step 3 is the crux, and it is precise about its range. It clears **`&0480`–`&04FF`** only:
 
@@ -80,7 +80,7 @@ Model the lifecycle as: `NEW`/`OLD`/`CLEAR`/`RUN`/`CHAIN` all reset the dynamic-
 
 ## Cross-references
 
-- [`clear_vars_heap_stack`](address:BD20@2?hex) (`&BD20`) — the shared clear; [`clear_var_table`](address:BD2F@2?hex) (`&BD2F`, zeroes `&0480`–`&04FF`) and [`reset_data_and_stacks`](address:BD3A@2?hex) (`&BD3A`).
+- [`clear_vars_heap_stack`](address:BD20@2?hex) — the shared clear; [`clear_var_table`](address:BD2F@2?hex) (`&BD2F`, zeroes `&0480`–`&04FF`) and [`reset_data_and_stacks`](address:BD3A@2?hex).
 - [`start_new_program`](address:8ADD@2?hex) (`NEW`), [`stmt_old`](address:8AB6@2?hex) (`OLD`), [`stmt_clear`](address:928D@2?hex) (`CLEAR`), [`stmt_run`](address:BD11@2?hex)/[`run_clear`](address:BD14@2?hex) (`RUN`), [`stmt_chain`](address:BF2A@2?hex)/[`load_program`](address:BE62@2?hex) (`CHAIN`).
 - Workspace: [`resint_at`](address:0400@2?hex) (`@%`, `A%`–`Z%`), [`var_ptr_table`](address:0480@2?hex), and the pointers [`LOMEM`](address:0000@2?hex), [`VARTOP`](address:0002@2?hex), [`HIMEM`](address:0006@2?hex), [`TOP`](address:0012@2?hex), [`PAGE`](address:0018@2?hex).
 - [Control flow on five stacks](control-flow-stacks.md) — what `reset_data_and_stacks` empties, and the early-exit hazards.
