@@ -1925,7 +1925,7 @@
       "addr": 34613,
       "name": "asm_absolute",
       "title": "Assemble a zero-page or absolute operand",
-      "description": "Adjust the opcode being built for absolute addressing\n(asm_opcode_add4), then fall into asm_zp_or_abs, which tests the high\nbyte of the evaluated operand address in zp_iwa: high byte zero emits\nthe two-byte zero-page form (asm_two_byte), otherwise the three-byte\nabsolute form (asm_indexed_adjust). The inline assembler's addressing-\nmode handler for absolute / zero-page operands.\n",
+      "description": "Adjust the opcode being built for absolute addressing\n(asm_opcode_add4), then fall into asm_zp_or_abs, which tests the high\nbyte of the evaluated operand address in zp_iwa: high byte zero emits\nthe two-byte zero-page form (asm_two_byte), otherwise the three-byte\nabsolute form (asm_indexed_adjust). The inline assembler's addressing-mode handler for absolute / zero-page operands.\n",
       "on_entry": {
         "zp_iwa (&2A/&2B)": "the evaluated operand address (low/high)",
         "zp_asm_opcode (&29)": "the opcode being built"
@@ -2071,7 +2071,7 @@
       "addr": 35147,
       "name": "general_next_byte",
       "title": "Advance the general pointer and read the next byte",
-      "description": "Call inc_ptr_general to increment the 16-bit general pointer\nzp_general (&37/&38) by one (carrying into the high byte), then load\nthe byte at (zp_general),Y and return it in A. The tokeniser's fetch-\nnext-character primitive for hex constants and string literals.\n",
+      "description": "Call inc_ptr_general to increment the 16-bit general pointer\nzp_general (&37/&38) by one (carrying into the high byte), then load\nthe byte at (zp_general),Y and return it in A. The tokeniser's fetch-next-character primitive for hex constants and string literals.\n",
       "on_entry": {
         "zp_general (&37)": "the pointer to advance (&37/&38)",
         "Y": "index added to the pointer for the read (usually 0)"
@@ -2265,6 +2265,19 @@
       },
       "on_exit": {
         "the string variable": "updated (allocation reused or grown)"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 35873,
+      "name": "assign_string_to",
+      "title": "Assign a string to a variable descriptor already in IWA",
+      "description": "Alternate entry to assign_string that assumes the variable descriptor\naddress is already in zp_iwa (&2A/&2B) rather than on the stack.\nAssign the string in the string buffer to that variable, reusing the\nexisting allocation if the new string fits, otherwise growing it in\nplace or grabbing fresh heap space.\n",
+      "on_entry": {
+        "zp_iwa (&2A/&2B)": "the variable descriptor address",
+        "zp_iwa_2 (&2C)": "the variable type (&80 = absolute $-string address)",
+        "string_work (&0600)": "the string characters",
+        "zp_strbuf_len (&36)": "the string length"
       }
     },
     {
@@ -2648,6 +2661,24 @@
         "zp_iwa_2 (&2C)": "the type byte (0/4/5/&80/&81)",
         "A": "nonzero if resolved, 0 if a name needs creating / absent",
         "C": "with A=0: clear = create the name, set = no name"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 38365,
+      "name": "pvr_parse",
+      "title": "Parse a variable reference at the scan pointer",
+      "description": "Alternate entry to parse_var_ref for callers that have already pointed\nthe scan pointer zp_text_ptr2 (&19/&1A) at the first non-space\ncharacter (in A). Classify the reference as an indirection operator, a\nresident integer (A%..Z%), or a named/array variable, setting the\nvalue address in zp_iwa (&2A/&2B) and the type byte in zp_iwa_2 (&2C).\n",
+      "on_entry": {
+        "A": "the first non-space character of the reference",
+        "zp_text_ptr2 (&19/&1A)": "the scan pointer at the reference",
+        "zp_text_ptr2_off (&1B)": "the scan offset of the character in A"
+      },
+      "on_exit": {
+        "zp_iwa (&2A/&2B)": "the value address (when resolved)",
+        "zp_iwa_2 (&2C)": "the type byte (0/4/5/&80/&81)",
+        "A": "nonzero if resolved, 0 if a name needs creating / absent",
+        "C": "with A=0: clear = create the name, set = no name"
       }
     },
     {
@@ -2749,6 +2780,21 @@
         "A": "the \"=\" character (consumed)",
         "zp_text_ptr2_off (&1B)": "advanced past the \"=\"",
         "BRK": "Mistake if \"=\" is missing"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 38988,
+      "name": "assign_check_end",
+      "title": "Sync PtrB offset and require statement end after an assignment",
+      "description": "Tail shared by assignment and function-return paths once the right-hand-side value has been computed: move the pending result byte into\nA, resync Y to PtrB's offset (zp_text_ptr2_off, &1B), and tail-jump\ninto check_end_of_statement at cend_check to demand the statement\nterminator against PtrA. Unlike eval_rhs (&9849) it does not evaluate\nthe RHS itself; the value is assumed already in place.\n",
+      "on_entry": {
+        "X": "the result byte left by the assignment / RHS evaluation (the value type)",
+        "zp_text_ptr (&0B)": "the program text pointer (PtrA)",
+        "zp_text_ptr2_off (&1B)": "PtrB's offset at the end of the parsed RHS"
+      },
+      "on_exit": {
+        "control": "jumps into check_end_of_statement (cend_check); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape"
       }
     },
     {
@@ -2794,6 +2840,23 @@
         "zp_text_ptr_off (&0A)": "reset to 1",
         "A": "1 (from the reset offset)",
         "control": "rts, unless Escape is pending (jumps to escape_error)"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 39056,
+      "name": "step_to_next_line",
+      "title": "Advance PtrA to the next program line",
+      "description": "Step from the current line's terminating CR onto the next line: if the\nnext line-number marker has bit 7 set the program has ended and\ncontrol jumps to immediate_loop; otherwise, when TRACE is enabled,\nload the line number into zp_iwa and call trace_line, then skip the\n3-byte line header and reset the character offset. Returns with Z\nclear so callers can branch to run the next statement.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "the current program line (PtrA)",
+        "Y": "offset of the current line's terminating CR within the line"
+      },
+      "on_exit": {
+        "zp_text_ptr (&0B/&0C)": "advanced to the next program line",
+        "zp_text_ptr_off (&0A)": "reset to 1",
+        "zp_iwa (&2A/&2B)": "the new line number, when TRACE is on",
+        "control": "rts with Z clear (more program follows); at end of program jmps to immediate_loop and does not return"
       }
     },
     {
@@ -2820,6 +2883,19 @@
       "on_exit": {
         "the output": "the decimal digits printed",
         "zp_count (&1E)": "the print column, advanced"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 39203,
+      "name": "trace_print_number",
+      "title": "Print a line number in a 5-digit field",
+      "description": "Alternate entry to print_line_number that prints the value in zp_iwa\nas a decimal line number right-justified in a 5-character field (used\nby TRACE and LIST). Loads a field width of 5, then joins\nprint_line_number at plnum_setwidth.\n",
+      "on_entry": {
+        "zp_iwa (&2A/&2B)": "the line number to print"
+      },
+      "on_exit": {
+        "zp_count (&1E)": "the print column, advanced past the 5-character field"
       }
     },
     {
@@ -3062,7 +3138,7 @@
       "addr": 40398,
       "name": "mul_stack_eval",
       "title": "Stack the integer, then evaluate a * / DIV / MOD expression",
-      "description": "Push the pending integer accumulator onto the arithmetic stack via\nstack_integer, then fall into eval_mul_div to evaluate the higher-\nprecedence (^) operand and apply any * / DIV / MOD operators. A\ntrampoline used when the caller already holds an integer that must be\npreserved across the multiply-level evaluation.\n",
+      "description": "Push the pending integer accumulator onto the arithmetic stack via\nstack_integer, then fall into eval_mul_div to evaluate the higher-precedence (^) operand and apply any * / DIV / MOD operators. A\ntrampoline used when the caller already holds an integer that must be\npreserved across the multiply-level evaluation.\n",
       "on_entry": {
         "zp_iwa (&2A)": "integer value to push onto the stack",
         "zp_text_ptr2 (&19/&1A)": "PtrB at the expression to evaluate",
@@ -3297,6 +3373,21 @@
       "on_exit": {
         "zp_fwa (&2E-&35)": "ten times FWA, unnormalised",
         "zp_fwb (&3B-&42)": "corrupted (scratch)"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 41480,
+      "name": "fwa_acc10",
+      "title": "Add FWB into FWA with carry renormalisation",
+      "description": "Add FWB into FWA via fwa_acc_fwb, then renormalise (fwa_carry_renorm):\nif the mantissa addition overflowed, shift FWA's mantissa right one\nbit and increment the exponent. Used repeatedly by the x10 / decimal-conversion routines to accumulate shifted terms into FWA.\n",
+      "on_entry": {
+        "zp_fwa (&2E-&35)": "floating-point accumulator A",
+        "zp_fwb (&3B-&42)": "floating-point accumulator B, the term to add"
+      },
+      "on_exit": {
+        "zp_fwa (&2E-&35)": "FWA + FWB, renormalised (mantissa shifted right and exponent bumped on overflow)",
+        "X": "preserved"
       }
     },
     {
@@ -4779,6 +4870,21 @@
       "on_exit": {
         "zp_top (&12/&13)": "TOP, just past the last line",
         "BRK": "Bad program if a line is malformed"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 48826,
+      "name": "terminate_strbuf",
+      "title": "Terminate the string buffer with a CR",
+      "description": "Write a carriage return (&0D) into string_work (&0600) at the offset\ngiven by zp_strbuf_len, marking the end of the string buffer. Reached\nboth by fall-through from point_strbuf_lo and by jsr from\nassign_str_addr and &BF88.\n",
+      "on_entry": {
+        "zp_strbuf_len (&36)": "the current string length (offset of the terminator)"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the buffer, terminated with a CR at offset zp_strbuf_len",
+        "Y": "the string length",
+        "A": "&0D"
       }
     },
     {

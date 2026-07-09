@@ -1340,8 +1340,7 @@ d.subroutine(
 (asm_opcode_add4), then fall into asm_zp_or_abs, which tests the high
 byte of the evaluated operand address in zp_iwa: high byte zero emits
 the two-byte zero-page form (asm_two_byte), otherwise the three-byte
-absolute form (asm_indexed_adjust). The inline assembler's addressing-
-mode handler for absolute / zero-page operands.
+absolute form (asm_indexed_adjust). The inline assembler's addressing-mode handler for absolute / zero-page operands.
 """,
     on_entry={
         'zp_iwa (&2A/&2B)': 'the evaluated operand address (low/high)',
@@ -1787,8 +1786,7 @@ d.subroutine(
     title='Advance the general pointer and read the next byte',
     description="""Call inc_ptr_general to increment the 16-bit general pointer
 zp_general (&37/&38) by one (carrying into the high byte), then load
-the byte at (zp_general),Y and return it in A. The tokeniser's fetch-
-next-character primitive for hex constants and string literals.
+the byte at (zp_general),Y and return it in A. The tokeniser's fetch-next-character primitive for hex constants and string literals.
 """,
     on_entry={
         'zp_general (&37)': 'the pointer to advance (&37/&38)',
@@ -2486,7 +2484,22 @@ the heap.
 d.comment(0x8c1e, 'Unstack the variable descriptor address', align=Align.INLINE)
 d.comment(0x8c21, 'Variable type', align=Align.INLINE)
 # assign_string
-d.label(0x8c21, 'assign_string_to')
+d.subroutine(
+    0x8c21, 'assign_string_to',
+    title='Assign a string to a variable descriptor already in IWA',
+    description="""Alternate entry to assign_string that assumes the variable descriptor
+address is already in zp_iwa (&2A/&2B) rather than on the stack.
+Assign the string in the string buffer to that variable, reusing the
+existing allocation if the new string fits, otherwise growing it in
+place or grabbing fresh heap space.
+""",
+    on_entry={
+        'zp_iwa (&2A/&2B)': 'the variable descriptor address',
+        'zp_iwa_2 (&2C)': 'the variable type (&80 = absolute $-string address)',
+        'string_work (&0600)': 'the string characters',
+        'zp_strbuf_len (&36)': 'the string length',
+    },
+)
 d.comment(0x8c23, 'An absolute $-string address?', align=Align.INLINE)
 d.comment(0x8c25, 'yes', align=Align.INLINE)
 d.comment(0x8c27, 'Bytes currently allocated', align=Align.INLINE)
@@ -4349,7 +4362,27 @@ d.char_literal(0x95da)
 d.comment(0x95db, 'skip spaces', align=Align.INLINE)
 d.comment(0x95dd, "below '@': an indirection operator", align=Align.INLINE)
 d.char_literal(0x95de)
-d.label(0x95dd, 'pvr_parse')
+d.subroutine(
+    0x95dd, 'pvr_parse',
+    title='Parse a variable reference at the scan pointer',
+    description="""Alternate entry to parse_var_ref for callers that have already pointed
+the scan pointer zp_text_ptr2 (&19/&1A) at the first non-space
+character (in A). Classify the reference as an indirection operator, a
+resident integer (A%..Z%), or a named/array variable, setting the
+value address in zp_iwa (&2A/&2B) and the type byte in zp_iwa_2 (&2C).
+""",
+    on_entry={
+        'A': 'the first non-space character of the reference',
+        'zp_text_ptr2 (&19/&1A)': 'the scan pointer at the reference',
+        'zp_text_ptr2_off (&1B)': 'the scan offset of the character in A',
+    },
+    on_exit={
+        'zp_iwa (&2A/&2B)': 'the value address (when resolved)',
+        'zp_iwa_2 (&2C)': 'the type byte (0/4/5/&80/&81)',
+        'A': 'nonzero if resolved, 0 if a name needs creating / absent',
+        'C': 'with A=0: clear = create the name, set = no name',
+    },
+)
 d.comment(0x95df, "below '@': handle as indirection ($ ! ?)", align=Align.INLINE)
 d.comment(0x95e1, "above 'Z'?", align=Align.INLINE)
 d.char_literal(0x95e2)
@@ -4819,7 +4852,24 @@ d.comment(0x9848, 'Return', align=Align.INLINE)
 d.comment(0x9849, 'Evaluate the right-hand side', align=Align.INLINE)
 d.label(0x9849, 'eval_rhs')
 d.comment(0x984c, 'Result type', align=Align.INLINE)
-d.label(0x984c, 'assign_check_end')
+d.subroutine(
+    0x984c, 'assign_check_end',
+    title='Sync PtrB offset and require statement end after an assignment',
+    description="""Tail shared by assignment and function-return paths once the right-hand-side value has been computed: move the pending result byte into
+A, resync Y to PtrB's offset (zp_text_ptr2_off, &1B), and tail-jump
+into check_end_of_statement at cend_check to demand the statement
+terminator against PtrA. Unlike eval_rhs (&9849) it does not evaluate
+the RHS itself; the value is assumed already in place.
+""",
+    on_entry={
+        'X': 'the result byte left by the assignment / RHS evaluation (the value type)',
+        'zp_text_ptr (&0B)': 'the program text pointer (PtrA)',
+        'zp_text_ptr2_off (&1B)': "PtrB's offset at the end of the parsed RHS",
+    },
+    on_exit={
+        'control': 'jumps into check_end_of_statement (cend_check); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape',
+    },
+)
 d.comment(0x984d, 'Sync the program pointer', align=Align.INLINE)
 d.comment(0x984f, 'check the statement ends', align=Align.INLINE)
 d.comment(0x9852, 'Sync the program pointer', align=Align.INLINE)
@@ -4931,7 +4981,27 @@ d.comment(0x988a, 'At the end of program memory?', align=Align.INLINE)
 d.comment(0x988c, 'in the &0700 buffer (immediate)?', align=Align.INLINE)
 d.comment(0x988e, 'yes: return to immediate mode', align=Align.INLINE)
 d.comment(0x9890, 'Next byte (line-number marker)', align=Align.INLINE)
-d.label(0x9890, 'step_to_next_line')
+d.subroutine(
+    0x9890, 'step_to_next_line',
+    title='Advance PtrA to the next program line',
+    description="""Step from the current line's terminating CR onto the next line: if the
+next line-number marker has bit 7 set the program has ended and
+control jumps to immediate_loop; otherwise, when TRACE is enabled,
+load the line number into zp_iwa and call trace_line, then skip the
+3-byte line header and reset the character offset. Returns with Z
+clear so callers can branch to run the next statement.
+""",
+    on_entry={
+        'zp_text_ptr (&0B/&0C)': 'the current program line (PtrA)',
+        'Y': "offset of the current line's terminating CR within the line",
+    },
+    on_exit={
+        'zp_text_ptr (&0B/&0C)': 'advanced to the next program line',
+        'zp_text_ptr_off (&0A)': 'reset to 1',
+        'zp_iwa (&2A/&2B)': 'the new line number, when TRACE is on',
+        'control': 'rts with Z clear (more program follows); at end of program jmps to immediate_loop and does not return',
+    },
+)
 d.comment(0x9891, 'read it', align=Align.INLINE)
 d.comment(0x9893, 'end of program: immediate mode', align=Align.INLINE)
 d.comment(0x9895, 'TRACE on?', align=Align.INLINE)
@@ -5054,7 +5124,21 @@ d.comment(0x991f, 'Default: no field padding', align=Align.INLINE)
 d.comment(0x9921, 'always: skip the TRACE entry', align=Align.INLINE)
 d.comment(0x9923, 'TRACE entry: 5-digit field', align=Align.INLINE)
 # print_line_number + powers-of-ten tables
-d.label(0x9923, 'trace_print_number')
+d.subroutine(
+    0x9923, 'trace_print_number',
+    title='Print a line number in a 5-digit field',
+    description="""Alternate entry to print_line_number that prints the value in zp_iwa
+as a decimal line number right-justified in a 5-character field (used
+by TRACE and LIST). Loads a field width of 5, then joins
+print_line_number at plnum_setwidth.
+""",
+    on_entry={
+        'zp_iwa (&2A/&2B)': 'the line number to print',
+    },
+    on_exit={
+        'zp_count (&1E)': 'the print column, advanced past the 5-character field',
+    },
+)
 d.comment(0x9925, 'Field width', align=Align.INLINE)
 d.label(0x9925, 'plnum_setwidth')
 d.comment(0x9927, 'Five powers of ten, index 4..0', align=Align.INLINE)
@@ -5950,8 +6034,7 @@ d.subroutine(
     0x9dce, 'mul_stack_eval',
     title='Stack the integer, then evaluate a * / DIV / MOD expression',
     description="""Push the pending integer accumulator onto the arithmetic stack via
-stack_integer, then fall into eval_mul_div to evaluate the higher-
-precedence (^) operand and apply any * / DIV / MOD operators. A
+stack_integer, then fall into eval_mul_div to evaluate the higher-precedence (^) operand and apply any * / DIV / MOD operators. A
 trampoline used when the caller already holds an integer that must be
 preserved across the multiply-level evaluation.
 """,
@@ -6814,7 +6897,22 @@ d.label(0xa1ff, 'mul10_x8')
 d.comment(0xa202, 'FWB = x*4', align=Align.INLINE)
 d.comment(0xa205, 'FWB = x*2', align=Align.INLINE)
 d.comment(0xa208, 'FWA = x*8 + x*2 = x*10', align=Align.INLINE)
-d.label(0xa208, 'fwa_acc10')
+d.subroutine(
+    0xa208, 'fwa_acc10',
+    title='Add FWB into FWA with carry renormalisation',
+    description="""Add FWB into FWA via fwa_acc_fwb, then renormalise (fwa_carry_renorm):
+if the mantissa addition overflowed, shift FWA's mantissa right one
+bit and increment the exponent. Used repeatedly by the x10 / decimal-conversion routines to accumulate shifted terms into FWA.
+""",
+    on_entry={
+        'zp_fwa (&2E-&35)': 'floating-point accumulator A',
+        'zp_fwb (&3B-&42)': 'floating-point accumulator B, the term to add',
+    },
+    on_exit={
+        'zp_fwa (&2E-&35)': 'FWA + FWB, renormalised (mantissa shifted right and exponent bumped on overflow)',
+        'X': 'preserved',
+    },
+)
 d.comment(0xa20b, 'no overflow: done', align=Align.INLINE)
 d.label(0xa20b, 'fwa_carry_renorm')
 d.comment(0xa20d, 'Overflow: shift right, bump exponent: m1', align=Align.INLINE)
@@ -12290,7 +12388,23 @@ d.comment(0xbeb4, '(store)', align=Align.INLINE)
 d.comment(0xbeb6, 'high (&06)', align=Align.INLINE)
 d.comment(0xbeb8, '(store)', align=Align.INLINE)
 d.comment(0xbeba, 'Terminate the string buffer with a CR:', align=Align.INLINE)
-d.label(0xbeba, 'terminate_strbuf')
+d.subroutine(
+    0xbeba, 'terminate_strbuf',
+    title='Terminate the string buffer with a CR',
+    description="""Write a carriage return (&0D) into string_work (&0600) at the offset
+given by zp_strbuf_len, marking the end of the string buffer. Reached
+both by fall-through from point_strbuf_lo and by jsr from
+assign_str_addr and &BF88.
+""",
+    on_entry={
+        'zp_strbuf_len (&36)': 'the current string length (offset of the terminator)',
+    },
+    on_exit={
+        'string_work (&0600)': 'the buffer, terminated with a CR at offset zp_strbuf_len',
+        'Y': 'the string length',
+        'A': '&0D',
+    },
+)
 d.comment(0xbebc, 'CR', align=Align.INLINE)
 d.comment(0xbebe, 'at the end of the buffer', align=Align.INLINE)
 d.comment(0xbec1, 'Return', align=Align.INLINE)

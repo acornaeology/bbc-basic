@@ -1618,7 +1618,7 @@ oscli             = &fff7
 ; Adjust the opcode being built for absolute addressing (asm_opcode_add4), then fall into
 ; asm_zp_or_abs, which tests the high byte of the evaluated operand address in zp_iwa:
 ; high byte zero emits the two-byte zero-page form (asm_two_byte), otherwise the
-; three-byte absolute form (asm_indexed_adjust). The inline assembler's addressing- mode
+; three-byte absolute form (asm_indexed_adjust). The inline assembler's addressing-mode
 ; handler for absolute / zero-page operands.
 ;
 ; On Entry:
@@ -2112,7 +2112,7 @@ oscli             = &fff7
 ;
 ; Call inc_ptr_general to increment the 16-bit general pointer zp_general (&37/&38) by
 ; one (carrying into the high byte), then load the byte at (zp_general),Y and return it
-; in A. The tokeniser's fetch- next-character primitive for hex constants and string
+; in A. The tokeniser's fetch-next-character primitive for hex constants and string
 ; literals.
 ;
 ; On Entry:
@@ -2878,6 +2878,19 @@ oscli             = &fff7
 ; &8c1e referenced 3 times by &8bf5, &ba13, &bb3d
 .assign_string
     jsr unstack_integer                                               ; 8c1e: 20 ea bd     ..      ; Unstack the variable descriptor address
+; ***************************************************************************************
+; Assign a string to a variable descriptor already in IWA
+;
+; Alternate entry to assign_string that assumes the variable descriptor address is
+; already in zp_iwa (&2A/&2B) rather than on the stack. Assign the string in the string
+; buffer to that variable, reusing the existing allocation if the new string fits,
+; otherwise growing it in place or grabbing fresh heap space.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the variable descriptor address
+;     ZP_IWA_2 (&2C): the variable type (&80 = absolute $-string address)
+;     STRING_WORK (&0600): the string characters
+;     ZP_STRBUF_LEN (&36): the string length
 ; &8c21 referenced 2 times by &b300, &bae0
 .assign_string_to
     lda zp_iwa_2                                                      ; 8c21: a5 2c       .,       ; Variable type
@@ -5157,6 +5170,24 @@ oscli             = &fff7
     lda (zp_text_ptr2),y                                              ; 95d7: b1 19       ..       ; Next character
     cmp #ASC(" ")                                                     ; 95d9: c9 20       .        ; space?
     beq pvr_advance                                                   ; 95db: f0 f7       ..       ; skip spaces
+; ***************************************************************************************
+; Parse a variable reference at the scan pointer
+;
+; Alternate entry to parse_var_ref for callers that have already pointed the scan pointer
+; zp_text_ptr2 (&19/&1A) at the first non-space character (in A). Classify the reference
+; as an indirection operator, a resident integer (A%..Z%), or a named/array variable,
+; setting the value address in zp_iwa (&2A/&2B) and the type byte in zp_iwa_2 (&2C).
+;
+; On Entry:
+;     A: the first non-space character of the reference
+;     ZP_TEXT_PTR2 (&19/&1A): the scan pointer at the reference
+;     ZP_TEXT_PTR2_OFF (&1B): the scan offset of the character in A
+;
+; On Exit:
+;     ZP_IWA (&2A/&2B): the value address (when resolved)
+;     ZP_IWA_2 (&2C): the type byte (0/4/5/&80/&81)
+;     A: nonzero if resolved, 0 if a name needs creating / absent
+;     C: with A=0: clear = create the name, set = no name
 ; &95dd referenced 2 times by &8bc9, &ae22
 .pvr_parse
     cmp #ASC("@")                                                     ; 95dd: c9 40       .@       ; below '@': an indirection operator
@@ -5666,6 +5697,22 @@ oscli             = &fff7
 ; &9849 referenced 2 times by &981f, &bf5f
 .eval_rhs
     jsr eval_or_eor                                                   ; 9849: 20 29 9b     ).      ; Evaluate the right-hand side
+; ***************************************************************************************
+; Sync PtrB offset and require statement end after an assignment
+;
+; Tail shared by assignment and function-return paths once the right-hand-side value has
+; been computed: move the pending result byte into A, resync Y to PtrB's offset
+; (zp_text_ptr2_off, &1B), and tail-jump into check_end_of_statement at cend_check to
+; demand the statement terminator against PtrA. Unlike eval_rhs (&9849) it does not
+; evaluate the RHS itself; the value is assumed already in place.
+;
+; On Entry:
+;     X: the result byte left by the assignment / RHS evaluation (the value type)
+;     ZP_TEXT_PTR (&0B): the program text pointer (PtrA)
+;     ZP_TEXT_PTR2_OFF (&1B): PtrB's offset at the end of the parsed RHS
+;
+; On Exit:
+;     CONTROL: jumps into check_end_of_statement (cend_check); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape
 ; &984c referenced 4 times by &8b56, &b58f, &bbb4, &beda
 .assign_check_end
     txa                                                               ; 984c: 8a          .        ; Result type
@@ -5771,6 +5818,24 @@ oscli             = &fff7
     lda zp_text_ptr_1                                                 ; 988a: a5 0c       ..       ; At the end of program memory?
     cmp #7                                                            ; 988c: c9 07       ..       ; in the &0700 buffer (immediate)?
     beq to_immediate                                                  ; 988e: f0 2c       .,       ; yes: return to immediate mode
+; ***************************************************************************************
+; Advance PtrA to the next program line
+;
+; Step from the current line's terminating CR onto the next line: if the next line-number
+; marker has bit 7 set the program has ended and control jumps to immediate_loop;
+; otherwise, when TRACE is enabled, load the line number into zp_iwa and call trace_line,
+; then skip the 3-byte line header and reset the character offset. Returns with Z clear
+; so callers can branch to run the next statement.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): the current program line (PtrA)
+;     Y: offset of the current line's terminating CR within the line
+;
+; On Exit:
+;     ZP_TEXT_PTR (&0B/&0C): advanced to the next program line
+;     ZP_TEXT_PTR_OFF (&0A): reset to 1
+;     ZP_IWA (&2A/&2B): the new line number, when TRACE is on
+;     CONTROL: rts with Z clear (more program follows); at end of program jmps to immediate_loop and does not return
 ; &9890 referenced 2 times by &859f, &8b91
 .step_to_next_line
     iny                                                               ; 9890: c8          .        ; Next byte (line-number marker)
@@ -5913,6 +5978,18 @@ oscli             = &fff7
 .print_line_number
     lda #0                                                            ; 991f: a9 00       ..       ; Default: no field padding
     beq plnum_setwidth                                                ; 9921: f0 02       ..       ; always: skip the TRACE entry
+; ***************************************************************************************
+; Print a line number in a 5-digit field
+;
+; Alternate entry to print_line_number that prints the value in zp_iwa as a decimal line
+; number right-justified in a 5-character field (used by TRACE and LIST). Loads a field
+; width of 5, then joins print_line_number at plnum_setwidth.
+;
+; On Entry:
+;     ZP_IWA (&2A/&2B): the line number to print
+;
+; On Exit:
+;     ZP_COUNT (&1E): the print column, advanced past the 5-character field
 ; &9923 referenced 2 times by &90b8, &b61d
 .trace_print_number
     lda #5                                                            ; 9923: a9 05       ..       ; TRACE entry: 5-digit field
@@ -6883,7 +6960,7 @@ oscli             = &fff7
 ; Stack the integer, then evaluate a * / DIV / MOD expression
 ;
 ; Push the pending integer accumulator onto the arithmetic stack via stack_integer, then
-; fall into eval_mul_div to evaluate the higher- precedence (^) operand and apply any * /
+; fall into eval_mul_div to evaluate the higher-precedence (^) operand and apply any * /
 ; DIV / MOD operators. A trampoline used when the caller already holds an integer that
 ; must be preserved across the multiply-level evaluation.
 ;
@@ -7843,6 +7920,21 @@ oscli             = &fff7
     jsr fwb_copy_from_fwa                                             ; a1ff: 20 1e a2     ..      ; FWB = x*8
     jsr fwb_div2                                                      ; a202: 20 42 a2     B.      ; FWB = x*4
     jsr fwb_div2                                                      ; a205: 20 42 a2     B.      ; FWB = x*2
+; ***************************************************************************************
+; Add FWB into FWA with carry renormalisation
+;
+; Add FWB into FWA via fwa_acc_fwb, then renormalise (fwa_carry_renorm): if the mantissa
+; addition overflowed, shift FWA's mantissa right one bit and increment the exponent.
+; Used repeatedly by the x10 / decimal-conversion routines to accumulate shifted terms
+; into FWA.
+;
+; On Entry:
+;     ZP_FWA (&2E-&35): floating-point accumulator A
+;     ZP_FWB (&3B-&42): floating-point accumulator B, the term to add
+;
+; On Exit:
+;     ZP_FWA (&2E-&35): FWA + FWB, renormalised (mantissa shifted right and exponent bumped on overflow)
+;     X: preserved
 ; &a208 referenced 5 times by &a25b, &a26a, &a284, &a29c, &a5e0
 .fwa_acc10
     jsr fwa_acc_fwb                                                   ; a208: 20 78 a1     x.      ; FWA = x8 + x2 = x*10
@@ -14735,6 +14827,20 @@ oscli             = &fff7
     sta zp_general                                                    ; beb4: 85 37       .7       ; (store)
     lda #6                                                            ; beb6: a9 06       ..       ; high (&06)
     sta zp_general_1                                                  ; beb8: 85 38       .8       ; (store)
+; ***************************************************************************************
+; Terminate the string buffer with a CR
+;
+; Write a carriage return (&0D) into string_work (&0600) at the offset given by
+; zp_strbuf_len, marking the end of the string buffer. Reached both by fall-through from
+; point_strbuf_lo and by jsr from assign_str_addr and &BF88.
+;
+; On Entry:
+;     ZP_STRBUF_LEN (&36): the current string length (offset of the terminator)
+;
+; On Exit:
+;     STRING_WORK (&0600): the buffer, terminated with a CR at offset zp_strbuf_len
+;     Y: the string length
+;     A: &0D
 ; &beba referenced 2 times by &8ca2, &bf88
 .terminate_strbuf
     ldy zp_strbuf_len                                                 ; beba: a4 36       .6       ; Terminate the string buffer with a CR:
