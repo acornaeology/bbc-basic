@@ -10,7 +10,7 @@ BBC BASIC's inline assembler is unusually well integrated: it is not a bolted-on
 
 ## Entering and leaving: `[` and `]`
 
-`[` at the start of a statement is recognised by [`check_eq_star_bracket`](address:8B60@2?hex) (`&8B60`) and jumps to [`asm_enter`](address:8504@2?hex) (`&8504`), which sets the default **`OPT 3`** and falls into the main loop [`asm_loop`](address:8508@2?hex):
+`[` at the start of a statement is recognised by [`check_eq_star_bracket`](address:8B60@2?hex) and jumps to [`asm_enter`](address:8504@2?hex), which sets the default **`OPT 3`** and falls into the main loop [`asm_loop`](address:8508@2?hex):
 
 ```
 .asm_enter
@@ -23,15 +23,15 @@ BBC BASIC's inline assembler is unusually well integrated: it is not a bolted-on
     ...                     ; assemble one statement, optionally list it, advance
 ```
 
-The terminator `]` is only ever tested **at the start of a statement** (the first non-space character). [`assembler_exit`](address:84FD@2?hex) (`&84FD`) sets the `OPT` flag [`zp_opt_flag`](address:0028@2?hex) (`&28`) to `&FF` and returns to the interpreter. That `&FF` is doing double duty: it is the *"not currently assembling"* sentinel that the rest of the ROM checks (see *Forward references* below).
+The terminator `]` is only ever tested **at the start of a statement** (the first non-space character). [`assembler_exit`](address:84FD@2?hex) sets the `OPT` flag [`zp_opt_flag`](address:0028@2?hex) to `&FF` and returns to the interpreter. That `&FF` is doing double duty: it is the *"not currently assembling"* sentinel that the rest of the ROM checks (see *Forward references* below).
 
 Because `]` is only the terminator at statement-start, it is safe **inside an `EQUS` string** — `EQUS "Contains]"` assembles the nine bytes verbatim, since the `]` is read as string data by the `EQUS` operand evaluator and never reaches the statement-start test.
 
 ## `P%`, `O%` and offset assembly
 
-The program counter `P%` lives at [`resint_p`](address:0440@2?hex) (`&0440`) and the offset address `O%` at [`resint_o`](address:043C@2?hex) (`&043C`) — the `'P'` and `'O'` slots of the resident integers `A%`–`Z%`. So they are plain BASIC variables: set `P% = &2000` before a block, read `P%` after it to find the end.
+The program counter `P%` lives at [`resint_p`](address:0440@2?hex) and the offset address `O%` at [`resint_o`](address:043C@2?hex) — the `'P'` and `'O'` slots of the resident integers `A%`–`Z%`. So they are plain BASIC variables: set `P% = &2000` before a block, read `P%` after it to find the end.
 
-Assembled bytes are written by [`asm_emit`](address:862B@2?hex) (`&862B`), which picks the destination from **`OPT` bit 2**:
+Assembled bytes are written by [`asm_emit`](address:862B@2?hex), which picks the destination from **`OPT` bit 2**:
 
 - bit 2 clear → store at `P%` (the normal case);
 - bit 2 set (`OPT >= 4`) → store at `O%` instead, while still advancing `P%`.
@@ -40,7 +40,7 @@ This is **offset assembly**: the code is laid down at `O%` but assembled *as if*
 
 ## `OPT`: four bits, two of which matter a lot
 
-[`asm_opt_directive`](address:8813@2?hex) (`&8813`) evaluates `OPT n` and stores `n` into the flag. The bits ([`zp_opt_flag`](address:0028@2?hex)):
+[`asm_opt_directive`](address:8813@2?hex) evaluates `OPT n` and stores `n` into the flag. The bits ([`zp_opt_flag`](address:0028@2?hex)):
 
 | Bit | Value | Meaning |
 |---|---|---|
@@ -53,14 +53,14 @@ Default on entry is `OPT 3` (listing + errors, assemble to `P%`). Bit 1 is the o
 
 ## Mnemonics — and `OPT`/`EQU` — in one packed table
 
-[`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`) reads the three-letter mnemonic, takes the **low 5 bits of each letter** (so `A`=1 … `Z`=26) and packs them **most-significant letter first** into a 15-bit key held in `&3D` (low) / `&3E` (high). [`asm_mn_search`](address:85F1@2?hex) (`&85F1`) then walks one index register **from `&3A` down to `1`**, comparing the low half against [`asm_mnemonic_lo`](address:8450@2?hex),X and, on a hit, the high half against `asm_mnemonic_hi`,X. A match yields an **index** that does two jobs at once: it selects the base opcode from [`asm_base_opcode`](address:84C4@2?hex),X, and its numeric *value* routes the operand parser to the right addressing-mode handler.
+[`asm_parse_mnemonic`](address:85BA@2?hex) reads the three-letter mnemonic, takes the **low 5 bits of each letter** (so `A`=1 … `Z`=26) and packs them **most-significant letter first** into a 15-bit key held in `&3D` (low) / `&3E` (high). [`asm_mn_search`](address:85F1@2?hex) then walks one index register **from `&3A` down to `1`**, comparing the low half against [`asm_mnemonic_lo`](address:8450@2?hex),X and, on a hit, the high half against `asm_mnemonic_hi`,X. A match yields an **index** that does two jobs at once: it selects the base opcode from [`asm_base_opcode`](address:84C4@2?hex),X, and its numeric *value* routes the operand parser to the right addressing-mode handler.
 
 Before the search, the statement dispatcher peels off the non-mnemonic cases:
 
 - `:` or carriage return → empty statement;
 - `\` → a comment to end of statement;
 - `.` → a **label definition** (below);
-- tokenised `AND` / `EOR` / `OR` → [`asm_logic_mnemonic`](address:8607@2?hex) (`&8607`), because these collide with BASIC keywords and are stored as single tokens, not letters (they rejoin the opcode path at indices `&22`–`&24`).
+- tokenised `AND` / `EOR` / `OR` → [`asm_logic_mnemonic`](address:8607@2?hex), because these collide with BASIC keywords and are stored as single tokens, not letters (they rejoin the opcode path at indices `&22`–`&24`).
 
 Everything else — **including the `OPT` and `EQU` directives** — goes through the packed table. There are 59 index slots:
 
@@ -88,7 +88,7 @@ Two space-saving tricks hide in the byte layout. Because index 0 is dead its low
 
 ## Labels are BASIC variables
 
-A leading `.` runs [`asm_define_label`](address:85A5@2?hex) (`&85A5`):
+A leading `.` runs [`asm_define_label`](address:85A5@2?hex):
 
 ```
 .asm_define_label
@@ -102,7 +102,7 @@ So `.loop` is literally `loop = P%` — the label is an ordinary integer variabl
 
 ## Forward references and the two-pass idiom
 
-This is the heart of how the assembler is used. When the expression evaluator meets a reference to an **undefined** variable, it reaches [`factor_undefined`](address:AE30@2?hex) (`&AE30`):
+This is the heart of how the assembler is used. When the expression evaluator meets a reference to an **undefined** variable, it reaches [`factor_undefined`](address:AE30@2?hex):
 
 ```
 .factor_undefined
@@ -136,7 +136,7 @@ The choice to return **`P%` rather than `0`** for an unknown forward reference i
 
 ## The `EQU` directives
 
-[`equb_directive`](address:883A@2?hex) (`&883A`) dispatches on the letter after `EQU`:
+[`equb_directive`](address:883A@2?hex) dispatches on the letter after `EQU`:
 
 - **`EQUB` / `EQUW` / `EQUD`** evaluate a **numeric** expression (`eval_expr_to_integer`) and emit 1 / 2 / 4 bytes.
 - **`EQUS`** evaluates a **string** expression and emits its bytes; a non-string operand raises *Type mismatch*.
@@ -162,8 +162,8 @@ Note the same OPT-bit-1 gate on *Out of range* as on *No such variable*: pass 1 
 
 ## Cross-references
 
-- Entry/loop/exit: [`check_eq_star_bracket`](address:8B60@2?hex) (`&8B60`), [`asm_enter`](address:8504@2?hex) (`&8504`), [`asm_loop`](address:8508@2?hex) (`&8508`), [`assembler_exit`](address:84FD@2?hex) (`&84FD`).
-- Mnemonics/operands: [`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`), [`asm_mn_search`](address:85F1@2?hex) (`&85F1`), [`asm_logic_mnemonic`](address:8607@2?hex) (`&8607`), [`asm_mnemonic_lo`](address:8450@2?hex) (`&8450`), [`asm_base_opcode`](address:84C4@2?hex) (`&84C4`), [`asm_emit`](address:862B@2?hex) (`&862B`).
-- Labels & forward refs: [`asm_define_label`](address:85A5@2?hex) (`&85A5`), [`factor_undefined`](address:AE30@2?hex) (`&AE30`), [`factor_pcounter`](address:AE3A@2?hex) (`&AE3A`).
-- Directives & `OPT`: [`equb_directive`](address:883A@2?hex) (`&883A`), [`asm_opt_directive`](address:8813@2?hex) (`&8813`).
-- Workspace: [`zp_opt_flag`](address:0028@2?hex) (`&28`), [`zp_asm_opcode`](address:0029@2?hex) (`&29`), [`resint_p`](address:0440@2?hex) (`P%`), [`resint_o`](address:043C@2?hex) (`O%`).
+- Entry/loop/exit: [`check_eq_star_bracket`](address:8B60@2?hex), [`asm_enter`](address:8504@2?hex), [`asm_loop`](address:8508@2?hex), [`assembler_exit`](address:84FD@2?hex).
+- Mnemonics/operands: [`asm_parse_mnemonic`](address:85BA@2?hex), [`asm_mn_search`](address:85F1@2?hex), [`asm_logic_mnemonic`](address:8607@2?hex), [`asm_mnemonic_lo`](address:8450@2?hex), [`asm_base_opcode`](address:84C4@2?hex), [`asm_emit`](address:862B@2?hex).
+- Labels & forward refs: [`asm_define_label`](address:85A5@2?hex), [`factor_undefined`](address:AE30@2?hex), [`factor_pcounter`](address:AE3A@2?hex).
+- Directives & `OPT`: [`equb_directive`](address:883A@2?hex), [`asm_opt_directive`](address:8813@2?hex).
+- Workspace: [`zp_opt_flag`](address:0028@2?hex), [`zp_asm_opcode`](address:0029@2?hex), [`resint_p`](address:0440@2?hex) (`P%`), [`resint_o`](address:043C@2?hex) (`O%`).
