@@ -37,6 +37,59 @@ ACTION_TABLE_HI = 0x83df
 FIRST_DISPATCH_TOKEN = 0x8e
 NUM_DISPATCH_TOKENS = 0x72  # tokens &8E..&FF
 
+# ----------------------------------------------------------------------
+# Inline-assembler mnemonic tables (&8450). Three parallel byte arrays,
+# indexed by the same X: asm_mnemonic_lo / asm_mnemonic_hi hold the low
+# / high halves of a 15-bit "packed name" hash of each mnemonic, and
+# asm_base_opcode holds the base ("mode 0") opcode. The banner rendered
+# at &8450 describes the full scheme, packing, and index ordering.
+# ----------------------------------------------------------------------
+ASM_MNEMONIC_LO_BASE = 0x8450
+ASM_MNEMONIC_HI_BASE = 0x848a
+ASM_BASE_OPCODE_BASE = 0x84c4
+ASM_TABLES_END = 0x84fd  # first byte past asm_base_opcode (assembler_exit)
+
+# Mnemonic recognised at each table index. Index &00 is dead padding
+# (the scan runs X = &3A..1, so index 0 is never tested). Indices &39 /
+# &3A are the OPT and EQU directives, which have no base-opcode entry.
+ASM_MNEMONICS = [
+    None,                                                          # &00 padding
+    'BRK', 'CLC', 'CLD', 'CLI', 'CLV', 'DEX', 'DEY', 'INX', 'INY', 'NOP',
+    'PHA', 'PHP', 'PLA', 'PLP', 'RTI', 'RTS', 'SEC', 'SED', 'SEI',
+    'TAX', 'TAY', 'TSX', 'TXA', 'TXS', 'TYA',                       # ..&19 implied
+    'BCC', 'BCS', 'BEQ', 'BMI', 'BNE', 'BPL', 'BVC', 'BVS',         # &1A..&21 branches
+    'AND', 'EOR', 'ORA', 'ADC', 'CMP', 'LDA', 'SBC',               # &22..&28 full modes
+    'ASL', 'LSR', 'ROL', 'ROR',                                    # &29..&2C A or memory
+    'DEC', 'INC',                                                  # &2D..&2E memory only
+    'CPX', 'CPY',                                                  # &2F..&30 #/zp/abs
+    'BIT',                                                         # &31 abs/zp
+    'JMP', 'JSR',                                                  # &32..&33
+    'LDX', 'LDY', 'STA',                                           # &34..&36
+    'STX', 'STY',                                                  # &37..&38 two-register
+    'OPT',                                                         # &39 directive
+    'EQU',                                                         # &3A directive (EQUB/W/D/S)
+]
+
+# Base ("mode 0") opcode for indices &00..&38. The bytes are the group's
+# addressing-mode column-0 value; the operand parser adds column offsets
+# via asm_opcode_add4/8/16, so a few (e.g. BIT &20, LDX/LDY-immediate
+# &A2/&A0) are the slot value, not a legal standalone opcode.
+ASM_BASE_OPCODES = [
+    0x16,                                                          # &00 padding
+    0x00, 0x18, 0xd8, 0x58, 0xb8, 0xca, 0x88, 0xe8, 0xc8, 0xea,
+    0x48, 0x08, 0x68, 0x28, 0x40, 0x60, 0x38, 0xf8, 0x78,
+    0xaa, 0xa8, 0xba, 0x8a, 0x9a, 0x98,
+    0x90, 0xb0, 0xf0, 0x30, 0xd0, 0x10, 0x50, 0x70,
+    0x21, 0x41, 0x01, 0x61, 0xc1, 0xa1, 0xe1,
+    0x06, 0x46, 0x26, 0x66,
+    0xc6, 0xe6,
+    0xe0, 0xc0,
+    0x20,
+    0x4c, 0x20,
+    0xa2, 0xa0, 0x81,
+    0x86, 0x84,
+]
+
 # token -> handler base name (from the keyword table). Tokens <= &C5 are
 # value-returning functions (fn_*); the rest are statements (stmt_*).
 # Token &CE has no keyword (a gap in the table). The five pseudo-variable
@@ -779,9 +832,98 @@ for _i in range(NUM_DISPATCH_TOKENS):
 
 d.index_base(0x82df, 'action_lo_by_token')
 d.index_base(0x8351, 'action_hi_by_token')
-d.index_base(0x8450, 'asm_mnemonic_lo')
-d.index_base(0x848a, 'asm_mnemonic_hi')
-d.index_base(0x84c4, 'asm_base_opcode')
+# ----------------------------------------------------------------------
+# Inline-assembler mnemonic tables (&8450-&84FC).
+# ----------------------------------------------------------------------
+d.comment(
+    ASM_MNEMONIC_LO_BASE,
+    """Inline-assembler mnemonic tables.
+
+Three parallel byte arrays, all indexed by the same X, that turn a
+typed mnemonic into a base opcode:
+
+  asm_mnemonic_lo  low  byte of the mnemonic's packed-name hash
+  asm_mnemonic_hi  high byte of the mnemonic's packed-name hash
+  asm_base_opcode  the base ("mode 0") opcode for that mnemonic
+
+asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
+low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
+value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
+from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
+and, on a hit, the high half against asm_mnemonic_hi,x; the matching
+index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
+indices directly via asm_logic_mnemonic (&8607).
+
+The index order is meaningful: the operand parser keys its addressing
+-mode handler off cpx thresholds on the matched index.
+
+| Index   | Mnemonics     | Operand form               |
+|---------|---------------|----------------------------|
+| &01-&19 | BRK..TYA      | implied (opcode only)      |
+| &1A-&21 | BCC..BVS      | relative branch            |
+| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|
+| &29-&2C | ASL..ROR      | accumulator (A) or memory  |
+| &2D-&2E | DEC, INC      | memory only                |
+| &2F-&30 | CPX, CPY      | #/zp/abs                   |
+| &31     | BIT           | abs/zp                     |
+| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |
+| &34-&36 | LDX, LDY, STA | with index register        |
+| &37-&38 | STX, STY      | two-register form          |
+| &39     | OPT           | directive (sets OPT flag)  |
+| &3A     | EQU           | directive (EQUB/W/D/S)     |
+
+Base opcodes are each group's column-0 value; the operand parser adds
+addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
+BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
+standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
+asm_base_opcode entry.
+
+Two space-saving quirks. Index 0 is dead: the scan starts at &3A and
+stops at 1, so index 0 is never tested. And the tables overlap by one
+byte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and
+asm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse
+is safe precisely because index 0's own high and opcode bytes, which
+those shared bytes stand in for, are never read.""",
+    align=Align.BEFORE_LABEL,
+    word_wrap=False,
+)
+
+# Each byte gets its own EQUB item (d.byte length 1) so its per-index
+# inline comment lands on its own line. asm_mnemonic_lo[&00] is padding
+# whose value (&BE) happens to equal >(stmt_oscli), which the renderer
+# would otherwise symbolise; pin it to a plain hex byte.
+d.index_base(ASM_MNEMONIC_LO_BASE, 'asm_mnemonic_lo')
+d.expr(ASM_MNEMONIC_LO_BASE, '&be')
+for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
+    d.byte(ASM_MNEMONIC_LO_BASE + _i, 1, override=True)
+    if _i == 0:
+        _text = 'index &00: unused padding (never tested by the scan)'
+    else:
+        _dir = ' directive' if _i >= 0x39 else ''
+        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name low byte'
+    d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
+
+d.index_base(ASM_MNEMONIC_HI_BASE, 'asm_mnemonic_hi')
+for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
+    d.byte(ASM_MNEMONIC_HI_BASE + _i, 1, override=True)
+    if _i == 0:
+        _text = ('index &00 hi (unused); also asm_mnemonic_lo[&3A] = '
+                 'EQU directive packed-name low byte')
+    else:
+        _dir = ' directive' if _i >= 0x39 else ''
+        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name high byte'
+    d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)
+
+d.index_base(ASM_BASE_OPCODE_BASE, 'asm_base_opcode')
+for _i in range(ASM_TABLES_END - ASM_BASE_OPCODE_BASE):
+    d.byte(ASM_BASE_OPCODE_BASE + _i, 1, override=True)
+    if _i == 0:
+        _text = ('index &00 base (unused); also asm_mnemonic_hi[&3A] = '
+                 'EQU directive packed-name high byte')
+    else:
+        _text = (f'[&{_i:02x}] {ASM_MNEMONICS[_i]}: base opcode '
+                 f'&{ASM_BASE_OPCODES[_i]:02x}')
+    d.comment(ASM_BASE_OPCODE_BASE + _i, _text, align=Align.INLINE)
 
 d.subroutine(
     0x84fd, 'assembler_exit',

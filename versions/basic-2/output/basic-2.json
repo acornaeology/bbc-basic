@@ -11714,6 +11714,10 @@
       "labels": [
         "asm_mnemonic_lo"
       ],
+      "comments_before_label": [
+        "Inline-assembler mnemonic tables.\n\nThree parallel byte arrays, all indexed by the same X, that turn a\ntyped mnemonic into a base opcode:\n\n  asm_mnemonic_lo  low  byte of the mnemonic's packed-name hash\n  asm_mnemonic_hi  high byte of the mnemonic's packed-name hash\n  asm_base_opcode  the base (\"mode 0\") opcode for that mnemonic\n\nasm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the\nlow 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit\nvalue in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X\nfrom &3A down to 1, comparing the low half against asm_mnemonic_lo,x\nand, on a hit, the high half against asm_mnemonic_hi,x; the matching\nindex selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same\nindices directly via asm_logic_mnemonic (&8607).\n\nThe index order is meaningful: the operand parser keys its addressing\n-mode handler off cpx thresholds on the matched index.\n\n| Index   | Mnemonics     | Operand form               |\n|---------|---------------|----------------------------|\n| &01-&19 | BRK..TYA      | implied (opcode only)      |\n| &1A-&21 | BCC..BVS      | relative branch            |\n| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|\n| &29-&2C | ASL..ROR      | accumulator (A) or memory  |\n| &2D-&2E | DEC, INC      | memory only                |\n| &2F-&30 | CPX, CPY      | #/zp/abs                   |\n| &31     | BIT           | abs/zp                     |\n| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |\n| &34-&36 | LDX, LDY, STA | with index register        |\n| &37-&38 | STX, STY      | two-register form          |\n| &39     | OPT           | directive (sets OPT flag)  |\n| &3A     | EQU           | directive (EQUB/W/D/S)     |\n\nBase opcodes are each group's column-0 value; the operand parser adds\naddressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.\nBIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal\nstandalone opcode. OPT (&39) and EQU (&3A) are directives and have no\nasm_base_opcode entry.\n\nTwo space-saving quirks. Index 0 is dead: the scan starts at &3A and\nstops at 1, so index 0 is never tested. And the tables overlap by one\nbyte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and\nasm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse\nis safe precisely because index 0's own high and opcode bytes, which\nthose shared bytes stand in for, are never read."
+      ],
+      "comment_inline": "index &00: unused padding (never tested by the scan)",
       "xref_summaries": [
         "&8450 used as index base 1 time by &85f5"
       ],
@@ -11728,182 +11732,645 @@
         190
       ],
       "expressions": [
-        ">(stmt_oscli)"
+        "&be"
       ]
     },
     {
       "addr": 33873,
       "bytes": [
-        75,
-        131,
-        132,
-        137,
-        150,
-        184,
-        185,
-        216,
-        217,
-        240,
-        1,
-        16,
-        129,
-        144,
-        137,
-        147,
-        163,
-        164,
-        169
+        75
       ],
+      "comment_inline": "[&01] BRK: packed-name low byte",
       "type": "byte",
       "values": [
-        75,
-        131,
-        132,
-        137,
-        150,
-        184,
-        185,
-        216,
-        217,
-        240,
-        1,
-        16,
-        129,
-        144,
-        137,
-        147,
-        163,
-        164,
+        75
+      ]
+    },
+    {
+      "addr": 33874,
+      "bytes": [
+        131
+      ],
+      "comment_inline": "[&02] CLC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        131
+      ]
+    },
+    {
+      "addr": 33875,
+      "bytes": [
+        132
+      ],
+      "comment_inline": "[&03] CLD: packed-name low byte",
+      "type": "byte",
+      "values": [
+        132
+      ]
+    },
+    {
+      "addr": 33876,
+      "bytes": [
+        137
+      ],
+      "comment_inline": "[&04] CLI: packed-name low byte",
+      "type": "byte",
+      "values": [
+        137
+      ]
+    },
+    {
+      "addr": 33877,
+      "bytes": [
+        150
+      ],
+      "comment_inline": "[&05] CLV: packed-name low byte",
+      "type": "byte",
+      "values": [
+        150
+      ]
+    },
+    {
+      "addr": 33878,
+      "bytes": [
+        184
+      ],
+      "comment_inline": "[&06] DEX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        184
+      ]
+    },
+    {
+      "addr": 33879,
+      "bytes": [
+        185
+      ],
+      "comment_inline": "[&07] DEY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        185
+      ]
+    },
+    {
+      "addr": 33880,
+      "bytes": [
+        216
+      ],
+      "comment_inline": "[&08] INX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        216
+      ]
+    },
+    {
+      "addr": 33881,
+      "bytes": [
+        217
+      ],
+      "comment_inline": "[&09] INY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        217
+      ]
+    },
+    {
+      "addr": 33882,
+      "bytes": [
+        240
+      ],
+      "comment_inline": "[&0a] NOP: packed-name low byte",
+      "type": "byte",
+      "values": [
+        240
+      ]
+    },
+    {
+      "addr": 33883,
+      "bytes": [
+        1
+      ],
+      "comment_inline": "[&0b] PHA: packed-name low byte",
+      "type": "byte",
+      "values": [
+        1
+      ]
+    },
+    {
+      "addr": 33884,
+      "bytes": [
+        16
+      ],
+      "comment_inline": "[&0c] PHP: packed-name low byte",
+      "type": "byte",
+      "values": [
+        16
+      ]
+    },
+    {
+      "addr": 33885,
+      "bytes": [
+        129
+      ],
+      "comment_inline": "[&0d] PLA: packed-name low byte",
+      "type": "byte",
+      "values": [
+        129
+      ]
+    },
+    {
+      "addr": 33886,
+      "bytes": [
+        144
+      ],
+      "comment_inline": "[&0e] PLP: packed-name low byte",
+      "type": "byte",
+      "values": [
+        144
+      ]
+    },
+    {
+      "addr": 33887,
+      "bytes": [
+        137
+      ],
+      "comment_inline": "[&0f] RTI: packed-name low byte",
+      "type": "byte",
+      "values": [
+        137
+      ]
+    },
+    {
+      "addr": 33888,
+      "bytes": [
+        147
+      ],
+      "comment_inline": "[&10] RTS: packed-name low byte",
+      "type": "byte",
+      "values": [
+        147
+      ]
+    },
+    {
+      "addr": 33889,
+      "bytes": [
+        163
+      ],
+      "comment_inline": "[&11] SEC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        163
+      ]
+    },
+    {
+      "addr": 33890,
+      "bytes": [
+        164
+      ],
+      "comment_inline": "[&12] SED: packed-name low byte",
+      "type": "byte",
+      "values": [
+        164
+      ]
+    },
+    {
+      "addr": 33891,
+      "bytes": [
+        169
+      ],
+      "comment_inline": "[&13] SEI: packed-name low byte",
+      "type": "byte",
+      "values": [
         169
       ]
     },
     {
       "addr": 33892,
       "bytes": [
-        56,
-        57,
+        56
+      ],
+      "comment_inline": "[&14] TAX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        56
+      ]
+    },
+    {
+      "addr": 33893,
+      "bytes": [
+        57
+      ],
+      "comment_inline": "[&15] TAY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        57
+      ]
+    },
+    {
+      "addr": 33894,
+      "bytes": [
         120
       ],
-      "type": "string",
-      "string": "89x"
+      "comment_inline": "[&16] TSX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        120
+      ]
     },
     {
       "addr": 33895,
       "bytes": [
-        1,
-        19
+        1
       ],
+      "comment_inline": "[&17] TXA: packed-name low byte",
       "type": "byte",
       "values": [
-        1,
+        1
+      ]
+    },
+    {
+      "addr": 33896,
+      "bytes": [
+        19
+      ],
+      "comment_inline": "[&18] TXS: packed-name low byte",
+      "type": "byte",
+      "values": [
         19
       ]
     },
     {
       "addr": 33897,
       "bytes": [
-        33,
-        99,
+        33
+      ],
+      "comment_inline": "[&19] TYA: packed-name low byte",
+      "type": "byte",
+      "values": [
+        33
+      ]
+    },
+    {
+      "addr": 33898,
+      "bytes": [
+        99
+      ],
+      "comment_inline": "[&1a] BCC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        99
+      ]
+    },
+    {
+      "addr": 33899,
+      "bytes": [
         115
       ],
-      "type": "string",
-      "string": "!cs"
+      "comment_inline": "[&1b] BCS: packed-name low byte",
+      "type": "byte",
+      "values": [
+        115
+      ]
     },
     {
       "addr": 33900,
       "bytes": [
-        177,
-        169,
-        197,
-        12,
-        195,
-        211,
-        196,
-        242,
-        65,
-        131,
-        176,
-        129
+        177
       ],
+      "comment_inline": "[&1c] BEQ: packed-name low byte",
       "type": "byte",
       "values": [
-        177,
-        169,
-        197,
-        12,
-        195,
-        211,
-        196,
-        242,
-        65,
-        131,
-        176,
+        177
+      ]
+    },
+    {
+      "addr": 33901,
+      "bytes": [
+        169
+      ],
+      "comment_inline": "[&1d] BMI: packed-name low byte",
+      "type": "byte",
+      "values": [
+        169
+      ]
+    },
+    {
+      "addr": 33902,
+      "bytes": [
+        197
+      ],
+      "comment_inline": "[&1e] BNE: packed-name low byte",
+      "type": "byte",
+      "values": [
+        197
+      ]
+    },
+    {
+      "addr": 33903,
+      "bytes": [
+        12
+      ],
+      "comment_inline": "[&1f] BPL: packed-name low byte",
+      "type": "byte",
+      "values": [
+        12
+      ]
+    },
+    {
+      "addr": 33904,
+      "bytes": [
+        195
+      ],
+      "comment_inline": "[&20] BVC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        195
+      ]
+    },
+    {
+      "addr": 33905,
+      "bytes": [
+        211
+      ],
+      "comment_inline": "[&21] BVS: packed-name low byte",
+      "type": "byte",
+      "values": [
+        211
+      ]
+    },
+    {
+      "addr": 33906,
+      "bytes": [
+        196
+      ],
+      "comment_inline": "[&22] AND: packed-name low byte",
+      "type": "byte",
+      "values": [
+        196
+      ]
+    },
+    {
+      "addr": 33907,
+      "bytes": [
+        242
+      ],
+      "comment_inline": "[&23] EOR: packed-name low byte",
+      "type": "byte",
+      "values": [
+        242
+      ]
+    },
+    {
+      "addr": 33908,
+      "bytes": [
+        65
+      ],
+      "comment_inline": "[&24] ORA: packed-name low byte",
+      "type": "byte",
+      "values": [
+        65
+      ]
+    },
+    {
+      "addr": 33909,
+      "bytes": [
+        131
+      ],
+      "comment_inline": "[&25] ADC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        131
+      ]
+    },
+    {
+      "addr": 33910,
+      "bytes": [
+        176
+      ],
+      "comment_inline": "[&26] CMP: packed-name low byte",
+      "type": "byte",
+      "values": [
+        176
+      ]
+    },
+    {
+      "addr": 33911,
+      "bytes": [
+        129
+      ],
+      "comment_inline": "[&27] LDA: packed-name low byte",
+      "type": "byte",
+      "values": [
         129
       ]
     },
     {
       "addr": 33912,
       "bytes": [
-        67,
-        108,
+        67
+      ],
+      "comment_inline": "[&28] SBC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        67
+      ]
+    },
+    {
+      "addr": 33913,
+      "bytes": [
+        108
+      ],
+      "comment_inline": "[&29] ASL: packed-name low byte",
+      "type": "byte",
+      "values": [
+        108
+      ]
+    },
+    {
+      "addr": 33914,
+      "bytes": [
         114
       ],
-      "type": "string",
-      "string": "Clr"
+      "comment_inline": "[&2a] LSR: packed-name low byte",
+      "type": "byte",
+      "values": [
+        114
+      ]
     },
     {
       "addr": 33915,
       "bytes": [
-        236,
-        242,
-        163,
-        195,
-        24,
-        25,
-        52,
-        176,
-        114,
-        152,
-        153,
-        129,
-        152,
-        153,
-        20
+        236
       ],
+      "comment_inline": "[&2b] ROL: packed-name low byte",
       "type": "byte",
       "values": [
-        236,
-        242,
-        163,
-        195,
-        24,
-        25,
-        52,
-        176,
-        114,
-        152,
-        153,
-        129,
-        152,
-        153,
+        236
+      ]
+    },
+    {
+      "addr": 33916,
+      "bytes": [
+        242
+      ],
+      "comment_inline": "[&2c] ROR: packed-name low byte",
+      "type": "byte",
+      "values": [
+        242
+      ]
+    },
+    {
+      "addr": 33917,
+      "bytes": [
+        163
+      ],
+      "comment_inline": "[&2d] DEC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        163
+      ]
+    },
+    {
+      "addr": 33918,
+      "bytes": [
+        195
+      ],
+      "comment_inline": "[&2e] INC: packed-name low byte",
+      "type": "byte",
+      "values": [
+        195
+      ]
+    },
+    {
+      "addr": 33919,
+      "bytes": [
+        24
+      ],
+      "comment_inline": "[&2f] CPX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        24
+      ]
+    },
+    {
+      "addr": 33920,
+      "bytes": [
+        25
+      ],
+      "comment_inline": "[&30] CPY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        25
+      ]
+    },
+    {
+      "addr": 33921,
+      "bytes": [
+        52
+      ],
+      "comment_inline": "[&31] BIT: packed-name low byte",
+      "type": "byte",
+      "values": [
+        52
+      ]
+    },
+    {
+      "addr": 33922,
+      "bytes": [
+        176
+      ],
+      "comment_inline": "[&32] JMP: packed-name low byte",
+      "type": "byte",
+      "values": [
+        176
+      ]
+    },
+    {
+      "addr": 33923,
+      "bytes": [
+        114
+      ],
+      "comment_inline": "[&33] JSR: packed-name low byte",
+      "type": "byte",
+      "values": [
+        114
+      ]
+    },
+    {
+      "addr": 33924,
+      "bytes": [
+        152
+      ],
+      "comment_inline": "[&34] LDX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        152
+      ]
+    },
+    {
+      "addr": 33925,
+      "bytes": [
+        153
+      ],
+      "comment_inline": "[&35] LDY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        153
+      ]
+    },
+    {
+      "addr": 33926,
+      "bytes": [
+        129
+      ],
+      "comment_inline": "[&36] STA: packed-name low byte",
+      "type": "byte",
+      "values": [
+        129
+      ]
+    },
+    {
+      "addr": 33927,
+      "bytes": [
+        152
+      ],
+      "comment_inline": "[&37] STX: packed-name low byte",
+      "type": "byte",
+      "values": [
+        152
+      ]
+    },
+    {
+      "addr": 33928,
+      "bytes": [
+        153
+      ],
+      "comment_inline": "[&38] STY: packed-name low byte",
+      "type": "byte",
+      "values": [
+        153
+      ]
+    },
+    {
+      "addr": 33929,
+      "bytes": [
+        20
+      ],
+      "comment_inline": "[&39] OPT directive: packed-name low byte",
+      "type": "byte",
+      "values": [
         20
       ]
     },
     {
       "addr": 33930,
       "bytes": [
-        53,
-        10,
-        13,
-        13,
-        13,
-        13,
-        16,
-        16
+        53
       ],
       "labels": [
         "asm_mnemonic_hi"
       ],
+      "comment_inline": "index &00 hi (unused); also asm_mnemonic_lo[&3A] = EQU directive packed-name low byte",
       "xref_summaries": [
         "&848a used as index base 1 time by &85fa"
       ],
@@ -11915,144 +12382,645 @@
       ],
       "type": "byte",
       "values": [
-        53,
-        10,
-        13,
-        13,
-        13,
-        13,
-        16,
+        53
+      ]
+    },
+    {
+      "addr": 33931,
+      "bytes": [
+        10
+      ],
+      "comment_inline": "[&01] BRK: packed-name high byte",
+      "type": "byte",
+      "values": [
+        10
+      ]
+    },
+    {
+      "addr": 33932,
+      "bytes": [
+        13
+      ],
+      "comment_inline": "[&02] CLC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        13
+      ]
+    },
+    {
+      "addr": 33933,
+      "bytes": [
+        13
+      ],
+      "comment_inline": "[&03] CLD: packed-name high byte",
+      "type": "byte",
+      "values": [
+        13
+      ]
+    },
+    {
+      "addr": 33934,
+      "bytes": [
+        13
+      ],
+      "comment_inline": "[&04] CLI: packed-name high byte",
+      "type": "byte",
+      "values": [
+        13
+      ]
+    },
+    {
+      "addr": 33935,
+      "bytes": [
+        13
+      ],
+      "comment_inline": "[&05] CLV: packed-name high byte",
+      "type": "byte",
+      "values": [
+        13
+      ]
+    },
+    {
+      "addr": 33936,
+      "bytes": [
+        16
+      ],
+      "comment_inline": "[&06] DEX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        16
+      ]
+    },
+    {
+      "addr": 33937,
+      "bytes": [
+        16
+      ],
+      "comment_inline": "[&07] DEY: packed-name high byte",
+      "type": "byte",
+      "values": [
         16
       ]
     },
     {
       "addr": 33938,
       "bytes": [
-        37,
-        37,
-        57,
-        65,
-        65,
-        65,
-        65,
-        74,
-        74,
-        76,
-        76,
-        76,
-        80,
-        80,
-        82,
-        83,
-        83,
+        37
+      ],
+      "comment_inline": "[&08] INX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        37
+      ]
+    },
+    {
+      "addr": 33939,
+      "bytes": [
+        37
+      ],
+      "comment_inline": "[&09] INY: packed-name high byte",
+      "type": "byte",
+      "values": [
+        37
+      ]
+    },
+    {
+      "addr": 33940,
+      "bytes": [
+        57
+      ],
+      "comment_inline": "[&0a] NOP: packed-name high byte",
+      "type": "byte",
+      "values": [
+        57
+      ]
+    },
+    {
+      "addr": 33941,
+      "bytes": [
+        65
+      ],
+      "comment_inline": "[&0b] PHA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        65
+      ]
+    },
+    {
+      "addr": 33942,
+      "bytes": [
+        65
+      ],
+      "comment_inline": "[&0c] PHP: packed-name high byte",
+      "type": "byte",
+      "values": [
+        65
+      ]
+    },
+    {
+      "addr": 33943,
+      "bytes": [
+        65
+      ],
+      "comment_inline": "[&0d] PLA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        65
+      ]
+    },
+    {
+      "addr": 33944,
+      "bytes": [
+        65
+      ],
+      "comment_inline": "[&0e] PLP: packed-name high byte",
+      "type": "byte",
+      "values": [
+        65
+      ]
+    },
+    {
+      "addr": 33945,
+      "bytes": [
+        74
+      ],
+      "comment_inline": "[&0f] RTI: packed-name high byte",
+      "type": "byte",
+      "values": [
+        74
+      ]
+    },
+    {
+      "addr": 33946,
+      "bytes": [
+        74
+      ],
+      "comment_inline": "[&10] RTS: packed-name high byte",
+      "type": "byte",
+      "values": [
+        74
+      ]
+    },
+    {
+      "addr": 33947,
+      "bytes": [
+        76
+      ],
+      "comment_inline": "[&11] SEC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        76
+      ]
+    },
+    {
+      "addr": 33948,
+      "bytes": [
+        76
+      ],
+      "comment_inline": "[&12] SED: packed-name high byte",
+      "type": "byte",
+      "values": [
+        76
+      ]
+    },
+    {
+      "addr": 33949,
+      "bytes": [
+        76
+      ],
+      "comment_inline": "[&13] SEI: packed-name high byte",
+      "type": "byte",
+      "values": [
+        76
+      ]
+    },
+    {
+      "addr": 33950,
+      "bytes": [
+        80
+      ],
+      "comment_inline": "[&14] TAX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        80
+      ]
+    },
+    {
+      "addr": 33951,
+      "bytes": [
+        80
+      ],
+      "comment_inline": "[&15] TAY: packed-name high byte",
+      "type": "byte",
+      "values": [
+        80
+      ]
+    },
+    {
+      "addr": 33952,
+      "bytes": [
+        82
+      ],
+      "comment_inline": "[&16] TSX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        82
+      ]
+    },
+    {
+      "addr": 33953,
+      "bytes": [
         83
       ],
-      "type": "string",
-      "string": "%%9AAAAJJLLLPPRSSS"
+      "comment_inline": "[&17] TXA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        83
+      ]
+    },
+    {
+      "addr": 33954,
+      "bytes": [
+        83
+      ],
+      "comment_inline": "[&18] TXS: packed-name high byte",
+      "type": "byte",
+      "values": [
+        83
+      ]
+    },
+    {
+      "addr": 33955,
+      "bytes": [
+        83
+      ],
+      "comment_inline": "[&19] TYA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        83
+      ]
     },
     {
       "addr": 33956,
       "bytes": [
-        8,
-        8,
-        8,
-        9,
-        9,
-        10,
-        10,
-        10,
-        5,
-        21,
-        62,
-        4,
-        13,
-        48,
-        76,
-        6
+        8
       ],
+      "comment_inline": "[&1a] BCC: packed-name high byte",
       "type": "byte",
       "values": [
-        8,
-        8,
-        8,
-        9,
-        9,
-        10,
-        10,
-        10,
-        5,
-        21,
-        62,
-        4,
-        13,
-        48,
-        76,
+        8
+      ]
+    },
+    {
+      "addr": 33957,
+      "bytes": [
+        8
+      ],
+      "comment_inline": "[&1b] BCS: packed-name high byte",
+      "type": "byte",
+      "values": [
+        8
+      ]
+    },
+    {
+      "addr": 33958,
+      "bytes": [
+        8
+      ],
+      "comment_inline": "[&1c] BEQ: packed-name high byte",
+      "type": "byte",
+      "values": [
+        8
+      ]
+    },
+    {
+      "addr": 33959,
+      "bytes": [
+        9
+      ],
+      "comment_inline": "[&1d] BMI: packed-name high byte",
+      "type": "byte",
+      "values": [
+        9
+      ]
+    },
+    {
+      "addr": 33960,
+      "bytes": [
+        9
+      ],
+      "comment_inline": "[&1e] BNE: packed-name high byte",
+      "type": "byte",
+      "values": [
+        9
+      ]
+    },
+    {
+      "addr": 33961,
+      "bytes": [
+        10
+      ],
+      "comment_inline": "[&1f] BPL: packed-name high byte",
+      "type": "byte",
+      "values": [
+        10
+      ]
+    },
+    {
+      "addr": 33962,
+      "bytes": [
+        10
+      ],
+      "comment_inline": "[&20] BVC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        10
+      ]
+    },
+    {
+      "addr": 33963,
+      "bytes": [
+        10
+      ],
+      "comment_inline": "[&21] BVS: packed-name high byte",
+      "type": "byte",
+      "values": [
+        10
+      ]
+    },
+    {
+      "addr": 33964,
+      "bytes": [
+        5
+      ],
+      "comment_inline": "[&22] AND: packed-name high byte",
+      "type": "byte",
+      "values": [
+        5
+      ]
+    },
+    {
+      "addr": 33965,
+      "bytes": [
+        21
+      ],
+      "comment_inline": "[&23] EOR: packed-name high byte",
+      "type": "byte",
+      "values": [
+        21
+      ]
+    },
+    {
+      "addr": 33966,
+      "bytes": [
+        62
+      ],
+      "comment_inline": "[&24] ORA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        62
+      ]
+    },
+    {
+      "addr": 33967,
+      "bytes": [
+        4
+      ],
+      "comment_inline": "[&25] ADC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        4
+      ]
+    },
+    {
+      "addr": 33968,
+      "bytes": [
+        13
+      ],
+      "comment_inline": "[&26] CMP: packed-name high byte",
+      "type": "byte",
+      "values": [
+        13
+      ]
+    },
+    {
+      "addr": 33969,
+      "bytes": [
+        48
+      ],
+      "comment_inline": "[&27] LDA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        48
+      ]
+    },
+    {
+      "addr": 33970,
+      "bytes": [
+        76
+      ],
+      "comment_inline": "[&28] SBC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        76
+      ]
+    },
+    {
+      "addr": 33971,
+      "bytes": [
+        6
+      ],
+      "comment_inline": "[&29] ASL: packed-name high byte",
+      "type": "byte",
+      "values": [
         6
       ]
     },
     {
       "addr": 33972,
       "bytes": [
-        50,
-        73,
+        50
+      ],
+      "comment_inline": "[&2a] LSR: packed-name high byte",
+      "type": "byte",
+      "values": [
+        50
+      ]
+    },
+    {
+      "addr": 33973,
+      "bytes": [
         73
       ],
-      "type": "string",
-      "string": "2II"
+      "comment_inline": "[&2b] ROL: packed-name high byte",
+      "type": "byte",
+      "values": [
+        73
+      ]
+    },
+    {
+      "addr": 33974,
+      "bytes": [
+        73
+      ],
+      "comment_inline": "[&2c] ROR: packed-name high byte",
+      "type": "byte",
+      "values": [
+        73
+      ]
     },
     {
       "addr": 33975,
       "bytes": [
-        16,
-        37,
-        14,
-        14,
-        9
+        16
       ],
+      "comment_inline": "[&2d] DEC: packed-name high byte",
       "type": "byte",
       "values": [
-        16,
-        37,
-        14,
-        14,
+        16
+      ]
+    },
+    {
+      "addr": 33976,
+      "bytes": [
+        37
+      ],
+      "comment_inline": "[&2e] INC: packed-name high byte",
+      "type": "byte",
+      "values": [
+        37
+      ]
+    },
+    {
+      "addr": 33977,
+      "bytes": [
+        14
+      ],
+      "comment_inline": "[&2f] CPX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        14
+      ]
+    },
+    {
+      "addr": 33978,
+      "bytes": [
+        14
+      ],
+      "comment_inline": "[&30] CPY: packed-name high byte",
+      "type": "byte",
+      "values": [
+        14
+      ]
+    },
+    {
+      "addr": 33979,
+      "bytes": [
+        9
+      ],
+      "comment_inline": "[&31] BIT: packed-name high byte",
+      "type": "byte",
+      "values": [
         9
       ]
     },
     {
       "addr": 33980,
       "bytes": [
-        41,
-        42,
-        48,
-        48,
-        78,
-        78,
-        78,
+        41
+      ],
+      "comment_inline": "[&32] JMP: packed-name high byte",
+      "type": "byte",
+      "values": [
+        41
+      ]
+    },
+    {
+      "addr": 33981,
+      "bytes": [
+        42
+      ],
+      "comment_inline": "[&33] JSR: packed-name high byte",
+      "type": "byte",
+      "values": [
+        42
+      ]
+    },
+    {
+      "addr": 33982,
+      "bytes": [
+        48
+      ],
+      "comment_inline": "[&34] LDX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        48
+      ]
+    },
+    {
+      "addr": 33983,
+      "bytes": [
+        48
+      ],
+      "comment_inline": "[&35] LDY: packed-name high byte",
+      "type": "byte",
+      "values": [
+        48
+      ]
+    },
+    {
+      "addr": 33984,
+      "bytes": [
+        78
+      ],
+      "comment_inline": "[&36] STA: packed-name high byte",
+      "type": "byte",
+      "values": [
+        78
+      ]
+    },
+    {
+      "addr": 33985,
+      "bytes": [
+        78
+      ],
+      "comment_inline": "[&37] STX: packed-name high byte",
+      "type": "byte",
+      "values": [
+        78
+      ]
+    },
+    {
+      "addr": 33986,
+      "bytes": [
+        78
+      ],
+      "comment_inline": "[&38] STY: packed-name high byte",
+      "type": "byte",
+      "values": [
+        78
+      ]
+    },
+    {
+      "addr": 33987,
+      "bytes": [
         62
       ],
-      "type": "string",
-      "string": ")*00NNN>"
+      "comment_inline": "[&39] OPT directive: packed-name high byte",
+      "type": "byte",
+      "values": [
+        62
+      ]
     },
     {
       "addr": 33988,
       "bytes": [
-        22,
-        0,
-        24,
-        216,
-        88,
-        184,
-        202,
-        136,
-        232,
-        200,
-        234,
-        72,
-        8
+        22
       ],
       "labels": [
         "asm_base_opcode"
       ],
+      "comment_inline": "index &00 base (unused); also asm_mnemonic_hi[&3A] = EQU directive packed-name high byte",
       "xref_summaries": [
         "&84c4 used as index base 1 time by &8620"
       ],
@@ -12064,151 +13032,622 @@
       ],
       "type": "byte",
       "values": [
-        22,
-        0,
-        24,
-        216,
-        88,
-        184,
-        202,
-        136,
-        232,
-        200,
-        234,
-        72,
+        22
+      ]
+    },
+    {
+      "addr": 33989,
+      "bytes": [
+        0
+      ],
+      "comment_inline": "[&01] BRK: base opcode &00",
+      "type": "byte",
+      "values": [
+        0
+      ]
+    },
+    {
+      "addr": 33990,
+      "bytes": [
+        24
+      ],
+      "comment_inline": "[&02] CLC: base opcode &18",
+      "type": "byte",
+      "values": [
+        24
+      ]
+    },
+    {
+      "addr": 33991,
+      "bytes": [
+        216
+      ],
+      "comment_inline": "[&03] CLD: base opcode &d8",
+      "type": "byte",
+      "values": [
+        216
+      ]
+    },
+    {
+      "addr": 33992,
+      "bytes": [
+        88
+      ],
+      "comment_inline": "[&04] CLI: base opcode &58",
+      "type": "byte",
+      "values": [
+        88
+      ]
+    },
+    {
+      "addr": 33993,
+      "bytes": [
+        184
+      ],
+      "comment_inline": "[&05] CLV: base opcode &b8",
+      "type": "byte",
+      "values": [
+        184
+      ]
+    },
+    {
+      "addr": 33994,
+      "bytes": [
+        202
+      ],
+      "comment_inline": "[&06] DEX: base opcode &ca",
+      "type": "byte",
+      "values": [
+        202
+      ]
+    },
+    {
+      "addr": 33995,
+      "bytes": [
+        136
+      ],
+      "comment_inline": "[&07] DEY: base opcode &88",
+      "type": "byte",
+      "values": [
+        136
+      ]
+    },
+    {
+      "addr": 33996,
+      "bytes": [
+        232
+      ],
+      "comment_inline": "[&08] INX: base opcode &e8",
+      "type": "byte",
+      "values": [
+        232
+      ]
+    },
+    {
+      "addr": 33997,
+      "bytes": [
+        200
+      ],
+      "comment_inline": "[&09] INY: base opcode &c8",
+      "type": "byte",
+      "values": [
+        200
+      ]
+    },
+    {
+      "addr": 33998,
+      "bytes": [
+        234
+      ],
+      "comment_inline": "[&0a] NOP: base opcode &ea",
+      "type": "byte",
+      "values": [
+        234
+      ]
+    },
+    {
+      "addr": 33999,
+      "bytes": [
+        72
+      ],
+      "comment_inline": "[&0b] PHA: base opcode &48",
+      "type": "byte",
+      "values": [
+        72
+      ]
+    },
+    {
+      "addr": 34000,
+      "bytes": [
+        8
+      ],
+      "comment_inline": "[&0c] PHP: base opcode &08",
+      "type": "byte",
+      "values": [
         8
       ]
     },
     {
       "addr": 34001,
       "bytes": [
-        104,
-        40,
-        64,
-        96,
+        104
+      ],
+      "comment_inline": "[&0d] PLA: base opcode &68",
+      "type": "byte",
+      "values": [
+        104
+      ]
+    },
+    {
+      "addr": 34002,
+      "bytes": [
+        40
+      ],
+      "comment_inline": "[&0e] PLP: base opcode &28",
+      "type": "byte",
+      "values": [
+        40
+      ]
+    },
+    {
+      "addr": 34003,
+      "bytes": [
+        64
+      ],
+      "comment_inline": "[&0f] RTI: base opcode &40",
+      "type": "byte",
+      "values": [
+        64
+      ]
+    },
+    {
+      "addr": 34004,
+      "bytes": [
+        96
+      ],
+      "comment_inline": "[&10] RTS: base opcode &60",
+      "type": "byte",
+      "values": [
+        96
+      ]
+    },
+    {
+      "addr": 34005,
+      "bytes": [
         56
       ],
-      "type": "string",
-      "string": "h(@`8"
+      "comment_inline": "[&11] SEC: base opcode &38",
+      "type": "byte",
+      "values": [
+        56
+      ]
     },
     {
       "addr": 34006,
       "bytes": [
-        248,
-        120,
-        170,
-        168,
-        186,
-        138,
-        154,
-        152,
-        144,
-        176,
-        240,
-        48,
-        208,
-        16
+        248
       ],
+      "comment_inline": "[&12] SED: base opcode &f8",
       "type": "byte",
       "values": [
-        248,
-        120,
-        170,
-        168,
-        186,
-        138,
-        154,
-        152,
-        144,
-        176,
-        240,
-        48,
-        208,
+        248
+      ]
+    },
+    {
+      "addr": 34007,
+      "bytes": [
+        120
+      ],
+      "comment_inline": "[&13] SEI: base opcode &78",
+      "type": "byte",
+      "values": [
+        120
+      ]
+    },
+    {
+      "addr": 34008,
+      "bytes": [
+        170
+      ],
+      "comment_inline": "[&14] TAX: base opcode &aa",
+      "type": "byte",
+      "values": [
+        170
+      ]
+    },
+    {
+      "addr": 34009,
+      "bytes": [
+        168
+      ],
+      "comment_inline": "[&15] TAY: base opcode &a8",
+      "type": "byte",
+      "values": [
+        168
+      ]
+    },
+    {
+      "addr": 34010,
+      "bytes": [
+        186
+      ],
+      "comment_inline": "[&16] TSX: base opcode &ba",
+      "type": "byte",
+      "values": [
+        186
+      ]
+    },
+    {
+      "addr": 34011,
+      "bytes": [
+        138
+      ],
+      "comment_inline": "[&17] TXA: base opcode &8a",
+      "type": "byte",
+      "values": [
+        138
+      ]
+    },
+    {
+      "addr": 34012,
+      "bytes": [
+        154
+      ],
+      "comment_inline": "[&18] TXS: base opcode &9a",
+      "type": "byte",
+      "values": [
+        154
+      ]
+    },
+    {
+      "addr": 34013,
+      "bytes": [
+        152
+      ],
+      "comment_inline": "[&19] TYA: base opcode &98",
+      "type": "byte",
+      "values": [
+        152
+      ]
+    },
+    {
+      "addr": 34014,
+      "bytes": [
+        144
+      ],
+      "comment_inline": "[&1a] BCC: base opcode &90",
+      "type": "byte",
+      "values": [
+        144
+      ]
+    },
+    {
+      "addr": 34015,
+      "bytes": [
+        176
+      ],
+      "comment_inline": "[&1b] BCS: base opcode &b0",
+      "type": "byte",
+      "values": [
+        176
+      ]
+    },
+    {
+      "addr": 34016,
+      "bytes": [
+        240
+      ],
+      "comment_inline": "[&1c] BEQ: base opcode &f0",
+      "type": "byte",
+      "values": [
+        240
+      ]
+    },
+    {
+      "addr": 34017,
+      "bytes": [
+        48
+      ],
+      "comment_inline": "[&1d] BMI: base opcode &30",
+      "type": "byte",
+      "values": [
+        48
+      ]
+    },
+    {
+      "addr": 34018,
+      "bytes": [
+        208
+      ],
+      "comment_inline": "[&1e] BNE: base opcode &d0",
+      "type": "byte",
+      "values": [
+        208
+      ]
+    },
+    {
+      "addr": 34019,
+      "bytes": [
+        16
+      ],
+      "comment_inline": "[&1f] BPL: base opcode &10",
+      "type": "byte",
+      "values": [
         16
       ]
     },
     {
       "addr": 34020,
       "bytes": [
-        80,
-        112,
-        33,
+        80
+      ],
+      "comment_inline": "[&20] BVC: base opcode &50",
+      "type": "byte",
+      "values": [
+        80
+      ]
+    },
+    {
+      "addr": 34021,
+      "bytes": [
+        112
+      ],
+      "comment_inline": "[&21] BVS: base opcode &70",
+      "type": "byte",
+      "values": [
+        112
+      ]
+    },
+    {
+      "addr": 34022,
+      "bytes": [
+        33
+      ],
+      "comment_inline": "[&22] AND: base opcode &21",
+      "type": "byte",
+      "values": [
+        33
+      ]
+    },
+    {
+      "addr": 34023,
+      "bytes": [
         65
       ],
-      "type": "string",
-      "string": "Pp!A"
+      "comment_inline": "[&23] EOR: base opcode &41",
+      "type": "byte",
+      "values": [
+        65
+      ]
     },
     {
       "addr": 34024,
       "bytes": [
-        1,
-        97,
-        193,
-        161,
-        225,
-        6
+        1
       ],
+      "comment_inline": "[&24] ORA: base opcode &01",
       "type": "byte",
       "values": [
-        1,
-        97,
-        193,
-        161,
-        225,
+        1
+      ]
+    },
+    {
+      "addr": 34025,
+      "bytes": [
+        97
+      ],
+      "comment_inline": "[&25] ADC: base opcode &61",
+      "type": "byte",
+      "values": [
+        97
+      ]
+    },
+    {
+      "addr": 34026,
+      "bytes": [
+        193
+      ],
+      "comment_inline": "[&26] CMP: base opcode &c1",
+      "type": "byte",
+      "values": [
+        193
+      ]
+    },
+    {
+      "addr": 34027,
+      "bytes": [
+        161
+      ],
+      "comment_inline": "[&27] LDA: base opcode &a1",
+      "type": "byte",
+      "values": [
+        161
+      ]
+    },
+    {
+      "addr": 34028,
+      "bytes": [
+        225
+      ],
+      "comment_inline": "[&28] SBC: base opcode &e1",
+      "type": "byte",
+      "values": [
+        225
+      ]
+    },
+    {
+      "addr": 34029,
+      "bytes": [
+        6
+      ],
+      "comment_inline": "[&29] ASL: base opcode &06",
+      "type": "byte",
+      "values": [
         6
       ]
     },
     {
       "addr": 34030,
       "bytes": [
-        70,
-        38,
+        70
+      ],
+      "comment_inline": "[&2a] LSR: base opcode &46",
+      "type": "byte",
+      "values": [
+        70
+      ]
+    },
+    {
+      "addr": 34031,
+      "bytes": [
+        38
+      ],
+      "comment_inline": "[&2b] ROL: base opcode &26",
+      "type": "byte",
+      "values": [
+        38
+      ]
+    },
+    {
+      "addr": 34032,
+      "bytes": [
         102
       ],
-      "type": "string",
-      "string": "F&f"
+      "comment_inline": "[&2c] ROR: base opcode &66",
+      "type": "byte",
+      "values": [
+        102
+      ]
     },
     {
       "addr": 34033,
       "bytes": [
-        198,
-        230,
-        224,
-        192
+        198
       ],
+      "comment_inline": "[&2d] DEC: base opcode &c6",
       "type": "byte",
       "values": [
-        198,
-        230,
-        224,
+        198
+      ]
+    },
+    {
+      "addr": 34034,
+      "bytes": [
+        230
+      ],
+      "comment_inline": "[&2e] INC: base opcode &e6",
+      "type": "byte",
+      "values": [
+        230
+      ]
+    },
+    {
+      "addr": 34035,
+      "bytes": [
+        224
+      ],
+      "comment_inline": "[&2f] CPX: base opcode &e0",
+      "type": "byte",
+      "values": [
+        224
+      ]
+    },
+    {
+      "addr": 34036,
+      "bytes": [
+        192
+      ],
+      "comment_inline": "[&30] CPY: base opcode &c0",
+      "type": "byte",
+      "values": [
         192
       ]
     },
     {
       "addr": 34037,
       "bytes": [
-        32,
-        76,
         32
       ],
-      "type": "string",
-      "string": " L "
+      "comment_inline": "[&31] BIT: base opcode &20",
+      "type": "byte",
+      "values": [
+        32
+      ]
+    },
+    {
+      "addr": 34038,
+      "bytes": [
+        76
+      ],
+      "comment_inline": "[&32] JMP: base opcode &4c",
+      "type": "byte",
+      "values": [
+        76
+      ]
+    },
+    {
+      "addr": 34039,
+      "bytes": [
+        32
+      ],
+      "comment_inline": "[&33] JSR: base opcode &20",
+      "type": "byte",
+      "values": [
+        32
+      ]
     },
     {
       "addr": 34040,
       "bytes": [
-        162,
-        160,
-        129,
-        134,
-        132
+        162
       ],
+      "comment_inline": "[&34] LDX: base opcode &a2",
       "type": "byte",
       "values": [
-        162,
-        160,
-        129,
-        134,
+        162
+      ]
+    },
+    {
+      "addr": 34041,
+      "bytes": [
+        160
+      ],
+      "comment_inline": "[&35] LDY: base opcode &a0",
+      "type": "byte",
+      "values": [
+        160
+      ]
+    },
+    {
+      "addr": 34042,
+      "bytes": [
+        129
+      ],
+      "comment_inline": "[&36] STA: base opcode &81",
+      "type": "byte",
+      "values": [
+        129
+      ]
+    },
+    {
+      "addr": 34043,
+      "bytes": [
+        134
+      ],
+      "comment_inline": "[&37] STX: base opcode &86",
+      "type": "byte",
+      "values": [
+        134
+      ]
+    },
+    {
+      "addr": 34044,
+      "bytes": [
+        132
+      ],
+      "comment_inline": "[&38] STY: base opcode &84",
+      "type": "byte",
+      "values": [
         132
       ]
     },

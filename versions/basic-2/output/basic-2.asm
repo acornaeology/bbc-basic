@@ -963,40 +963,232 @@ oscli             = &fff7
     equb >(stmt_trace)                                                ; 844d: 92          .     
     equb >(stmt_until)                                                ; 844e: bb          .     
     equb >(stmt_width)                                                ; 844f: b4          .     
+; Inline-assembler mnemonic tables.
+;
+; Three parallel byte arrays, all indexed by the same X, that turn a
+; typed mnemonic into a base opcode:
+;
+;   asm_mnemonic_lo  low  byte of the mnemonic's packed-name hash
+;   asm_mnemonic_hi  high byte of the mnemonic's packed-name hash
+;   asm_base_opcode  the base ("mode 0") opcode for that mnemonic
+;
+; asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
+; low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
+; value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
+; from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
+; and, on a hit, the high half against asm_mnemonic_hi,x; the matching
+; index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
+; indices directly via asm_logic_mnemonic (&8607).
+;
+; The index order is meaningful: the operand parser keys its addressing
+; -mode handler off cpx thresholds on the matched index.
+;
+; | Index   | Mnemonics     | Operand form               |
+; |---------|---------------|----------------------------|
+; | &01-&19 | BRK..TYA      | implied (opcode only)      |
+; | &1A-&21 | BCC..BVS      | relative branch            |
+; | &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|
+; | &29-&2C | ASL..ROR      | accumulator (A) or memory  |
+; | &2D-&2E | DEC, INC      | memory only                |
+; | &2F-&30 | CPX, CPY      | #/zp/abs                   |
+; | &31     | BIT           | abs/zp                     |
+; | &32-&33 | JMP, JSR      | abs; JMP also (abs)        |
+; | &34-&36 | LDX, LDY, STA | with index register        |
+; | &37-&38 | STX, STY      | two-register form          |
+; | &39     | OPT           | directive (sets OPT flag)  |
+; | &3A     | EQU           | directive (EQUB/W/D/S)     |
+;
+; Base opcodes are each group's column-0 value; the operand parser adds
+; addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
+; BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
+; standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
+; asm_base_opcode entry.
+;
+; Two space-saving quirks. Index 0 is dead: the scan starts at &3A and
+; stops at 1, so index 0 is never tested. And the tables overlap by one
+; byte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and
+; asm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse
+; is safe precisely because index 0's own high and opcode bytes, which
+; those shared bytes stand in for, are never read.
 ; &8450 used as index base 1 time by &85f5
 .asm_mnemonic_lo
-    equb >(stmt_oscli)                                                ; 8450: be          .     
-    equb &4b, &83, &84, &89, &96, &b8, &b9, &d8, &d9, &f0, &01, &10   ; 8451: 4b 83 84... K.....
-    equb &81, &90, &89, &93, &a3, &a4, &a9                            ; 845d: 81 90 89... ......
-    equs "89x"                                                        ; 8464: 38 39 78    89x   
-    equb &01, &13                                                     ; 8467: 01 13       ..    
-    equs "!cs"                                                        ; 8469: 21 63 73    !cs   
-    equb &b1, &a9, &c5, &0c, &c3, &d3, &c4, &f2, &41, &83, &b0, &81   ; 846c: b1 a9 c5... ......
-    equs "Clr"                                                        ; 8478: 43 6c 72    Clr   
-    equb &ec, &f2, &a3, &c3, &18, &19, &34, &b0, &72, &98, &99, &81   ; 847b: ec f2 a3... ......
-    equb &98, &99, &14                                                ; 8487: 98 99 14    ...   
+    equb &be                                                          ; 8450: be          .        ; index &00: unused padding (never tested by the scan)
+    equb &4b                                                          ; 8451: 4b          K        ; [&01] BRK: packed-name low byte
+    equb &83                                                          ; 8452: 83          .        ; [&02] CLC: packed-name low byte
+    equb &84                                                          ; 8453: 84          .        ; [&03] CLD: packed-name low byte
+    equb &89                                                          ; 8454: 89          .        ; [&04] CLI: packed-name low byte
+    equb &96                                                          ; 8455: 96          .        ; [&05] CLV: packed-name low byte
+    equb &b8                                                          ; 8456: b8          .        ; [&06] DEX: packed-name low byte
+    equb &b9                                                          ; 8457: b9          .        ; [&07] DEY: packed-name low byte
+    equb &d8                                                          ; 8458: d8          .        ; [&08] INX: packed-name low byte
+    equb &d9                                                          ; 8459: d9          .        ; [&09] INY: packed-name low byte
+    equb &f0                                                          ; 845a: f0          .        ; [&0a] NOP: packed-name low byte
+    equb &01                                                          ; 845b: 01          .        ; [&0b] PHA: packed-name low byte
+    equb &10                                                          ; 845c: 10          .        ; [&0c] PHP: packed-name low byte
+    equb &81                                                          ; 845d: 81          .        ; [&0d] PLA: packed-name low byte
+    equb &90                                                          ; 845e: 90          .        ; [&0e] PLP: packed-name low byte
+    equb &89                                                          ; 845f: 89          .        ; [&0f] RTI: packed-name low byte
+    equb &93                                                          ; 8460: 93          .        ; [&10] RTS: packed-name low byte
+    equb &a3                                                          ; 8461: a3          .        ; [&11] SEC: packed-name low byte
+    equb &a4                                                          ; 8462: a4          .        ; [&12] SED: packed-name low byte
+    equb &a9                                                          ; 8463: a9          .        ; [&13] SEI: packed-name low byte
+    equb &38                                                          ; 8464: 38          8        ; [&14] TAX: packed-name low byte
+    equb &39                                                          ; 8465: 39          9        ; [&15] TAY: packed-name low byte
+    equb &78                                                          ; 8466: 78          x        ; [&16] TSX: packed-name low byte
+    equb &01                                                          ; 8467: 01          .        ; [&17] TXA: packed-name low byte
+    equb &13                                                          ; 8468: 13          .        ; [&18] TXS: packed-name low byte
+    equb &21                                                          ; 8469: 21          !        ; [&19] TYA: packed-name low byte
+    equb &63                                                          ; 846a: 63          c        ; [&1a] BCC: packed-name low byte
+    equb &73                                                          ; 846b: 73          s        ; [&1b] BCS: packed-name low byte
+    equb &b1                                                          ; 846c: b1          .        ; [&1c] BEQ: packed-name low byte
+    equb &a9                                                          ; 846d: a9          .        ; [&1d] BMI: packed-name low byte
+    equb &c5                                                          ; 846e: c5          .        ; [&1e] BNE: packed-name low byte
+    equb &0c                                                          ; 846f: 0c          .        ; [&1f] BPL: packed-name low byte
+    equb &c3                                                          ; 8470: c3          .        ; [&20] BVC: packed-name low byte
+    equb &d3                                                          ; 8471: d3          .        ; [&21] BVS: packed-name low byte
+    equb &c4                                                          ; 8472: c4          .        ; [&22] AND: packed-name low byte
+    equb &f2                                                          ; 8473: f2          .        ; [&23] EOR: packed-name low byte
+    equb &41                                                          ; 8474: 41          A        ; [&24] ORA: packed-name low byte
+    equb &83                                                          ; 8475: 83          .        ; [&25] ADC: packed-name low byte
+    equb &b0                                                          ; 8476: b0          .        ; [&26] CMP: packed-name low byte
+    equb &81                                                          ; 8477: 81          .        ; [&27] LDA: packed-name low byte
+    equb &43                                                          ; 8478: 43          C        ; [&28] SBC: packed-name low byte
+    equb &6c                                                          ; 8479: 6c          l        ; [&29] ASL: packed-name low byte
+    equb &72                                                          ; 847a: 72          r        ; [&2a] LSR: packed-name low byte
+    equb &ec                                                          ; 847b: ec          .        ; [&2b] ROL: packed-name low byte
+    equb &f2                                                          ; 847c: f2          .        ; [&2c] ROR: packed-name low byte
+    equb &a3                                                          ; 847d: a3          .        ; [&2d] DEC: packed-name low byte
+    equb &c3                                                          ; 847e: c3          .        ; [&2e] INC: packed-name low byte
+    equb &18                                                          ; 847f: 18          .        ; [&2f] CPX: packed-name low byte
+    equb &19                                                          ; 8480: 19          .        ; [&30] CPY: packed-name low byte
+    equb &34                                                          ; 8481: 34          4        ; [&31] BIT: packed-name low byte
+    equb &b0                                                          ; 8482: b0          .        ; [&32] JMP: packed-name low byte
+    equb &72                                                          ; 8483: 72          r        ; [&33] JSR: packed-name low byte
+    equb &98                                                          ; 8484: 98          .        ; [&34] LDX: packed-name low byte
+    equb &99                                                          ; 8485: 99          .        ; [&35] LDY: packed-name low byte
+    equb &81                                                          ; 8486: 81          .        ; [&36] STA: packed-name low byte
+    equb &98                                                          ; 8487: 98          .        ; [&37] STX: packed-name low byte
+    equb &99                                                          ; 8488: 99          .        ; [&38] STY: packed-name low byte
+    equb &14                                                          ; 8489: 14          .        ; [&39] OPT directive: packed-name low byte
 ; &848a used as index base 1 time by &85fa
 .asm_mnemonic_hi
-    equb &35, &0a, &0d, &0d, &0d, &0d, &10, &10                       ; 848a: 35 0a 0d... 5.....
-    equs "%%9AAAAJJLLLPPRSSS"                                         ; 8492: 25 25 39... %%9...
-    equb &08, &08, &08, &09, &09, &0a, &0a, &0a, &05, &15, &3e, &04   ; 84a4: 08 08 08... ......
-    equb &0d, &30, &4c, &06                                           ; 84b0: 0d 30 4c... .0L...
-    equs "2II"                                                        ; 84b4: 32 49 49    2II   
-    equb &10, &25, &0e, &0e, &09                                      ; 84b7: 10 25 0e... .%....
-    equs ")*00NNN>"                                                   ; 84bc: 29 2a 30... )*0...
+    equb &35                                                          ; 848a: 35          5        ; index &00 hi (unused); also asm_mnemonic_lo[&3A] = EQU directive packed-name low byte
+    equb &0a                                                          ; 848b: 0a          .        ; [&01] BRK: packed-name high byte
+    equb &0d                                                          ; 848c: 0d          .        ; [&02] CLC: packed-name high byte
+    equb &0d                                                          ; 848d: 0d          .        ; [&03] CLD: packed-name high byte
+    equb &0d                                                          ; 848e: 0d          .        ; [&04] CLI: packed-name high byte
+    equb &0d                                                          ; 848f: 0d          .        ; [&05] CLV: packed-name high byte
+    equb &10                                                          ; 8490: 10          .        ; [&06] DEX: packed-name high byte
+    equb &10                                                          ; 8491: 10          .        ; [&07] DEY: packed-name high byte
+    equb &25                                                          ; 8492: 25          %        ; [&08] INX: packed-name high byte
+    equb &25                                                          ; 8493: 25          %        ; [&09] INY: packed-name high byte
+    equb &39                                                          ; 8494: 39          9        ; [&0a] NOP: packed-name high byte
+    equb &41                                                          ; 8495: 41          A        ; [&0b] PHA: packed-name high byte
+    equb &41                                                          ; 8496: 41          A        ; [&0c] PHP: packed-name high byte
+    equb &41                                                          ; 8497: 41          A        ; [&0d] PLA: packed-name high byte
+    equb &41                                                          ; 8498: 41          A        ; [&0e] PLP: packed-name high byte
+    equb &4a                                                          ; 8499: 4a          J        ; [&0f] RTI: packed-name high byte
+    equb &4a                                                          ; 849a: 4a          J        ; [&10] RTS: packed-name high byte
+    equb &4c                                                          ; 849b: 4c          L        ; [&11] SEC: packed-name high byte
+    equb &4c                                                          ; 849c: 4c          L        ; [&12] SED: packed-name high byte
+    equb &4c                                                          ; 849d: 4c          L        ; [&13] SEI: packed-name high byte
+    equb &50                                                          ; 849e: 50          P        ; [&14] TAX: packed-name high byte
+    equb &50                                                          ; 849f: 50          P        ; [&15] TAY: packed-name high byte
+    equb &52                                                          ; 84a0: 52          R        ; [&16] TSX: packed-name high byte
+    equb &53                                                          ; 84a1: 53          S        ; [&17] TXA: packed-name high byte
+    equb &53                                                          ; 84a2: 53          S        ; [&18] TXS: packed-name high byte
+    equb &53                                                          ; 84a3: 53          S        ; [&19] TYA: packed-name high byte
+    equb &08                                                          ; 84a4: 08          .        ; [&1a] BCC: packed-name high byte
+    equb &08                                                          ; 84a5: 08          .        ; [&1b] BCS: packed-name high byte
+    equb &08                                                          ; 84a6: 08          .        ; [&1c] BEQ: packed-name high byte
+    equb &09                                                          ; 84a7: 09          .        ; [&1d] BMI: packed-name high byte
+    equb &09                                                          ; 84a8: 09          .        ; [&1e] BNE: packed-name high byte
+    equb &0a                                                          ; 84a9: 0a          .        ; [&1f] BPL: packed-name high byte
+    equb &0a                                                          ; 84aa: 0a          .        ; [&20] BVC: packed-name high byte
+    equb &0a                                                          ; 84ab: 0a          .        ; [&21] BVS: packed-name high byte
+    equb &05                                                          ; 84ac: 05          .        ; [&22] AND: packed-name high byte
+    equb &15                                                          ; 84ad: 15          .        ; [&23] EOR: packed-name high byte
+    equb &3e                                                          ; 84ae: 3e          >        ; [&24] ORA: packed-name high byte
+    equb &04                                                          ; 84af: 04          .        ; [&25] ADC: packed-name high byte
+    equb &0d                                                          ; 84b0: 0d          .        ; [&26] CMP: packed-name high byte
+    equb &30                                                          ; 84b1: 30          0        ; [&27] LDA: packed-name high byte
+    equb &4c                                                          ; 84b2: 4c          L        ; [&28] SBC: packed-name high byte
+    equb &06                                                          ; 84b3: 06          .        ; [&29] ASL: packed-name high byte
+    equb &32                                                          ; 84b4: 32          2        ; [&2a] LSR: packed-name high byte
+    equb &49                                                          ; 84b5: 49          I        ; [&2b] ROL: packed-name high byte
+    equb &49                                                          ; 84b6: 49          I        ; [&2c] ROR: packed-name high byte
+    equb &10                                                          ; 84b7: 10          .        ; [&2d] DEC: packed-name high byte
+    equb &25                                                          ; 84b8: 25          %        ; [&2e] INC: packed-name high byte
+    equb &0e                                                          ; 84b9: 0e          .        ; [&2f] CPX: packed-name high byte
+    equb &0e                                                          ; 84ba: 0e          .        ; [&30] CPY: packed-name high byte
+    equb &09                                                          ; 84bb: 09          .        ; [&31] BIT: packed-name high byte
+    equb &29                                                          ; 84bc: 29          )        ; [&32] JMP: packed-name high byte
+    equb &2a                                                          ; 84bd: 2a          *        ; [&33] JSR: packed-name high byte
+    equb &30                                                          ; 84be: 30          0        ; [&34] LDX: packed-name high byte
+    equb &30                                                          ; 84bf: 30          0        ; [&35] LDY: packed-name high byte
+    equb &4e                                                          ; 84c0: 4e          N        ; [&36] STA: packed-name high byte
+    equb &4e                                                          ; 84c1: 4e          N        ; [&37] STX: packed-name high byte
+    equb &4e                                                          ; 84c2: 4e          N        ; [&38] STY: packed-name high byte
+    equb &3e                                                          ; 84c3: 3e          >        ; [&39] OPT directive: packed-name high byte
 ; &84c4 used as index base 1 time by &8620
 .asm_base_opcode
-    equb &16, &00, &18, &d8, &58, &b8, &ca, &88, &e8, &c8, &ea, &48   ; 84c4: 16 00 18... ......
-    equb &08                                                          ; 84d0: 08          .     
-    equs "h(@`8"                                                      ; 84d1: 68 28 40... h(@...
-    equb &f8, &78, &aa, &a8, &ba, &8a, &9a, &98, &90, &b0, &f0, &30   ; 84d6: f8 78 aa... .x....
-    equb &d0, &10                                                     ; 84e2: d0 10       ..    
-    equs "Pp!A"                                                       ; 84e4: 50 70 21... Pp!...
-    equb &01, &61, &c1, &a1, &e1, &06                                 ; 84e8: 01 61 c1... .a....
-    equs "F&f"                                                        ; 84ee: 46 26 66    F&f   
-    equb &c6, &e6, &e0, &c0                                           ; 84f1: c6 e6 e0... ......
-    equs " L "                                                        ; 84f5: 20 4c 20     L    
-    equb &a2, &a0, &81, &86, &84                                      ; 84f8: a2 a0 81... ......
+    equb &16                                                          ; 84c4: 16          .        ; index &00 base (unused); also asm_mnemonic_hi[&3A] = EQU directive packed-name high byte
+    equb &00                                                          ; 84c5: 00          .        ; [&01] BRK: base opcode &00
+    equb &18                                                          ; 84c6: 18          .        ; [&02] CLC: base opcode &18
+    equb &d8                                                          ; 84c7: d8          .        ; [&03] CLD: base opcode &d8
+    equb &58                                                          ; 84c8: 58          X        ; [&04] CLI: base opcode &58
+    equb &b8                                                          ; 84c9: b8          .        ; [&05] CLV: base opcode &b8
+    equb &ca                                                          ; 84ca: ca          .        ; [&06] DEX: base opcode &ca
+    equb &88                                                          ; 84cb: 88          .        ; [&07] DEY: base opcode &88
+    equb &e8                                                          ; 84cc: e8          .        ; [&08] INX: base opcode &e8
+    equb &c8                                                          ; 84cd: c8          .        ; [&09] INY: base opcode &c8
+    equb &ea                                                          ; 84ce: ea          .        ; [&0a] NOP: base opcode &ea
+    equb &48                                                          ; 84cf: 48          H        ; [&0b] PHA: base opcode &48
+    equb &08                                                          ; 84d0: 08          .        ; [&0c] PHP: base opcode &08
+    equb &68                                                          ; 84d1: 68          h        ; [&0d] PLA: base opcode &68
+    equb &28                                                          ; 84d2: 28          (        ; [&0e] PLP: base opcode &28
+    equb &40                                                          ; 84d3: 40          @        ; [&0f] RTI: base opcode &40
+    equb &60                                                          ; 84d4: 60          `        ; [&10] RTS: base opcode &60
+    equb &38                                                          ; 84d5: 38          8        ; [&11] SEC: base opcode &38
+    equb &f8                                                          ; 84d6: f8          .        ; [&12] SED: base opcode &f8
+    equb &78                                                          ; 84d7: 78          x        ; [&13] SEI: base opcode &78
+    equb &aa                                                          ; 84d8: aa          .        ; [&14] TAX: base opcode &aa
+    equb &a8                                                          ; 84d9: a8          .        ; [&15] TAY: base opcode &a8
+    equb &ba                                                          ; 84da: ba          .        ; [&16] TSX: base opcode &ba
+    equb &8a                                                          ; 84db: 8a          .        ; [&17] TXA: base opcode &8a
+    equb &9a                                                          ; 84dc: 9a          .        ; [&18] TXS: base opcode &9a
+    equb &98                                                          ; 84dd: 98          .        ; [&19] TYA: base opcode &98
+    equb &90                                                          ; 84de: 90          .        ; [&1a] BCC: base opcode &90
+    equb &b0                                                          ; 84df: b0          .        ; [&1b] BCS: base opcode &b0
+    equb &f0                                                          ; 84e0: f0          .        ; [&1c] BEQ: base opcode &f0
+    equb &30                                                          ; 84e1: 30          0        ; [&1d] BMI: base opcode &30
+    equb &d0                                                          ; 84e2: d0          .        ; [&1e] BNE: base opcode &d0
+    equb &10                                                          ; 84e3: 10          .        ; [&1f] BPL: base opcode &10
+    equb &50                                                          ; 84e4: 50          P        ; [&20] BVC: base opcode &50
+    equb &70                                                          ; 84e5: 70          p        ; [&21] BVS: base opcode &70
+    equb &21                                                          ; 84e6: 21          !        ; [&22] AND: base opcode &21
+    equb &41                                                          ; 84e7: 41          A        ; [&23] EOR: base opcode &41
+    equb &01                                                          ; 84e8: 01          .        ; [&24] ORA: base opcode &01
+    equb &61                                                          ; 84e9: 61          a        ; [&25] ADC: base opcode &61
+    equb &c1                                                          ; 84ea: c1          .        ; [&26] CMP: base opcode &c1
+    equb &a1                                                          ; 84eb: a1          .        ; [&27] LDA: base opcode &a1
+    equb &e1                                                          ; 84ec: e1          .        ; [&28] SBC: base opcode &e1
+    equb &06                                                          ; 84ed: 06          .        ; [&29] ASL: base opcode &06
+    equb &46                                                          ; 84ee: 46          F        ; [&2a] LSR: base opcode &46
+    equb &26                                                          ; 84ef: 26          &        ; [&2b] ROL: base opcode &26
+    equb &66                                                          ; 84f0: 66          f        ; [&2c] ROR: base opcode &66
+    equb &c6                                                          ; 84f1: c6          .        ; [&2d] DEC: base opcode &c6
+    equb &e6                                                          ; 84f2: e6          .        ; [&2e] INC: base opcode &e6
+    equb &e0                                                          ; 84f3: e0          .        ; [&2f] CPX: base opcode &e0
+    equb &c0                                                          ; 84f4: c0          .        ; [&30] CPY: base opcode &c0
+    equb &20                                                          ; 84f5: 20                   ; [&31] BIT: base opcode &20
+    equb &4c                                                          ; 84f6: 4c          L        ; [&32] JMP: base opcode &4c
+    equb &20                                                          ; 84f7: 20                   ; [&33] JSR: base opcode &20
+    equb &a2                                                          ; 84f8: a2          .        ; [&34] LDX: base opcode &a2
+    equb &a0                                                          ; 84f9: a0          .        ; [&35] LDY: base opcode &a0
+    equb &81                                                          ; 84fa: 81          .        ; [&36] STA: base opcode &81
+    equb &86                                                          ; 84fb: 86          .        ; [&37] STX: base opcode &86
+    equb &84                                                          ; 84fc: 84          .        ; [&38] STY: base opcode &84
 ; ***************************************************************************************
 ; Finish the inline assembler
 ;
@@ -15810,7 +16002,7 @@ save pydis_start, pydis_end
 ;     Data                     = 1959 bytes (12%)
 ;
 ;     Number of instructions   = 7133
-;     Number of data bytes     = 944 bytes
+;     Number of data bytes     = 997 bytes
 ;     Number of data words     = 0 bytes
-;     Number of string bytes   = 1015 bytes
-;     Number of strings        = 186
+;     Number of string bytes   = 962 bytes
+;     Number of strings        = 176
