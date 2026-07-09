@@ -51,16 +51,40 @@ This is **offset assembly**: the code is laid down at `O%` but assembled *as if*
 
 Default on entry is `OPT 3` (listing + errors, assemble to `P%`). Bit 1 is the one that makes two-pass assembly work.
 
-## Mnemonics: a 58-entry packed table
+## Mnemonics — and `OPT`/`EQU` — in one packed table
 
-[`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`) packs a three-letter mnemonic **5 bits per letter** into a 15-bit key and searches three parallel 58-entry tables — [`asm_mnemonic_lo`](address:8450@2?hex) / `asm_mnemonic_hi` (`&8450`/`&848A`) for the key, [`asm_base_opcode`](address:84C4@2?hex) (`&84C4`) for the base opcode. The set is the **NMOS 6502** instruction set (BASIC II predates the 65C02 — there are no `&C02` mnemonics). Before the table search, the statement dispatcher handles the non-mnemonic cases:
+[`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`) reads the three-letter mnemonic, takes the **low 5 bits of each letter** (so `A`=1 … `Z`=26) and packs them **most-significant letter first** into a 15-bit key held in `&3D` (low) / `&3E` (high). [`asm_mn_search`](address:85F1@2?hex) (`&85F1`) then walks one index register **from `&3A` down to `1`**, comparing the low half against [`asm_mnemonic_lo`](address:8450@2?hex),X and, on a hit, the high half against `asm_mnemonic_hi`,X. A match yields an **index** that does two jobs at once: it selects the base opcode from [`asm_base_opcode`](address:84C4@2?hex),X, and its numeric *value* routes the operand parser to the right addressing-mode handler.
+
+Before the search, the statement dispatcher peels off the non-mnemonic cases:
 
 - `:` or carriage return → empty statement;
 - `\` → a comment to end of statement;
 - `.` → a **label definition** (below);
-- tokenised `AND` / `EOR` / `OR` → handled specially (`asm_logic_mnemonic`), because these mnemonics collide with BASIC keywords and are stored as single tokens, not letters.
+- tokenised `AND` / `EOR` / `OR` → [`asm_logic_mnemonic`](address:8607@2?hex) (`&8607`), because these collide with BASIC keywords and are stored as single tokens, not letters (they rejoin the opcode path at indices `&22`–`&24`).
 
-Addressing modes are selected by the mnemonic's table-index range and the operand syntax (`#`, `(`, `,X`, `,Y`, `A`, `)`), with the opcode stepped between the 6502's regular four-column mode layout by `+4`/`+8`/`+16` helpers. Zero-page versus absolute is **auto-selected by the operand's high byte**: high byte zero → 2-byte zero-page form, otherwise 3-byte absolute (`asm_zp_or_abs`, `&8738`). Remember that detail — it interacts with forward references.
+Everything else — **including the `OPT` and `EQU` directives** — goes through the packed table. There are 59 index slots:
+
+| Index | Entries | Operand handling |
+|---|---|---|
+| `&00` | — | **dead padding**; the scan runs `&3A`→`1`, so index 0 is never tested |
+| `&01`–`&19` | `BRK`…`TYA` | implied (opcode only) |
+| `&1A`–`&21` | `BCC`…`BVS` | relative branch |
+| `&22`–`&28` | `AND`…`SBC` | full modes: `#`/zp/abs/`(zp,X)`/`(zp),Y`/`,X`/`,Y` |
+| `&29`–`&2C` | `ASL`…`ROR` | accumulator (`A`) or memory |
+| `&2D`–`&2E` | `DEC`, `INC` | memory only |
+| `&2F`–`&30` | `CPX`, `CPY` | `#`/zp/abs |
+| `&31` | `BIT` | abs/zp |
+| `&32`–`&33` | `JMP`, `JSR` | abs; `JMP` also `(abs)` |
+| `&34`–`&36` | `LDX`, `LDY`, `STA` | with index register |
+| `&37`–`&38` | `STX`, `STY` | two-register form |
+| `&39` | `OPT` | directive → [`asm_opt_directive`](address:8813@2?hex) |
+| `&3A` | `EQU` | directive → [`equb_directive`](address:883A@2?hex) (`EQUB`/`W`/`D`/`S`) |
+
+Indices `&01`–`&38` are exactly the **56 NMOS 6502 mnemonics** (BASIC II predates the 65C02 — there are no `&C02` mnemonics); `&39`/`&3A` are the two directives, recognised by the *same* packed hash rather than a separate keyword test. `OPT` and `EQU` therefore have no `asm_base_opcode` entry — the operand parser branches to their handlers on the index before it would ever read one.
+
+The **base opcodes are the addressing-mode "column 0" value** of each instruction group; the operand parser steps between the 6502's regular four-column mode layout with the `+4`/`+8`/`+16` helpers ([`asm_opcode_add4`](address:8832@2?hex)/[`asm_opcode_add8`](address:882F@2?hex)/[`asm_opcode_add16`](address:882C@2?hex)). A few base bytes are slot values rather than legal standalone opcodes (e.g. `BIT` base `&20`, `LDX`/`LDY`-immediate `&A2`/`&A0`). Zero-page versus absolute is **auto-selected by the operand's high byte**: high byte zero → 2-byte zero-page form, otherwise 3-byte absolute ([`asm_zp_or_abs`](address:8738@2?hex), `&8738`). Remember that detail — it interacts with forward references.
+
+Two space-saving tricks hide in the byte layout. Because index 0 is dead its low/high/opcode bytes carry no information — and the three tables are laid **end to end with a one-byte overlap**, so that `asm_mnemonic_lo[&3A]` *is* the first byte of `asm_mnemonic_hi`, and `asm_mnemonic_hi[&3A]` *is* the first byte of `asm_base_opcode`. The reuse is safe precisely because those shared bytes stand in for index 0's own (never-read) high and opcode bytes.
 
 ## Labels are BASIC variables
 
@@ -74,7 +98,7 @@ A leading `.` runs [`asm_define_label`](address:85A5@2?hex) (`&85A5`):
     jsr assign_number       ; label_variable = P%
 ```
 
-So `.loop` is literally `loop = P%` — the label is an ordinary integer variable holding the address. Consequences a compiler must mirror: labels live in the same namespace as program variables, persist after the block, can be read or even reassigned from BASIC, and an indirection or empty name where a label is expected raises *Mistake*.
+So `.loop` is literally `loop = P%` — the label is an ordinary integer variable holding the address. It follows that labels live in the same namespace as program variables, persist after the block, and can be read or even reassigned from BASIC; an indirection or empty name where a label is expected raises *Mistake*.
 
 ## Forward references and the two-pass idiom
 
@@ -136,14 +160,10 @@ With bit 0 set, each assembled line prints as: `P%` as four hex digits, then the
 
 Note the same OPT-bit-1 gate on *Out of range* as on *No such variable*: pass 1 tolerates both a missing label and a not-yet-valid branch distance; pass 2 enforces them.
 
-## For a compiler
-
-To reproduce BASIC II's assembler faithfully: model labels as entries in the ordinary variable namespace assigned `P%`; expose `P%`/`O%` as the live program counter and offset address; implement `OPT` as the four-bit flag with bit 1 gating both undefined-label tolerance (returning `P%`) and branch-range/`No such variable` reporting; assemble one pass per `[ ... ]` and leave multi-pass to the caller's `FOR` loop; and auto-size zero-page vs absolute by the operand's high byte. The `]`-only-at-statement-start rule and the `P%`-for-unknown-forward-reference rule are both observable behaviours real programs depend on.
-
 ## Cross-references
 
 - Entry/loop/exit: [`check_eq_star_bracket`](address:8B60@2?hex) (`&8B60`), [`asm_enter`](address:8504@2?hex) (`&8504`), [`asm_loop`](address:8508@2?hex) (`&8508`), [`assembler_exit`](address:84FD@2?hex) (`&84FD`).
-- Mnemonics/operands: [`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`), [`asm_mnemonic_lo`](address:8450@2?hex) (`&8450`), [`asm_base_opcode`](address:84C4@2?hex) (`&84C4`), [`asm_emit`](address:862B@2?hex) (`&862B`).
+- Mnemonics/operands: [`asm_parse_mnemonic`](address:85BA@2?hex) (`&85BA`), [`asm_mn_search`](address:85F1@2?hex) (`&85F1`), [`asm_logic_mnemonic`](address:8607@2?hex) (`&8607`), [`asm_mnemonic_lo`](address:8450@2?hex) (`&8450`), [`asm_base_opcode`](address:84C4@2?hex) (`&84C4`), [`asm_emit`](address:862B@2?hex) (`&862B`).
 - Labels & forward refs: [`asm_define_label`](address:85A5@2?hex) (`&85A5`), [`factor_undefined`](address:AE30@2?hex) (`&AE30`), [`factor_pcounter`](address:AE3A@2?hex) (`&AE3A`).
 - Directives & `OPT`: [`equb_directive`](address:883A@2?hex) (`&883A`), [`asm_opt_directive`](address:8813@2?hex) (`&8813`).
 - Workspace: [`zp_opt_flag`](address:0028@2?hex) (`&28`), [`zp_asm_opcode`](address:0029@2?hex) (`&29`), [`resint_p`](address:0440@2?hex) (`P%`), [`resint_o`](address:043C@2?hex) (`O%`).
