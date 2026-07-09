@@ -982,6 +982,11 @@ oscli             = &fff7
 ; matching index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same indices
 ; directly via asm_logic_mnemonic (&8607).
 ;
+; Because the two hash tables are pure functions of the mnemonic text, each
+; asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm expression that
+; re-derives it from the three letters (the assembled value is shown in the address
+; comment). asm_base_opcode holds real 6502 opcodes and stays a plain byte.
+;
 ; The index order is meaningful: the operand parser keys its addressing-mode handler off
 ; cpx thresholds on the matched index.
 ;
@@ -1013,123 +1018,123 @@ oscli             = &fff7
 ; &8450 used as index base 1 time by &85f5
 .asm_mnemonic_lo
     equb &be                                                          ; 8450: be          .        ; index &00: unused padding (never tested by the scan)
-    equb &4b                                                          ; 8451: 4b          K        ; [&01] BRK: packed-name low byte
-    equb &83                                                          ; 8452: 83          .        ; [&02] CLC: packed-name low byte
-    equb &84                                                          ; 8453: 84          .        ; [&03] CLD: packed-name low byte
-    equb &89                                                          ; 8454: 89          .        ; [&04] CLI: packed-name low byte
-    equb &96                                                          ; 8455: 96          .        ; [&05] CLV: packed-name low byte
-    equb &b8                                                          ; 8456: b8          .        ; [&06] DEX: packed-name low byte
-    equb &b9                                                          ; 8457: b9          .        ; [&07] DEY: packed-name low byte
-    equb &d8                                                          ; 8458: d8          .        ; [&08] INX: packed-name low byte
-    equb &d9                                                          ; 8459: d9          .        ; [&09] INY: packed-name low byte
-    equb &f0                                                          ; 845a: f0          .        ; [&0a] NOP: packed-name low byte
-    equb &01                                                          ; 845b: 01          .        ; [&0b] PHA: packed-name low byte
-    equb &10                                                          ; 845c: 10          .        ; [&0c] PHP: packed-name low byte
-    equb &81                                                          ; 845d: 81          .        ; [&0d] PLA: packed-name low byte
-    equb &90                                                          ; 845e: 90          .        ; [&0e] PLP: packed-name low byte
-    equb &89                                                          ; 845f: 89          .        ; [&0f] RTI: packed-name low byte
-    equb &93                                                          ; 8460: 93          .        ; [&10] RTS: packed-name low byte
-    equb &a3                                                          ; 8461: a3          .        ; [&11] SEC: packed-name low byte
-    equb &a4                                                          ; 8462: a4          .        ; [&12] SED: packed-name low byte
-    equb &a9                                                          ; 8463: a9          .        ; [&13] SEI: packed-name low byte
-    equb &38                                                          ; 8464: 38          8        ; [&14] TAX: packed-name low byte
-    equb &39                                                          ; 8465: 39          9        ; [&15] TAY: packed-name low byte
-    equb &78                                                          ; 8466: 78          x        ; [&16] TSX: packed-name low byte
-    equb &01                                                          ; 8467: 01          .        ; [&17] TXA: packed-name low byte
-    equb &13                                                          ; 8468: 13          .        ; [&18] TXS: packed-name low byte
-    equb &21                                                          ; 8469: 21          !        ; [&19] TYA: packed-name low byte
-    equb &63                                                          ; 846a: 63          c        ; [&1a] BCC: packed-name low byte
-    equb &73                                                          ; 846b: 73          s        ; [&1b] BCS: packed-name low byte
-    equb &b1                                                          ; 846c: b1          .        ; [&1c] BEQ: packed-name low byte
-    equb &a9                                                          ; 846d: a9          .        ; [&1d] BMI: packed-name low byte
-    equb &c5                                                          ; 846e: c5          .        ; [&1e] BNE: packed-name low byte
-    equb &0c                                                          ; 846f: 0c          .        ; [&1f] BPL: packed-name low byte
-    equb &c3                                                          ; 8470: c3          .        ; [&20] BVC: packed-name low byte
-    equb &d3                                                          ; 8471: d3          .        ; [&21] BVS: packed-name low byte
-    equb &c4                                                          ; 8472: c4          .        ; [&22] AND: packed-name low byte
-    equb &f2                                                          ; 8473: f2          .        ; [&23] EOR: packed-name low byte
-    equb &41                                                          ; 8474: 41          A        ; [&24] ORA: packed-name low byte
-    equb &83                                                          ; 8475: 83          .        ; [&25] ADC: packed-name low byte
-    equb &b0                                                          ; 8476: b0          .        ; [&26] CMP: packed-name low byte
-    equb &81                                                          ; 8477: 81          .        ; [&27] LDA: packed-name low byte
-    equb &43                                                          ; 8478: 43          C        ; [&28] SBC: packed-name low byte
-    equb &6c                                                          ; 8479: 6c          l        ; [&29] ASL: packed-name low byte
-    equb &72                                                          ; 847a: 72          r        ; [&2a] LSR: packed-name low byte
-    equb &ec                                                          ; 847b: ec          .        ; [&2b] ROL: packed-name low byte
-    equb &f2                                                          ; 847c: f2          .        ; [&2c] ROR: packed-name low byte
-    equb &a3                                                          ; 847d: a3          .        ; [&2d] DEC: packed-name low byte
-    equb &c3                                                          ; 847e: c3          .        ; [&2e] INC: packed-name low byte
-    equb &18                                                          ; 847f: 18          .        ; [&2f] CPX: packed-name low byte
-    equb &19                                                          ; 8480: 19          .        ; [&30] CPY: packed-name low byte
-    equb &34                                                          ; 8481: 34          4        ; [&31] BIT: packed-name low byte
-    equb &b0                                                          ; 8482: b0          .        ; [&32] JMP: packed-name low byte
-    equb &72                                                          ; 8483: 72          r        ; [&33] JSR: packed-name low byte
-    equb &98                                                          ; 8484: 98          .        ; [&34] LDX: packed-name low byte
-    equb &99                                                          ; 8485: 99          .        ; [&35] LDY: packed-name low byte
-    equb &81                                                          ; 8486: 81          .        ; [&36] STA: packed-name low byte
-    equb &98                                                          ; 8487: 98          .        ; [&37] STX: packed-name low byte
-    equb &99                                                          ; 8488: 99          .        ; [&38] STY: packed-name low byte
-    equb &14                                                          ; 8489: 14          .        ; [&39] OPT directive: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('R' AND &1F) * &20 + ('K' AND &1F)) AND &FF  ; 8451: 4b          K       ; [&01] BRK: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 8452: 83          .       ; [&02] CLC: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('D' AND &1F)) AND &FF  ; 8453: 84          .       ; [&03] CLD: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('I' AND &1F)) AND &FF  ; 8454: 89          .       ; [&04] CLI: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('V' AND &1F)) AND &FF  ; 8455: 96          .       ; [&05] CLV: packed-name low byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8456: b8          .       ; [&06] DEX: packed-name low byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8457: b9          .       ; [&07] DEY: packed-name low byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8458: d8          .       ; [&08] INX: packed-name low byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8459: d9          .       ; [&09] INY: packed-name low byte
+    equb (('N' AND &1F) * &400 + ('O' AND &1F) * &20 + ('P' AND &1F)) AND &FF  ; 845a: f0          .       ; [&0a] NOP: packed-name low byte
+    equb (('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 845b: 01          .       ; [&0b] PHA: packed-name low byte
+    equb (('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('P' AND &1F)) AND &FF  ; 845c: 10          .       ; [&0c] PHP: packed-name low byte
+    equb (('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 845d: 81          .       ; [&0d] PLA: packed-name low byte
+    equb (('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('P' AND &1F)) AND &FF  ; 845e: 90          .       ; [&0e] PLP: packed-name low byte
+    equb (('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('I' AND &1F)) AND &FF  ; 845f: 89          .       ; [&0f] RTI: packed-name low byte
+    equb (('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('S' AND &1F)) AND &FF  ; 8460: 93          .       ; [&10] RTS: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 8461: a3          .       ; [&11] SEC: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('D' AND &1F)) AND &FF  ; 8462: a4          .       ; [&12] SED: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('I' AND &1F)) AND &FF  ; 8463: a9          .       ; [&13] SEI: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8464: 38          8       ; [&14] TAX: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8465: 39          9       ; [&15] TAY: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('S' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8466: 78          x       ; [&16] TSX: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 8467: 01          .       ; [&17] TXA: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('S' AND &1F)) AND &FF  ; 8468: 13          .       ; [&18] TXS: packed-name low byte
+    equb (('T' AND &1F) * &400 + ('Y' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 8469: 21          !       ; [&19] TYA: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 846a: 63          c       ; [&1a] BCC: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('S' AND &1F)) AND &FF  ; 846b: 73          s       ; [&1b] BCS: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Q' AND &1F)) AND &FF  ; 846c: b1          .       ; [&1c] BEQ: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('M' AND &1F) * &20 + ('I' AND &1F)) AND &FF  ; 846d: a9          .       ; [&1d] BMI: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('N' AND &1F) * &20 + ('E' AND &1F)) AND &FF  ; 846e: c5          .       ; [&1e] BNE: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('P' AND &1F) * &20 + ('L' AND &1F)) AND &FF  ; 846f: 0c          .       ; [&1f] BPL: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 8470: c3          .       ; [&20] BVC: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('S' AND &1F)) AND &FF  ; 8471: d3          .       ; [&21] BVS: packed-name low byte
+    equb (('A' AND &1F) * &400 + ('N' AND &1F) * &20 + ('D' AND &1F)) AND &FF  ; 8472: c4          .       ; [&22] AND: packed-name low byte
+    equb (('E' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) AND &FF  ; 8473: f2          .       ; [&23] EOR: packed-name low byte
+    equb (('O' AND &1F) * &400 + ('R' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 8474: 41          A       ; [&24] ORA: packed-name low byte
+    equb (('A' AND &1F) * &400 + ('D' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 8475: 83          .       ; [&25] ADC: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) AND &FF  ; 8476: b0          .       ; [&26] CMP: packed-name low byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 8477: 81          .       ; [&27] LDA: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('B' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 8478: 43          C       ; [&28] SBC: packed-name low byte
+    equb (('A' AND &1F) * &400 + ('S' AND &1F) * &20 + ('L' AND &1F)) AND &FF  ; 8479: 6c          l       ; [&29] ASL: packed-name low byte
+    equb (('L' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) AND &FF  ; 847a: 72          r       ; [&2a] LSR: packed-name low byte
+    equb (('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('L' AND &1F)) AND &FF  ; 847b: ec          .       ; [&2b] ROL: packed-name low byte
+    equb (('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) AND &FF  ; 847c: f2          .       ; [&2c] ROR: packed-name low byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 847d: a3          .       ; [&2d] DEC: packed-name low byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('C' AND &1F)) AND &FF  ; 847e: c3          .       ; [&2e] INC: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 847f: 18          .       ; [&2f] CPX: packed-name low byte
+    equb (('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8480: 19          .       ; [&30] CPY: packed-name low byte
+    equb (('B' AND &1F) * &400 + ('I' AND &1F) * &20 + ('T' AND &1F)) AND &FF  ; 8481: 34          4       ; [&31] BIT: packed-name low byte
+    equb (('J' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) AND &FF  ; 8482: b0          .       ; [&32] JMP: packed-name low byte
+    equb (('J' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) AND &FF  ; 8483: 72          r       ; [&33] JSR: packed-name low byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8484: 98          .       ; [&34] LDX: packed-name low byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8485: 99          .       ; [&35] LDY: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('A' AND &1F)) AND &FF  ; 8486: 81          .       ; [&36] STA: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('X' AND &1F)) AND &FF  ; 8487: 98          .       ; [&37] STX: packed-name low byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('Y' AND &1F)) AND &FF  ; 8488: 99          .       ; [&38] STY: packed-name low byte
+    equb (('O' AND &1F) * &400 + ('P' AND &1F) * &20 + ('T' AND &1F)) AND &FF  ; 8489: 14          .       ; [&39] OPT directive: packed-name low byte
 ; &848a used as index base 1 time by &85fa
 .asm_mnemonic_hi
     equb &35                                                          ; 848a: 35          5        ; index &00 hi (unused); also asm_mnemonic_lo[&3A] = EQU directive packed-name low byte
-    equb &0a                                                          ; 848b: 0a          .        ; [&01] BRK: packed-name high byte
-    equb &0d                                                          ; 848c: 0d          .        ; [&02] CLC: packed-name high byte
-    equb &0d                                                          ; 848d: 0d          .        ; [&03] CLD: packed-name high byte
-    equb &0d                                                          ; 848e: 0d          .        ; [&04] CLI: packed-name high byte
-    equb &0d                                                          ; 848f: 0d          .        ; [&05] CLV: packed-name high byte
-    equb &10                                                          ; 8490: 10          .        ; [&06] DEX: packed-name high byte
-    equb &10                                                          ; 8491: 10          .        ; [&07] DEY: packed-name high byte
-    equb &25                                                          ; 8492: 25          %        ; [&08] INX: packed-name high byte
-    equb &25                                                          ; 8493: 25          %        ; [&09] INY: packed-name high byte
-    equb &39                                                          ; 8494: 39          9        ; [&0a] NOP: packed-name high byte
-    equb &41                                                          ; 8495: 41          A        ; [&0b] PHA: packed-name high byte
-    equb &41                                                          ; 8496: 41          A        ; [&0c] PHP: packed-name high byte
-    equb &41                                                          ; 8497: 41          A        ; [&0d] PLA: packed-name high byte
-    equb &41                                                          ; 8498: 41          A        ; [&0e] PLP: packed-name high byte
-    equb &4a                                                          ; 8499: 4a          J        ; [&0f] RTI: packed-name high byte
-    equb &4a                                                          ; 849a: 4a          J        ; [&10] RTS: packed-name high byte
-    equb &4c                                                          ; 849b: 4c          L        ; [&11] SEC: packed-name high byte
-    equb &4c                                                          ; 849c: 4c          L        ; [&12] SED: packed-name high byte
-    equb &4c                                                          ; 849d: 4c          L        ; [&13] SEI: packed-name high byte
-    equb &50                                                          ; 849e: 50          P        ; [&14] TAX: packed-name high byte
-    equb &50                                                          ; 849f: 50          P        ; [&15] TAY: packed-name high byte
-    equb &52                                                          ; 84a0: 52          R        ; [&16] TSX: packed-name high byte
-    equb &53                                                          ; 84a1: 53          S        ; [&17] TXA: packed-name high byte
-    equb &53                                                          ; 84a2: 53          S        ; [&18] TXS: packed-name high byte
-    equb &53                                                          ; 84a3: 53          S        ; [&19] TYA: packed-name high byte
-    equb &08                                                          ; 84a4: 08          .        ; [&1a] BCC: packed-name high byte
-    equb &08                                                          ; 84a5: 08          .        ; [&1b] BCS: packed-name high byte
-    equb &08                                                          ; 84a6: 08          .        ; [&1c] BEQ: packed-name high byte
-    equb &09                                                          ; 84a7: 09          .        ; [&1d] BMI: packed-name high byte
-    equb &09                                                          ; 84a8: 09          .        ; [&1e] BNE: packed-name high byte
-    equb &0a                                                          ; 84a9: 0a          .        ; [&1f] BPL: packed-name high byte
-    equb &0a                                                          ; 84aa: 0a          .        ; [&20] BVC: packed-name high byte
-    equb &0a                                                          ; 84ab: 0a          .        ; [&21] BVS: packed-name high byte
-    equb &05                                                          ; 84ac: 05          .        ; [&22] AND: packed-name high byte
-    equb &15                                                          ; 84ad: 15          .        ; [&23] EOR: packed-name high byte
-    equb &3e                                                          ; 84ae: 3e          >        ; [&24] ORA: packed-name high byte
-    equb &04                                                          ; 84af: 04          .        ; [&25] ADC: packed-name high byte
-    equb &0d                                                          ; 84b0: 0d          .        ; [&26] CMP: packed-name high byte
-    equb &30                                                          ; 84b1: 30          0        ; [&27] LDA: packed-name high byte
-    equb &4c                                                          ; 84b2: 4c          L        ; [&28] SBC: packed-name high byte
-    equb &06                                                          ; 84b3: 06          .        ; [&29] ASL: packed-name high byte
-    equb &32                                                          ; 84b4: 32          2        ; [&2a] LSR: packed-name high byte
-    equb &49                                                          ; 84b5: 49          I        ; [&2b] ROL: packed-name high byte
-    equb &49                                                          ; 84b6: 49          I        ; [&2c] ROR: packed-name high byte
-    equb &10                                                          ; 84b7: 10          .        ; [&2d] DEC: packed-name high byte
-    equb &25                                                          ; 84b8: 25          %        ; [&2e] INC: packed-name high byte
-    equb &0e                                                          ; 84b9: 0e          .        ; [&2f] CPX: packed-name high byte
-    equb &0e                                                          ; 84ba: 0e          .        ; [&30] CPY: packed-name high byte
-    equb &09                                                          ; 84bb: 09          .        ; [&31] BIT: packed-name high byte
-    equb &29                                                          ; 84bc: 29          )        ; [&32] JMP: packed-name high byte
-    equb &2a                                                          ; 84bd: 2a          *        ; [&33] JSR: packed-name high byte
-    equb &30                                                          ; 84be: 30          0        ; [&34] LDX: packed-name high byte
-    equb &30                                                          ; 84bf: 30          0        ; [&35] LDY: packed-name high byte
-    equb &4e                                                          ; 84c0: 4e          N        ; [&36] STA: packed-name high byte
-    equb &4e                                                          ; 84c1: 4e          N        ; [&37] STX: packed-name high byte
-    equb &4e                                                          ; 84c2: 4e          N        ; [&38] STY: packed-name high byte
-    equb &3e                                                          ; 84c3: 3e          >        ; [&39] OPT directive: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('R' AND &1F) * &20 + ('K' AND &1F)) DIV &100  ; 848b: 0a          .       ; [&01] BRK: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 848c: 0d          .       ; [&02] CLC: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('D' AND &1F)) DIV &100  ; 848d: 0d          .       ; [&03] CLD: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('I' AND &1F)) DIV &100  ; 848e: 0d          .       ; [&04] CLI: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('V' AND &1F)) DIV &100  ; 848f: 0d          .       ; [&05] CLV: packed-name high byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 8490: 10          .       ; [&06] DEX: packed-name high byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 8491: 10          .       ; [&07] DEY: packed-name high byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 8492: 25          %       ; [&08] INX: packed-name high byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 8493: 25          %       ; [&09] INY: packed-name high byte
+    equb (('N' AND &1F) * &400 + ('O' AND &1F) * &20 + ('P' AND &1F)) DIV &100  ; 8494: 39          9       ; [&0a] NOP: packed-name high byte
+    equb (('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 8495: 41          A       ; [&0b] PHA: packed-name high byte
+    equb (('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('P' AND &1F)) DIV &100  ; 8496: 41          A       ; [&0c] PHP: packed-name high byte
+    equb (('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 8497: 41          A       ; [&0d] PLA: packed-name high byte
+    equb (('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('P' AND &1F)) DIV &100  ; 8498: 41          A       ; [&0e] PLP: packed-name high byte
+    equb (('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('I' AND &1F)) DIV &100  ; 8499: 4a          J       ; [&0f] RTI: packed-name high byte
+    equb (('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('S' AND &1F)) DIV &100  ; 849a: 4a          J       ; [&10] RTS: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 849b: 4c          L       ; [&11] SEC: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('D' AND &1F)) DIV &100  ; 849c: 4c          L       ; [&12] SED: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('I' AND &1F)) DIV &100  ; 849d: 4c          L       ; [&13] SEI: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 849e: 50          P       ; [&14] TAX: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 849f: 50          P       ; [&15] TAY: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('S' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 84a0: 52          R       ; [&16] TSX: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 84a1: 53          S       ; [&17] TXA: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('S' AND &1F)) DIV &100  ; 84a2: 53          S       ; [&18] TXS: packed-name high byte
+    equb (('T' AND &1F) * &400 + ('Y' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 84a3: 53          S       ; [&19] TYA: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84a4: 08          .       ; [&1a] BCC: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('S' AND &1F)) DIV &100  ; 84a5: 08          .       ; [&1b] BCS: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Q' AND &1F)) DIV &100  ; 84a6: 08          .       ; [&1c] BEQ: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('M' AND &1F) * &20 + ('I' AND &1F)) DIV &100  ; 84a7: 09          .       ; [&1d] BMI: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('N' AND &1F) * &20 + ('E' AND &1F)) DIV &100  ; 84a8: 09          .       ; [&1e] BNE: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('P' AND &1F) * &20 + ('L' AND &1F)) DIV &100  ; 84a9: 0a          .       ; [&1f] BPL: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84aa: 0a          .       ; [&20] BVC: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('S' AND &1F)) DIV &100  ; 84ab: 0a          .       ; [&21] BVS: packed-name high byte
+    equb (('A' AND &1F) * &400 + ('N' AND &1F) * &20 + ('D' AND &1F)) DIV &100  ; 84ac: 05          .       ; [&22] AND: packed-name high byte
+    equb (('E' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) DIV &100  ; 84ad: 15          .       ; [&23] EOR: packed-name high byte
+    equb (('O' AND &1F) * &400 + ('R' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 84ae: 3e          >       ; [&24] ORA: packed-name high byte
+    equb (('A' AND &1F) * &400 + ('D' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84af: 04          .       ; [&25] ADC: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) DIV &100  ; 84b0: 0d          .       ; [&26] CMP: packed-name high byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 84b1: 30          0       ; [&27] LDA: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('B' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84b2: 4c          L       ; [&28] SBC: packed-name high byte
+    equb (('A' AND &1F) * &400 + ('S' AND &1F) * &20 + ('L' AND &1F)) DIV &100  ; 84b3: 06          .       ; [&29] ASL: packed-name high byte
+    equb (('L' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) DIV &100  ; 84b4: 32          2       ; [&2a] LSR: packed-name high byte
+    equb (('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('L' AND &1F)) DIV &100  ; 84b5: 49          I       ; [&2b] ROL: packed-name high byte
+    equb (('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) DIV &100  ; 84b6: 49          I       ; [&2c] ROR: packed-name high byte
+    equb (('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84b7: 10          .       ; [&2d] DEC: packed-name high byte
+    equb (('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('C' AND &1F)) DIV &100  ; 84b8: 25          %       ; [&2e] INC: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 84b9: 0e          .       ; [&2f] CPX: packed-name high byte
+    equb (('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 84ba: 0e          .       ; [&30] CPY: packed-name high byte
+    equb (('B' AND &1F) * &400 + ('I' AND &1F) * &20 + ('T' AND &1F)) DIV &100  ; 84bb: 09          .       ; [&31] BIT: packed-name high byte
+    equb (('J' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) DIV &100  ; 84bc: 29          )       ; [&32] JMP: packed-name high byte
+    equb (('J' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) DIV &100  ; 84bd: 2a          *       ; [&33] JSR: packed-name high byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 84be: 30          0       ; [&34] LDX: packed-name high byte
+    equb (('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 84bf: 30          0       ; [&35] LDY: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('A' AND &1F)) DIV &100  ; 84c0: 4e          N       ; [&36] STA: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('X' AND &1F)) DIV &100  ; 84c1: 4e          N       ; [&37] STX: packed-name high byte
+    equb (('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('Y' AND &1F)) DIV &100  ; 84c2: 4e          N       ; [&38] STY: packed-name high byte
+    equb (('O' AND &1F) * &400 + ('P' AND &1F) * &20 + ('T' AND &1F)) DIV &100  ; 84c3: 3e          >       ; [&39] OPT directive: packed-name high byte
 ; &84c4 used as index base 1 time by &8620
 .asm_base_opcode
     equb &16                                                          ; 84c4: 16          .        ; index &00 base (unused); also asm_mnemonic_hi[&3A] = EQU directive packed-name high byte

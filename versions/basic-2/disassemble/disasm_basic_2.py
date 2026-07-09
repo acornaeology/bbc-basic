@@ -90,6 +90,7 @@ ASM_BASE_OPCODES = [
     0x86, 0x84,
 ]
 
+
 # token -> handler base name (from the keyword table). Tokens <= &C5 are
 # value-returning functions (fn_*); the rest are statements (stmt_*).
 # Token &CE has no keyword (a gap in the table). The five pseudo-variable
@@ -434,6 +435,18 @@ EVAL_LEVEL_ON_EXIT = {
     'X': 'the next unconsumed operator token (lookahead)',
     'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
 }
+def asm_pack_expr(mnemonic, half):
+    """beebasm expression that re-derives a packed-name hash byte from the
+    mnemonic's three letters (low 5 bits of each, packed MSB-first into a
+    15-bit key). ``half`` is 'lo' or 'hi'. Rendered in place of the raw
+    EQUB so the table documents how each byte is computed; verify proves
+    the expression assembles back to the original ROM byte."""
+    c1, c2, c3 = mnemonic
+    key = (f"('{c1}' AND &1F) * &400 + ('{c2}' AND &1F) * &20 "
+           f"+ ('{c3}' AND &1F)")
+    tail = 'AND &FF' if half == 'lo' else 'DIV &100'
+    return f"({key}) {tail}"
+
 """dasmos driver for Acorn BBC BASIC II.
 
 BBC BASIC II is a 16 kB sideways language ROM mapped at &8000-&BFFF
@@ -855,6 +868,12 @@ and, on a hit, the high half against asm_mnemonic_hi,x; the matching
 index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
 indices directly via asm_logic_mnemonic (&8607).
 
+Because the two hash tables are pure functions of the mnemonic text,
+each asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm
+expression that re-derives it from the three letters (the assembled
+value is shown in the address comment). asm_base_opcode holds real
+6502 opcodes and stays a plain byte.
+
 The index order is meaningful: the operand parser keys its
 addressing-mode handler off cpx thresholds on the matched index.
 
@@ -898,6 +917,7 @@ for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
     if _i == 0:
         _text = 'index &00: unused padding (never tested by the scan)'
     else:
+        d.expr(ASM_MNEMONIC_LO_BASE + _i, asm_pack_expr(ASM_MNEMONICS[_i], 'lo'))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name low byte'
     d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
@@ -909,6 +929,7 @@ for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
         _text = ('index &00 hi (unused); also asm_mnemonic_lo[&3A] = '
                  'EQU directive packed-name low byte')
     else:
+        d.expr(ASM_MNEMONIC_HI_BASE + _i, asm_pack_expr(ASM_MNEMONICS[_i], 'hi'))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name high byte'
     d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)
