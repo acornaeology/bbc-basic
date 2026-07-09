@@ -1355,8 +1355,7 @@
       },
       "on_exit": {
         "control": "rejoins statement_loop; no value, registers not preserved"
-      },
-      "fall_through": true
+      }
     },
     {
       "addr": 36541,
@@ -1854,8 +1853,7 @@
       },
       "on_exit": {
         "control": "rejoins statement_loop; no value, registers not preserved"
-      },
-      "fall_through": true
+      }
     },
     {
       "addr": 48834,
@@ -1903,6 +1901,24 @@
       "on_exit": {
         "zp_fwb_exp (&3D/&3E)": "the three letters packed 5 bits each",
         "zp_text_ptr_off (&0A)": "advanced past the mnemonic"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 34347,
+      "name": "asm_emit",
+      "title": "Emit assembled bytes to P%/O%",
+      "description": "The inline assembler's byte-emit routine. Copies the assembled bytes\nto the destination given by P% (resint_p, &0440), or by O% (resint_o,\n&043C) when OPT selects offset assembly (OPT >= 4), then advances P%\n(and O% for offset assembly) past them. Y is the signed byte count: 0\nemits nothing; a positive count stores that many opcode/operand bytes\nfrom the assembly buffer at zp_asm_opcode (&29); a negative count is\nan EQUS, storing zp_strbuf_len (&36) bytes taken from string_work\n(&0600).\n",
+      "on_entry": {
+        "Y": "signed byte count: 0 = none, positive N = N opcode bytes from zp_asm_opcode (&29), negative = EQUS string from string_work (&0600)",
+        "zp_opt_flag (&28)": "current OPT setting (bit 2 selects offset assembly to O%)",
+        "zp_strbuf_len (&36)": "string length when emitting an EQUS",
+        "resint_p (&0440)": "P%, the assembly program counter",
+        "resint_o (&043C)": "O%, the offset-assembly destination"
+      },
+      "on_exit": {
+        "resint_p (&0440)": "P% advanced past the emitted bytes",
+        "resint_o (&043C)": "O% advanced too when offset assembly is active"
       }
     },
     {
@@ -2039,6 +2055,21 @@
       }
     },
     {
+      "addr": 35147,
+      "name": "general_next_byte",
+      "title": "Advance the general pointer and read the next byte",
+      "description": "Call inc_ptr_general to increment the 16-bit general pointer\nzp_general (&37/&38) by one (carrying into the high byte), then load\nthe byte at (zp_general),Y and return it in A. The tokeniser's fetch-\nnext-character primitive for hex constants and string literals.\n",
+      "on_entry": {
+        "zp_general (&37)": "the pointer to advance (&37/&38)",
+        "Y": "index added to the pointer for the read (usually 0)"
+      },
+      "on_exit": {
+        "A": "the byte read at the incremented pointer",
+        "zp_general (&37)": "incremented by one",
+        "Y": "preserved"
+      }
+    },
+    {
       "addr": 35153,
       "name": "tokenise_line",
       "title": "Tokenise a line",
@@ -2074,6 +2105,15 @@
         "A": "first non-space character",
         "Y": "its offset within the line",
         "zp_text_ptr_off (&0A)": "advanced past that character"
+      }
+    },
+    {
+      "addr": 35490,
+      "name": "missing_comma",
+      "title": "Raise \"Missing ,\" error",
+      "description": "Raise BASIC error &05, \"Missing ,\", via a BRK error block. Reached\nfrom the argument-list parsers when a required comma is absent. Does\nnot return.\n",
+      "on_exit": {
+        "control": "raises BRK error &05 \"Missing ,\"; does not return to the caller"
       }
     },
     {
@@ -2155,6 +2195,20 @@
       "fall_through": true
     },
     {
+      "addr": 35747,
+      "name": "next_statement",
+      "title": "Execute the next statement on the line",
+      "description": "The interpreter's per-statement entry point. Read the character at\nPtrA+offset while advancing zp_text_ptr_off (&0A) past the ':'\nseparator, skipping spaces. A token >= &CF falls into dispatch_token,\nwhich indexes the action-address table and JMP (&0037)s to its\nhandler; a byte below &CF is not a command token, so it branches to\ntry_variable_assignment for an implied LET. Non-returning: every path\ntransfers to a statement handler.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B)": "the program text pointer (PtrA)",
+        "zp_text_ptr_off (&0A)": "offset at the statement start (the ':' or first character)"
+      },
+      "on_exit": {
+        "control": "non-returning; dispatches via dispatch_token JMP (&0037) to a keyword handler, or branches to try_variable_assignment"
+      },
+      "fall_through": true
+    },
+    {
       "addr": 35761,
       "name": "dispatch_token",
       "title": "Dispatch a tokenised function or command",
@@ -2176,6 +2230,15 @@
         "control": "performs the assignment then rejoins statement_loop, or dispatches to the =, * or [ form"
       },
       "fall_through": true
+    },
+    {
+      "addr": 35854,
+      "name": "err_type_mismatch",
+      "title": "Raise \"Type mismatch\" error",
+      "description": "Raise BASIC error &06, \"Type mismatch\", via a BRK error block. Reached\n(18 callers) whenever a routine finds a string where a number is\nrequired, or vice versa. Does not return.\n",
+      "on_exit": {
+        "control": "raises BRK error &06 \"Type mismatch\"; does not return to the caller"
+      }
     },
     {
       "addr": 35870,
@@ -2394,6 +2457,18 @@
       }
     },
     {
+      "addr": 37974,
+      "name": "vdu_send_byte",
+      "title": "Send the integer accumulator low byte to OSWRCH",
+      "description": "Load the low byte of the integer work accumulator and send it to the\nVDU by jumping through WRCHV (OSWRCH), which returns to the caller.\nUsed to output a computed byte value.\n",
+      "on_entry": {
+        "zp_iwa (&2A)": "the byte to send (IWA low byte)"
+      },
+      "on_exit": {
+        "A": "the byte sent (written to the VDU via OSWRCH)"
+      }
+    },
+    {
       "addr": 37979,
       "name": "find_proc_fn",
       "title": "Find a PROC or FN definition by name",
@@ -2580,6 +2655,15 @@
       }
     },
     {
+      "addr": 38954,
+      "name": "syntax_error",
+      "title": "Raise \"Syntax error\" error",
+      "description": "Raise BASIC error &10, \"Syntax error\", via a BRK error block. Reached\nwhen a statement or expression is malformed (e.g. from\ncheck_end_of_statement when unexpected text follows a statement). Does\nnot return.\n",
+      "on_exit": {
+        "control": "raises BRK error &10 \"Syntax error\"; does not return to the caller"
+      }
+    },
+    {
       "addr": 38977,
       "name": "expect_eq",
       "title": "Require \"=\" at the parser pointer",
@@ -2591,6 +2675,19 @@
         "A": "the \"=\" character (consumed)",
         "zp_text_ptr2_off (&1B)": "advanced past the \"=\"",
         "BRK": "Mistake if \"=\" is missing"
+      }
+    },
+    {
+      "addr": 38994,
+      "name": "sync_text_ptr",
+      "title": "Resync PtrA's offset to PtrB, then require statement end",
+      "description": "Load the resume position from PtrB's offset (zp_text_ptr2_off, &1B)\ninto Y and tail-jump into check_end_of_statement at cend_back. Used\nafter a sub-parse that tracked its position in PtrB (e.g. FOR /\nassignment operands): it resumes at PtrB's offset against the PtrA\ntext pointer and demands the statement end there, advancing PtrA to\nthe next statement.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B)": "the program text pointer (PtrA)",
+        "zp_text_ptr2_off (&1B)": "PtrB offset to resume from"
+      },
+      "on_exit": {
+        "control": "jumps into check_end_of_statement (cend_back); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape"
       }
     },
     {
@@ -2606,6 +2703,23 @@
         "zp_text_ptr_off (&0A)": "at the statement terminator",
         "A": "the terminator character",
         "BRK": "Syntax error if more text follows"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 39021,
+      "name": "skip_to_statement_end",
+      "title": "Advance PtrA past the current statement",
+      "description": "Add the terminator offset in Y to the PtrA text pointer (zp_text_ptr,\n&0B/&0C), carrying into the high byte, so PtrA now addresses the\nstatement terminator; reset the character offset zp_text_ptr_off (&0A)\nto 1; then poll ESCFLG and raise Escape if pressed before returning.\nThe common tail of the end-of-statement check and several statement\nhandlers.\n",
+      "on_entry": {
+        "Y": "offset of the statement terminator within the line",
+        "zp_text_ptr (&0B)": "the program text pointer (PtrA)"
+      },
+      "on_exit": {
+        "zp_text_ptr (&0B)": "advanced to the terminator (&0B/&0C)",
+        "zp_text_ptr_off (&0A)": "reset to 1",
+        "A": "1 (from the reset offset)",
+        "control": "rts, unless Escape is pending (jumps to escape_error)"
       }
     },
     {
@@ -2678,6 +2792,22 @@
         "Z": "set if the values are equal",
         "C": "the sign-corrected ordering when they differ",
         "A": "nonzero when they differ"
+      }
+    },
+    {
+      "addr": 39581,
+      "name": "compare_values",
+      "title": "Compare the current value with the next operand",
+      "description": "Take the already-evaluated left value (whose type is in X), stack it,\nevaluate the next arithmetic operand at PtrB, then compare the two -\ninteger, real or string - returning the ordering flags for the\nrelational operators. A one-instruction head (txa) on eval_and_compare\nthat supplies the left type in X.\n",
+      "on_entry": {
+        "X": "the type of the left value (already evaluated)",
+        "zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)": "the left value",
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the right operand"
+      },
+      "on_exit": {
+        "C": "the ordering of left vs right",
+        "Z": "set if equal",
+        "X": "the next unconsumed operator token"
       },
       "fall_through": true
     },
@@ -3743,6 +3873,31 @@
       }
     },
     {
+      "addr": 44611,
+      "name": "no_such_variable",
+      "title": "Raise \"No such variable\" error",
+      "description": "Raise BASIC error &1A, \"No such variable\", via a BRK error block.\nReached when an expression or lvalue names a variable that has not\nbeen created. Does not return.\n",
+      "on_exit": {
+        "control": "raises BRK error &1A \"No such variable\"; does not return to the caller"
+      }
+    },
+    {
+      "addr": 44630,
+      "name": "eval_subexpr",
+      "title": "Evaluate a parenthesised sub-expression",
+      "description": "Evaluate a full expression at PtrB via eval_or_eor, then require a\nclosing \")\" - raising Missing ) if the terminating operator is\nanything else. Used wherever a bracketed sub-expression appears in the\ngrammar.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB, positioned just after the opening \"(\"",
+        "zp_text_ptr2_off (&1B)": "offset into the text"
+      },
+      "on_exit": {
+        "A": "result type (<0 float in fwa, >0 integer in iwa, 0 string)",
+        "Y": "copy of the result type",
+        "zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)": "the value, selected by the type",
+        "zp_text_ptr2_off (&1B)": "advanced past the \")\""
+      }
+    },
+    {
       "addr": 44760,
       "name": "int_result_a",
       "title": "Return A as an integer result",
@@ -3918,6 +4073,22 @@
       },
       "on_exit": {
         "zp_stack_ptr (&04/&05)": "lowered past the saved value and identity"
+      }
+    },
+    {
+      "addr": 45868,
+      "name": "load_var_by_type",
+      "title": "Load a variable by type",
+      "description": "Dispatch on the variable type code in zp_iwa_2 and load the variable\naddressed by (zp_iwa) into the appropriate accumulator: a string into\nthe string buffer (load_string_var), a byte or 4-byte integer into IWA\n(iwa_load_var / load_byte_var), or a 5-byte real into FWA\n(load_real_var). Negative = string, 0 = byte, 5 = real, anything else\n= integer.\n",
+      "on_entry": {
+        "zp_iwa (&2A)": "pointer to the variable (&2A/&2B)",
+        "zp_iwa_2 (&2C)": "the variable type code (<0 string, 0 byte, 5 real, else integer)"
+      },
+      "on_exit": {
+        "A": "value-type marker (&40 integer, &FF real)",
+        "zp_iwa (&2A)": "the integer, if integer/byte",
+        "zp_fwa (&2E)": "the unpacked real, if real (&2E-&35)",
+        "string_work (&0600)": "the string characters, if string; length in zp_strbuf_len (&36)"
       },
       "fall_through": true
     },
@@ -3989,6 +4160,17 @@
       "on_exit": {
         "zp_erl (&08/&09)": "the line number (ERL), or 0"
       }
+    },
+    {
+      "addr": 46257,
+      "name": "width_eval_value",
+      "title": "Evaluate a numeric value and assign it to a variable",
+      "description": "Evaluate the numeric expression at PtrB via eval_or_eor, then fall\nstraight into assign_number, which pops the variable's data address\noff the BASIC stack and stores the value there, coercing to the\nvariable's own type.\n",
+      "on_entry": {
+        "zp_text_ptr2 (&19/&1A)": "PtrB at the value expression",
+        "(zp_stack_ptr) (&04/&05)": "the destination variable data address on top of the BASIC stack"
+      },
+      "fall_through": true
     },
     {
       "addr": 46260,
@@ -4076,6 +4258,23 @@
       },
       "on_exit": {
         "zp_count (&1E)": "updated (reset by CR, else advanced)",
+        "X": "corrupted",
+        "Y": "corrupted"
+      }
+    },
+    {
+      "addr": 46434,
+      "name": "print_hex_space",
+      "title": "Print A as two hex digits then a space",
+      "description": "Print the byte in A as two hexadecimal digits (print_hex_byte), then\nfall through into print_space to emit a trailing space through the\nprint formatter, which auto-newlines when the column reaches WIDTH.\n",
+      "on_entry": {
+        "A": "the byte to print as hex",
+        "zp_count (&1E)": "the current print column",
+        "zp_width (&23)": "the print WIDTH limit"
+      },
+      "on_exit": {
+        "zp_count (&1E)": "advanced past the digits and the space",
+        "A": "space (&20)",
         "X": "corrupted",
         "Y": "corrupted"
       },
@@ -4168,6 +4367,18 @@
       }
     },
     {
+      "addr": 48165,
+      "name": "emit_newline",
+      "title": "Print a newline and reset the print column",
+      "description": "Emit a newline via OSNEWL, then fall through into reset_print_column\nto zero the print-column counter. The standard way BASIC ends an\noutput line so the column-tracking auto-newline logic stays in step.\n",
+      "on_exit": {
+        "zp_count (&1E)": "reset to 0 (print column)",
+        "A": "0",
+        "X": "preserved",
+        "Y": "preserved"
+      }
+    },
+    {
       "addr": 48173,
       "name": "delete_program_line",
       "title": "Delete a program line and close the gap",
@@ -4178,6 +4389,37 @@
       "on_exit": {
         "the program": "the line removed and memory compacted",
         "zp_top (&12/&13)": "TOP reduced by the deleted line"
+      }
+    },
+    {
+      "addr": 48257,
+      "name": "copy_byte",
+      "title": "Copy one byte, advancing the offset",
+      "description": "Increment the shared offset Y (bumping both pointer high bytes on a\npage crossing), then copy one byte from (zp_general) to (zp_top). The\nper-byte helper used by delete_program_line to copy the line-number\nand length bytes while compacting the program.\n",
+      "on_entry": {
+        "Y": "the current copy offset",
+        "(zp_general) (&37/&38)": "source pointer",
+        "(zp_top) (&12/&13)": "destination pointer"
+      },
+      "on_exit": {
+        "Y": "advanced by 1 (with page carry into &38/&13)",
+        "A": "the byte copied",
+        "(zp_top) (&12/&13)": "receives the copied byte"
+      }
+    },
+    {
+      "addr": 48269,
+      "name": "insert_line",
+      "title": "Insert a tokenised program line",
+      "description": "Insert the numbered, tokenised line held in the &0700 input buffer\ninto the program. First deletes any existing line with the same number\n(delete_program_line); if the buffer holds only a CR the edit was a\npure deletion and it returns. Otherwise it measures the line, checks\nthe new TOP still fits below HIMEM (raising 'LINE space' after tidying\nif not), shifts the program up to open a gap, writes the 4-byte line\nheader (line number + length), copies the line body in, and sets the\nnew TOP.\n",
+      "on_entry": {
+        "zp_iwa (&2A)": "the line number (&2A/&2B)",
+        "Y": "offset within the &0700 input buffer of the tokenised line text",
+        "zp_top (&12)": "current TOP, the end of the program (&12/&13)"
+      },
+      "on_exit": {
+        "zp_top (&12)": "updated past the new line (&12/&13)",
+        "control": "raises 'LINE space' (BRK) if the line will not fit below HIMEM"
       }
     },
     {
@@ -4192,6 +4434,23 @@
         "zp_lomem (&00/&01)": "= TOP",
         "zp_vartop (&02/&03)": "= TOP",
         "the variable table and stacks": "cleared"
+      }
+    },
+    {
+      "addr": 48442,
+      "name": "reset_data_and_stacks",
+      "title": "Reset the DATA pointer and the BASIC stacks",
+      "description": "Reset the READ/DATA pointer to PAGE and empty the FOR/REPEAT/GOSUB and\nvalue stacks: point the stack pointer back at HIMEM and zero the\nREPEAT, FOR and GOSUB nesting levels. Variables and the heap are left\nintact. Called on NEW/CLEAR/RUN as part of clear_vars_heap_stack, and\non the error path.\n",
+      "on_entry": {
+        "zp_page (&18)": "PAGE, the start of the program",
+        "zp_himem (&06)": "HIMEM, the top of memory (&06/&07)"
+      },
+      "on_exit": {
+        "zp_data_ptr (&1C)": "reset to PAGE (&1C/&1D)",
+        "zp_stack_ptr (&04)": "reset to HIMEM (stacks emptied) (&04/&05)",
+        "zp_repeat_level (&24)": "0",
+        "zp_for_level (&26)": "0",
+        "zp_gosub_level (&25)": "0"
       }
     },
     {
@@ -4273,6 +4532,20 @@
         "zp_strbuf_len (&36)": "the string length",
         "zp_stack_ptr": "advanced past the string",
         "X": "preserved"
+      },
+      "fall_through": true
+    },
+    {
+      "addr": 48604,
+      "name": "drop_stacked_string",
+      "title": "Drop a string off the BASIC stack",
+      "description": "Read the length byte of the length-prefixed string on top of the BASIC\nstack and advance the stack pointer past both the length byte and the\nstring characters, discarding the string without copying it.\n",
+      "on_entry": {
+        "zp_stack_ptr (&04)": "a length-prefixed string on top of the BASIC stack (&04/&05)"
+      },
+      "on_exit": {
+        "zp_stack_ptr (&04)": "advanced past the length byte and characters (string dropped)",
+        "X": "preserved"
       }
     },
     {
@@ -4302,6 +4575,20 @@
         "zp_stack_ptr": "advanced by 4",
         "X": "preserved",
         "Y": "preserved"
+      }
+    },
+    {
+      "addr": 48651,
+      "name": "unstack_int_to_general",
+      "title": "Pop a stacked integer into the general work area",
+      "description": "Set the destination to zp_general (&37) and fall into\nunstack_int_to_zp, which copies the 4-byte integer on top of the BASIC\nstack to (&37..&3A) and drops it from the stack.\n",
+      "on_entry": {
+        "zp_stack_ptr (&04)": "a 4-byte integer (MSB first) on top of the BASIC stack (&04/&05)"
+      },
+      "on_exit": {
+        "zp_general (&37)": "the popped integer (&37-&3A)",
+        "zp_stack_ptr (&04)": "advanced by 4 (integer dropped)",
+        "X": "preserved (= &37)"
       },
       "fall_through": true
     },
@@ -4373,6 +4660,53 @@
       }
     },
     {
+      "addr": 48850,
+      "name": "eval_string_arg",
+      "title": "Evaluate a string argument and CR-terminate it",
+      "description": "Evaluate an expression via eval_expr, require it to be a string (Type\nmismatch otherwise), CR-terminate it in the string buffer, and check\nthat the statement ends. Used by OSCLI-style commands and\neval_filename to fetch a single string argument.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "PtrA at the string expression",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the string, terminated with a carriage return",
+        "zp_strbuf_len (&36)": "the string length"
+      }
+    },
+    {
+      "addr": 48861,
+      "name": "eval_filename",
+      "title": "Evaluate a filename and build the OSFILE load address",
+      "description": "Evaluate a CR-terminated filename string via eval_string_arg, then set\nthe load address to PAGE (low byte 0, high byte PAGE) and read the\nmachine's high-order address word via OSBYTE &82. Shared setup for\nSAVE/LOAD/CHAIN.\n",
+      "on_entry": {
+        "zp_text_ptr (&0B/&0C)": "PtrA at the filename expression",
+        "zp_text_ptr_off (&0A)": "offset just past the keyword"
+      },
+      "on_exit": {
+        "string_work (&0600)": "the CR-terminated filename",
+        "zp_fileblk (&39)": "load address low = 0",
+        "zp_fileblk_1 (&3A)": "load address high = PAGE",
+        "zp_fwb_sign (&3B)": "high-order address low (X from OSBYTE &82)",
+        "zp_fwb_ovf (&3C)": "high-order address high (Y from OSBYTE &82)",
+        "A": "zero"
+      }
+    },
+    {
+      "addr": 49065,
+      "name": "sync_ptrb_from_ptra",
+      "title": "Copy PtrA to PtrB, then evaluate a #channel",
+      "description": "Copy the three fields of the primary text pointer PtrA (offset &0A,\nlow &0B, high &0C) into the secondary pointer PtrB (offset &1B, low\n&19, high &1A), then fall straight through into eval_channel. In\neffect: rewind PtrB to PtrA's position and parse the '#channel' file\nhandle that follows.\n",
+      "on_entry": {
+        "zp_text_ptr_off (&0A)": "PtrA offset",
+        "zp_text_ptr (&0B)": "PtrA pointer low/high (&0B/&0C)"
+      },
+      "on_exit": {
+        "zp_text_ptr2 (&19)": "PtrB set equal to PtrA (offset &1B, low &19, high &1A)",
+        "control": "falls through to eval_channel, returning with zp_iwa (&2A) = channel handle, or BRK Missing #"
+      },
+      "fall_through": true
+    },
+    {
       "addr": 49077,
       "name": "eval_channel",
       "title": "Evaluate a #channel argument",
@@ -4429,6 +4763,16 @@
       "name": "callpf_save_parser2",
       "title": "Bind the PROC/FN parameters",
       "description": "Each formal is parsed by [`parse_lvalue`](address:9582)\n\u2014 the same lvalue parser LET, FOR and LOCAL use \u2014 so a formal need not\nbe a name: a `?`, `!` or `$` indirection or an array element is a legal\nparameter, and binding it is a scoped assignment to that location. Each\nformal's current value is stacked (for LOCAL-style restore on return via\n[`stack_local`](address:b30d)) and its identity recorded, then the\nactual arguments are evaluated and assigned.",
+      "align": "before_label"
+    },
+    {
+      "addr": 49103,
+      "name": "print_inline_string",
+      "title": "Print an inline string following the call",
+      "description": "Print the string embedded in the code immediately after the JSR to\nthis routine. It pulls the return address into zp_general as a text\npointer, then walks forward with general_next_byte printing each byte\nthrough osasci, stopping at the first byte with bit 7 set. It resumes\nexecution at that terminating byte via jmp (zp_general) - so the\nterminator doubles as the opcode of the continuation.\n",
+      "on_exit": {
+        "control": "resumes at the string terminator (the byte after the string) as the next instruction; A, Y and zp_general (&37/&38) are corrupted"
+      },
       "align": "before_label"
     }
   ],

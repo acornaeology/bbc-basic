@@ -1424,6 +1424,26 @@ oscli             = &fff7
     ldy #1                                                            ; 8625: a0 01       ..       ; Assume a one-byte instruction
     cpx #&1a                                                          ; 8627: e0 1a       ..       ; index &1A+ takes an operand?
     bcs asm_operand                                                   ; 8629: b0 48       .H       ; yes: parse the addressing mode
+; ***************************************************************************************
+; Emit assembled bytes to P%/O%
+;
+; The inline assembler's byte-emit routine. Copies the assembled bytes to the destination
+; given by P% (resint_p, &0440), or by O% (resint_o, &043C) when OPT selects offset
+; assembly (OPT >= 4), then advances P% (and O% for offset assembly) past them. Y is the
+; signed byte count: 0 emits nothing; a positive count stores that many opcode/operand
+; bytes from the assembly buffer at zp_asm_opcode (&29); a negative count is an EQUS,
+; storing zp_strbuf_len (&36) bytes taken from string_work (&0600).
+;
+; On Entry:
+;     Y: signed byte count: 0 = none, positive N = N opcode bytes from zp_asm_opcode (&29), negative = EQUS string from string_work (&0600)
+;     ZP_OPT_FLAG (&28): current OPT setting (bit 2 selects offset assembly to O%)
+;     ZP_STRBUF_LEN (&36): string length when emitting an EQUS
+;     RESINT_P (&0440): P%, the assembly program counter
+;     RESINT_O (&043C): O%, the offset-assembly destination
+;
+; On Exit:
+;     RESINT_P (&0440): P% advanced past the emitted bytes
+;     RESINT_O (&043C): O% advanced too when offset assembly is active
 ; &862b referenced 7 times by &85c5, &85c9, &85cd, &86aa, &879c, &881e, &8864
 .asm_emit
     lda resint_p                                                      ; 862b: ad 40 04    .@.      ; P% low -> destination
@@ -2072,6 +2092,22 @@ oscli             = &fff7
 ; &894a referenced 2 times by &8946, &895b
 .return_3
     rts                                                               ; 894a: 60          `        ; Return (shared)
+; ***************************************************************************************
+; Advance the general pointer and read the next byte
+;
+; Call inc_ptr_general to increment the 16-bit general pointer zp_general (&37/&38) by
+; one (carrying into the high byte), then load the byte at (zp_general),Y and return it
+; in A. The tokeniser's fetch- next-character primitive for hex constants and string
+; literals.
+;
+; On Entry:
+;     ZP_GENERAL (&37): the pointer to advance (&37/&38)
+;     Y: index added to the pointer for the read (usually 0)
+;
+; On Exit:
+;     A: the byte read at the incremented pointer
+;     ZP_GENERAL (&37): incremented by one
+;     Y: preserved
 ; &894b referenced 3 times by &896a, &8980, &bfdc
 .general_next_byte
     jsr inc_ptr_general                                               ; 894b: 20 44 89     D.      ; Advance the pointer...
@@ -2376,6 +2412,14 @@ oscli             = &fff7
     cmp #ASC(" ")                                                     ; 8a9d: c9 20       .        ; Loop while the character is a space
     beq skip_spaces                                                   ; 8a9f: f0 f6       ..       ; Space: keep skipping
     rts                                                               ; 8aa1: 60          `        ; Return the first non-space character
+; ***************************************************************************************
+; Raise "Missing ," error
+;
+; Raise BASIC error &05, "Missing ,", via a BRK error block. Reached from the
+; argument-list parsers when a required comma is absent. Does not return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &05 "Missing ,"; does not return to the caller
 ; &8aa2 referenced 4 times by &8ab3, &8e21, &ad03, &b036
 .missing_comma
     brk                                                               ; 8aa2: 00          .        ; BRK error block ("Missing ,") follows
@@ -2675,6 +2719,22 @@ oscli             = &fff7
     lda (zp_text_ptr),y                                               ; 8b9d: b1 0b       ..       ; Get the current character
     cmp #ASC(":")                                                     ; 8b9f: c9 3a       .:       ; A colon separates statements on a line
     bne stmt_eol                                                      ; 8ba1: d0 e4       ..       ; Not a colon: check for ELSE / end of line
+; ***************************************************************************************
+; Execute the next statement on the line
+;
+; The interpreter's per-statement entry point. Read the character at PtrA+offset while
+; advancing zp_text_ptr_off (&0A) past the ':' separator, skipping spaces. A token >= &CF
+; falls into dispatch_token, which indexes the action-address table and JMP (&0037)s to
+; its handler; a byte below &CF is not a command token, so it branches to
+; try_variable_assignment for an implied LET. Non-returning: every path transfers to a
+; statement handler.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B): the program text pointer (PtrA)
+;     ZP_TEXT_PTR_OFF (&0A): offset at the statement start (the ':' or first character)
+;
+; On Exit:
+;     CONTROL: non-returning; dispatches via dispatch_token JMP (&0037) to a keyword handler, or branches to try_variable_assignment
 ; &8ba3 referenced 10 times by &8501, &8b94, &8bab, &98de, &b20b, &b430, &b74e, &b84c, &b8e1, &bbf9
 .next_statement
     ldy zp_text_ptr_off                                               ; 8ba3: a4 0a       ..       ; Skip spaces to the next statement
@@ -2771,6 +2831,15 @@ oscli             = &fff7
 ; &8c0b referenced 1 time by &8be7
 .let_mistake
     jmp syntax_error                                                  ; 8c0b: 4c 2a 98    L*.      ; Mistake (syntax) error
+; ***************************************************************************************
+; Raise "Type mismatch" error
+;
+; Raise BASIC error &06, "Type mismatch", via a BRK error block. Reached (18 callers)
+; whenever a routine finds a string where a number is required, or vice versa. Does not
+; return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &06 "Type mismatch"; does not return to the caller
 ; &8c0e referenced 18 times by &8867, &8bf3, &8c03, &92f7, &98bf, &9a9a, &9c88, &9d39, &abe6, &ac9b, &ad67, &aece, &b033, &b0bf, &b4ae, &b9c4, &becf, &bf96
 .err_type_mismatch
     brk                                                               ; 8c0e: 00          .        ; Type mismatch error
@@ -4582,6 +4651,18 @@ oscli             = &fff7
 ; &9453 referenced 3 times by &9434, &9438, &943c
 .vdu_done
     jmp stmt_backup_end                                               ; 9453: 4c 96 8b    L..      ; next statement
+; ***************************************************************************************
+; Send the integer accumulator low byte to OSWRCH
+;
+; Load the low byte of the integer work accumulator and send it to the VDU by jumping
+; through WRCHV (OSWRCH), which returns to the caller. Used to output a computed byte
+; value.
+;
+; On Entry:
+;     ZP_IWA (&2A): the byte to send (IWA low byte)
+;
+; On Exit:
+;     A: the byte sent (written to the VDU via OSWRCH)
 ; &9456 referenced 4 times by &8e3a, &93de, &941f, &9443
 .vdu_send_byte
     lda zp_iwa                                                        ; 9456: a5 2a       .*       ; Send the low byte to OSWRCH
@@ -5465,6 +5546,15 @@ oscli             = &fff7
     brk                                                               ; 9821: 00          .        ; Mistake error
     equb &04                                                          ; 9822: 04          .     
     equs "Mistake"                                                    ; 9823: 4d 69 73... Mis...
+; ***************************************************************************************
+; Raise "Syntax error" error
+;
+; Raise BASIC error &10, "Syntax error", via a BRK error block. Reached when a statement
+; or expression is malformed (e.g. from check_end_of_statement when unexpected text
+; follows a statement). Does not return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &10 "Syntax error"; does not return to the caller
 ; &982a referenced 7 times by &8604, &8855, &8c0b, &8f2e, &986b, &b6a0, &b9c7
 .syntax_error
     brk                                                               ; 982a: 00          .        ; Mistake error
@@ -5502,6 +5592,21 @@ oscli             = &fff7
     txa                                                               ; 984c: 8a          .        ; Result type
     ldy zp_text_ptr2_off                                              ; 984d: a4 1b       ..       ; Sync the program pointer
     jmp cend_check                                                    ; 984f: 4c 61 98    La.      ; check the statement ends
+; ***************************************************************************************
+; Resync PtrA's offset to PtrB, then require statement end
+;
+; Load the resume position from PtrB's offset (zp_text_ptr2_off, &1B) into Y and
+; tail-jump into check_end_of_statement at cend_back. Used after a sub-parse that tracked
+; its position in PtrB (e.g. FOR / assignment operands): it resumes at PtrB's offset
+; against the PtrA text pointer and demands the statement end there, advancing PtrA to
+; the next statement.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B): the program text pointer (PtrA)
+;     ZP_TEXT_PTR2_OFF (&1B): PtrB offset to resume from
+;
+; On Exit:
+;     CONTROL: jumps into check_end_of_statement (cend_back); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape
 ; &9852 referenced 8 times by &8f0e, &9315, &9383, &9406, &b461, &b484, &b4a3, &bf9c
 .sync_text_ptr
     ldy zp_text_ptr2_off                                              ; 9852: a4 1b       ..       ; Sync the program pointer
@@ -5540,6 +5645,24 @@ oscli             = &fff7
     beq skip_to_statement_end                                         ; 9867: f0 04       ..       ; yes
     cmp #&8b                                                          ; 9869: c9 8b       ..       ; ELSE token?
     bne syntax_error                                                  ; 986b: d0 bd       ..       ; none: Mistake (syntax error)
+; ***************************************************************************************
+; Advance PtrA past the current statement
+;
+; Add the terminator offset in Y to the PtrA text pointer (zp_text_ptr, &0B/&0C),
+; carrying into the high byte, so PtrA now addresses the statement terminator; reset the
+; character offset zp_text_ptr_off (&0A) to 1; then poll ESCFLG and raise Escape if
+; pressed before returning. The common tail of the end-of-statement check and several
+; statement handlers.
+;
+; On Entry:
+;     Y: offset of the statement terminator within the line
+;     ZP_TEXT_PTR (&0B): the program text pointer (PtrA)
+;
+; On Exit:
+;     ZP_TEXT_PTR (&0B): advanced to the terminator (&0B/&0C)
+;     ZP_TEXT_PTR_OFF (&0A): reset to 1
+;     A: 1 (from the reset offset)
+;     CONTROL: rts, unless Escape is pending (jumps to escape_error)
 ; &986d referenced 8 times by &850f, &8b73, &9863, &9867, &b16e, &b5ff, &b8fc, &bbea
 .skip_to_statement_end
     clc                                                               ; 986d: 18          .        ; Advance the program pointer past the statement
@@ -6001,6 +6124,23 @@ oscli             = &fff7
 ; &9a9a referenced 2 times by &9aa9, &9aee
 .cmp_type_error
     jmp err_type_mismatch                                             ; 9a9a: 4c 0e 8c    L..      ; Type mismatch error
+; ***************************************************************************************
+; Compare the current value with the next operand
+;
+; Take the already-evaluated left value (whose type is in X), stack it, evaluate the next
+; arithmetic operand at PtrB, then compare the two - integer, real or string - returning
+; the ordering flags for the relational operators. A one-instruction head (txa) on
+; eval_and_compare that supplies the left type in X.
+;
+; On Entry:
+;     X: the type of the left value (already evaluated)
+;     ZP_IWA (&2A) / ZP_FWA (&2E) / STRING_WORK (&0600): the left value
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the right operand
+;
+; On Exit:
+;     C: the ordering of left vs right
+;     Z: set if equal
+;     X: the next unconsumed operator token
 ; &9a9d referenced 5 times by &9bcd, &9bd6, &9be1, &9bf1, &9bfc
 .compare_values
     txa                                                               ; 9a9d: 8a          .        ; Current type
@@ -10515,12 +10655,36 @@ oscli             = &fff7
     lda resint_p                                                      ; ae3a: ad 40 04    .@.      ; Use P% as the value
     ldy resint_p_1                                                    ; ae3d: ac 41 04    .A.      ; return it as an integer
     jmp iwa_from_ya                                                   ; ae40: 4c ea ae    L..      ; return as a 16-bit integer
+; ***************************************************************************************
+; Raise "No such variable" error
+;
+; Raise BASIC error &1A, "No such variable", via a BRK error block. Reached when an
+; expression or lvalue names a variable that has not been created. Does not return.
+;
+; On Exit:
+;     CONTROL: raises BRK error &1A "No such variable"; does not return to the caller
 ; &ae43 referenced 6 times by &8f1b, &ae0b, &ae2d, &ae34, &ae36, &aec7
 .no_such_variable
     brk                                                               ; ae43: 00          .        ; No such variable error
     equb &1a                                                          ; ae44: 1a          .     
     equs "No such variable"                                           ; ae45: 4e 6f 20... No ...
     equb &00                                                          ; ae55: 00          .     
+; ***************************************************************************************
+; Evaluate a parenthesised sub-expression
+;
+; Evaluate a full expression at PtrB via eval_or_eor, then require a closing ")" -
+; raising Missing ) if the terminating operator is anything else. Used wherever a
+; bracketed sub-expression appears in the grammar.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB, positioned just after the opening "("
+;     ZP_TEXT_PTR2_OFF (&1B): offset into the text
+;
+; On Exit:
+;     A: result type (<0 float in fwa, >0 integer in iwa, 0 string)
+;     Y: copy of the result type
+;     ZP_IWA (&2A) / ZP_FWA (&2E) / STRING_WORK (&0600): the value, selected by the type
+;     ZP_TEXT_PTR2_OFF (&1B): advanced past the ")"
 ; &ae56 referenced 11 times by &8e2b, &9747, &976c, &ab4a, &ad09, &ae1e, &af0c, &afda, &affc, &b05b, &b0cb
 .eval_subexpr
     jsr eval_or_eor                                                   ; ae56: 20 29 9b     ).      ; Sub-expression: evaluate it
@@ -11825,6 +11989,24 @@ oscli             = &fff7
 ; &b329 referenced 2 times by &b320, &b322
 .local_push_id
     jmp stack_integer                                                 ; b329: 4c 94 bd    L..      ; push the variable identity (as an integer)
+; ***************************************************************************************
+; Load a variable by type
+;
+; Dispatch on the variable type code in zp_iwa_2 and load the variable addressed by
+; (zp_iwa) into the appropriate accumulator: a string into the string buffer
+; (load_string_var), a byte or 4-byte integer into IWA (iwa_load_var / load_byte_var), or
+; a 5-byte real into FWA (load_real_var). Negative = string, 0 = byte, 5 = real, anything
+; else = integer.
+;
+; On Entry:
+;     ZP_IWA (&2A): pointer to the variable (&2A/&2B)
+;     ZP_IWA_2 (&2C): the variable type code (<0 string, 0 byte, 5 real, else integer)
+;
+; On Exit:
+;     A: value-type marker (&40 integer, &FF real)
+;     ZP_IWA (&2A): the integer, if integer/byte
+;     ZP_FWA (&2E): the unpacked real, if real (&2E-&35)
+;     STRING_WORK (&0600): the string characters, if string; length in zp_strbuf_len (&36)
 ; &b32c referenced 3 times by &9685, &ae27, &b318
 .load_var_by_type
     ldy zp_iwa_2                                                      ; b32c: a4 2c       .,       ; Load the variable by type:
@@ -12177,6 +12359,16 @@ oscli             = &fff7
 ; &b4ae referenced 2 times by &b4bf, &b4e2
 .width_type_error
     jmp err_type_mismatch                                             ; b4ae: 4c 0e 8c    L..      ; Type mismatch error
+; ***************************************************************************************
+; Evaluate a numeric value and assign it to a variable
+;
+; Evaluate the numeric expression at PtrB via eval_or_eor, then fall straight into
+; assign_number, which pops the variable's data address off the BASIC stack and stores
+; the value there, coercing to the variable's own type.
+;
+; On Entry:
+;     ZP_TEXT_PTR2 (&19/&1A): PtrB at the value expression
+;     (ZP_STACK_PTR) (&04/&05): the destination variable data address on top of the BASIC stack
 ; &b4b1 referenced 2 times by &b7d1, &bb2c
 .width_eval_value
     jsr eval_or_eor                                                   ; b4b1: 20 29 9b     ).      ; Evaluate the value
@@ -12396,6 +12588,23 @@ oscli             = &fff7
     bne print_char_body                                               ; b55a: d0 0b       ..       ; no: format and print
     jsr oswrch                                                        ; b55c: 20 ee ff     ..      ; print the CR
     jmp reset_print_column                                            ; b55f: 4c 28 bc    L(.      ; reset the column
+; ***************************************************************************************
+; Print A as two hex digits then a space
+;
+; Print the byte in A as two hexadecimal digits (print_hex_byte), then fall through into
+; print_space to emit a trailing space through the print formatter, which auto-newlines
+; when the column reaches WIDTH.
+;
+; On Entry:
+;     A: the byte to print as hex
+;     ZP_COUNT (&1E): the current print column
+;     ZP_WIDTH (&23): the print WIDTH limit
+;
+; On Exit:
+;     ZP_COUNT (&1E): advanced past the digits and the space
+;     A: space (&20)
+;     X: corrupted
+;     Y: corrupted
 ; &b562 referenced 2 times by &852b, &854e
 .print_hex_space
     jsr print_hex_byte                                                ; b562: 20 45 b5     E.      ; Print A as hex then a space
@@ -13628,6 +13837,18 @@ oscli             = &fff7
     jsr osword                                                        ; bc1d: 20 f1 ff     ..      ; Read a line
     bcc reset_print_column                                            ; bc20: 90 06       ..       ; ok: reset the column
     jmp escape_error                                                  ; bc22: 4c 38 98    L8.      ; Escape: raise it
+; ***************************************************************************************
+; Print a newline and reset the print column
+;
+; Emit a newline via OSNEWL, then fall through into reset_print_column to zero the
+; print-column counter. The standard way BASIC ends an output line so the column-tracking
+; auto-newline logic stays in step.
+;
+; On Exit:
+;     ZP_COUNT (&1E): reset to 0 (print column)
+;     A: 0
+;     X: preserved
+;     Y: preserved
 ; &bc25 referenced 9 times by &853f, &857b, &8d7d, &8e53, &8e67, &909a, &b56e, &b5fc, &bfe7
 .emit_newline
     jsr osnewl                                                        ; bc25: 20 e7 ff     ..      ; Print a newline
@@ -13706,6 +13927,23 @@ oscli             = &fff7
 ; &bc80 referenced 1 time by &bc30
 .return_37
     rts                                                               ; bc80: 60          `        ; Return
+; ***************************************************************************************
+; Copy one byte, advancing the offset
+;
+; Increment the shared offset Y (bumping both pointer high bytes on a page crossing),
+; then copy one byte from (zp_general) to (zp_top). The per-byte helper used by
+; delete_program_line to copy the line-number and length bytes while compacting the
+; program.
+;
+; On Entry:
+;     Y: the current copy offset
+;     (ZP_GENERAL) (&37/&38): source pointer
+;     (ZP_TOP) (&12/&13): destination pointer
+;
+; On Exit:
+;     Y: advanced by 1 (with page carry into &38/&13)
+;     A: the byte copied
+;     (ZP_TOP) (&12/&13): receives the copied byte
 ; &bc81 referenced 2 times by &bc73, &bc76
 .copy_byte
     iny                                                               ; bc81: c8          .        ; Copy one byte (source -> destination)
@@ -13717,6 +13955,24 @@ oscli             = &fff7
     lda (zp_general),y                                                ; bc88: b1 37       .7       ; read the byte,
     sta (zp_top),y                                                    ; bc8a: 91 12       ..       ; write it down
     rts                                                               ; bc8c: 60          `        ; Return
+; ***************************************************************************************
+; Insert a tokenised program line
+;
+; Insert the numbered, tokenised line held in the &0700 input buffer into the program.
+; First deletes any existing line with the same number (delete_program_line); if the
+; buffer holds only a CR the edit was a pure deletion and it returns. Otherwise it
+; measures the line, checks the new TOP still fits below HIMEM (raising 'LINE space'
+; after tidying if not), shifts the program up to open a gap, writes the 4-byte line
+; header (line number + length), copies the line body in, and sets the new TOP.
+;
+; On Entry:
+;     ZP_IWA (&2A): the line number (&2A/&2B)
+;     Y: offset within the &0700 input buffer of the tokenised line text
+;     ZP_TOP (&12): current TOP, the end of the program (&12/&13)
+;
+; On Exit:
+;     ZP_TOP (&12): updated past the new line (&12/&13)
+;     CONTROL: raises 'LINE space' (BRK) if the line will not fit below HIMEM
 ; &bc8d referenced 2 times by &8b32, &90c6
 .insert_line
     sty zp_fwb_sign                                                   ; bc8d: 84 3b       .;       ; Save the line-buffer pointer
@@ -13854,6 +14110,24 @@ oscli             = &fff7
     dex                                                               ; bd36: ca          .        ; count down
     bne clear_var_table_loop                                          ; bd37: d0 fa       ..       ; loop
     rts                                                               ; bd39: 60          `        ; Return
+; ***************************************************************************************
+; Reset the DATA pointer and the BASIC stacks
+;
+; Reset the READ/DATA pointer to PAGE and empty the FOR/REPEAT/GOSUB and value stacks:
+; point the stack pointer back at HIMEM and zero the REPEAT, FOR and GOSUB nesting
+; levels. Variables and the heap are left intact. Called on NEW/CLEAR/RUN as part of
+; clear_vars_heap_stack, and on the error path.
+;
+; On Entry:
+;     ZP_PAGE (&18): PAGE, the start of the program
+;     ZP_HIMEM (&06): HIMEM, the top of memory (&06/&07)
+;
+; On Exit:
+;     ZP_DATA_PTR (&1C): reset to PAGE (&1C/&1D)
+;     ZP_STACK_PTR (&04): reset to HIMEM (stacks emptied) (&04/&05)
+;     ZP_REPEAT_LEVEL (&24): 0
+;     ZP_FOR_LEVEL (&26): 0
+;     ZP_GOSUB_LEVEL (&25): 0
 ; &bd3a referenced 3 times by &8b1a, &b41b, &bd2c
 .reset_data_and_stacks
     lda zp_page                                                       ; bd3a: a5 18       ..       ; DATA pointer = PAGE: high
@@ -14037,6 +14311,19 @@ oscli             = &fff7
     sta strbuf_base,y                                                 ; bdd6: 99 ff 05    ...      ; (into the buffer)
     dey                                                               ; bdd9: 88          .        ; next
     bne us_copy_loop                                                  ; bdda: d0 f8       ..       ; loop
+; ***************************************************************************************
+; Drop a string off the BASIC stack
+;
+; Read the length byte of the length-prefixed string on top of the BASIC stack and
+; advance the stack pointer past both the length byte and the string characters,
+; discarding the string without copying it.
+;
+; On Entry:
+;     ZP_STACK_PTR (&04): a length-prefixed string on top of the BASIC stack (&04/&05)
+;
+; On Exit:
+;     ZP_STACK_PTR (&04): advanced past the length byte and characters (string dropped)
+;     X: preserved
 ; &bddc referenced 6 times by &8ceb, &9b16, &ac20, &ad39, &ad52, &bdd1
 .drop_stacked_string
     ldy #0                                                            ; bddc: a0 00       ..       ; Drop the string: get its length
@@ -14099,6 +14386,19 @@ oscli             = &fff7
 ; &be0a referenced 3 times by &bde5, &be06, &be29
 .return_39
     rts                                                               ; be0a: 60          `        ; Return (shared)
+; ***************************************************************************************
+; Pop a stacked integer into the general work area
+;
+; Set the destination to zp_general (&37) and fall into unstack_int_to_zp, which copies
+; the 4-byte integer on top of the BASIC stack to (&37..&3A) and drops it from the stack.
+;
+; On Entry:
+;     ZP_STACK_PTR (&04): a 4-byte integer (MSB first) on top of the BASIC stack (&04/&05)
+;
+; On Exit:
+;     ZP_GENERAL (&37): the popped integer (&37-&3A)
+;     ZP_STACK_PTR (&04): advanced by 4 (integer dropped)
+;     X: preserved (= &37)
 ; &be0b referenced 3 times by &9412, &b21c, &b4b4
 .unstack_int_to_general
     ldx #&37 ; '7'                                                    ; be0b: a2 37       .7       ; Default destination: zp_general (&37)
@@ -14332,12 +14632,44 @@ oscli             = &fff7
 ; &becf referenced 1 time by &bed5
 .oscli_type_error
     jmp err_type_mismatch                                             ; becf: 4c 0e 8c    L..      ; not a string: Type mismatch
+; ***************************************************************************************
+; Evaluate a string argument and CR-terminate it
+;
+; Evaluate an expression via eval_expr, require it to be a string (Type mismatch
+; otherwise), CR-terminate it in the string buffer, and check that the statement ends.
+; Used by OSCLI-style commands and eval_filename to fetch a single string argument.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): PtrA at the string expression
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword
+;
+; On Exit:
+;     STRING_WORK (&0600): the string, terminated with a carriage return
+;     ZP_STRBUF_LEN (&36): the string length
 ; &bed2 referenced 2 times by &bec2, &bedd
 .eval_string_arg
     jsr eval_expr                                                     ; bed2: 20 1d 9b     ..      ; Evaluate the expression
     bne oscli_type_error                                              ; bed5: d0 f8       ..       ; not a string: error
     jsr point_strbuf_lo                                               ; bed7: 20 b2 be     ..      ; CR-terminate the string buffer
     jmp assign_check_end                                              ; beda: 4c 4c 98    LL.      ; Check for end of statement
+; ***************************************************************************************
+; Evaluate a filename and build the OSFILE load address
+;
+; Evaluate a CR-terminated filename string via eval_string_arg, then set the load address
+; to PAGE (low byte 0, high byte PAGE) and read the machine's high-order address word via
+; OSBYTE &82. Shared setup for SAVE/LOAD/CHAIN.
+;
+; On Entry:
+;     ZP_TEXT_PTR (&0B/&0C): PtrA at the filename expression
+;     ZP_TEXT_PTR_OFF (&0A): offset just past the keyword
+;
+; On Exit:
+;     STRING_WORK (&0600): the CR-terminated filename
+;     ZP_FILEBLK (&39): load address low = 0
+;     ZP_FILEBLK_1 (&3A): load address high = PAGE
+;     ZP_FWB_SIGN (&3B): high-order address low (X from OSBYTE &82)
+;     ZP_FWB_OVF (&3C): high-order address high (Y from OSBYTE &82)
+;     A: zero
 ; &bedd referenced 2 times by &be62, &bf0a
 .eval_filename
     jsr eval_string_arg                                               ; bedd: 20 d2 be     ..      ; Evaluate the filename, CR-terminate
@@ -14607,6 +14939,21 @@ oscli             = &fff7
     lda #osfind_close                                                 ; bfa1: a9 00       ..       ; OSFIND &00: close the file
     jsr osfind                                                        ; bfa3: 20 ce ff     ..      ; osfind: close one or all files
     jmp statement_loop                                                ; bfa6: 4c 9b 8b    L..      ; Back to execution
+; ***************************************************************************************
+; Copy PtrA to PtrB, then evaluate a #channel
+;
+; Copy the three fields of the primary text pointer PtrA (offset &0A, low &0B, high &0C)
+; into the secondary pointer PtrB (offset &1B, low &19, high &1A), then fall straight
+; through into eval_channel. In effect: rewind PtrB to PtrA's position and parse the
+; '#channel' file handle that follows.
+;
+; On Entry:
+;     ZP_TEXT_PTR_OFF (&0A): PtrA offset
+;     ZP_TEXT_PTR (&0B): PtrA pointer low/high (&0B/&0C)
+;
+; On Exit:
+;     ZP_TEXT_PTR2 (&19): PtrB set equal to PtrA (offset &1B, low &19, high &1A)
+;     CONTROL: falls through to eval_channel, returning with zp_iwa (&2A) = channel handle, or BRK Missing #
 ; &bfa9 referenced 5 times by &8d2d, &b9d1, &bf30, &bf58, &bf99
 .sync_ptrb_from_ptra
     lda zp_text_ptr_off                                               ; bfa9: a5 0a       ..       ; Set PtrB = PtrA: offset
@@ -14664,6 +15011,17 @@ oscli             = &fff7
     brk                                                               ; bfc3: 00          .        ; BRK error block ("Missing #")
     equs "-Missing #"                                                 ; bfc4: 2d 4d 69... -Mi...
     equb &00                                                          ; bfce: 00          .     
+; ***************************************************************************************
+; Print an inline string following the call
+;
+; Print the string embedded in the code immediately after the JSR to this routine. It
+; pulls the return address into zp_general as a text pointer, then walks forward with
+; general_next_byte printing each byte through osasci, stopping at the first byte with
+; bit 7 set. It resumes execution at that terminating byte via jmp (zp_general) - so the
+; terminator doubles as the opcode of the continuation.
+;
+; On Exit:
+;     CONTROL: resumes at the string terminator (the byte after the string) as the next instruction; A, Y and zp_general (&37/&38) are corrupted
 ; &bfcf referenced 2 times by &9080, &be9e
 .print_inline_string
     pla                                                               ; bfcf: 68          h        ; Pull the return address: it points at the string

@@ -1159,7 +1159,30 @@ d.comment(0x8627, 'index &1A+ takes an operand?', align=Align.INLINE)
 d.comment(0x8629, 'yes: parse the addressing mode', align=Align.INLINE)
 # Store loop (&862B): write the assembled bytes to P%/O%.
 d.comment(0x862b, "P% low -> destination", align=Align.INLINE)
-d.label(0x862b, 'asm_emit')
+d.subroutine(
+    0x862b, 'asm_emit',
+    title='Emit assembled bytes to P%/O%',
+    description="""The inline assembler's byte-emit routine. Copies the assembled bytes
+to the destination given by P% (resint_p, &0440), or by O% (resint_o,
+&043C) when OPT selects offset assembly (OPT >= 4), then advances P%
+(and O% for offset assembly) past them. Y is the signed byte count: 0
+emits nothing; a positive count stores that many opcode/operand bytes
+from the assembly buffer at zp_asm_opcode (&29); a negative count is
+an EQUS, storing zp_strbuf_len (&36) bytes taken from string_work
+(&0600).
+""",
+    on_entry={
+        'Y': 'signed byte count: 0 = none, positive N = N opcode bytes from zp_asm_opcode (&29), negative = EQUS string from string_work (&0600)',
+        'zp_opt_flag (&28)': 'current OPT setting (bit 2 selects offset assembly to O%)',
+        'zp_strbuf_len (&36)': 'string length when emitting an EQUS',
+        'resint_p (&0440)': 'P%, the assembly program counter',
+        'resint_o (&043C)': 'O%, the offset-assembly destination',
+    },
+    on_exit={
+        'resint_p (&0440)': 'P% advanced past the emitted bytes',
+        'resint_o (&043C)': 'O% advanced too when offset assembly is active',
+    },
+)
 d.comment(0x862e, 'to &37', align=Align.INLINE)
 d.comment(0x8630, 'Save the byte count', align=Align.INLINE)
 d.comment(0x8632, 'OPT setting', align=Align.INLINE)
@@ -1742,7 +1765,24 @@ d.comment(0x8946, 'No carry: done', align=Align.INLINE)
 d.comment(0x8948, 'Carry into the high byte', align=Align.INLINE)
 d.comment(0x894a, 'Return (shared)', align=Align.INLINE)
 d.comment(0x894b, 'Advance the pointer...', align=Align.INLINE)
-d.label(0x894b, 'general_next_byte')
+d.subroutine(
+    0x894b, 'general_next_byte',
+    title='Advance the general pointer and read the next byte',
+    description="""Call inc_ptr_general to increment the 16-bit general pointer
+zp_general (&37/&38) by one (carrying into the high byte), then load
+the byte at (zp_general),Y and return it in A. The tokeniser's fetch-
+next-character primitive for hex constants and string literals.
+""",
+    on_entry={
+        'zp_general (&37)': 'the pointer to advance (&37/&38)',
+        'Y': 'index added to the pointer for the read (usually 0)',
+    },
+    on_exit={
+        'A': 'the byte read at the incremented pointer',
+        'zp_general (&37)': 'incremented by one',
+        'Y': 'preserved',
+    },
+)
 
 d.comment(0x894e, '...then read the next byte', align=Align.INLINE)
 d.comment(0x8950, 'Return the byte', align=Align.INLINE)
@@ -2053,7 +2093,17 @@ d.char_literal(0x8a9e)
 d.comment(0x8a9f, 'Space: keep skipping', align=Align.INLINE)
 d.comment(0x8aa1, 'Return the first non-space character', align=Align.INLINE)
 d.comment(0x8aa2, 'BRK error block ("Missing ,") follows', align=Align.INLINE)
-d.label(0x8aa2, 'missing_comma')
+d.subroutine(
+    0x8aa2, 'missing_comma',
+    title='Raise "Missing ," error',
+    description="""Raise BASIC error &05, "Missing ,", via a BRK error block. Reached
+from the argument-list parsers when a required comma is absent. Does
+not return.
+""",
+    on_exit={
+        'control': 'raises BRK error &05 "Missing ,"; does not return to the caller',
+    },
+)
 d.subroutine(
     0x8aae, 'skip_spaces_expect_comma',
     title='Skip spaces and require a comma',
@@ -2281,7 +2331,25 @@ d.comment(0x8b9f, 'A colon separates statements on a line', align=Align.INLINE)
 d.char_literal(0x8ba0)
 d.comment(0x8ba1, 'Not a colon: check for ELSE / end of line', align=Align.INLINE)
 d.comment(0x8ba3, 'Skip spaces to the next statement', align=Align.INLINE)
-d.label(0x8ba3, 'next_statement')
+d.subroutine(
+    0x8ba3, 'next_statement',
+    title='Execute the next statement on the line',
+    description="""The interpreter's per-statement entry point. Read the character at
+PtrA+offset while advancing zp_text_ptr_off (&0A) past the ':'
+separator, skipping spaces. A token >= &CF falls into dispatch_token,
+which indexes the action-address table and JMP (&0037)s to its
+handler; a byte below &CF is not a command token, so it branches to
+try_variable_assignment for an implied LET. Non-returning: every path
+transfers to a statement handler.
+""",
+    on_entry={
+        'zp_text_ptr (&0B)': 'the program text pointer (PtrA)',
+        'zp_text_ptr_off (&0A)': "offset at the statement start (the ':' or first character)",
+    },
+    on_exit={
+        'control': 'non-returning; dispatches via dispatch_token JMP (&0037) to a keyword handler, or branches to try_variable_assignment',
+    },
+)
 d.comment(0x8ba5, 'advance past the colon', align=Align.INLINE)
 d.comment(0x8ba7, 'Get the next character', align=Align.INLINE)
 d.comment(0x8ba9, 'Skip spaces', align=Align.INLINE)
@@ -2365,7 +2433,17 @@ d.comment(0x8c0b, 'Mistake (syntax) error', align=Align.INLINE)
 
 d.label(0x8c0b, 'let_mistake')
 
-d.label(0x8c0e, 'err_type_mismatch')   # BRK error block: "Type mismatch"
+d.subroutine(
+    0x8c0e, 'err_type_mismatch',
+    title='Raise "Type mismatch" error',
+    description="""Raise BASIC error &06, "Type mismatch", via a BRK error block. Reached
+(18 callers) whenever a routine finds a string where a number is
+required, or vice versa. Does not return.
+""",
+    on_exit={
+        'control': 'raises BRK error &06 "Type mismatch"; does not return to the caller',
+    },
+)
 d.comment(0x8c0e, 'Type mismatch error', align=Align.INLINE)
 d.subroutine(
     0x8c1e, 'assign_string',
@@ -3776,7 +3854,20 @@ d.comment(0x9453, 'next statement', align=Align.INLINE)
 
 d.label(0x9453, 'vdu_done')
 d.comment(0x9456, 'Send the low byte to OSWRCH', align=Align.INLINE)
-d.label(0x9456, 'vdu_send_byte')
+d.subroutine(
+    0x9456, 'vdu_send_byte',
+    title='Send the integer accumulator low byte to OSWRCH',
+    description="""Load the low byte of the integer work accumulator and send it to the
+VDU by jumping through WRCHV (OSWRCH), which returns to the caller.
+Used to output a computed byte value.
+""",
+    on_entry={
+        'zp_iwa (&2A)': 'the byte to send (IWA low byte)',
+    },
+    on_exit={
+        'A': 'the byte sent (written to the VDU via OSWRCH)',
+    },
+)
 
 d.comment(0x9458, 'jump through WRCHV (OSWRCH)', align=Align.INLINE)
 # --- variable / PROC / FN lookup -------------------------------------
@@ -4608,7 +4699,18 @@ d.comment(0x981f, 'yes: evaluate', align=Align.INLINE)
 d.comment(0x9821, 'Mistake error', align=Align.INLINE)
 d.label(0x9821, 'mistake_error')
 d.comment(0x982a, 'Mistake error', align=Align.INLINE)
-d.label(0x982a, 'syntax_error')
+d.subroutine(
+    0x982a, 'syntax_error',
+    title='Raise "Syntax error" error',
+    description="""Raise BASIC error &10, "Syntax error", via a BRK error block. Reached
+when a statement or expression is malformed (e.g. from
+check_end_of_statement when unexpected text follows a statement). Does
+not return.
+""",
+    on_exit={
+        'control': 'raises BRK error &10 "Syntax error"; does not return to the caller',
+    },
+)
 d.comment(0x9838, 'Escape error', align=Align.INLINE)
 d.label(0x9838, 'escape_error')
 d.subroutine(0x9841, 'expect_eq', title='Require "=" at the parser pointer',
@@ -4630,7 +4732,24 @@ d.label(0x984c, 'assign_check_end')
 d.comment(0x984d, 'Sync the program pointer', align=Align.INLINE)
 d.comment(0x984f, 'check the statement ends', align=Align.INLINE)
 d.comment(0x9852, 'Sync the program pointer', align=Align.INLINE)
-d.label(0x9852, 'sync_text_ptr')
+d.subroutine(
+    0x9852, 'sync_text_ptr',
+    title="Resync PtrA's offset to PtrB, then require statement end",
+    description="""Load the resume position from PtrB's offset (zp_text_ptr2_off, &1B)
+into Y and tail-jump into check_end_of_statement at cend_back. Used
+after a sub-parse that tracked its position in PtrB (e.g. FOR /
+assignment operands): it resumes at PtrB's offset against the PtrA
+text pointer and demands the statement end there, advancing PtrA to
+the next statement.
+""",
+    on_entry={
+        'zp_text_ptr (&0B)': 'the program text pointer (PtrA)',
+        'zp_text_ptr2_off (&1B)': 'PtrB offset to resume from',
+    },
+    on_exit={
+        'control': 'jumps into check_end_of_statement (cend_back); returns via its rts with PtrA advanced past the statement, or BRK Syntax error / Escape',
+    },
+)
 d.comment(0x9854, 'check the statement ends', align=Align.INLINE)
 
 # ----------------------------------------------------------------------
@@ -4675,7 +4794,27 @@ d.comment(0x9869, 'ELSE token?', align=Align.INLINE)
 d.comment(0x986b, 'none: Mistake (syntax error)', align=Align.INLINE)
 d.comment(0x986d, 'Advance the program pointer past the statement',
           align=Align.INLINE)
-d.label(0x986d, 'skip_to_statement_end')
+d.subroutine(
+    0x986d, 'skip_to_statement_end',
+    title='Advance PtrA past the current statement',
+    description="""Add the terminator offset in Y to the PtrA text pointer (zp_text_ptr,
+&0B/&0C), carrying into the high byte, so PtrA now addresses the
+statement terminator; reset the character offset zp_text_ptr_off (&0A)
+to 1; then poll ESCFLG and raise Escape if pressed before returning.
+The common tail of the end-of-statement check and several statement
+handlers.
+""",
+    on_entry={
+        'Y': 'offset of the statement terminator within the line',
+        'zp_text_ptr (&0B)': 'the program text pointer (PtrA)',
+    },
+    on_exit={
+        'zp_text_ptr (&0B)': 'advanced to the terminator (&0B/&0C)',
+        'zp_text_ptr_off (&0A)': 'reset to 1',
+        'A': '1 (from the reset offset)',
+        'control': 'rts, unless Escape is pending (jumps to escape_error)',
+    },
+)
 d.comment(0x986e, 'offset to A,', align=Align.INLINE)
 d.comment(0x986f, '+ pointer low,', align=Align.INLINE)
 d.comment(0x9871, 'store low,', align=Align.INLINE)
@@ -5091,7 +5230,26 @@ d.comment(0x9a99, 'Return', align=Align.INLINE)
 d.comment(0x9a9a, 'Type mismatch error', align=Align.INLINE)
 d.label(0x9a9a, 'cmp_type_error')
 d.comment(0x9a9d, 'Current type', align=Align.INLINE)
-d.label(0x9a9d, 'compare_values')
+d.subroutine(
+    0x9a9d, 'compare_values',
+    title='Compare the current value with the next operand',
+    description="""Take the already-evaluated left value (whose type is in X), stack it,
+evaluate the next arithmetic operand at PtrB, then compare the two -
+integer, real or string - returning the ordering flags for the
+relational operators. A one-instruction head (txa) on eval_and_compare
+that supplies the left type in X.
+""",
+    on_entry={
+        'X': 'the type of the left value (already evaluated)',
+        'zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)': 'the left value',
+        'zp_text_ptr2 (&19/&1A)': 'PtrB at the right operand',
+    },
+    on_exit={
+        'C': 'the ordering of left vs right',
+        'Z': 'set if equal',
+        'X': 'the next unconsumed operator token',
+    },
+)
 d.subroutine(0x9a9e, 'eval_and_compare',
              title='Evaluate the next operand and compare',
              description='Stack the already-evaluated left value, evaluate the '
@@ -8719,9 +8877,37 @@ d.label(0xae3a, 'factor_pcounter')
 d.comment(0xae3f, 'return it as an integer', align=Align.INLINE)
 d.comment(0xae40, 'return as a 16-bit integer', align=Align.INLINE)
 d.comment(0xae43, 'No such variable error', align=Align.INLINE)
-d.label(0xae43, 'no_such_variable')
+d.subroutine(
+    0xae43, 'no_such_variable',
+    title='Raise "No such variable" error',
+    description="""Raise BASIC error &1A, "No such variable", via a BRK error block.
+Reached when an expression or lvalue names a variable that has not
+been created. Does not return.
+""",
+    on_exit={
+        'control': 'raises BRK error &1A "No such variable"; does not return to the caller',
+    },
+)
 d.comment(0xae56, 'Sub-expression: evaluate it', align=Align.INLINE)
-d.label(0xae56, 'eval_subexpr')
+d.subroutine(
+    0xae56, 'eval_subexpr',
+    title='Evaluate a parenthesised sub-expression',
+    description="""Evaluate a full expression at PtrB via eval_or_eor, then require a
+closing ")" - raising Missing ) if the terminating operator is
+anything else. Used wherever a bracketed sub-expression appears in the
+grammar.
+""",
+    on_entry={
+        'zp_text_ptr2 (&19/&1A)': 'PtrB, positioned just after the opening "("',
+        'zp_text_ptr2_off (&1B)': 'offset into the text',
+    },
+    on_exit={
+        'A': 'result type (<0 float in fwa, >0 integer in iwa, 0 string)',
+        'Y': 'copy of the result type',
+        'zp_iwa (&2A) / zp_fwa (&2E) / string_work (&0600)': 'the value, selected by the type',
+        'zp_text_ptr2_off (&1B)': 'advanced past the ")"',
+    },
+)
 d.comment(0xae59, 'step past', align=Align.INLINE)
 d.comment(0xae5b, "')' to close?", align=Align.INLINE)
 d.char_literal(0xae5c)
@@ -9720,7 +9906,27 @@ d.comment(0xb326, 'from &37', align=Align.INLINE)
 d.comment(0xb329, 'push the variable identity (as an integer)', align=Align.INLINE)
 d.label(0xb329, 'local_push_id')
 d.comment(0xb32c, 'Load the variable by type:', align=Align.INLINE)
-d.label(0xb32c, 'load_var_by_type')
+d.subroutine(
+    0xb32c, 'load_var_by_type',
+    title='Load a variable by type',
+    description="""Dispatch on the variable type code in zp_iwa_2 and load the variable
+addressed by (zp_iwa) into the appropriate accumulator: a string into
+the string buffer (load_string_var), a byte or 4-byte integer into IWA
+(iwa_load_var / load_byte_var), or a 5-byte real into FWA
+(load_real_var). Negative = string, 0 = byte, 5 = real, anything else
+= integer.
+""",
+    on_entry={
+        'zp_iwa (&2A)': 'pointer to the variable (&2A/&2B)',
+        'zp_iwa_2 (&2C)': 'the variable type code (<0 string, 0 byte, 5 real, else integer)',
+    },
+    on_exit={
+        'A': 'value-type marker (&40 integer, &FF real)',
+        'zp_iwa (&2A)': 'the integer, if integer/byte',
+        'zp_fwa (&2E)': 'the unpacked real, if real (&2E-&35)',
+        'string_work (&0600)': 'the string characters, if string; length in zp_strbuf_len (&36)',
+    },
+)
 d.comment(0xb32e, 'string', align=Align.INLINE)
 d.comment(0xb330, 'byte', align=Align.INLINE)
 d.comment(0xb332, 'real?', align=Align.INLINE)
@@ -10027,7 +10233,19 @@ d.comment(0xb4ab, 'next statement', align=Align.INLINE)
 d.comment(0xb4ae, 'Type mismatch error', align=Align.INLINE)
 d.label(0xb4ae, 'width_type_error')
 d.comment(0xb4b1, 'Evaluate the value', align=Align.INLINE)
-d.label(0xb4b1, 'width_eval_value')
+d.subroutine(
+    0xb4b1, 'width_eval_value',
+    title='Evaluate a numeric value and assign it to a variable',
+    description="""Evaluate the numeric expression at PtrB via eval_or_eor, then fall
+straight into assign_number, which pops the variable's data address
+off the BASIC stack and stores the value there, coercing to the
+variable's own type.
+""",
+    on_entry={
+        'zp_text_ptr2 (&19/&1A)': 'PtrB at the value expression',
+        '(zp_stack_ptr) (&04/&05)': 'the destination variable data address on top of the BASIC stack',
+    },
+)
 d.subroutine(
     0xb4b4, 'assign_number',
     title='Store a numeric value into a variable',
@@ -10211,7 +10429,25 @@ d.comment(0xb55a, 'no: format and print', align=Align.INLINE)
 d.comment(0xb55c, 'print the CR', align=Align.INLINE)
 d.comment(0xb55f, 'reset the column', align=Align.INLINE)
 d.comment(0xb562, 'Print A as hex then a space', align=Align.INLINE)
-d.label(0xb562, 'print_hex_space')
+d.subroutine(
+    0xb562, 'print_hex_space',
+    title='Print A as two hex digits then a space',
+    description="""Print the byte in A as two hexadecimal digits (print_hex_byte), then
+fall through into print_space to emit a trailing space through the
+print formatter, which auto-newlines when the column reaches WIDTH.
+""",
+    on_entry={
+        'A': 'the byte to print as hex',
+        'zp_count (&1E)': 'the current print column',
+        'zp_width (&23)': 'the print WIDTH limit',
+    },
+    on_exit={
+        'zp_count (&1E)': 'advanced past the digits and the space',
+        'A': 'space (&20)',
+        'X': 'corrupted',
+        'Y': 'corrupted',
+    },
+)
 d.subroutine(0xb565, 'print_space',
              title='Print a space through the print formatter',
              description='Print a space via print_char, auto-newlining when the '
@@ -11224,7 +11460,20 @@ d.comment(0xbc1d, 'Read a line', align=Align.INLINE)
 d.comment(0xbc20, 'ok: reset the column', align=Align.INLINE)
 d.comment(0xbc22, 'Escape: raise it', align=Align.INLINE)
 d.comment(0xbc25, 'Print a newline', align=Align.INLINE)
-d.label(0xbc25, 'emit_newline')
+d.subroutine(
+    0xbc25, 'emit_newline',
+    title='Print a newline and reset the print column',
+    description="""Emit a newline via OSNEWL, then fall through into reset_print_column
+to zero the print-column counter. The standard way BASIC ends an
+output line so the column-tracking auto-newline logic stays in step.
+""",
+    on_exit={
+        'zp_count (&1E)': 'reset to 0 (print column)',
+        'A': '0',
+        'X': 'preserved',
+        'Y': 'preserved',
+    },
+)
 d.comment(0xbc28, 'Reset the column to 0', align=Align.INLINE)
 d.label(0xbc28, 'reset_print_column')
 d.comment(0xbc2a, 'store it', align=Align.INLINE)
@@ -11288,7 +11537,25 @@ d.label(0xbc7c, 'del_set_top')
 d.comment(0xbc7f, 'carry clear: line was deleted', align=Align.INLINE)
 d.comment(0xbc80, 'Return', align=Align.INLINE)
 d.comment(0xbc81, 'Copy one byte (source -> destination)', align=Align.INLINE)
-d.label(0xbc81, 'copy_byte')
+d.subroutine(
+    0xbc81, 'copy_byte',
+    title='Copy one byte, advancing the offset',
+    description="""Increment the shared offset Y (bumping both pointer high bytes on a
+page crossing), then copy one byte from (zp_general) to (zp_top). The
+per-byte helper used by delete_program_line to copy the line-number
+and length bytes while compacting the program.
+""",
+    on_entry={
+        'Y': 'the current copy offset',
+        '(zp_general) (&37/&38)': 'source pointer',
+        '(zp_top) (&12/&13)': 'destination pointer',
+    },
+    on_exit={
+        'Y': 'advanced by 1 (with page carry into &38/&13)',
+        'A': 'the byte copied',
+        '(zp_top) (&12/&13)': 'receives the copied byte',
+    },
+)
 d.comment(0xbc82, 'no page wrap', align=Align.INLINE)
 d.comment(0xbc84, 'cross a page', align=Align.INLINE)
 d.comment(0xbc86, 'source page too', align=Align.INLINE)
@@ -11299,7 +11566,28 @@ d.comment(0xbc8c, 'Return', align=Align.INLINE)
 
 # Insert a program line (&BC8D): make room and store the typed line.
 d.comment(0xbc8d, 'Save the line-buffer pointer', align=Align.INLINE)
-d.label(0xbc8d, 'insert_line')
+d.subroutine(
+    0xbc8d, 'insert_line',
+    title='Insert a tokenised program line',
+    description="""Insert the numbered, tokenised line held in the &0700 input buffer
+into the program. First deletes any existing line with the same number
+(delete_program_line); if the buffer holds only a CR the edit was a
+pure deletion and it returns. Otherwise it measures the line, checks
+the new TOP still fits below HIMEM (raising 'LINE space' after tidying
+if not), shifts the program up to open a gap, writes the 4-byte line
+header (line number + length), copies the line body in, and sets the
+new TOP.
+""",
+    on_entry={
+        'zp_iwa (&2A)': 'the line number (&2A/&2B)',
+        'Y': 'offset within the &0700 input buffer of the tokenised line text',
+        'zp_top (&12)': 'current TOP, the end of the program (&12/&13)',
+    },
+    on_exit={
+        'zp_top (&12)': 'updated past the new line (&12/&13)',
+        'control': "raises 'LINE space' (BRK) if the line will not fit below HIMEM",
+    },
+)
 d.comment(0xbc8f, 'Delete any existing line with this number',
           align=Align.INLINE)
 d.comment(0xbc92, 'Point past the line header', align=Align.INLINE)
@@ -11408,7 +11696,27 @@ d.comment(0xbd36, 'count down', align=Align.INLINE)
 d.comment(0xbd37, 'loop', align=Align.INLINE)
 d.comment(0xbd39, 'Return', align=Align.INLINE)
 d.comment(0xbd3a, 'DATA pointer = PAGE: high', align=Align.INLINE)
-d.label(0xbd3a, 'reset_data_and_stacks')
+d.subroutine(
+    0xbd3a, 'reset_data_and_stacks',
+    title='Reset the DATA pointer and the BASIC stacks',
+    description="""Reset the READ/DATA pointer to PAGE and empty the FOR/REPEAT/GOSUB and
+value stacks: point the stack pointer back at HIMEM and zero the
+REPEAT, FOR and GOSUB nesting levels. Variables and the heap are left
+intact. Called on NEW/CLEAR/RUN as part of clear_vars_heap_stack, and
+on the error path.
+""",
+    on_entry={
+        'zp_page (&18)': 'PAGE, the start of the program',
+        'zp_himem (&06)': 'HIMEM, the top of memory (&06/&07)',
+    },
+    on_exit={
+        'zp_data_ptr (&1C)': 'reset to PAGE (&1C/&1D)',
+        'zp_stack_ptr (&04)': 'reset to HIMEM (stacks emptied) (&04/&05)',
+        'zp_repeat_level (&24)': '0',
+        'zp_for_level (&26)': '0',
+        'zp_gosub_level (&25)': '0',
+    },
+)
 d.comment(0xbd3c, '(data pointer high)', align=Align.INLINE)
 d.comment(0xbd3e, 'STACK = HIMEM: low', align=Align.INLINE)
 d.comment(0xbd40, '(store)', align=Align.INLINE)
@@ -11579,7 +11887,21 @@ d.comment(0xbdd6, '(into the buffer)', align=Align.INLINE)
 d.comment(0xbdd9, 'next', align=Align.INLINE)
 d.comment(0xbdda, 'loop', align=Align.INLINE)
 d.comment(0xbddc, 'Drop the string: get its length', align=Align.INLINE)
-d.label(0xbddc, 'drop_stacked_string')
+d.subroutine(
+    0xbddc, 'drop_stacked_string',
+    title='Drop a string off the BASIC stack',
+    description="""Read the length byte of the length-prefixed string on top of the BASIC
+stack and advance the stack pointer past both the length byte and the
+string characters, discarding the string without copying it.
+""",
+    on_entry={
+        'zp_stack_ptr (&04)': 'a length-prefixed string on top of the BASIC stack (&04/&05)',
+    },
+    on_exit={
+        'zp_stack_ptr (&04)': 'advanced past the length byte and characters (string dropped)',
+        'X': 'preserved',
+    },
+)
 d.comment(0xbdde, 'read it', align=Align.INLINE)
 d.comment(0xbde0, 'so the +1 covers the length byte', align=Align.INLINE)
 d.comment(0xbde1, 'advance the stack pointer past it: low', align=Align.INLINE)
@@ -11632,7 +11954,22 @@ d.comment(0xbe06, 'No carry: done', align=Align.INLINE)
 d.comment(0xbe08, 'Carry into the high byte', align=Align.INLINE)
 d.comment(0xbe0a, 'Return (shared)', align=Align.INLINE)
 
-d.label(0xbe0b, 'unstack_int_to_general')
+d.subroutine(
+    0xbe0b, 'unstack_int_to_general',
+    title='Pop a stacked integer into the general work area',
+    description="""Set the destination to zp_general (&37) and fall into
+unstack_int_to_zp, which copies the 4-byte integer on top of the BASIC
+stack to (&37..&3A) and drops it from the stack.
+""",
+    on_entry={
+        'zp_stack_ptr (&04)': 'a 4-byte integer (MSB first) on top of the BASIC stack (&04/&05)',
+    },
+    on_exit={
+        'zp_general (&37)': 'the popped integer (&37-&3A)',
+        'zp_stack_ptr (&04)': 'advanced by 4 (integer dropped)',
+        'X': 'preserved (= &37)',
+    },
+)
 d.comment(0xbe0b, 'Default destination: zp_general (&37)', align=Align.INLINE)
 # unstack_int_to_zp (&BE0D): pop the stacked integer into 4 zp bytes at X
 d.subroutine(0xbe0d, 'unstack_int_to_zp',
@@ -11821,12 +12158,48 @@ d.comment(0xbecc, 'Back to execution', align=Align.INLINE)
 d.comment(0xbecf, 'not a string: Type mismatch', align=Align.INLINE)
 d.label(0xbecf, 'oscli_type_error')
 d.comment(0xbed2, 'Evaluate the expression', align=Align.INLINE)
-d.label(0xbed2, 'eval_string_arg')
+d.subroutine(
+    0xbed2, 'eval_string_arg',
+    title='Evaluate a string argument and CR-terminate it',
+    description="""Evaluate an expression via eval_expr, require it to be a string (Type
+mismatch otherwise), CR-terminate it in the string buffer, and check
+that the statement ends. Used by OSCLI-style commands and
+eval_filename to fetch a single string argument.
+""",
+    on_entry={
+        'zp_text_ptr (&0B/&0C)': 'PtrA at the string expression',
+        'zp_text_ptr_off (&0A)': 'offset just past the keyword',
+    },
+    on_exit={
+        'string_work (&0600)': 'the string, terminated with a carriage return',
+        'zp_strbuf_len (&36)': 'the string length',
+    },
+)
 d.comment(0xbed5, 'not a string: error', align=Align.INLINE)
 d.comment(0xbed7, 'CR-terminate the string buffer', align=Align.INLINE)
 d.comment(0xbeda, 'Check for end of statement', align=Align.INLINE)
 d.comment(0xbedd, 'Evaluate the filename, CR-terminate', align=Align.INLINE)
-d.label(0xbedd, 'eval_filename')
+d.subroutine(
+    0xbedd, 'eval_filename',
+    title='Evaluate a filename and build the OSFILE load address',
+    description="""Evaluate a CR-terminated filename string via eval_string_arg, then set
+the load address to PAGE (low byte 0, high byte PAGE) and read the
+machine's high-order address word via OSBYTE &82. Shared setup for
+SAVE/LOAD/CHAIN.
+""",
+    on_entry={
+        'zp_text_ptr (&0B/&0C)': 'PtrA at the filename expression',
+        'zp_text_ptr_off (&0A)': 'offset just past the keyword',
+    },
+    on_exit={
+        'string_work (&0600)': 'the CR-terminated filename',
+        'zp_fileblk (&39)': 'load address low = 0',
+        'zp_fileblk_1 (&3A)': 'load address high = PAGE',
+        'zp_fwb_sign (&3B)': 'high-order address low (X from OSBYTE &82)',
+        'zp_fwb_ovf (&3C)': 'high-order address high (Y from OSBYTE &82)',
+        'A': 'zero',
+    },
+)
 d.comment(0xbee0, 'Y = 0 for the low byte', align=Align.INLINE)
 d.comment(0xbee1, 'LOAD address low = 0', align=Align.INLINE)
 d.comment(0xbee3, 'LOAD address high = PAGE', align=Align.INLINE)
@@ -11938,7 +12311,24 @@ d.comment(0xbf9f, 'Y = the handle', align=Align.INLINE)
 d.comment(0xbfa1, 'OSFIND &00: close the file', align=Align.INLINE)
 d.comment(0xbfa6, 'Back to execution', align=Align.INLINE)
 d.comment(0xbfa9, 'Set PtrB = PtrA: offset', align=Align.INLINE)
-d.label(0xbfa9, 'sync_ptrb_from_ptra')
+d.subroutine(
+    0xbfa9, 'sync_ptrb_from_ptra',
+    title='Copy PtrA to PtrB, then evaluate a #channel',
+    description="""Copy the three fields of the primary text pointer PtrA (offset &0A,
+low &0B, high &0C) into the secondary pointer PtrB (offset &1B, low
+&19, high &1A), then fall straight through into eval_channel. In
+effect: rewind PtrB to PtrA's position and parse the '#channel' file
+handle that follows.
+""",
+    on_entry={
+        'zp_text_ptr_off (&0A)': 'PtrA offset',
+        'zp_text_ptr (&0B)': 'PtrA pointer low/high (&0B/&0C)',
+    },
+    on_exit={
+        'zp_text_ptr2 (&19)': 'PtrB set equal to PtrA (offset &1B, low &19, high &1A)',
+        'control': 'falls through to eval_channel, returning with zp_iwa (&2A) = channel handle, or BRK Missing #',
+    },
+)
 d.comment(0xbfab, '(store)', align=Align.INLINE)
 d.comment(0xbfad, 'low', align=Align.INLINE)
 d.comment(0xbfaf, '(store)', align=Align.INLINE)
@@ -11990,6 +12380,20 @@ d.comment(0xbfc3, 'BRK error block ("Missing #")', align=Align.INLINE)
 d.label(0xbfc3, 'missing_hash')
 # print_inline_string (&BFCF): print the bit-7-terminated string that
 # follows the JSR, then resume at the terminator byte (an opcode).
+d.banner(
+    0xbfcf,
+    title='Print an inline string following the call',
+    description="""Print the string embedded in the code immediately after the JSR to
+this routine. It pulls the return address into zp_general as a text
+pointer, then walks forward with general_next_byte printing each byte
+through osasci, stopping at the first byte with bit 7 set. It resumes
+execution at that terminating byte via jmp (zp_general) - so the
+terminator doubles as the opcode of the continuation.
+""",
+    on_exit={
+        'control': 'resumes at the string terminator (the byte after the string) as the next instruction; A, Y and zp_general (&37/&38) are corrupted',
+    },
+)
 d.hook_subroutine(0xbfcf, 'print_inline_string', stringhi_hook)
 d.comment(0xbfcf, 'Pull the return address: it points at the string',
           align=Align.INLINE)
