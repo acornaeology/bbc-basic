@@ -44,7 +44,7 @@ Because the same routine resolves all four, they accept the same grammar. `parse
 - a leading indirection — `?addr` (byte), `!addr` (word), `$addr` (string);
 - a trailing indirection — `base?n`, `base!n`.
 
-For each it returns the storage address in [`zp_iwa`](address:002a@2?hex) (`&2A/&2B`) and a **type byte** in [`zp_iwa_2`](address:002c@2?hex):
+For each it returns the storage address in [`zp_iwa`](address:002a@2) (`&2A/&2B`) and a **type byte** in [`zp_iwa_2`](address:002c@2?hex):
 
 | Type | Meaning | Width / form |
 |---|---|---|

@@ -80,7 +80,7 @@ Model the lifecycle as: `NEW`/`OLD`/`CLEAR`/`RUN`/`CHAIN` all reset the dynamic-
 
 ## Cross-references
 
-- [`clear_vars_heap_stack`](address:BD20@2?hex) — the shared clear; [`clear_var_table`](address:BD2F@2?hex) (`&BD2F`, zeroes `&0480`–`&04FF`) and [`reset_data_and_stacks`](address:BD3A@2?hex).
+- [`clear_vars_heap_stack`](address:BD20@2?hex) — the shared clear; [`clear_var_table`](address:BD2F@2) (`&BD2F`, zeroes `&0480`–`&04FF`) and [`reset_data_and_stacks`](address:BD3A@2?hex).
 - [`start_new_program`](address:8ADD@2?hex) (`NEW`), [`stmt_old`](address:8AB6@2?hex) (`OLD`), [`stmt_clear`](address:928D@2?hex) (`CLEAR`), [`stmt_run`](address:BD11@2?hex)/[`run_clear`](address:BD14@2?hex) (`RUN`), [`stmt_chain`](address:BF2A@2?hex)/[`load_program`](address:BE62@2?hex) (`CHAIN`).
 - Workspace: [`resint_at`](address:0400@2?hex) (`@%`, `A%`–`Z%`), [`var_ptr_table`](address:0480@2?hex), and the pointers [`LOMEM`](address:0000@2?hex), [`VARTOP`](address:0002@2?hex), [`HIMEM`](address:0006@2?hex), [`TOP`](address:0012@2?hex), [`PAGE`](address:0018@2?hex).
 - [Control flow on five stacks](control-flow-stacks.md) — what `reset_data_and_stacks` empties, and the early-exit hazards.

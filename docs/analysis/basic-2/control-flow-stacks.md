@@ -14,10 +14,10 @@ The single most useful fact, derived directly from the ROM, is this:
 | Stack | Where | Frame | Counter | Capacity | Used by |
 |---|---|---|---|---|---|
 | 6502 hardware stack | page 1, `&0100–01FF` | 2 bytes (return addr) | the 6502 `S` register | 256 bytes | interpreter `JSR` nesting; nested `PROC`/`FN` call context |
-| BASIC value stack | descends from `HIMEM`, ptr at [`zp_stack_ptr`](address:0004@2?hex) (`&04/05`) | varies | the pointer itself | down to the top of variables | expression temporaries, stacked strings, the saved copy of the 6502 stack during a call, and the per-call `LOCAL`/parameter restore list |
+| BASIC value stack | descends from `HIMEM`, ptr at [`zp_stack_ptr`](address:0004@2) (`&04/05`) | varies | the pointer itself | down to the top of variables | expression temporaries, stacked strings, the saved copy of the 6502 stack during a call, and the per-call `LOCAL`/parameter restore list |
 | `FOR` stack | [`for_stack`](address:0500@2?hex) | 15 bytes | [`zp_for_level`](address:0026@2?hex) | 10 nested | `FOR`/`NEXT` |
-| `REPEAT` stack | [`repeat_stack`](address:05A4@2?hex) (`&05A4`/`&05B8`) | 2 bytes | [`zp_repeat_level`](address:0024@2?hex) | 20 nested | `REPEAT`/`UNTIL` |
-| `GOSUB` stack | [`gosub_stack`](address:05CC@2?hex) (`&05CC`/`&05E6`) | 2 bytes | [`zp_gosub_level`](address:0025@2?hex) | 26 nested | `GOSUB`/`RETURN` |
+| `REPEAT` stack | [`repeat_stack`](address:05A4@2) (`&05A4`/`&05B8`) | 2 bytes | [`zp_repeat_level`](address:0024@2?hex) | 20 nested | `REPEAT`/`UNTIL` |
+| `GOSUB` stack | [`gosub_stack`](address:05CC@2) (`&05CC`/`&05E6`) | 2 bytes | [`zp_gosub_level`](address:0025@2?hex) | 26 nested | `GOSUB`/`RETURN` |
 
 The three loop stacks live side by side in page 5 and are plain LIFO arrays indexed by a one-byte counter each. They are completely independent of one another and of the two general-purpose stacks above them. The capacities are baked into the push routines as literal comparisons — e.g. `REPEAT` checks `CPX #&14` (20) and raises *Too many REPEATs* if the stack is full.
 
