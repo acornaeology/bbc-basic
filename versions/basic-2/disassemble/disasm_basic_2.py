@@ -446,8 +446,8 @@ _mnem = param("mnem")
 _pack_key = group((_mnem[0] & 0x1F) * 0x400
                   + (_mnem[1] & 0x1F) * 0x20
                   + (_mnem[2] & 0x1F))
-pack_lo = d.define_macro("pack_lo", ["mnem"], _pack_key & 0xFF)
-pack_hi = d.define_macro("pack_hi", ["mnem"], _pack_key // 0x100)
+pack_mnemonic_lo = d.define_macro("pack_mnemonic_lo", ["mnem"], _pack_key & 0xFF)
+pack_mnemonic_hi = d.define_macro("pack_mnemonic_hi", ["mnem"], _pack_key // 0x100)
 
 """dasmos driver for Acorn BBC BASIC II.
 
@@ -919,7 +919,7 @@ for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
     if _i == 0:
         _text = 'index &00: unused padding (never tested by the scan)'
     else:
-        d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_lo(ASM_MNEMONICS[_i]))
+        d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name low byte'
     d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
@@ -931,7 +931,7 @@ for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
         _text = ('index &00 hi (unused); also asm_mnemonic_lo[&3A] = '
                  'EQU directive packed-name low byte')
     else:
-        d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_hi(ASM_MNEMONICS[_i]))
+        d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name high byte'
     d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)

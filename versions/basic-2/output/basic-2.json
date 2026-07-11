@@ -72,7 +72,7 @@
   ],
   "macros": [
     {
-      "name": "pack_lo",
+      "name": "pack_mnemonic_lo",
       "params": [
         "mnem"
       ],
@@ -162,7 +162,7 @@
       }
     },
     {
-      "name": "pack_hi",
+      "name": "pack_mnemonic_hi",
       "params": [
         "mnem"
       ],
@@ -14586,9 +14586,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BRK\")",
+          "text": "pack_mnemonic_lo(\"BRK\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BRK"
@@ -14610,9 +14610,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CLC\")",
+          "text": "pack_mnemonic_lo(\"CLC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CLC"
@@ -14634,9 +14634,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CLD\")",
+          "text": "pack_mnemonic_lo(\"CLD\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CLD"
@@ -14658,9 +14658,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CLI\")",
+          "text": "pack_mnemonic_lo(\"CLI\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CLI"
@@ -14682,9 +14682,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CLV\")",
+          "text": "pack_mnemonic_lo(\"CLV\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CLV"
@@ -14706,9 +14706,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"DEX\")",
+          "text": "pack_mnemonic_lo(\"DEX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "DEX"
@@ -14730,9 +14730,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"DEY\")",
+          "text": "pack_mnemonic_lo(\"DEY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "DEY"
@@ -14754,9 +14754,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"INX\")",
+          "text": "pack_mnemonic_lo(\"INX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "INX"
@@ -14778,9 +14778,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"INY\")",
+          "text": "pack_mnemonic_lo(\"INY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "INY"
@@ -14802,9 +14802,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"NOP\")",
+          "text": "pack_mnemonic_lo(\"NOP\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "NOP"
@@ -14826,9 +14826,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"PHA\")",
+          "text": "pack_mnemonic_lo(\"PHA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "PHA"
@@ -14850,9 +14850,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"PHP\")",
+          "text": "pack_mnemonic_lo(\"PHP\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "PHP"
@@ -14874,9 +14874,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"PLA\")",
+          "text": "pack_mnemonic_lo(\"PLA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "PLA"
@@ -14898,9 +14898,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"PLP\")",
+          "text": "pack_mnemonic_lo(\"PLP\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "PLP"
@@ -14922,9 +14922,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"RTI\")",
+          "text": "pack_mnemonic_lo(\"RTI\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "RTI"
@@ -14946,9 +14946,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"RTS\")",
+          "text": "pack_mnemonic_lo(\"RTS\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "RTS"
@@ -14970,9 +14970,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"SEC\")",
+          "text": "pack_mnemonic_lo(\"SEC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "SEC"
@@ -14994,9 +14994,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"SED\")",
+          "text": "pack_mnemonic_lo(\"SED\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "SED"
@@ -15018,9 +15018,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"SEI\")",
+          "text": "pack_mnemonic_lo(\"SEI\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "SEI"
@@ -15042,9 +15042,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TAX\")",
+          "text": "pack_mnemonic_lo(\"TAX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TAX"
@@ -15066,9 +15066,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TAY\")",
+          "text": "pack_mnemonic_lo(\"TAY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TAY"
@@ -15090,9 +15090,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TSX\")",
+          "text": "pack_mnemonic_lo(\"TSX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TSX"
@@ -15114,9 +15114,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TXA\")",
+          "text": "pack_mnemonic_lo(\"TXA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TXA"
@@ -15138,9 +15138,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TXS\")",
+          "text": "pack_mnemonic_lo(\"TXS\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TXS"
@@ -15162,9 +15162,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"TYA\")",
+          "text": "pack_mnemonic_lo(\"TYA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "TYA"
@@ -15186,9 +15186,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BCC\")",
+          "text": "pack_mnemonic_lo(\"BCC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BCC"
@@ -15210,9 +15210,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BCS\")",
+          "text": "pack_mnemonic_lo(\"BCS\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BCS"
@@ -15234,9 +15234,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BEQ\")",
+          "text": "pack_mnemonic_lo(\"BEQ\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BEQ"
@@ -15258,9 +15258,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BMI\")",
+          "text": "pack_mnemonic_lo(\"BMI\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BMI"
@@ -15282,9 +15282,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BNE\")",
+          "text": "pack_mnemonic_lo(\"BNE\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BNE"
@@ -15306,9 +15306,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BPL\")",
+          "text": "pack_mnemonic_lo(\"BPL\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BPL"
@@ -15330,9 +15330,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BVC\")",
+          "text": "pack_mnemonic_lo(\"BVC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BVC"
@@ -15354,9 +15354,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BVS\")",
+          "text": "pack_mnemonic_lo(\"BVS\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BVS"
@@ -15378,9 +15378,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"AND\")",
+          "text": "pack_mnemonic_lo(\"AND\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "AND"
@@ -15402,9 +15402,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"EOR\")",
+          "text": "pack_mnemonic_lo(\"EOR\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "EOR"
@@ -15426,9 +15426,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"ORA\")",
+          "text": "pack_mnemonic_lo(\"ORA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "ORA"
@@ -15450,9 +15450,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"ADC\")",
+          "text": "pack_mnemonic_lo(\"ADC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "ADC"
@@ -15474,9 +15474,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CMP\")",
+          "text": "pack_mnemonic_lo(\"CMP\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CMP"
@@ -15498,9 +15498,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"LDA\")",
+          "text": "pack_mnemonic_lo(\"LDA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "LDA"
@@ -15522,9 +15522,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"SBC\")",
+          "text": "pack_mnemonic_lo(\"SBC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "SBC"
@@ -15546,9 +15546,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"ASL\")",
+          "text": "pack_mnemonic_lo(\"ASL\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "ASL"
@@ -15570,9 +15570,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"LSR\")",
+          "text": "pack_mnemonic_lo(\"LSR\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "LSR"
@@ -15594,9 +15594,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"ROL\")",
+          "text": "pack_mnemonic_lo(\"ROL\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "ROL"
@@ -15618,9 +15618,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"ROR\")",
+          "text": "pack_mnemonic_lo(\"ROR\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "ROR"
@@ -15642,9 +15642,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"DEC\")",
+          "text": "pack_mnemonic_lo(\"DEC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "DEC"
@@ -15666,9 +15666,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"INC\")",
+          "text": "pack_mnemonic_lo(\"INC\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "INC"
@@ -15690,9 +15690,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CPX\")",
+          "text": "pack_mnemonic_lo(\"CPX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CPX"
@@ -15714,9 +15714,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"CPY\")",
+          "text": "pack_mnemonic_lo(\"CPY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "CPY"
@@ -15738,9 +15738,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"BIT\")",
+          "text": "pack_mnemonic_lo(\"BIT\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "BIT"
@@ -15762,9 +15762,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"JMP\")",
+          "text": "pack_mnemonic_lo(\"JMP\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "JMP"
@@ -15786,9 +15786,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"JSR\")",
+          "text": "pack_mnemonic_lo(\"JSR\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "JSR"
@@ -15810,9 +15810,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"LDX\")",
+          "text": "pack_mnemonic_lo(\"LDX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "LDX"
@@ -15834,9 +15834,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"LDY\")",
+          "text": "pack_mnemonic_lo(\"LDY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "LDY"
@@ -15858,9 +15858,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"STA\")",
+          "text": "pack_mnemonic_lo(\"STA\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "STA"
@@ -15882,9 +15882,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"STX\")",
+          "text": "pack_mnemonic_lo(\"STX\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "STX"
@@ -15906,9 +15906,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"STY\")",
+          "text": "pack_mnemonic_lo(\"STY\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "STY"
@@ -15930,9 +15930,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_lo(\"OPT\")",
+          "text": "pack_mnemonic_lo(\"OPT\")",
           "tree": {
-            "macro_call": "pack_lo",
+            "macro_call": "pack_mnemonic_lo",
             "args": [
               {
                 "str": "OPT"
@@ -15977,9 +15977,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BRK\")",
+          "text": "pack_mnemonic_hi(\"BRK\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BRK"
@@ -16001,9 +16001,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CLC\")",
+          "text": "pack_mnemonic_hi(\"CLC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CLC"
@@ -16025,9 +16025,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CLD\")",
+          "text": "pack_mnemonic_hi(\"CLD\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CLD"
@@ -16049,9 +16049,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CLI\")",
+          "text": "pack_mnemonic_hi(\"CLI\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CLI"
@@ -16073,9 +16073,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CLV\")",
+          "text": "pack_mnemonic_hi(\"CLV\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CLV"
@@ -16097,9 +16097,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"DEX\")",
+          "text": "pack_mnemonic_hi(\"DEX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "DEX"
@@ -16121,9 +16121,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"DEY\")",
+          "text": "pack_mnemonic_hi(\"DEY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "DEY"
@@ -16145,9 +16145,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"INX\")",
+          "text": "pack_mnemonic_hi(\"INX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "INX"
@@ -16169,9 +16169,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"INY\")",
+          "text": "pack_mnemonic_hi(\"INY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "INY"
@@ -16193,9 +16193,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"NOP\")",
+          "text": "pack_mnemonic_hi(\"NOP\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "NOP"
@@ -16217,9 +16217,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"PHA\")",
+          "text": "pack_mnemonic_hi(\"PHA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "PHA"
@@ -16241,9 +16241,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"PHP\")",
+          "text": "pack_mnemonic_hi(\"PHP\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "PHP"
@@ -16265,9 +16265,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"PLA\")",
+          "text": "pack_mnemonic_hi(\"PLA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "PLA"
@@ -16289,9 +16289,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"PLP\")",
+          "text": "pack_mnemonic_hi(\"PLP\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "PLP"
@@ -16313,9 +16313,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"RTI\")",
+          "text": "pack_mnemonic_hi(\"RTI\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "RTI"
@@ -16337,9 +16337,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"RTS\")",
+          "text": "pack_mnemonic_hi(\"RTS\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "RTS"
@@ -16361,9 +16361,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"SEC\")",
+          "text": "pack_mnemonic_hi(\"SEC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "SEC"
@@ -16385,9 +16385,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"SED\")",
+          "text": "pack_mnemonic_hi(\"SED\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "SED"
@@ -16409,9 +16409,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"SEI\")",
+          "text": "pack_mnemonic_hi(\"SEI\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "SEI"
@@ -16433,9 +16433,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TAX\")",
+          "text": "pack_mnemonic_hi(\"TAX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TAX"
@@ -16457,9 +16457,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TAY\")",
+          "text": "pack_mnemonic_hi(\"TAY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TAY"
@@ -16481,9 +16481,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TSX\")",
+          "text": "pack_mnemonic_hi(\"TSX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TSX"
@@ -16505,9 +16505,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TXA\")",
+          "text": "pack_mnemonic_hi(\"TXA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TXA"
@@ -16529,9 +16529,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TXS\")",
+          "text": "pack_mnemonic_hi(\"TXS\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TXS"
@@ -16553,9 +16553,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"TYA\")",
+          "text": "pack_mnemonic_hi(\"TYA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "TYA"
@@ -16577,9 +16577,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BCC\")",
+          "text": "pack_mnemonic_hi(\"BCC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BCC"
@@ -16601,9 +16601,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BCS\")",
+          "text": "pack_mnemonic_hi(\"BCS\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BCS"
@@ -16625,9 +16625,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BEQ\")",
+          "text": "pack_mnemonic_hi(\"BEQ\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BEQ"
@@ -16649,9 +16649,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BMI\")",
+          "text": "pack_mnemonic_hi(\"BMI\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BMI"
@@ -16673,9 +16673,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BNE\")",
+          "text": "pack_mnemonic_hi(\"BNE\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BNE"
@@ -16697,9 +16697,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BPL\")",
+          "text": "pack_mnemonic_hi(\"BPL\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BPL"
@@ -16721,9 +16721,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BVC\")",
+          "text": "pack_mnemonic_hi(\"BVC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BVC"
@@ -16745,9 +16745,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BVS\")",
+          "text": "pack_mnemonic_hi(\"BVS\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BVS"
@@ -16769,9 +16769,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"AND\")",
+          "text": "pack_mnemonic_hi(\"AND\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "AND"
@@ -16793,9 +16793,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"EOR\")",
+          "text": "pack_mnemonic_hi(\"EOR\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "EOR"
@@ -16817,9 +16817,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"ORA\")",
+          "text": "pack_mnemonic_hi(\"ORA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "ORA"
@@ -16841,9 +16841,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"ADC\")",
+          "text": "pack_mnemonic_hi(\"ADC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "ADC"
@@ -16865,9 +16865,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CMP\")",
+          "text": "pack_mnemonic_hi(\"CMP\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CMP"
@@ -16889,9 +16889,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"LDA\")",
+          "text": "pack_mnemonic_hi(\"LDA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "LDA"
@@ -16913,9 +16913,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"SBC\")",
+          "text": "pack_mnemonic_hi(\"SBC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "SBC"
@@ -16937,9 +16937,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"ASL\")",
+          "text": "pack_mnemonic_hi(\"ASL\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "ASL"
@@ -16961,9 +16961,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"LSR\")",
+          "text": "pack_mnemonic_hi(\"LSR\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "LSR"
@@ -16985,9 +16985,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"ROL\")",
+          "text": "pack_mnemonic_hi(\"ROL\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "ROL"
@@ -17009,9 +17009,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"ROR\")",
+          "text": "pack_mnemonic_hi(\"ROR\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "ROR"
@@ -17033,9 +17033,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"DEC\")",
+          "text": "pack_mnemonic_hi(\"DEC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "DEC"
@@ -17057,9 +17057,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"INC\")",
+          "text": "pack_mnemonic_hi(\"INC\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "INC"
@@ -17081,9 +17081,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CPX\")",
+          "text": "pack_mnemonic_hi(\"CPX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CPX"
@@ -17105,9 +17105,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"CPY\")",
+          "text": "pack_mnemonic_hi(\"CPY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "CPY"
@@ -17129,9 +17129,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"BIT\")",
+          "text": "pack_mnemonic_hi(\"BIT\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "BIT"
@@ -17153,9 +17153,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"JMP\")",
+          "text": "pack_mnemonic_hi(\"JMP\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "JMP"
@@ -17177,9 +17177,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"JSR\")",
+          "text": "pack_mnemonic_hi(\"JSR\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "JSR"
@@ -17201,9 +17201,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"LDX\")",
+          "text": "pack_mnemonic_hi(\"LDX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "LDX"
@@ -17225,9 +17225,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"LDY\")",
+          "text": "pack_mnemonic_hi(\"LDY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "LDY"
@@ -17249,9 +17249,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"STA\")",
+          "text": "pack_mnemonic_hi(\"STA\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "STA"
@@ -17273,9 +17273,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"STX\")",
+          "text": "pack_mnemonic_hi(\"STX\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "STX"
@@ -17297,9 +17297,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"STY\")",
+          "text": "pack_mnemonic_hi(\"STY\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "STY"
@@ -17321,9 +17321,9 @@
       ],
       "expressions": [
         {
-          "text": "pack_hi(\"OPT\")",
+          "text": "pack_mnemonic_hi(\"OPT\")",
           "tree": {
-            "macro_call": "pack_hi",
+            "macro_call": "pack_mnemonic_hi",
             "args": [
               {
                 "str": "OPT"
