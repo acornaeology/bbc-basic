@@ -921,7 +921,7 @@ for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
     else:
         d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
-        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name low byte'
+        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} lo-byte'
     d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
 
 d.index_base(ASM_MNEMONIC_HI_BASE, 'asm_mnemonic_hi')
@@ -933,7 +933,7 @@ for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
     else:
         d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
-        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name high byte'
+        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} hi-byte'
     d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)
 
 d.index_base(ASM_BASE_OPCODE_BASE, 'asm_base_opcode')

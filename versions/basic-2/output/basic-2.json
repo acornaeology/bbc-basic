@@ -14579,7 +14579,7 @@
       "bytes": [
         75
       ],
-      "comment_inline": "[&01] BRK: packed-name low byte",
+      "comment_inline": "[&01] BRK lo-byte",
       "type": "byte",
       "values": [
         75
@@ -14603,7 +14603,7 @@
       "bytes": [
         131
       ],
-      "comment_inline": "[&02] CLC: packed-name low byte",
+      "comment_inline": "[&02] CLC lo-byte",
       "type": "byte",
       "values": [
         131
@@ -14627,7 +14627,7 @@
       "bytes": [
         132
       ],
-      "comment_inline": "[&03] CLD: packed-name low byte",
+      "comment_inline": "[&03] CLD lo-byte",
       "type": "byte",
       "values": [
         132
@@ -14651,7 +14651,7 @@
       "bytes": [
         137
       ],
-      "comment_inline": "[&04] CLI: packed-name low byte",
+      "comment_inline": "[&04] CLI lo-byte",
       "type": "byte",
       "values": [
         137
@@ -14675,7 +14675,7 @@
       "bytes": [
         150
       ],
-      "comment_inline": "[&05] CLV: packed-name low byte",
+      "comment_inline": "[&05] CLV lo-byte",
       "type": "byte",
       "values": [
         150
@@ -14699,7 +14699,7 @@
       "bytes": [
         184
       ],
-      "comment_inline": "[&06] DEX: packed-name low byte",
+      "comment_inline": "[&06] DEX lo-byte",
       "type": "byte",
       "values": [
         184
@@ -14723,7 +14723,7 @@
       "bytes": [
         185
       ],
-      "comment_inline": "[&07] DEY: packed-name low byte",
+      "comment_inline": "[&07] DEY lo-byte",
       "type": "byte",
       "values": [
         185
@@ -14747,7 +14747,7 @@
       "bytes": [
         216
       ],
-      "comment_inline": "[&08] INX: packed-name low byte",
+      "comment_inline": "[&08] INX lo-byte",
       "type": "byte",
       "values": [
         216
@@ -14771,7 +14771,7 @@
       "bytes": [
         217
       ],
-      "comment_inline": "[&09] INY: packed-name low byte",
+      "comment_inline": "[&09] INY lo-byte",
       "type": "byte",
       "values": [
         217
@@ -14795,7 +14795,7 @@
       "bytes": [
         240
       ],
-      "comment_inline": "[&0a] NOP: packed-name low byte",
+      "comment_inline": "[&0a] NOP lo-byte",
       "type": "byte",
       "values": [
         240
@@ -14819,7 +14819,7 @@
       "bytes": [
         1
       ],
-      "comment_inline": "[&0b] PHA: packed-name low byte",
+      "comment_inline": "[&0b] PHA lo-byte",
       "type": "byte",
       "values": [
         1
@@ -14843,7 +14843,7 @@
       "bytes": [
         16
       ],
-      "comment_inline": "[&0c] PHP: packed-name low byte",
+      "comment_inline": "[&0c] PHP lo-byte",
       "type": "byte",
       "values": [
         16
@@ -14867,7 +14867,7 @@
       "bytes": [
         129
       ],
-      "comment_inline": "[&0d] PLA: packed-name low byte",
+      "comment_inline": "[&0d] PLA lo-byte",
       "type": "byte",
       "values": [
         129
@@ -14891,7 +14891,7 @@
       "bytes": [
         144
       ],
-      "comment_inline": "[&0e] PLP: packed-name low byte",
+      "comment_inline": "[&0e] PLP lo-byte",
       "type": "byte",
       "values": [
         144
@@ -14915,7 +14915,7 @@
       "bytes": [
         137
       ],
-      "comment_inline": "[&0f] RTI: packed-name low byte",
+      "comment_inline": "[&0f] RTI lo-byte",
       "type": "byte",
       "values": [
         137
@@ -14939,7 +14939,7 @@
       "bytes": [
         147
       ],
-      "comment_inline": "[&10] RTS: packed-name low byte",
+      "comment_inline": "[&10] RTS lo-byte",
       "type": "byte",
       "values": [
         147
@@ -14963,7 +14963,7 @@
       "bytes": [
         163
       ],
-      "comment_inline": "[&11] SEC: packed-name low byte",
+      "comment_inline": "[&11] SEC lo-byte",
       "type": "byte",
       "values": [
         163
@@ -14987,7 +14987,7 @@
       "bytes": [
         164
       ],
-      "comment_inline": "[&12] SED: packed-name low byte",
+      "comment_inline": "[&12] SED lo-byte",
       "type": "byte",
       "values": [
         164
@@ -15011,7 +15011,7 @@
       "bytes": [
         169
       ],
-      "comment_inline": "[&13] SEI: packed-name low byte",
+      "comment_inline": "[&13] SEI lo-byte",
       "type": "byte",
       "values": [
         169
@@ -15035,7 +15035,7 @@
       "bytes": [
         56
       ],
-      "comment_inline": "[&14] TAX: packed-name low byte",
+      "comment_inline": "[&14] TAX lo-byte",
       "type": "byte",
       "values": [
         56
@@ -15059,7 +15059,7 @@
       "bytes": [
         57
       ],
-      "comment_inline": "[&15] TAY: packed-name low byte",
+      "comment_inline": "[&15] TAY lo-byte",
       "type": "byte",
       "values": [
         57
@@ -15083,7 +15083,7 @@
       "bytes": [
         120
       ],
-      "comment_inline": "[&16] TSX: packed-name low byte",
+      "comment_inline": "[&16] TSX lo-byte",
       "type": "byte",
       "values": [
         120
@@ -15107,7 +15107,7 @@
       "bytes": [
         1
       ],
-      "comment_inline": "[&17] TXA: packed-name low byte",
+      "comment_inline": "[&17] TXA lo-byte",
       "type": "byte",
       "values": [
         1
@@ -15131,7 +15131,7 @@
       "bytes": [
         19
       ],
-      "comment_inline": "[&18] TXS: packed-name low byte",
+      "comment_inline": "[&18] TXS lo-byte",
       "type": "byte",
       "values": [
         19
@@ -15155,7 +15155,7 @@
       "bytes": [
         33
       ],
-      "comment_inline": "[&19] TYA: packed-name low byte",
+      "comment_inline": "[&19] TYA lo-byte",
       "type": "byte",
       "values": [
         33
@@ -15179,7 +15179,7 @@
       "bytes": [
         99
       ],
-      "comment_inline": "[&1a] BCC: packed-name low byte",
+      "comment_inline": "[&1a] BCC lo-byte",
       "type": "byte",
       "values": [
         99
@@ -15203,7 +15203,7 @@
       "bytes": [
         115
       ],
-      "comment_inline": "[&1b] BCS: packed-name low byte",
+      "comment_inline": "[&1b] BCS lo-byte",
       "type": "byte",
       "values": [
         115
@@ -15227,7 +15227,7 @@
       "bytes": [
         177
       ],
-      "comment_inline": "[&1c] BEQ: packed-name low byte",
+      "comment_inline": "[&1c] BEQ lo-byte",
       "type": "byte",
       "values": [
         177
@@ -15251,7 +15251,7 @@
       "bytes": [
         169
       ],
-      "comment_inline": "[&1d] BMI: packed-name low byte",
+      "comment_inline": "[&1d] BMI lo-byte",
       "type": "byte",
       "values": [
         169
@@ -15275,7 +15275,7 @@
       "bytes": [
         197
       ],
-      "comment_inline": "[&1e] BNE: packed-name low byte",
+      "comment_inline": "[&1e] BNE lo-byte",
       "type": "byte",
       "values": [
         197
@@ -15299,7 +15299,7 @@
       "bytes": [
         12
       ],
-      "comment_inline": "[&1f] BPL: packed-name low byte",
+      "comment_inline": "[&1f] BPL lo-byte",
       "type": "byte",
       "values": [
         12
@@ -15323,7 +15323,7 @@
       "bytes": [
         195
       ],
-      "comment_inline": "[&20] BVC: packed-name low byte",
+      "comment_inline": "[&20] BVC lo-byte",
       "type": "byte",
       "values": [
         195
@@ -15347,7 +15347,7 @@
       "bytes": [
         211
       ],
-      "comment_inline": "[&21] BVS: packed-name low byte",
+      "comment_inline": "[&21] BVS lo-byte",
       "type": "byte",
       "values": [
         211
@@ -15371,7 +15371,7 @@
       "bytes": [
         196
       ],
-      "comment_inline": "[&22] AND: packed-name low byte",
+      "comment_inline": "[&22] AND lo-byte",
       "type": "byte",
       "values": [
         196
@@ -15395,7 +15395,7 @@
       "bytes": [
         242
       ],
-      "comment_inline": "[&23] EOR: packed-name low byte",
+      "comment_inline": "[&23] EOR lo-byte",
       "type": "byte",
       "values": [
         242
@@ -15419,7 +15419,7 @@
       "bytes": [
         65
       ],
-      "comment_inline": "[&24] ORA: packed-name low byte",
+      "comment_inline": "[&24] ORA lo-byte",
       "type": "byte",
       "values": [
         65
@@ -15443,7 +15443,7 @@
       "bytes": [
         131
       ],
-      "comment_inline": "[&25] ADC: packed-name low byte",
+      "comment_inline": "[&25] ADC lo-byte",
       "type": "byte",
       "values": [
         131
@@ -15467,7 +15467,7 @@
       "bytes": [
         176
       ],
-      "comment_inline": "[&26] CMP: packed-name low byte",
+      "comment_inline": "[&26] CMP lo-byte",
       "type": "byte",
       "values": [
         176
@@ -15491,7 +15491,7 @@
       "bytes": [
         129
       ],
-      "comment_inline": "[&27] LDA: packed-name low byte",
+      "comment_inline": "[&27] LDA lo-byte",
       "type": "byte",
       "values": [
         129
@@ -15515,7 +15515,7 @@
       "bytes": [
         67
       ],
-      "comment_inline": "[&28] SBC: packed-name low byte",
+      "comment_inline": "[&28] SBC lo-byte",
       "type": "byte",
       "values": [
         67
@@ -15539,7 +15539,7 @@
       "bytes": [
         108
       ],
-      "comment_inline": "[&29] ASL: packed-name low byte",
+      "comment_inline": "[&29] ASL lo-byte",
       "type": "byte",
       "values": [
         108
@@ -15563,7 +15563,7 @@
       "bytes": [
         114
       ],
-      "comment_inline": "[&2a] LSR: packed-name low byte",
+      "comment_inline": "[&2a] LSR lo-byte",
       "type": "byte",
       "values": [
         114
@@ -15587,7 +15587,7 @@
       "bytes": [
         236
       ],
-      "comment_inline": "[&2b] ROL: packed-name low byte",
+      "comment_inline": "[&2b] ROL lo-byte",
       "type": "byte",
       "values": [
         236
@@ -15611,7 +15611,7 @@
       "bytes": [
         242
       ],
-      "comment_inline": "[&2c] ROR: packed-name low byte",
+      "comment_inline": "[&2c] ROR lo-byte",
       "type": "byte",
       "values": [
         242
@@ -15635,7 +15635,7 @@
       "bytes": [
         163
       ],
-      "comment_inline": "[&2d] DEC: packed-name low byte",
+      "comment_inline": "[&2d] DEC lo-byte",
       "type": "byte",
       "values": [
         163
@@ -15659,7 +15659,7 @@
       "bytes": [
         195
       ],
-      "comment_inline": "[&2e] INC: packed-name low byte",
+      "comment_inline": "[&2e] INC lo-byte",
       "type": "byte",
       "values": [
         195
@@ -15683,7 +15683,7 @@
       "bytes": [
         24
       ],
-      "comment_inline": "[&2f] CPX: packed-name low byte",
+      "comment_inline": "[&2f] CPX lo-byte",
       "type": "byte",
       "values": [
         24
@@ -15707,7 +15707,7 @@
       "bytes": [
         25
       ],
-      "comment_inline": "[&30] CPY: packed-name low byte",
+      "comment_inline": "[&30] CPY lo-byte",
       "type": "byte",
       "values": [
         25
@@ -15731,7 +15731,7 @@
       "bytes": [
         52
       ],
-      "comment_inline": "[&31] BIT: packed-name low byte",
+      "comment_inline": "[&31] BIT lo-byte",
       "type": "byte",
       "values": [
         52
@@ -15755,7 +15755,7 @@
       "bytes": [
         176
       ],
-      "comment_inline": "[&32] JMP: packed-name low byte",
+      "comment_inline": "[&32] JMP lo-byte",
       "type": "byte",
       "values": [
         176
@@ -15779,7 +15779,7 @@
       "bytes": [
         114
       ],
-      "comment_inline": "[&33] JSR: packed-name low byte",
+      "comment_inline": "[&33] JSR lo-byte",
       "type": "byte",
       "values": [
         114
@@ -15803,7 +15803,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "[&34] LDX: packed-name low byte",
+      "comment_inline": "[&34] LDX lo-byte",
       "type": "byte",
       "values": [
         152
@@ -15827,7 +15827,7 @@
       "bytes": [
         153
       ],
-      "comment_inline": "[&35] LDY: packed-name low byte",
+      "comment_inline": "[&35] LDY lo-byte",
       "type": "byte",
       "values": [
         153
@@ -15851,7 +15851,7 @@
       "bytes": [
         129
       ],
-      "comment_inline": "[&36] STA: packed-name low byte",
+      "comment_inline": "[&36] STA lo-byte",
       "type": "byte",
       "values": [
         129
@@ -15875,7 +15875,7 @@
       "bytes": [
         152
       ],
-      "comment_inline": "[&37] STX: packed-name low byte",
+      "comment_inline": "[&37] STX lo-byte",
       "type": "byte",
       "values": [
         152
@@ -15899,7 +15899,7 @@
       "bytes": [
         153
       ],
-      "comment_inline": "[&38] STY: packed-name low byte",
+      "comment_inline": "[&38] STY lo-byte",
       "type": "byte",
       "values": [
         153
@@ -15923,7 +15923,7 @@
       "bytes": [
         20
       ],
-      "comment_inline": "[&39] OPT directive: packed-name low byte",
+      "comment_inline": "[&39] OPT directive lo-byte",
       "type": "byte",
       "values": [
         20
@@ -15970,7 +15970,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "[&01] BRK: packed-name high byte",
+      "comment_inline": "[&01] BRK hi-byte",
       "type": "byte",
       "values": [
         10
@@ -15994,7 +15994,7 @@
       "bytes": [
         13
       ],
-      "comment_inline": "[&02] CLC: packed-name high byte",
+      "comment_inline": "[&02] CLC hi-byte",
       "type": "byte",
       "values": [
         13
@@ -16018,7 +16018,7 @@
       "bytes": [
         13
       ],
-      "comment_inline": "[&03] CLD: packed-name high byte",
+      "comment_inline": "[&03] CLD hi-byte",
       "type": "byte",
       "values": [
         13
@@ -16042,7 +16042,7 @@
       "bytes": [
         13
       ],
-      "comment_inline": "[&04] CLI: packed-name high byte",
+      "comment_inline": "[&04] CLI hi-byte",
       "type": "byte",
       "values": [
         13
@@ -16066,7 +16066,7 @@
       "bytes": [
         13
       ],
-      "comment_inline": "[&05] CLV: packed-name high byte",
+      "comment_inline": "[&05] CLV hi-byte",
       "type": "byte",
       "values": [
         13
@@ -16090,7 +16090,7 @@
       "bytes": [
         16
       ],
-      "comment_inline": "[&06] DEX: packed-name high byte",
+      "comment_inline": "[&06] DEX hi-byte",
       "type": "byte",
       "values": [
         16
@@ -16114,7 +16114,7 @@
       "bytes": [
         16
       ],
-      "comment_inline": "[&07] DEY: packed-name high byte",
+      "comment_inline": "[&07] DEY hi-byte",
       "type": "byte",
       "values": [
         16
@@ -16138,7 +16138,7 @@
       "bytes": [
         37
       ],
-      "comment_inline": "[&08] INX: packed-name high byte",
+      "comment_inline": "[&08] INX hi-byte",
       "type": "byte",
       "values": [
         37
@@ -16162,7 +16162,7 @@
       "bytes": [
         37
       ],
-      "comment_inline": "[&09] INY: packed-name high byte",
+      "comment_inline": "[&09] INY hi-byte",
       "type": "byte",
       "values": [
         37
@@ -16186,7 +16186,7 @@
       "bytes": [
         57
       ],
-      "comment_inline": "[&0a] NOP: packed-name high byte",
+      "comment_inline": "[&0a] NOP hi-byte",
       "type": "byte",
       "values": [
         57
@@ -16210,7 +16210,7 @@
       "bytes": [
         65
       ],
-      "comment_inline": "[&0b] PHA: packed-name high byte",
+      "comment_inline": "[&0b] PHA hi-byte",
       "type": "byte",
       "values": [
         65
@@ -16234,7 +16234,7 @@
       "bytes": [
         65
       ],
-      "comment_inline": "[&0c] PHP: packed-name high byte",
+      "comment_inline": "[&0c] PHP hi-byte",
       "type": "byte",
       "values": [
         65
@@ -16258,7 +16258,7 @@
       "bytes": [
         65
       ],
-      "comment_inline": "[&0d] PLA: packed-name high byte",
+      "comment_inline": "[&0d] PLA hi-byte",
       "type": "byte",
       "values": [
         65
@@ -16282,7 +16282,7 @@
       "bytes": [
         65
       ],
-      "comment_inline": "[&0e] PLP: packed-name high byte",
+      "comment_inline": "[&0e] PLP hi-byte",
       "type": "byte",
       "values": [
         65
@@ -16306,7 +16306,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "[&0f] RTI: packed-name high byte",
+      "comment_inline": "[&0f] RTI hi-byte",
       "type": "byte",
       "values": [
         74
@@ -16330,7 +16330,7 @@
       "bytes": [
         74
       ],
-      "comment_inline": "[&10] RTS: packed-name high byte",
+      "comment_inline": "[&10] RTS hi-byte",
       "type": "byte",
       "values": [
         74
@@ -16354,7 +16354,7 @@
       "bytes": [
         76
       ],
-      "comment_inline": "[&11] SEC: packed-name high byte",
+      "comment_inline": "[&11] SEC hi-byte",
       "type": "byte",
       "values": [
         76
@@ -16378,7 +16378,7 @@
       "bytes": [
         76
       ],
-      "comment_inline": "[&12] SED: packed-name high byte",
+      "comment_inline": "[&12] SED hi-byte",
       "type": "byte",
       "values": [
         76
@@ -16402,7 +16402,7 @@
       "bytes": [
         76
       ],
-      "comment_inline": "[&13] SEI: packed-name high byte",
+      "comment_inline": "[&13] SEI hi-byte",
       "type": "byte",
       "values": [
         76
@@ -16426,7 +16426,7 @@
       "bytes": [
         80
       ],
-      "comment_inline": "[&14] TAX: packed-name high byte",
+      "comment_inline": "[&14] TAX hi-byte",
       "type": "byte",
       "values": [
         80
@@ -16450,7 +16450,7 @@
       "bytes": [
         80
       ],
-      "comment_inline": "[&15] TAY: packed-name high byte",
+      "comment_inline": "[&15] TAY hi-byte",
       "type": "byte",
       "values": [
         80
@@ -16474,7 +16474,7 @@
       "bytes": [
         82
       ],
-      "comment_inline": "[&16] TSX: packed-name high byte",
+      "comment_inline": "[&16] TSX hi-byte",
       "type": "byte",
       "values": [
         82
@@ -16498,7 +16498,7 @@
       "bytes": [
         83
       ],
-      "comment_inline": "[&17] TXA: packed-name high byte",
+      "comment_inline": "[&17] TXA hi-byte",
       "type": "byte",
       "values": [
         83
@@ -16522,7 +16522,7 @@
       "bytes": [
         83
       ],
-      "comment_inline": "[&18] TXS: packed-name high byte",
+      "comment_inline": "[&18] TXS hi-byte",
       "type": "byte",
       "values": [
         83
@@ -16546,7 +16546,7 @@
       "bytes": [
         83
       ],
-      "comment_inline": "[&19] TYA: packed-name high byte",
+      "comment_inline": "[&19] TYA hi-byte",
       "type": "byte",
       "values": [
         83
@@ -16570,7 +16570,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "[&1a] BCC: packed-name high byte",
+      "comment_inline": "[&1a] BCC hi-byte",
       "type": "byte",
       "values": [
         8
@@ -16594,7 +16594,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "[&1b] BCS: packed-name high byte",
+      "comment_inline": "[&1b] BCS hi-byte",
       "type": "byte",
       "values": [
         8
@@ -16618,7 +16618,7 @@
       "bytes": [
         8
       ],
-      "comment_inline": "[&1c] BEQ: packed-name high byte",
+      "comment_inline": "[&1c] BEQ hi-byte",
       "type": "byte",
       "values": [
         8
@@ -16642,7 +16642,7 @@
       "bytes": [
         9
       ],
-      "comment_inline": "[&1d] BMI: packed-name high byte",
+      "comment_inline": "[&1d] BMI hi-byte",
       "type": "byte",
       "values": [
         9
@@ -16666,7 +16666,7 @@
       "bytes": [
         9
       ],
-      "comment_inline": "[&1e] BNE: packed-name high byte",
+      "comment_inline": "[&1e] BNE hi-byte",
       "type": "byte",
       "values": [
         9
@@ -16690,7 +16690,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "[&1f] BPL: packed-name high byte",
+      "comment_inline": "[&1f] BPL hi-byte",
       "type": "byte",
       "values": [
         10
@@ -16714,7 +16714,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "[&20] BVC: packed-name high byte",
+      "comment_inline": "[&20] BVC hi-byte",
       "type": "byte",
       "values": [
         10
@@ -16738,7 +16738,7 @@
       "bytes": [
         10
       ],
-      "comment_inline": "[&21] BVS: packed-name high byte",
+      "comment_inline": "[&21] BVS hi-byte",
       "type": "byte",
       "values": [
         10
@@ -16762,7 +16762,7 @@
       "bytes": [
         5
       ],
-      "comment_inline": "[&22] AND: packed-name high byte",
+      "comment_inline": "[&22] AND hi-byte",
       "type": "byte",
       "values": [
         5
@@ -16786,7 +16786,7 @@
       "bytes": [
         21
       ],
-      "comment_inline": "[&23] EOR: packed-name high byte",
+      "comment_inline": "[&23] EOR hi-byte",
       "type": "byte",
       "values": [
         21
@@ -16810,7 +16810,7 @@
       "bytes": [
         62
       ],
-      "comment_inline": "[&24] ORA: packed-name high byte",
+      "comment_inline": "[&24] ORA hi-byte",
       "type": "byte",
       "values": [
         62
@@ -16834,7 +16834,7 @@
       "bytes": [
         4
       ],
-      "comment_inline": "[&25] ADC: packed-name high byte",
+      "comment_inline": "[&25] ADC hi-byte",
       "type": "byte",
       "values": [
         4
@@ -16858,7 +16858,7 @@
       "bytes": [
         13
       ],
-      "comment_inline": "[&26] CMP: packed-name high byte",
+      "comment_inline": "[&26] CMP hi-byte",
       "type": "byte",
       "values": [
         13
@@ -16882,7 +16882,7 @@
       "bytes": [
         48
       ],
-      "comment_inline": "[&27] LDA: packed-name high byte",
+      "comment_inline": "[&27] LDA hi-byte",
       "type": "byte",
       "values": [
         48
@@ -16906,7 +16906,7 @@
       "bytes": [
         76
       ],
-      "comment_inline": "[&28] SBC: packed-name high byte",
+      "comment_inline": "[&28] SBC hi-byte",
       "type": "byte",
       "values": [
         76
@@ -16930,7 +16930,7 @@
       "bytes": [
         6
       ],
-      "comment_inline": "[&29] ASL: packed-name high byte",
+      "comment_inline": "[&29] ASL hi-byte",
       "type": "byte",
       "values": [
         6
@@ -16954,7 +16954,7 @@
       "bytes": [
         50
       ],
-      "comment_inline": "[&2a] LSR: packed-name high byte",
+      "comment_inline": "[&2a] LSR hi-byte",
       "type": "byte",
       "values": [
         50
@@ -16978,7 +16978,7 @@
       "bytes": [
         73
       ],
-      "comment_inline": "[&2b] ROL: packed-name high byte",
+      "comment_inline": "[&2b] ROL hi-byte",
       "type": "byte",
       "values": [
         73
@@ -17002,7 +17002,7 @@
       "bytes": [
         73
       ],
-      "comment_inline": "[&2c] ROR: packed-name high byte",
+      "comment_inline": "[&2c] ROR hi-byte",
       "type": "byte",
       "values": [
         73
@@ -17026,7 +17026,7 @@
       "bytes": [
         16
       ],
-      "comment_inline": "[&2d] DEC: packed-name high byte",
+      "comment_inline": "[&2d] DEC hi-byte",
       "type": "byte",
       "values": [
         16
@@ -17050,7 +17050,7 @@
       "bytes": [
         37
       ],
-      "comment_inline": "[&2e] INC: packed-name high byte",
+      "comment_inline": "[&2e] INC hi-byte",
       "type": "byte",
       "values": [
         37
@@ -17074,7 +17074,7 @@
       "bytes": [
         14
       ],
-      "comment_inline": "[&2f] CPX: packed-name high byte",
+      "comment_inline": "[&2f] CPX hi-byte",
       "type": "byte",
       "values": [
         14
@@ -17098,7 +17098,7 @@
       "bytes": [
         14
       ],
-      "comment_inline": "[&30] CPY: packed-name high byte",
+      "comment_inline": "[&30] CPY hi-byte",
       "type": "byte",
       "values": [
         14
@@ -17122,7 +17122,7 @@
       "bytes": [
         9
       ],
-      "comment_inline": "[&31] BIT: packed-name high byte",
+      "comment_inline": "[&31] BIT hi-byte",
       "type": "byte",
       "values": [
         9
@@ -17146,7 +17146,7 @@
       "bytes": [
         41
       ],
-      "comment_inline": "[&32] JMP: packed-name high byte",
+      "comment_inline": "[&32] JMP hi-byte",
       "type": "byte",
       "values": [
         41
@@ -17170,7 +17170,7 @@
       "bytes": [
         42
       ],
-      "comment_inline": "[&33] JSR: packed-name high byte",
+      "comment_inline": "[&33] JSR hi-byte",
       "type": "byte",
       "values": [
         42
@@ -17194,7 +17194,7 @@
       "bytes": [
         48
       ],
-      "comment_inline": "[&34] LDX: packed-name high byte",
+      "comment_inline": "[&34] LDX hi-byte",
       "type": "byte",
       "values": [
         48
@@ -17218,7 +17218,7 @@
       "bytes": [
         48
       ],
-      "comment_inline": "[&35] LDY: packed-name high byte",
+      "comment_inline": "[&35] LDY hi-byte",
       "type": "byte",
       "values": [
         48
@@ -17242,7 +17242,7 @@
       "bytes": [
         78
       ],
-      "comment_inline": "[&36] STA: packed-name high byte",
+      "comment_inline": "[&36] STA hi-byte",
       "type": "byte",
       "values": [
         78
@@ -17266,7 +17266,7 @@
       "bytes": [
         78
       ],
-      "comment_inline": "[&37] STX: packed-name high byte",
+      "comment_inline": "[&37] STX hi-byte",
       "type": "byte",
       "values": [
         78
@@ -17290,7 +17290,7 @@
       "bytes": [
         78
       ],
-      "comment_inline": "[&38] STY: packed-name high byte",
+      "comment_inline": "[&38] STY hi-byte",
       "type": "byte",
       "values": [
         78
@@ -17314,7 +17314,7 @@
       "bytes": [
         62
       ],
-      "comment_inline": "[&39] OPT directive: packed-name high byte",
+      "comment_inline": "[&39] OPT directive hi-byte",
       "type": "byte",
       "values": [
         62
