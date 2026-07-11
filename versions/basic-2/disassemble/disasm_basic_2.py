@@ -2413,24 +2413,17 @@ BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
 standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
 asm_base_opcode entry.
 
-The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is
-never compared), so each label marks its real first entry (BRK) and the
-code reads the table as `<label> - 1,x` (see the &85F5 / &85FA / &8620
-sites). No byte is wasted on a dead index-0 slot. The byte one before
-asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
-table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the
-1-based table simply abuts. asm_mnemonic_hi and asm_base_opcode in turn
-begin one byte past their predecessor's final entry (EQU's low and high
-hash bytes), so the three tables pack together end to end.""",
+The tables are indexed 1-based by the mnemonic number: the scan runs X
+from &3A (EQU) down to 1 (BRK), so each label sits on entry 1 (BRK) and
+the code reads the table as `<label> - 1,x` (the &85F5 / &85FA / &8620
+sites).""",
 )
 
-# The tables are indexed 1-based (X = mnemonic number 1..58), so each
-# label sits on its real first entry (BRK) and the code reads it as
-# `<label> - 1,x`. Each byte is its own EQUB item so its per-index inline
-# comment lands on its own line. The byte one before asm_mnemonic_lo
-# (&8450) is action_table_hi's last entry (>(stmt_oscli), token &FF) and
-# is left to that table; the bytes one before asm_mnemonic_hi / asm_base_
-# opcode are the preceding table's final entry (EQU's low / high byte).
+# The tables are indexed 1-based (X = the mnemonic number 1..58): each
+# label sits on entry 1 (BRK), one past its *_BASE, so the code reads
+# them as `<label> - 1,x`. The loops walk *_BASE + i for i in 1..N and
+# emit one EQUB item per byte so each per-index inline comment gets its
+# own line.
 d.index_base(ASM_MNEMONIC_LO, 'asm_mnemonic_lo')
 for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
     d.byte(ASM_MNEMONIC_LO_BASE + _i, 1, override=True)

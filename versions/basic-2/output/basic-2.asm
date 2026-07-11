@@ -1046,14 +1046,9 @@ oscli             = &fff7
 ; &A2/&A0) are the slot value, not a legal standalone opcode. OPT (&39) and EQU (&3A) are
 ; directives and have no asm_base_opcode entry.
 ;
-; The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is never compared),
-; so each label marks its real first entry (BRK) and the code reads the table as <label>
-; - 1,x (see the &85F5 / &85FA / &8620 sites). No byte is wasted on a dead index-0 slot.
-; The byte one before asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
-; table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the 1-based table
-; simply abuts. asm_mnemonic_hi and asm_base_opcode in turn begin one byte past their
-; predecessor's final entry (EQU's low and high hash bytes), so the three tables pack
-; together end to end.
+; The tables are indexed 1-based by the mnemonic number: the scan runs X from &3A (EQU)
+; down to 1 (BRK), so each label sits on entry 1 (BRK) and the code reads the table as
+; <label> - 1,x (the &85F5 / &85FA / &8620 sites).
 .asm_mnemonic_lo
     pack_mnemonic_lo "BRK"                                            ; 8451: 4b          K        ; [&01] BRK lo-byte
     pack_mnemonic_lo "CLC"                                            ; 8452: 83          .        ; [&02] CLC lo-byte
