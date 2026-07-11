@@ -4,6 +4,7 @@ from pathlib import Path
 
 import dasmos
 from dasmos import Align
+from dasmos.expr import param, group
 from dasmos.hooks import stringhi_hook
 
 _script_dirpath = Path(__file__).resolve().parent
@@ -435,17 +436,18 @@ EVAL_LEVEL_ON_EXIT = {
     'X': 'the next unconsumed operator token (lookahead)',
     'zp_text_ptr2_off (&1B)': 'advanced past the consumed text',
 }
-def asm_pack_expr(mnemonic, half):
-    """beebasm expression that re-derives a packed-name hash byte from the
-    mnemonic's three letters (low 5 bits of each, packed MSB-first into a
-    15-bit key). ``half`` is 'lo' or 'hi'. Rendered in place of the raw
-    EQUB so the table documents how each byte is computed; verify proves
-    the expression assembles back to the original ROM byte."""
-    c1, c2, c3 = mnemonic
-    key = (f"('{c1}' AND &1F) * &400 + ('{c2}' AND &1F) * &20 "
-           f"+ ('{c3}' AND &1F)")
-    tail = 'AND &FF' if half == 'lo' else 'DIV &100'
-    return f"({key}) {tail}"
+# Macros that re-derive a packed-name hash byte from a mnemonic's three
+# letters: the low 5 bits of each letter, packed MSB-first into a 15-bit
+# key, then split into low (AND &FF) and high (DIV &100) halves. dasmos
+# emits a real MACRO ... ENDMACRO per backend and one invocation per
+# table entry, so the mnemonic string stays visible and verify proves
+# each invocation assembles back to the original ROM byte.
+_mnem = param("mnem")
+_pack_key = group((_mnem[0] & 0x1F) * 0x400
+                  + (_mnem[1] & 0x1F) * 0x20
+                  + (_mnem[2] & 0x1F))
+pack_lo = d.define_macro("pack_lo", ["mnem"], _pack_key & 0xFF)
+pack_hi = d.define_macro("pack_hi", ["mnem"], _pack_key // 0x100)
 
 """dasmos driver for Acorn BBC BASIC II.
 
@@ -917,7 +919,7 @@ for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
     if _i == 0:
         _text = 'index &00: unused padding (never tested by the scan)'
     else:
-        d.expr(ASM_MNEMONIC_LO_BASE + _i, asm_pack_expr(ASM_MNEMONICS[_i], 'lo'))
+        d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_lo(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name low byte'
     d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
@@ -929,7 +931,7 @@ for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
         _text = ('index &00 hi (unused); also asm_mnemonic_lo[&3A] = '
                  'EQU directive packed-name low byte')
     else:
-        d.expr(ASM_MNEMONIC_HI_BASE + _i, asm_pack_expr(ASM_MNEMONICS[_i], 'hi'))
+        d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_hi(ASM_MNEMONICS[_i]))
         _dir = ' directive' if _i >= 0x39 else ''
         _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir}: packed-name high byte'
     d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)

@@ -70,6 +70,188 @@
       "value": 0
     }
   ],
+  "macros": [
+    {
+      "name": "pack_lo",
+      "params": [
+        "mnem"
+      ],
+      "emit": "byte",
+      "body": {
+        "text": "((mnem[0] AND &1f) * &0400 + (mnem[1] AND &1f) * &20 + (mnem[2] AND &1f)) AND &ff",
+        "tree": {
+          "op": "and",
+          "left": {
+            "group": {
+              "op": "add",
+              "left": {
+                "op": "add",
+                "left": {
+                  "op": "mul",
+                  "left": {
+                    "op": "and",
+                    "left": {
+                      "op": "str_index",
+                      "string": {
+                        "param": "mnem"
+                      },
+                      "index": {
+                        "int": 0,
+                        "radix": "auto"
+                      }
+                    },
+                    "right": {
+                      "int": 31,
+                      "radix": "auto"
+                    }
+                  },
+                  "right": {
+                    "int": 1024,
+                    "radix": "auto"
+                  }
+                },
+                "right": {
+                  "op": "mul",
+                  "left": {
+                    "op": "and",
+                    "left": {
+                      "op": "str_index",
+                      "string": {
+                        "param": "mnem"
+                      },
+                      "index": {
+                        "int": 1,
+                        "radix": "auto"
+                      }
+                    },
+                    "right": {
+                      "int": 31,
+                      "radix": "auto"
+                    }
+                  },
+                  "right": {
+                    "int": 32,
+                    "radix": "auto"
+                  }
+                }
+              },
+              "right": {
+                "op": "and",
+                "left": {
+                  "op": "str_index",
+                  "string": {
+                    "param": "mnem"
+                  },
+                  "index": {
+                    "int": 2,
+                    "radix": "auto"
+                  }
+                },
+                "right": {
+                  "int": 31,
+                  "radix": "auto"
+                }
+              }
+            }
+          },
+          "right": {
+            "int": 255,
+            "radix": "auto"
+          }
+        }
+      }
+    },
+    {
+      "name": "pack_hi",
+      "params": [
+        "mnem"
+      ],
+      "emit": "byte",
+      "body": {
+        "text": "((mnem[0] AND &1f) * &0400 + (mnem[1] AND &1f) * &20 + (mnem[2] AND &1f)) DIV &0100",
+        "tree": {
+          "op": "div",
+          "left": {
+            "group": {
+              "op": "add",
+              "left": {
+                "op": "add",
+                "left": {
+                  "op": "mul",
+                  "left": {
+                    "op": "and",
+                    "left": {
+                      "op": "str_index",
+                      "string": {
+                        "param": "mnem"
+                      },
+                      "index": {
+                        "int": 0,
+                        "radix": "auto"
+                      }
+                    },
+                    "right": {
+                      "int": 31,
+                      "radix": "auto"
+                    }
+                  },
+                  "right": {
+                    "int": 1024,
+                    "radix": "auto"
+                  }
+                },
+                "right": {
+                  "op": "mul",
+                  "left": {
+                    "op": "and",
+                    "left": {
+                      "op": "str_index",
+                      "string": {
+                        "param": "mnem"
+                      },
+                      "index": {
+                        "int": 1,
+                        "radix": "auto"
+                      }
+                    },
+                    "right": {
+                      "int": 31,
+                      "radix": "auto"
+                    }
+                  },
+                  "right": {
+                    "int": 32,
+                    "radix": "auto"
+                  }
+                }
+              },
+              "right": {
+                "op": "and",
+                "left": {
+                  "op": "str_index",
+                  "string": {
+                    "param": "mnem"
+                  },
+                  "index": {
+                    "int": 2,
+                    "radix": "auto"
+                  }
+                },
+                "right": {
+                  "int": 31,
+                  "radix": "auto"
+                }
+              }
+            }
+          },
+          "right": {
+            "int": 256,
+            "radix": "auto"
+          }
+        }
+      }
+    }
+  ],
   "subroutines": [
     {
       "addr": 65465,
@@ -5912,7 +6094,18 @@
         14
       ],
       "expressions": [
-        "copyright - language_entry"
+        {
+          "text": "copyright - language_entry",
+          "tree": {
+            "op": "sub",
+            "left": {
+              "sym": "copyright"
+            },
+            "right": {
+              "sym": "language_entry"
+            }
+          }
+        }
       ]
     },
     {
@@ -6035,7 +6228,13 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_himem"
+      "operand": "#osbyte_read_himem",
+      "expr": {
+        "text": "osbyte_read_himem",
+        "tree": {
+          "sym": "osbyte_read_himem"
+        }
+      }
     },
     {
       "addr": 32805,
@@ -6086,7 +6285,13 @@
       "comment_inline": "OSBYTE &83: read OSHWM (PAGE)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_oshwm"
+      "operand": "#osbyte_read_oshwm",
+      "expr": {
+        "text": "osbyte_read_oshwm",
+        "tree": {
+          "sym": "osbyte_read_oshwm"
+        }
+      }
     },
     {
       "addr": 32814,
@@ -6462,7 +6667,7 @@
       "comment_inline": "(BRKV high)",
       "type": "code",
       "mnemonic": "sta",
-      "operand": "brkv+1",
+      "operand": "brkv + 1",
       "target": 515
     },
     {
@@ -9350,7 +9555,16 @@
         120
       ],
       "expressions": [
-        "<(fn_openin)"
+        {
+          "text": "<(fn_openin)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49016,
+              "name": "fn_openin"
+            }
+          }
+        }
       ]
     },
     {
@@ -9363,7 +9577,16 @@
         71
       ],
       "expressions": [
-        "<(fn_ptr)"
+        {
+          "text": "<(fn_ptr)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48967,
+              "name": "fn_ptr"
+            }
+          }
+        }
       ]
     },
     {
@@ -9376,7 +9599,16 @@
         192
       ],
       "expressions": [
-        "<(fn_page)"
+        {
+          "text": "<(fn_page)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44736,
+              "name": "fn_page"
+            }
+          }
+        }
       ]
     },
     {
@@ -9389,7 +9621,16 @@
         180
       ],
       "expressions": [
-        "<(fn_time)"
+        {
+          "text": "<(fn_time)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44724,
+              "name": "fn_time"
+            }
+          }
+        }
       ]
     },
     {
@@ -9402,7 +9643,16 @@
         252
       ],
       "expressions": [
-        "<(fn_lomem)"
+        {
+          "text": "<(fn_lomem)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44796,
+              "name": "fn_lomem"
+            }
+          }
+        }
       ]
     },
     {
@@ -9415,7 +9665,16 @@
         3
       ],
       "expressions": [
-        "<(fn_himem)"
+        {
+          "text": "<(fn_himem)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44803,
+              "name": "fn_himem"
+            }
+          }
+        }
       ]
     },
     {
@@ -9428,7 +9687,16 @@
         106
       ],
       "expressions": [
-        "<(fn_abs)"
+        {
+          "text": "<(fn_abs)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44394,
+              "name": "fn_abs"
+            }
+          }
+        }
       ]
     },
     {
@@ -9441,7 +9709,16 @@
         212
       ],
       "expressions": [
-        "<(fn_acs)"
+        {
+          "text": "<(fn_acs)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43220,
+              "name": "fn_acs"
+            }
+          }
+        }
       ]
     },
     {
@@ -9454,7 +9731,16 @@
         51
       ],
       "expressions": [
-        "<(fn_adval)"
+        {
+          "text": "<(fn_adval)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43827,
+              "name": "fn_adval"
+            }
+          }
+        }
       ]
     },
     {
@@ -9467,7 +9753,16 @@
         158
       ],
       "expressions": [
-        "<(fn_asc)"
+        {
+          "text": "<(fn_asc)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44190,
+              "name": "fn_asc"
+            }
+          }
+        }
       ]
     },
     {
@@ -9480,7 +9775,16 @@
         218
       ],
       "expressions": [
-        "<(fn_asn)"
+        {
+          "text": "<(fn_asn)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43226,
+              "name": "fn_asn"
+            }
+          }
+        }
       ]
     },
     {
@@ -9493,7 +9797,16 @@
         7
       ],
       "expressions": [
-        "<(fn_atn)"
+        {
+          "text": "<(fn_atn)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43271,
+              "name": "fn_atn"
+            }
+          }
+        }
       ]
     },
     {
@@ -9506,7 +9819,16 @@
         111
       ],
       "expressions": [
-        "<(fn_bget)"
+        {
+          "text": "<(fn_bget)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49007,
+              "name": "fn_bget"
+            }
+          }
+        }
       ]
     },
     {
@@ -9519,7 +9841,16 @@
         141
       ],
       "expressions": [
-        "<(fn_cos)"
+        {
+          "text": "<(fn_cos)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43405,
+              "name": "fn_cos"
+            }
+          }
+        }
       ]
     },
     {
@@ -9532,7 +9863,16 @@
         247
       ],
       "expressions": [
-        "<(fn_count)"
+        {
+          "text": "<(fn_count)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44791,
+              "name": "fn_count"
+            }
+          }
+        }
       ]
     },
     {
@@ -9545,7 +9885,16 @@
         194
       ],
       "expressions": [
-        "<(fn_deg)"
+        {
+          "text": "<(fn_deg)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43970,
+              "name": "fn_deg"
+            }
+          }
+        }
       ]
     },
     {
@@ -9558,7 +9907,16 @@
         159
       ],
       "expressions": [
-        "<(fn_erl)"
+        {
+          "text": "<(fn_erl)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44959,
+              "name": "fn_erl"
+            }
+          }
+        }
       ]
     },
     {
@@ -9571,7 +9929,16 @@
         166
       ],
       "expressions": [
-        "<(fn_err)"
+        {
+          "text": "<(fn_err)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44966,
+              "name": "fn_err"
+            }
+          }
+        }
       ]
     },
     {
@@ -9584,7 +9951,16 @@
         233
       ],
       "expressions": [
-        "<(fn_eval)"
+        {
+          "text": "<(fn_eval)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44009,
+              "name": "fn_eval"
+            }
+          }
+        }
       ]
     },
     {
@@ -9597,7 +9973,16 @@
         145
       ],
       "expressions": [
-        "<(fn_exp)"
+        {
+          "text": "<(fn_exp)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43665,
+              "name": "fn_exp"
+            }
+          }
+        }
       ]
     },
     {
@@ -9610,7 +9995,16 @@
         70
       ],
       "expressions": [
-        "<(fn_ext)"
+        {
+          "text": "<(fn_ext)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48966,
+              "name": "fn_ext"
+            }
+          }
+        }
       ]
     },
     {
@@ -9623,7 +10017,16 @@
         202
       ],
       "expressions": [
-        "<(fn_false)"
+        {
+          "text": "<(fn_false)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44746,
+              "name": "fn_false"
+            }
+          }
+        }
       ]
     },
     {
@@ -9636,7 +10039,16 @@
         149
       ],
       "expressions": [
-        "<(fn_fn)"
+        {
+          "text": "<(fn_fn)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45461,
+              "name": "fn_fn"
+            }
+          }
+        }
       ]
     },
     {
@@ -9649,7 +10061,16 @@
         185
       ],
       "expressions": [
-        "<(fn_get)"
+        {
+          "text": "<(fn_get)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44985,
+              "name": "fn_get"
+            }
+          }
+        }
       ]
     },
     {
@@ -9662,7 +10083,16 @@
         173
       ],
       "expressions": [
-        "<(fn_inkey)"
+        {
+          "text": "<(fn_inkey)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44205,
+              "name": "fn_inkey"
+            }
+          }
+        }
       ]
     },
     {
@@ -9675,7 +10105,16 @@
         226
       ],
       "expressions": [
-        "<(fn_instr)"
+        {
+          "text": "<(fn_instr)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44258,
+              "name": "fn_instr"
+            }
+          }
+        }
       ]
     },
     {
@@ -9688,7 +10127,16 @@
         120
       ],
       "expressions": [
-        "<(fn_int)"
+        {
+          "text": "<(fn_int)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44152,
+              "name": "fn_int"
+            }
+          }
+        }
       ]
     },
     {
@@ -9701,7 +10149,16 @@
         209
       ],
       "expressions": [
-        "<(fn_len)"
+        {
+          "text": "<(fn_len)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44753,
+              "name": "fn_len"
+            }
+          }
+        }
       ]
     },
     {
@@ -9714,7 +10171,16 @@
         254
       ],
       "expressions": [
-        "<(fn_ln)"
+        {
+          "text": "<(fn_ln)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43006,
+              "name": "fn_ln"
+            }
+          }
+        }
       ]
     },
     {
@@ -9727,7 +10193,16 @@
         168
       ],
       "expressions": [
-        "<(fn_log)"
+        {
+          "text": "<(fn_log)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43944,
+              "name": "fn_log"
+            }
+          }
+        }
       ]
     },
     {
@@ -9740,7 +10215,16 @@
         209
       ],
       "expressions": [
-        "<(fn_not)"
+        {
+          "text": "<(fn_not)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44241,
+              "name": "fn_not"
+            }
+          }
+        }
       ]
     },
     {
@@ -9753,7 +10237,16 @@
         128
       ],
       "expressions": [
-        "<(fn_openup)"
+        {
+          "text": "<(fn_openup)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49024,
+              "name": "fn_openup"
+            }
+          }
+        }
       ]
     },
     {
@@ -9766,7 +10259,16 @@
         124
       ],
       "expressions": [
-        "<(fn_openout)"
+        {
+          "text": "<(fn_openout)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49020,
+              "name": "fn_openout"
+            }
+          }
+        }
       ]
     },
     {
@@ -9779,7 +10281,16 @@
         203
       ],
       "expressions": [
-        "<(fn_pi)"
+        {
+          "text": "<(fn_pi)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43979,
+              "name": "fn_pi"
+            }
+          }
+        }
       ]
     },
     {
@@ -9792,7 +10303,16 @@
         65
       ],
       "expressions": [
-        "<(fn_point)"
+        {
+          "text": "<(fn_point)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43841,
+              "name": "fn_point"
+            }
+          }
+        }
       ]
     },
     {
@@ -9805,7 +10325,16 @@
         109
       ],
       "expressions": [
-        "<(fn_pos)"
+        {
+          "text": "<(fn_pos)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43885,
+              "name": "fn_pos"
+            }
+          }
+        }
       ]
     },
     {
@@ -9818,7 +10347,16 @@
         177
       ],
       "expressions": [
-        "<(fn_rad)"
+        {
+          "text": "<(fn_rad)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43953,
+              "name": "fn_rad"
+            }
+          }
+        }
       ]
     },
     {
@@ -9831,7 +10369,16 @@
         73
       ],
       "expressions": [
-        "<(fn_rnd)"
+        {
+          "text": "<(fn_rnd)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44873,
+              "name": "fn_rnd"
+            }
+          }
+        }
       ]
     },
     {
@@ -9844,7 +10391,16 @@
         136
       ],
       "expressions": [
-        "<(fn_sgn)"
+        {
+          "text": "<(fn_sgn)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43912,
+              "name": "fn_sgn"
+            }
+          }
+        }
       ]
     },
     {
@@ -9857,7 +10413,16 @@
         152
       ],
       "expressions": [
-        "<(fn_sin)"
+        {
+          "text": "<(fn_sin)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43416,
+              "name": "fn_sin"
+            }
+          }
+        }
       ]
     },
     {
@@ -9870,7 +10435,16 @@
         180
       ],
       "expressions": [
-        "<(fn_sqr)"
+        {
+          "text": "<(fn_sqr)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 42932,
+              "name": "fn_sqr"
+            }
+          }
+        }
       ]
     },
     {
@@ -9883,7 +10457,16 @@
         190
       ],
       "expressions": [
-        "<(fn_tan)"
+        {
+          "text": "<(fn_tan)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 42686,
+              "name": "fn_tan"
+            }
+          }
+        }
       ]
     },
     {
@@ -9896,7 +10479,16 @@
         220
       ],
       "expressions": [
-        "<(fn_to)"
+        {
+          "text": "<(fn_to)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44764,
+              "name": "fn_to"
+            }
+          }
+        }
       ]
     },
     {
@@ -9909,7 +10501,16 @@
         196
       ],
       "expressions": [
-        "<(fn_true)"
+        {
+          "text": "<(fn_true)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44228,
+              "name": "fn_true"
+            }
+          }
+        }
       ]
     },
     {
@@ -9922,7 +10523,16 @@
         210
       ],
       "expressions": [
-        "<(fn_usr)"
+        {
+          "text": "<(fn_usr)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43986,
+              "name": "fn_usr"
+            }
+          }
+        }
       ]
     },
     {
@@ -9935,7 +10545,16 @@
         47
       ],
       "expressions": [
-        "<(fn_val)"
+        {
+          "text": "<(fn_val)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44079,
+              "name": "fn_val"
+            }
+          }
+        }
       ]
     },
     {
@@ -9948,7 +10567,16 @@
         118
       ],
       "expressions": [
-        "<(fn_vpos)"
+        {
+          "text": "<(fn_vpos)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 43894,
+              "name": "fn_vpos"
+            }
+          }
+        }
       ]
     },
     {
@@ -9961,7 +10589,16 @@
         189
       ],
       "expressions": [
-        "<(fn_chrs)"
+        {
+          "text": "<(fn_chrs)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46013,
+              "name": "fn_chrs"
+            }
+          }
+        }
       ]
     },
     {
@@ -9974,7 +10611,16 @@
         191
       ],
       "expressions": [
-        "<(fn_gets)"
+        {
+          "text": "<(fn_gets)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44991,
+              "name": "fn_gets"
+            }
+          }
+        }
       ]
     },
     {
@@ -9987,7 +10633,16 @@
         38
       ],
       "expressions": [
-        "<(fn_inkeys)"
+        {
+          "text": "<(fn_inkeys)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45094,
+              "name": "fn_inkeys"
+            }
+          }
+        }
       ]
     },
     {
@@ -10000,7 +10655,16 @@
         204
       ],
       "expressions": [
-        "<(fn_lefts)"
+        {
+          "text": "<(fn_lefts)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45004,
+              "name": "fn_lefts"
+            }
+          }
+        }
       ]
     },
     {
@@ -10013,7 +10677,16 @@
         57
       ],
       "expressions": [
-        "<(fn_mids)"
+        {
+          "text": "<(fn_mids)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45113,
+              "name": "fn_mids"
+            }
+          }
+        }
       ]
     },
     {
@@ -10026,7 +10699,16 @@
         238
       ],
       "expressions": [
-        "<(fn_rights)"
+        {
+          "text": "<(fn_rights)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45038,
+              "name": "fn_rights"
+            }
+          }
+        }
       ]
     },
     {
@@ -10039,7 +10721,16 @@
         148
       ],
       "expressions": [
-        "<(fn_strs)"
+        {
+          "text": "<(fn_strs)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45204,
+              "name": "fn_strs"
+            }
+          }
+        }
       ]
     },
     {
@@ -10052,7 +10743,16 @@
         194
       ],
       "expressions": [
-        "<(fn_strings)"
+        {
+          "text": "<(fn_strings)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 45250,
+              "name": "fn_strings"
+            }
+          }
+        }
       ]
     },
     {
@@ -10065,7 +10765,16 @@
         184
       ],
       "expressions": [
-        "<(fn_eof)"
+        {
+          "text": "<(fn_eof)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 44216,
+              "name": "fn_eof"
+            }
+          }
+        }
       ]
     },
     {
@@ -10078,7 +10787,16 @@
         172
       ],
       "expressions": [
-        "<(stmt_auto)"
+        {
+          "text": "<(stmt_auto)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37036,
+              "name": "stmt_auto"
+            }
+          }
+        }
       ]
     },
     {
@@ -10091,7 +10809,16 @@
         49
       ],
       "expressions": [
-        "<(stmt_delete)"
+        {
+          "text": "<(stmt_delete)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36657,
+              "name": "stmt_delete"
+            }
+          }
+        }
       ]
     },
     {
@@ -10104,7 +10831,16 @@
         36
       ],
       "expressions": [
-        "<(stmt_load)"
+        {
+          "text": "<(stmt_load)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48932,
+              "name": "stmt_load"
+            }
+          }
+        }
       ]
     },
     {
@@ -10117,7 +10853,16 @@
         156
       ],
       "expressions": [
-        "<(stmt_list)"
+        {
+          "text": "<(stmt_list)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46492,
+              "name": "stmt_list"
+            }
+          }
+        }
       ]
     },
     {
@@ -10130,7 +10875,16 @@
         218
       ],
       "expressions": [
-        "<(stmt_new)"
+        {
+          "text": "<(stmt_new)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35546,
+              "name": "stmt_new"
+            }
+          }
+        }
       ]
     },
     {
@@ -10143,7 +10897,16 @@
         182
       ],
       "expressions": [
-        "<(stmt_old)"
+        {
+          "text": "<(stmt_old)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35510,
+              "name": "stmt_old"
+            }
+          }
+        }
       ]
     },
     {
@@ -10156,7 +10919,16 @@
         163
       ],
       "expressions": [
-        "<(stmt_renumber)"
+        {
+          "text": "<(stmt_renumber)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36771,
+              "name": "stmt_renumber"
+            }
+          }
+        }
       ]
     },
     {
@@ -10169,7 +10941,16 @@
         243
       ],
       "expressions": [
-        "<(stmt_save)"
+        {
+          "text": "<(stmt_save)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48883,
+              "name": "stmt_save"
+            }
+          }
+        }
       ]
     },
     {
@@ -10182,7 +10963,16 @@
         42
       ],
       "expressions": [
-        "<(syntax_error)"
+        {
+          "text": "<(syntax_error)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 38954,
+              "name": "syntax_error"
+            }
+          }
+        }
       ]
     },
     {
@@ -10195,7 +10985,16 @@
         48
       ],
       "expressions": [
-        "<(stmt_ptr)"
+        {
+          "text": "<(stmt_ptr)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48944,
+              "name": "stmt_ptr"
+            }
+          }
+        }
       ]
     },
     {
@@ -10208,7 +11007,16 @@
         131
       ],
       "expressions": [
-        "<(stmt_page)"
+        {
+          "text": "<(stmt_page)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37507,
+              "name": "stmt_page"
+            }
+          }
+        }
       ]
     },
     {
@@ -10221,7 +11029,16 @@
         201
       ],
       "expressions": [
-        "<(stmt_time)"
+        {
+          "text": "<(stmt_time)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37577,
+              "name": "stmt_time"
+            }
+          }
+        }
       ]
     },
     {
@@ -10234,7 +11051,16 @@
         111
       ],
       "expressions": [
-        "<(stmt_lomem)"
+        {
+          "text": "<(stmt_lomem)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37487,
+              "name": "stmt_lomem"
+            }
+          }
+        }
       ]
     },
     {
@@ -10247,7 +11073,16 @@
         93
       ],
       "expressions": [
-        "<(stmt_himem)"
+        {
+          "text": "<(stmt_himem)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37469,
+              "name": "stmt_himem"
+            }
+          }
+        }
       ]
     },
     {
@@ -10260,7 +11095,16 @@
         76
       ],
       "expressions": [
-        "<(stmt_sound)"
+        {
+          "text": "<(stmt_sound)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46156,
+              "name": "stmt_sound"
+            }
+          }
+        }
       ]
     },
     {
@@ -10273,7 +11117,16 @@
         88
       ],
       "expressions": [
-        "<(stmt_bput)"
+        {
+          "text": "<(stmt_bput)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48984,
+              "name": "stmt_bput"
+            }
+          }
+        }
       ]
     },
     {
@@ -10286,7 +11139,16 @@
         210
       ],
       "expressions": [
-        "<(stmt_call)"
+        {
+          "text": "<(stmt_call)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36562,
+              "name": "stmt_call"
+            }
+          }
+        }
       ]
     },
     {
@@ -10299,7 +11161,16 @@
         42
       ],
       "expressions": [
-        "<(stmt_chain)"
+        {
+          "text": "<(stmt_chain)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48938,
+              "name": "stmt_chain"
+            }
+          }
+        }
       ]
     },
     {
@@ -10312,7 +11183,16 @@
         141
       ],
       "expressions": [
-        "<(stmt_clear)"
+        {
+          "text": "<(stmt_clear)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37517,
+              "name": "stmt_clear"
+            }
+          }
+        }
       ]
     },
     {
@@ -10325,7 +11205,16 @@
         153
       ],
       "expressions": [
-        "<(stmt_close)"
+        {
+          "text": "<(stmt_close)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49049,
+              "name": "stmt_close"
+            }
+          }
+        }
       ]
     },
     {
@@ -10338,7 +11227,16 @@
         189
       ],
       "expressions": [
-        "<(stmt_clg)"
+        {
+          "text": "<(stmt_clg)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36541,
+              "name": "stmt_clg"
+            }
+          }
+        }
       ]
     },
     {
@@ -10351,7 +11249,16 @@
         196
       ],
       "expressions": [
-        "<(stmt_cls)"
+        {
+          "text": "<(stmt_cls)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36548,
+              "name": "stmt_cls"
+            }
+          }
+        }
       ]
     },
     {
@@ -10364,7 +11271,16 @@
         125
       ],
       "expressions": [
-        "<(stmt_data)"
+        {
+          "text": "<(stmt_data)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -10377,7 +11293,16 @@
         125
       ],
       "expressions": [
-        "<(stmt_data)"
+        {
+          "text": "<(stmt_data)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -10390,7 +11315,16 @@
         47
       ],
       "expressions": [
-        "<(stmt_dim)"
+        {
+          "text": "<(stmt_dim)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37167,
+              "name": "stmt_dim"
+            }
+          }
+        }
       ]
     },
     {
@@ -10403,7 +11337,16 @@
         232
       ],
       "expressions": [
-        "<(stmt_draw)"
+        {
+          "text": "<(stmt_draw)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37864,
+              "name": "stmt_draw"
+            }
+          }
+        }
       ]
     },
     {
@@ -10416,7 +11359,16 @@
         200
       ],
       "expressions": [
-        "<(stmt_end)"
+        {
+          "text": "<(stmt_end)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35528,
+              "name": "stmt_end"
+            }
+          }
+        }
       ]
     },
     {
@@ -10429,7 +11381,16 @@
         86
       ],
       "expressions": [
-        "<(stmt_endproc)"
+        {
+          "text": "<(stmt_endproc)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37718,
+              "name": "stmt_endproc"
+            }
+          }
+        }
       ]
     },
     {
@@ -10442,7 +11403,16 @@
         114
       ],
       "expressions": [
-        "<(stmt_envelope)"
+        {
+          "text": "<(stmt_envelope)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46194,
+              "name": "stmt_envelope"
+            }
+          }
+        }
       ]
     },
     {
@@ -10455,7 +11425,16 @@
         196
       ],
       "expressions": [
-        "<(stmt_for)"
+        {
+          "text": "<(stmt_for)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47044,
+              "name": "stmt_for"
+            }
+          }
+        }
       ]
     },
     {
@@ -10468,7 +11447,16 @@
         136
       ],
       "expressions": [
-        "<(stmt_gosub)"
+        {
+          "text": "<(stmt_gosub)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47240,
+              "name": "stmt_gosub"
+            }
+          }
+        }
       ]
     },
     {
@@ -10481,7 +11469,16 @@
         204
       ],
       "expressions": [
-        "<(stmt_goto)"
+        {
+          "text": "<(stmt_goto)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47308,
+              "name": "stmt_goto"
+            }
+          }
+        }
       ]
     },
     {
@@ -10494,7 +11491,16 @@
         122
       ],
       "expressions": [
-        "<(stmt_gcol)"
+        {
+          "text": "<(stmt_gcol)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37754,
+              "name": "stmt_gcol"
+            }
+          }
+        }
       ]
     },
     {
@@ -10507,7 +11513,16 @@
         194
       ],
       "expressions": [
-        "<(stmt_if)"
+        {
+          "text": "<(stmt_if)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 39106,
+              "name": "stmt_if"
+            }
+          }
+        }
       ]
     },
     {
@@ -10520,7 +11535,16 @@
         68
       ],
       "expressions": [
-        "<(stmt_input)"
+        {
+          "text": "<(stmt_input)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47684,
+              "name": "stmt_input"
+            }
+          }
+        }
       ]
     },
     {
@@ -10533,7 +11557,16 @@
         228
       ],
       "expressions": [
-        "<(stmt_let)"
+        {
+          "text": "<(stmt_let)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35812,
+              "name": "stmt_let"
+            }
+          }
+        }
       ]
     },
     {
@@ -10546,7 +11579,16 @@
         35
       ],
       "expressions": [
-        "<(stmt_local)"
+        {
+          "text": "<(stmt_local)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37667,
+              "name": "stmt_local"
+            }
+          }
+        }
       ]
     },
     {
@@ -10559,7 +11601,16 @@
         154
       ],
       "expressions": [
-        "<(stmt_mode)"
+        {
+          "text": "<(stmt_mode)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37786,
+              "name": "stmt_mode"
+            }
+          }
+        }
       ]
     },
     {
@@ -10572,7 +11623,16 @@
         228
       ],
       "expressions": [
-        "<(stmt_move)"
+        {
+          "text": "<(stmt_move)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37860,
+              "name": "stmt_move"
+            }
+          }
+        }
       ]
     },
     {
@@ -10585,7 +11645,16 @@
         149
       ],
       "expressions": [
-        "<(stmt_next)"
+        {
+          "text": "<(stmt_next)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46741,
+              "name": "stmt_next"
+            }
+          }
+        }
       ]
     },
     {
@@ -10598,7 +11667,16 @@
         21
       ],
       "expressions": [
-        "<(stmt_on)"
+        {
+          "text": "<(stmt_on)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47381,
+              "name": "stmt_on"
+            }
+          }
+        }
       ]
     },
     {
@@ -10611,7 +11689,16 @@
         47
       ],
       "expressions": [
-        "<(stmt_vdu)"
+        {
+          "text": "<(stmt_vdu)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37935,
+              "name": "stmt_vdu"
+            }
+          }
+        }
       ]
     },
     {
@@ -10624,7 +11711,16 @@
         241
       ],
       "expressions": [
-        "<(stmt_plot)"
+        {
+          "text": "<(stmt_plot)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37873,
+              "name": "stmt_plot"
+            }
+          }
+        }
       ]
     },
     {
@@ -10637,7 +11733,16 @@
         154
       ],
       "expressions": [
-        "<(stmt_print)"
+        {
+          "text": "<(stmt_print)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 36250,
+              "name": "stmt_print"
+            }
+          }
+        }
       ]
     },
     {
@@ -10650,7 +11755,16 @@
         4
       ],
       "expressions": [
-        "<(stmt_proc)"
+        {
+          "text": "<(stmt_proc)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37636,
+              "name": "stmt_proc"
+            }
+          }
+        }
       ]
     },
     {
@@ -10663,7 +11777,16 @@
         31
       ],
       "expressions": [
-        "<(stmt_read)"
+        {
+          "text": "<(stmt_read)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47903,
+              "name": "stmt_read"
+            }
+          }
+        }
       ]
     },
     {
@@ -10676,7 +11799,16 @@
         125
       ],
       "expressions": [
-        "<(stmt_data)"
+        {
+          "text": "<(stmt_data)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -10689,7 +11821,16 @@
         228
       ],
       "expressions": [
-        "<(stmt_repeat)"
+        {
+          "text": "<(stmt_repeat)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48100,
+              "name": "stmt_repeat"
+            }
+          }
+        }
       ]
     },
     {
@@ -10702,7 +11843,16 @@
         228
       ],
       "expressions": [
-        "<(stmt_report)"
+        {
+          "text": "<(stmt_report)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 49124,
+              "name": "stmt_report"
+            }
+          }
+        }
       ]
     },
     {
@@ -10715,7 +11865,16 @@
         230
       ],
       "expressions": [
-        "<(stmt_restore)"
+        {
+          "text": "<(stmt_restore)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47846,
+              "name": "stmt_restore"
+            }
+          }
+        }
       ]
     },
     {
@@ -10728,7 +11887,16 @@
         182
       ],
       "expressions": [
-        "<(stmt_return)"
+        {
+          "text": "<(stmt_return)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 47286,
+              "name": "stmt_return"
+            }
+          }
+        }
       ]
     },
     {
@@ -10741,7 +11909,16 @@
         17
       ],
       "expressions": [
-        "<(stmt_run)"
+        {
+          "text": "<(stmt_run)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48401,
+              "name": "stmt_run"
+            }
+          }
+        }
       ]
     },
     {
@@ -10754,7 +11931,16 @@
         208
       ],
       "expressions": [
-        "<(stmt_stop)"
+        {
+          "text": "<(stmt_stop)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 35536,
+              "name": "stmt_stop"
+            }
+          }
+        }
       ]
     },
     {
@@ -10767,7 +11953,16 @@
         142
       ],
       "expressions": [
-        "<(stmt_colour)"
+        {
+          "text": "<(stmt_colour)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37774,
+              "name": "stmt_colour"
+            }
+          }
+        }
       ]
     },
     {
@@ -10780,7 +11975,16 @@
         149
       ],
       "expressions": [
-        "<(stmt_trace)"
+        {
+          "text": "<(stmt_trace)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 37525,
+              "name": "stmt_trace"
+            }
+          }
+        }
       ]
     },
     {
@@ -10793,7 +11997,16 @@
         177
       ],
       "expressions": [
-        "<(stmt_until)"
+        {
+          "text": "<(stmt_until)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48049,
+              "name": "stmt_until"
+            }
+          }
+        }
       ]
     },
     {
@@ -10806,7 +12019,16 @@
         160
       ],
       "expressions": [
-        "<(stmt_width)"
+        {
+          "text": "<(stmt_width)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 46240,
+              "name": "stmt_width"
+            }
+          }
+        }
       ]
     },
     {
@@ -10819,7 +12041,16 @@
         194
       ],
       "expressions": [
-        "<(stmt_oscli)"
+        {
+          "text": "<(stmt_oscli)",
+          "tree": {
+            "op": "lowbyte",
+            "operand": {
+              "ref": 48834,
+              "name": "stmt_oscli"
+            }
+          }
+        }
       ]
     },
     {
@@ -10835,7 +12066,16 @@
         191
       ],
       "expressions": [
-        ">(fn_openin)"
+        {
+          "text": ">(fn_openin)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49016,
+              "name": "fn_openin"
+            }
+          }
+        }
       ]
     },
     {
@@ -10848,7 +12088,16 @@
         191
       ],
       "expressions": [
-        ">(fn_ptr)"
+        {
+          "text": ">(fn_ptr)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48967,
+              "name": "fn_ptr"
+            }
+          }
+        }
       ]
     },
     {
@@ -10861,7 +12110,16 @@
         174
       ],
       "expressions": [
-        ">(fn_page)"
+        {
+          "text": ">(fn_page)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44736,
+              "name": "fn_page"
+            }
+          }
+        }
       ]
     },
     {
@@ -10874,7 +12132,16 @@
         174
       ],
       "expressions": [
-        ">(fn_time)"
+        {
+          "text": ">(fn_time)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44724,
+              "name": "fn_time"
+            }
+          }
+        }
       ]
     },
     {
@@ -10887,7 +12154,16 @@
         174
       ],
       "expressions": [
-        ">(fn_lomem)"
+        {
+          "text": ">(fn_lomem)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44796,
+              "name": "fn_lomem"
+            }
+          }
+        }
       ]
     },
     {
@@ -10900,7 +12176,16 @@
         175
       ],
       "expressions": [
-        ">(fn_himem)"
+        {
+          "text": ">(fn_himem)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44803,
+              "name": "fn_himem"
+            }
+          }
+        }
       ]
     },
     {
@@ -10913,7 +12198,16 @@
         173
       ],
       "expressions": [
-        ">(fn_abs)"
+        {
+          "text": ">(fn_abs)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44394,
+              "name": "fn_abs"
+            }
+          }
+        }
       ]
     },
     {
@@ -10926,7 +12220,16 @@
         168
       ],
       "expressions": [
-        ">(fn_acs)"
+        {
+          "text": ">(fn_acs)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43220,
+              "name": "fn_acs"
+            }
+          }
+        }
       ]
     },
     {
@@ -10939,7 +12242,16 @@
         171
       ],
       "expressions": [
-        ">(fn_adval)"
+        {
+          "text": ">(fn_adval)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43827,
+              "name": "fn_adval"
+            }
+          }
+        }
       ]
     },
     {
@@ -10952,7 +12264,16 @@
         172
       ],
       "expressions": [
-        ">(fn_asc)"
+        {
+          "text": ">(fn_asc)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44190,
+              "name": "fn_asc"
+            }
+          }
+        }
       ]
     },
     {
@@ -10965,7 +12286,16 @@
         168
       ],
       "expressions": [
-        ">(fn_asn)"
+        {
+          "text": ">(fn_asn)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43226,
+              "name": "fn_asn"
+            }
+          }
+        }
       ]
     },
     {
@@ -10978,7 +12308,16 @@
         169
       ],
       "expressions": [
-        ">(fn_atn)"
+        {
+          "text": ">(fn_atn)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43271,
+              "name": "fn_atn"
+            }
+          }
+        }
       ]
     },
     {
@@ -10991,7 +12330,16 @@
         191
       ],
       "expressions": [
-        ">(fn_bget)"
+        {
+          "text": ">(fn_bget)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49007,
+              "name": "fn_bget"
+            }
+          }
+        }
       ]
     },
     {
@@ -11004,7 +12352,16 @@
         169
       ],
       "expressions": [
-        ">(fn_cos)"
+        {
+          "text": ">(fn_cos)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43405,
+              "name": "fn_cos"
+            }
+          }
+        }
       ]
     },
     {
@@ -11017,7 +12374,16 @@
         174
       ],
       "expressions": [
-        ">(fn_count)"
+        {
+          "text": ">(fn_count)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44791,
+              "name": "fn_count"
+            }
+          }
+        }
       ]
     },
     {
@@ -11030,7 +12396,16 @@
         171
       ],
       "expressions": [
-        ">(fn_deg)"
+        {
+          "text": ">(fn_deg)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43970,
+              "name": "fn_deg"
+            }
+          }
+        }
       ]
     },
     {
@@ -11043,7 +12418,16 @@
         175
       ],
       "expressions": [
-        ">(fn_erl)"
+        {
+          "text": ">(fn_erl)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44959,
+              "name": "fn_erl"
+            }
+          }
+        }
       ]
     },
     {
@@ -11056,7 +12440,16 @@
         175
       ],
       "expressions": [
-        ">(fn_err)"
+        {
+          "text": ">(fn_err)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44966,
+              "name": "fn_err"
+            }
+          }
+        }
       ]
     },
     {
@@ -11069,7 +12462,16 @@
         171
       ],
       "expressions": [
-        ">(fn_eval)"
+        {
+          "text": ">(fn_eval)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44009,
+              "name": "fn_eval"
+            }
+          }
+        }
       ]
     },
     {
@@ -11082,7 +12484,16 @@
         170
       ],
       "expressions": [
-        ">(fn_exp)"
+        {
+          "text": ">(fn_exp)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43665,
+              "name": "fn_exp"
+            }
+          }
+        }
       ]
     },
     {
@@ -11095,7 +12506,16 @@
         191
       ],
       "expressions": [
-        ">(fn_ext)"
+        {
+          "text": ">(fn_ext)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48966,
+              "name": "fn_ext"
+            }
+          }
+        }
       ]
     },
     {
@@ -11108,7 +12528,16 @@
         174
       ],
       "expressions": [
-        ">(fn_false)"
+        {
+          "text": ">(fn_false)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44746,
+              "name": "fn_false"
+            }
+          }
+        }
       ]
     },
     {
@@ -11121,7 +12550,16 @@
         177
       ],
       "expressions": [
-        ">(fn_fn)"
+        {
+          "text": ">(fn_fn)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45461,
+              "name": "fn_fn"
+            }
+          }
+        }
       ]
     },
     {
@@ -11134,7 +12572,16 @@
         175
       ],
       "expressions": [
-        ">(fn_get)"
+        {
+          "text": ">(fn_get)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44985,
+              "name": "fn_get"
+            }
+          }
+        }
       ]
     },
     {
@@ -11147,7 +12594,16 @@
         172
       ],
       "expressions": [
-        ">(fn_inkey)"
+        {
+          "text": ">(fn_inkey)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44205,
+              "name": "fn_inkey"
+            }
+          }
+        }
       ]
     },
     {
@@ -11160,7 +12616,16 @@
         172
       ],
       "expressions": [
-        ">(fn_instr)"
+        {
+          "text": ">(fn_instr)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44258,
+              "name": "fn_instr"
+            }
+          }
+        }
       ]
     },
     {
@@ -11173,7 +12638,16 @@
         172
       ],
       "expressions": [
-        ">(fn_int)"
+        {
+          "text": ">(fn_int)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44152,
+              "name": "fn_int"
+            }
+          }
+        }
       ]
     },
     {
@@ -11186,7 +12660,16 @@
         174
       ],
       "expressions": [
-        ">(fn_len)"
+        {
+          "text": ">(fn_len)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44753,
+              "name": "fn_len"
+            }
+          }
+        }
       ]
     },
     {
@@ -11199,7 +12682,16 @@
         167
       ],
       "expressions": [
-        ">(fn_ln)"
+        {
+          "text": ">(fn_ln)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43006,
+              "name": "fn_ln"
+            }
+          }
+        }
       ]
     },
     {
@@ -11212,7 +12704,16 @@
         171
       ],
       "expressions": [
-        ">(fn_log)"
+        {
+          "text": ">(fn_log)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43944,
+              "name": "fn_log"
+            }
+          }
+        }
       ]
     },
     {
@@ -11225,7 +12726,16 @@
         172
       ],
       "expressions": [
-        ">(fn_not)"
+        {
+          "text": ">(fn_not)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44241,
+              "name": "fn_not"
+            }
+          }
+        }
       ]
     },
     {
@@ -11238,7 +12748,16 @@
         191
       ],
       "expressions": [
-        ">(fn_openup)"
+        {
+          "text": ">(fn_openup)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49024,
+              "name": "fn_openup"
+            }
+          }
+        }
       ]
     },
     {
@@ -11251,7 +12770,16 @@
         191
       ],
       "expressions": [
-        ">(fn_openout)"
+        {
+          "text": ">(fn_openout)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49020,
+              "name": "fn_openout"
+            }
+          }
+        }
       ]
     },
     {
@@ -11264,7 +12792,16 @@
         171
       ],
       "expressions": [
-        ">(fn_pi)"
+        {
+          "text": ">(fn_pi)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43979,
+              "name": "fn_pi"
+            }
+          }
+        }
       ]
     },
     {
@@ -11277,7 +12814,16 @@
         171
       ],
       "expressions": [
-        ">(fn_point)"
+        {
+          "text": ">(fn_point)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43841,
+              "name": "fn_point"
+            }
+          }
+        }
       ]
     },
     {
@@ -11290,7 +12836,16 @@
         171
       ],
       "expressions": [
-        ">(fn_pos)"
+        {
+          "text": ">(fn_pos)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43885,
+              "name": "fn_pos"
+            }
+          }
+        }
       ]
     },
     {
@@ -11303,7 +12858,16 @@
         171
       ],
       "expressions": [
-        ">(fn_rad)"
+        {
+          "text": ">(fn_rad)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43953,
+              "name": "fn_rad"
+            }
+          }
+        }
       ]
     },
     {
@@ -11316,7 +12880,16 @@
         175
       ],
       "expressions": [
-        ">(fn_rnd)"
+        {
+          "text": ">(fn_rnd)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44873,
+              "name": "fn_rnd"
+            }
+          }
+        }
       ]
     },
     {
@@ -11329,7 +12902,16 @@
         171
       ],
       "expressions": [
-        ">(fn_sgn)"
+        {
+          "text": ">(fn_sgn)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43912,
+              "name": "fn_sgn"
+            }
+          }
+        }
       ]
     },
     {
@@ -11342,7 +12924,16 @@
         169
       ],
       "expressions": [
-        ">(fn_sin)"
+        {
+          "text": ">(fn_sin)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43416,
+              "name": "fn_sin"
+            }
+          }
+        }
       ]
     },
     {
@@ -11355,7 +12946,16 @@
         167
       ],
       "expressions": [
-        ">(fn_sqr)"
+        {
+          "text": ">(fn_sqr)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 42932,
+              "name": "fn_sqr"
+            }
+          }
+        }
       ]
     },
     {
@@ -11368,7 +12968,16 @@
         166
       ],
       "expressions": [
-        ">(fn_tan)"
+        {
+          "text": ">(fn_tan)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 42686,
+              "name": "fn_tan"
+            }
+          }
+        }
       ]
     },
     {
@@ -11381,7 +12990,16 @@
         174
       ],
       "expressions": [
-        ">(fn_to)"
+        {
+          "text": ">(fn_to)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44764,
+              "name": "fn_to"
+            }
+          }
+        }
       ]
     },
     {
@@ -11394,7 +13012,16 @@
         172
       ],
       "expressions": [
-        ">(fn_true)"
+        {
+          "text": ">(fn_true)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44228,
+              "name": "fn_true"
+            }
+          }
+        }
       ]
     },
     {
@@ -11407,7 +13034,16 @@
         171
       ],
       "expressions": [
-        ">(fn_usr)"
+        {
+          "text": ">(fn_usr)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43986,
+              "name": "fn_usr"
+            }
+          }
+        }
       ]
     },
     {
@@ -11420,7 +13056,16 @@
         172
       ],
       "expressions": [
-        ">(fn_val)"
+        {
+          "text": ">(fn_val)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44079,
+              "name": "fn_val"
+            }
+          }
+        }
       ]
     },
     {
@@ -11433,7 +13078,16 @@
         171
       ],
       "expressions": [
-        ">(fn_vpos)"
+        {
+          "text": ">(fn_vpos)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 43894,
+              "name": "fn_vpos"
+            }
+          }
+        }
       ]
     },
     {
@@ -11446,7 +13100,16 @@
         179
       ],
       "expressions": [
-        ">(fn_chrs)"
+        {
+          "text": ">(fn_chrs)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46013,
+              "name": "fn_chrs"
+            }
+          }
+        }
       ]
     },
     {
@@ -11459,7 +13122,16 @@
         175
       ],
       "expressions": [
-        ">(fn_gets)"
+        {
+          "text": ">(fn_gets)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44991,
+              "name": "fn_gets"
+            }
+          }
+        }
       ]
     },
     {
@@ -11472,7 +13144,16 @@
         176
       ],
       "expressions": [
-        ">(fn_inkeys)"
+        {
+          "text": ">(fn_inkeys)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45094,
+              "name": "fn_inkeys"
+            }
+          }
+        }
       ]
     },
     {
@@ -11485,7 +13166,16 @@
         175
       ],
       "expressions": [
-        ">(fn_lefts)"
+        {
+          "text": ">(fn_lefts)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45004,
+              "name": "fn_lefts"
+            }
+          }
+        }
       ]
     },
     {
@@ -11498,7 +13188,16 @@
         176
       ],
       "expressions": [
-        ">(fn_mids)"
+        {
+          "text": ">(fn_mids)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45113,
+              "name": "fn_mids"
+            }
+          }
+        }
       ]
     },
     {
@@ -11511,7 +13210,16 @@
         175
       ],
       "expressions": [
-        ">(fn_rights)"
+        {
+          "text": ">(fn_rights)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45038,
+              "name": "fn_rights"
+            }
+          }
+        }
       ]
     },
     {
@@ -11524,7 +13232,16 @@
         176
       ],
       "expressions": [
-        ">(fn_strs)"
+        {
+          "text": ">(fn_strs)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45204,
+              "name": "fn_strs"
+            }
+          }
+        }
       ]
     },
     {
@@ -11537,7 +13254,16 @@
         176
       ],
       "expressions": [
-        ">(fn_strings)"
+        {
+          "text": ">(fn_strings)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 45250,
+              "name": "fn_strings"
+            }
+          }
+        }
       ]
     },
     {
@@ -11550,7 +13276,16 @@
         172
       ],
       "expressions": [
-        ">(fn_eof)"
+        {
+          "text": ">(fn_eof)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 44216,
+              "name": "fn_eof"
+            }
+          }
+        }
       ]
     },
     {
@@ -11563,7 +13298,16 @@
         144
       ],
       "expressions": [
-        ">(stmt_auto)"
+        {
+          "text": ">(stmt_auto)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37036,
+              "name": "stmt_auto"
+            }
+          }
+        }
       ]
     },
     {
@@ -11576,7 +13320,16 @@
         143
       ],
       "expressions": [
-        ">(stmt_delete)"
+        {
+          "text": ">(stmt_delete)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36657,
+              "name": "stmt_delete"
+            }
+          }
+        }
       ]
     },
     {
@@ -11589,7 +13342,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_load)"
+        {
+          "text": ">(stmt_load)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48932,
+              "name": "stmt_load"
+            }
+          }
+        }
       ]
     },
     {
@@ -11602,7 +13364,16 @@
         181
       ],
       "expressions": [
-        ">(stmt_list)"
+        {
+          "text": ">(stmt_list)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46492,
+              "name": "stmt_list"
+            }
+          }
+        }
       ]
     },
     {
@@ -11615,7 +13386,16 @@
         138
       ],
       "expressions": [
-        ">(stmt_new)"
+        {
+          "text": ">(stmt_new)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35546,
+              "name": "stmt_new"
+            }
+          }
+        }
       ]
     },
     {
@@ -11628,7 +13408,16 @@
         138
       ],
       "expressions": [
-        ">(stmt_old)"
+        {
+          "text": ">(stmt_old)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35510,
+              "name": "stmt_old"
+            }
+          }
+        }
       ]
     },
     {
@@ -11641,7 +13430,16 @@
         143
       ],
       "expressions": [
-        ">(stmt_renumber)"
+        {
+          "text": ">(stmt_renumber)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36771,
+              "name": "stmt_renumber"
+            }
+          }
+        }
       ]
     },
     {
@@ -11654,7 +13452,16 @@
         190
       ],
       "expressions": [
-        ">(stmt_save)"
+        {
+          "text": ">(stmt_save)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48883,
+              "name": "stmt_save"
+            }
+          }
+        }
       ]
     },
     {
@@ -11667,7 +13474,16 @@
         152
       ],
       "expressions": [
-        ">(syntax_error)"
+        {
+          "text": ">(syntax_error)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 38954,
+              "name": "syntax_error"
+            }
+          }
+        }
       ]
     },
     {
@@ -11680,7 +13496,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_ptr)"
+        {
+          "text": ">(stmt_ptr)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48944,
+              "name": "stmt_ptr"
+            }
+          }
+        }
       ]
     },
     {
@@ -11693,7 +13518,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_page)"
+        {
+          "text": ">(stmt_page)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37507,
+              "name": "stmt_page"
+            }
+          }
+        }
       ]
     },
     {
@@ -11706,7 +13540,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_time)"
+        {
+          "text": ">(stmt_time)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37577,
+              "name": "stmt_time"
+            }
+          }
+        }
       ]
     },
     {
@@ -11719,7 +13562,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_lomem)"
+        {
+          "text": ">(stmt_lomem)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37487,
+              "name": "stmt_lomem"
+            }
+          }
+        }
       ]
     },
     {
@@ -11732,7 +13584,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_himem)"
+        {
+          "text": ">(stmt_himem)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37469,
+              "name": "stmt_himem"
+            }
+          }
+        }
       ]
     },
     {
@@ -11745,7 +13606,16 @@
         180
       ],
       "expressions": [
-        ">(stmt_sound)"
+        {
+          "text": ">(stmt_sound)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46156,
+              "name": "stmt_sound"
+            }
+          }
+        }
       ]
     },
     {
@@ -11758,7 +13628,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_bput)"
+        {
+          "text": ">(stmt_bput)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48984,
+              "name": "stmt_bput"
+            }
+          }
+        }
       ]
     },
     {
@@ -11771,7 +13650,16 @@
         142
       ],
       "expressions": [
-        ">(stmt_call)"
+        {
+          "text": ">(stmt_call)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36562,
+              "name": "stmt_call"
+            }
+          }
+        }
       ]
     },
     {
@@ -11784,7 +13672,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_chain)"
+        {
+          "text": ">(stmt_chain)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48938,
+              "name": "stmt_chain"
+            }
+          }
+        }
       ]
     },
     {
@@ -11797,7 +13694,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_clear)"
+        {
+          "text": ">(stmt_clear)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37517,
+              "name": "stmt_clear"
+            }
+          }
+        }
       ]
     },
     {
@@ -11810,7 +13716,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_close)"
+        {
+          "text": ">(stmt_close)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49049,
+              "name": "stmt_close"
+            }
+          }
+        }
       ]
     },
     {
@@ -11823,7 +13738,16 @@
         142
       ],
       "expressions": [
-        ">(stmt_clg)"
+        {
+          "text": ">(stmt_clg)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36541,
+              "name": "stmt_clg"
+            }
+          }
+        }
       ]
     },
     {
@@ -11836,7 +13760,16 @@
         142
       ],
       "expressions": [
-        ">(stmt_cls)"
+        {
+          "text": ">(stmt_cls)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36548,
+              "name": "stmt_cls"
+            }
+          }
+        }
       ]
     },
     {
@@ -11849,7 +13782,16 @@
         139
       ],
       "expressions": [
-        ">(stmt_data)"
+        {
+          "text": ">(stmt_data)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -11862,7 +13804,16 @@
         139
       ],
       "expressions": [
-        ">(stmt_data)"
+        {
+          "text": ">(stmt_data)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -11875,7 +13826,16 @@
         145
       ],
       "expressions": [
-        ">(stmt_dim)"
+        {
+          "text": ">(stmt_dim)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37167,
+              "name": "stmt_dim"
+            }
+          }
+        }
       ]
     },
     {
@@ -11888,7 +13848,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_draw)"
+        {
+          "text": ">(stmt_draw)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37864,
+              "name": "stmt_draw"
+            }
+          }
+        }
       ]
     },
     {
@@ -11901,7 +13870,16 @@
         138
       ],
       "expressions": [
-        ">(stmt_end)"
+        {
+          "text": ">(stmt_end)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35528,
+              "name": "stmt_end"
+            }
+          }
+        }
       ]
     },
     {
@@ -11914,7 +13892,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_endproc)"
+        {
+          "text": ">(stmt_endproc)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37718,
+              "name": "stmt_endproc"
+            }
+          }
+        }
       ]
     },
     {
@@ -11927,7 +13914,16 @@
         180
       ],
       "expressions": [
-        ">(stmt_envelope)"
+        {
+          "text": ">(stmt_envelope)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46194,
+              "name": "stmt_envelope"
+            }
+          }
+        }
       ]
     },
     {
@@ -11940,7 +13936,16 @@
         183
       ],
       "expressions": [
-        ">(stmt_for)"
+        {
+          "text": ">(stmt_for)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47044,
+              "name": "stmt_for"
+            }
+          }
+        }
       ]
     },
     {
@@ -11953,7 +13958,16 @@
         184
       ],
       "expressions": [
-        ">(stmt_gosub)"
+        {
+          "text": ">(stmt_gosub)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47240,
+              "name": "stmt_gosub"
+            }
+          }
+        }
       ]
     },
     {
@@ -11966,7 +13980,16 @@
         184
       ],
       "expressions": [
-        ">(stmt_goto)"
+        {
+          "text": ">(stmt_goto)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47308,
+              "name": "stmt_goto"
+            }
+          }
+        }
       ]
     },
     {
@@ -11979,7 +14002,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_gcol)"
+        {
+          "text": ">(stmt_gcol)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37754,
+              "name": "stmt_gcol"
+            }
+          }
+        }
       ]
     },
     {
@@ -11992,7 +14024,16 @@
         152
       ],
       "expressions": [
-        ">(stmt_if)"
+        {
+          "text": ">(stmt_if)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 39106,
+              "name": "stmt_if"
+            }
+          }
+        }
       ]
     },
     {
@@ -12005,7 +14046,16 @@
         186
       ],
       "expressions": [
-        ">(stmt_input)"
+        {
+          "text": ">(stmt_input)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47684,
+              "name": "stmt_input"
+            }
+          }
+        }
       ]
     },
     {
@@ -12018,7 +14068,16 @@
         139
       ],
       "expressions": [
-        ">(stmt_let)"
+        {
+          "text": ">(stmt_let)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35812,
+              "name": "stmt_let"
+            }
+          }
+        }
       ]
     },
     {
@@ -12031,7 +14090,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_local)"
+        {
+          "text": ">(stmt_local)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37667,
+              "name": "stmt_local"
+            }
+          }
+        }
       ]
     },
     {
@@ -12044,7 +14112,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_mode)"
+        {
+          "text": ">(stmt_mode)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37786,
+              "name": "stmt_mode"
+            }
+          }
+        }
       ]
     },
     {
@@ -12057,7 +14134,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_move)"
+        {
+          "text": ">(stmt_move)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37860,
+              "name": "stmt_move"
+            }
+          }
+        }
       ]
     },
     {
@@ -12070,7 +14156,16 @@
         182
       ],
       "expressions": [
-        ">(stmt_next)"
+        {
+          "text": ">(stmt_next)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46741,
+              "name": "stmt_next"
+            }
+          }
+        }
       ]
     },
     {
@@ -12083,7 +14178,16 @@
         185
       ],
       "expressions": [
-        ">(stmt_on)"
+        {
+          "text": ">(stmt_on)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47381,
+              "name": "stmt_on"
+            }
+          }
+        }
       ]
     },
     {
@@ -12096,7 +14200,16 @@
         148
       ],
       "expressions": [
-        ">(stmt_vdu)"
+        {
+          "text": ">(stmt_vdu)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37935,
+              "name": "stmt_vdu"
+            }
+          }
+        }
       ]
     },
     {
@@ -12109,7 +14222,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_plot)"
+        {
+          "text": ">(stmt_plot)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37873,
+              "name": "stmt_plot"
+            }
+          }
+        }
       ]
     },
     {
@@ -12122,7 +14244,16 @@
         141
       ],
       "expressions": [
-        ">(stmt_print)"
+        {
+          "text": ">(stmt_print)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 36250,
+              "name": "stmt_print"
+            }
+          }
+        }
       ]
     },
     {
@@ -12135,7 +14266,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_proc)"
+        {
+          "text": ">(stmt_proc)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37636,
+              "name": "stmt_proc"
+            }
+          }
+        }
       ]
     },
     {
@@ -12148,7 +14288,16 @@
         187
       ],
       "expressions": [
-        ">(stmt_read)"
+        {
+          "text": ">(stmt_read)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47903,
+              "name": "stmt_read"
+            }
+          }
+        }
       ]
     },
     {
@@ -12161,7 +14310,16 @@
         139
       ],
       "expressions": [
-        ">(stmt_data)"
+        {
+          "text": ">(stmt_data)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35709,
+              "name": "stmt_data"
+            }
+          }
+        }
       ]
     },
     {
@@ -12174,7 +14332,16 @@
         187
       ],
       "expressions": [
-        ">(stmt_repeat)"
+        {
+          "text": ">(stmt_repeat)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48100,
+              "name": "stmt_repeat"
+            }
+          }
+        }
       ]
     },
     {
@@ -12187,7 +14354,16 @@
         191
       ],
       "expressions": [
-        ">(stmt_report)"
+        {
+          "text": ">(stmt_report)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 49124,
+              "name": "stmt_report"
+            }
+          }
+        }
       ]
     },
     {
@@ -12200,7 +14376,16 @@
         186
       ],
       "expressions": [
-        ">(stmt_restore)"
+        {
+          "text": ">(stmt_restore)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47846,
+              "name": "stmt_restore"
+            }
+          }
+        }
       ]
     },
     {
@@ -12213,7 +14398,16 @@
         184
       ],
       "expressions": [
-        ">(stmt_return)"
+        {
+          "text": ">(stmt_return)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 47286,
+              "name": "stmt_return"
+            }
+          }
+        }
       ]
     },
     {
@@ -12226,7 +14420,16 @@
         189
       ],
       "expressions": [
-        ">(stmt_run)"
+        {
+          "text": ">(stmt_run)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48401,
+              "name": "stmt_run"
+            }
+          }
+        }
       ]
     },
     {
@@ -12239,7 +14442,16 @@
         138
       ],
       "expressions": [
-        ">(stmt_stop)"
+        {
+          "text": ">(stmt_stop)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 35536,
+              "name": "stmt_stop"
+            }
+          }
+        }
       ]
     },
     {
@@ -12252,7 +14464,16 @@
         147
       ],
       "expressions": [
-        ">(stmt_colour)"
+        {
+          "text": ">(stmt_colour)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37774,
+              "name": "stmt_colour"
+            }
+          }
+        }
       ]
     },
     {
@@ -12265,7 +14486,16 @@
         146
       ],
       "expressions": [
-        ">(stmt_trace)"
+        {
+          "text": ">(stmt_trace)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 37525,
+              "name": "stmt_trace"
+            }
+          }
+        }
       ]
     },
     {
@@ -12278,7 +14508,16 @@
         187
       ],
       "expressions": [
-        ">(stmt_until)"
+        {
+          "text": ">(stmt_until)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 48049,
+              "name": "stmt_until"
+            }
+          }
+        }
       ]
     },
     {
@@ -12291,7 +14530,16 @@
         180
       ],
       "expressions": [
-        ">(stmt_width)"
+        {
+          "text": ">(stmt_width)",
+          "tree": {
+            "op": "highbyte",
+            "operand": {
+              "ref": 46240,
+              "name": "stmt_width"
+            }
+          }
+        }
       ]
     },
     {
@@ -12317,7 +14565,13 @@
         190
       ],
       "expressions": [
-        "&be"
+        {
+          "text": "&be",
+          "tree": {
+            "int": 190,
+            "radix": "hex"
+          }
+        }
       ]
     },
     {
@@ -12331,7 +14585,17 @@
         75
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('R' AND &1F) * &20 + ('K' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BRK\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BRK"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12345,7 +14609,17 @@
         131
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CLC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CLC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12359,7 +14633,17 @@
         132
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('D' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CLD\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CLD"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12373,7 +14657,17 @@
         137
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('I' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CLI\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CLI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12387,7 +14681,17 @@
         150
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('V' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CLV\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CLV"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12401,7 +14705,17 @@
         184
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"DEX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "DEX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12415,7 +14729,17 @@
         185
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"DEY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "DEY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12429,7 +14753,17 @@
         216
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"INX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "INX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12443,7 +14777,17 @@
         217
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"INY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "INY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12457,7 +14801,17 @@
         240
       ],
       "expressions": [
-        "(('N' AND &1F) * &400 + ('O' AND &1F) * &20 + ('P' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"NOP\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "NOP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12471,7 +14825,17 @@
         1
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"PHA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "PHA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12485,7 +14849,17 @@
         16
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('P' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"PHP\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "PHP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12499,7 +14873,17 @@
         129
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"PLA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "PLA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12513,7 +14897,17 @@
         144
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('P' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"PLP\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "PLP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12527,7 +14921,17 @@
         137
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('I' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"RTI\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "RTI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12541,7 +14945,17 @@
         147
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('S' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"RTS\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "RTS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12555,7 +14969,17 @@
         163
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"SEC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "SEC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12569,7 +14993,17 @@
         164
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('D' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"SED\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "SED"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12583,7 +15017,17 @@
         169
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('I' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"SEI\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "SEI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12597,7 +15041,17 @@
         56
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TAX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TAX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12611,7 +15065,17 @@
         57
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TAY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TAY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12625,7 +15089,17 @@
         120
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('S' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TSX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TSX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12639,7 +15113,17 @@
         1
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TXA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TXA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12653,7 +15137,17 @@
         19
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('S' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TXS\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TXS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12667,7 +15161,17 @@
         33
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('Y' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"TYA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "TYA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12681,7 +15185,17 @@
         99
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BCC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BCC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12695,7 +15209,17 @@
         115
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('S' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BCS\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BCS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12709,7 +15233,17 @@
         177
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Q' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BEQ\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BEQ"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12723,7 +15257,17 @@
         169
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('M' AND &1F) * &20 + ('I' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BMI\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BMI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12737,7 +15281,17 @@
         197
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('N' AND &1F) * &20 + ('E' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BNE\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BNE"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12751,7 +15305,17 @@
         12
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('P' AND &1F) * &20 + ('L' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BPL\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BPL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12765,7 +15329,17 @@
         195
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BVC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BVC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12779,7 +15353,17 @@
         211
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('S' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BVS\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BVS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12793,7 +15377,17 @@
         196
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('N' AND &1F) * &20 + ('D' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"AND\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "AND"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12807,7 +15401,17 @@
         242
       ],
       "expressions": [
-        "(('E' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"EOR\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "EOR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12821,7 +15425,17 @@
         65
       ],
       "expressions": [
-        "(('O' AND &1F) * &400 + ('R' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"ORA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "ORA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12835,7 +15449,17 @@
         131
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('D' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"ADC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "ADC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12849,7 +15473,17 @@
         176
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CMP\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CMP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12863,7 +15497,17 @@
         129
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"LDA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "LDA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12877,7 +15521,17 @@
         67
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('B' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"SBC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "SBC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12891,7 +15545,17 @@
         108
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('S' AND &1F) * &20 + ('L' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"ASL\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "ASL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12905,7 +15569,17 @@
         114
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"LSR\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "LSR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12919,7 +15593,17 @@
         236
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('L' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"ROL\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "ROL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12933,7 +15617,17 @@
         242
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"ROR\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "ROR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12947,7 +15641,17 @@
         163
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"DEC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "DEC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12961,7 +15665,17 @@
         195
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('C' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"INC\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "INC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12975,7 +15689,17 @@
         24
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CPX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CPX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -12989,7 +15713,17 @@
         25
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"CPY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "CPY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13003,7 +15737,17 @@
         52
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('I' AND &1F) * &20 + ('T' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"BIT\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "BIT"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13017,7 +15761,17 @@
         176
       ],
       "expressions": [
-        "(('J' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"JMP\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "JMP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13031,7 +15785,17 @@
         114
       ],
       "expressions": [
-        "(('J' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"JSR\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "JSR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13045,7 +15809,17 @@
         152
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"LDX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "LDX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13059,7 +15833,17 @@
         153
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"LDY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "LDY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13073,7 +15857,17 @@
         129
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('A' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"STA\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "STA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13087,7 +15881,17 @@
         152
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('X' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"STX\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "STX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13101,7 +15905,17 @@
         153
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('Y' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"STY\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "STY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13115,7 +15929,17 @@
         20
       ],
       "expressions": [
-        "(('O' AND &1F) * &400 + ('P' AND &1F) * &20 + ('T' AND &1F)) AND &FF"
+        {
+          "text": "pack_lo(\"OPT\")",
+          "tree": {
+            "macro_call": "pack_lo",
+            "args": [
+              {
+                "str": "OPT"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13152,7 +15976,17 @@
         10
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('R' AND &1F) * &20 + ('K' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BRK\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BRK"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13166,7 +16000,17 @@
         13
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CLC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CLC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13180,7 +16024,17 @@
         13
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('D' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CLD\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CLD"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13194,7 +16048,17 @@
         13
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('I' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CLI\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CLI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13208,7 +16072,17 @@
         13
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('L' AND &1F) * &20 + ('V' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CLV\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CLV"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13222,7 +16096,17 @@
         16
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"DEX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "DEX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13236,7 +16120,17 @@
         16
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"DEY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "DEY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13250,7 +16144,17 @@
         37
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"INX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "INX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13264,7 +16168,17 @@
         37
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"INY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "INY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13278,7 +16192,17 @@
         57
       ],
       "expressions": [
-        "(('N' AND &1F) * &400 + ('O' AND &1F) * &20 + ('P' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"NOP\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "NOP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13292,7 +16216,17 @@
         65
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"PHA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "PHA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13306,7 +16240,17 @@
         65
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('H' AND &1F) * &20 + ('P' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"PHP\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "PHP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13320,7 +16264,17 @@
         65
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"PLA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "PLA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13334,7 +16288,17 @@
         65
       ],
       "expressions": [
-        "(('P' AND &1F) * &400 + ('L' AND &1F) * &20 + ('P' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"PLP\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "PLP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13348,7 +16312,17 @@
         74
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('I' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"RTI\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "RTI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13362,7 +16336,17 @@
         74
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('T' AND &1F) * &20 + ('S' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"RTS\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "RTS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13376,7 +16360,17 @@
         76
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"SEC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "SEC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13390,7 +16384,17 @@
         76
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('D' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"SED\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "SED"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13404,7 +16408,17 @@
         76
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('E' AND &1F) * &20 + ('I' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"SEI\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "SEI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13418,7 +16432,17 @@
         80
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TAX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TAX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13432,7 +16456,17 @@
         80
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('A' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TAY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TAY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13446,7 +16480,17 @@
         82
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('S' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TSX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TSX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13460,7 +16504,17 @@
         83
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TXA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TXA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13474,7 +16528,17 @@
         83
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('X' AND &1F) * &20 + ('S' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TXS\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TXS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13488,7 +16552,17 @@
         83
       ],
       "expressions": [
-        "(('T' AND &1F) * &400 + ('Y' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"TYA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "TYA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13502,7 +16576,17 @@
         8
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BCC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BCC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13516,7 +16600,17 @@
         8
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('C' AND &1F) * &20 + ('S' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BCS\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BCS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13530,7 +16624,17 @@
         8
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('E' AND &1F) * &20 + ('Q' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BEQ\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BEQ"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13544,7 +16648,17 @@
         9
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('M' AND &1F) * &20 + ('I' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BMI\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BMI"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13558,7 +16672,17 @@
         9
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('N' AND &1F) * &20 + ('E' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BNE\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BNE"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13572,7 +16696,17 @@
         10
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('P' AND &1F) * &20 + ('L' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BPL\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BPL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13586,7 +16720,17 @@
         10
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BVC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BVC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13600,7 +16744,17 @@
         10
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('V' AND &1F) * &20 + ('S' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BVS\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BVS"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13614,7 +16768,17 @@
         5
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('N' AND &1F) * &20 + ('D' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"AND\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "AND"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13628,7 +16792,17 @@
         21
       ],
       "expressions": [
-        "(('E' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"EOR\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "EOR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13642,7 +16816,17 @@
         62
       ],
       "expressions": [
-        "(('O' AND &1F) * &400 + ('R' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"ORA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "ORA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13656,7 +16840,17 @@
         4
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('D' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"ADC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "ADC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13670,7 +16864,17 @@
         13
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CMP\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CMP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13684,7 +16888,17 @@
         48
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"LDA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "LDA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13698,7 +16912,17 @@
         76
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('B' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"SBC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "SBC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13712,7 +16936,17 @@
         6
       ],
       "expressions": [
-        "(('A' AND &1F) * &400 + ('S' AND &1F) * &20 + ('L' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"ASL\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "ASL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13726,7 +16960,17 @@
         50
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"LSR\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "LSR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13740,7 +16984,17 @@
         73
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('L' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"ROL\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "ROL"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13754,7 +17008,17 @@
         73
       ],
       "expressions": [
-        "(('R' AND &1F) * &400 + ('O' AND &1F) * &20 + ('R' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"ROR\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "ROR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13768,7 +17032,17 @@
         16
       ],
       "expressions": [
-        "(('D' AND &1F) * &400 + ('E' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"DEC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "DEC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13782,7 +17056,17 @@
         37
       ],
       "expressions": [
-        "(('I' AND &1F) * &400 + ('N' AND &1F) * &20 + ('C' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"INC\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "INC"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13796,7 +17080,17 @@
         14
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CPX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CPX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13810,7 +17104,17 @@
         14
       ],
       "expressions": [
-        "(('C' AND &1F) * &400 + ('P' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"CPY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "CPY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13824,7 +17128,17 @@
         9
       ],
       "expressions": [
-        "(('B' AND &1F) * &400 + ('I' AND &1F) * &20 + ('T' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"BIT\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "BIT"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13838,7 +17152,17 @@
         41
       ],
       "expressions": [
-        "(('J' AND &1F) * &400 + ('M' AND &1F) * &20 + ('P' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"JMP\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "JMP"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13852,7 +17176,17 @@
         42
       ],
       "expressions": [
-        "(('J' AND &1F) * &400 + ('S' AND &1F) * &20 + ('R' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"JSR\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "JSR"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13866,7 +17200,17 @@
         48
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"LDX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "LDX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13880,7 +17224,17 @@
         48
       ],
       "expressions": [
-        "(('L' AND &1F) * &400 + ('D' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"LDY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "LDY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13894,7 +17248,17 @@
         78
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('A' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"STA\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "STA"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13908,7 +17272,17 @@
         78
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('X' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"STX\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "STX"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13922,7 +17296,17 @@
         78
       ],
       "expressions": [
-        "(('S' AND &1F) * &400 + ('T' AND &1F) * &20 + ('Y' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"STY\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "STY"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -13936,7 +17320,17 @@
         62
       ],
       "expressions": [
-        "(('O' AND &1F) * &400 + ('P' AND &1F) * &20 + ('T' AND &1F)) DIV &100"
+        {
+          "text": "pack_hi(\"OPT\")",
+          "tree": {
+            "macro_call": "pack_hi",
+            "args": [
+              {
+                "str": "OPT"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -40246,7 +43640,16 @@
       "comment_inline": "Point at IWA",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "#<(zp_iwa)"
+      "operand": "#<(zp_iwa)",
+      "expr": {
+        "text": "<(zp_iwa)",
+        "tree": {
+          "op": "lowbyte",
+          "operand": {
+            "sym": "zp_iwa"
+          }
+        }
+      }
     },
     {
       "addr": 37582,
@@ -40257,7 +43660,16 @@
       "comment_inline": "high byte of the address",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "#>(zp_iwa)"
+      "operand": "#>(zp_iwa)",
+      "expr": {
+        "text": ">(zp_iwa)",
+        "tree": {
+          "op": "highbyte",
+          "operand": {
+            "sym": "zp_iwa"
+          }
+        }
+      }
     },
     {
       "addr": 37584,
@@ -40281,7 +43693,13 @@
       "comment_inline": "OSWORD 2 (write clock)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osword_write_clock"
+      "operand": "#osword_write_clock",
+      "expr": {
+        "text": "osword_write_clock",
+        "tree": {
+          "sym": "osword_write_clock"
+        }
+      }
     },
     {
       "addr": 37588,
@@ -42090,7 +45508,13 @@
       "comment_inline": "OSBYTE &85",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_himem_for_mode"
+      "operand": "#osbyte_read_himem_for_mode",
+      "expr": {
+        "text": "osbyte_read_himem_for_mode",
+        "tree": {
+          "sym": "osbyte_read_himem_for_mode"
+        }
+      }
     },
     {
       "addr": 37822,
@@ -85726,7 +89150,13 @@
       "comment_inline": "OSBYTE &80: read ADC / buffer status",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_adc_or_get_buffer_status"
+      "operand": "#osbyte_read_adc_or_get_buffer_status",
+      "expr": {
+        "text": "osbyte_read_adc_or_get_buffer_status",
+        "tree": {
+          "sym": "osbyte_read_adc_or_get_buffer_status"
+        }
+      }
     },
     {
       "addr": 43834,
@@ -85960,7 +89390,13 @@
       "comment_inline": "Read the pixel colour",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osword_read_pixel"
+      "operand": "#osword_read_pixel",
+      "expr": {
+        "text": "osword_read_pixel",
+        "tree": {
+          "sym": "osword_read_pixel"
+        }
+      }
     },
     {
       "addr": 43875,
@@ -86028,7 +89464,13 @@
       "comment_inline": "OSBYTE &86: read the text cursor position",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_text_cursor_pos"
+      "operand": "#osbyte_read_text_cursor_pos",
+      "expr": {
+        "text": "osbyte_read_text_cursor_pos",
+        "tree": {
+          "sym": "osbyte_read_text_cursor_pos"
+        }
+      }
     },
     {
       "addr": 43887,
@@ -86079,7 +89521,13 @@
       "comment_inline": "OSBYTE &86: read the cursor position",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_text_cursor_pos"
+      "operand": "#osbyte_read_text_cursor_pos",
+      "expr": {
+        "text": "osbyte_read_text_cursor_pos",
+        "tree": {
+          "sym": "osbyte_read_text_cursor_pos"
+        }
+      }
     },
     {
       "addr": 43896,
@@ -88280,7 +91728,13 @@
       "comment_inline": "OSBYTE &7F: test for end of file",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_check_eof"
+      "operand": "#osbyte_check_eof",
+      "expr": {
+        "text": "osbyte_check_eof",
+        "tree": {
+          "sym": "osbyte_check_eof"
+        }
+      }
     },
     {
       "addr": 44222,
@@ -92037,7 +95491,16 @@
       "comment_inline": "Point OSWORD at IWA: low byte",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "#<(zp_iwa)"
+      "operand": "#<(zp_iwa)",
+      "expr": {
+        "text": "<(zp_iwa)",
+        "tree": {
+          "op": "lowbyte",
+          "operand": {
+            "sym": "zp_iwa"
+          }
+        }
+      }
     },
     {
       "addr": 44726,
@@ -92048,7 +95511,16 @@
       "comment_inline": "high byte",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "#>(zp_iwa)"
+      "operand": "#>(zp_iwa)",
+      "expr": {
+        "text": ">(zp_iwa)",
+        "tree": {
+          "op": "highbyte",
+          "operand": {
+            "sym": "zp_iwa"
+          }
+        }
+      }
     },
     {
       "addr": 44728,
@@ -92059,7 +95531,13 @@
       "comment_inline": "OSWORD &01: read the centisecond clock into IWA",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osword_read_clock"
+      "operand": "#osword_read_clock",
+      "expr": {
+        "text": "osword_read_clock",
+        "tree": {
+          "sym": "osword_read_clock"
+        }
+      }
     },
     {
       "addr": 44730,
@@ -93851,7 +97329,13 @@
       "comment_inline": "OSBYTE &81: INKEY (read a key with a timeout)",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_inkey"
+      "operand": "#osbyte_inkey",
+      "expr": {
+        "text": "osbyte_inkey",
+        "tree": {
+          "sym": "osbyte_inkey"
+        }
+      }
     },
     {
       "addr": 44978,
@@ -101757,7 +105241,13 @@
       "comment_inline": "OSBYTE &DA: flush the VDU queue",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_vdu_queue_size"
+      "operand": "#osbyte_vdu_queue_size",
+      "expr": {
+        "text": "osbyte_vdu_queue_size",
+        "tree": {
+          "sym": "osbyte_vdu_queue_size"
+        }
+      }
     },
     {
       "addr": 46115,
@@ -101782,7 +105272,13 @@
       "comment_inline": "OSBYTE &7E: acknowledge any Escape",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_acknowledge_escape"
+      "operand": "#osbyte_acknowledge_escape",
+      "expr": {
+        "text": "osbyte_acknowledge_escape",
+        "tree": {
+          "sym": "osbyte_acknowledge_escape"
+        }
+      }
     },
     {
       "addr": 46120,
@@ -102357,7 +105853,13 @@
       "comment_inline": "OSWORD number 8",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "#osword_envelope"
+      "operand": "#osword_envelope",
+      "expr": {
+        "text": "osword_envelope",
+        "tree": {
+          "sym": "osword_envelope"
+        }
+      }
     },
     {
       "addr": 46223,
@@ -102437,7 +105939,16 @@
       "comment_inline": "Point at the control block",
       "type": "code",
       "mnemonic": "ldx",
-      "operand": "#<(zp_general)"
+      "operand": "#<(zp_general)",
+      "expr": {
+        "text": "<(zp_general)",
+        "tree": {
+          "op": "lowbyte",
+          "operand": {
+            "sym": "zp_general"
+          }
+        }
+      }
     },
     {
       "addr": 46232,
@@ -102448,7 +105959,16 @@
       "comment_inline": "block address high",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "#>(zp_general)"
+      "operand": "#>(zp_general)",
+      "expr": {
+        "text": ">(zp_general)",
+        "tree": {
+          "op": "highbyte",
+          "operand": {
+            "sym": "zp_general"
+          }
+        }
+      }
     },
     {
       "addr": 46234,
@@ -120102,7 +123622,13 @@
       "comment_inline": "OSFILE &FF: load the named file",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osfile_load"
+      "operand": "#osfile_load",
+      "expr": {
+        "text": "osfile_load",
+        "tree": {
+          "sym": "osfile_load"
+        }
+      }
     },
     {
       "addr": 48744,
@@ -121009,7 +124535,13 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osbyte_read_high_order_address"
+      "operand": "#osbyte_read_high_order_address",
+      "expr": {
+        "text": "osbyte_read_high_order_address",
+        "tree": {
+          "sym": "osbyte_read_high_order_address"
+        }
+      }
     },
     {
       "addr": 48873,
@@ -122116,7 +125648,13 @@
       "comment_inline": "OSFIND &00: close the file",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "#osfind_close"
+      "operand": "#osfind_close",
+      "expr": {
+        "text": "osfind_close",
+        "tree": {
+          "sym": "osfind_close"
+        }
+      }
     },
     {
       "addr": 49059,

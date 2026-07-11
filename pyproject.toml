@@ -20,6 +20,9 @@ dev = [
 [tool.uv]
 index-url = "https://pypi.org/simple"
 
+[tool.uv.sources]
+dasmos = { path = "../dasmos", editable = true }
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
