@@ -421,6 +421,14 @@ HANDLER_INFO = {
 # symbolically against the first declaration.
 _rom_bytes = Path(_rom_filepath).read_bytes()
 _declared_handlers: dict[int, str] = {}
+
+
+# Keyword table runs from &8071 up to the action-address tables.
+# Keyword/tokeniser table token addresses (&8071..&836C): the only bytes
+# with bit 7 set are the token bytes, so each marks the end of a keyword's
+# text and the start of its token + flag suffix.
+KEYWORD_TOKEN_ADDRS = [_a for _a in range(0x8071, ACTION_TABLE_LO)
+                       if _rom_bytes[_a - 0x8000] >= 0x80]
 # --- expression evaluator: the operator-precedence ladder ------------
 # eval_expr enters at the lowest precedence and each level calls the
 # next-higher one for its operands, then applies its own operators in a
@@ -815,6 +823,17 @@ to the action-address tables at action_table_lo.
 """,
 )
 
+# Declare each keyword entry's structure explicitly: EQUS "<keyword>" then
+# EQUB <token>, <flag>. dasmos's auto string-detection otherwise merges a
+# printable flag byte into the following keyword's text (DATA's &20 becomes
+# " DEG"; HIMEM/LOMEM/PAGE/PTR/TIME's &43 prefixes 'C' to the next keyword;
+# REM's &20 likewise), which also makes short keywords (FN, IF, LN) look
+# missing. Each keyword's text runs from the previous suffix to its token.
+for _kw_i, _kw_tok in enumerate(KEYWORD_TOKEN_ADDRS):
+    _kw_text = 0x8071 if _kw_i == 0 else KEYWORD_TOKEN_ADDRS[_kw_i - 1] + 2
+    d.string(_kw_text, _kw_tok - _kw_text, override=True)  # EQUS "<keyword>"
+    d.byte(_kw_tok, 2, override=True)                      # EQUB <token>, <flag>
+
 d.label(ACTION_TABLE_LO, 'action_table_lo')
 d.label(ACTION_TABLE_HI, 'action_table_hi')
 
@@ -848,104 +867,6 @@ for _i in range(NUM_DISPATCH_TOKENS):
     else:
         d.subroutine(_target, _name, on_entry=_on_entry, on_exit=_on_exit)
     _declared_handlers[_target] = _name
-
-d.index_base(0x82df, 'action_lo_by_token')
-d.index_base(0x8351, 'action_hi_by_token')
-# ----------------------------------------------------------------------
-# Inline-assembler mnemonic tables (&8450-&84FC).
-# ----------------------------------------------------------------------
-d.banner(
-    ASM_MNEMONIC_LO,
-    title='Inline-assembler mnemonic tables',
-    description="""Three parallel byte arrays, all indexed by the same X, that turn a
-typed mnemonic into a base opcode:
-
-| Array           | Holds                                     |
-|-----------------|-------------------------------------------|
-| asm_mnemonic_lo | low byte of the mnemonic's packed-name hash |
-| asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
-| asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
-
-asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
-low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
-value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
-from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
-and, on a hit, the high half against asm_mnemonic_hi,x; the matching
-index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
-indices directly via asm_logic_mnemonic (&8607).
-
-Because the two hash tables are pure functions of the mnemonic text,
-each asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm
-expression that re-derives it from the three letters (the assembled
-value is shown in the address comment). asm_base_opcode holds real
-6502 opcodes and stays a plain byte.
-
-The index order is meaningful: the operand parser keys its
-addressing-mode handler off cpx thresholds on the matched index.
-
-| Index   | Mnemonics     | Operand form               |
-|---------|---------------|----------------------------|
-| &01-&19 | BRK..TYA      | implied (opcode only)      |
-| &1A-&21 | BCC..BVS      | relative branch            |
-| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|
-| &29-&2C | ASL..ROR      | accumulator (A) or memory  |
-| &2D-&2E | DEC, INC      | memory only                |
-| &2F-&30 | CPX, CPY      | #/zp/abs                   |
-| &31     | BIT           | abs/zp                     |
-| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |
-| &34-&36 | LDX, LDY, STA | with index register        |
-| &37-&38 | STX, STY      | two-register form          |
-| &39     | OPT           | directive (sets OPT flag)  |
-| &3A     | EQU           | directive (EQUB/W/D/S)     |
-
-Base opcodes are each group's column-0 value; the operand parser adds
-addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
-BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
-standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
-asm_base_opcode entry.
-
-The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is
-never compared), so each label marks its real first entry (BRK) and the
-code reads the table as `<label> - 1,x` (see the &85F5 / &85FA / &8620
-sites). No byte is wasted on a dead index-0 slot. The byte one before
-asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
-table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the
-1-based table simply abuts. asm_mnemonic_hi and asm_base_opcode in turn
-begin one byte past their predecessor's final entry (EQU's low and high
-hash bytes), so the three tables pack together end to end.""",
-)
-
-# The tables are indexed 1-based (X = mnemonic number 1..58), so each
-# label sits on its real first entry (BRK) and the code reads it as
-# `<label> - 1,x`. Each byte is its own EQUB item so its per-index inline
-# comment lands on its own line. The byte one before asm_mnemonic_lo
-# (&8450) is action_table_hi's last entry (>(stmt_oscli), token &FF) and
-# is left to that table; the bytes one before asm_mnemonic_hi / asm_base_
-# opcode are the preceding table's final entry (EQU's low / high byte).
-d.index_base(ASM_MNEMONIC_LO, 'asm_mnemonic_lo')
-for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
-    d.byte(ASM_MNEMONIC_LO_BASE + _i, 1, override=True)
-    d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
-    _dir = ' directive' if _i >= 0x39 else ''
-    d.comment(ASM_MNEMONIC_LO_BASE + _i,
-              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} lo-byte',
-              align=Align.INLINE)
-
-d.index_base(ASM_MNEMONIC_HI, 'asm_mnemonic_hi')
-for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
-    d.byte(ASM_MNEMONIC_HI_BASE + _i, 1, override=True)
-    d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
-    _dir = ' directive' if _i >= 0x39 else ''
-    d.comment(ASM_MNEMONIC_HI_BASE + _i,
-              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} hi-byte',
-              align=Align.INLINE)
-
-d.index_base(ASM_BASE_OPCODE, 'asm_base_opcode')
-for _i in range(1, len(ASM_BASE_OPCODES)):          # 1..56 (BRK..STY)
-    d.byte(ASM_BASE_OPCODE_BASE + _i, 1, override=True)
-    d.comment(ASM_BASE_OPCODE_BASE + _i,
-              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}: base opcode '
-              f'&{ASM_BASE_OPCODES[_i]:02x}', align=Align.INLINE)
 
 d.subroutine(
     0x84fd, 'assembler_exit',
@@ -2413,8 +2334,111 @@ the indirect jump that reaches every fn_* / stmt_* handler.
 d.comment(0x8bb1, 'Token to X for indexing', align=Align.INLINE)
 d.comment(0x8bb2, 'Handler low byte = action_table_lo[token - &8E]',
           align=Align.INLINE)
+# The statement dispatcher indexes the action-address tables by the raw
+# token (&8E..&FF): `lda action_table_lo - &8E,x`. The -&8E bases (&82DF /
+# &8351) fall inside the keyword table, so express them as offsets from
+# action_table_lo/hi rather than labels there (which would collide with
+# the keyword strings, e.g. &8351 is the "E" of PAGE).
+d.expr(0x8bb3, ref(ACTION_TABLE_LO) - 0x8e)   # lda action_table_lo - &8E,x
 d.comment(0x8bb5, 'Store the handler low byte', align=Align.INLINE)
 d.comment(0x8bb7, 'Handler high byte from action_table_hi', align=Align.INLINE)
+d.expr(0x8bb8, ref(ACTION_TABLE_HI) - 0x8e)   # lda action_table_hi - &8E,x
+# ----------------------------------------------------------------------
+# Inline-assembler mnemonic tables (&8450-&84FC).
+# ----------------------------------------------------------------------
+d.banner(
+    ASM_MNEMONIC_LO,
+    title='Inline-assembler mnemonic tables',
+    description="""Three parallel byte arrays, all indexed by the same X, that turn a
+typed mnemonic into a base opcode:
+
+| Array           | Holds                                     |
+|-----------------|-------------------------------------------|
+| asm_mnemonic_lo | low byte of the mnemonic's packed-name hash |
+| asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
+| asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
+
+asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
+low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
+value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
+from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
+and, on a hit, the high half against asm_mnemonic_hi,x; the matching
+index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
+indices directly via asm_logic_mnemonic (&8607).
+
+Because the two hash tables are pure functions of the mnemonic text,
+each asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm
+expression that re-derives it from the three letters (the assembled
+value is shown in the address comment). asm_base_opcode holds real
+6502 opcodes and stays a plain byte.
+
+The index order is meaningful: the operand parser keys its
+addressing-mode handler off cpx thresholds on the matched index.
+
+| Index   | Mnemonics     | Operand form               |
+|---------|---------------|----------------------------|
+| &01-&19 | BRK..TYA      | implied (opcode only)      |
+| &1A-&21 | BCC..BVS      | relative branch            |
+| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|
+| &29-&2C | ASL..ROR      | accumulator (A) or memory  |
+| &2D-&2E | DEC, INC      | memory only                |
+| &2F-&30 | CPX, CPY      | #/zp/abs                   |
+| &31     | BIT           | abs/zp                     |
+| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |
+| &34-&36 | LDX, LDY, STA | with index register        |
+| &37-&38 | STX, STY      | two-register form          |
+| &39     | OPT           | directive (sets OPT flag)  |
+| &3A     | EQU           | directive (EQUB/W/D/S)     |
+
+Base opcodes are each group's column-0 value; the operand parser adds
+addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
+BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
+standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
+asm_base_opcode entry.
+
+The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is
+never compared), so each label marks its real first entry (BRK) and the
+code reads the table as `<label> - 1,x` (see the &85F5 / &85FA / &8620
+sites). No byte is wasted on a dead index-0 slot. The byte one before
+asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
+table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the
+1-based table simply abuts. asm_mnemonic_hi and asm_base_opcode in turn
+begin one byte past their predecessor's final entry (EQU's low and high
+hash bytes), so the three tables pack together end to end.""",
+)
+
+# The tables are indexed 1-based (X = mnemonic number 1..58), so each
+# label sits on its real first entry (BRK) and the code reads it as
+# `<label> - 1,x`. Each byte is its own EQUB item so its per-index inline
+# comment lands on its own line. The byte one before asm_mnemonic_lo
+# (&8450) is action_table_hi's last entry (>(stmt_oscli), token &FF) and
+# is left to that table; the bytes one before asm_mnemonic_hi / asm_base_
+# opcode are the preceding table's final entry (EQU's low / high byte).
+d.index_base(ASM_MNEMONIC_LO, 'asm_mnemonic_lo')
+for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
+    d.byte(ASM_MNEMONIC_LO_BASE + _i, 1, override=True)
+    d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
+    _dir = ' directive' if _i >= 0x39 else ''
+    d.comment(ASM_MNEMONIC_LO_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} lo-byte',
+              align=Align.INLINE)
+
+d.index_base(ASM_MNEMONIC_HI, 'asm_mnemonic_hi')
+for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
+    d.byte(ASM_MNEMONIC_HI_BASE + _i, 1, override=True)
+    d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
+    _dir = ' directive' if _i >= 0x39 else ''
+    d.comment(ASM_MNEMONIC_HI_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} hi-byte',
+              align=Align.INLINE)
+
+d.index_base(ASM_BASE_OPCODE, 'asm_base_opcode')
+for _i in range(1, len(ASM_BASE_OPCODES)):          # 1..56 (BRK..STY)
+    d.byte(ASM_BASE_OPCODE_BASE + _i, 1, override=True)
+    d.comment(ASM_BASE_OPCODE_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}: base opcode '
+              f'&{ASM_BASE_OPCODES[_i]:02x}', align=Align.INLINE)
+
 d.comment(0x8bba, 'Store the handler high byte', align=Align.INLINE)
 
 d.comment(0x8bbc, 'Jump to the keyword handler', align=Align.INLINE)

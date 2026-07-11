@@ -541,8 +541,8 @@ oscli             = &fff7
     equs "COUNT"                                                      ; 80e0: 43 4f 55... COU...
     equb &9c, &01                                                     ; 80e5: 9c 01       ..    
     equs "DATA"                                                       ; 80e7: 44 41 54... DAT...
-    equb &dc                                                          ; 80eb: dc          .     
-    equs " DEG"                                                       ; 80ec: 20 44 45...  DE...
+    equb &dc, &20                                                     ; 80eb: dc 20       .     
+    equs "DEG"                                                        ; 80ed: 44 45 47    DEG   
     equb &9d, &00                                                     ; 80f0: 9d 00       ..    
     equs "DEF"                                                        ; 80f2: 44 45 46    DEF   
     equb &dd, &00                                                     ; 80f5: dd 00       ..    
@@ -581,7 +581,9 @@ oscli             = &fff7
     equs "FOR"                                                        ; 8158: 46 4f 52    FOR   
     equb &e3, &02                                                     ; 815b: e3 02       ..    
     equs "FALSE"                                                      ; 815d: 46 41 4c... FAL...
-    equb &a3, &01, &46, &4e, &a4, &08                                 ; 8162: a3 01 46... ..F...
+    equb &a3, &01                                                     ; 8162: a3 01       ..    
+    equs "FN"                                                         ; 8164: 46 4e       FN    
+    equb &a4, &08                                                     ; 8166: a4 08       ..    
     equs "GOTO"                                                       ; 8168: 47 4f 54... GOT...
     equb &e5, &12                                                     ; 816c: e5 12       ..    
     equs "GET$"                                                       ; 816e: 47 45 54... GET...
@@ -593,9 +595,11 @@ oscli             = &fff7
     equs "GCOL"                                                       ; 8180: 47 43 4f... GCO...
     equb &e6, &02                                                     ; 8184: e6 02       ..    
     equs "HIMEM"                                                      ; 8186: 48 49 4d... HIM...
-    equb &93                                                          ; 818b: 93          .     
-    equs "CINPUT"                                                     ; 818c: 43 49 4e... CIN...
-    equb &e8, &02, &49, &46, &e7, &02                                 ; 8192: e8 02 49... ..I...
+    equb &93, &43                                                     ; 818b: 93 43       .C    
+    equs "INPUT"                                                      ; 818d: 49 4e 50... INP...
+    equb &e8, &02                                                     ; 8192: e8 02       ..    
+    equs "IF"                                                         ; 8194: 49 46       IF    
+    equb &e7, &02                                                     ; 8196: e7 02       ..    
     equs "INKEY$"                                                     ; 8198: 49 4e 4b... INK...
     equb &bf, &00                                                     ; 819e: bf 00       ..    
     equs "INKEY"                                                      ; 81a0: 49 4e 4b... INK...
@@ -611,8 +615,8 @@ oscli             = &fff7
     equs "LOAD"                                                       ; 81c0: 4c 4f 41... LOA...
     equb &c8, &02                                                     ; 81c4: c8 02       ..    
     equs "LOMEM"                                                      ; 81c6: 4c 4f 4d... LOM...
-    equb &92                                                          ; 81cb: 92          .     
-    equs "CLOCAL"                                                     ; 81cc: 43 4c 4f... CLO...
+    equb &92, &43                                                     ; 81cb: 92 43       .C    
+    equs "LOCAL"                                                      ; 81cd: 4c 4f 43... LOC...
     equb &ea, &02                                                     ; 81d2: ea 02       ..    
     equs "LEFT$("                                                     ; 81d4: 4c 45 46... LEF...
     equb &c0, &00                                                     ; 81da: c0 00       ..    
@@ -621,7 +625,9 @@ oscli             = &fff7
     equs "LET"                                                        ; 81e1: 4c 45 54    LET   
     equb &e9, &04                                                     ; 81e4: e9 04       ..    
     equs "LOG"                                                        ; 81e6: 4c 4f 47    LOG   
-    equb &ab, &00, &4c, &4e, &aa, &00                                 ; 81e9: ab 00 4c... ..L...
+    equb &ab, &00                                                     ; 81e9: ab 00       ..    
+    equs "LN"                                                         ; 81eb: 4c 4e       LN    
+    equb &aa, &00                                                     ; 81ed: aa 00       ..    
     equs "MID$("                                                      ; 81ef: 4d 49 44... MID...
     equb &c1, &00                                                     ; 81f4: c1 00       ..    
     equs "MODE"                                                       ; 81f6: 4d 4f 44... MOD...
@@ -637,9 +643,13 @@ oscli             = &fff7
     equs "NOT"                                                        ; 8212: 4e 4f 54    NOT   
     equb &ac, &00                                                     ; 8215: ac 00       ..    
     equs "OLD"                                                        ; 8217: 4f 4c 44    OLD   
-    equb &cb, &01, &4f, &4e, &ee, &02                                 ; 821a: cb 01 4f... ..O...
+    equb &cb, &01                                                     ; 821a: cb 01       ..    
+    equs "ON"                                                         ; 821c: 4f 4e       ON    
+    equb &ee, &02                                                     ; 821e: ee 02       ..    
     equs "OFF"                                                        ; 8220: 4f 46 46    OFF   
-    equb &87, &00, &4f, &52, &84, &00                                 ; 8223: 87 00 4f... ..O...
+    equb &87, &00                                                     ; 8223: 87 00       ..    
+    equs "OR"                                                         ; 8225: 4f 52       OR    
+    equb &84, &00                                                     ; 8227: 84 00       ..    
     equs "OPENIN"                                                     ; 8229: 4f 50 45... OPE...
     equb &8e, &00                                                     ; 822f: 8e 00       ..    
     equs "OPENOUT"                                                    ; 8231: 4f 50 45... OPE...
@@ -651,10 +661,10 @@ oscli             = &fff7
     equs "PRINT"                                                      ; 8249: 50 52 49... PRI...
     equb &f1, &02                                                     ; 824e: f1 02       ..    
     equs "PAGE"                                                       ; 8250: 50 41 47... PAG...
-    equb &90                                                          ; 8254: 90          .     
-    equs "CPTR"                                                       ; 8255: 43 50 54... CPT...
-    equb &8f                                                          ; 8259: 8f          .     
-    equs "CPI"                                                        ; 825a: 43 50 49    CPI   
+    equb &90, &43                                                     ; 8254: 90 43       .C    
+    equs "PTR"                                                        ; 8256: 50 54 52    PTR   
+    equb &8f, &43                                                     ; 8259: 8f 43       .C    
+    equs "PI"                                                         ; 825b: 50 49       PI    
     equb &af, &01                                                     ; 825d: af 01       ..    
     equs "PLOT"                                                       ; 825f: 50 4c 4f... PLO...
     equb &f0, &02                                                     ; 8263: f0 02       ..    
@@ -673,8 +683,8 @@ oscli             = &fff7
     equs "READ"                                                       ; 8290: 52 45 41... REA...
     equb &f3, &02                                                     ; 8294: f3 02       ..    
     equs "REM"                                                        ; 8296: 52 45 4d    REM   
-    equb &f4                                                          ; 8299: f4          .     
-    equs " RUN"                                                       ; 829a: 20 52 55...  RU...
+    equb &f4, &20                                                     ; 8299: f4 20       .     
+    equs "RUN"                                                        ; 829b: 52 55 4e    RUN   
     equb &f9, &01                                                     ; 829e: f9 01       ..    
     equs "RAD"                                                        ; 82a0: 52 41 44    RAD   
     equb &b2, &00                                                     ; 82a3: b2 00       ..    
@@ -695,8 +705,6 @@ oscli             = &fff7
     equs "SIN"                                                        ; 82d7: 53 49 4e    SIN   
     equb &b5, &00                                                     ; 82da: b5 00       ..    
     equs "SQR"                                                        ; 82dc: 53 51 52    SQR   
-; &82df used as index base 1 time by &8bb2
-.action_lo_by_token
     equb &b6, &00                                                     ; 82df: b6 00       ..    
     equs "SPC"                                                        ; 82e1: 53 50 43    SPC   
     equb &89, &00                                                     ; 82e4: 89 00       ..    
@@ -711,14 +719,16 @@ oscli             = &fff7
     equs "TAN"                                                        ; 8303: 54 41 4e    TAN   
     equb &b7, &00                                                     ; 8306: b7 00       ..    
     equs "THEN"                                                       ; 8308: 54 48 45... THE...
-    equb &8c, &14, &54, &4f, &b8, &00                                 ; 830c: 8c 14 54... ..T...
+    equb &8c, &14                                                     ; 830c: 8c 14       ..    
+    equs "TO"                                                         ; 830e: 54 4f       TO    
+    equb &b8, &00                                                     ; 8310: b8 00       ..    
     equs "TAB("                                                       ; 8312: 54 41 42... TAB...
     equb &8a, &00                                                     ; 8316: 8a 00       ..    
     equs "TRACE"                                                      ; 8318: 54 52 41... TRA...
     equb &fc, &12                                                     ; 831d: fc 12       ..    
     equs "TIME"                                                       ; 831f: 54 49 4d... TIM...
-    equb &91                                                          ; 8323: 91          .     
-    equs "CTRUE"                                                      ; 8324: 43 54 52... CTR...
+    equb &91, &43                                                     ; 8323: 91 43       .C    
+    equs "TRUE"                                                       ; 8325: 54 52 55... TRU...
     equb &b9, &01                                                     ; 8329: b9 01       ..    
     equs "UNTIL"                                                      ; 832b: 55 4e 54... UNT...
     equb &fd, &02                                                     ; 8330: fd 02       ..    
@@ -732,10 +742,8 @@ oscli             = &fff7
     equb &bc, &01                                                     ; 8345: bc 01       ..    
     equs "WIDTH"                                                      ; 8347: 57 49 44... WID...
     equb &fe, &02                                                     ; 834c: fe 02       ..    
-    equs "PAG"                                                        ; 834e: 50 41 47    PAG   
-; &8351 used as index base 1 time by &8bb7
-.action_hi_by_token
-    equb &45, &d0, &00                                                ; 8351: 45 d0 00    E..   
+    equs "PAGE"                                                       ; 834e: 50 41 47... PAG...
+    equb &d0, &00                                                     ; 8352: d0 00       ..    
     equs "PTR"                                                        ; 8354: 50 54 52    PTR   
     equb &cf, &00                                                     ; 8357: cf 00       ..    
     equs "TIME"                                                       ; 8359: 54 49 4d... TIM...
@@ -2786,9 +2794,9 @@ oscli             = &fff7
 ; &8bb1 referenced 2 times by &8b3d, &ae0d
 .dispatch_token
     tax                                                               ; 8bb1: aa          .        ; Token to X for indexing
-    lda action_lo_by_token,x                                          ; 8bb2: bd df 82    ...      ; Handler low byte = action_table_lo[token - &8E]
+    lda action_table_lo - &8e,x                                       ; 8bb2: bd df 82    ...      ; Handler low byte = action_table_lo[token - &8E]
     sta zp_general                                                    ; 8bb5: 85 37       .7       ; Store the handler low byte
-    lda action_hi_by_token,x                                          ; 8bb7: bd 51 83    .Q.      ; Handler high byte from action_table_hi
+    lda action_table_hi - &8e,x                                       ; 8bb7: bd 51 83    .Q.      ; Handler high byte from action_table_hi
     sta zp_general_1                                                  ; 8bba: 85 38       .8       ; Store the handler high byte
     jmp (zp_general)                                                  ; 8bbc: 6c 37 00    l7.      ; Jump to the keyword handler
 ; ***************************************************************************************
@@ -15844,8 +15852,6 @@ save pydis_start, pydis_end
 ;     a2n_back:                      1
 ;     a2n_negative:                  1
 ;     abs_real:                      1
-;     action_hi_by_token:            1
-;     action_lo_by_token:            1
 ;     add_int_real:                  1
 ;     add_real_left:                 1
 ;     add_y_to_top_lo:               1
@@ -16619,7 +16625,7 @@ save pydis_start, pydis_end
 ;     Data                     = 1959 bytes (12%)
 ;
 ;     Number of instructions   = 7133
-;     Number of data bytes     = 997 bytes
+;     Number of data bytes     = 991 bytes
 ;     Number of data words     = 0 bytes
-;     Number of string bytes   = 962 bytes
-;     Number of strings        = 176
+;     Number of string bytes   = 968 bytes
+;     Number of strings        = 182

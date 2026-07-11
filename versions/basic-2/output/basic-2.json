@@ -7168,23 +7168,24 @@
     {
       "addr": 33003,
       "bytes": [
-        220
+        220,
+        32
       ],
       "type": "byte",
       "values": [
-        220
+        220,
+        32
       ]
     },
     {
-      "addr": 33004,
+      "addr": 33005,
       "bytes": [
-        32,
         68,
         69,
         71
       ],
       "type": "string",
-      "string": " DEG"
+      "string": "DEG"
     },
     {
       "addr": 33008,
@@ -7627,18 +7628,31 @@
       "addr": 33122,
       "bytes": [
         163,
-        1,
+        1
+      ],
+      "type": "byte",
+      "values": [
+        163,
+        1
+      ]
+    },
+    {
+      "addr": 33124,
+      "bytes": [
         70,
-        78,
+        78
+      ],
+      "type": "string",
+      "string": "FN"
+    },
+    {
+      "addr": 33126,
+      "bytes": [
         164,
         8
       ],
       "type": "byte",
       "values": [
-        163,
-        1,
-        70,
-        78,
         164,
         8
       ]
@@ -7773,17 +7787,18 @@
     {
       "addr": 33163,
       "bytes": [
-        147
+        147,
+        67
       ],
       "type": "byte",
       "values": [
-        147
+        147,
+        67
       ]
     },
     {
-      "addr": 33164,
+      "addr": 33165,
       "bytes": [
-        67,
         73,
         78,
         80,
@@ -7791,24 +7806,37 @@
         84
       ],
       "type": "string",
-      "string": "CINPUT"
+      "string": "INPUT"
     },
     {
       "addr": 33170,
       "bytes": [
         232,
-        2,
-        73,
-        70,
-        231,
         2
       ],
       "type": "byte",
       "values": [
         232,
-        2,
+        2
+      ]
+    },
+    {
+      "addr": 33172,
+      "bytes": [
         73,
-        70,
+        70
+      ],
+      "type": "string",
+      "string": "IF"
+    },
+    {
+      "addr": 33174,
+      "bytes": [
+        231,
+        2
+      ],
+      "type": "byte",
+      "values": [
         231,
         2
       ]
@@ -7993,17 +8021,18 @@
     {
       "addr": 33227,
       "bytes": [
-        146
+        146,
+        67
       ],
       "type": "byte",
       "values": [
-        146
+        146,
+        67
       ]
     },
     {
-      "addr": 33228,
+      "addr": 33229,
       "bytes": [
-        67,
         76,
         79,
         67,
@@ -8011,7 +8040,7 @@
         76
       ],
       "type": "string",
-      "string": "CLOCAL"
+      "string": "LOCAL"
     },
     {
       "addr": 33234,
@@ -8108,18 +8137,31 @@
       "addr": 33257,
       "bytes": [
         171,
-        0,
-        76,
-        78,
-        170,
         0
       ],
       "type": "byte",
       "values": [
         171,
-        0,
+        0
+      ]
+    },
+    {
+      "addr": 33259,
+      "bytes": [
         76,
-        78,
+        78
+      ],
+      "type": "string",
+      "string": "LN"
+    },
+    {
+      "addr": 33261,
+      "bytes": [
+        170,
+        0
+      ],
+      "type": "byte",
+      "values": [
         170,
         0
       ]
@@ -8297,18 +8339,31 @@
       "addr": 33306,
       "bytes": [
         203,
-        1,
+        1
+      ],
+      "type": "byte",
+      "values": [
+        203,
+        1
+      ]
+    },
+    {
+      "addr": 33308,
+      "bytes": [
         79,
-        78,
+        78
+      ],
+      "type": "string",
+      "string": "ON"
+    },
+    {
+      "addr": 33310,
+      "bytes": [
         238,
         2
       ],
       "type": "byte",
       "values": [
-        203,
-        1,
-        79,
-        78,
         238,
         2
       ]
@@ -8327,18 +8382,31 @@
       "addr": 33315,
       "bytes": [
         135,
-        0,
-        79,
-        82,
-        132,
         0
       ],
       "type": "byte",
       "values": [
         135,
-        0,
+        0
+      ]
+    },
+    {
+      "addr": 33317,
+      "bytes": [
         79,
-        82,
+        82
+      ],
+      "type": "string",
+      "string": "OR"
+    },
+    {
+      "addr": 33319,
+      "bytes": [
+        132,
+        0
+      ],
+      "type": "byte",
+      "values": [
         132,
         0
       ]
@@ -8481,43 +8549,45 @@
     {
       "addr": 33364,
       "bytes": [
-        144
+        144,
+        67
       ],
       "type": "byte",
       "values": [
-        144
+        144,
+        67
       ]
     },
     {
-      "addr": 33365,
+      "addr": 33366,
       "bytes": [
-        67,
         80,
         84,
         82
       ],
       "type": "string",
-      "string": "CPTR"
+      "string": "PTR"
     },
     {
       "addr": 33369,
       "bytes": [
-        143
+        143,
+        67
       ],
       "type": "byte",
       "values": [
-        143
+        143,
+        67
       ]
     },
     {
-      "addr": 33370,
+      "addr": 33371,
       "bytes": [
-        67,
         80,
         73
       ],
       "type": "string",
-      "string": "CPI"
+      "string": "PI"
     },
     {
       "addr": 33373,
@@ -8735,23 +8805,24 @@
     {
       "addr": 33433,
       "bytes": [
-        244
+        244,
+        32
       ],
       "type": "byte",
       "values": [
-        244
+        244,
+        32
       ]
     },
     {
-      "addr": 33434,
+      "addr": 33435,
       "bytes": [
-        32,
         82,
         85,
         78
       ],
       "type": "string",
-      "string": " RUN"
+      "string": "RUN"
     },
     {
       "addr": 33438,
@@ -8994,18 +9065,6 @@
         182,
         0
       ],
-      "labels": [
-        "action_lo_by_token"
-      ],
-      "xref_summaries": [
-        "&82df used as index base 1 time by &8bb2"
-      ],
-      "references": [
-        {
-          "addr": 35762,
-          "kind": "indexed"
-        }
-      ],
       "type": "byte",
       "values": [
         182,
@@ -9168,18 +9227,31 @@
       "addr": 33548,
       "bytes": [
         140,
-        20,
+        20
+      ],
+      "type": "byte",
+      "values": [
+        140,
+        20
+      ]
+    },
+    {
+      "addr": 33550,
+      "bytes": [
         84,
-        79,
+        79
+      ],
+      "type": "string",
+      "string": "TO"
+    },
+    {
+      "addr": 33552,
+      "bytes": [
         184,
         0
       ],
       "type": "byte",
       "values": [
-        140,
-        20,
-        84,
-        79,
         184,
         0
       ]
@@ -9245,24 +9317,25 @@
     {
       "addr": 33571,
       "bytes": [
-        145
+        145,
+        67
       ],
       "type": "byte",
       "values": [
-        145
+        145,
+        67
       ]
     },
     {
-      "addr": 33572,
+      "addr": 33573,
       "bytes": [
-        67,
         84,
         82,
         85,
         69
       ],
       "type": "string",
-      "string": "CTRUE"
+      "string": "TRUE"
     },
     {
       "addr": 33577,
@@ -9418,33 +9491,20 @@
       "bytes": [
         80,
         65,
-        71
+        71,
+        69
       ],
       "type": "string",
-      "string": "PAG"
+      "string": "PAGE"
     },
     {
-      "addr": 33617,
+      "addr": 33618,
       "bytes": [
-        69,
         208,
         0
       ],
-      "labels": [
-        "action_hi_by_token"
-      ],
-      "xref_summaries": [
-        "&8351 used as index base 1 time by &8bb7"
-      ],
-      "references": [
-        {
-          "addr": 35767,
-          "kind": "indexed"
-        }
-      ],
       "type": "byte",
       "values": [
-        69,
         208,
         0
       ]
@@ -31128,9 +31188,22 @@
       "comment_inline": "Handler low byte = action_table_lo[token - &8E]",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "action_lo_by_token,x",
-      "target": 33503,
-      "target_label": "action_lo_by_token"
+      "operand": "action_table_lo - &8e,x",
+      "expr": {
+        "text": "action_table_lo - &8e",
+        "tree": {
+          "op": "sub",
+          "left": {
+            "ref": 33645,
+            "name": "action_table_lo"
+          },
+          "right": {
+            "int": 142,
+            "radix": "auto"
+          }
+        }
+      },
+      "target": 33503
     },
     {
       "addr": 35765,
@@ -31155,9 +31228,22 @@
       "comment_inline": "Handler high byte from action_table_hi",
       "type": "code",
       "mnemonic": "lda",
-      "operand": "action_hi_by_token,x",
-      "target": 33617,
-      "target_label": "action_hi_by_token"
+      "operand": "action_table_hi - &8e,x",
+      "expr": {
+        "text": "action_table_hi - &8e",
+        "tree": {
+          "op": "sub",
+          "left": {
+            "ref": 33759,
+            "name": "action_table_hi"
+          },
+          "right": {
+            "int": 142,
+            "radix": "auto"
+          }
+        }
+      },
+      "target": 33617
     },
     {
       "addr": 35770,
