@@ -1,6 +1,6 @@
 {
   "meta": {
-    "schema_version": 2,
+    "schema_version": 3,
     "load_addr": 32768,
     "end_addr": 49152
   },
