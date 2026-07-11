@@ -369,7 +369,7 @@ oscli             = $fff7
 
     * = $8000
 
-; BASIC v&01
+; Acorn BBC BASIC II
 ; ***************************************************************************************
 ; Sideways ROM header — language-entry slot (3 bytes)
 ;

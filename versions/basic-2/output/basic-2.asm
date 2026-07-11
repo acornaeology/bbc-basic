@@ -374,7 +374,7 @@ oscli             = &fff7
     org &8000
 
 .pydis_start
-; BASIC v&01
+; Acorn BBC BASIC II
 ; ***************************************************************************************
 ; Sideways ROM header — language-entry slot (3 bytes)
 ;

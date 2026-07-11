@@ -6026,7 +6026,7 @@
         "language_entry"
       ],
       "comments_before_label": [
-        "# BASIC v&01"
+        "# Acorn BBC BASIC II"
       ],
       "comment_inline": "A=1: language start?",
       "type": "code",

@@ -505,6 +505,7 @@ d.use_environment('acorn_model_b_hardware')
 # not a separate handler.
 d.use_environment(
     'acorn_sideways_rom', language_entry='code', service_entry='none',
+    rom_title='Acorn BBC BASIC II',
 )
 # Language-specific data types: registers the packed 5-byte
 # floating-point type "bbc_float5" used for the REAL constant pool.
