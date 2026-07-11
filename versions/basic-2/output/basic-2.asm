@@ -1011,12 +1011,12 @@ oscli             = &fff7
 ; | asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
 ; | asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
 ;
-; asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the low 5 bits of
-; each (A=1..Z=26) and packs them MSB-first into a 15-bit value in &3D (low) / &3E
-; (high). asm_mn_search (&85F1) then scans X from &3A down to 1, comparing the low half
-; against asm_mnemonic_lo,x and, on a hit, the high half against asm_mnemonic_hi,x; the
-; matching index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same indices
-; directly via asm_logic_mnemonic (&8607).
+; asm_parse_mnemonic reads the three mnemonic letters, keeps the low 5 bits of each
+; (A=1..Z=26) and packs them MSB-first into a 15-bit value in &3D (low) / &3E (high).
+; asm_mn_search then scans X from &3A down to 1, comparing the low half against
+; asm_mnemonic_lo,x and, on a hit, the high half against asm_mnemonic_hi,x; the matching
+; index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same indices directly
+; via asm_logic_mnemonic.
 ;
 ; Because the two hash tables are pure functions of the mnemonic text, each
 ; asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm expression that
@@ -1042,9 +1042,9 @@ oscli             = &fff7
 ; | &3A     | EQU           | directive (EQUB/W/D/S)       |
 ;
 ; Base opcodes are each group's column-0 value; the operand parser adds addressing-mode
-; offsets via asm_opcode_add4/8/16, so a few bases (e.g. BIT &20, LDX/LDY-immediate
-; &A2/&A0) are the slot value, not a legal standalone opcode. OPT (&39) and EQU (&3A) are
-; directives and have no asm_base_opcode entry.
+; offsets via asm_opcode_add4 / add8 / add16, so a few bases (e.g. BIT &20,
+; LDX/LDY-immediate &A2/&A0) are the slot value, not a legal standalone opcode. OPT (&39)
+; and EQU (&3A) are directives and have no asm_base_opcode entry.
 ;
 ; The tables are indexed 1-based by the mnemonic number: the scan runs X from &3A (EQU)
 ; down to 1 (BRK), so each label sits on entry 1 (BRK) and the code reads the table as

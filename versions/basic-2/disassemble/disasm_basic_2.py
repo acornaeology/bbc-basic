@@ -2376,22 +2376,22 @@ typed mnemonic into a base opcode:
 | asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |
 | asm_base_opcode | the base ("mode 0") opcode for that mnemonic |
 
-asm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the
+[`asm_parse_mnemonic`](address:85ba) reads the three mnemonic letters, keeps the
 low 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit
-value in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X
-from &3A down to 1, comparing the low half against asm_mnemonic_lo,x
-and, on a hit, the high half against asm_mnemonic_hi,x; the matching
-index selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same
-indices directly via asm_logic_mnemonic (&8607).
+value in `&3D` (low) / `&3E` (high). [`asm_mn_search`](address:85f1) then scans X
+from &3A down to 1, comparing the low half against `asm_mnemonic_lo,x`
+and, on a hit, the high half against [`asm_mnemonic_hi`](address:848b),x; the matching
+index selects [`asm_base_opcode`](address:84c5),x. Tokenised `AND`/`EOR`/`OR` reach the same
+indices directly via [`asm_logic_mnemonic`](address:8607).
 
 Because the two hash tables are pure functions of the mnemonic text,
-each asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm
+each `asm_mnemonic_lo` / `asm_mnemonic_hi` byte is emitted as the beebasm
 expression that re-derives it from the three letters (the assembled
-value is shown in the address comment). asm_base_opcode holds real
+value is shown in the address comment). `asm_base_opcode` holds real
 6502 opcodes and stays a plain byte.
 
 The index order is meaningful: the operand parser keys its
-addressing-mode handler off cpx thresholds on the matched index.
+addressing-mode handler off `cpx` thresholds on the matched index.
 
 | Index   | Mnemonics     | Operand form               |
 |---------|---------------|----------------------------|
@@ -2409,14 +2409,14 @@ addressing-mode handler off cpx thresholds on the matched index.
 | &3A     | EQU           | directive (EQUB/W/D/S)     |
 
 Base opcodes are each group's column-0 value; the operand parser adds
-addressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.
-BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
-standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
-asm_base_opcode entry.
+addressing-mode offsets via [`asm_opcode_add4`](address:8832) / [`add8`](address:882f) / [`add16`](address:882c), so a few bases (e.g.
+`BIT &20`, `LDX`/`LDY`-immediate `&A2`/`&A0`) are the slot value, not a legal
+standalone opcode. `OPT` (&39) and `EQU` (&3A) are directives and have no
+`asm_base_opcode` entry.
 
 The tables are indexed 1-based by the mnemonic number: the scan runs X
 from &3A (EQU) down to 1 (BRK), so each label sits on entry 1 (BRK) and
-the code reads the table as `<label> - 1,x` (the &85F5 / &85FA / &8620
+the code reads the table as `<label> - 1,x` (the [`&85F5`](address:85f5) / [`&85FA`](address:85fa) / [`&8620`](address:8620)
 sites).""",
 )
 
