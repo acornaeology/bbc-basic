@@ -10,3 +10,8 @@ versions/*/context/
 
 # JGH correlation outputs (regenerate with tools/correlate_jgh.py)
 tools/*.tsv
+
+# Assembled ROMs produced by the listings' build commands (beebasm /
+# 64tass). The tracked *source* ROM lives in versions/*/rom/.
+/basic-2.rom
+versions/*/output/*.rom
