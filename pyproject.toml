@@ -8,8 +8,8 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "fantasm>=0.17.2",
-    "dasmos>=2.0.1",
+    "fantasm>=0.18.0",
+    "dasmos>=3.0.1",
 ]
 
 [dependency-groups]
@@ -19,9 +19,6 @@ dev = [
 
 [tool.uv]
 index-url = "https://pypi.org/simple"
-
-[tool.uv.sources]
-dasmos = { path = "../dasmos", editable = true }
 
 [build-system]
 requires = ["hatchling"]
