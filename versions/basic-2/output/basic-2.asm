@@ -13,7 +13,7 @@
 ; - sha256: 45bd55dc0f6f0f8f1fe9e2481de7def206565eec8f600ba3068b849ca4132079
 ;
 ; Assemble with beebasm:
-;   beebasm -i basic-2.asm -o <output.bin>
+;   beebasm -i basic-2.asm -o basic-2.rom
 
 ; Macros
 
