@@ -973,6 +973,7 @@ oscli             = &fff7
     equb >(stmt_trace)                                                ; 844d: 92          .     
     equb >(stmt_until)                                                ; 844e: bb          .     
     equb >(stmt_width)                                                ; 844f: b4          .     
+    equb >(stmt_oscli)                                                ; 8450: be          .     
 ; ***************************************************************************************
 ; Inline-assembler mnemonic tables
 ;
@@ -1020,14 +1021,15 @@ oscli             = &fff7
 ; &A2/&A0) are the slot value, not a legal standalone opcode. OPT (&39) and EQU (&3A) are
 ; directives and have no asm_base_opcode entry.
 ;
-; Two space-saving quirks. Index 0 is dead: the scan starts at &3A and stops at 1, so
-; index 0 is never tested. And the tables overlap by one byte - asm_mnemonic_lo[&3A] is
-; the first byte of asm_mnemonic_hi, and asm_mnemonic_hi[&3A] is the first byte of
-; asm_base_opcode. The reuse is safe precisely because index 0's own high and opcode
-; bytes, which those shared bytes stand in for, are never read.
-; &8450 used as index base 1 time by &85f5
+; The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is never compared),
+; so each label marks its real first entry (BRK) and the code reads the table as <label>
+; - 1,x (see the &85F5 / &85FA / &8620 sites). No byte is wasted on a dead index-0 slot.
+; The byte one before asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
+; table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the 1-based table
+; simply abuts. asm_mnemonic_hi and asm_base_opcode in turn begin one byte past their
+; predecessor's final entry (EQU's low and high hash bytes), so the three tables pack
+; together end to end.
 .asm_mnemonic_lo
-    equb &be                                                          ; 8450: be          .        ; index &00: unused padding (never tested by the scan)
     pack_mnemonic_lo "BRK"                                            ; 8451: 4b          K        ; [&01] BRK lo-byte
     pack_mnemonic_lo "CLC"                                            ; 8452: 83          .        ; [&02] CLC lo-byte
     pack_mnemonic_lo "CLD"                                            ; 8453: 84          .        ; [&03] CLD lo-byte
@@ -1085,9 +1087,8 @@ oscli             = &fff7
     pack_mnemonic_lo "STX"                                            ; 8487: 98          .        ; [&37] STX lo-byte
     pack_mnemonic_lo "STY"                                            ; 8488: 99          .        ; [&38] STY lo-byte
     pack_mnemonic_lo "OPT"                                            ; 8489: 14          .        ; [&39] OPT directive lo-byte
-; &848a used as index base 1 time by &85fa
+    pack_mnemonic_lo "EQU"                                            ; 848a: 35          5        ; [&3a] EQU directive lo-byte
 .asm_mnemonic_hi
-    equb &35                                                          ; 848a: 35          5        ; index &00 hi (unused); also asm_mnemonic_lo[&3A] = EQU directive packed-name low byte
     pack_mnemonic_hi "BRK"                                            ; 848b: 0a          .        ; [&01] BRK hi-byte
     pack_mnemonic_hi "CLC"                                            ; 848c: 0d          .        ; [&02] CLC hi-byte
     pack_mnemonic_hi "CLD"                                            ; 848d: 0d          .        ; [&03] CLD hi-byte
@@ -1145,9 +1146,8 @@ oscli             = &fff7
     pack_mnemonic_hi "STX"                                            ; 84c1: 4e          N        ; [&37] STX hi-byte
     pack_mnemonic_hi "STY"                                            ; 84c2: 4e          N        ; [&38] STY hi-byte
     pack_mnemonic_hi "OPT"                                            ; 84c3: 3e          >        ; [&39] OPT directive hi-byte
-; &84c4 used as index base 1 time by &8620
+    pack_mnemonic_hi "EQU"                                            ; 84c4: 16          .        ; [&3a] EQU directive hi-byte
 .asm_base_opcode
-    equb &16                                                          ; 84c4: 16          .        ; index &00 base (unused); also asm_mnemonic_hi[&3A] = EQU directive packed-name high byte
     equb &00                                                          ; 84c5: 00          .        ; [&01] BRK: base opcode &00
     equb &18                                                          ; 84c6: 18          .        ; [&02] CLC: base opcode &18
     equb &d8                                                          ; 84c7: d8          .        ; [&03] CLD: base opcode &d8
@@ -1404,9 +1404,9 @@ oscli             = &fff7
     lda zp_fwb_exp                                                    ; 85f3: a5 3d       .=       ; Compacted mnemonic low byte
 ; &85f5 referenced 1 time by &8602
 .asm_mn_search_loop
-    cmp asm_mnemonic_lo,x                                             ; 85f5: dd 50 84    .P.      ; Compare the low half
+    cmp asm_mnemonic_lo - 1,x                                         ; 85f5: dd 50 84    .P.      ; Compare the low half
     bne asm_mn_search_next                                            ; 85f8: d0 07       ..       ; no match: next entry
-    ldy asm_mnemonic_hi,x                                             ; 85fa: bc 8a 84    ...      ; High half
+    ldy asm_mnemonic_hi - 1,x                                         ; 85fa: bc 8a 84    ...      ; High half
     cpy zp_fwb_m1                                                     ; 85fd: c4 3e       .>       ; match the high half?
     beq asm_got_opcode                                                ; 85ff: f0 1f       ..       ; matched
 ; &8601 referenced 1 time by &85f8
@@ -1434,7 +1434,7 @@ oscli             = &fff7
     bne asm_mistake                                                   ; 861e: d0 e4       ..       ; no: Mistake
 ; &8620 referenced 3 times by &85ff, &860b, &8610
 .asm_got_opcode
-    lda asm_base_opcode,x                                             ; 8620: bd c4 84    ...      ; Base opcode from the table
+    lda asm_base_opcode - 1,x                                         ; 8620: bd c4 84    ...      ; Base opcode from the table
     sta zp_asm_opcode                                                 ; 8623: 85 29       .)       ; Save it
     ldy #1                                                            ; 8625: a0 01       ..       ; Assume a one-byte instruction
     cpx #&1a                                                          ; 8627: e0 1a       ..       ; index &1A+ takes an operand?
@@ -15866,7 +15866,6 @@ save pydis_start, pydis_end
 ;     asm_acc_or_abs:                1
 ;     asm_accumulator:               1
 ;     asm_addr_eval:                 1
-;     asm_base_opcode:               1
 ;     asm_branch_back:               1
 ;     asm_branch_fwd:                1
 ;     asm_branch_ok:                 1
@@ -15901,8 +15900,6 @@ save pydis_start, pydis_end
 ;     asm_mn_search:                 1
 ;     asm_mn_search_loop:            1
 ;     asm_mn_search_next:            1
-;     asm_mnemonic_hi:               1
-;     asm_mnemonic_lo:               1
 ;     asm_mode_class2:               1
 ;     asm_mode_class3:               1
 ;     asm_mode_equ:                  1

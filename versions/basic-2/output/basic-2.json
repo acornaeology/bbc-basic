@@ -5155,10 +5155,10 @@
       "align": "after_label"
     },
     {
-      "addr": 33872,
+      "addr": 33873,
       "name": "asm_mnemonic_lo",
       "title": "Inline-assembler mnemonic tables",
-      "description": "Three parallel byte arrays, all indexed by the same X, that turn a\ntyped mnemonic into a base opcode:\n\n| Array           | Holds                                     |\n|-----------------|-------------------------------------------|\n| asm_mnemonic_lo | low byte of the mnemonic's packed-name hash |\n| asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |\n| asm_base_opcode | the base (\"mode 0\") opcode for that mnemonic |\n\nasm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the\nlow 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit\nvalue in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X\nfrom &3A down to 1, comparing the low half against asm_mnemonic_lo,x\nand, on a hit, the high half against asm_mnemonic_hi,x; the matching\nindex selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same\nindices directly via asm_logic_mnemonic (&8607).\n\nBecause the two hash tables are pure functions of the mnemonic text,\neach asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm\nexpression that re-derives it from the three letters (the assembled\nvalue is shown in the address comment). asm_base_opcode holds real\n6502 opcodes and stays a plain byte.\n\nThe index order is meaningful: the operand parser keys its\naddressing-mode handler off cpx thresholds on the matched index.\n\n| Index   | Mnemonics     | Operand form               |\n|---------|---------------|----------------------------|\n| &01-&19 | BRK..TYA      | implied (opcode only)      |\n| &1A-&21 | BCC..BVS      | relative branch            |\n| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|\n| &29-&2C | ASL..ROR      | accumulator (A) or memory  |\n| &2D-&2E | DEC, INC      | memory only                |\n| &2F-&30 | CPX, CPY      | #/zp/abs                   |\n| &31     | BIT           | abs/zp                     |\n| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |\n| &34-&36 | LDX, LDY, STA | with index register        |\n| &37-&38 | STX, STY      | two-register form          |\n| &39     | OPT           | directive (sets OPT flag)  |\n| &3A     | EQU           | directive (EQUB/W/D/S)     |\n\nBase opcodes are each group's column-0 value; the operand parser adds\naddressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.\nBIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal\nstandalone opcode. OPT (&39) and EQU (&3A) are directives and have no\nasm_base_opcode entry.\n\nTwo space-saving quirks. Index 0 is dead: the scan starts at &3A and\nstops at 1, so index 0 is never tested. And the tables overlap by one\nbyte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and\nasm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse\nis safe precisely because index 0's own high and opcode bytes, which\nthose shared bytes stand in for, are never read.",
+      "description": "Three parallel byte arrays, all indexed by the same X, that turn a\ntyped mnemonic into a base opcode:\n\n| Array           | Holds                                     |\n|-----------------|-------------------------------------------|\n| asm_mnemonic_lo | low byte of the mnemonic's packed-name hash |\n| asm_mnemonic_hi | high byte of the mnemonic's packed-name hash |\n| asm_base_opcode | the base (\"mode 0\") opcode for that mnemonic |\n\nasm_parse_mnemonic (&85BA) reads the three mnemonic letters, keeps the\nlow 5 bits of each (A=1..Z=26) and packs them MSB-first into a 15-bit\nvalue in &3D (low) / &3E (high). asm_mn_search (&85F1) then scans X\nfrom &3A down to 1, comparing the low half against asm_mnemonic_lo,x\nand, on a hit, the high half against asm_mnemonic_hi,x; the matching\nindex selects asm_base_opcode,x. Tokenised AND/EOR/OR reach the same\nindices directly via asm_logic_mnemonic (&8607).\n\nBecause the two hash tables are pure functions of the mnemonic text,\neach asm_mnemonic_lo / asm_mnemonic_hi byte is emitted as the beebasm\nexpression that re-derives it from the three letters (the assembled\nvalue is shown in the address comment). asm_base_opcode holds real\n6502 opcodes and stays a plain byte.\n\nThe index order is meaningful: the operand parser keys its\naddressing-mode handler off cpx thresholds on the matched index.\n\n| Index   | Mnemonics     | Operand form               |\n|---------|---------------|----------------------------|\n| &01-&19 | BRK..TYA      | implied (opcode only)      |\n| &1A-&21 | BCC..BVS      | relative branch            |\n| &22-&28 | AND..SBC      | #/zp/abs/(zp,X)/(zp),Y/,X/,Y|\n| &29-&2C | ASL..ROR      | accumulator (A) or memory  |\n| &2D-&2E | DEC, INC      | memory only                |\n| &2F-&30 | CPX, CPY      | #/zp/abs                   |\n| &31     | BIT           | abs/zp                     |\n| &32-&33 | JMP, JSR      | abs; JMP also (abs)        |\n| &34-&36 | LDX, LDY, STA | with index register        |\n| &37-&38 | STX, STY      | two-register form          |\n| &39     | OPT           | directive (sets OPT flag)  |\n| &3A     | EQU           | directive (EQUB/W/D/S)     |\n\nBase opcodes are each group's column-0 value; the operand parser adds\naddressing-mode offsets via asm_opcode_add4/8/16, so a few bases (e.g.\nBIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal\nstandalone opcode. OPT (&39) and EQU (&3A) are directives and have no\nasm_base_opcode entry.\n\nThe tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is\nnever compared), so each label marks its real first entry (BRK) and the\ncode reads the table as `<label> - 1,x` (see the &85F5 / &85FA / &8620\nsites). No byte is wasted on a dead index-0 slot. The byte one before\nasm_mnemonic_lo is &8450 - the last entry of the statement-dispatch\ntable action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the\n1-based table simply abuts. asm_mnemonic_hi and asm_base_opcode in turn\nbegin one byte past their predecessor's final entry (EQU's low and high\nhash bytes), so the three tables pack together end to end.",
       "align": "before_label"
     },
     {
@@ -14547,29 +14547,19 @@
       "bytes": [
         190
       ],
-      "labels": [
-        "asm_mnemonic_lo"
-      ],
-      "comment_inline": "index &00: unused padding (never tested by the scan)",
-      "xref_summaries": [
-        "&8450 used as index base 1 time by &85f5"
-      ],
-      "references": [
-        {
-          "addr": 34293,
-          "kind": "indexed"
-        }
-      ],
       "type": "byte",
       "values": [
         190
       ],
       "expressions": [
         {
-          "text": "&be",
+          "text": ">(stmt_oscli)",
           "tree": {
-            "int": 190,
-            "radix": "hex"
+            "op": "highbyte",
+            "operand": {
+              "ref": 48834,
+              "name": "stmt_oscli"
+            }
           }
         }
       ]
@@ -14578,6 +14568,9 @@
       "addr": 33873,
       "bytes": [
         75
+      ],
+      "labels": [
+        "asm_mnemonic_lo"
       ],
       "comment_inline": "[&01] BRK lo-byte",
       "type": "byte",
@@ -15947,28 +15940,32 @@
       "bytes": [
         53
       ],
-      "labels": [
-        "asm_mnemonic_hi"
-      ],
-      "comment_inline": "index &00 hi (unused); also asm_mnemonic_lo[&3A] = EQU directive packed-name low byte",
-      "xref_summaries": [
-        "&848a used as index base 1 time by &85fa"
-      ],
-      "references": [
-        {
-          "addr": 34298,
-          "kind": "indexed"
-        }
-      ],
+      "comment_inline": "[&3a] EQU directive lo-byte",
       "type": "byte",
       "values": [
         53
+      ],
+      "expressions": [
+        {
+          "text": "pack_mnemonic_lo(\"EQU\")",
+          "tree": {
+            "macro_call": "pack_mnemonic_lo",
+            "args": [
+              {
+                "str": "EQU"
+              }
+            ]
+          }
+        }
       ]
     },
     {
       "addr": 33931,
       "bytes": [
         10
+      ],
+      "labels": [
+        "asm_mnemonic_hi"
       ],
       "comment_inline": "[&01] BRK hi-byte",
       "type": "byte",
@@ -17338,28 +17335,32 @@
       "bytes": [
         22
       ],
-      "labels": [
-        "asm_base_opcode"
-      ],
-      "comment_inline": "index &00 base (unused); also asm_mnemonic_hi[&3A] = EQU directive packed-name high byte",
-      "xref_summaries": [
-        "&84c4 used as index base 1 time by &8620"
-      ],
-      "references": [
-        {
-          "addr": 34336,
-          "kind": "indexed"
-        }
-      ],
+      "comment_inline": "[&3a] EQU directive hi-byte",
       "type": "byte",
       "values": [
         22
+      ],
+      "expressions": [
+        {
+          "text": "pack_mnemonic_hi(\"EQU\")",
+          "tree": {
+            "macro_call": "pack_mnemonic_hi",
+            "args": [
+              {
+                "str": "EQU"
+              }
+            ]
+          }
+        }
       ]
     },
     {
       "addr": 33989,
       "bytes": [
         0
+      ],
+      "labels": [
+        "asm_base_opcode"
       ],
       "comment_inline": "[&01] BRK: base opcode &00",
       "type": "byte",
@@ -19748,9 +19749,22 @@
       ],
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "asm_mnemonic_lo,x",
-      "target": 33872,
-      "target_label": "asm_mnemonic_lo"
+      "operand": "asm_mnemonic_lo - 1,x",
+      "expr": {
+        "text": "asm_mnemonic_lo - 1",
+        "tree": {
+          "op": "sub",
+          "left": {
+            "ref": 33873,
+            "name": "asm_mnemonic_lo"
+          },
+          "right": {
+            "int": 1,
+            "radix": "auto"
+          }
+        }
+      },
+      "target": 33872
     },
     {
       "addr": 34296,
@@ -19775,9 +19789,22 @@
       "comment_inline": "High half",
       "type": "code",
       "mnemonic": "ldy",
-      "operand": "asm_mnemonic_hi,x",
-      "target": 33930,
-      "target_label": "asm_mnemonic_hi"
+      "operand": "asm_mnemonic_hi - 1,x",
+      "expr": {
+        "text": "asm_mnemonic_hi - 1",
+        "tree": {
+          "op": "sub",
+          "left": {
+            "ref": 33931,
+            "name": "asm_mnemonic_hi"
+          },
+          "right": {
+            "int": 1,
+            "radix": "auto"
+          }
+        }
+      },
+      "target": 33930
     },
     {
       "addr": 34301,
@@ -20080,9 +20107,22 @@
       ],
       "type": "code",
       "mnemonic": "lda",
-      "operand": "asm_base_opcode,x",
-      "target": 33988,
-      "target_label": "asm_base_opcode"
+      "operand": "asm_base_opcode - 1,x",
+      "expr": {
+        "text": "asm_base_opcode - 1",
+        "tree": {
+          "op": "sub",
+          "left": {
+            "ref": 33989,
+            "name": "asm_base_opcode"
+          },
+          "right": {
+            "int": 1,
+            "radix": "auto"
+          }
+        }
+      },
+      "target": 33988
     },
     {
       "addr": 34339,

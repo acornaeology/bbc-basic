@@ -4,7 +4,7 @@ from pathlib import Path
 
 import dasmos
 from dasmos import Align
-from dasmos.expr import param, group
+from dasmos.expr import param, group, ref
 from dasmos.hooks import stringhi_hook
 
 _script_dirpath = Path(__file__).resolve().parent
@@ -48,7 +48,11 @@ NUM_DISPATCH_TOKENS = 0x72  # tokens &8E..&FF
 ASM_MNEMONIC_LO_BASE = 0x8450
 ASM_MNEMONIC_HI_BASE = 0x848a
 ASM_BASE_OPCODE_BASE = 0x84c4
-ASM_TABLES_END = 0x84fd  # first byte past asm_base_opcode (assembler_exit)
+# The labels sit on each table's real first entry (BRK), one past the
+# *_BASE addressing base; the code reads the tables as `<label> - 1,x`.
+ASM_MNEMONIC_LO = 0x8451
+ASM_MNEMONIC_HI = 0x848b
+ASM_BASE_OPCODE = 0x84c5
 
 # Mnemonic recognised at each table index. Index &00 is dead padding
 # (the scan runs X = &3A..1, so index 0 is never tested). Indices &39 /
@@ -851,7 +855,7 @@ d.index_base(0x8351, 'action_hi_by_token')
 # Inline-assembler mnemonic tables (&8450-&84FC).
 # ----------------------------------------------------------------------
 d.banner(
-    ASM_MNEMONIC_LO_BASE,
+    ASM_MNEMONIC_LO,
     title='Inline-assembler mnemonic tables',
     description="""Three parallel byte arrays, all indexed by the same X, that turn a
 typed mnemonic into a base opcode:
@@ -900,52 +904,48 @@ BIT &20, LDX/LDY-immediate &A2/&A0) are the slot value, not a legal
 standalone opcode. OPT (&39) and EQU (&3A) are directives and have no
 asm_base_opcode entry.
 
-Two space-saving quirks. Index 0 is dead: the scan starts at &3A and
-stops at 1, so index 0 is never tested. And the tables overlap by one
-byte - asm_mnemonic_lo[&3A] is the first byte of asm_mnemonic_hi, and
-asm_mnemonic_hi[&3A] is the first byte of asm_base_opcode. The reuse
-is safe precisely because index 0's own high and opcode bytes, which
-those shared bytes stand in for, are never read.""",
+The tables are indexed 1-based: the scan runs X = &3A..1 (index 0 is
+never compared), so each label marks its real first entry (BRK) and the
+code reads the table as `<label> - 1,x` (see the &85F5 / &85FA / &8620
+sites). No byte is wasted on a dead index-0 slot. The byte one before
+asm_mnemonic_lo is &8450 - the last entry of the statement-dispatch
+table action_table_hi, >(stmt_oscli) for OSCLI (token &FF), which the
+1-based table simply abuts. asm_mnemonic_hi and asm_base_opcode in turn
+begin one byte past their predecessor's final entry (EQU's low and high
+hash bytes), so the three tables pack together end to end.""",
 )
 
-# Each byte gets its own EQUB item (d.byte length 1) so its per-index
-# inline comment lands on its own line. asm_mnemonic_lo[&00] is padding
-# whose value (&BE) happens to equal >(stmt_oscli), which the renderer
-# would otherwise symbolise; pin it to a plain hex byte.
-d.index_base(ASM_MNEMONIC_LO_BASE, 'asm_mnemonic_lo')
-d.expr(ASM_MNEMONIC_LO_BASE, '&be')
-for _i in range(ASM_MNEMONIC_HI_BASE - ASM_MNEMONIC_LO_BASE):
+# The tables are indexed 1-based (X = mnemonic number 1..58), so each
+# label sits on its real first entry (BRK) and the code reads it as
+# `<label> - 1,x`. Each byte is its own EQUB item so its per-index inline
+# comment lands on its own line. The byte one before asm_mnemonic_lo
+# (&8450) is action_table_hi's last entry (>(stmt_oscli), token &FF) and
+# is left to that table; the bytes one before asm_mnemonic_hi / asm_base_
+# opcode are the preceding table's final entry (EQU's low / high byte).
+d.index_base(ASM_MNEMONIC_LO, 'asm_mnemonic_lo')
+for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
     d.byte(ASM_MNEMONIC_LO_BASE + _i, 1, override=True)
-    if _i == 0:
-        _text = 'index &00: unused padding (never tested by the scan)'
-    else:
-        d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
-        _dir = ' directive' if _i >= 0x39 else ''
-        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} lo-byte'
-    d.comment(ASM_MNEMONIC_LO_BASE + _i, _text, align=Align.INLINE)
+    d.expr(ASM_MNEMONIC_LO_BASE + _i, pack_mnemonic_lo(ASM_MNEMONICS[_i]))
+    _dir = ' directive' if _i >= 0x39 else ''
+    d.comment(ASM_MNEMONIC_LO_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} lo-byte',
+              align=Align.INLINE)
 
-d.index_base(ASM_MNEMONIC_HI_BASE, 'asm_mnemonic_hi')
-for _i in range(ASM_BASE_OPCODE_BASE - ASM_MNEMONIC_HI_BASE):
+d.index_base(ASM_MNEMONIC_HI, 'asm_mnemonic_hi')
+for _i in range(1, len(ASM_MNEMONICS)):             # 1..58 (BRK..EQU)
     d.byte(ASM_MNEMONIC_HI_BASE + _i, 1, override=True)
-    if _i == 0:
-        _text = ('index &00 hi (unused); also asm_mnemonic_lo[&3A] = '
-                 'EQU directive packed-name low byte')
-    else:
-        d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
-        _dir = ' directive' if _i >= 0x39 else ''
-        _text = f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} hi-byte'
-    d.comment(ASM_MNEMONIC_HI_BASE + _i, _text, align=Align.INLINE)
+    d.expr(ASM_MNEMONIC_HI_BASE + _i, pack_mnemonic_hi(ASM_MNEMONICS[_i]))
+    _dir = ' directive' if _i >= 0x39 else ''
+    d.comment(ASM_MNEMONIC_HI_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}{_dir} hi-byte',
+              align=Align.INLINE)
 
-d.index_base(ASM_BASE_OPCODE_BASE, 'asm_base_opcode')
-for _i in range(ASM_TABLES_END - ASM_BASE_OPCODE_BASE):
+d.index_base(ASM_BASE_OPCODE, 'asm_base_opcode')
+for _i in range(1, len(ASM_BASE_OPCODES)):          # 1..56 (BRK..STY)
     d.byte(ASM_BASE_OPCODE_BASE + _i, 1, override=True)
-    if _i == 0:
-        _text = ('index &00 base (unused); also asm_mnemonic_hi[&3A] = '
-                 'EQU directive packed-name high byte')
-    else:
-        _text = (f'[&{_i:02x}] {ASM_MNEMONICS[_i]}: base opcode '
-                 f'&{ASM_BASE_OPCODES[_i]:02x}')
-    d.comment(ASM_BASE_OPCODE_BASE + _i, _text, align=Align.INLINE)
+    d.comment(ASM_BASE_OPCODE_BASE + _i,
+              f'[&{_i:02x}] {ASM_MNEMONICS[_i]}: base opcode '
+              f'&{ASM_BASE_OPCODES[_i]:02x}', align=Align.INLINE)
 
 d.subroutine(
     0x84fd, 'assembler_exit',
@@ -1140,8 +1140,10 @@ d.label(0x85f1, 'asm_mn_search')
 d.comment(0x85f3, 'Compacted mnemonic low byte', align=Align.INLINE)
 d.comment(0x85f5, 'Compare the low half', align=Align.INLINE)
 d.label(0x85f5, 'asm_mn_search_loop')
+d.expr(0x85f6, ref(ASM_MNEMONIC_LO) - 1)   # cmp asm_mnemonic_lo-1,x (1-based)
 d.comment(0x85f8, 'no match: next entry', align=Align.INLINE)
 d.comment(0x85fa, 'High half', align=Align.INLINE)
+d.expr(0x85fb, ref(ASM_MNEMONIC_HI) - 1)   # ldy asm_mnemonic_hi-1,x (1-based)
 d.comment(0x85fd, 'match the high half?', align=Align.INLINE)
 d.comment(0x85ff, 'matched', align=Align.INLINE)
 d.comment(0x8601, 'Next entry', align=Align.INLINE)
@@ -1176,6 +1178,7 @@ d.comment(0x861e, 'no: Mistake', align=Align.INLINE)
 # opcode_found (&8620): start assembling the matched opcode.
 d.comment(0x8620, 'Base opcode from the table', align=Align.INLINE)
 d.label(0x8620, 'asm_got_opcode')
+d.expr(0x8621, ref(ASM_BASE_OPCODE) - 1)   # lda asm_base_opcode-1,x (1-based)
 d.comment(0x8623, 'Save it', align=Align.INLINE)
 d.comment(0x8625, 'Assume a one-byte instruction', align=Align.INLINE)
 d.comment(0x8627, 'index &1A+ takes an operand?', align=Align.INLINE)
