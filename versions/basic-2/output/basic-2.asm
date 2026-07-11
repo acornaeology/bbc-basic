@@ -1964,7 +1964,7 @@ oscli             = &fff7
 .parse_dec_loop
     iny                                                               ; 889d: c8          .        ; Next character
     lda (zp_general),y                                                ; 889e: b1 37       .7       ; read it
-    cmp #ASC(":")                                                     ; 88a0: c9 3a       .:       ; above 9?
+    cmp #'9' + 1                                                      ; 88a0: c9 3a       .:       ; above 9?
     bcs parse_dec_encode                                              ; 88a2: b0 36       .6       ; not a digit: done
     cmp #ASC("0")                                                     ; 88a4: c9 30       .0       ; below 0?
     bcc parse_dec_encode                                              ; 88a6: 90 32       .2       ; not a digit: done

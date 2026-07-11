@@ -5,7 +5,7 @@ from pathlib import Path
 
 import dasmos
 from dasmos import Align
-from dasmos.expr import param, group, ref
+from dasmos.expr import param, group, ref, char
 from dasmos.hooks import stringhi_hook
 
 _script_dirpath = Path(__file__).resolve().parent
@@ -1588,7 +1588,7 @@ d.comment(0x889d, 'Next character', align=Align.INLINE)
 d.label(0x889d, 'parse_dec_loop')
 d.comment(0x889e, 'read it', align=Align.INLINE)
 d.comment(0x88a0, 'above 9?', align=Align.INLINE)
-d.char_literal(0x88a1)
+d.expr(0x88a1, char(ord('9')) + 1)  # &3A: one past '9'
 d.comment(0x88a2, 'not a digit: done', align=Align.INLINE)
 d.comment(0x88a4, 'below 0?', align=Align.INLINE)
 d.char_literal(0x88a5)

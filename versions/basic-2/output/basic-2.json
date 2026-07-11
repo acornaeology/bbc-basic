@@ -24788,8 +24788,21 @@
       "comment_inline": "above 9?",
       "type": "code",
       "mnemonic": "cmp",
-      "operand": "#':'",
-      "format_hint": "char"
+      "operand": "#'9' + 1",
+      "expr": {
+        "text": "'9' + 1",
+        "tree": {
+          "op": "add",
+          "left": {
+            "int": 57,
+            "radix": "char"
+          },
+          "right": {
+            "int": 1,
+            "radix": "auto"
+          }
+        }
+      }
     },
     {
       "addr": 34978,
