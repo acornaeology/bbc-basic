@@ -56,38 +56,52 @@
     ],
     "references": [
         {
+            "label": "tobylobster's BBC Micro MOS disassembly",
+            "url": "https://tobylobster.github.io/mos/",
+            "icon": "ref",
+            "category": "source",
+            "note": "tobylobster's fully annotated disassembly of the BBC Micro MOS — a reference for the OSBYTE / OSWORD / vector-call semantics and zero-page / workspace names BBC BASIC relies on.",
+            "id": "mos"
+        },
+        {
             "label": "The Advanced BASIC ROM User Guide (Colin Pharo)",
             "url": "https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf",
+            "category": "source",
             "icon": "doc",
             "note": "A detailed reference to the internals of the BBC BASIC ROM: zero-page usage, the keyword table, the interpreter loop, variable storage, and the floating-point routines."
         },
         {
             "label": "BBC Microcomputer System User Guide (John Coll)",
             "url": "https://archive.org/details/BBCUserGuide",
+            "category": "source",
             "icon": "doc",
             "note": "The official BBC Micro user guide. Much of it documents the BBC BASIC language: statements, functions, operators, and the assembler."
         },
         {
             "label": "J.G. Harston's BBC BASIC source reconstruction",
             "url": "https://mdfs.net/Software/BBCBasic/BBC/",
+            "category": "source",
             "icon": "ref",
             "note": "A multi-target reconstruction of the BBC BASIC source that reassembles (with the BBC BASIC assembler) to byte-identical ROMs, with zero-page maps and entry/exit documentation. The primary external source of BBC BASIC II labels."
         },
         {
             "label": "tobylobster's BBC BASIC tokeniser/detokeniser",
             "url": "https://github.com/TobyLobster/basic_tokens",
+            "category": "source",
             "icon": "ref",
             "note": "A Python BBC BASIC tokeniser and detokeniser — a clean reference for the keyword/token table and the tokenising rules."
         },
         {
             "label": "hoglet's BBC BASIC 4r32 disassembly",
             "url": "https://github.com/hoglet67/BBCBasic4r32",
+            "category": "related",
             "icon": "ref",
             "note": "A byte-identical disassembly of BBC BASIC 4r32. A later, reorganised cousin of BASIC II, useful for cross-referencing structure and label names."
         },
         {
             "label": "BBC BASIC II in The BBC Micro ROM Library",
             "url": "https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d",
+            "category": "rom-image",
             "icon": "chip",
             "note": "The exact ROM image catalogued by tobylobster's ROM library, identified by MD5."
         }

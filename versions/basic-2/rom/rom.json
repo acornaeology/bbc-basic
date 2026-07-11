@@ -10,31 +10,21 @@
     "size": 16384,
     "md5": "2cc67be4624df4dc66617742571a8e3d",
     "sha256": "45bd55dc0f6f0f8f1fe9e2481de7def206565eec8f600ba3068b849ca4132079",
-    "links": [
+    "sources": [
         {
-            "label": "Disassembly source on GitHub",
-            "url": "https://github.com/acornaeology/bbc-basic/blob/master/versions/basic-2/output/basic-2.asm",
-            "icon": "github"
+            "assembler": "beebasm",
+            "url": "https://github.com/acornaeology/bbc-basic/blob/master/versions/basic-2/output/basic-2.asm"
         },
+        {
+            "assembler": "64tass",
+            "url": "https://github.com/acornaeology/bbc-basic/blob/master/versions/basic-2/output/basic-2.s"
+        }
+    ],
+    "links": [
         {
             "label": "BBC BASIC II in The BBC Micro ROM Library",
             "url": "https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d",
             "icon": "chip"
-        },
-        {
-            "label": "J.G. Harston's BBC BASIC source reconstruction (mdfs.net)",
-            "url": "https://mdfs.net/Software/BBCBasic/BBC/",
-            "icon": "ref"
-        },
-        {
-            "label": "hoglet's BBC BASIC 4r32 disassembly",
-            "url": "https://github.com/hoglet67/BBCBasic4r32",
-            "icon": "ref"
-        },
-        {
-            "label": "The Advanced BASIC ROM User Guide (Colin Pharo)",
-            "url": "https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf",
-            "icon": "doc"
         }
     ]
 }
