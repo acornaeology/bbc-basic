@@ -4,8 +4,8 @@
 ; ROM mapped at &8000 on the BBC Micro.
 ;
 ; Generated from the original ROM by a dasmos driver
-; (versions/basic-2/disassemble/disasm_basic_2.py); it reassembles byte-for-byte with
-; beebasm. This file is generated - do not edit it by hand. Edit the driver and
+; (versions/basic-2/disassemble/disasm_basic_2.py) and reassembles byte-for-byte to the
+; original ROM. This file is generated - do not edit it by hand. Edit the driver and
 ; regenerate with fantasm disassemble 2.
 ;
 ; - Source ROM: 16384 bytes

@@ -467,8 +467,8 @@ d.set_file_header(
 the 16 kB sideways language ROM mapped at &8000 on the BBC Micro.
 
 Generated from the original ROM by a dasmos driver
-(`versions/basic-2/disassemble/disasm_basic_2.py`); it reassembles
-byte-for-byte with beebasm. This file is generated - do not edit it by
+(`versions/basic-2/disassemble/disasm_basic_2.py`) and reassembles
+byte-for-byte to the original ROM. This file is generated - do not edit it by
 hand. Edit the driver and regenerate with `fantasm disassemble 2`.
 
 - Source ROM: {len(_rom_bytes)} bytes
@@ -12793,6 +12793,21 @@ _output_dirpath.mkdir(parents=True, exist_ok=True)
 output_filepath = _output_dirpath / 'basic-2.asm'
 output_filepath.write_text(output, encoding='utf-8')
 print(f'Wrote {output_filepath}', file=sys.stderr)
+
+tass_output = str(
+    ir.render(
+        '64tass',
+        include_build_instructions=True,
+        listing_filename='basic-2.s',
+        build_output_name='basic-2.rom',
+        byte_column=True,
+        default_byte_cols=12,
+        default_word_cols=6,
+    )
+)
+tass_filepath = _output_dirpath / 'basic-2.s'
+tass_filepath.write_text(tass_output, encoding='utf-8')
+print(f'Wrote {tass_filepath}', file=sys.stderr)
 json_filepath = _output_dirpath / 'basic-2.json'
 json_filepath.write_text(str(ir.render('json')), encoding='utf-8')
 print(f'Wrote {json_filepath}', file=sys.stderr)

@@ -68,7 +68,7 @@ The orchestration layer is provided by [fantasm](https://github.com/acornaeology
 The ROM version lives under `versions/basic-2/`. Subdirectories:
 - `rom/` — original ROM binary and metadata (`rom.json` with hashes)
 - `disassemble/` — dasmos driver script
-- `output/` — generated assembly (`.asm`) and structured data (`.json`)
+- `output/` — generated assembly (`.asm` beebasm, `.s` 64tass) and structured data (`.json`)
 
 The version ID in `acornaeology.json` and CLI arguments is the bare number `2`. The directory layout is governed by `[versions] prefixes` in `fantasm.toml`; fantasm's `resolve_version_files()` maps a version ID to the matching `versions/basic-{version_id}/` directory and the driver `disasm_basic_{version_id}.py`.
 
