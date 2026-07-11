@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -422,7 +423,6 @@ HANDLER_INFO = {
 _rom_bytes = Path(_rom_filepath).read_bytes()
 _declared_handlers: dict[int, str] = {}
 
-
 # Keyword table runs from &8071 up to the action-address tables.
 # Keyword/tokeniser table token addresses (&8071..&836C): the only bytes
 # with bit 7 set are the token bytes, so each marks the end of a keyword's
@@ -460,6 +460,23 @@ _pack_key = group((_mnem[0] & 0x1F) * 0x400
                   + (_mnem[2] & 0x1F))
 pack_mnemonic_lo = d.define_macro("pack_mnemonic_lo", ["mnem"], _pack_key & 0xFF)
 pack_mnemonic_hi = d.define_macro("pack_mnemonic_hi", ["mnem"], _pack_key // 0x100)
+
+d.set_file_header(
+    title='Acorn BBC BASIC II',
+    description=f"""Annotated disassembly of the BBC BASIC II interpreter ROM:
+the 16 kB sideways language ROM mapped at &8000 on the BBC Micro.
+
+Generated from the original ROM by a dasmos driver
+(`versions/basic-2/disassemble/disasm_basic_2.py`); it reassembles
+byte-for-byte with beebasm. This file is generated - do not edit it by
+hand. Edit the driver and regenerate with `fantasm disassemble 2`.
+
+- Source ROM: {len(_rom_bytes)} bytes
+- md5: `{hashlib.md5(_rom_bytes).hexdigest()}`
+- sha256: `{hashlib.sha256(_rom_bytes).hexdigest()}`
+""",
+)
+
 
 """dasmos driver for Acorn BBC BASIC II.
 
@@ -12762,6 +12779,8 @@ ir = d.disassemble()
 output = str(
     ir.render(
         'beebasm',
+        include_build_instructions=True,
+        listing_filename='basic-2.asm',
         boundary_label_prefix='pydis_',
         byte_column=True,
         byte_column_format='py8dis',

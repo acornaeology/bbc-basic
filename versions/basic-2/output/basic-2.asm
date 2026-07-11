@@ -1,3 +1,20 @@
+; Acorn BBC BASIC II
+;
+; Annotated disassembly of the BBC BASIC II interpreter ROM: the 16 kB sideways language
+; ROM mapped at &8000 on the BBC Micro.
+;
+; Generated from the original ROM by a dasmos driver
+; (versions/basic-2/disassemble/disasm_basic_2.py); it reassembles byte-for-byte with
+; beebasm. This file is generated - do not edit it by hand. Edit the driver and
+; regenerate with fantasm disassemble 2.
+;
+; - Source ROM: 16384 bytes
+; - md5: 2cc67be4624df4dc66617742571a8e3d
+; - sha256: 45bd55dc0f6f0f8f1fe9e2481de7def206565eec8f600ba3068b849ca4132079
+;
+; Assemble with beebasm:
+;   beebasm -i basic-2.asm -o <output.bin>
+
 ; Macros
 
 MACRO pack_mnemonic_lo mnem
