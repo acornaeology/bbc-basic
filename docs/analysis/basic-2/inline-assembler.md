@@ -97,7 +97,7 @@ A leading `.` runs [`asm_define_label`](address:85A5@2?hex):
     jsr assign_number       ; label_variable = P%
 ```
 
-So `.loop` is literally `loop = P%` — the label is an ordinary integer variable holding the address. It follows that labels live in the same namespace as program variables, persist after the block, and can be read or even reassigned from BASIC; an indirection or empty name where a label is expected raises *Mistake*.
+So `.loop` is literally `loop = P%` — the label is an ordinary **floating-point variable** holding the address. A BASIC variable name is integer only when it carries a `%` suffix, so a bare label defines a floating-point variable, presumably so that the same plain name denotes the label at its definition (`.loop`) and at every reference (`loop`); an integer label would have to be spelled `.loop%` and referenced as `loop%`. It follows that labels live in the same namespace as program variables, persist after the block, and can be read or even reassigned from BASIC; an indirection or empty name where a label is expected raises *Mistake*.
 
 ## Forward references and the two-pass idiom
 
@@ -136,13 +136,14 @@ The choice to return **`P%` rather than `0`** for an unknown forward reference i
 The residual failure case is a forward reference that ultimately resolves to a **zero-page** address: pass 1 sizes it absolute (operand `P%`, non-zero high byte), pass 2 zero-page, and the instruction shrinks — shifting every address after it. BBC BASIC II offers no directive to force an addressing mode — the mode is chosen solely from the operand's high byte, and the pass-1 value is `P%`, which cannot be coerced to zero page — so the only remedy is to **define zero-page labels before they are used**, giving both passes the same small value:
 
 ```basic
-   10 zpwork = &70                 : REM define the zero-page label up front
-   20 FOR pass% = 0 TO 3 STEP 3
-   30   P% = code%
-   40   [ OPT pass%
-   50     LDA zpwork               \ zero-page (2 bytes) on both passes
-   60   ]
-   70 NEXT
+   10 DIM code% 256
+   20 zpwork = &70                 : REM define the zero-page label up front
+   30 FOR pass% = 0 TO 3 STEP 3
+   40   P% = code%
+   50   [ OPT pass%
+   60     LDA zpwork               \ zero-page (2 bytes) on both passes
+   70   ]
+   80 NEXT
 ```
 
 Assign `zpwork` *after* the block instead and pass 1 would size the `LDA` absolute, pass 2 zero-page, and every label following it would take a different value on each pass.
