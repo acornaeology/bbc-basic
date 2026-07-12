@@ -1,10 +1,10 @@
-# The constant that isn't quite *e*: BBC BASIC's 5-byte floats and the precision of its constant pool
+# BBC BASIC's 5-byte floats and the precision of its constant pool
 
 > **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for stored REAL constants. The format, the addresses, and the byte-level figures are all specific to this version.
 
-Tucked into the maths section of the ROM is a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Disassembling them raised a small but stubborn question: when the ROM says it holds *e*, does it?
+The maths section of the ROM holds a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Each is a 32-bit approximation to an irrational or non-terminating value, so none is exact; the most the format can hold is a value within one unit in the last place of the target.
 
-Not exactly — but no finite representation could. *e* is irrational, so no 32-bit fraction equals it; the most any such format can do is store the *nearest representable* value, and that, not exactness, is the fair yardstick. The sharper question is whether the ROM holds *that* nearest value — and for *e* it does not. It stores the neighbouring value one step further out — and, as we'll see, not by accident: for *e* that value is the one that prints *correctly in decimal*. A look across the whole pool shows neither tidy nearest-rounding nor any single rule, but no carelessness either. This article works through the format in the base the machine actually uses, the evidence, and why the disassembly shows the full decoded value rather than a tidy rounded one.
+For *e*, the stored value is not even the *nearest* representable one — it is the neighbour one step further out, which is the value that prints correctly when BBC BASIC rounds it to ten figures. Across the whole pool the rounding is not uniform: most constants are faithful to a written decimal, a couple are the nearest representable outright, and one is a ULP off in both bases. This article works through the format in the base the machine uses, sets out the value stored for each constant, and shows how the disassembly records the exact stored value.
 
 
 ## The 5-byte format
@@ -36,11 +36,10 @@ The smallest change the format can make to a value at a given magnitude is a cha
 The constant at [`&AAE4`](address:AAE4@2?hex) is five bytes:
 
 ```asm
-.flt_e
-    equb &82, &2d, &f8, &54, &58    ; bbc_float5 = 2.718281827867031  e
+    equb &82, &2d, &f8, &54, &58    ; float40 2.718281828  e
 ```
 
-Exponent `&82` = 130; restoring the implied leading bit gives the significand `(0x2d|0x80) f8 54 58` = **`ADF85458`**.
+Exponent `&82` = 130; restoring the implied leading bit gives the significand `(0x2d|0x80) f8 54 58` = **`ADF85458`**. (`float40` is the disassembly's display label for the packed 5-byte type; the inline comment shows the value to ten significant figures, of which more below.)
 
 Now carry the true value of *e* to more than 32 significand bits and line the two up:
 
@@ -60,12 +59,12 @@ For the human reader, in decimal:
 | true *e*                                     | `2.718281828459045`            |
 | difference                                   | `5.92 × 10⁻¹⁰`  (≈ `0.64` ULP) |
 
-One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The point isn't that the bytes aren't *e* — no 32-bit value is — but that they aren't even the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better *binary* value was available in the same five bytes, and rounding down passed it over — which looks like a slip until you ask what the bytes *print as*. (They are the exact rational `ADF85458 / 2³⁰`.)
+One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The bytes are not *e* — no 32-bit value is — but they are also not the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better *binary* value was available in the same five bytes; rounding down passed it over. The reason emerges from what the bytes *print as* — they are the exact rational `ADF85458 / 2³⁰`.
 
 
 ## Why round down? Decimal fidelity
 
-The truncation looks like a slip only until you ask what the stored value *prints as*. BBC BASIC shows reals to ten significant figures, and to ten figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
+The reason is the decimal display. BBC BASIC shows reals to ten significant figures, and to ten figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
 
 A real BBC Micro bears it out — `@% = &A0A` selects ten significant figures:
 
@@ -79,12 +78,12 @@ A real BBC Micro bears it out — `@% = &A0A` selects ten significant figures:
 
 `EXP(1)` evaluates to `e⁰ × e¹` with both factors exact, so it returns the raw `&AAE4` constant — and it reads `2.718281828`, not the `2.718281829` the binary-nearest value would have given. (`PRINT PI` showing `3.141592653` confirms the ten-figure display is live and rounding to nearest; that it lands one digit below true π is just the format running out of precision at the tenth figure — a separate effect.)
 
-The likeliest mechanism is the dullest one: the constants were written down as decimals, to whatever length the source table carried, and an assembler converted them. The stored binary is then the nearest representable to *the decimal Acorn wrote*, not to the true irrational — and the two diverge exactly when the decimal's last digit and the binary's last bit disagree. The value isn't careless; it's loyal to its decimal.
+The likely mechanism is prosaic: the constants were written down as decimals, to whatever length the source table carried, and an assembler converted them. The stored binary is then the nearest representable to *the decimal Acorn wrote*, not to the true irrational — and the two diverge exactly when the decimal's last digit and the binary's last bit disagree.
 
 
 ## Not a uniform policy
 
-Does that decimal loyalty explain the *whole* pool? Not quite. Restoring each named scalar's significand and comparing it with the true value carried past 32 bits:
+Does decimal fidelity explain the *whole* pool? Not quite. Restoring each named scalar's significand and comparing it with the true value carried past 32 bits:
 
 | constant | addr    | exp | ROM significand | true significand (hex) | nearest 32-bit | ROM − nearest          |
 |----------|---------|-----|-----------------|------------------------|----------------|------------------------|
@@ -101,12 +100,12 @@ Read the last two columns together. Where the dropped continuation is far from `
 - **ln 2 is correctly rounded** — its true significand is `…F7.D1C…`, and the `.D` *did* carry `F7` up to `F8`;
 - **log₁₀*e* sits one ULP *above* the correctly-rounded value** (`DE5BD8AA` where nearest is `DE5BD8A9`). It is *high*, so it cannot be a truncation at all.
 
-So decimal fidelity explains *e* — and is consistent with π/180, whose truncation is decimally harmless (both neighbours print the same ten figures) — but it does not govern the whole pool. ln 2, π/2 and 180/π simply happen to be the nearest value in both bases at once. log₁₀*e*, though, is the odd one out: a ULP high in binary *and* wrong in its tenth decimal figure (`0.4342944820` against the true `0.4342944819`), worse in both bases than the value next door. That's the signature of a *computed* constant rather than a typed one — consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected. The honest summary: **most of the constants are faithful to a decimal, a couple are the nearest representable outright, and at least one is simply a little off — no single discipline, but no carelessness either.**
+So decimal fidelity explains *e* — and is consistent with π/180, whose truncation is decimally harmless (both neighbours print the same ten figures) — but it does not govern the whole pool. ln 2, π/2 and 180/π simply happen to be the nearest value in both bases at once. log₁₀*e*, though, is the odd one out: a ULP high in binary *and* wrong in its tenth decimal figure (`0.4342944820` against the true `0.4342944819`), worse in both bases than the value next door. That is the signature of a *computed* constant rather than a typed one — consistent with its having been formed as `1 / ln 10` from a slightly-low `ln 10` and never corrected. In summary: **most of the constants are faithful to a written decimal, a couple are the nearest representable outright, and at least one is a ULP off — no single rule across the pool.**
 
 
-## A constant the interpreter can beat
+## A constant the interpreter computes more accurately than it stores
 
-The log₁₀*e* outlier is something you can watch happen. BBC BASIC effectively carries log₁₀*e* twice over: `LOG` reaches for the stored `&A869` constant (`LOG(x) = LN(x) × log₁₀e`), while `1/LN(10)` derives the same quantity afresh from the `ln 10` series, never touching the table.
+The log₁₀*e* outlier can be observed directly. BBC BASIC effectively carries log₁₀*e* twice over: `LOG` reaches for the stored `&A869` constant (`LOG(x) = LN(x) × log₁₀e`), while `1/LN(10)` derives the same quantity afresh from the `ln 10` series, never touching the table.
 
 The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, i.e. `0.4342944820` at ten figures and `0.79` ULP high. BASIC II has no float-indirection operator to read those ROM bytes back as a real, but the value reconstructs exactly as the significand over a power of two. On a real machine, with ten figures selected:
 
@@ -120,18 +119,18 @@ The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, i.e. `0.434294
 
 The first line is the stored `&A869` constant, rebuilt arithmetically as `3730561194 / 2³³` (halved to `1865280597 / 2³²` to keep the literal representable) — and general format trims its trailing zero, so `0.4342944820` shows as `0.434294482`. The second is log₁₀*e* recomputed from the `ln 10` series. They diverge at the tenth figure: the stored value rounds *up* to `…820`, the computed one lands on the correct `…819`.
 
-So the interpreter computes a *more accurate* log₁₀*e* than the one baked into its own ROM, and then ships the inferior value in `LOG`, the one function whose entire job is base-10 logarithms. The likeliest history is the one the survey pointed to: the constant was precomputed once — `1 / ln 10` from an `ln 10` a hair too low, rounded the wrong way — and never revisited, while the runtime series simply happens to be good enough that one-over-it lands on the right bit.
+So the interpreter computes a *more accurate* log₁₀*e* than the one stored in its own ROM, yet `LOG` — whose job is base-10 logarithms — uses the stored constant. The likely history: the constant was precomputed once as `1 / ln 10` from an `ln 10` slightly too low, rounded the wrong way, and never revised, while the runtime `ln 10` series is good enough that one over it lands on the correct bit.
 
 
-## Why the disassembly shows the full value
+## How the disassembly records the value
 
-This is precisely why the typed-data annotation emits the whole decoded figure and not a rounded one:
+The typed-data annotation records each constant at two precisions. The `.asm` inline comment shows the value to ten significant figures — the honest width of a 32-bit mantissa, and the same figure BBC BASIC itself prints:
 
 ```asm
-    equb &82, &2d, &f8, &54, &58    ; bbc_float5 = 2.718281827867031  e
+    equb &82, &2d, &f8, &54, &58    ; float40 2.718281828  e
 ```
 
-Printed as `2.718281828`, the constant would read as exact *e* and hide both facts at once — that it is a finite approximation, and that it isn't even the closest one the format allows. Anyone wondering why BASIC's `EXP`, `LN` or `DEG`/`RAD` disagree with a pocket calculator in the last digits is owed the value actually stored, not a flattering round of it: the *constants themselves* carry up to a ULP of error before a single multiply happens. The full repr makes the stored reality visible; the comment after it (`e`) names the *intent* without claiming the bytes achieve it.
+At that width the stored constant is indistinguishable from true *e*: the two agree to ten figures, as *Why round down* showed, and the departure only appears at the eleventh. The exact stored value — the rational `ADF85458 / 2³⁰` = `2.718281827867031` — is carried full-precision in the JSON `decoded.value` field, where the gap from *e* is explicit. Anyone wondering why BASIC's `EXP`, `LN` or `DEG`/`RAD` disagree with a pocket calculator in the last digits can read the exact stored value there: the *constants themselves* carry up to a ULP of error before a single multiply happens. The trailing `e` in the comment names the *intent* without claiming the bytes achieve it.
 
 
 ## Working past the limit: the two-part π/2
@@ -141,17 +140,9 @@ Acorn knew 32 bits wasn't always enough, and one corner of the pool shows them e
 - [`&AA59`](address:AA59@2?hex): a deliberately *low-precision* high part, `−1.57080078125`, whose significand `C9100000` has its **bottom two bytes zeroed** — so `n × C₁` is computed with no rounding error in the product;
 - [`&AA5E`](address:AA5E@2?hex): the correction `4.454455 × 10⁻⁶`, holding the bits the high part dropped.
 
-Their sum is `−π/2` to about fourteen digits — far past what a single 32-bit value could carry — and the reduction subtracts the two parts in turn. It's a neat acknowledgement, in the ROM itself, of the very precision ceiling this article is about. (Both halves are typed `bbc_float5` in the disassembly, so their decoded values sit right beside the bytes.)
+Their sum is `−π/2` to about fourteen digits — far past what a single 32-bit value could carry — and the reduction subtracts the two parts in turn. This works past the 32-bit ceiling the rest of this article describes. (Both halves carry the packed 5-byte type in the disassembly, so their decoded values sit beside the bytes.)
 
 
 ## In the disassembly
 
-All 39 packed constants in the pool — the named scalars, the `1.0`/`−0.5` terms, and every coefficient of the ATN/SIN/EXP/LN continued-fraction tables — are marked with the `bbc_float5` typed-data type (dasmos 1.10.0). The five raw bytes are still emitted, so the image reassembles byte-identical, while the decoded value rides along as an annotation (and as a structured `decoded` field in the JSON). That is what makes a claim like "the *e* in the ROM is the rational `ADF85458 / 2³⁰` — a ULP short of the nearest value the format could hold" something you can read straight off the listing rather than having to work out by hand.
-
-
-## Cross-references
-
-- [`&AAE4`](address:AAE4@2?hex) — the *e* constant analysed above.
-- [`&AA63`](address:AA63@2?hex) π/2, [`&A86E`](address:A86E@2?hex) ln 2, [`&A869`](address:A869@2?hex) log₁₀*e*, [`&AA68`](address:AA68@2?hex) π/180, [`&AA6D`](address:AA6D@2?hex) 180/π.
-- [`&AA59`](address:AA59@2?hex) / [`&AA5E`](address:AA5E@2?hex) — the two-part π/2 for accurate range reduction.
-- [`fp_eval_cont_frac`](address:A897@2?hex) — the evaluator that consumes the coefficient tables whose entries share this format.
+All 39 packed constants in the pool — the named scalars, the `1.0`/`−0.5` terms, and every coefficient of the ATN/SIN/EXP/LN continued-fraction tables consumed by [`fp_eval_cont_frac`](address:A897@2?hex) — are marked with the packed 5-byte typed-data type (display label `float40`). The five raw bytes are still emitted, so the image reassembles byte-identical, while the ten-figure value rides along as the inline annotation and the exact stored value as the `value` in the structured `decoded` field of the JSON. That is what makes a statement like "the *e* in the ROM is the rational `ADF85458 / 2³⁰` — a ULP short of the nearest value the format could hold" something you can read from the disassembly's data rather than work out by hand.
