@@ -5838,6 +5838,7 @@
     {
       "addr": 60,
       "name": "zp_fwb_ovf",
+      "group": "zero_page",
       "description": "FWB overflow byte (&3C), part of [`zp_fwb_sign`](address:003b). A much-reused scratch location: outside floating point it serves as the tokeniser's line-number-arming flag (&FF after GOTO etc. means encode the next number as a line number), a variable-chain walk pointer, an array dimension-descriptor offset, and LIST's REPEAT/UNTIL indent counter. Read each use in its own context rather than assuming a single global meaning."
     },
     {
@@ -5943,6 +5944,7 @@
     {
       "addr": 262,
       "name": "frame_local_count",
+      "group": "stack_6502",
       "access": [
         "b"
       ]
@@ -5974,6 +5976,7 @@
     {
       "addr": 1151,
       "name": "var_table_base",
+      "group": "resident_vars",
       "access": [
         "b"
       ]
@@ -5992,6 +5995,7 @@
     {
       "addr": 1265,
       "name": "for_var_lo",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -5999,6 +6003,7 @@
     {
       "addr": 1266,
       "name": "for_var_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6006,6 +6011,7 @@
     {
       "addr": 1267,
       "name": "for_type",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6013,6 +6019,7 @@
     {
       "addr": 1268,
       "name": "for_step0",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6020,6 +6027,7 @@
     {
       "addr": 1269,
       "name": "for_step1",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6027,6 +6035,7 @@
     {
       "addr": 1270,
       "name": "for_step2",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6034,6 +6043,7 @@
     {
       "addr": 1271,
       "name": "for_step3",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6041,6 +6051,7 @@
     {
       "addr": 1273,
       "name": "for_limit0",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6048,6 +6059,7 @@
     {
       "addr": 1274,
       "name": "for_limit1",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6055,6 +6067,7 @@
     {
       "addr": 1275,
       "name": "for_limit2",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6062,6 +6075,7 @@
     {
       "addr": 1276,
       "name": "for_limit3",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6069,6 +6083,7 @@
     {
       "addr": 1278,
       "name": "for_loopback_lo",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6076,6 +6091,7 @@
     {
       "addr": 1279,
       "name": "for_loopback_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6093,6 +6109,7 @@
     {
       "addr": 1281,
       "name": "for_set_ptr_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6100,6 +6117,7 @@
     {
       "addr": 1282,
       "name": "for_set_type",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6107,6 +6125,7 @@
     {
       "addr": 1283,
       "name": "for_set_step0",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6114,6 +6133,7 @@
     {
       "addr": 1284,
       "name": "for_set_step1",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6121,6 +6141,7 @@
     {
       "addr": 1285,
       "name": "for_set_step2",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6128,6 +6149,7 @@
     {
       "addr": 1286,
       "name": "for_set_step3",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6135,6 +6157,7 @@
     {
       "addr": 1288,
       "name": "for_set_limit0",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6142,6 +6165,7 @@
     {
       "addr": 1289,
       "name": "for_set_limit1",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6149,6 +6173,7 @@
     {
       "addr": 1290,
       "name": "for_set_limit2",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6156,6 +6181,7 @@
     {
       "addr": 1291,
       "name": "for_set_limit3",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6163,6 +6189,7 @@
     {
       "addr": 1293,
       "name": "for_set_loop_lo",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6170,6 +6197,7 @@
     {
       "addr": 1294,
       "name": "for_set_loop_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6177,6 +6205,7 @@
     {
       "addr": 1443,
       "name": "repeat_loop_lo",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6194,6 +6223,7 @@
     {
       "addr": 1463,
       "name": "repeat_loop_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6211,6 +6241,7 @@
     {
       "addr": 1483,
       "name": "gosub_return_lo",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6228,6 +6259,7 @@
     {
       "addr": 1509,
       "name": "gosub_return_hi",
+      "group": "basic_stacks",
       "access": [
         "b"
       ]
@@ -6245,6 +6277,7 @@
     {
       "addr": 1535,
       "name": "strbuf_base",
+      "group": "buffers",
       "access": [
         "b"
       ]

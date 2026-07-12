@@ -623,7 +623,7 @@ d.label(0x003a, 'zp_fileblk_1')
 # Floating point work area B (FWB), same layout as FWA.
 d.label(0x003b, 'zp_fwb_sign', length=8, group='zero_page', access='rw',
         description="""FWB — floating-point work accumulator B (&3B-&42), same layout as [`zp_fwa_sign`](address:002e). Supplies the second operand for binary floating-point operations (add, multiply, divide).""")
-d.label(0x003c, 'zp_fwb_ovf',
+d.label(0x003c, 'zp_fwb_ovf', group='zero_page',
         description="""FWB overflow byte (&3C), part of [`zp_fwb_sign`](address:003b). A much-reused scratch location: outside floating point it serves as the tokeniser's line-number-arming flag (&FF after GOTO etc. means encode the next number as a line number), a variable-chain walk pointer, an array dimension-descriptor offset, and LIST's REPEAT/UNTIL indent counter. Read each use in its own context rather than assuming a single global meaning.""")
 d.label(0x003d, 'zp_fwb_exp')
 d.label(0x003e, 'zp_fwb_m1')
@@ -656,7 +656,7 @@ d.label(0x00ff, 'zp_escflg', length=1, group='zero_page', access='rw',
         description="""ESCFLG — the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the "Escape" error.""")
 d.label(0x0100, 'hw_stack', length=256, group='stack_6502', access='rw',
         description="""The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.""")
-d.index_base(0x0106, 'frame_local_count')
+d.index_base(0x0106, 'frame_local_count', group='stack_6502')
 d.label(0x01ff, 'hw_stack_top')
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
@@ -673,22 +673,22 @@ d.label(0x0441, 'resint_p_1')
 d.label(0x046c, 'fp_temps', length=20, group='resident_vars', access='rw',
         description="""Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing [`FWA`](address:002e) / [`FWB`](address:003b).""")
 
-d.index_base(0x047f, 'var_table_base')
+d.index_base(0x047f, 'var_table_base', group='resident_vars')
 d.label(0x0480, 'var_ptr_table', length=128, group='resident_vars', access='rw',
         description="""The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, `_`, `@`), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.""")
-d.index_base(0x04f1, 'for_var_lo')
-d.index_base(0x04f2, 'for_var_hi')
-d.index_base(0x04f3, 'for_type')
-d.index_base(0x04f4, 'for_step0')
-d.index_base(0x04f5, 'for_step1')
-d.index_base(0x04f6, 'for_step2')
-d.index_base(0x04f7, 'for_step3')
-d.index_base(0x04f9, 'for_limit0')
-d.index_base(0x04fa, 'for_limit1')
-d.index_base(0x04fb, 'for_limit2')
-d.index_base(0x04fc, 'for_limit3')
-d.index_base(0x04fe, 'for_loopback_lo')
-d.index_base(0x04ff, 'for_loopback_hi')
+d.index_base(0x04f1, 'for_var_lo', group='basic_stacks')
+d.index_base(0x04f2, 'for_var_hi', group='basic_stacks')
+d.index_base(0x04f3, 'for_type', group='basic_stacks')
+d.index_base(0x04f4, 'for_step0', group='basic_stacks')
+d.index_base(0x04f5, 'for_step1', group='basic_stacks')
+d.index_base(0x04f6, 'for_step2', group='basic_stacks')
+d.index_base(0x04f7, 'for_step3', group='basic_stacks')
+d.index_base(0x04f9, 'for_limit0', group='basic_stacks')
+d.index_base(0x04fa, 'for_limit1', group='basic_stacks')
+d.index_base(0x04fb, 'for_limit2', group='basic_stacks')
+d.index_base(0x04fc, 'for_limit3', group='basic_stacks')
+d.index_base(0x04fe, 'for_loopback_lo', group='basic_stacks')
+d.index_base(0x04ff, 'for_loopback_hi', group='basic_stacks')
 # Control-flow stacks (page 5). Three independent LIFO arrays, one per
 # loop construct, each indexed by its own zero-page level counter:
 #   for_stack    &0500  15-byte frames, counter zp_for_level    (&26)
@@ -699,31 +699,31 @@ d.index_base(0x04ff, 'for_loopback_hi')
 # PROC/FN call. See call_proc_fn (&B197).
 d.index_base(0x0500, 'for_stack', length=150, group='basic_stacks',
         description="""The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by `FOR`, consulted and updated by `NEXT`.""")
-d.index_base(0x0501, 'for_set_ptr_hi')
-d.index_base(0x0502, 'for_set_type')
-d.index_base(0x0503, 'for_set_step0')
-d.index_base(0x0504, 'for_set_step1')
-d.index_base(0x0505, 'for_set_step2')
-d.index_base(0x0506, 'for_set_step3')
-d.index_base(0x0508, 'for_set_limit0')
-d.index_base(0x0509, 'for_set_limit1')
-d.index_base(0x050a, 'for_set_limit2')
-d.index_base(0x050b, 'for_set_limit3')
-d.index_base(0x050d, 'for_set_loop_lo')
-d.index_base(0x050e, 'for_set_loop_hi')
-d.index_base(0x05a3, 'repeat_loop_lo')
+d.index_base(0x0501, 'for_set_ptr_hi', group='basic_stacks')
+d.index_base(0x0502, 'for_set_type', group='basic_stacks')
+d.index_base(0x0503, 'for_set_step0', group='basic_stacks')
+d.index_base(0x0504, 'for_set_step1', group='basic_stacks')
+d.index_base(0x0505, 'for_set_step2', group='basic_stacks')
+d.index_base(0x0506, 'for_set_step3', group='basic_stacks')
+d.index_base(0x0508, 'for_set_limit0', group='basic_stacks')
+d.index_base(0x0509, 'for_set_limit1', group='basic_stacks')
+d.index_base(0x050a, 'for_set_limit2', group='basic_stacks')
+d.index_base(0x050b, 'for_set_limit3', group='basic_stacks')
+d.index_base(0x050d, 'for_set_loop_lo', group='basic_stacks')
+d.index_base(0x050e, 'for_set_loop_hi', group='basic_stacks')
+d.index_base(0x05a3, 'repeat_loop_lo', group='basic_stacks')
 d.index_base(0x05a4, 'repeat_stack', length=20, group='basic_stacks',
         description="""`REPEAT` loop-start text pointers, low bytes — up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition.""")
-d.index_base(0x05b7, 'repeat_loop_hi')
+d.index_base(0x05b7, 'repeat_loop_hi', group='basic_stacks')
 d.index_base(0x05b8, 'repeat_stack_hi', length=20, group='basic_stacks',
         description="""High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4).""")
-d.index_base(0x05cb, 'gosub_return_lo')
+d.index_base(0x05cb, 'gosub_return_lo', group='basic_stacks')
 d.index_base(0x05cc, 'gosub_stack', length=26, group='basic_stacks',
         description="""`GOSUB` return text pointers, low bytes — up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry.""")
-d.index_base(0x05e5, 'gosub_return_hi')
+d.index_base(0x05e5, 'gosub_return_hi', group='basic_stacks')
 d.index_base(0x05e6, 'gosub_stack_hi', length=26, group='basic_stacks',
         description="""High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc).""")
-d.index_base(0x05ff, 'strbuf_base')
+d.index_base(0x05ff, 'strbuf_base', group='buffers')
 d.label(0x0600, 'string_work', length=256, group='buffers', access='rw',
         description="""The string work area / `CALL` parameter block. BASIC builds string results here — the text of `STR$`, the digits of a number conversion, a popped string for comparison — with the length in [`zp_strbuf_len`](address:0036). `CALL` also assembles its parameter block here.""")
 d.label(0x06ff, 'call_block_base')
