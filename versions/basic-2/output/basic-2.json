@@ -5947,7 +5947,8 @@
       "group": "stack_6502",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Base for the PROC/FN call frame's `LOCAL`/parameter restore count: `frame_local_count,X` with X = the running body's stack pointer (&F5) addresses the count byte at &01FB. [`stmt_local`](address:9323) bumps it as each `LOCAL` or parameter is saved; `call_proc_fn` replays that many saved values on `=`/`ENDPROC`."
     },
     {
       "addr": 1024,
@@ -5979,7 +5980,8 @@
       "group": "resident_vars",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 base for the variable chain-head table [`var_ptr_table`](address:0480): the clear loop stores `var_table_base,X` for X = &80\u20261, zeroing &0480-&04FF."
     },
     {
       "addr": 1152,
@@ -5998,7 +6000,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, control-variable address low (offset +0): the `,X` read base (X = [`zp_for_level`](address:0026)) `NEXT` uses to match and reload the loop variable."
     },
     {
       "addr": 1266,
@@ -6006,7 +6009,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, control-variable address high (offset +1)."
     },
     {
       "addr": 1267,
@@ -6014,7 +6018,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, control-variable type (offset +2): 5 = real, otherwise integer."
     },
     {
       "addr": 1268,
@@ -6022,7 +6027,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, STEP byte 0 (offset +3): `NEXT` adds the STEP to the control variable. An integer STEP uses bytes 0-3; a real STEP adds a fifth byte at +7."
     },
     {
       "addr": 1269,
@@ -6030,7 +6036,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, STEP byte 1 (offset +4)."
     },
     {
       "addr": 1270,
@@ -6038,7 +6045,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, STEP byte 2 (offset +5)."
     },
     {
       "addr": 1271,
@@ -6046,7 +6054,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, STEP byte 3 (offset +6)."
     },
     {
       "addr": 1273,
@@ -6054,7 +6063,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-limit byte 0 (offset +8): `NEXT` compares the control variable against it. An integer limit uses bytes 0-3; a real limit adds a fifth byte at +C."
     },
     {
       "addr": 1274,
@@ -6062,7 +6072,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-limit byte 1 (offset +9)."
     },
     {
       "addr": 1275,
@@ -6070,7 +6081,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-limit byte 2 (offset +A)."
     },
     {
       "addr": 1276,
@@ -6078,7 +6090,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-limit byte 3 (offset +B)."
     },
     {
       "addr": 1278,
@@ -6086,7 +6099,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-body text pointer low (offset +D): where `NEXT` resumes each iteration."
     },
     {
       "addr": 1279,
@@ -6094,7 +6108,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Current [`FOR`](address:0500) frame, loop-body text pointer high (offset +E)."
     },
     {
       "addr": 1280,
@@ -6112,7 +6127,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "Write base `FOR` uses to stack a new [`for_stack`](address:0500) frame: control-variable address high (offset +1). The low byte goes to [`for_stack`](address:0500) itself; the read-side counterpart is [`for_var_hi`](address:04f2)."
     },
     {
       "addr": 1282,
@@ -6120,7 +6136,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: control-variable type (offset +2)."
     },
     {
       "addr": 1283,
@@ -6128,7 +6145,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: STEP byte 0 (offset +3)."
     },
     {
       "addr": 1284,
@@ -6136,7 +6154,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: STEP byte 1 (offset +4)."
     },
     {
       "addr": 1285,
@@ -6144,7 +6163,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: STEP byte 2 (offset +5)."
     },
     {
       "addr": 1286,
@@ -6152,7 +6172,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: STEP byte 3 (offset +6)."
     },
     {
       "addr": 1288,
@@ -6160,7 +6181,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-limit byte 0 (offset +8)."
     },
     {
       "addr": 1289,
@@ -6168,7 +6190,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-limit byte 1 (offset +9)."
     },
     {
       "addr": 1290,
@@ -6176,7 +6199,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-limit byte 2 (offset +A)."
     },
     {
       "addr": 1291,
@@ -6184,7 +6208,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-limit byte 3 (offset +B)."
     },
     {
       "addr": 1293,
@@ -6192,7 +6217,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-body text pointer low (offset +D)."
     },
     {
       "addr": 1294,
@@ -6200,7 +6226,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "New-frame write base: loop-body text pointer high (offset +E)."
     },
     {
       "addr": 1443,
@@ -6208,7 +6235,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 read base for the [`REPEAT` stack](address:05a4) low bytes: `UNTIL` loads `repeat_loop_lo,X` (X = [`zp_repeat_level`](address:0024)) to reload the current loop-start pointer."
     },
     {
       "addr": 1444,
@@ -6226,7 +6254,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 read base for the `REPEAT` stack high bytes ([`repeat_stack_hi`](address:05b8)); pairs with [`repeat_loop_lo`](address:05a3)."
     },
     {
       "addr": 1464,
@@ -6244,7 +6273,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 read base for the [`GOSUB` stack](address:05cc) low bytes: `RETURN` loads `gosub_return_lo,X` (X = [`zp_gosub_level`](address:0025)) to recover the return position."
     },
     {
       "addr": 1484,
@@ -6262,7 +6292,8 @@
       "group": "basic_stacks",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 read base for the `GOSUB` stack high bytes ([`gosub_stack_hi`](address:05e6)); pairs with [`gosub_return_lo`](address:05cb)."
     },
     {
       "addr": 1510,
@@ -6280,7 +6311,8 @@
       "group": "buffers",
       "access": [
         "b"
-      ]
+      ],
+      "description": "The \u22121 base for the string work area [`string_work`](address:0600): `strbuf_base,X` (X = 1\u2026length) addresses the buffer, so index 1 is the first character \u2014 the string routines fill and read it one-based."
     },
     {
       "addr": 1536,

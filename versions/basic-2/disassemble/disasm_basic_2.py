@@ -656,7 +656,8 @@ d.label(0x00ff, 'zp_escflg', length=1, group='zero_page', access='rw',
         description="""ESCFLG — the MOS escape flag. Its top bit is set when Escape is pressed; BASIC polls it between statements, acknowledges it via OSBYTE, and raises the "Escape" error.""")
 d.label(0x0100, 'hw_stack', length=256, group='stack_6502', access='rw',
         description="""The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.""")
-d.index_base(0x0106, 'frame_local_count', group='stack_6502')
+d.index_base(0x0106, 'frame_local_count', group='stack_6502',
+        description="""Base for the PROC/FN call frame's `LOCAL`/parameter restore count: `frame_local_count,X` with X = the running body's stack pointer (&F5) addresses the count byte at &01FB. [`stmt_local`](address:9323) bumps it as each `LOCAL` or parameter is saved; `call_proc_fn` replays that many saved values on `=`/`ENDPROC`.""")
 d.label(0x01ff, 'hw_stack_top')
 # ----------------------------------------------------------------------
 # Page 4 / 5 / 6 / 7 RAM workspace (Pharo ch. 7.3-7.6).
@@ -673,22 +674,36 @@ d.label(0x0441, 'resint_p_1')
 d.label(0x046c, 'fp_temps', length=20, group='resident_vars', access='rw',
         description="""Four 5-byte packed floating-point temporaries: TEMP1 (&046C), TEMP2 (&0471), TEMP3 (&0476) and TEMP4 (&047B). The maths routines stash intermediate reals here while reusing [`FWA`](address:002e) / [`FWB`](address:003b).""")
 
-d.index_base(0x047f, 'var_table_base', group='resident_vars')
+d.index_base(0x047f, 'var_table_base', group='resident_vars',
+        description="""The −1 base for the variable chain-head table [`var_ptr_table`](address:0480): the clear loop stores `var_table_base,X` for X = &80…1, zeroing &0480-&04FF.""")
 d.label(0x0480, 'var_ptr_table', length=128, group='resident_vars', access='rw',
         description="""The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, `_`, `@`), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.""")
-d.index_base(0x04f1, 'for_var_lo', group='basic_stacks')
-d.index_base(0x04f2, 'for_var_hi', group='basic_stacks')
-d.index_base(0x04f3, 'for_type', group='basic_stacks')
-d.index_base(0x04f4, 'for_step0', group='basic_stacks')
-d.index_base(0x04f5, 'for_step1', group='basic_stacks')
-d.index_base(0x04f6, 'for_step2', group='basic_stacks')
-d.index_base(0x04f7, 'for_step3', group='basic_stacks')
-d.index_base(0x04f9, 'for_limit0', group='basic_stacks')
-d.index_base(0x04fa, 'for_limit1', group='basic_stacks')
-d.index_base(0x04fb, 'for_limit2', group='basic_stacks')
-d.index_base(0x04fc, 'for_limit3', group='basic_stacks')
-d.index_base(0x04fe, 'for_loopback_lo', group='basic_stacks')
-d.index_base(0x04ff, 'for_loopback_hi', group='basic_stacks')
+d.index_base(0x04f1, 'for_var_lo', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, control-variable address low (offset +0): the `,X` read base (X = [`zp_for_level`](address:0026)) `NEXT` uses to match and reload the loop variable.""")
+d.index_base(0x04f2, 'for_var_hi', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, control-variable address high (offset +1).""")
+d.index_base(0x04f3, 'for_type', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, control-variable type (offset +2): 5 = real, otherwise integer.""")
+d.index_base(0x04f4, 'for_step0', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, STEP byte 0 (offset +3): `NEXT` adds the STEP to the control variable. An integer STEP uses bytes 0-3; a real STEP adds a fifth byte at +7.""")
+d.index_base(0x04f5, 'for_step1', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, STEP byte 1 (offset +4).""")
+d.index_base(0x04f6, 'for_step2', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, STEP byte 2 (offset +5).""")
+d.index_base(0x04f7, 'for_step3', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, STEP byte 3 (offset +6).""")
+d.index_base(0x04f9, 'for_limit0', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-limit byte 0 (offset +8): `NEXT` compares the control variable against it. An integer limit uses bytes 0-3; a real limit adds a fifth byte at +C.""")
+d.index_base(0x04fa, 'for_limit1', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-limit byte 1 (offset +9).""")
+d.index_base(0x04fb, 'for_limit2', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-limit byte 2 (offset +A).""")
+d.index_base(0x04fc, 'for_limit3', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-limit byte 3 (offset +B).""")
+d.index_base(0x04fe, 'for_loopback_lo', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-body text pointer low (offset +D): where `NEXT` resumes each iteration.""")
+d.index_base(0x04ff, 'for_loopback_hi', group='basic_stacks',
+        description="""Current [`FOR`](address:0500) frame, loop-body text pointer high (offset +E).""")
 # Control-flow stacks (page 5). Three independent LIFO arrays, one per
 # loop construct, each indexed by its own zero-page level counter:
 #   for_stack    &0500  15-byte frames, counter zp_for_level    (&26)
@@ -699,31 +714,48 @@ d.index_base(0x04ff, 'for_loopback_hi', group='basic_stacks')
 # PROC/FN call. See call_proc_fn (&B197).
 d.index_base(0x0500, 'for_stack', length=150, group='basic_stacks',
         description="""The `FOR` stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in [`zp_for_level`](address:0026)). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by `FOR`, consulted and updated by `NEXT`.""")
-d.index_base(0x0501, 'for_set_ptr_hi', group='basic_stacks')
-d.index_base(0x0502, 'for_set_type', group='basic_stacks')
-d.index_base(0x0503, 'for_set_step0', group='basic_stacks')
-d.index_base(0x0504, 'for_set_step1', group='basic_stacks')
-d.index_base(0x0505, 'for_set_step2', group='basic_stacks')
-d.index_base(0x0506, 'for_set_step3', group='basic_stacks')
-d.index_base(0x0508, 'for_set_limit0', group='basic_stacks')
-d.index_base(0x0509, 'for_set_limit1', group='basic_stacks')
-d.index_base(0x050a, 'for_set_limit2', group='basic_stacks')
-d.index_base(0x050b, 'for_set_limit3', group='basic_stacks')
-d.index_base(0x050d, 'for_set_loop_lo', group='basic_stacks')
-d.index_base(0x050e, 'for_set_loop_hi', group='basic_stacks')
-d.index_base(0x05a3, 'repeat_loop_lo', group='basic_stacks')
+d.index_base(0x0501, 'for_set_ptr_hi', group='basic_stacks',
+        description="""Write base `FOR` uses to stack a new [`for_stack`](address:0500) frame: control-variable address high (offset +1). The low byte goes to [`for_stack`](address:0500) itself; the read-side counterpart is [`for_var_hi`](address:04f2).""")
+d.index_base(0x0502, 'for_set_type', group='basic_stacks',
+        description="""New-frame write base: control-variable type (offset +2).""")
+d.index_base(0x0503, 'for_set_step0', group='basic_stacks',
+        description="""New-frame write base: STEP byte 0 (offset +3).""")
+d.index_base(0x0504, 'for_set_step1', group='basic_stacks',
+        description="""New-frame write base: STEP byte 1 (offset +4).""")
+d.index_base(0x0505, 'for_set_step2', group='basic_stacks',
+        description="""New-frame write base: STEP byte 2 (offset +5).""")
+d.index_base(0x0506, 'for_set_step3', group='basic_stacks',
+        description="""New-frame write base: STEP byte 3 (offset +6).""")
+d.index_base(0x0508, 'for_set_limit0', group='basic_stacks',
+        description="""New-frame write base: loop-limit byte 0 (offset +8).""")
+d.index_base(0x0509, 'for_set_limit1', group='basic_stacks',
+        description="""New-frame write base: loop-limit byte 1 (offset +9).""")
+d.index_base(0x050a, 'for_set_limit2', group='basic_stacks',
+        description="""New-frame write base: loop-limit byte 2 (offset +A).""")
+d.index_base(0x050b, 'for_set_limit3', group='basic_stacks',
+        description="""New-frame write base: loop-limit byte 3 (offset +B).""")
+d.index_base(0x050d, 'for_set_loop_lo', group='basic_stacks',
+        description="""New-frame write base: loop-body text pointer low (offset +D).""")
+d.index_base(0x050e, 'for_set_loop_hi', group='basic_stacks',
+        description="""New-frame write base: loop-body text pointer high (offset +E).""")
+d.index_base(0x05a3, 'repeat_loop_lo', group='basic_stacks',
+        description="""The −1 read base for the [`REPEAT` stack](address:05a4) low bytes: `UNTIL` loads `repeat_loop_lo,X` (X = [`zp_repeat_level`](address:0024)) to reload the current loop-start pointer.""")
 d.index_base(0x05a4, 'repeat_stack', length=20, group='basic_stacks',
         description="""`REPEAT` loop-start text pointers, low bytes — up to 20 nested (depth in [`zp_repeat_level`](address:0024)); high bytes in [`repeat_stack_hi`](address:05b8). `UNTIL` reloads the pointer to re-test its condition.""")
-d.index_base(0x05b7, 'repeat_loop_hi', group='basic_stacks')
+d.index_base(0x05b7, 'repeat_loop_hi', group='basic_stacks',
+        description="""The −1 read base for the `REPEAT` stack high bytes ([`repeat_stack_hi`](address:05b8)); pairs with [`repeat_loop_lo`](address:05a3).""")
 d.index_base(0x05b8, 'repeat_stack_hi', length=20, group='basic_stacks',
         description="""High bytes of the `REPEAT` loop-start pointers; low bytes in [`repeat_stack`](address:05a4).""")
-d.index_base(0x05cb, 'gosub_return_lo', group='basic_stacks')
+d.index_base(0x05cb, 'gosub_return_lo', group='basic_stacks',
+        description="""The −1 read base for the [`GOSUB` stack](address:05cc) low bytes: `RETURN` loads `gosub_return_lo,X` (X = [`zp_gosub_level`](address:0025)) to recover the return position.""")
 d.index_base(0x05cc, 'gosub_stack', length=26, group='basic_stacks',
         description="""`GOSUB` return text pointers, low bytes — up to 26 nested (depth in [`zp_gosub_level`](address:0025)); high bytes in [`gosub_stack_hi`](address:05e6). `RETURN` pops the top entry.""")
-d.index_base(0x05e5, 'gosub_return_hi', group='basic_stacks')
+d.index_base(0x05e5, 'gosub_return_hi', group='basic_stacks',
+        description="""The −1 read base for the `GOSUB` stack high bytes ([`gosub_stack_hi`](address:05e6)); pairs with [`gosub_return_lo`](address:05cb).""")
 d.index_base(0x05e6, 'gosub_stack_hi', length=26, group='basic_stacks',
         description="""High bytes of the `GOSUB` return pointers; low bytes in [`gosub_stack`](address:05cc).""")
-d.index_base(0x05ff, 'strbuf_base', group='buffers')
+d.index_base(0x05ff, 'strbuf_base', group='buffers',
+        description="""The −1 base for the string work area [`string_work`](address:0600): `strbuf_base,X` (X = 1…length) addresses the buffer, so index 1 is the first character — the string routines fill and read it one-based.""")
 d.label(0x0600, 'string_work', length=256, group='buffers', access='rw',
         description="""The string work area / `CALL` parameter block. BASIC builds string results here — the text of `STR$`, the digits of a number conversion, a popped string for comparison — with the length in [`zp_strbuf_len`](address:0036). `CALL` also assembles its parameter block here.""")
 d.label(0x06ff, 'call_block_base')

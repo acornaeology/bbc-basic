@@ -208,7 +208,7 @@ zp_escflg         = &ff  ; ESCFLG — the MOS escape flag. Its top bit is set wh
 ; &ff referenced 1 time by &987b
 hw_stack          = &0100  ; The 6502 hardware stack (page 1), used normally for JSR/RTS and register saves. A PROC/FN call copies a snapshot of the live stack onto the BASIC value stack and restores it on return, so call nesting is bounded by free stack space rather than a fixed table.
 ; &0100 used as index base 2 times by &b1a8, &b23a
-frame_local_count = &0106
+frame_local_count = &0106  ; Base for the PROC/FN call frame's LOCAL/parameter restore count: frame_local_count,X with X = the running body's stack pointer (&F5) addresses the count byte at &01FB. stmt_local bumps it as each LOCAL or parameter is saved; call_proc_fn replays that many saved values on =/ENDPROC.
 ; &0106 used as index base 1 time by &9342
 hw_stack_top      = &01ff
 ; &01ff referenced 2 times by &8b4c, &935b
@@ -267,78 +267,78 @@ fp_temps          = &046c  ; Four 5-byte packed floating-point temporaries: TEMP
 fp_temp2          = &0471
 fp_temp3          = &0476
 fp_temp4          = &047b
-var_table_base    = &047f
+var_table_base    = &047f  ; The −1 base for the variable chain-head table var_ptr_table: the clear loop stores var_table_base,X for X = &80…1, zeroing &0480-&04FF.
 ; &047f used as index base 1 time by &bd33
 var_ptr_table     = &0480  ; The dynamic-variable chain-head table: a two-byte head pointer per initial-character class (A-Z, a-z, _, @), addressed as &0400 + 2×char. find_variable walks the linked list of variables sharing an initial character; create_variable links a new one in at the head.
-for_var_lo        = &04f1
+for_var_lo        = &04f1  ; Current FOR frame, control-variable address low (offset +0): the ,X read base (X = zp_for_level) NEXT uses to match and reload the loop variable.
 ; &04f1 used as index base 2 times by &b6ab, &b6d7
-for_var_hi        = &04f2
+for_var_hi        = &04f2  ; Current FOR frame, control-variable address high (offset +1).
 ; &04f2 used as index base 2 times by &b6b2, &b6dc
-for_type          = &04f3
+for_type          = &04f3  ; Current FOR frame, control-variable type (offset +2): 5 = real, otherwise integer.
 ; &04f3 used as index base 2 times by &b6b9, &b6e1
-for_step0         = &04f4
+for_step0         = &04f4  ; Current FOR frame, STEP byte 0 (offset +3): NEXT adds the STEP to the control variable. An integer STEP uses bytes 0-3; a real STEP adds a fifth byte at +7.
 ; &04f4 used as index base 1 time by &b6ec
-for_step1         = &04f5
+for_step1         = &04f5  ; Current FOR frame, STEP byte 1 (offset +4).
 ; &04f5 used as index base 2 times by &b6f6, &b794
-for_step2         = &04f6
+for_step2         = &04f6  ; Current FOR frame, STEP byte 2 (offset +5).
 ; &04f6 used as index base 1 time by &b700
-for_step3         = &04f7
+for_step3         = &04f7  ; Current FOR frame, STEP byte 3 (offset +6).
 ; &04f7 used as index base 2 times by &b70a, &b733
-for_limit0        = &04f9
+for_limit0        = &04f9  ; Current FOR frame, loop-limit byte 0 (offset +8): NEXT compares the control variable against it. An integer limit uses bytes 0-3; a real limit adds a fifth byte at +C.
 ; &04f9 used as index base 1 time by &b713
-for_limit1        = &04fa
+for_limit1        = &04fa  ; Current FOR frame, loop-limit byte 1 (offset +9).
 ; &04fa used as index base 1 time by &b71a
-for_limit2        = &04fb
+for_limit2        = &04fb  ; Current FOR frame, loop-limit byte 2 (offset +A).
 ; &04fb used as index base 1 time by &b721
-for_limit3        = &04fc
+for_limit3        = &04fc  ; Current FOR frame, loop-limit byte 3 (offset +B).
 ; &04fc used as index base 2 times by &b727, &b736
-for_loopback_lo   = &04fe
+for_loopback_lo   = &04fe  ; Current FOR frame, loop-body text pointer low (offset +D): where NEXT resumes each iteration.
 ; &04fe used as index base 1 time by &b741
-for_loopback_hi   = &04ff
+for_loopback_hi   = &04ff  ; Current FOR frame, loop-body text pointer high (offset +E).
 ; &04ff used as index base 1 time by &b744
 for_stack         = &0500  ; The FOR stack: up to 10 frames of 15 bytes each (&0500-&0595; depth in zp_for_level). Each frame holds the control-variable address and type, the STEP and limit values, and the loop-back text pointer — pushed by FOR, consulted and updated by NEXT.
 ; &0500 used as index base 1 time by &b7dc
-for_set_ptr_hi    = &0501
+for_set_ptr_hi    = &0501  ; Write base FOR uses to stack a new for_stack frame: control-variable address high (offset +1). The low byte goes to for_stack itself; the read-side counterpart is for_var_hi.
 ; &0501 used as index base 1 time by &b7e1
-for_set_type      = &0502
+for_set_type      = &0502  ; New-frame write base: control-variable type (offset +2).
 ; &0502 used as index base 1 time by &b7e6
-for_set_step0     = &0503
+for_set_step0     = &0503  ; New-frame write base: STEP byte 0 (offset +3).
 ; &0503 used as index base 1 time by &b825
-for_set_step1     = &0504
+for_set_step1     = &0504  ; New-frame write base: STEP byte 1 (offset +4).
 ; &0504 used as index base 1 time by &b82a
-for_set_step2     = &0505
+for_set_step2     = &0505  ; New-frame write base: STEP byte 2 (offset +5).
 ; &0505 used as index base 1 time by &b82f
-for_set_step3     = &0506
+for_set_step3     = &0506  ; New-frame write base: STEP byte 3 (offset +6).
 ; &0506 used as index base 1 time by &b834
-for_set_limit0    = &0508
+for_set_limit0    = &0508  ; New-frame write base: loop-limit byte 0 (offset +8).
 ; &0508 used as index base 1 time by &b7fc
-for_set_limit1    = &0509
+for_set_limit1    = &0509  ; New-frame write base: loop-limit byte 1 (offset +9).
 ; &0509 used as index base 1 time by &b801
-for_set_limit2    = &050a
+for_set_limit2    = &050a  ; New-frame write base: loop-limit byte 2 (offset +A).
 ; &050a used as index base 1 time by &b806
-for_set_limit3    = &050b
+for_set_limit3    = &050b  ; New-frame write base: loop-limit byte 3 (offset +B).
 ; &050b used as index base 1 time by &b80b
-for_set_loop_lo   = &050d
+for_set_loop_lo   = &050d  ; New-frame write base: loop-body text pointer low (offset +D).
 ; &050d used as index base 1 time by &b83e
-for_set_loop_hi   = &050e
+for_set_loop_hi   = &050e  ; New-frame write base: loop-body text pointer high (offset +E).
 ; &050e used as index base 1 time by &b843
-repeat_loop_lo    = &05a3
+repeat_loop_lo    = &05a3  ; The −1 read base for the REPEAT stack low bytes: UNTIL loads repeat_loop_lo,X (X = zp_repeat_level) to reload the current loop-start pointer.
 ; &05a3 used as index base 1 time by &bbcd
 repeat_stack      = &05a4  ; REPEAT loop-start text pointers, low bytes — up to 20 nested (depth in zp_repeat_level); high bytes in repeat_stack_hi. UNTIL reloads the pointer to re-test its condition.
 ; &05a4 used as index base 1 time by &bbef
-repeat_loop_hi    = &05b7
+repeat_loop_hi    = &05b7  ; The −1 read base for the REPEAT stack high bytes (repeat_stack_hi); pairs with repeat_loop_lo.
 ; &05b7 used as index base 1 time by &bbd0
 repeat_stack_hi   = &05b8  ; High bytes of the REPEAT loop-start pointers; low bytes in repeat_stack.
 ; &05b8 used as index base 1 time by &bbf4
-gosub_return_lo   = &05cb
+gosub_return_lo   = &05cb  ; The −1 read base for the GOSUB stack low bytes: RETURN loads gosub_return_lo,X (X = zp_gosub_level) to recover the return position.
 ; &05cb used as index base 1 time by &b8bf
 gosub_stack       = &05cc  ; GOSUB return text pointers, low bytes — up to 26 nested (depth in zp_gosub_level); high bytes in gosub_stack_hi. RETURN pops the top entry.
 ; &05cc used as index base 1 time by &b896
-gosub_return_hi   = &05e5
+gosub_return_hi   = &05e5  ; The −1 read base for the GOSUB stack high bytes (gosub_stack_hi); pairs with gosub_return_lo.
 ; &05e5 used as index base 1 time by &b8c2
 gosub_stack_hi    = &05e6  ; High bytes of the GOSUB return pointers; low bytes in gosub_stack.
 ; &05e6 used as index base 1 time by &b89b
-strbuf_base       = &05ff
+strbuf_base       = &05ff  ; The −1 base for the string work area string_work: strbuf_base,X (X = 1…length) addresses the buffer, so index 1 is the first character — the string routines fill and read it one-based.
 ; &05ff used as index base 8 times by &8d6c, &9b0a, &9c2d, &9c30, &abf4, &ba0d, &bdbe, &bdd6
 string_work       = &0600  ; The string work area / CALL parameter block. BASIC builds string results here — the text of STR$, the digits of a number conversion, a popped string for comparison — with the length in zp_strbuf_len. CALL also assembles its parameter block here.
 ; &0600 referenced 5 times by &8cb1, &8edd, &8f06, &aca7, &afc2; also used as index base 22 times by &8658, &8c97, &8ca9, &8e14, &8ef7, &8efd, &8f03, &a003, &a06a, &ac38, &ad44, &adb8, &add3, &b017, &b01a, &b083, &b086, &b0e1, &b0e4, &b3a0, &b3af, &bebe
