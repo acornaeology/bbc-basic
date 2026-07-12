@@ -373,7 +373,7 @@ oscli             = &fff7
 
     org &8000
 
-.pydis_start
+.dasmos_start
 ; Acorn BBC BASIC II
 ; ***************************************************************************************
 ; Sideways ROM header — language-entry slot (3 bytes)
@@ -15338,9 +15338,9 @@ oscli             = &fff7
     equb &00                                                          ; bff9: 00          .     
     equs "Roger"                                                      ; bffa: 52 6f 67... Rog...
     equb &00                                                          ; bfff: 00          .     
-.pydis_end
+.dasmos_end
 
-save pydis_start, pydis_end
+save dasmos_start, dasmos_end
 
 ; Label references by decreasing frequency:
 ;     zp_iwa:                      188

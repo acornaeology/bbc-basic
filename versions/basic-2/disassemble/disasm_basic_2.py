@@ -12776,7 +12776,6 @@ output = str(
         include_build_instructions=True,
         listing_filename='basic-2.asm',
         build_output_name='basic-2.rom',
-        boundary_label_prefix='pydis_',
         byte_column=True,
         byte_column_format='py8dis',
         default_byte_cols=12,
