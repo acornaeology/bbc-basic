@@ -2,7 +2,7 @@
 
 > **Scope.** This article maps the **BBC BASIC II** text-reading machinery — the tokeniser, the statement dispatcher, the expression evaluator and its factor-level readers, the lvalue parser, and the two string→value front doors `VAL` and `EVAL`. Every routine address is specific to this version and was read from the disassembly (which reassembles byte-identically to the ROM). It is a road-map: the deep dives on [tokenising](tokeniser-and-detokeniser.md), [control-flow stacks](control-flow-stacks.md), [floating point](floating-point-constants-and-precision.md) and [indirection lvalues](indirection-lvalue-parameters.md) cover the individual pieces.
 
-A recurring source of confusion about BBC BASIC — *why does `VAL("&FF")` give 0 but `EVAL("&FF")` give 255? why is `TOP` not `TO`+`P` here but is there? why can an indirection be a procedure parameter?* — dissolves once you see that BASIC II is **not one parser**. It is several distinct text-reading machines, each reached from the language in different places. Knowing which machine runs where is the whole game.
+BBC BASIC II is not one parser but several distinct text-reading machines, each reached from the language in different places. That structure accounts for a number of surface behaviours that otherwise look arbitrary: `VAL("&FF")` gives 0 while `EVAL("&FF")` gives 255; `TOP` reads as a pseudo-variable in some positions but as `TO` followed by `P` in others; an indirection can serve as a procedure parameter. Each follows from which machine reads the text, and where.
 
 ## The machines at a glance
 
@@ -15,7 +15,7 @@ A recurring source of confusion about BBC BASIC — *why does `VAL("&FF")` give 
 | Lvalue parser | [`parse_lvalue`](address:9582@2?hex) / [`parse_var_ref`](address:95C9@2?hex) | text → an assignable location + type | `LET`, `FOR`, `LOCAL`, `PROC`/`FN` parameters |
 | String→value front doors | [`fn_val`](address:AC2F@2?hex) (`VAL`), [`fn_eval`](address:ABE9@2?hex) (`EVAL`) | a string → a value | the `VAL` and `EVAL` functions |
 
-The rest of this article walks the three layers that most often surprise people: the evaluator ladder, the factor-level *readers* (where the number/hex/string/variable splits live), and the two front doors.
+The rest of this article walks the three layers behind those behaviours: the evaluator ladder, the factor-level *readers* (where the number/hex/string/variable splits live), and the two front doors.
 
 ## The expression evaluator: a precedence ladder
 
@@ -28,6 +28,7 @@ The rest of this article walks the three layers that most often surprise people:
 | 5 | [`eval_relational`](address:9B9C@2?hex) | `< <= = >= > <>` |
 | 4 | [`eval_add_sub`](address:9C42@2?hex) | `+ -` (and string concatenation) |
 | 3 | [`eval_mul_div`](address:9DD1@2?hex) | `* / DIV MOD` |
+| 2 | [`eval_power`](address:9E20@2?hex) | `^` |
 | 1 | [`eval_factor`](address:ADEC@2?hex) | the **atom** |
 
 [`eval_factor`](address:ADEC@2?hex) is "level 1" — the highest-precedence rung and the one that actually *reads* things. It handles unary `-`, `+` and `NOT`; a parenthesised sub-expression; the `?`, `!`, `$` and `|` indirection operators; string literals; and the built-in functions. Unlike the higher levels it does **not** read the trailing operator — its caller does. Everything below is a sub-reader dispatched from here.
@@ -42,7 +43,7 @@ This is the layer that explains the surface quirks. `eval_factor` looks at the f
 - **Variables, array elements and indirection** as *values* → the scanner shared with the lvalue path ([`parse_var_ref`](address:95C9@2?hex)).
 - **Built-in functions** → the per-token `fn_*` handlers, reached through the action-address table ([`action_table_lo`](address:836D@2?hex)) by token value. This is how `SIN`, `LEN`, `VAL`, `EVAL`, and the `TO`-token's [`fn_to`](address:AEDC@2?hex) (which reads `TOP`) are dispatched.
 
-The decisive fact: **the decimal reader and the hex reader are different routines, and `&` is reachable only through `eval_factor`.** `parse_number` never sees a `&`. That single split is the root of the `VAL`/`EVAL` difference below.
+The decimal reader and the hex reader are different routines, and `&` is reachable only through `eval_factor`: `parse_number` never sees a `&`. That split is the root of the `VAL`/`EVAL` difference below.
 
 ## The lvalue parser: one routine, four exposures
 
@@ -64,30 +65,13 @@ That is the entire reason for the classic contrast:
 | `"12AB"` | 12 | (depends) | `VAL` stops at the first non-digit; `EVAL` evaluates `12` then sees `AB` as a variable/operator context |
 | `"2+3"` | 2 | 5 | `VAL` reads one number; `EVAL` evaluates the whole expression |
 
-`VAL` is "read a literal"; `EVAL` is "be the interpreter". A compiler matching the ROM must model them as two readers, not one with a flag.
+`VAL` reads a literal; `EVAL` runs the interpreter. They are two separate readers, not one reader with a flag.
 
 ## Surface consequences, and where they're documented
 
-Most of BASIC II's "vexing parse" folklore is just the machine boundaries showing through:
+Several of BASIC II's surface behaviours are these machine boundaries showing through:
 
 - **`VAL` vs `EVAL` on hex** — the two-readers split above.
 - **`TOP` is not a token** — the crunch emits `TO`+`'P'`; the pseudo-variable is resolved at *factor* time by [`fn_to`](address:AEDC@2?hex), only when the `TO` token is in operand position immediately followed by a bare `P`. See [tokeniser §1.7](tokeniser-and-detokeniser.md).
 - **Indirection as a parameter** — `parse_lvalue` being shared by the `PROC`/`FN` binder. See [indirection lvalues](indirection-lvalue-parameters.md).
 - **`&` is uppercase-only and wraps at 32 bits** — a property of `factor_hex`, not of "numbers" in general.
-
-## Appendix: routine cross-reference
-
-| Concern | Routine |
-|---|---|
-| Tokenise a line | [`tokenise_line`](address:8951@2?hex) `&8951` |
-| Dispatch a statement token | [`next_statement`](address:8BA3@2?hex) `&8BA3`, [`dispatch_token`](address:8BB1@2?hex) `&8BB1` |
-| Evaluate an expression | [`eval_expr`](address:9B1D@2?hex) `&9B1D` |
-| Precedence levels 7→3 | [`eval_or_eor`](address:9B29@2?hex), [`eval_and`](address:9B72@2?hex), [`eval_relational`](address:9B9C@2?hex), [`eval_add_sub`](address:9C42@2?hex), [`eval_mul_div`](address:9DD1@2?hex) |
-| Evaluate a factor (level 1) | [`eval_factor`](address:ADEC@2?hex) `&ADEC` |
-| Decimal/float literal reader | [`parse_number`](address:A07B@2?hex) `&A07B` |
-| Hex (`&`) literal reader | [`factor_hex`](address:AE6D@2?hex) `&AE6D` |
-| String literal reader | [`read_string_literal`](address:ADAD@2?hex) `&ADAD` |
-| Variable / indirection scan | [`parse_var_ref`](address:95C9@2?hex) `&95C9` |
-| Assignment-target (lvalue) parse | [`parse_lvalue`](address:9582@2?hex) `&9582` |
-| `VAL` | [`fn_val`](address:AC2F@2?hex) `&AC2F` → [`ascii_to_number`](address:AC34@2?hex) `&AC34` |
-| `EVAL` | [`fn_eval`](address:ABE9@2?hex) `&ABE9` |
