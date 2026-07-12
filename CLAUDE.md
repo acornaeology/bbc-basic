@@ -14,6 +14,7 @@ Requires [uv](https://docs.astral.sh/uv/) and [beebasm](https://github.com/stard
 
 ```sh
 uv sync                                                                       # Install dependencies (fantasm, dasmos)
+uv run pre-commit install                                                     # One-time: activate the pre-commit hook (regenerates README.md)
 uv run fantasm disassemble 2                                                  # Run the dasmos driver via fantasm (sets FANTASM_ROM / FANTASM_OUTPUT_DIR)
 uv run fantasm lint 2 versions/basic-2/disassemble/disasm_basic_2.py          # Validate annotation addresses
 uv run fantasm verify 2                                                       # Reassemble and byte-compare against original ROM

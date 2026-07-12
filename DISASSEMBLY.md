@@ -13,6 +13,17 @@ For project overview and build instructions, see [README.md](README.md). For arc
 - MD5 and SHA-256 hashes of the ROM (`md5 <rom>`, `shasum -a 256 <rom>`)
 - Reference materials: the BBC Micro User Guide, Colin Pharo's *Advanced BASIC ROM User Guide*, and existing disassemblies (tobylobster, J.G. Harston)
 
+### One-time setup
+
+After cloning, install dependencies and wire up the git hooks:
+
+```sh
+uv sync                    # Install dependencies (fantasm, dasmos)
+uv run pre-commit install  # Activate the pre-commit hook (regenerates README.md)
+```
+
+`pre-commit install` is per-clone and easily forgotten: without it the `readme-update` hook never fires, so a change to `README.md.j2`, `acornaeology.json`, or `rom.json` can be committed without regenerating `README.md`. The CI `check-readme` job is the non-bypassable backstop that catches such drift.
+
 
 ## Quick reference: CLI tools
 
