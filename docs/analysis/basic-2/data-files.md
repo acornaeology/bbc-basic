@@ -2,7 +2,7 @@
 
 > **Scope.** This article is about **data files** in **BBC BASIC II** — the channel-based file I/O reached through `OPENIN`/`OPENOUT`/`OPENUP`, `CLOSE`, `BGET#`/`BPUT#`, `PRINT#`/`INPUT#`, and `PTR#`/`EXT#`/`EOF#`. It is *not* about loading and saving whole programs: `LOAD`, `SAVE` and `CHAIN` are a separate mechanism — a single `OSFILE` call driven by an 18-byte control block — documented in the [`load_program`](address:BE62@2?hex) banner, and out of scope here. Every address and value below is specific to BASIC II and was read from the disassembly (which reassembles byte-identically to the ROM).
 
-The headline, for the impatient:
+One behaviour is worth stating up front:
 
 > **`PRINT#` does not write text.** `PRINT#channel, 42` does not write the characters `4` `2`. It writes a 1-byte *type tag* and then the number's raw bytes **in reverse** — five bytes `40 00 00 00 2A`. Strings go out backwards too. The format is private to BASIC; a `PRINT#` file is meant to be read back only by `INPUT#`.
 
@@ -27,7 +27,7 @@ BBC BASIC owns no file logic of its own — every data-file word is a thin wrapp
 
 The handle is passed in `Y` (except `OSFILE`/`OSARGS`, which take a control block / a zero-page value address). **`OSFIND` returns the new handle in `A`, or 0 if the open failed** — which is why the idiom is `chan=OPENIN("x"):IF chan=0 THEN ...`. Two things follow from this being pure MOS plumbing: the *meaning* of a handle, the maximum number of open files, and the on-media layout all belong to the current filing system, not to BASIC; and `PTR#`/`EXT#` work in whatever units (usually bytes) that filing system uses.
 
-The `#` itself is mandatory and is parsed by [`eval_channel`](address:BFB5@2?hex) (raising *Missing #* if absent); the handle is evaluated as an integer into IWA (`&2A`).
+The `#` itself is mandatory and is parsed by [`eval_channel`](address:BFB5@2?hex) (raising *Missing #* if absent); the handle is evaluated as an integer into IWA (`&2A`). The three opens share one routine, [`openup_action`](address:BF82@2?hex), which evaluates the filename and calls `OSFIND` with the `A` value carried in from the caller; [`stmt_close`](address:BF99@2?hex) implements `CLOSE`.
 
 ---
 
@@ -44,7 +44,7 @@ Everything in §3 is built out of these.
 
 ## 3. `PRINT#` / `INPUT#`: a type-tagged, byte-reversed record format
 
-This is the part that surprises people, and the reason data files written on a BBC are awkward to read on anything else.
+This format is why data files written on a BBC are awkward to read on anything else.
 
 ### 3.1 What `PRINT#` actually emits
 
@@ -100,7 +100,7 @@ So `PRINT#` and `INPUT#` are exact mirror images, and the on-disc bytes are an i
 
 ### 3.4 Reading a real off the wire
 
-A real is the only multi-field value, so it is worth spelling out — and its byte order surprises people twice over. In memory the packed five bytes ([`fwa_pack_temp1`](address:A385@2?hex) → [`fwa_pack_var`](address:A38D@2?hex), buffer at [`fp_temp1`](address:046C@2?hex)) are **exponent-first**:
+A real is the only multi-field value, so its layout is worth spelling out in full. In memory the packed five bytes ([`fwa_pack_temp1`](address:A385@2?hex) → [`fwa_pack_var`](address:A38D@2?hex), buffer at [`fp_temp1`](address:046C@2?hex)) are **exponent-first**:
 
 | `fp_temp1` | byte |
 |---|---|
@@ -137,20 +137,4 @@ Setting `PTR#` allows random access on an `OPENUP` channel; `BGET#`/`BPUT#` then
 
 ---
 
-## 5. Routine reference
-
-| Concern | Label | Address |
-|---|---|---|
-| `#channel` parser (shared) | [`eval_channel`](address:BFB5@2?hex) | `&BFB5` |
-| `OPENIN`/`OPENOUT`/`OPENUP` (shared open) | [`openup_action`](address:BF82@2?hex) | `&BF82` |
-| `CLOSE` | [`stmt_close`](address:BF99@2?hex) | `&BF99` |
-| `BPUT#` | [`stmt_bput`](address:BF58@2?hex) | `&BF58` |
-| `=BGET#` | [`fn_bget`](address:BF6F@2?hex) | `&BF6F` |
-| `PRINT#` writer | [`print_file`](address:8D2B@2?hex) | `&8D2B` |
-| — integer / real / string payload | [`print_file_int_loop`](address:8D4D@2?hex) / [`print_file_real`](address:8D57@2?hex) / [`print_file_str`](address:8D64@2?hex) | `&8D4D` / `&8D57` / `&8D64` |
-| `INPUT#` reader | [`inputf_skip_hash`](address:B9CF@2?hex) | `&B9CF` |
-| — integer / real / string payload | [`inputf_int_loop`](address:BA21@2?hex) / [`inputf_real`](address:BA2B@2?hex) / [`inputf_read_loop`](address:BA0A@2?hex) | `&BA21` / `&BA2B` / `&BA0A` |
-| `PTR#=` / `=PTR#` / `=EXT#` | [`stmt_ptr`](address:BF30@2?hex) / [`fn_ptr`](address:BF47@2?hex) / [`fn_ext`](address:BF46@2?hex) | `&BF30` / `&BF47` / `&BF46` |
-| `=EOF#` | [`fn_eof`](address:ACB8@2?hex) | `&ACB8` |
-
-> **See also:** whole-program loading (`LOAD`/`SAVE`/`CHAIN`) uses `OSFILE` and the 18-byte control block, not channels — see the [`load_program`](address:BE62@2?hex) banner. The control-flow and value stacks that hold evaluated values during `PRINT#`/`INPUT#` are covered in [Control flow on five stacks](control-flow-stacks.md).
+Whole-program loading (`LOAD`/`SAVE`/`CHAIN`) uses `OSFILE` and the 18-byte control block, not channels — see the [`load_program`](address:BE62@2?hex) banner. The control-flow and value stacks that hold evaluated values during `PRINT#`/`INPUT#` are covered in [Control flow on five stacks](control-flow-stacks.md).
