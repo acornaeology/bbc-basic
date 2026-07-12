@@ -1,15 +1,15 @@
 # BBC BASIC's 5-byte floats and the precision of its constant pool
 
-> **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for stored REAL constants. The format, the addresses, and the byte-level figures are all specific to this version.
+> **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for its stored constants. The format, the addresses, and the byte-level figures are all specific to this version.
 
-The maths section of the ROM holds a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Each is a 32-bit approximation to an irrational or non-terminating value, so none is exact; the most the format can hold is a value within one unit in the last place (ULP) of the target.
+The maths section of the ROM holds a pool of pre-computed floating-point constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Each is a 32-bit approximation to an irrational or non-terminating value, so none is exact; the most the format can hold is a value within one unit in the last place (ULP) of the target.
 
 For *e*, the stored value is not even the *nearest* representable one — it is the neighbour one step further out, which is the value that prints correctly when BBC BASIC rounds it to ten figures. Across the whole pool the rounding is not uniform: most constants are faithful to a written decimal, a couple are the nearest representable outright, and one is a ULP off in both bases. This article works through the format in the base the machine uses, sets out the value stored for each constant, and shows how the disassembly records the exact stored value.
 
 
 ## The 5-byte format
 
-A packed BBC BASIC REAL is five bytes:
+A packed BBC BASIC float is five bytes:
 
 ```
   +0      exponent    (excess-128 bias; 0 means the whole value is zero)
@@ -26,12 +26,12 @@ The significand is a normalised fraction in `[0.5, 1)`, so its top bit (bit 31, 
 
 (The `−160` folds together the `−128` exponent bias and the `2^−32` that turns the 32-bit integer `S` back into a fraction.)
 
-That significand is where all the precision lives, and it is **32 bits — exactly eight hexadecimal digits**. The mapping is clean: four bits to a hexit, so the entire precision of any BBC REAL is those eight hex digits and nothing more. (A decimal-digit count would only ever be approximate, and drifts with magnitude — which is part of why hex is the honest unit here. We'll still write the constants in decimal where it helps say *which* number we mean; we just won't measure precision in decimal places.)
+That significand is where all the precision lives, and it is **32 bits — exactly eight hexadecimal digits**. The mapping is clean: four bits to a hexit, so the entire precision of any BBC float is those eight hex digits and nothing more. (A decimal-digit count would only ever be approximate, and drifts with magnitude — which is part of why hex is the honest unit here. We'll still write the constants in decimal where it helps say *which* number we mean; we just won't measure precision in decimal places.)
 
 The smallest change the format can make to a value at a given magnitude is a change of 1 in that 8-hexit significand: a **unit in the last place**, or **ULP** — the gap between one representable number and the next. Everything below is measured in ULPs of the significand.
 
 
-## *e*, hexit by hexit
+## The exponential constant, *e*
 
 The constant at `&AAE4` is five bytes:
 
@@ -62,9 +62,9 @@ For the human reader, in decimal:
 One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The bytes are not *e* — no 32-bit value is — but they are also not the *closest* value the format can hold: the nearest representable significand, `ADF85459`, lies `0.36` ULP from *e*, while the ROM keeps its lower neighbour `ADF85458` at `0.64` ULP. A better *binary* value was available in the same five bytes; rounding down passed it over. The reason emerges from what the bytes *print as* — they are the exact rational `ADF85458 / 2³⁰`.
 
 
-## Why round down? Decimal fidelity
+## Why round down? Decimal fidelity?
 
-The reason is the decimal display. To ten significant figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
+Perhaps the reason is the decimal display. To ten significant figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
 
 A real BBC Micro bears it out. The default general format shows **nine** significant figures (`@%` powers on as `&90A`), at which the constants print correctly — `PRINT PI` gives `3.14159265`. Widening to ten with `@% = &A0A` is what exposes the last-figure differences:
 
@@ -109,7 +109,7 @@ So decimal fidelity explains *e* — and is consistent with π/180, whose trunca
 
 The log₁₀*e* outlier can be observed directly. BBC BASIC effectively carries log₁₀*e* twice over: `LOG` reaches for the stored `&A869` constant (`LOG(x) = LN(x) × log₁₀e`), while `1/LN(10)` derives the same quantity afresh from the `ln 10` series, never touching the table.
 
-The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, i.e. `0.4342944820` at ten figures and `0.79` ULP high. BASIC II has no float-indirection operator to read those ROM bytes back as a real, but the value reconstructs exactly as the significand over a power of two. On a real machine, with ten figures selected:
+The stored constant is `7F 5E 5B D8 AA` → `0.4342944819945842`, i.e. `0.4342944820` at ten figures and `0.79` ULP high. BASIC II has no float-indirection operator to read those ROM bytes back as a float, but the value reconstructs exactly as the significand over a power of two. On a real machine, with ten figures selected:
 
 ```
 >@%=&A0A
