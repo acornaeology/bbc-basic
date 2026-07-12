@@ -2,7 +2,7 @@
 
 > **Scope.** This article is about **BBC BASIC II** — the 16 KB language ROM of the BBC Micro. It documents a little-known capability: that a formal parameter of a `DEF FN`/`DEF PROC` may be *any assignable location*, including a byte (`?`), word (`!`) or string (`$`) indirection onto raw memory, not just a named variable. Every address and value below was read from the disassembly (which reassembles byte-identically to the ROM). The *shape* of the behaviour carries forward to later BASICs; the *addresses* are version II only.
 
-Most people learn `DEF FNarea(w, h) = w*h` and stop there: a parameter is a name, and the name becomes a `LOCAL` variable that holds the argument. That is the common case, but it is not the rule the ROM actually implements. The real rule is stranger and more powerful:
+In the common case a parameter is a name, and the name becomes a `LOCAL` variable that holds the argument — `DEF FNarea(w, h) = w*h`. That is not the rule the ROM implements, though; the actual rule is more general:
 
 > A formal parameter is parsed by exactly the same routine that parses the left-hand side of `LET`. So **anything you can assign to, you can use as a parameter** — including a `?`, `!` or `$` indirection onto an arbitrary address. The call then *assigns* the argument into that location, runs the body, and restores the location's previous contents on return.
 
@@ -63,7 +63,7 @@ The parameter binder lives inside [`call_proc_fn`](address:B197@2?hex) at `&B24D
 
 1. **Parse the formal as an lvalue** — `jsr parse_lvalue` (`&B256`). This yields the address and type byte above.
 2. **Save the location's current contents** — `jsr` [`stack_local`](address:B30D@2?hex) (at `&B276`), pushing a *(address, type, old value)* record onto the BASIC value stack. This is the *identical* call `LOCAL` makes; a parameter is a `LOCAL` that is about to be assigned. The "old value" is captured by type: 1 byte for `?`, 4 bytes for `!`, and — for a `$addr` target — the string currently at the address, read **up to and including the first `&0D`** (the `lsv_dollar` loop at `&B3A7`). A `$addr` save therefore depends on a terminator already being present; an uninitialised buffer is saved as whatever bytes precede the first stray `&0D`.
-3. **Assign the actual argument into the location** — after a parameter/argument count check, the binder dispatches on the type byte:
+3. **Assign the actual argument into the location** — after a parameter/argument count and type check (a numeric formal given a string argument, or the reverse, raises *Arguments* at [`&B2BE`](address:B2BE@2?hex)), the binder dispatches on the type byte:
    - bit 7 set (`&80`/`&81`, a string target) → [`assign_string_to`](address:8C21@2?hex) (`jsr` at `&B300`). For `$addr` (`&80`) this writes the string's bytes to the raw address followed by a `&0D` carriage-return terminator.
    - bit 7 clear (numeric) → [`assign_num_by_type`](address:B4B7@2?hex) (`jsr` at `&B2F3`), storing 1 byte for `?`, 4 bytes for `!`, or the value coerced to the variable's own type.
 
@@ -187,35 +187,6 @@ It is a **feature**, in the precise sense that it falls directly out of the inte
 - That binder reuses [`parse_lvalue`](address:9582@2?hex) verbatim. There is no separate, weaker "parameter parser" that an indirection sneaks through — it is the full assignment-target grammar.
 - The binding (`stack_local` → assign → restore) is the same `LOCAL` machinery the language documents for ordinary locals.
 
-So the capability is intentional in the way a great deal of BBC BASIC is intentional: by composing one general mechanism (lvalues) into several places (`LET`, `FOR`, `LOCAL`, parameters) rather than special-casing each. It was almost certainly never *documented* — no user-guide example passes a `$addr` as a parameter — but it is not a bug, and it is stable across the ROM's logic.
+So the capability composes one general mechanism (lvalues) into several places (`LET`, `FOR`, `LOCAL`, parameters) rather than special-casing each. No user-guide example passes a `$addr` as a parameter, but it is not a bug: the binding path is the full assignment-target grammar and the same `LOCAL` save/restore, applied to a formal-parameter list.
 
-What makes it feel like a trick is the *use*, not the *mechanism*: passing a value into a fixed memory cell under cover of a parameter, then reading it back through indirection inside the body, is a way to smuggle data into a known buffer for the duration of a call. That is creative exploitation of an honest feature.
-
-
-## Notes for a compiler (OWL and friends)
-
-If byte-exact fidelity with corpus/Bot one-liners matters:
-
-- **Accept the full lvalue grammar in formal lists** — named scalars, array elements, `?e`, `!e`, `$e`, and the trailing `e?n` / `e!n` forms — wherever you parse `DEF FN`/`DEF PROC` parameters.
-- **Model an indirection formal as a scoped assignment, not a binding to a name.** `DEF FNf(?e)` ≡ "evaluate `e`, save the byte there, store the argument, run the body, restore the byte." There is no parameter *name*; the body reaches the value by re-evaluating the same indirection. The address `e` is taken from the `DEF` text and re-evaluated per call.
-- **Respect the type/width split:** `?` → 1 byte, `!` → 4 bytes, `$` → bytes plus a `&0D` terminator; numeric formals reject string arguments and vice-versa (the ROM raises *Arguments* at [`&B2BE`](address:B2BE@2?hex)).
-- **Restore on return** — the previous contents must come back on `=`/`ENDPROC`, including the original string's bytes and terminator for the `$` case. The save/restore is the same list `LOCAL` uses, replayed in `call_proc_fn`.
-- You may reasonably *decline* the zero-page guard subtlety (`$` with a high address byte of `0` errors) only if you never need that exact error; otherwise it is part of the semantics.
-
-The honest summary: this is a language feature a faithful compiler should support, not an interpreter-specific quirk it can wave away — but it is a feature you implement *for free* if your front end already treats parameters as lvalues the way the ROM does.
-
-
-## Provenance
-
-This analysis was prompted by a [rheolism](https://bbcmic.ro/) BBC Micro Bot one-liner whose function header reads `DEF FNd(X, $@%)` — a string-indirection parameter onto `@%`, the resident print-format integer at [`&0400`](address:0400@2?hex), used here purely as a pointer. The body then writes its string argument over whatever address `@%` holds and reads it back with `LEN $@%` and `@%?i`. It looked at first like an interpreter quirk worth distrusting; the disassembly shows it is the ordinary lvalue machinery above, with `@%` chosen as the buffer address. The mechanism is the same as the tame `$buf%` demos; only the choice of address is audacious.
-
-
-## Cross-references
-
-- [`parse_lvalue`](address:9582@2?hex) — the shared assignment-target parser; the leading `!`/`$`/`?` dispatch lives at `&9595`–`&95BE`, with the `$ range` guard at [`&95BF`](address:95BF@2?hex).
-- [`parse_var_ref`](address:95C9@2?hex) — scans names, arrays and indirections; sets the type byte (`&00`/`&04`/`&05`/`&80`/`&81`) in [`zp_iwa_2`](address:002c@2?hex).
-- [`call_proc_fn`](address:B197@2?hex) — the call mechanism; parameter binding at `&B24D`, the per-formal `parse_lvalue` at `&B256`, the string/numeric assign at `&B2F3`/`&B300`, and the restore replay at `&B21C`.
-- [`stack_local`](address:B30D@2?hex) — stacks a location's old value for restore; shared by `LOCAL` and by each parameter.
-- [`assign_string`](address:8C1E@2?hex) / `assign_string_to` (`&8C21`) — the `$addr` CR-terminated write; [`iwa_store_var`](address:B4C6@2?hex) — the `?`/`!`/integer write, width from the size byte.
-- [`stmt_local`](address:9323@2?hex) — confirms `LOCAL` uses the same `parse_lvalue`, so `LOCAL ?buf%` / `LOCAL $buf%` are equally legal.
-- Related reading: [Control flow on five stacks](control-flow-stacks.md) for the call frame and the `LOCAL`/parameter restore list that this feature rides on.
+The call frame and the `LOCAL`/parameter restore list this feature rides on are detailed in [control flow on five stacks](control-flow-stacks.md).
