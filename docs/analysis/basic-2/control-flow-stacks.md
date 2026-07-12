@@ -2,9 +2,9 @@
 
 > **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro. The mechanism, the workspace addresses, and the ROM entry points are all specific to this version. BASIC IV (the BBC Master) keeps the same architecture but relocates the addresses; BASIC V (Acorn Archimedes) is a 32-bit ARM interpreter and works differently again. Treat the *shape* of the argument as portable and the *addresses* as version II only.
 
-BBC BASIC is justly admired for its structured-programming constructs — named `PROC`s and `FN`s with `LOCAL` variables, `REPEAT…UNTIL`, `FOR…NEXT`, and `GOSUB…RETURN`. Underneath, every one of these rests on a stack. But not the *same* stack: the interpreter maintains **five** distinct ones, and which construct uses which is the key to understanding why some control-flow tricks are clean and others quietly corrupt the interpreter's state.
+BBC BASIC's structured-programming constructs — named `PROC`s and `FN`s with `LOCAL` variables, `REPEAT…UNTIL`, `FOR…NEXT`, and `GOSUB…RETURN` — each rest on a stack. But not the *same* stack: the interpreter maintains **five** distinct ones, and which construct uses which determines why some control-flow tricks are clean and others quietly corrupt the interpreter's state.
 
-The single most useful fact, derived directly from the ROM, is this:
+The behaviour that governs the rest of this article is this:
 
 > A `PROC`/`FN` call saves and restores the 6502 hardware stack and the BASIC value stack. It does **not** save the `FOR`, `REPEAT` or `GOSUB` stacks. So leaving a loop early — whether by `GOTO` or by `ENDPROC` from inside it — leaks that loop's frame.
 
@@ -30,7 +30,7 @@ The three loop stacks live side by side in page 5 and are plain LIFO arrays inde
 
 **`GOSUB`/`RETURN`.** [`stmt_gosub`](address:B888@2?hex) pushes the return text pointer into `gosub_stack[level]` and increments `zp_gosub_level`; [`stmt_return`](address:B8B6@2?hex) pops it. Straightforward.
 
-**`PROC`/`FN`.** This is the interesting one, and the exception.
+**`PROC`/`FN`.** This one is the exception.
 
 
 ## The PROC/FN exception
@@ -77,9 +77,9 @@ Two things sit on the BASIC value stack across the call, beneath that frame:
 
 ### Unwinding
 
-`ENDPROC` ([`stmt_endproc`](address:9356@2?hex)) and `FN`'s `=expr` do **not** pop the frame themselves — and that is the elegant part. Each verifies the framed token, then falls into the ordinary end-of-statement path. Because the body was entered by `JSR <body>`, the `RTS` ending that path pops the body return address (`&01F6/&01F7`) straight back into `call_proc_fn` (at `&B20E`). Only there does the real unwind happen: restore PtrB, replay the count by popping that many *(address, value)* pairs off the value stack to undo the `LOCAL`s and parameters, restore the caller's PtrA, then copy the saved hardware stack back into page 1 and fix up the value-stack pointer.
+`ENDPROC` ([`stmt_endproc`](address:9356@2?hex)) and `FN`'s `=expr` do **not** pop the frame themselves. Each verifies the framed token, then falls into the ordinary end-of-statement path. Because the body was entered by `JSR <body>`, the `RTS` ending that path pops the body return address (`&01F6/&01F7`) straight back into `call_proc_fn` (at `&B20E`). Only there does the real unwind happen: restore PtrB, replay the count by popping that many *(address, value)* pairs off the value stack to undo the `LOCAL`s and parameters, restore the caller's PtrA, then copy the saved hardware stack back into page 1 and fix up the value-stack pointer.
 
-So `PROC`/`FN`/`ENDPROC` correctly tidy **two** stacks: the 6502 hardware stack and the BASIC value stack. The catch is in what they leave alone. Searching the ROM for every write to the three loop-level counters turns up exactly five sites — the loop statements themselves, plus one bulk reset — and **none of them is in `call_proc_fn` or `stmt_endproc`**. The loop stacks are global state that a procedure call neither saves nor restores.
+So `PROC`/`FN`/`ENDPROC` correctly tidy **two** stacks: the 6502 hardware stack and the BASIC value stack. The catch is in what they leave alone. Only seven places in the ROM write the three loop-level counters — the six loop statements (`FOR`/`NEXT`, `REPEAT`/`UNTIL`, `GOSUB`/`RETURN`) and the one bulk reset in [`reset_data_and_stacks`](address:BD3A@2?hex) — and **none is in `call_proc_fn` or `stmt_endproc`**. The loop stacks are global state that a procedure call neither saves nor restores.
 
 
 ## Legitimate control flow
@@ -109,7 +109,7 @@ The trouble starts whenever control leaves a construct by a path other than its 
 1990 ENDPROC
 ```
 
-**Early exit from a procedure *within a loop*.** This is where the two ideas collide, and it is the case worth understanding. Consider:
+**Early exit from a procedure *within a loop*.** This is where the two ideas collide. Consider:
 
 ```basic
   10 REPEAT
@@ -138,7 +138,7 @@ The same reasoning applies to a `FOR` loop left open across an `ENDPROC`, with *
 
 ## Why casual misuse often seems to work
 
-There is one more piece that explains why programmers got away with this more often than the analysis suggests they should have. The routine [`reset_data_and_stacks`](address:BD3A@2?hex) resets the value stack to `HIMEM`, the `DATA` pointer to `PAGE`, and **zeroes all three loop-level counters**. It runs whenever control returns to the immediate-mode prompt (from [`execute_line`](address:8B1A@2?hex)) and on `RUN`.
+One more mechanism explains why misuse often seems harmless. The routine [`reset_data_and_stacks`](address:BD3A@2?hex) resets the value stack to `HIMEM`, the `DATA` pointer to `PAGE`, and **zeroes all three loop-level counters**. It runs whenever control returns to the immediate-mode prompt (from [`execute_line`](address:8B1A@2?hex)) and on `RUN`.
 
 So a leaked frame from a single ill-advised `ENDPROC` is wiped the moment you get back to the `>` prompt. A program that early-exits a loop once, returns to the prompt, and is re-`RUN` will look perfectly healthy. The leak only bites when it *accumulates within a single run* — many early exits without passing through the prompt — or when a leaked inner frame sits on top of a live **outer** loop, as in the example above. Both are real; both are easy to trigger by accident; neither is reported as an error until the ceiling is hit.
 
@@ -157,13 +157,3 @@ So a leaked frame from a single ill-advised `ENDPROC` is wiped the moment you ge
 - Never `GOTO` out of a `FOR` or `REPEAT`. It is the same leak by a different name.
 
 The underlying rule is simple once the stacks are laid bare: **a loop's frame is removed only by that loop's own `NEXT`/`UNTIL` (or by the prompt reset).** Nothing else — not `GOTO`, not `ENDPROC`, not an error caught by `ON ERROR` short of returning to the prompt — tidies it for you.
-
-
-## Cross-references
-
-- [`call_proc_fn`](address:B197@2?hex) — saves the 6502 and value stacks across a call; leaves the loop stacks alone.
-- [`stmt_endproc`](address:9356@2?hex) — the early-exit point; restores the two general stacks only.
-- [`stmt_local`](address:9323@2?hex) — stacks each `LOCAL`'s old value and bumps the call frame's restore count at `&01FB`.
-- [`stmt_for`](address:B7C4@2?hex) / [`stmt_next`](address:B695@2?hex), [`stmt_repeat`](address:BBE4@2?hex) / [`stmt_until`](address:BBB1@2?hex), [`stmt_gosub`](address:B888@2?hex) / [`stmt_return`](address:B8B6@2?hex) — the matched push/pop pairs.
-- [`reset_data_and_stacks`](address:BD3A@2?hex) — the prompt/`RUN` reset that zeroes all three loop-level counters.
-- Workspace: [`for_stack`](address:0500@2?hex), [`repeat_stack`](address:05A4@2?hex), [`gosub_stack`](address:05CC@2?hex), and the counters [`zp_for_level`](address:0026@2?hex), [`zp_repeat_level`](address:0024@2?hex), [`zp_gosub_level`](address:0025@2?hex).
