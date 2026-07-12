@@ -15,7 +15,7 @@
             "label": "The 5-byte float format and the precision of BASIC's constants (BASIC II)",
             "url": "docs/analysis/basic-2/floating-point-constants-and-precision.md",
             "icon": "doc",
-            "note": "A reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants: how the 32-bit significand encodes values such as e, pi/180 and ln 2, the inconsistent last-bit rounding across them, and the two-part Cody–Waite pi/2."
+            "note": "A reading of BBC BASIC II's packed 5-byte floating-point format and its constant pool: how the 32-bit significand encodes values such as e, pi/180 and ln 2, the inconsistent last-bit rounding across them, and the two-part Cody–Waite pi/2."
         },
         {
             "label": "Tokenising and de-tokenising: the keyword table, the crunch, and LIST (BASIC II)",
