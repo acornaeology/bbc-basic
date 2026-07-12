@@ -10,11 +10,7 @@ This repository contains an annotated disassembly of the Acorn BBC BASIC ROM, pr
 
 - **Acorn BBC BASIC II**
   - [Formatted disassembly on acornaeology.uk](https://acornaeology.uk/bbc-basic/2.html)
-  - [Disassembly source on GitHub](https://github.com/acornaeology/bbc-basic/blob/master/versions/basic-2/output/basic-2.asm)
   - [BBC BASIC II in The BBC Micro ROM Library](https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d)
-  - [J.G. Harston's BBC BASIC source reconstruction (mdfs.net)](https://mdfs.net/Software/BBCBasic/BBC/)
-  - [hoglet's BBC BASIC 4r32 disassembly](https://github.com/hoglet67/BBCBasic4r32)
-  - [The Advanced BASIC ROM User Guide (Colin Pharo)](https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf)
 
 ## How it works
 
@@ -44,6 +40,8 @@ beebasm -i versions/basic-2/output/basic-2.asm -o basic-2.rom
 
 ## References
 
+- [tobylobster's BBC Micro MOS disassembly](https://tobylobster.github.io/mos/)
+  tobylobster's fully annotated disassembly of the BBC Micro MOS — a reference for the OSBYTE / OSWORD / vector-call semantics and zero-page / workspace names BBC BASIC relies on.
 - [The Advanced BASIC ROM User Guide (Colin Pharo)](https://www.retro-kit.co.uk/user/custom/BBC/Books/Advanced-BASIC-ROM-User-Guide.pdf)
   A detailed reference to the internals of the BBC BASIC ROM: zero-page usage, the keyword table, the interpreter loop, variable storage, and the floating-point routines.
 - [BBC Microcomputer System User Guide (John Coll)](https://archive.org/details/BBCUserGuide)
