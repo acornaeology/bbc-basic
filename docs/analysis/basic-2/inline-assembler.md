@@ -83,7 +83,7 @@ Indices `&01`–`&38` are exactly the **56 NMOS 6502 mnemonics** (BASIC II preda
 
 The **base opcodes are the addressing-mode "column 0" value** of each instruction group; the operand parser steps between the 6502's regular four-column mode layout with the `+4`/`+8`/`+16` helpers ([`asm_opcode_add4`](address:8832@2?hex)/[`asm_opcode_add8`](address:882F@2?hex)/[`asm_opcode_add16`](address:882C@2?hex)). A few base bytes are slot values rather than legal standalone opcodes (e.g. `BIT` base `&20`, `LDX`/`LDY`-immediate `&A2`/`&A0`). Zero-page versus absolute is **selected automatically from the operand's high byte**: a zero high byte gives the 2-byte zero-page form, otherwise the 3-byte absolute form ([`asm_zp_or_abs`](address:8738@2?hex)). This behaviour interacts with forward references, as discussed below.
 
-The index register counts from `&3A` down to `1` and never reaches `0`, so the tables carry no zeroth entry: each begins at index `&01`. The lookups accommodate this by naming the base address *minus one* — `asm_mnemonic_lo-1,X`, `asm_mnemonic_hi-1,X`, `asm_base_opcode-1,X` — the conventional 6502 idiom for a one-based table. With `X` in the range `1`–`&3A` the effective address spans exactly entries `&01`–`&3A`. The three arrays are consequently packed contiguously, with neither padding nor overlap: [`asm_mnemonic_lo`](address:8451@2?hex) occupies `&8451`–`&848A`, [`asm_mnemonic_hi`](address:848B@2?hex) `&848B`–`&84C4`, and [`asm_base_opcode`](address:84C5@2?hex) begins at `&84C5`. The byte immediately below `asm_mnemonic_lo`, at the never-addressed `&8450`, belongs not to the table but to the statement-dispatch table that precedes it — it holds `>(stmt_oscli)` — and the search leaves it untouched because `X` never falls to `0`.
+The index register counts from `&3A` down to `1` and never reaches `0`, so the tables carry no zeroth entry: each begins at index `&01`. The lookups accommodate this by naming the base address *minus one* — `asm_mnemonic_lo-1,X`, `asm_mnemonic_hi-1,X`, `asm_base_opcode-1,X` — the conventional 6502 idiom for a one-based table. With `X` in the range `1`–`&3A` the effective address spans exactly entries `&01`–`&3A`. The three arrays are consequently packed contiguously, with neither padding nor overlap: [`asm_mnemonic_lo`](address:8451@2?hex) occupies `&8451`–`&848A`, [`asm_mnemonic_hi`](address:848B@2?hex) `&848B`–`&84C4`, and [`asm_base_opcode`](address:84C5@2?hex) begins at `&84C5`.
 
 ## Labels as BASIC variables
 
@@ -131,7 +131,21 @@ The classic two-pass loop relies on exactly this behaviour:
 - **Pass 1 (`OPT 0`, bit 1 clear):** forward references to not-yet-defined labels evaluate to `P%`; no errors; the `.label` assignments create the variables as they are reached.
 - **Pass 2 (`OPT 3`, bit 1 set):** every label now exists, references resolve to real addresses, and any genuinely undefined name (or out-of-range branch) is reported.
 
-The choice to return **`P%` rather than `0`** for an unknown forward reference is deliberate and consequential: `P%` is a genuine 16-bit address with (usually) a non-zero high byte, so `LDA forwardlabel` sizes to **absolute (3 bytes)** on pass 1 — matching the 3-byte absolute it will be on pass 2 once the label resolves to another address. Instruction sizes therefore stay consistent between passes and `P%` doesn't drift. (The known failure case is a forward reference that ultimately resolves to a **zero-page** address: pass 1 sizes it absolute, pass 2 zero-page, and everything after it shifts — which is why zero-page labels must be defined before use or forced.)
+The choice to return **`P%` rather than `0`** for an unknown forward reference is deliberate and consequential, in two complementary ways. First, **sizing**: `P%` is a genuine 16-bit address with (usually) a non-zero high byte, so `LDA forwardlabel` sizes to **absolute (3 bytes)** on pass 1 — matching the 3-byte absolute it will be on pass 2 once the label resolves to a real address. Had an undefined reference evaluated to `0`, pass 1 would size it *zero-page (2 bytes)* and pass 2 *absolute (3 bytes)*, growing the instruction and shifting everything after it. Second, **branch range**: a forward branch such as `BNE fwd` evaluates its not-yet-defined target as `P%`, giving an offset of about −2 rather than a wild displacement measured from `0`, so the branch is trivially in range on pass 1 even though its target does not yet exist. Between them, instruction sizes and label addresses stay consistent across the two passes.
+
+The residual failure case is a forward reference that ultimately resolves to a **zero-page** address: pass 1 sizes it absolute (operand `P%`, non-zero high byte), pass 2 zero-page, and the instruction shrinks — shifting every address after it. BBC BASIC II offers no directive to force an addressing mode — the mode is chosen solely from the operand's high byte, and the pass-1 value is `P%`, which cannot be coerced to zero page — so the only remedy is to **define zero-page labels before they are used**, giving both passes the same small value:
+
+```basic
+   10 zpwork = &70                 : REM define the zero-page label up front
+   20 FOR pass% = 0 TO 3 STEP 3
+   30   P% = code%
+   40   [ OPT pass%
+   50     LDA zpwork               \ zero-page (2 bytes) on both passes
+   60   ]
+   70 NEXT
+```
+
+Assign `zpwork` *after* the block instead and pass 1 would size the `LDA` absolute, pass 2 zero-page, and every label following it would take a different value on each pass.
 
 ## The `EQU` directives
 
