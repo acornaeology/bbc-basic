@@ -4,7 +4,8 @@
     "description": "BBC BASIC is the BASIC interpreter built into the BBC Micro, written by Sophie Wilson at Acorn Computers. It is a 16 kB sideways language ROM combining a line editor, a keyword tokeniser and de-tokeniser, a statement interpreter, an expression evaluator with full operator precedence, integer and 40-bit floating-point arithmetic, string handling, and variable storage. BBC BASIC is renowned for its structured-programming features — named procedures and functions (PROC/FN) with local variables, REPEAT/UNTIL loops, and IF/THEN/ELSE — and for its built-in 6502 assembler, which lets machine code be written inline and assembled directly from a BASIC program. Version II is the most widely used BBC Micro release.",
     "glossary": "GLOSSARY.md",
     "versions": ["2"],
-    "analyses": [
+    "analyses": [],
+    "analyses_pending": [
         {
             "label": "Control flow on five stacks (BASIC II)",
             "url": "docs/analysis/basic-2/control-flow-stacks.md",
