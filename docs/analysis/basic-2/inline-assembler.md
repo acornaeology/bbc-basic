@@ -10,7 +10,7 @@ BBC BASIC's inline assembler is closely integrated with the interpreter: rather 
 
 ## Entering and leaving: `[` and `]`
 
-`[` at the start of a statement is recognised by [`check_eq_star_bracket`](address:8B60@2?hex) and jumps to [`asm_enter`](address:8504@2?hex), which sets the default **`OPT 3`** and falls into the main loop [`asm_loop`](address:8508@2?hex):
+A `[` symbol at the start of a statement is recognised by [`check_eq_star_bracket`](address:8B60@2?hex) and jumps to [`asm_enter`](address:8504@2?hex), which sets the default **`OPT 3`** and falls into the main loop [`asm_loop`](address:8508@2?hex):
 
 ```
 .asm_enter
@@ -36,7 +36,7 @@ Assembled bytes are written by [`asm_emit`](address:862B@2?hex), which picks the
 - bit 2 clear → store at `P%` (the normal case);
 - bit 2 set (`OPT >= 4`) → store at `O%` instead, while still advancing `P%`.
 
-This is **offset assembly**: the code is laid down at `O%` but assembled *as if* it will run at `P%` (so that all address calculations use `P%`). It is the means of building code in a spare buffer that will later be copied to, or paged into, its true run address. `P%` always advances; `O%` advances only while bit 2 is set.
+This is **offset assembly**: the code is laid down at `O%` but assembled *as if* it will run at `P%` (so that all address calculations use `P%`). It is the means of building code in a spare buffer that will later be copied to, or paged into, its true run address. The program counter `P%` always advances; `O%` advances only while bit 2 is set.
 
 ## The `OPT` directive
 
