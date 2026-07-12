@@ -9,49 +9,49 @@
             "label": "Control flow on five stacks (BASIC II)",
             "url": "docs/analysis/basic-2/control-flow-stacks.md",
             "icon": "doc",
-            "note": "How BBC BASIC II spreads its control flow across five separate stacks — the 6502 hardware stack, the BASIC value stack, and the FOR/REPEAT/GOSUB arrays in page 5. A PROC/FN call saves the first two but not the loop stacks, which is why ENDPROC (or GOTO) out of an open loop leaks its frame: harmless once at the prompt, but a source of Too many FORs/REPEATs and enclosing-loop corruption otherwise. Covers the legitimate idioms and the version-II ROM addresses."
+            "note": "How BBC BASIC II spreads control flow across five stacks — the 6502 hardware stack, the BASIC value stack, and the FOR, REPEAT and GOSUB arrays in page 5 — and why a PROC/FN call saves the first two but not the loop stacks."
         },
         {
             "label": "The 5-byte float format and the precision of BASIC's constants (BASIC II)",
             "url": "docs/analysis/basic-2/floating-point-constants-and-precision.md",
             "icon": "doc",
-            "note": "A close reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants. The significand is 32 bits — eight hexadecimal digits — so the e at &AAE4 is really the rational ADF85458/2^30: every stored hexit of e, then truncated one unit-in-the-last-place low (round-to-nearest would be ADF85459). A survey of the named scalars shows the last-bit rounding isn't even consistent (e and pi/180 truncated, ln 2 rounded, log10 e a ULP high), which is why the disassembly shows the full decoded value rather than a misleading rounded one. Ends on the two-part Cody-Waite pi/2, Acorn's own workaround for the precision limit."
+            "note": "A reading of BBC BASIC II's packed 5-byte floating-point format and its pool of stored REAL constants: how the 32-bit significand encodes values such as e, pi/180 and ln 2, the inconsistent last-bit rounding across them, and the two-part Cody–Waite pi/2."
         },
         {
             "label": "Tokenising and de-tokenising: the keyword table, the crunch, and LIST (BASIC II)",
             "url": "docs/analysis/basic-2/tokeniser-and-detokeniser.md",
             "icon": "doc",
-            "note": "A complete, address-cited account of how BBC BASIC II turns source text into tokens and back. Gives the full 126-entry keyword/token/flag table verbatim, the meaning of every flag bit, and the first-full-match-in-table-order crunch algorithm (with abbreviations, the start-of-statement state machine, and the REM/DATA/* suppression contexts). Documents the three-byte &8D line-number codec — verified to round-trip only for 0–32767 and never to emit a &0D — the line storage layout (&0D hi lo len body, &0D &FF end marker), and what LIST does and does not preserve. Written for anyone building a faithful BASIC II tokeniser/detokeniser."
+            "note": "An address-cited account of how BBC BASIC II turns source text into tokens and back: the 126-entry keyword/token/flag table, the flag bits, the first-match crunch and its suppression contexts, the three-byte line-number encoding, the line storage layout, and what LIST preserves."
         },
         {
             "label": "Data files: channels, raw bytes, and the backwards PRINT# (BASIC II)",
             "url": "docs/analysis/basic-2/data-files.md",
             "icon": "doc",
-            "note": "How BBC BASIC II handles data files — the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a thin wrapper over a MOS call (OSFIND/OSBGET/OSBPUT/OSARGS/OSBYTE). The centrepiece is the PRINT#/INPUT# record format: PRINT# writes no text at all but a 1-byte type tag (0 string, &40 integer, &FF real) followed by the value's bytes in reverse — integers and reals MSB-first, strings last-character-first — so PRINT#42 emits 40 00 00 00 2A, not \"42\". INPUT# mirrors the reversal byte for byte, which is why such files are really only readable by BASIC. Whole-program LOAD/SAVE/CHAIN (a separate OSFILE mechanism) is deliberately excluded."
+            "note": "How BBC BASIC II handles data files: the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a wrapper over a MOS call, and the PRINT#/INPUT# record format that stores a type tag then the value's bytes in reverse."
         },
         {
             "label": "Indirection lvalues as PROC/FN parameters (BASIC II)",
             "url": "docs/analysis/basic-2/indirection-lvalue-parameters.md",
             "icon": "doc",
-            "note": "A little-known BBC BASIC II capability: a formal parameter of DEF FN/DEF PROC may be any assignable location, not just a name — including a byte (?), word (!) or string ($) indirection onto raw memory. The reason is structural: the parameter binder in call_proc_fn reuses parse_lvalue, the very routine that parses the left-hand side of LET, FOR and LOCAL, so all four accept the same lvalue grammar. Binding an indirection formal is therefore a scoped assignment to a memory cell — save the old contents (the same stack_local LOCAL uses), poke in the argument, run the body, restore on =/ENDPROC — not call-by-reference and not a named local. Explains the type-byte scheme (&00 ?, &04 ! / integer, &05 real, &80 $, &81 string), works through minimal demonstration programs for each lvalue form, and gives guidance for compiler authors on modelling it faithfully. Closes on the rheolism DEF FNd(X,$@%) one-liner that motivated the investigation."
+            "note": "A BBC BASIC II capability: a DEF FN/DEF PROC formal parameter may be any assignable location — a byte (?), word (!) or string ($) indirection onto memory — because the parameter binder reuses parse_lvalue, so binding such a formal is a scoped assignment to a memory cell."
         },
         {
             "label": "Parsers and evaluators: who reads text, and how the language reaches them (BASIC II)",
             "url": "docs/analysis/basic-2/parsers-and-evaluators.md",
             "icon": "doc",
-            "note": "A road-map to BBC BASIC II's text-reading machinery, and the single insight that dissolves much of its parsing folklore: BASIC II is not one parser but several distinct machines reached from different places in the language. Lays out the tokeniser, the statement dispatcher, the recursive-descent expression evaluator (eval_expr down a precedence ladder to the level-1 eval_factor atom), the factor-level readers, the lvalue parser, and the two string-to-value front doors. The decisive split: the decimal/float reader (parse_number) and the hex reader (factor_hex) are different routines and & is reachable only through eval_factor — which is why VAL(\"&FF\")=0 (VAL runs parse_number on the raw string) but EVAL(\"&FF\")=255 (EVAL tokenises and runs the whole evaluator), though both read \"1E3\" as 1000. Also ties together the surface quirks documented in the sibling articles — TOP-as-TO+P, indirection lvalues as parameters, & being uppercase-only and 32-bit-wrapping — to the machine boundary each one exposes. Ends with a routine cross-reference."
+            "note": "A road-map to BBC BASIC II's text-reading machinery: the tokeniser, the statement dispatcher, the recursive-descent expression evaluator, the factor-level readers, and the lvalue parser. Explains why VAL(\"&FF\") is 0 but EVAL(\"&FF\") is 255 — the decimal and hex readers are distinct routines."
         },
         {
             "label": "Program lifecycle: what NEW, OLD, CLEAR, RUN and CHAIN inherit and leave behind (BASIC II)",
             "url": "docs/analysis/basic-2/program-lifecycle.md",
             "icon": "doc",
-            "note": "What state survives, and what is wiped, across the BBC BASIC II commands that start, clear and re-run a program. All five funnel through one routine, clear_vars_heap_stack, which empties the dynamic-variable world (named variables, arrays, strings, PROC/FN, LOMEM, the DATA pointer and the FOR/REPEAT/GOSUB and value stacks) but deliberately preserves the resident integer variables @% and A%-Z% at &0400-&046B, because the variable-table clear starts at &0480 and never descends into them. That is the documented channel for passing data into a CHAINed program (and why @%'s print format persists across RUN). HIMEM and PAGE survive too. Includes a side-by-side matrix of NEW/OLD/CLEAR/RUN/CHAIN, the page-4 memory map that explains the &0480 boundary, and two non-obvious clears: editing any program line wipes the variables, whereas an error resets only the DATA pointer and stacks and leaves variables intact."
+            "note": "What state survives, and what is wiped, across NEW, OLD, CLEAR, RUN and CHAIN. All five funnel through clear_vars_heap_stack, which empties the dynamic-variable world but preserves the resident integers @% and A%–Z% at &0400–&046B — the channel for passing data into a CHAINed program."
         },
         {
             "label": "The inline 6502 assembler (BASIC II)",
             "url": "docs/analysis/basic-2/inline-assembler.md",
             "icon": "doc",
-            "note": "How BBC BASIC II's [ ... ] inline 6502 assembler works, and why it behaves the way it does — it is a thin front end over the interpreter's own expression evaluator and variable table. Three integration facts explain almost everything: labels are ordinary BASIC variables (.loop is literally loop = P%, via parse_lvalue + assign_number); P% and O% are resident-integer slots (&0440 and &043C) readable and writable from BASIC; and each [ ... ] is a single pass, with two-pass assembly being a BASIC-level FOR/OPT idiom. Documents the OPT flag bits (0 listing, 1 error reporting, 2 offset assembly to O%, &FF = not assembling), the 58-entry 5-bit-packed NMOS-6502 mnemonic table and addressing-mode opcode stepping, the zero-page-vs-absolute auto-sizing, the EQU directives, the listing format, and the error set. The centrepiece is the forward-reference mechanism: an undefined label evaluates to P% (not 0) when OPT error-reporting is off, which is what makes two-pass assembly converge without instruction-size drift. Includes the EQUS-with-a-bracket and ]-only-at-statement-start findings, and guidance for compiler authors."
+            "note": "How BBC BASIC II's [ ... ] inline 6502 assembler works: a thin front end over the interpreter's expression evaluator and variable table. Covers labels as BASIC variables, P% and O%, the OPT flag bits, the packed mnemonic table, zero-page/absolute auto-sizing, the EQU directives, and the forward-reference mechanism behind two-pass assembly."
         }
     ],
     "references": [
