@@ -76,7 +76,9 @@ A real BBC Micro bears it out — `@% = &A0A` selects ten significant figures:
 3.141592653
 ```
 
-`EXP(1)` evaluates to `e⁰ × e¹` with both factors exact, so it returns the raw `&AAE4` constant — and it reads `2.718281828`, not the `2.718281829` the binary-nearest value would have given. (`PRINT PI` showing `3.141592653` confirms the ten-figure display is live and rounding to nearest; that it lands one digit below true π is just the format running out of precision at the tenth figure — a separate effect.)
+`EXP(1)` evaluates to `e⁰ × e¹` with both factors exact, so it returns the raw `&AAE4` constant — and it reads `2.718281828`, not the `2.718281829` the binary-nearest value would have given.
+
+The companion `PRINT PI` shows `3.141592653`, one below true π's ten-figure value `3.141592654` — and here the last figure is genuinely wrong, for a reason that turns on this ROM storing π/2 rather than π. There is no stored π: [`fn_pi`](address:ABCB@2?hex) loads the π/2 constant and doubles it by incrementing the exponent (`INC zp_fwa_exp`), which is exact. But doubling the *nearest* representable π/2 does not give the nearest representable π. The stored π/2 significand is `C90FDAA2` (`⌊π/2 × 2³¹⌉`, which drops the `.006` past the 32nd bit); doubling leaves that significand unchanged at π's exponent, whereas the nearest π is `C90FDAA3` (`π × 2³⁰` rounds *up*, to `…426.99`). So `PI` comes out one ULP low, at `3.14159265347`, and the print routine correctly rounds *that* to `3.141592653`. Rounding π/2 and then doubling is not the same as rounding π; had the ROM stored π directly, `PRINT PI` would show the correct `3.141592654`.
 
 The likely mechanism is prosaic: the constants were written down as decimals, to whatever length the source table carried, and an assembler converted them. The stored binary is then the nearest representable to *the decimal Acorn wrote*, not to the true irrational — and the two diverge exactly when the decimal's last digit and the binary's last bit disagree.
 
