@@ -63,7 +63,7 @@ The parameter binder lives inside [`call_proc_fn`](address:B197@2?hex) at `&B24D
 
 1. **Parse the formal as an lvalue** — `jsr parse_lvalue` (`&B256`). This yields the address and type byte above.
 2. **Save the location's current contents** — `jsr` [`stack_local`](address:B30D@2?hex) (at `&B276`), pushing a *(address, type, old value)* record onto the BASIC value stack. This is the *identical* call `LOCAL` makes; a parameter is a `LOCAL` that is about to be assigned. The "old value" is captured by type: 1 byte for `?`, 4 bytes for `!`, and — for a `$addr` target — the string currently at the address, read **up to and including the first `&0D`** (the `lsv_dollar` loop at `&B3A7`). A `$addr` save therefore depends on a terminator already being present; an uninitialised buffer is saved as whatever bytes precede the first stray `&0D`.
-3. **Assign the actual argument into the location** — after a parameter/argument count and type check (a numeric formal given a string argument, or the reverse, raises *Arguments* at [`&B2BE`](address:B2BE@2?hex)), the binder dispatches on the type byte:
+3. **Assign the actual argument into the location** — after a parameter/argument count and type check (a numeric formal given a string argument, or the reverse, raises *Arguments* at `&B2BE`), the binder dispatches on the type byte:
    - bit 7 set (`&80`/`&81`, a string target) → [`assign_string_to`](address:8C21@2?hex) (`jsr` at `&B300`). For `$addr` (`&80`) this writes the string's bytes to the raw address followed by a `&0D` carriage-return terminator.
    - bit 7 clear (numeric) → [`assign_num_by_type`](address:B4B7@2?hex) (`jsr` at `&B2F3`), storing 1 byte for `?`, 4 bytes for `!`, or the value coerced to the variable's own type.
 
@@ -73,7 +73,7 @@ The crucial consequence for anyone modelling this:
 
 > An indirection parameter is **not** call-by-reference and **not** a named variable. It is a *scoped assignment to a fixed memory location*. `DEF FNf(?buf%)` called with value `V` behaves precisely like `LOCAL ?buf% : ?buf% = V` at entry and a restore of `?buf%` at exit. The address (`buf%` here) is named in the `DEF` line and evaluated afresh on each call; the body refers to the parameter not by a name but by *repeating the indirection*.
 
-There is one guard worth knowing: the `$` lvalue path rejects an address whose high byte is zero (`address in zero page? → $ range error`, [`&95BF`](address:95BF@2?hex)), so `$0`–`$255` will not bind.
+There is one guard worth knowing: the `$` lvalue path rejects an address whose high byte is zero (`address in zero page? → $ range error`, `&95BF`), so `$0`–`$255` will not bind.
 
 
 ## A catalogue, with the smallest programs that show each

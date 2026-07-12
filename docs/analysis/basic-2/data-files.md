@@ -56,7 +56,7 @@ This format is why data files written on a BBC are awkward to read on anything e
 | `&FF` (negative) | real    | 5 packed FP bytes                  | **reversed** — mantissa LSB first, **exponent last** ([`print_file_real`](address:8D57@2?hex), `LDX #4 … DEX`)     |
 | `&00`            | string  | 1 length byte, then the characters | **reversed** ([`print_file_str`](address:8D64@2?hex), `LDX len … DEX`)      |
 
-The tag is BASIC's own internal type code for the value (`zp_var_type`, `&27`): `0` string, `&40` integer, `&FF` real. The disassembly's own inline comments name the quirk outright — [`&8D52`](address:8D52@2?hex) "next byte (MSB first)" and [`&8D72`](address:8D72@2?hex) "next character (written in reverse)".
+The tag is BASIC's own internal type code for the value (`zp_var_type`, `&27`): `0` string, `&40` integer, `&FF` real. The disassembly's own inline comments name the quirk outright — `&8D52` "next byte (MSB first)" and `&8D72` "next character (written in reverse)".
 
 ### 3.2 Worked examples
 
@@ -87,7 +87,7 @@ It is not a deliberate wire format so much as a consequence of the copy loops: e
 
 The point is that **`INPUT#` undoes it by counting down too**, so the asymmetry cancels:
 
-- [`inputf_skip_hash`](address:B9CF@2?hex) reads the tag byte ([`&B9F6`](address:B9F6@2?hex)) and checks it against the target variable's type (raising *Type mismatch* otherwise).
+- [`inputf_skip_hash`](address:B9CF@2?hex) reads the tag byte (`&B9F6`) and checks it against the target variable's type (raising *Type mismatch* otherwise).
 - An integer is read with `LDX #3 … STA zp_iwa,x … DEX` ([`inputf_int_loop`](address:BA21@2?hex)) — the first byte off the file lands in `iwa+3`, restoring little-endian.
 - A real likewise into `fp_temp1+4…+0` then unpacked ([`inputf_real`](address:BA2B@2?hex)).
 - A string reads the length, then `STA strbuf_base,x … DEX` ([`inputf_read_loop`](address:BA0A@2?hex)) — the inline comment reads "into the buffer (reversed)" — so the original character order is recovered.

@@ -188,9 +188,9 @@ These are the BASIC **II** values — use them, not a BASIC I table:
 
 The scheme is *almost* perfectly symmetric, with two wrinkles:
 
-1. **`&8D` (line number)** is produced by the tokeniser and consumed by `LIST`, so it is used by both — but it is special-cased on both sides (it is not a table entry; the tokeniser builds it in [`parse_decimal_u16`](address:8897@2?hex)/`encode_line_number`, and `LIST` intercepts it before `print_token` at [`&B655`](address:B655@2?hex)).
+1. **`&8D` (line number)** is produced by the tokeniser and consumed by `LIST`, so it is used by both — but it is special-cased on both sides (it is not a table entry; the tokeniser builds it in [`parse_decimal_u16`](address:8897@2?hex)/`encode_line_number`, and `LIST` intercepts it before `print_token` at `&B655`).
 
-2. **The five assignment-form tokens `&CF`–`&D3`** (`PTR=`,`PAGE=`,`TIME=`,`LOMEM=`,`HIMEM=`) are *produced* by the tokeniser arithmetically (bit 6, §1.6) but their **table entries are reachable only by the de-tokeniser**. The tokeniser stops scanning at `WIDTH`'s token `&FE`, which doubles as the table-end sentinel (see [`&8A12`](address:8A12@2?hex): `cmp #&fe` → give up). The five `&CF`–`&D3` entries sit *after* `WIDTH`, so the crunch never matches them; they exist purely so `print_token` can render `PTR=` etc. back to text.
+2. **The five assignment-form tokens `&CF`–`&D3`** (`PTR=`,`PAGE=`,`TIME=`,`LOMEM=`,`HIMEM=`) are *produced* by the tokeniser arithmetically (bit 6, §1.6) but their **table entries are reachable only by the de-tokeniser**. The tokeniser stops scanning at `WIDTH`'s token `&FE`, which doubles as the table-end sentinel (see `&8A12`: `cmp #&fe` → give up). The five `&CF`–`&D3` entries sit *after* `WIDTH`, so the crunch never matches them; they exist purely so `print_token` can render `PTR=` etc. back to text.
 
 ### 1.6 Pseudo-variables and the `&40` trick
 
@@ -207,7 +207,7 @@ That is why the table carries the keyword twice — once at the function token (
 
 This matters because `TO` is **not** conditional (flag `&00`, no bit 0), so it tokenises at a name-run start even when a name character follows (§2.2). So the crunch turns the source `TOP` into the two bytes `[TO]` + `'P'` — the `TO` token followed by a literal ASCII `P` left in the line as ordinary name text. There is no longest-match step that could ever produce a `TOP` token, because no such token exists. A tokeniser that carries `TOP` as a keyword and does longest-match will mis-split `FORi=0TOPI*2` as `… 0 TOP I …`; the ROM produces `… 0 TO PI …` (`PI` = `&AF`), because at the run-start after the digit `0` the crunch matches `TO`, resumes at `PI`, and matches that.
 
-**It is not just digits that trigger the split.** `TO` tokenises at *any* name-run start, and a run-start is any position not continuing an identifier — i.e. preceded by anything that is **not** a name character (`is_alphanumeric`, [`&8926`](address:8926@2?hex), accepts only `0-9 A-Z a-z _`; it rejects `% $ # ( ) [ ] ^` and every operator), or sitting just after a completed number literal or an emitted token. So `TO` glues onto the preceding text after every value terminator, not only after a digit:
+**It is not just digits that trigger the split.** `TO` tokenises at *any* name-run start, and a run-start is any position not continuing an identifier — i.e. preceded by anything that is **not** a name character (`is_alphanumeric`, `&8926`, accepts only `0-9 A-Z a-z _`; it rejects `% $ # ( ) [ ] ^` and every operator), or sitting just after a completed number literal or an emitted token. So `TO` glues onto the preceding text after every value terminator, not only after a digit:
 
 | Source | After | Crunches as | Why |
 |---|---|---|---|
@@ -238,13 +238,13 @@ Read straight from [`tok_kw_found`](address:8A37@2?hex) onward, the flag byte is
 
 | Bit | Mask  | Meaning                                                                                                                                                            | Code                          |
 |-----|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
-| 0   | `&01` | **Conditional**: if the character *after* the matched keyword is a name character (`is_alphanumeric`), do **not** tokenise — keep it as part of a name/identifier. | [`&8A3E`](address:8A3E@2?hex) |
-| 1   | `&02` | Enter **middle-of-statement** mode (set state flag `&3B = &FF`; clear `&3C`).                                                                                      | [`&8A5E`](address:8A5E@2?hex) |
-| 2   | `&04` | Enter **start-of-statement** mode (set `&3B = 0`; clear `&3C`).                                                                                                    | [`&8A66`](address:8A66@2?hex) |
-| 3   | `&08` | **FN/PROC**: do not tokenise the following name (skip the identifier whole).                                                                                       | [`&8A6D`](address:8A6D@2?hex) |
-| 4   | `&10` | **Start a line number**: set the line-number flag `&3C = &FF` so the next decimal literal is encoded with the `&8D` token.                                         | [`&8A81`](address:8A81@2?hex) |
-| 5   | `&20` | **Stop tokenising the rest of the line** (`REM`, `DATA`): return from the crunch immediately.                                                                      | [`&8A86`](address:8A86@2?hex) |
-| 6   | `&40` | **Pseudo-variable**: if at statement start, add `&40` to the token (assignment form).                                                                              | [`&8A49`](address:8A49@2?hex) |
+| 0   | `&01` | **Conditional**: if the character *after* the matched keyword is a name character (`is_alphanumeric`), do **not** tokenise — keep it as part of a name/identifier. | `&8A3E` |
+| 1   | `&02` | Enter **middle-of-statement** mode (set state flag `&3B = &FF`; clear `&3C`).                                                                                      | `&8A5E` |
+| 2   | `&04` | Enter **start-of-statement** mode (set `&3B = 0`; clear `&3C`).                                                                                                    | `&8A66` |
+| 3   | `&08` | **FN/PROC**: do not tokenise the following name (skip the identifier whole).                                                                                       | `&8A6D` |
+| 4   | `&10` | **Start a line number**: set the line-number flag `&3C = &FF` so the next decimal literal is encoded with the `&8D` token.                                         | `&8A81` |
+| 5   | `&20` | **Stop tokenising the rest of the line** (`REM`, `DATA`): return from the crunch immediately.                                                                      | `&8A86` |
+| 6   | `&40` | **Pseudo-variable**: if at statement start, add `&40` to the token (assignment form).                                                                              | `&8A49` |
 | 7   | —     | unused (no flag byte exceeds `&43`).                                                                                                                               |                               |
 
 Notes on the individual bits:
@@ -259,7 +259,7 @@ Notes on the individual bits:
 
 The crunch does **not** do longest-match, and it does not do plain prefix-match. For the character at the cursor it scans entries **in table order** ([`tok_try_keyword`](address:89EC@2?hex)):
 
-1. The table is grouped by ascending first letter. If an entry's first letter is **greater** than the cursor letter, give up — it's a name (`BCC` at [`&89FA`](address:89FA@2?hex)). (There are no keywords past `W`; `X`/`Y`/`Z` and all lowercase short-circuit to "name" at [`&89EC`](address:89EC@2?hex).)
+1. The table is grouped by ascending first letter. If an entry's first letter is **greater** than the cursor letter, give up — it's a name (`BCC` at `&89FA`). (There are no keywords past `W`; `X`/`Y`/`Z` and all lowercase short-circuit to "name" at `&89EC`.)
 2. Otherwise compare the **whole** keyword character-by-character ([`tok_kw_match_loop`](address:89FE@2?hex)). A full match (next table byte has bit 7 set) → emit that token.
 3. A character mismatch → if the cursor character is `.`, accept the abbreviation (§2.3); else advance to the next entry and retry.
 
@@ -286,7 +286,7 @@ The winner on a shared prefix is therefore **the first table entry the typed let
 
 The curated table order is exactly what makes "the shortest unambiguous abbreviation" resolve correctly; the driver banner at [`keyword_table`](address:8071@2?hex) notes the entries are "ordered so that the first acceptable abbreviation of each keyword is unambiguous."
 
-A leading `.` with **no** preceding letter is not an abbreviation — it is treated as the start of a number (e.g. `.5`), see [`&89A3`](address:89A3@2?hex).
+A leading `.` with **no** preceding letter is not an abbreviation — it is treated as the start of a number (e.g. `.5`), see `&89A3`.
 
 ### 2.4 The start-of-statement state machine
 
@@ -310,9 +310,9 @@ There is no "recognised only at statement start" *class* of keywords in the crun
 | Context               | Entry                                        | Behaviour                                                                                  | Resumes                                                                                  |
 |-----------------------|----------------------------------------------|--------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
 | String literal `"…"`  | [`tok_check_string`](address:897C@2?hex)     | copy bytes verbatim through the closing `"`                                                | after the closing quote                                                                  |
-| Unterminated string   | [`&8987`](address:8987@2?hex)                | if `CR` is hit before a closing `"`, **return** — the rest of the line stays literal       | (line ends)                                                                              |
-| After `REM` / `DATA`  | flag bit 5, [`&8A86`](address:8A86@2?hex)    | **return** from the crunch — rest of line literal                                          | not until next line (`:` does **not** resume — colons are part of the `DATA`/`REM` text) |
-| Statement-leading `*` | [`&899A`](address:899A@2?hex)                | at statement start (`&3B = 0`) → **return**, rest of line literal (`*command` for `OSCLI`) | (line ends)                                                                              |
+| Unterminated string   | `&8987`                | if `CR` is hit before a closing `"`, **return** — the rest of the line stays literal       | (line ends)                                                                              |
+| After `REM` / `DATA`  | flag bit 5, `&8A86`    | **return** from the crunch — rest of line literal                                          | not until next line (`:` does **not** resume — colons are part of the `DATA`/`REM` text) |
+| Statement-leading `*` | `&899A`                | at statement start (`&3B = 0`) → **return**, rest of line literal (`*command` for `OSCLI`) | (line ends)                                                                              |
 | Mid-statement `*`     | same                                         | when `&3B ≠ 0`, `*` is the multiply operator — *not* suppression; scanning continues       | —                                                                                        |
 | `&`-hex constant      | [`tok_check_hex`](address:8966@2?hex)        | copy `&` and the run of hex digits `0-9 A-F` verbatim                                      | after the hex digits                                                                     |
 | Plain number          | [`tok_skip_number_loop`](address:89B5@2?hex) | digit/`.` runs copied verbatim (unless line-number-armed, §3)                              | after the number                                                                         |
@@ -325,7 +325,7 @@ There is no "recognised only at statement start" *class* of keywords in the crun
 
 ### 2.7 Case sensitivity
 
-Only uppercase `A`–`W` initiate keyword matching; lowercase never tokenises. The dispatch at [`tok_check_letter`](address:89DF@2?hex) requires `>= 'A'`, then [`tok_try_keyword`](address:89EC@2?hex) rejects anything `>= 'X'` — which includes all lowercase (`'a'` = `&61` ≥ `'X'` = `&58`). Lowercase letters are consumed as name characters. And the inner compare ([`&8A03`](address:8A03@2?hex)) is an exact byte comparison against the uppercase table text, so even reaching it, a lowercase byte cannot match.
+Only uppercase `A`–`W` initiate keyword matching; lowercase never tokenises. The dispatch at [`tok_check_letter`](address:89DF@2?hex) requires `>= 'A'`, then [`tok_try_keyword`](address:89EC@2?hex) rejects anything `>= 'X'` — which includes all lowercase (`'a'` = `&61` ≥ `'X'` = `&58`). Lowercase letters are consumed as name characters. And the inner compare (`&8A03`) is an exact byte comparison against the uppercase table text, so even reaching it, a lowercase byte cannot match.
 
 ---
 
@@ -341,7 +341,7 @@ byte2           = (LO & 0x3F) | 0x40
 byte3           = HI | 0x40
 ```
 
-So the stored reference is `8D <byte1> <byte2> <byte3>`. The `^ 0x54` (`EOR #&54` at [`&8915`](address:8915@2?hex)) is the "scramble" that keeps the control byte clear of `&0D`/`&8D`.
+So the stored reference is `8D <byte1> <byte2> <byte3>`. The `^ 0x54` (`EOR #&54` at `&8915`) is the "scramble" that keeps the control byte clear of `&0D`/`&8D`.
 
 The inverse, from [`decode_line_number`](address:97EB@2?hex) (`LIST` and the program editor both use it):
 
@@ -373,7 +373,7 @@ The qualification rule, from [`tok_check_number`](address:89A3@2?hex):
 - A **sign or any non-digit disarms**: `-`, `+`, `.`, or a letter routes through [`tok_check_letter`](address:89DF@2?hex)/[`tok_not_keyword`](address:89E3@2?hex), which clears `&3C`. So `GOTO -5` does **not** line-number-encode the `5`, and `GOTO X` (a computed line, `GOTO` of a variable) leaves `X` as an ordinary name.
 - `&3C` stays armed across commas but not across `:`/identifiers, so `RESTORE 100,200`-style lists encode each literal, while `THEN PRINT` (bit 2 also set) drops straight into a new statement.
 
-The leading line number of a program line you type uses the *same* `&8D` machinery: immediate mode ([`execute_line`](address:8B0B@2?hex)) pre-arms `&3C = &FF`, so the first number on the line is encoded; [`check_line_number`](address:97DF@2?hex) then decodes it back and that value becomes the stored 2-byte line number (§5.1). `AUTO` and `RENUMBER` reuse `encode_line_number` directly ([`&906A`](address:906A@2?hex)).
+The leading line number of a program line you type uses the *same* `&8D` machinery: immediate mode ([`execute_line`](address:8B0B@2?hex)) pre-arms `&3C = &FF`, so the first number on the line is encoded; [`check_line_number`](address:97DF@2?hex) then decodes it back and that value becomes the stored 2-byte line number (§5.1). `AUTO` and `RENUMBER` reuse `encode_line_number` directly (`&906A`).
 
 ---
 
@@ -381,7 +381,7 @@ The leading line number of a program line you type uses the *same* `&8D` machine
 
 ### 4.1 Is `LIST` a pure inverse?
 
-Essentially yes for the body. `print_token` ([`&B50E`](address:B50E@2?hex)) maps a token byte back to its keyword text and **adds no spaces of its own**; bytes `< &80` are printed as-is. The `LIST` line walker ([`list_char_loop`](address:B639@2?hex)) inserts no cosmetic spacing around tokens either — the only spacing it adds is **LISTO** indentation (§4.2). The tokeniser likewise *preserves spaces verbatim* (spaces are skipped over but left in the stored line), so:
+Essentially yes for the body. `print_token` (`&B50E`) maps a token byte back to its keyword text and **adds no spaces of its own**; bytes `< &80` are printed as-is. The `LIST` line walker ([`list_char_loop`](address:B639@2?hex)) inserts no cosmetic spacing around tokens either — the only spacing it adds is **LISTO** indentation (§4.2). The tokeniser likewise *preserves spaces verbatim* (spaces are skipped over but left in the stored line), so:
 
 ```
 detokenise(tokenise("PRINT X"))  ==  "PRINT X"     (whitespace preserved)
@@ -396,7 +396,7 @@ The round trip is therefore exact at the level of *tokenised bytes*, but not alw
 
 ### 4.2 LISTO indentation and quote tracking
 
-`LIST` ([`stmt_list`](address:B59C@2?hex)) walks each line byte-by-byte. It maintains its own **quote flag** (`&4D`, toggled at [`&B643`](address:B643@2?hex)); while inside a quoted string every byte is printed **literally** with no de-tokenising. Outside quotes:
+`LIST` ([`stmt_list`](address:B59C@2?hex)) walks each line byte-by-byte. It maintains its own **quote flag** (`&4D`, toggled at `&B643`); while inside a quoted string every byte is printed **literally** with no de-tokenising. Outside quotes:
 
 - `&8D` → decode + print the line number (§4.3);
 - `FOR`/`NEXT`/`REPEAT`/`UNTIL` adjust the two LISTO indent counters (`&3B`,`&3C`);
@@ -417,7 +417,7 @@ At the default `LISTO 0`, **none** of these apply.
 Two different renderings, both via the decimal formatter [`print_line_number`](address:991F@2?hex) (leading-zero-suppressed, units always shown, no trailing space):
 
 - **The line's own number** (start of each listed line) is printed in a **5-character right-justified field** ([`list_print_num`](address:B61D@2?hex) → [`trace_print_number`](address:9923@2?hex), width 5): `    1`, `   10`, `  100`, `32767`.
-- **An embedded line-number reference** (`&8D`, after `GOTO` etc.) is printed as **plain decimal, no padding** ([`&B65E`](address:B65E@2?hex), width 0).
+- **An embedded line-number reference** (`&8D`, after `GOTO` etc.) is printed as **plain decimal, no padding** (`&B65E`, width 0).
 
 ### 4.4 Token spellings and re-tokenisation
 
@@ -444,18 +444,18 @@ No. `print_token` prints the literal table text of whichever entry holds that to
 Valid line numbers are **0–32767**:
 
 - `0` is valid (`GOTO 0`, a line numbered `0`).
-- `AUTO` stops as soon as the number would exceed 32767 — [`&90D7`](address:90D7@2?hex) `BPL auto_loop` ends the loop when the high bit sets.
+- `AUTO` stops as soon as the number would exceed 32767 — `&90D7` `BPL auto_loop` ends the loop when the high bit sets.
 - Numbers above 32767 do not survive the `&8D` reference codec (§3.1): both typed leading line numbers and references pass through `encode`/`decode`, which only round-trips ≤ 32767. There is no explicit "line number too big" error — values above the ceiling mis-encode rather than being rejected.
 
 ### 5.3 Maximum input line length and overflow
 
-A typed line is read by OSWORD 0 into the input buffer at **`&0700`** with a **maximum length of 238 bytes** (`&EE`) and accepted characters in `&20`–`&FF` ([`read_input_line`](address:BC02@2?hex), `LDA #&EE` at [`&BC0D`](address:BC0D@2?hex)). OSWORD 0 enforces the limit (it refuses further characters and only accepts `CR` once at/under the cap). Tokenising happens *in place* afterwards; note it can *grow* a line (a short line reference such as `GOTO 1` expands from 6 source bytes to the 4-byte `&8D` form), so the stored record (capped by the 1-byte length field, §5.1) is the binding limit, not the 238-byte input.
+A typed line is read by OSWORD 0 into the input buffer at **`&0700`** with a **maximum length of 238 bytes** (`&EE`) and accepted characters in `&20`–`&FF` ([`read_input_line`](address:BC02@2?hex), `LDA #&EE` at `&BC0D`). OSWORD 0 enforces the limit (it refuses further characters and only accepts `CR` once at/under the cap). Tokenising happens *in place* afterwards; note it can *grow* a line (a short line reference such as `GOTO 1` expands from 6 source bytes to the 4-byte `&8D` form), so the stored record (capped by the 1-byte length field, §5.1) is the binding limit, not the 238-byte input.
 
 ### 5.4 Top-bit-set bytes inside string literals
 
 There is no collision, on either side:
 
 - **Tokenise:** inside `"…"` the crunch copies bytes **verbatim** ([`tok_string_loop`](address:8980@2?hex)) — a `&80`–`&FF` byte in a string is stored unchanged and never interpreted as a token.
-- **`LIST`:** while its quote flag says "inside a string" ([`&B651`](address:B651@2?hex)), every byte is sent straight to `print_char` with **no** table lookup — so a stored `&C8` inside a string prints as the raw character, *not* as `LOAD`.
+- **`LIST`:** while its quote flag says "inside a string" (`&B651`), every byte is sent straight to `print_char` with **no** table lookup — so a stored `&C8` inside a string prints as the raw character, *not* as `LOAD`.
 
 The one caveat is the editor, not the codec: you cannot *type* a literal `&0D` (it terminates the line) or a top-bit byte the keyboard/OSWORD won't deliver. But any such byte already present in a tokenised string is round-tripped faithfully.

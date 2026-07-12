@@ -33,7 +33,7 @@ The smallest change the format can make to a value at a given magnitude is a cha
 
 ## *e*, hexit by hexit
 
-The constant at [`&AAE4`](address:AAE4@2?hex) is five bytes:
+The constant at `&AAE4` is five bytes:
 
 ```asm
     equb &82, &2d, &f8, &54, &58    ; float40 2.718281828  e
@@ -137,8 +137,8 @@ At that width the stored constant is indistinguishable from true *e*: the two ag
 
 Acorn knew 32 bits wasn't always enough, and one corner of the pool shows them engineering around it. Argument reduction for `SIN`/`COS` needs `x − n·(π/2)` accurately even when `n` is large, and a single 32-bit π/2 loses low-order bits in the product. So π/2 is stored **twice**, as a high part plus a correction — a textbook *Cody–Waite split*:
 
-- [`&AA59`](address:AA59@2?hex): a deliberately *low-precision* high part, `−1.57080078125`, whose significand `C9100000` has its **bottom two bytes zeroed** — so `n × C₁` is computed with no rounding error in the product;
-- [`&AA5E`](address:AA5E@2?hex): the correction `4.454455 × 10⁻⁶`, holding the bits the high part dropped.
+- `&AA59`: a deliberately *low-precision* high part, `−1.57080078125`, whose significand `C9100000` has its **bottom two bytes zeroed** — so `n × C₁` is computed with no rounding error in the product;
+- `&AA5E`: the correction `4.454455 × 10⁻⁶`, holding the bits the high part dropped.
 
 Their sum is `−π/2` to about fourteen digits — far past what a single 32-bit value could carry — and the reduction subtracts the two parts in turn. This works past the 32-bit ceiling the rest of this article describes. (Both halves carry the packed 5-byte type in the disassembly, so their decoded values sit beside the bytes.)
 
