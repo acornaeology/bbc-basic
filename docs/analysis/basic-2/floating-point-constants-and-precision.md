@@ -2,7 +2,7 @@
 
 > **Scope.** This article describes **BBC BASIC II** — the 16 KB language ROM of the BBC Micro — and the packed 5-byte floating-point format it uses for stored REAL constants. The format, the addresses, and the byte-level figures are all specific to this version.
 
-The maths section of the ROM holds a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Each is a 32-bit approximation to an irrational or non-terminating value, so none is exact; the most the format can hold is a value within one unit in the last place of the target.
+The maths section of the ROM holds a pool of pre-computed REAL constants — *e*, π/2, ln 2, log₁₀*e*, the degree/radian conversion factors, and the coefficient tables for the trig and log series. Each is a 32-bit approximation to an irrational or non-terminating value, so none is exact; the most the format can hold is a value within one unit in the last place (ULP) of the target.
 
 For *e*, the stored value is not even the *nearest* representable one — it is the neighbour one step further out, which is the value that prints correctly when BBC BASIC rounds it to ten figures. Across the whole pool the rounding is not uniform: most constants are faithful to a written decimal, a couple are the nearest representable outright, and one is a ULP off in both bases. This article works through the format in the base the machine uses, sets out the value stored for each constant, and shows how the disassembly records the exact stored value.
 
