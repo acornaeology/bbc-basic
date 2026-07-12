@@ -9530,7 +9530,7 @@ oscli             = &fff7
     jsr fwa_add_var                                                   ; a863: 20 00 a5     ..      ; LN(x) = e*ln2 + ln(mantissa)
     lda #&ff                                                          ; a866: a9 ff       ..       ; real result
     rts                                                               ; a868: 60          `        ; Return
-    equb &7f, &5e, &5b, &d8, &aa                                      ; a869: 7f 5e 5b... .^[...   ; float40 0.434294482  log10(e) = 1/ln(10)
+    equb &7f, &5e, &5b, &d8, &aa                                      ; a869: 7f 5e 5b... .^[...   ; float40 0.434294482  log10(e) = 1/ln(10); 1 ULP high
     equb &80, &31, &72, &17, &f8                                      ; a86e: 80 31 72... .1r...   ; float40 0.6931471806  ln 2
     equb &06                                                          ; a873: 06          .     
     equb &7a, &12, &38, &a5, &0b                                      ; a874: 7a 12 38... z.8...   ; float40 0.008924637961  ln c0
@@ -9910,7 +9910,7 @@ oscli             = &fff7
     equb &81, &c9, &10, &00, &00                                      ; aa59: 81 c9 10... ......   ; float40 -1.570800781  pi/2, high part (Cody-Waite)
     equb &6f, &15, &77, &7a, &61                                      ; aa5e: 6f 15 77... o.w...   ; float40 4.454455111e-06  pi/2, low part (Cody-Waite)
     equb &81, &49, &0f, &da, &a2                                      ; aa63: 81 49 0f... .I....   ; float40 1.570796327  pi/2
-    equb &7b, &0e, &fa, &35, &12                                      ; aa68: 7b 0e fa... {.....   ; float40 0.01745329252  pi/180 (degrees -> radians, RAD)
+    equb &7b, &0e, &fa, &35, &12                                      ; aa68: 7b 0e fa... {.....   ; float40 0.01745329252  pi/180 (deg -> rad, RAD); 1 ULP low
     equb &86, &65, &2e, &e0, &d3                                      ; aa6d: 86 65 2e... .e....   ; float40 57.29577951  180/pi (radians -> degrees, DEG)
     equb &05                                                          ; aa72: 05          .     
     equb &84, &8a, &ea, &0c, &1b                                      ; aa73: 84 8a ea... ......   ; float40 -8.682140451  sin c0
@@ -9982,7 +9982,7 @@ oscli             = &fff7
     jsr fp_eval_cont_frac                                             ; aade: 20 97 a8     ..      ; Evaluate the continued fraction
     lda #&ff                                                          ; aae1: a9 ff       ..       ; real result
     rts                                                               ; aae3: 60          `        ; Return
-    equb &82, &2d, &f8, &54, &58                                      ; aae4: 82 2d f8... .-....   ; float40 2.718281828  e
+    equb &82, &2d, &f8, &54, &58                                      ; aae4: 82 2d f8... .-....   ; float40 2.718281828  e (stored 1 ULP low)
     equb &07                                                          ; aae9: 07          .     
     equb &83, &e0, &20, &86, &5b                                      ; aaea: 83 e0 20... .. ...   ; float40 -7.003970316  exp c0
     equb &82, &80, &53, &93, &b8                                      ; aaef: 82 80 53... ..S...   ; float40 -2.005101137  exp c1

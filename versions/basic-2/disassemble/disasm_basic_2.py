@@ -10427,7 +10427,8 @@ def _fp_coeff_table(count_addr, count, name, trailing_comment):
 
 
 # LN: log10(e) and ln 2 scalars, then the LN continued-fraction table.
-d.typed_data(0xa869, 'bbc_float5', comment='log10(e) = 1/ln(10)', override=True)
+d.typed_data(0xa869, 'bbc_float5', comment='log10(e) = 1/ln(10); 1 ULP high',
+             override=True)
 d.typed_data(0xa86e, 'bbc_float5', comment='ln 2', override=True)
 _fp_coeff_table(0xa873, 6, 'ln', '-0.5')
 # ATN continued-fraction table.
@@ -10438,13 +10439,13 @@ d.typed_data(0xaa59, 'bbc_float5', comment='pi/2, high part (Cody-Waite)',
 d.typed_data(0xaa5e, 'bbc_float5', comment='pi/2, low part (Cody-Waite)',
              override=True)
 d.typed_data(0xaa63, 'bbc_float5', comment='pi/2', override=True)
-d.typed_data(0xaa68, 'bbc_float5', comment='pi/180 (degrees -> radians, RAD)',
+d.typed_data(0xaa68, 'bbc_float5', comment='pi/180 (deg -> rad, RAD); 1 ULP low',
              override=True)
 d.typed_data(0xaa6d, 'bbc_float5', comment='180/pi (radians -> degrees, DEG)',
              override=True)
 _fp_coeff_table(0xaa72, 5, 'sin', '1.0')
 # e, then the EXP continued-fraction table.
-d.typed_data(0xaae4, 'bbc_float5', comment='e', override=True)
+d.typed_data(0xaae4, 'bbc_float5', comment='e (stored 1 ULP low)', override=True)
 _fp_coeff_table(0xaae9, 7, 'exp', '1.0')
 
 # ----------------------------------------------------------------------

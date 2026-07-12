@@ -84973,12 +84973,12 @@
         216,
         170
       ],
-      "comment_inline": "float40 0.434294482  log10(e) = 1/ln(10)",
+      "comment_inline": "float40 0.434294482  log10(e) = 1/ln(10); 1 ULP high",
       "decoded": {
         "type": "bbc_float5",
         "text": "0.434294482",
         "value": 0.4342944819945842,
-        "comment": "log10(e) = 1/ln(10)"
+        "comment": "log10(e) = 1/ln(10); 1 ULP high"
       },
       "type": "byte",
       "values": [
@@ -88024,12 +88024,12 @@
         53,
         18
       ],
-      "comment_inline": "float40 0.01745329252  pi/180 (degrees -> radians, RAD)",
+      "comment_inline": "float40 0.01745329252  pi/180 (deg -> rad, RAD); 1 ULP low",
       "decoded": {
         "type": "bbc_float5",
         "text": "0.01745329252",
         "value": 0.017453292515710928,
-        "comment": "pi/180 (degrees -> radians, RAD)"
+        "comment": "pi/180 (deg -> rad, RAD); 1 ULP low"
       },
       "type": "byte",
       "values": [
@@ -88762,12 +88762,12 @@
         84,
         88
       ],
-      "comment_inline": "float40 2.718281828  e",
+      "comment_inline": "float40 2.718281828  e (stored 1 ULP low)",
       "decoded": {
         "type": "bbc_float5",
         "text": "2.718281828",
         "value": 2.718281827867031,
-        "comment": "e"
+        "comment": "e (stored 1 ULP low)"
       },
       "type": "byte",
       "values": [
