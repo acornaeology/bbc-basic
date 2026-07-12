@@ -66,7 +66,7 @@ One ULP here is `2^(130−160) = 2^−30 ≈ 9.31 × 10⁻¹⁰`. The bytes are 
 
 The reason is the decimal display. To ten significant figures *e* is `2.718281828`. Convert *that* decimal back into the format and you land on significand `2918732888` = `ADF85458` — the value actually in the ROM. The binary-nearest value `ADF85459` would instead print `2.718281829`, a wrong tenth digit. So the binary-suboptimal choice is the *decimal-optimal* one: it is exactly what you get by writing *e* to ten figures and converting, faithful to the decimal at the cost of a fraction of a ULP in binary.
 
-A real BBC Micro bears it out. The default general format shows **nine** significant figures (`@%` powers on as `&0000090A`), at which the constants print correctly — `PRINT PI` gives `3.14159265`. Widening to ten with `@% = &A0A` is what exposes the last-figure differences:
+A real BBC Micro bears it out. The default general format shows **nine** significant figures (`@%` powers on as `&90A`), at which the constants print correctly — `PRINT PI` gives `3.14159265`. Widening to ten with `@% = &A0A` is what exposes the last-figure differences:
 
 ```
 >@%=&A0A
