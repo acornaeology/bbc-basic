@@ -31,10 +31,10 @@
             "note": "How BBC BASIC II handles data files: the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a wrapper over a MOS call, and the PRINT#/INPUT# record format that stores a type tag then the value's bytes in reverse."
         },
         {
-            "label": "Indirection lvalues as PROC/FN parameters (BASIC II)",
-            "url": "docs/analysis/basic-2/indirection-lvalue-parameters.md",
+            "label": "Arbitrary lvalues as formal PROC/FN parameters (BASIC II)",
+            "url": "docs/analysis/basic-2/lvalue-parameters.md",
             "icon": "doc",
-            "note": "A BBC BASIC II capability: a DEF FN/DEF PROC formal parameter may be any assignable location — a byte (?), word (!) or string ($) indirection onto memory — because the parameter binder reuses parse_lvalue, so binding such a formal is a scoped assignment to a memory cell."
+            "note": "A BBC BASIC capability, present from BASIC I through BASIC V: a DEF FN/DEF PROC formal parameter may be any assignable location — an array element, or a byte (?), word (!) or string ($) indirection onto memory — because the parameter binder reuses parse_lvalue, so binding such a formal is a scoped assignment to that location."
         },
         {
             "label": "Parsers and evaluators: who reads text, and how the language reaches them (BASIC II)",
