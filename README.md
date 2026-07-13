@@ -10,6 +10,7 @@ This repository contains an annotated disassembly of the Acorn BBC BASIC ROM, pr
 
 - **Acorn BBC BASIC II**
   - [Formatted disassembly on acornaeology.uk](https://acornaeology.uk/bbc-basic/2.html)
+  - [Discuss this disassembly on Stardot](https://stardot.org.uk/forums/viewtopic.php?t=33284)
   - [BBC BASIC II in The BBC Micro ROM Library](https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d)
 
 ## How it works

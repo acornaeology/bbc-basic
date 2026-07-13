@@ -22,6 +22,12 @@
     ],
     "links": [
         {
+            "label": "Discuss this disassembly on Stardot",
+            "url": "https://stardot.org.uk/forums/viewtopic.php?t=33284",
+            "icon": "chat",
+            "category": "discussion"
+        },
+        {
             "label": "BBC BASIC II in The BBC Micro ROM Library",
             "url": "https://tobylobster.github.io/rom_library/?md5=2cc67be4624df4dc66617742571a8e3d",
             "icon": "chip"
