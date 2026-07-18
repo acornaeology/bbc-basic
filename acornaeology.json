@@ -4,7 +4,14 @@
     "description": "BBC BASIC is the BASIC interpreter built into the BBC Micro, written by Sophie Wilson at Acorn Computers. It is a 16 kB sideways language ROM combining a line editor, a keyword tokeniser and de-tokeniser, a statement interpreter, an expression evaluator with full operator precedence, integer and 40-bit floating-point arithmetic, string handling, and variable storage. BBC BASIC is renowned for its structured-programming features — named procedures and functions (PROC/FN) with local variables, REPEAT/UNTIL loops, and IF/THEN/ELSE — and for its built-in 6502 assembler, which lets machine code be written inline and assembled directly from a BASIC program. Version II is the most widely used BBC Micro release.",
     "glossary": "GLOSSARY.md",
     "versions": ["2"],
-    "analyses": [],
+    "analyses": [
+        {
+            "label": "Arbitrary lvalues as formal PROC/FN parameters (BASIC II)",
+            "url": "docs/analysis/basic-2/lvalue-parameters.md",
+            "icon": "doc",
+            "note": "A BBC BASIC capability, present from BASIC I through BASIC V: a DEF FN/DEF PROC formal parameter may be any assignable location — an array element, or a byte (?), word (!) or string ($) indirection onto memory — because the parameter binder reuses parse_lvalue, so binding such a formal is a scoped assignment to that location."
+        }
+    ],
     "analyses_pending": [
         {
             "label": "Control flow on five stacks (BASIC II)",
@@ -29,12 +36,6 @@
             "url": "docs/analysis/basic-2/data-files.md",
             "icon": "doc",
             "note": "How BBC BASIC II handles data files: the channel-based I/O behind OPENIN/OPENOUT/OPENUP, CLOSE, BGET#/BPUT#, PRINT#/INPUT# and PTR#/EXT#/EOF#, each a wrapper over a MOS call, and the PRINT#/INPUT# record format that stores a type tag then the value's bytes in reverse."
-        },
-        {
-            "label": "Arbitrary lvalues as formal PROC/FN parameters (BASIC II)",
-            "url": "docs/analysis/basic-2/lvalue-parameters.md",
-            "icon": "doc",
-            "note": "A BBC BASIC capability, present from BASIC I through BASIC V: a DEF FN/DEF PROC formal parameter may be any assignable location — an array element, or a byte (?), word (!) or string ($) indirection onto memory — because the parameter binder reuses parse_lvalue, so binding such a formal is a scoped assignment to that location."
         },
         {
             "label": "Parsers and evaluators: who reads text, and how the language reaches them (BASIC II)",
