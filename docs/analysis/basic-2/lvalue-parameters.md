@@ -198,7 +198,7 @@ The parameter binder lives inside [`call_proc_fn`](address:B197@2?hex) at `&B24D
 
 1. **Parse the formal as an lvalue** — `jsr parse_lvalue` (`&B256`). This yields the address and type byte above. Nothing has looked at the formal parameter list before this moment: `DEF` is never parsed at definition time, sharing the skip-to-end-of-line handler with `DATA`/`REM`/`ELSE`, so the list is parsed lazily, at *call* time, by the binder.
 2. **Save the location's current contents** — `jsr` [`stack_local`](address:B30D@2?hex) (at `&B276`), pushing a *(address, type, old value)* record onto the BASIC value stack. The "old value" is captured by type: 1 byte for `?`, 4 bytes for `!`, and — for a `$addr` target — the string currently at the address, scanned for a terminating `&0D` (the `lsv_dollar` loop at `&B3A7`). That scan is bounded by the 8-bit index it uses: at most 256 bytes are copied from the address into the string work area at `&0600`, and if no `&0D` turns up within them the recorded length is `0` and the saved string is simply empty (`&B3B9`). The bound is on the count, not on the address, so the scan crosses page boundaries freely. The terminator is not counted in the length; the restore path appends a fresh `&0D` of its own ([`unstack_value_to_var`](address:8CC1@2?hex), `&8CFF`). A `$addr` save therefore depends on a terminator already being present within 256 bytes; an uninitialised buffer is saved as whatever bytes precede the first stray `&0D`, and a buffer with no `&0D` at all is saved as nothing.
-3. **Assign the actual argument into the location** — after a parameter/argument count and type check (a numeric formal given a string argument, or the reverse, raises *Arguments* at `&B2BE`), the binder dispatches on the type byte:
+3. **Assign the actual argument into the location** — after a parameter/argument count and type check (a numeric formal given a string argument, or the reverse, raises an *Arguments* error at `&B2BE`), the binder dispatches on the type byte:
    - bit 7 set (`&80`/`&81`, a string target) → [`assign_string_to`](address:8C21@2?hex) (`jsr` at `&B300`). For `$addr` (`&80`) this writes the string's bytes to the raw address followed by a `&0D` carriage-return terminator.
    - bit 7 clear (numeric) → [`assign_num_by_type`](address:B4B7@2?hex) (`jsr` at `&B2F3`), storing 1 byte for `?`, 4 bytes for `!`, or the value coerced to the variable's own type.
 
@@ -274,7 +274,7 @@ Before : 55
 During : 99
 After  : 55
 ```
-[`index_array`](address:96DF@2?hex) evaluates every comma-separated subscript and folds them into one flattened element address before the binder sees it, so a `2`-D element is indistinguishable from a `1`-D one at bind time. The usual rules apply at the call: the subscript count must match the array's declared rank (else *Array*) and each index must be in range (else *Subscript*).
+[`index_array`](address:96DF@2?hex) evaluates every comma-separated subscript and folds them into one flattened element address before the binder sees it, so a `2`-D element is indistinguishable from a `1`-D one at bind time. The usual rules apply at the call: the subscript count must match the array's declared rank (else an *Array* error) and each index must be in range (else a *Subscript* error).
 
 ### 3. A unary byte indirection — `?addr`
 
