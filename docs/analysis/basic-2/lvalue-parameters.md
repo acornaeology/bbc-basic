@@ -191,6 +191,8 @@ For each it returns the storage address in [`zp_iwa`](address:002a@2) (`&2A/&2B`
 
 The parameter binder does not know or care which of these it is holding until it is time to store the argument, at which point it branches on bit 7 (string vs numeric) and on the width.
 
+One further site uses the same parser. The `CALL` statement ([`stmt_call`](address:8ED2@2?hex)) resolves each of its arguments through `parse_var_ref` — the layer beneath `parse_lvalue` — and copies the resulting `(address, type)` pair into the parameter block it passes to the machine code, so a `CALL` argument is an lvalue on the same terms as a formal parameter and may equally be an indirection or an array element. It enters below the create-if-absent step, though, so an undefined name in a `CALL` list raises a *No such variable* error rather than being created.
+
 
 ## What "binding to an lvalue parameter" actually does
 
