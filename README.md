@@ -59,7 +59,7 @@ beebasm -i versions/basic-2/output/basic-2.asm -o basic-2.rom
 ## Credits
 
 - [dasmos](https://github.com/acornaeology/dasmos) — programmable 6502 disassembler used to drive the annotation pipeline. dasmos is a ground-up rewrite of [py8dis](https://github.com/acornaeology/py8dis) (originally by [SteveF](https://github.com/ZornsLemma), forked for acornaeology), to which it owes its core ideas
-- [beebasm](https://github.com/stardot/beebasm) by Rich Mayfield and contributors
+- [beebasm](https://github.com/stardot/beebasm) by Rich Talbot-Watkins and contributors
 - [The BBC Micro ROM Library](https://tobylobster.github.io/rom_library/) by tobylobster
 
 ## License
