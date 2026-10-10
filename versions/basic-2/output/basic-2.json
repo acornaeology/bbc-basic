@@ -5780,6 +5780,16 @@
       "description": "IWA \u2014 the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable\u2019s value during a fetch."
     },
     {
+      "addr": 44,
+      "name": "zp_iwa_2",
+      "group": "zero_page",
+      "access": [
+        "r",
+        "w"
+      ],
+      "description": "IWA byte 2. When the lvalue/variable-lookup routines return a storage address in [`zp_iwa`](address:002a), this byte carries the accompanying type code (&00 byte, &04/&05 integer/real, &80/&81 string)."
+    },
+    {
       "addr": 46,
       "name": "zp_fwa_sign",
       "length": 8,

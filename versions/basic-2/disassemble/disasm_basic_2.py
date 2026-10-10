@@ -600,7 +600,8 @@ d.label(0x0029, 'zp_asm_opcode', length=1, group='zero_page', access='rw',
 d.label(0x002a, 'zp_iwa', length=4, group='zero_page', access='rw',
         description="""IWA — the 32-bit integer work accumulator. Holds the integer operand/result of the evaluator and the integer arithmetic primitives, and doubles as a pointer to a variable’s value during a fetch.""")
 d.label(0x002b, 'zp_iwa_1')
-d.label(0x002c, 'zp_iwa_2')
+d.label(0x002c, 'zp_iwa_2', group='zero_page', access='rw',
+        description="""IWA byte 2. When the lvalue/variable-lookup routines return a storage address in [`zp_iwa`](address:002a), this byte carries the accompanying type code (&00 byte, &04/&05 integer/real, &80/&81 string).""")
 d.label(0x002d, 'zp_iwa_3')           # IWA byte 3 (most significant)
 # Floating point work area A (FWA), the unpacked 8-byte accumulator.
 d.label(0x002e, 'zp_fwa_sign', length=8, group='zero_page', access='rw',
