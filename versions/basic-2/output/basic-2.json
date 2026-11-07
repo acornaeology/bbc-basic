@@ -97853,7 +97853,7 @@
         244,
         255
       ],
-      "comment_inline": "INKEY: Scan for a key with positive X, or read internal key number EOR 128 for negative X",
+      "comment_inline": "Read a key within the time limit in X and Y, or with Y = &FF test for the key with negative INKEY number X",
       "type": "code",
       "mnemonic": "jmp",
       "operand": "osbyte",

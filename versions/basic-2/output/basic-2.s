@@ -11474,7 +11474,7 @@ read_key_timed
     lda #osbyte_inkey                                                 ; $afb0: $a9 $81     ..      ; OSBYTE &81: INKEY (read a key with a timeout)
     ldx zp_iwa                                                        ; $afb2: $a6 $2a     .*      ; time limit low
     ldy zp_iwa_1                                                      ; $afb4: $a4 $2b     .+      ; time limit high
-    jmp osbyte                                                        ; $afb6: $4c $f4 $ff L..     ; INKEY: Scan for a key with positive X, or read internal key number EOR 128 for negative X
+    jmp osbyte                                                        ; $afb6: $4c $f4 $ff L..     ; Read a key within the time limit in X and Y, or with Y = &FF test for the key with negative INKEY number X
 ; ***************************************************************************************
 ; GET
 ;
